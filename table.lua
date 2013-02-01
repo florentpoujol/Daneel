@@ -1,231 +1,197 @@
 
---------------------------------------------------
+-- DEPENDENCIES : math.isinteger() in table.join()
 
---
--- Constructor for tables that allows to use the functions  in the table table on the table copies
---
-function table.new (...)
+
+-- Constructor for tables that allows to use the functions in the table table on the table copies
+-- @param ... (optionnal) A single table, or 2 or more values to fill the new table with
+-- @return table - The new table
+function table.new(...)
     local table_mt = {}
     table_mt.__index = table
 
     if arg == nil then 
-        return setmetatable ({}, table_mt)
+        return setmetatable({}, table_mt)
     end
 
     arg.n = nil
     local newTable = arg
     
-    if arg[2] == nil and type (arg[1]) == "table" then -- the only argument is the table
+    if arg[2] == nil and type(arg[1]) == "table" then -- the only argument is the table
         for key,value in pairs(arg[1]) do
             newTable[key] = value
         end
-
-        --newTable = table.copy (arg[1]) -- outch, great infinite loop with copy() that calls new()
     end
 
-    return setmetatable (newTable, table_mt)
+    return setmetatable(newTable, table_mt)
 end
 
-
---------------------------------------------------
-
---
--- Return a copy of the provided table
---
-function table.copy (t)
-    if t == nil then
-        error ("table.copy(table) : Arguent #1 is nil.")
-    end
-    
-    local argType = type (t)
+-- Return a copy of the provided table.
+-- Dependent of table.new().
+-- @param t The table to copy
+function table.copy(t)    
+    local argType = type(t)
     if argType ~= "table" then
-        error ("table.copy(table) : Argument #1 is of type "..argType.." instead of table.")
+        error("table.copy(table) : Argument 'table' is of type '"..argType.."' instead of table.")
     end
-    
-    ----------
 
-    return table.new (t)
+    return table.new(t)
 end
 
+-- Tells wether the provided key is found within the provided table.
+-- @param t The table to search in
+-- @param key The key to search for
+-- @return boolean - True if the key is found in the table, false otherwise
+function table.containskey(t, p_key)
+    local errorHead = "table.containskey(table, key) : "
 
---------------------------------------------------
-
---
--- Tells wether the provided key is found within the provided table
---
-function table.containskey (t, p_key)
-    if t == nil then
-        error ("table.containskey(table, key) : Argument #1 is nil.")
-    end
-    
-    local argType = type (t)
+    local argType = type(t)
     if argType ~= "table" then
-        error ("table.containskey(table, key) : Argument #1 is of type "..argType.." instead of table.")
+        error(errorHead.."Argument 'table' is of type '"..argType.."' instead of 'table'.")
     end
     
-    if p_key == nil then
-        error ("table.containskey(table, key) : Argument #2 is nil.")
+    argType = type(p_key)
+    if argType ~= "string" then
+        error(errorHead.."Argument 'key' is of type '"..argType.."' instead of 'string'.")
     end
     
-    ----------
-    
-    for key,value in pairs(t) do
+    for key, value in pairs(t) do
         if p_key == key then return true end
     end
     
     return false
 end
 
+-- Tells wether the provided value is found within the provided table.
+-- @param t The table to search in
+-- @param value The value to search for
+-- @return boolean - True if the value is found in the table, false otherwise
+function table.containsvalue(t, p_value)
+    local errorHead = "table.containsvalue(table, value) : "
 
---------------------------------------------------
-
---
--- tells wether the provided value is found within the provided table
---
-function table.containsvalue (t, p_value)
-    if t == nil then
-        error ("table.containsvalue(table, value) : Argument #1 is nil.")
-    end
-    
-    local argType = type (t)
+    local argType = type(t)
     if argType ~= "table" then
-        error ("table.containsvalue(table, value) : Argument #1 is of type "..argType.." instead of table.")
+        error(errorHead.."Argument 'table' is of type '"..argType.."' instead of 'table'.")
     end
     
     if p_value == nil then
-        error ("table.containsvalue(table, value) : Argument #2 is nil.")
+        error(errorHead.."Argument 'value' is nil.")
     end
     
-    ----------
-    
-    for key,value in pairs(t) do
+    for key, value in pairs(t) do
         if p_value == value then return true end
     end
     
     return false
 end
 
+-- Returns the length of a table, which is the numbers of keys for which the value is non-nil.
+-- The keyType argument can be "all", nil (default to "all") or any Lua type (as a string).
+-- The function returns only count the number of keys of values for which the key has the specified.
+-- Dependent of table.constainsvalue()
+-- @param t The table
+-- @param keyType (optionnal) See function description
+-- @return number - The table length
+function table.length(t, keyType)
+    local errorHead = "table.length(table, keyType) : "
 
---------------------------------------------------
-
---
--- return the length of a table
--- keyType can be "number", "string", "both" or nil (defaulted to "both")
--- if "number", it count only numeric keys
--- if "string", it count only string key
--- if "both", it count both
---
-function table.length (t, keyType)
-    if t == nil then
-        error ("table.length(table, keyType) : Argument #1 is empty.")
+    local argType = type(t)
+    if argType ~= 'table' then
+        error(errorHead.."Argument 'table' is of type '"..argType.."' instead of 'table'.")
     end
-    
-    local argType = type (t)
-    if argType ~= "table" then
-        error ("table.length(table, keyType) : Argument #1 is of type "..argType.." instead of table.")
-    end
-    
+        
     if keyType == nil then
-        keyType = "both"
-    elseif not table.containsvalue ({"number", "string", "both"}, keyType) then
-        error ("table.length(table, keyType) : Argument #2 as an unautorized value ["..tostring(keyType).."]. Must be 'number', 'string', 'both' or nil.")
+        keyType = "all"
+    elseif not table.containsvalue({"number", "string", "boolean", "table", "function", "userdata", "thread"}, keyType) then
+        error(errorHead.."Argument 'keyType' as an unautorized value '"..tostring(keyType).."'. Must be one of the seven Lua data types, 'all', or nil.")
     end
-    
-    ----------  
     
     local length = 0
     
-    for key,value in pairs(t) do
-        if keyType == "both" then
-            length = length +1
-        elseif type (key) == keyType then
-            length = length +1
+    for key, value in pairs(t) do
+        if keyType == "all" then
+            length = length + 1
+        elseif type(key) == keyType then
+            length = length + 1
         end
     end
 
     return length
 end
 
-
---------------------------------------------------
-
---
--- Print all key/value pairs within the provided table
--- if verbose is true (a nil value is defaulted to false)
---
+-- Print all key/value pairs within the provided table.
+-- Dependent of table.length().
+-- @param t The table.
 function table.print(t)
+    errorHead = "table.print(table) : "
+
     if t == nil then
-        print("table is nil")
-        return
-    end
-    
-    local argType = type (t)
-    if argType ~= "table" then
-        print ("table.print(table) : Argument #1 is of type "..argType.." instead of table.")
-        return
-    end
-    
-    if table.length (t) == 0 then
-        print ("table.print(table) : Provided table is empty.")
+        print(errorHead.."Provided table is nil")
         return
     end
 
-    ----------
+    local argType = type(t)
+    if argType ~= 'table' then
+        error(errorHead.."Argument 'table' is of type '"..argType.."' instead of 'table'.")
+    end
     
-    for key,value in pairs(t) do
-        print (key, value)
+    if table.length(t) == 0 then
+        print(errorHead.."Provided table is empty.")
+        return
+    end
+
+    for key, value in pairs(t) do
+        print(key, value)
     end
 end
 
-
---------------------------------------------------
-
---
--- Print all key/value pairs within the provided table
--- if verbose is true (a nil value is defaulted to false)
---
+-- Print the metatable of the provided table.
+-- Dependent of table.length().
+-- @param t The table.
 function table.printmetatable(t)
+    errorHead = "table.printmetatable(table) : "
+
     if t == nil then
-        print ("table.printmetatable(table) : Argument 'table' is nil.")
-        return
-    end
-    
-    local argType = type (t)
-    if argType ~= "table" then
-        print ("table.printmetatable(table) : Argument 'table' is of type "..argType.." instead of table.")
-        return
-    end
-    
-    local mt = getmetatable (table)
-    if mt == nil then
-        print ("table.printmetatable(table) : No metatable attached to the provided table.")
+        print(errorHead.."Provided table is nil")
         return
     end
 
-    ----------
+    local argType = type(t)
+    if argType ~= 'table' then
+        error(errorHead.."Argument 'table' is of type '"..argType.."' instead of 'table'.")
+    end
     
-    for key,value in pairs(mt) do
-        print (key, value)
+    local mt = getmetatable(table)
+    if mt == nil then
+        print(errorHead.."Provided table has no metatable attached.")
+        return
+    end
+
+    if table.length(mt) == 0 then
+        print(errorHead.."The metatable of the provided table is empty.")
+        return
+    end
+   
+    for key, value in pairs(mt) do
+        print(key, value)
     end
 end
 
-
---------------------------------------------------
-
---
--- Concatenate several table into one
---
+-- Join two or more tables into one.
+-- Integer keys are not overrided.
+-- Dependent of math.isinterger().
+-- @param (optionnal) At least two tables to join together. Non-table arguments are ignored.
+-- @return table - The new table
 function table.join(...)
     if arg == nil then 
-        error ("table.join(...) : No argument provided. Need at least two.")
+        error("table.join(...) : No argument provided. Need at least two.")
     end
     
-    local fullTable = {}
+    local fullTable = table.new()
     
     for i, t in ipairs(arg) do
         if type(t) == "table" then
             for key, value in pairs(t) do
-                if type(tonumber(key)) == "number" then
+                if math.isinterger(key) then
                     table.insert(fullTable, value)
                 else
                     fullTable[key] = value
@@ -237,19 +203,30 @@ function table.join(...)
     return fullTable
 end
 
+-- Compare table1 and table2. Returns true if they have the exact same keys which have the exact same values.
+-- Dependant of table.length().
+-- @param The first table to compare
+-- @param The second table to compare to the first table
+-- @return boolean - True if the two table have the same content
+function table.compare(table1, table2)
+    local errorHead = "table.compare(table1, table2) : "
+    
+    local argType = type(table1)
+    if argType ~= "table" then
+        error(errorHead.."Argument 'table1' is of type '"..argType.."' instead of 'table'.")
+    end
 
---------------------------------------------------
+    argType = type(table2)
+    if argType ~= "table" then
+        error(errorHead.."Argument 'table2' is of type '"..argType.."' instead of 'table'.")
+    end
 
---
--- Compare t1 and t2
---
-function table.compare (t1, t2)
-    if table.length (t1) ~= table.length (t2) then
+    if table.length(table1) ~= table.length(table2) then
         return false
     end
 
-    for key,value in ipairs (t1) do
-        if t1[key] ~= t2[key] then
+    for key, value in pairs(table1) do
+        if table1[key] ~= table2[key] then
             return false
         end
     end

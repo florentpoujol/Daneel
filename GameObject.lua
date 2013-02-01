@@ -15,16 +15,16 @@ function GameObject.New(name, params, g)
     -- errors
     local errorHead = "GameObject.New(name[, params]) : "
 
-    local varType = type(name)
-    if name == nil or varType ~= "string" then
-        error(errorHead .. "Argument 'name' is of type '" .. varType .. "' instead of 'string'. Must be the gameObject name.")
+    local argType = type(name)
+    if name == nil or argType ~= "string" then
+        error(errorHead .. "Argument 'name' is of type '" .. argType .. "' instead of 'string'. Must be the gameObject name.")
     end
 
     if params == nil then params = {} end
 
-    varType = type(params)
-    if varType ~= "table" then
-        error(errorHead .. "Argument 'params' is of type '" .. varType .. "' instead of 'table'. This argument is optionnal but if set, it must be a table.")
+    argType = type(params)
+    if argType ~= "table" then
+        error(errorHead .. "Argument 'params' is of type '" .. argType .. "' instead of 'table'. This argument is optionnal but if set, it must be a table.")
     end
     
     --
@@ -50,21 +50,21 @@ function GameObject.Instantiate(goName, sceneName, params, g)
     -- errors
     local errorHead = "GameObject.Instantiate(gameObjectName, sceneName[, params]) : "
 
-    local varType = type(goName)
-    if goName == nil or varType ~= "string" then
-        error(errorHead .. "Argument 'gameObjectName' is of type '" .. varType .. "' instead of 'string'. Must be the gameObject name.")
+    local argType = type(goName)
+    if goName == nil or argType ~= "string" then
+        error(errorHead .. "Argument 'gameObjectName' is of type '" .. argType .. "' instead of 'string'. Must be the gameObject name.")
     end
 
-    varType = type(sceneName)
-    if sceneName == nil or varType ~= "string" then
-        error(errorHead .. "Argument 'sceneName' is of type '" .. varType .. "' instead of 'string'. Must be the scene name.")
+    argType = type(sceneName)
+    if sceneName == nil or argType ~= "string" then
+        error(errorHead .. "Argument 'sceneName' is of type '" .. argType .. "' instead of 'string'. Must be the scene name.")
     end
 
     if params == nil then params = {} end
 
-    varType = type(params)
-    if varType ~= "table" then
-        error(errorHead .. "Argument 'params' is of type '" .. varType .. "' instead of 'table'. This argument is optionnal but if set, it must be a table.")
+    argType = type(params)
+    if argType ~= "table" then
+        error(errorHead .. "Argument 'params' is of type '" .. argType .. "' instead of 'table'. This argument is optionnal but if set, it must be a table.")
     end
     
     --
@@ -194,9 +194,9 @@ function GameObject.Get(name, g)
         name = g
     end
 
-    local varType = type(name)
-    if name == nil or varType ~= "string" then
-        error("GameObject.Get(gameObjectName) : Argument 'gameObjectName' is of type '" .. varType .. "' instead of 'string'. Must be the gameObject name.")
+    local argType = type(name)
+    if name == nil or argType ~= "string" then
+        error("GameObject.Get(gameObjectName) : Argument 'gameObjectName' is of type '" .. argType .. "' instead of 'string'. Must be the gameObject name.")
     end
 
     return CraftStudio.FindGameObject(name)
@@ -214,14 +214,14 @@ function GameObject:SetParentByName(name, keepLocalTransform)
         error(errorHead .. gameObjectCallSyntaxError .. "SetParentByName()")
     end
 
-    local varType = type(name)
-    if name == nil or varType ~= "string" then
-        error(errorHead .. "Argument 'name' is of type '" .. varType .. "' instead of 'string'. Must the parent gameObject name.")
+    local argType = type(name)
+    if name == nil or argType ~= "string" then
+        error(errorHead .. "Argument 'name' is of type '" .. argType .. "' instead of 'string'. Must the parent gameObject name.")
     end
 
-    varType = type(keepLocalTransform)
-    if keepLocalTransform ~= nil and varType ~= "boolean" then
-        error(errorHead .. "Argument 'keepLocalTransform' is of type '" .. varType .. "' instead of 'boolean'.")
+    argType = type(keepLocalTransform)
+    if keepLocalTransform ~= nil and argType ~= "boolean" then
+        error(errorHead .. "Argument 'keepLocalTransform' is of type '" .. argType .. "' instead of 'boolean'.")
     end
 
     --
@@ -248,14 +248,14 @@ function GameObject:GetChild(name, recursive)
         error(errorHead .. gameObjectCallSyntaxError .. "GetChild()")
     end
 
-    local varType = type(name)
-    if name == nil or varType ~= "string" then
-        error(errorHead .. "Argument 'name' is of type '" .. varType .. "' instead of 'string'. Must the child gameObject name.")
+    local argType = type(name)
+    if name == nil or argType ~= "string" then
+        error(errorHead .. "Argument 'name' is of type '" .. argType .. "' instead of 'string'. Must the child gameObject name.")
     end
 
-    varType = type(recursive)
-    if recursive ~= nil and varType ~= "boolean" then
-        error(errorHead .. "Argument 'recursive' is of type '" .. varType .. "' instead of 'boolean'.")
+    argType = type(recursive)
+    if recursive ~= nil and argType ~= "boolean" then
+        error(errorHead .. "Argument 'recursive' is of type '" .. argType .. "' instead of 'boolean'.")
     end
 
     return self:FindChild(name, recursive)
@@ -272,9 +272,9 @@ function GameObject:GetChildrenRecursive(includeSelf)
         error(errorHead .. gameObjectCallSyntaxError .. "GetChildrenRecursive()")
     end
 
-    local varType = type(includeSelf)
-    if includeSelf ~= nil and varType ~= "boolean" then
-        error(errorHead .. "Argument 'includeSelf' is of type '" .. varType .. "' instead of 'boolean'.")
+    local argType = type(includeSelf)
+    if includeSelf ~= nil and argType ~= "boolean" then
+        error(errorHead .. "Argument 'includeSelf' is of type '" .. argType .. "' instead of 'boolean'.")
     end
 
     -- 
@@ -309,14 +309,14 @@ function GameObject:BroadcastMessage(methodName, data)
         error(errorHead .. gameObjectCallSyntaxError .. "BroadcastMessage()")
     end
 
-    local varType = type(methodName)
-    if name == nil or varType ~= "string" then
-        error(errorHead .. "Argument 'name' is of type '" .. varType .. "' instead of 'string'. Must the method name.")
+    local argType = type(methodName)
+    if name == nil or argType ~= "string" then
+        error(errorHead .. "Argument 'name' is of type '" .. argType .. "' instead of 'string'. Must the method name.")
     end
 
-    varType = type(data)
-    if data ~= nil and varType ~= "table" then
-        error(errorHead .. "Argument 'data' is of type '" .. varType .. "' instead of 'table'. If set, must be a table.")
+    argType = type(data)
+    if data ~= nil and argType ~= "table" then
+        error(errorHead .. "Argument 'data' is of type '" .. argType .. "' instead of 'table'. If set, must be a table.")
     end
 
     --
