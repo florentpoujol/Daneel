@@ -329,9 +329,6 @@ function GameObject:BroadcastMessage(methodName, data)
 end
 
 
-
-
-
 --------------------------------------------------
 -- Components
 --------------------------------------------------
@@ -351,7 +348,7 @@ local function IsScript(text)
     return false
 end
 
-
+-- Correspondance between the component type (the keys) and the asset type (the values)
 local assetTypeFromComponentType = {
     Script = "Script",
     ModelRenderer = "Model",
@@ -359,7 +356,9 @@ local assetTypeFromComponentType = {
 }
 
 
--- Add a component to the gameObject and optionnaly set the model, map or script asset
+-- Add a component to the gameObject and optionnaly set the model, map or script asset.
+-- @param componentType The Compoenent type
+-- @param asset (optionnal) The model, map or script name or asset to initialize the new component with
 function GameObject:AddComponent(componentType, asset)
     local errorHead = "GameObject:AddComponent(componentType[, asset or asset name]) : "
 
@@ -403,7 +402,8 @@ function GameObject:AddComponent(componentType, asset)
     return component
 end
 
--- Script
+-- Add a ScriptedBehavior to the gameObject.
+-- @param assetNameOrAsset The script name or asset
 function GameObject:AddScript(assetNameOrAsset)
     local errorHead = "GameObject:AddScript(assetNameOrAsset) : "
 
@@ -418,7 +418,7 @@ function GameObject:AddScript(assetNameOrAsset)
     return self:AddComponent("Script", assetNameOrAsset)
 end
 
--- Model
+-- Add a ModelRenderer component to the gameObject.
 function GameObject:AddModelRenderer()
     local errorHead = "GameObject:AddModelRenderer() : "
 
@@ -429,6 +429,8 @@ function GameObject:AddModelRenderer()
     return self:AddComponent("ModelRenderer")
 end
 
+-- Add a ModelRenderer component to the gameObject and set its model.
+-- @param assetNameOrAsset The model name or asset
 function GameObject:AddModel(assetNameOrAsset)
     local errorHead = "GameObject:AddModel(assetNameOrAsset) : "
 
@@ -443,7 +445,7 @@ function GameObject:AddModel(assetNameOrAsset)
     return self:AddComponent("ModelRenderer", assetNameOrAsset)
 end
 
--- Map
+-- Add a MapRenderer to the gameObject.
 function GameObject:AddMapRenderer()
     local errorHead = "GameObject:AddMapRenderer() : "
 
@@ -454,6 +456,8 @@ function GameObject:AddMapRenderer()
     return self:AddComponent("MapRenderer")
 end
 
+-- Add a MapRenderer component to the gameObject and set its map 
+-- @param assetNameOrAsset The model name or asset
 function GameObject:AddMap(assetNameOrAsset)
     local errorHead = "GameObject:AddMap(assetNameOrAsset) : "
 
@@ -468,7 +472,7 @@ function GameObject:AddMap(assetNameOrAsset)
     return self:AddComponent("MapRenderer", assetNameOrAsset)
 end
 
--- Camera
+-- Add a Camera component to the gameObject.
 function GameObject:AddCamera()
     local errorHead = "GameObject:AddCamera() : "
 
@@ -480,33 +484,33 @@ function GameObject:AddCamera()
 end
 
 
--- Get components
-
--- Script
-function GameObject:GetScript(script)
-    local errorHead = "GameObject:GetScript(scriptNameOrScriptAsset) : "
+-- Get the specified ScriptedBehavior instance attached to the gameObject
+-- @param scriptNameOrAsset The script name or asset
+-- @return The ScriptedBehavior instance
+function GameObject:GetScript(scriptNameOrAsset)
+    local errorHead = "GameObject:GetScript(scriptNameOrAsset) : "
 
     if getmetatable(self) ~= GameObject then -- pas appelé depuis un gameObject
         error(errorHead .. gameObjectCallSyntaxError .. "GetScript()")
     end
 
-    if script == nil then
-        error(errorHead .. "Argument 'scriptNameOrScriptAsset' is nil. Must be the script name or the script asset")
+    if scriptNameOrAsset == nil then
+        error(errorHead .. "Argument 'scriptNameOrAsset' is nil. Must be the script name or the script asset")
     end
 
-    if script ~= nil and type(script) == "string" then
-        local scriptName = script
-        script = CraftStudio.FindAsset(scriptName, "Script")
+    if scriptNameOrAsset ~= nil and type(scriptNameOrAsset) == "string" then
+        local script = CraftStudio.FindAsset(scriptNameOrAsset, "Script")
         
         if script == nil then
-            error(errorHead .. "Script asset not found. Script name='" .. scriptName .. "'")
+            error(errorHead .. "Script asset not found. Script name='" .. scriptNameOrAsset .. "'")
         end
     end
 
     return self:GetScriptedBehavior(script)
 end
 
--- Model
+-- Get the first ModelRenderer component attached to the gameObject
+-- @return The ModelRenderer component
 function GameObject:GetModelRenderer()
     local errorHead = "GameObject:GetModelRenderer() : "
 
@@ -517,7 +521,8 @@ function GameObject:GetModelRenderer()
     return self:GetComponent("ModelRenderer")
 end
 
--- Map
+-- Get the first MapRenderer component attached to the gameObject
+-- @return The MapRenderer component
 function GameObject:GetMapRenderer()
     local errorHead = "GameObject:GetMapRenderer() : "
 
@@ -528,7 +533,8 @@ function GameObject:GetMapRenderer()
     return self:GetComponent("MapRenderer")
 end
 
--- Camera
+-- Get the first Camera component attached to the gameObject
+-- @return The Camera component
 function GameObject:GetCamera()
     local errorHead = "GameObject:GetCamera() : "
 
@@ -539,7 +545,8 @@ function GameObject:GetCamera()
     return self:GetComponent("Camera")
 end
 
--- Transform
+-- Get the Transform component attached to the gameObject
+-- @return The Transform component
 function GameObject:GetTransform()
     local errorHead = "GameObject:GetTransform() : "
 
@@ -551,12 +558,7 @@ function GameObject:GetTransform()
 end
 
 
--- Destory Components
-
-
-
-
--- Destroy
+-- Destroy the gameObject
 function GameObject:Destroy()
     local errorHead = "GameObject:Destroy() : "
 
@@ -567,11 +569,3 @@ function GameObject:Destroy()
     CraftSudio.Destroy(self)
 end
 
-
-
-
-
-
-function Asset.Get(assetName, assetType)
-    return CraftSudio.FindAsset(assetName, assetType)
-end
