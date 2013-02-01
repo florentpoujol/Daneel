@@ -1,0 +1,2054 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"meth",
+				"methodName"
+			],
+			[
+				"scen",
+				"sceneName"
+			],
+			[
+				"sce",
+				"sceneName"
+			],
+			[
+				"err",
+				"error"
+			],
+			[
+				"compo",
+				"componentType"
+			],
+			[
+				"com",
+				"componentType"
+			],
+			[
+				"ass",
+				"assetName"
+			],
+			[
+				"Create",
+				"CreateScripteBehavior"
+			],
+			[
+				"asse",
+				"assetType"
+			],
+			[
+				"error",
+				"error"
+			],
+			[
+				"comp",
+				"componentType"
+			],
+			[
+				"comonent",
+				"Components"
+			],
+			[
+				"para",
+				"params"
+			],
+			[
+				"er",
+				"errorHead"
+			],
+			[
+				"Vide",
+				"VideoGamesChest"
+			],
+			[
+				"li",
+				"line-height"
+			],
+			[
+				"fr",
+				"frequency"
+			],
+			[
+				"Discover",
+				"discovered"
+			],
+			[
+				"sub",
+				"subtitle"
+			],
+			[
+				"search",
+				"search_id"
+			],
+			[
+				"feed",
+				"feed_type"
+			],
+			[
+				"rep",
+				"reports"
+			],
+			[
+				"orde",
+				"ordered_reports"
+			],
+			[
+				"array_m",
+				"array_merge"
+			],
+			[
+				"date",
+				"date_report"
+			],
+			[
+				"array_key",
+				"array_key_exists"
+			],
+			[
+				"is_",
+				"is_null"
+			],
+			[
+				"user",
+				"user_id"
+			],
+			[
+				"win",
+				"windowsdesktop"
+			],
+			[
+				"in",
+				"input"
+			],
+			[
+				"profi",
+				"profile"
+			],
+			[
+				"prof",
+				"profile_type"
+			],
+			[
+				"profile",
+				"profile_type"
+			],
+			[
+				"profil",
+				"profile_type"
+			],
+			[
+				"pro",
+				"profile_types"
+			],
+			[
+				"background",
+				"background-color"
+			],
+			[
+				"pub",
+				"publishername"
+			],
+			[
+				"default",
+				"default_string"
+			],
+			[
+				"font-",
+				"font-weight"
+			],
+			[
+				"he",
+				"header	Tag"
+			],
+			[
+				"arra",
+				"array_success"
+			],
+			[
+				"d",
+				"display"
+			],
+			[
+				"wikipedia",
+				"Wikipedia"
+			],
+			[
+				"cross",
+				"crosspromotion_key"
+			],
+			[
+				"erre",
+				"error_reporting"
+			],
+			[
+				"smt",
+				"smtp_server"
+			],
+			[
+				"is_in",
+				"is_integer"
+			],
+			[
+				"bod",
+				"body_html"
+			],
+			[
+				"fail",
+				"failures"
+			],
+			[
+				"bo",
+				"body_html"
+			],
+			[
+				"str_rep",
+				"str_replace"
+			],
+			[
+				"item",
+				"item_count"
+			],
+			[
+				"ca",
+				"cached_value"
+			],
+			[
+				"se",
+				"search"
+			],
+			[
+				"develo",
+				"developer_name"
+			],
+			[
+				"menu",
+				"menu_items"
+			],
+			[
+				"str_re",
+				"str_replace"
+			],
+			[
+				"arr",
+				"array_success"
+			],
+			[
+				"sea",
+				"search_data"
+			],
+			[
+				"json",
+				"json_input"
+			],
+			[
+				"jso",
+				"json_input"
+			],
+			[
+				"sear",
+				"search_id"
+			],
+			[
+				"field",
+				"field_name"
+			],
+			[
+				"mar",
+				"margin-right"
+			],
+			[
+				"array",
+				"array_items"
+			],
+			[
+				"user_",
+				"user_secret_key"
+			],
+			[
+				"promotion",
+				"cross-promotion"
+			],
+			[
+				"croo",
+				"crosspromotion_subscription"
+			],
+			[
+				"subs",
+				"subscription"
+			],
+			[
+				"par",
+				"particiative"
+			],
+			[
+				"array_k",
+				"array_key_exists"
+			],
+			[
+				"icon",
+				"icon_white"
+			],
+			[
+				"ic",
+				"icon_white"
+			],
+			[
+				"list",
+				"list-style-type"
+			],
+			[
+				"strto",
+				"strtolower"
+			],
+			[
+				"class_",
+				"class_name"
+			],
+			[
+				"fo",
+				"foreign_key"
+			],
+			[
+				"re",
+				"report"
+			],
+			[
+				"report",
+				"report_type"
+			],
+			[
+				"unse",
+				"unset"
+			],
+			[
+				"els",
+				"else"
+			],
+			[
+				"a_",
+				"a_reports"
+			],
+			[
+				"for",
+				"foreach	foreach …"
+			],
+			[
+				"pasd",
+				"password"
+			],
+			[
+				"log",
+				"logged"
+			],
+			[
+				"Re",
+				"Redirect"
+			],
+			[
+				"is",
+				"is_numeric"
+			],
+			[
+				"IS_",
+				"IS_DEVELOPER"
+			],
+			[
+				"is_n",
+				"is_numeric"
+			],
+			[
+				"is_nu",
+				"is_numeric"
+			],
+			[
+				"date_",
+				"date_create"
+			],
+			[
+				"rev",
+				"review"
+			],
+			[
+				"ree",
+				"reviews"
+			],
+			[
+				"D",
+				"DEV_PROFILE_ID"
+			],
+			[
+				"game",
+				"Game"
+			],
+			[
+				"send",
+				"send_mail"
+			],
+			[
+				"attr",
+				"attributes"
+			],
+			[
+				"att",
+				"attributes"
+			],
+			[
+				"app",
+				"approved_by"
+			],
+			[
+				"USE",
+				"USER_ID"
+			],
+			[
+				"ap",
+				"approved_by"
+			],
+			[
+				"admin_",
+				"get_admin_home"
+			],
+			[
+				"sound",
+				"soundtrackurl"
+			],
+			[
+				"op",
+				"options"
+			],
+			[
+				"vie",
+				"viewpoints"
+			],
+			[
+				"devl",
+				"developementstates"
+			],
+			[
+				"dev",
+				"devices"
+			],
+			[
+				"ope",
+				"operatingsystems"
+			],
+			[
+				"lang",
+				"language"
+			],
+			[
+				"form",
+				"form_items_as_json"
+			],
+			[
+				"mul",
+				"multiselect_form_items"
+			],
+			[
+				"social",
+				"socialnetworks"
+			],
+			[
+				"with",
+				"with_errors"
+			],
+			[
+				"cre",
+				"create_user"
+			],
+			[
+				"Developer",
+				"developer"
+			],
+			[
+				"m",
+				"multiselect_form_items"
+			],
+			[
+				"html",
+				"html_success"
+			],
+			[
+				"adm",
+				"adminhome"
+			],
+			[
+				"pr",
+				"profile_id"
+			],
+			[
+				"ol",
+				"old_password_ok"
+			],
+			[
+				"es",
+				"escape_json_chars"
+			],
+			[
+				"pass",
+				"password"
+			],
+			[
+				"o",
+				"old_password_ok"
+			],
+			[
+				"Me",
+				"METHOD"
+			],
+			[
+				"valid",
+				"validation"
+			],
+			[
+				"val",
+				"validation_errors"
+			],
+			[
+				"IS",
+				"IS_LOGGED_IN"
+			],
+			[
+				"forbty",
+				"forbiddenBlockTypes"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "Config.lua",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "GameObject.lua",
+			"settings":
+			{
+				"buffer_size": 17531,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "table.lua",
+			"settings":
+			{
+				"buffer_size": 6108,
+				"line_ending": "Windows",
+				"name": "t"
+			}
+		},
+		{
+			"file": "Events.lua",
+			"settings":
+			{
+				"buffer_size": 2228,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 58.0,
+		"selected_items":
+		[
+			[
+				"blade",
+				"Set Syntax: Blade"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"doc",
+				"DocBlockr: Reparse comment block"
+			],
+			[
+				"synph",
+				"Set Syntax: PHP"
+			],
+			[
+				"synbl",
+				"Set Syntax: Blade"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"snipara",
+				"Snippet: Comment Param"
+			],
+			[
+				"snip",
+				"Snippet: Comment Summary"
+			],
+			[
+				"deb	",
+				"Snippet: Debug_log"
+			],
+			[
+				"deb",
+				"Snippet: Debug_log"
+			],
+			[
+				"snippet	",
+				"Snippet: Debug_log"
+			],
+			[
+				"SNIGRoup	",
+				"Snippet: Regex Groups"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"istall",
+				"Package Control: Install Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"insta	",
+				"Package Control: Install Package"
+			],
+			[
+				"toglesideb",
+				"View: Toggle Side Bar"
+			],
+			[
+				"sid",
+				"View: Toggle Side Bar"
+			],
+			[
+				"gui",
+				"Set Syntax: Regular Expression"
+			],
+			[
+				"pa",
+				"Package Control: Install Package"
+			],
+			[
+				"p",
+				"Package Control: Install Package"
+			],
+			[
+				"",
+				"Package Control: Install Package"
+			],
+			[
+				"bro",
+				"Preferences: Browse Packages"
+			],
+			[
+				"cons",
+				"Set Syntax: R Console"
+			]
+		],
+		"width": 536.0
+	},
+	"console":
+	{
+		"height": 125.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/F/Wamp/www/videogameschest.com/application/language/en/Config.lua",
+		"/F/Wamp/www/videogameschest.com/application/language/en/Events.lua",
+		"/F/Wamp/www/videogameschest.com/application/language/en/GameObject.lua",
+		"/F/Development/CraftStudio/Tutos Script/jaumakenro_orienterperso.txt",
+		"/F/Wamp/www/videogameschest.com/application/views/menu.blade.php",
+		"/F/Wamp/www/videogameschest.com/TODO.txt",
+		"/F/Wamp/www/videogameschest.com/application/models/game.php",
+		"/F/Wamp/www/videogameschest.com/application/models/user.php",
+		"/F/Wamp/www/videogameschest.com/application/views/discover.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/forms/discover_feed.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/forms/discover_common.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/addgame.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/controllers/advertising.php",
+		"/F/Wamp/www/videogameschest.com/application/controllers/admin.php",
+		"/F/Wamp/www/videogameschest.com/application/views/find.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/forms/find_feed.blade.php",
+		"/F/Wamp/www/videogameschest.com/public/css/vgc/main.less",
+		"/F/Wamp/www/videogameschest.com/application/views/admin/adminhome.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/layouts/main.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/forms/login.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/login.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/forms/lostpassword.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/lostpassword.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/register.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/forms/register.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/partials/find_explanation_en.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/admin/selecteditdeveloper.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/search.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/advertising.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/partials/find_explanation.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/advertising/feed.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/advertising/crosspromotion.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/find/find_email.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/admin/editgame.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/developerdisplay.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/advertising/email.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/controllers/feed.php",
+		"/F/Wamp/www/videogameschest.com/application/models/search.php",
+		"/F/Wamp/www/videogameschest.com/application/views/partials/ad_menu.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/admin/reviews.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/admin/reports.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/partials/reviewtable.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/bundles.php",
+		"/C/Users/Florent POUJOL/AppData/Local/Temp/fz3temp-1/routes.php",
+		"/F/Wamp/www/videogameschest.com/application/controllers/base.php",
+		"/F/Wamp/www/videogameschest.com/bundles/feeder/feeder.php",
+		"/F/Wamp/www/videogameschest.com/bundles/feeder/chained.php",
+		"/F/Wamp/www/videogameschest.com/bundles/feeder/bundle.php",
+		"/F/Wamp/www/videogameschest.com/bundles/feeder/entry.php",
+		"/F/Wamp/www/videogameschest.com/application/controllers/syndicationfeed.php",
+		"/F/Wamp/www/videogameschest.com/application/models/profile.php",
+		"/F/Wamp/www/videogameschest.com/bundles/feeder/start.php",
+		"/F/Wamp/www/videogameschest.com/application/models/report.php",
+		"/F/Wamp/www/videogameschest.com/application/models/developer.php",
+		"/F/Wamp/www/videogameschest.com/application/views/profile_list_form.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/admin/edituser.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/adddeveloper.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/admin/editdeveloper.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/partials/search_form.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/partials/search_foreach_fields.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/language/en/validation.php",
+		"/F/Wamp/www/videogameschest.com/application/start.php",
+		"/F/Wamp/www/videogameschest.com/application/libraries/RSSReader.php",
+		"/F/Wamp/www/videogameschest.com/bundles/logreader/start.php",
+		"/F/Wamp/www/videogameschest.com/application/views/gamedisplay.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/main_menu.blade.php",
+		"/F/Wamp/www/videogameschest.com/storage/logs/2013-01-20.log",
+		"/F/Wamp/www/videogameschest.com/bundles/logreader/views/logreader_view.blade.php",
+		"/F/Wamp/www/videogameschest.com/bundles/logreader/routes.php",
+		"/F/Wamp/www/videogameschest.com/application/views/test.blade.php",
+		"/F/Wamp/www/videogameschest.com/bundles/logviewer/routes.php",
+		"/F/Wamp/www/videogameschest.com/bundles/logviewer/views/viewer2.php",
+		"/F/Wamp/www/videogameschest.com/bundles/logreader/libraries/dir.php",
+		"/F/Wamp/www/videogameschest.com/bundles/logviewer/bundle.php",
+		"/F/Wamp/www/videogameschest.com/bundles/logviewer/start.php",
+		"/F/Wamp/www/videogameschest.com/bundles/logviewer/libraries/dir.php",
+		"/F/Wamp/www/videogameschest.com/bundles/log-viewer/views/viewer2.php",
+		"/F/Wamp/www/videogameschest.com/bundles/log-viewer/views/viewer.php",
+		"/F/Wamp/www/videogameschest.com/bundles/log-viewer/readme.md",
+		"/F/Wamp/www/videogameschest.com/bundles/log-viewer/routes.php",
+		"/F/Wamp/www/videogameschest.com/bundles/log-viewer/start.php",
+		"/F/Wamp/www/videogameschest.com/application/config/error.php",
+		"/F/Wamp/www/videogameschest.com/bundles/logreader/models/logreader.php",
+		"/F/Wamp/www/videogameschest.com/bundles/logreader/views/logreader.blade.php",
+		"/F/Wamp/www/videogameschest.com/bundles/coolcaptcha/start.php",
+		"/F/Wamp/www/videogameschest.com/bundles/bootstrapper/start.php",
+		"/F/Wamp/www/videogameschest.com/application/config/alpha/application.php",
+		"/F/Wamp/www/videogameschest.com/application/language/en/emails.php",
+		"/F/Wamp/www/videogameschest.com/application/views/home_later.blade.php",
+		"/F/Wamp/www/videogameschest.com/bundles/former/src/start.php",
+		"/C/Users/Florent POUJOL/AppData/Local/Temp/fz3temp-1/vgc 2.php",
+		"/C/Users/Florent POUJOL/AppData/Local/Temp/fz3temp-1/vgc.php",
+		"/F/Wamp/www/videogameschest.com/application/language/en/email.php",
+		"/C/Users/Florent POUJOL/AppData/Local/Temp/fz3temp-1/Select.php",
+		"/F/Wamp/www/videogameschest.com/paths.php",
+		"/C/Users/Florent POUJOL/AppData/Local/Temp/fz3temp-1/start.php",
+		"/F/Wamp/www/videogameschest.com/application/config/database.php",
+		"/C/Users/Florent POUJOL/AppData/Local/Temp/fz3temp-1/database.php",
+		"/C/Users/Florent POUJOL/AppData/Local/Temp/fz3temp-1/index.php",
+		"/F/Wamp/www/videogameschest.com/application/macros.php",
+		"/F/Wamp/www/videogameschest.com/application/views/report_form.blade.php",
+		"/F/Wamp/www/videogameschest.com/public/css/font-awesome/font-awesome.css",
+		"/F/Wamp/www/videogameschest.com/public/css/font-awesome/font-awesome.min.css",
+		"/F/Downloads/FortAwesome-Font-Awesome-13d5dd3/css/font-awesome.css",
+		"/F/Downloads/FortAwesome-Font-Awesome-13d5dd3/README.md",
+		"/F/Wamp/www/videogameschest.com/public/css/nivo-slider/nivo-slider.css",
+		"/F/Wamp/www/videogameschest.com/public/css/main.less",
+		"/F/Wamp/www/videogameschest.com/application/views/admin/login.blade.php",
+		"/F/Wamp/www/videogameschest.com/bundles/coolcaptcha/resources/words/en.php",
+		"/F/Downloads/nivo-slider/jquery.nivo.slider.js",
+		"/F/Downloads/nivo-slider/jquery.nivo.slider.pack.js",
+		"/F/Wamp/www/videogameschest.com/bundles/recaptcha/start.php",
+		"/F/Wamp/www/videogameschest.com/application/views/partials/profile_list_tiles.blade.php",
+		"/F/Wamp/www/videogameschest.com/application/views/crosspromotion.blade.php",
+		"/F/Wamp/www/videogameschest.com/bundles/coolcaptcha/classes/captcha.php",
+		"/F/Wamp/www/videogameschest.com/bundles/coolcaptcha/config/config.php",
+		"/F/Wamp/www/videogameschest.com/public/css/font-awesome.min.css",
+		"/F/Wamp/www/videogameschest.com/application/views/home.blade.php",
+		"/F/Wamp/www/videogameschest.com/public/css/bootstrap.css",
+		"/F/Wamp/www/videogameschest.com/public/css/bootstrap-responsive.min.css",
+		"/D/backup bdd/backupsql/backup_themightyquestfrance_2013-01-15.sql.gz",
+		"/F/Wamp/www/videogameschest.com/storage/views/f837512fc3d10a497b677e87df9855d3",
+		"/F/Wamp/www/videogameschest.com/storage/views/e81585c5b76fa083fcc20a51f7e3f7d5",
+		"/F/Wamp/www/videogameschest.com/storage/views/3fd4acbee755832db3cf365bc04f641f",
+		"/F/Wamp/www/videogameschest.com/storage/views/9faa7e336e80bcc4e6c90868d6b28e2e",
+		"/F/Wamp/www/videogameschest.com/storage/views/0b798a4f20069580de7d116506c7949e",
+		"/F/Wamp/www/videogameschest.com/bundles/former/config/former.php",
+		"/F/Wamp/www/videogameschest.com/public/index.php"
+	],
+	"find":
+	{
+		"height": 40.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			"F:\\Wamp\\www\\videogameschest.com",
+			"F:\\Wamp\\www\\videogameschest.com\\bundles\\former,F:\\Wamp\\www\\videogameschest.com",
+			"F:\\Wamp\\www\\videogameschest.com\\bundles\\former",
+			"<open files>,F:\\Wamp\\www\\videogameschest.com",
+			"<open files>",
+			"F:\\Unity\\Projects\\ScriptConverters\\Assets\\UnityScriptToCSharp\\ScriptsToConvert",
+			"F:\\Unity\\Projects\\ScriptConverters\\gitignore\\Tests files\\Networks"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"Arguement",
+			"\"Not called from a gameObject. Your must use a colon ( : ) between the gameObject and the method name. Ie : self.gameObject:",
+			"\"Not called from a gameObject. Your must use a colon ( : ) between the gameObject and the method name. ",
+			"error (",
+			"type (",
+			"<p style=\"line-height:10.5pt;border:none;padding:0cm;\">",
+			"<span style=\"line-height:14px;\">",
+			"<span lang=\"EN-US\" style=\"color:#3A3A3A; mso-ansi-language:EN-US\">",
+			" <span style=\"mso-spacerun:yes\">",
+			"<span style=\"color:#3A3A3A\">",
+			"<span lang=\"EN-US\" style=\"color:#3A3A3A;mso-ansi-language: EN-US\">",
+			"<span lang=\"EN-US\" style=\"mso-ansi-language:EN-US\">",
+			"</span>",
+			"</pre>",
+			"<pre class=\"MsoNormal\">",
+			"</p>",
+			"<p class=\"MsoNormal\">",
+			"ffed_type",
+			"nb_profiles",
+			"frequency",
+			"Atom",
+			"feed_type",
+			"rules",
+			"find",
+			"form",
+			"user/editblacklist",
+			"gamestick",
+			"comments",
+			"feed",
+			"ADVERTISING",
+			"feed",
+			"function send",
+			"feed_type",
+			"asc",
+			"order",
+			"developer",
+			"alpha_dash",
+			"alpha_dash_extended",
+			"twentycentury",
+			"$profile_type.'s'",
+			"delete",
+			"common",
+			"'city' => 'max:0',",
+			"Blacklist",
+			"data_placement",
+			"if (is_admin()) {\n    $devs = Dev::get(array('id', 'name'));\n    $privacy = array_set_values_as_keys(Config::get('vgc.privacy_and_reviews'));\n}\nelse $devs = Dev::where_privacy('public')->get(array('id', 'name'));",
+			"profile_background",
+			"$item",
+			"<span",
+			"span",
+			"</span>",
+			"<span class=\"4\">",
+			"videos",
+			"$item",
+			"start_date",
+			"environment",
+			"environement",
+			"user",
+			"approved_profiles",
+			"report",
+			"abvertising",
+			"herounit_text",
+			" ",
+			"cover",
+			" ",
+			"   ",
+			"    ",
+			"   ",
+			"crosspromotion_developer_allowed_fields",
+			"get_crosspromotion_from_game",
+			"get_addgame",
+			"lang('crosspromotion.title')",
+			"echo  lang('crosspromotion.edit_game_subscribers_help', array('url' => $url)) ; ?></p>",
+			"crosspromotion_subscription",
+			"abvertising/crosspromotion",
+			"admin/",
+			"IS_ADMIN",
+			"profile_type",
+			"crosspromotion_key",
+			"temp_key",
+			"ini_set(",
+			"error_reporting",
+			"localhost",
+			"json-item",
+			"nivoSlider",
+			"ewriteEngine on",
+			"send_mail(",
+			"secret_key",
+			"$reader",
+			"$this",
+			"if( ",
+			"smoothDivScroll",
+			"lass=\"row\"",
+			"$item",
+			"search_data",
+			"dev",
+			"developer",
+			"dev_not_in_list_link",
+			"developer_select_first_option",
+			"IS_ADMIN",
+			"id",
+			"$form",
+			"$user",
+			"IS_ADMIN",
+			"IS_DEVELOPER",
+			"USER_ID",
+			"admin.",
+			"edit_user_account",
+			"json",
+			"lang('mail",
+			"lostpassword_success",
+			"login",
+			"        '",
+			"register",
+			"temp_key",
+			"Register",
+			"register_title",
+			"email",
+			"words_contains",
+			"search_mode_whole_word",
+			"item",
+			"$item",
+			"$form",
+			"array_items",
+			"$form",
+			"form",
+			"items",
+			"array_items"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"Argument",
+			"gameObjectCallSyntaxError .. \"",
+			"error(",
+			"type(",
+			"",
+			" ",
+			"",
+			"discover",
+			"alpha_dash_extended",
+			"$profile_type",
+			"'city' => 'honeypot',",
+			"</div>",
+			"<div class=\"span4\">",
+			"advertising",
+			"",
+			"is_admin()",
+			"json-field",
+			"sendMail(",
+			"url_key",
+			"$feed",
+			"$reader",
+			"if (",
+			"lass=\"row-fluid\"",
+			"is_admin()",
+			"! is_admin()",
+			"user_id()",
+			"lang('email",
+			"array_fields",
+			"json_fields",
+			"common",
+			"DEVELOPER_ID",
+			"lang('menu.login.",
+			"lang('menu.",
+			"lang('developer.fields.",
+			"/",
+			"lang('",
+			"Game::",
+			"$game",
+			"$dev",
+			"set_error",
+			"HTML::set_errors(",
+			"Messages::",
+			"game",
+			"\" => \"",
+			" => array(",
+			"),",
+			" => array(",
+			" }}",
+			"{{ ",
+			"HTML::set",
+			" for=\"\"",
+			"",
+			"__('vgc.",
+			"'$2' => '$5',",
+			"route",
+			"{{ URL::to_route$1 }}",
+			"{{ URL::To_route($1) }}",
+			"<li>",
+			"",
+			"@endforeach",
+			"@if$1",
+			"@else",
+			"@endif",
+			"\\\\[\\\\]",
+			"\\[\\]",
+			"[]|",
+			"|[]",
+			"openedParenthesis",
+			"UnityEngine.Random.",
+			"t",
+			"s",
+			"$1\\n$2{",
+			")\n    {",
+			"(",
+			"!",
+			"Add(",
+			"\");",
+			"Add (\"",
+			"foreach (",
+			"if (",
+			"\" );",
+			".Add( \"",
+			"();",
+			">();",
+			"DoReplacements();",
+			"(tweenArguments[\"speed\"] as float)",
+			")",
+			"(",
+			"convertedCode",
+			"(convertedCode",
+			"convertedCode)",
+			"(convertedCode",
+			"replacements.Add (",
+			"patterns.Add (",
+			"m_scriptInConversion",
+			"m_scriptsToConvertList",
+			"m_targetDirectory",
+			"m_sourceDirectory",
+			"\"/></a>",
+			"<a class=\"fancybox_cod_maps\" href=\"\" rel=\"cod_maps\" title=\"\"><img alt=\"\" src=\"",
+			"../",
+			"/></a>",
+			", offset: int,",
+			"offset",
+			"scriptIndex",
+			"classBlock",
+			"CSharpToUnityScript",
+			"script.text",
+			"unModifiedScript",
+			"script.text",
+			"itemsInScript",
+			"script.text",
+			"protected static",
+			"static protected",
+			"static public",
+			"ReverseMatches",
+			"scriptText",
+			"scriptsList",
+			"scriptContent",
+			"main.ReverseMatches (",
+			"itemsAndTypes.txt",
+			".EndsWith (\"(\")",
+			"Contains (\"=\")",
+			"StartsWith (\"#\")",
+			".StartsWith",
+			"classesList)",
+			"classesList.",
+			"void"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "Config.lua",
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": true,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Lua/Lua.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "GameObject.lua",
+					"settings":
+					{
+						"buffer_size": 17531,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								10568,
+								10568
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": true,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 495.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "table.lua",
+					"settings":
+					{
+						"buffer_size": 6108,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6108,
+								6108
+							]
+						],
+						"settings":
+						{
+							"auto_name": "t",
+							"syntax": "Packages/Lua/Lua.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 2739.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "Events.lua",
+					"settings":
+					{
+						"buffer_size": 2228,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": true,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"c",
+				"Config.lua"
+			],
+			[
+				"ev",
+				"Events.lua"
+			],
+			[
+				"menu",
+				"application/views/menu.blade.php"
+			],
+			[
+				"game",
+				"application/models/game.php"
+			],
+			[
+				"user",
+				"application/models/user.php"
+			],
+			[
+				"diso",
+				"application/views/discover.blade.php"
+			],
+			[
+				"addg",
+				"application/views/addgame.blade.php"
+			],
+			[
+				"home",
+				"application/views/home.blade.php"
+			],
+			[
+				"todo",
+				"TODO.txt"
+			],
+			[
+				"maless",
+				"public/css/vgc/main.less"
+			],
+			[
+				"fdf",
+				"application/views/forms/discover_feed.blade.php"
+			],
+			[
+				"fff",
+				"application/views/forms/find_feed.blade.php"
+			],
+			[
+				"find",
+				"application/views/find.blade.php"
+			],
+			[
+				"adhom",
+				"application/views/admin/adminhome.blade.php"
+			],
+			[
+				"flogin",
+				"application/views/forms/login.blade.php"
+			],
+			[
+				"login",
+				"application/views/login.blade.php"
+			],
+			[
+				"flos",
+				"application/views/forms/lostpassword.blade.php"
+			],
+			[
+				"lostpa",
+				"application/views/lostpassword.blade.php"
+			],
+			[
+				"register",
+				"application/views/register.blade.php"
+			],
+			[
+				"lmain",
+				"application/views/layouts/main.blade.php"
+			],
+			[
+				"admin",
+				"application/controllers/admin.php"
+			],
+			[
+				"logi",
+				"application/views/forms/login.blade.php"
+			],
+			[
+				"lostp",
+				"application/views/forms/lostpassword.blade.php"
+			],
+			[
+				"adminh",
+				"application/views/admin/adminhome.blade.php"
+			],
+			[
+				"adho",
+				"application/views/admin/adminhome.blade.php"
+			],
+			[
+				"tod",
+				"TODO.txt"
+			],
+			[
+				"search",
+				"application/views/search.blade.php"
+			],
+			[
+				"fnd",
+				"application/views/find.blade.php"
+			],
+			[
+				"adver",
+				"application/views/advertising.blade.php"
+			],
+			[
+				"editgam",
+				"application/views/admin/editgame.blade.php"
+			],
+			[
+				"edigame",
+				"application/views/admin/editgame.blade.php"
+			],
+			[
+				"devdisp",
+				"application/views/developerdisplay.blade.php"
+			],
+			[
+				"lamai",
+				"application/views/layouts/main.blade.php"
+			],
+			[
+				"parad_me",
+				"application/views/partials/ad_menu.blade.php"
+			],
+			[
+				"cross",
+				"application/views/advertising/crosspromotion.blade.php"
+			],
+			[
+				"sear",
+				"application/views/search.blade.php"
+			],
+			[
+				"report",
+				"application/views/admin/reports.blade.php"
+			],
+			[
+				"revi",
+				"application/views/admin/reviews.blade.php"
+			],
+			[
+				"review",
+				"application/views/partials/reviewtable.blade.php"
+			],
+			[
+				"bund",
+				"application/bundles.php"
+			],
+			[
+				"bas",
+				"application/controllers/base.php"
+			],
+			[
+				"bundl",
+				"application/bundles.php"
+			],
+			[
+				"fee",
+				"application/controllers/feed.php"
+			],
+			[
+				"pofil",
+				"application/models/profile.php"
+			],
+			[
+				"gam",
+				"application/models/game.php"
+			],
+			[
+				"profil",
+				"application/models/profile.php"
+			],
+			[
+				"deve",
+				"application/models/developer.php"
+			],
+			[
+				"edius",
+				"application/views/admin/edituser.blade.php"
+			],
+			[
+				"edi",
+				"application/views/admin/editgame.blade.php"
+			],
+			[
+				"addga",
+				"application/views/addgame.blade.php"
+			],
+			[
+				"edide",
+				"application/views/admin/editdeveloper.blade.php"
+			],
+			[
+				"envalid",
+				"application/language/en/validation.php"
+			],
+			[
+				"start",
+				"application/start.php"
+			],
+			[
+				"dev",
+				"application/models/developer.php"
+			],
+			[
+				"psff",
+				"application/views/partials/search_foreach_fields.blade.php"
+			],
+			[
+				"psearch",
+				"application/views/partials/search_form.blade.php"
+			],
+			[
+				"adddev",
+				"application/views/adddeveloper.blade.php"
+			],
+			[
+				"edigam",
+				"application/views/admin/editgame.blade.php"
+			],
+			[
+				"ediuser",
+				"application/views/admin/edituser.blade.php"
+			],
+			[
+				"addde",
+				"application/views/adddeveloper.blade.php"
+			],
+			[
+				"adiga",
+				"application/views/admin/editgame.blade.php"
+			],
+			[
+				"edidev",
+				"application/views/admin/editdeveloper.blade.php"
+			],
+			[
+				"adge",
+				"application/views/addgame.blade.php"
+			],
+			[
+				"addgame",
+				"application/views/addgame.blade.php"
+			],
+			[
+				"lanva",
+				"application/language/en/validation.php"
+			],
+			[
+				"display",
+				"application/views/gamedisplay.blade.php"
+			],
+			[
+				"rss",
+				"application/libraries/RSSReader.php"
+			],
+			[
+				"men",
+				"application/views/menu.blade.php"
+			],
+			[
+				"maimen",
+				"application/views/main_menu.blade.php"
+			],
+			[
+				"helper",
+				"application/helpers.php"
+			],
+			[
+				"ediga",
+				"application/views/admin/editgame.blade.php"
+			],
+			[
+				"view",
+				"bundles/logviewer/views/viewer2.php"
+			],
+			[
+				"bun",
+				"application/bundles.php"
+			],
+			[
+				"test",
+				"application/views/test.blade.php"
+			],
+			[
+				"prof",
+				"application/models/profile.php"
+			],
+			[
+				"de",
+				"application/models/developer.php"
+			],
+			[
+				"email",
+				"application/language/en/email.php"
+			],
+			[
+				"path",
+				"paths.php"
+			],
+			[
+				"data",
+				"application/config/database.php"
+			],
+			[
+				"appl",
+				"application/config/alpha/application.php"
+			],
+			[
+				"edituser",
+				"application/views/admin/edituser.blade.php"
+			],
+			[
+				"gamedis",
+				"application/views/gamedisplay.blade.php"
+			],
+			[
+				"ga",
+				"application/models/game.php"
+			],
+			[
+				"maime",
+				"application/views/main_menu.blade.php"
+			],
+			[
+				"admho",
+				"application/views/admin/adminhome.blade.php"
+			],
+			[
+				"devdi",
+				"application/views/developerdisplay.blade.php"
+			],
+			[
+				"macr",
+				"application/macros.php"
+			],
+			[
+				"font-",
+				"public/css/font-awesome/font-awesome.css"
+			],
+			[
+				"main.less",
+				"public/css/vgc/main.less"
+			],
+			[
+				"edigal",
+				"application/views/admin/editgame.blade.php"
+			],
+			[
+				"mainmen",
+				"application/views/main_menu.blade.php"
+			],
+			[
+				"regis",
+				"application/views/register.blade.php"
+			],
+			[
+				"star",
+				"bundles/coolcaptcha/start.php"
+			],
+			[
+				"searc",
+				"application/models/search.php"
+			],
+			[
+				"adm",
+				"application/controllers/admin.php"
+			],
+			[
+				"edigae",
+				"application/views/admin/editgame.blade.php"
+			],
+			[
+				"editdev",
+				"application/views/admin/editdeveloper.blade.php"
+			],
+			[
+				"gamd",
+				"application/views/gamedisplay.blade.php"
+			],
+			[
+				"pro",
+				"application/models/profile.php"
+			],
+			[
+				"prol",
+				"application/views/partials/profile_list.blade.php"
+			],
+			[
+				"editga",
+				"application/views/admin/editgame.blade.php"
+			],
+			[
+				"cros",
+				"application/views/advertising/crosspromotion.blade.php"
+			],
+			[
+				"cro",
+				"application/views/crosspromotion.blade.php"
+			],
+			[
+				"reports",
+				"application/views/admin/reports.blade.php"
+			],
+			[
+				"reviewta",
+				"application/views/partials/reviewtable.blade.php"
+			],
+			[
+				"revie",
+				"application/views/admin/reviews.blade.php"
+			],
+			[
+				"adminho",
+				"application/views/admin/adminhome.blade.php"
+			],
+			[
+				"admi",
+				"application/controllers/admin.php"
+			],
+			[
+				"gadi",
+				"application/views/gamedisplay.blade.php"
+			],
+			[
+				"refor",
+				"application/views/report_form.blade.php"
+			],
+			[
+				"reportb",
+				"application/views/admin/reports.blade.php"
+			],
+			[
+				"lma",
+				"application/views/layouts/main.blade.php"
+			],
+			[
+				"adv",
+				"application/controllers/advertising.php"
+			],
+			[
+				"main_",
+				"application/views/main_menu.blade.php"
+			],
+			[
+				"gamed",
+				"application/views/gamedisplay.blade.php"
+			],
+			[
+				"sea",
+				"application/models/search.php"
+			],
+			[
+				"pasef",
+				"application/views/partials/search_foreach_fields.blade.php"
+			],
+			[
+				"pasear",
+				"application/views/partials/search_form.blade.php"
+			],
+			[
+				"parsear",
+				"application/views/partials/search_form.blade.php"
+			],
+			[
+				"hom",
+				"application/views/home.blade.php"
+			],
+			[
+				"main_me",
+				"application/views/main_menu.blade.php"
+			],
+			[
+				"base",
+				"application/controllers/base.php"
+			],
+			[
+				"ad_me",
+				"application/views/partials/ad_menu.blade.php"
+			],
+			[
+				"mainme",
+				"application/views/main_menu.blade.php"
+			],
+			[
+				"editus",
+				"application/views/admin/edituser.blade.php"
+			],
+			[
+				"regi",
+				"application/views/register.blade.php"
+			],
+			[
+				"va",
+				"application/language/en/validation.php"
+			],
+			[
+				"sta",
+				"application/start.php"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+			[
+				"",
+				"/F/Wamp/www/videogameschest.com/gitignore/videogameschest_laravel.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": false,
+	"side_bar_width": 213.0,
+	"status_bar_visible": true
+}
