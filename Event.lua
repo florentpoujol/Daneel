@@ -1,9 +1,10 @@
+
 Event = { events = {} }
 
 -- Make the specified function listen to the specified event.
 -- The function will be called whenever the specified event will be fired.
--- @param eventName The event name
--- @param _function The function, not the function name
+-- @param eventName (string) The event name
+-- @param _function (function) The function, not the function name
 function Event.Listen(eventName, _function, g) -- g for garbage
     if eventName == Event then -- when users call the function with a colon, script = EventName, eventName = script, ...
         eventName = func
@@ -19,7 +20,7 @@ function Event.Listen(eventName, _function, g) -- g for garbage
 
     local varType = type(_function)
     if _function == nil or type(func) ~= "function" then
-        error(errorHead .. "Argument '_function' is of type '" .. varType .. "' instead of 'function'. Must be the function, not the function name.")
+        error(errorHead .. "Argument 'function' is of type '" .. varType .. "' instead of 'function'. Must be the function, not the function name.")
     end
 
     if Event.events[eventName] == nil then
@@ -31,8 +32,8 @@ end
 -- TODO check if a global function, registered several times for the same event is called several times
 
 -- Make the specified function to stop listen to the specified event.
--- @param eventName The event name
--- @param _function The function, not the function name
+-- @param eventName (string) The event name
+-- @param _function (function) The function, not the function name
 function Event.StopListen(eventName, _function, g)
     if eventName == Event then
         eventName = func
@@ -62,8 +63,8 @@ end
 
 -- Fire the specified event transmitting along all subsequent parameters to 'eventName' if some exists. 
 -- All functions that listen to this event with Event.Listen() will be called and receive all parameters.
--- @param eventName The event name
--- @param ... (optionnal) a list of parameters to pass along
+-- @param eventName (string) The event name
+-- @param ... [optionnal] a list of parameters to pass along
 function Event.Fire(eventName, ...)
     if eventName == Event then
         if arg ~= nill then

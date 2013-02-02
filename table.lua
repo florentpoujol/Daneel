@@ -3,8 +3,8 @@
 
 
 -- Constructor for tables that allows to use the functions in the table table on the table copies
--- @param ... (optionnal) A single table, or 2 or more values to fill the new table with
--- @return table - The new table
+-- @param ... [optionnal] (mixed) A single table, or 2 or more values to fill the new table with
+-- @return (table) The new table
 function table.new(...)
     local table_mt = {}
     table_mt.__index = table
@@ -27,7 +27,7 @@ end
 
 -- Return a copy of the provided table.
 -- Dependent of table.new().
--- @param t The table to copy
+-- @param t (table) The table to copy
 function table.copy(t)    
     local argType = type(t)
     if argType ~= "table" then
@@ -38,9 +38,9 @@ function table.copy(t)
 end
 
 -- Tells wether the provided key is found within the provided table.
--- @param t The table to search in
--- @param key The key to search for
--- @return boolean - True if the key is found in the table, false otherwise
+-- @param t (table) The table to search in
+-- @param key (string) The key to search for
+-- @return (boolean) True if the key is found in the table, false otherwise
 function table.containskey(t, p_key)
     local errorHead = "table.containskey(table, key) : "
 
@@ -62,9 +62,9 @@ function table.containskey(t, p_key)
 end
 
 -- Tells wether the provided value is found within the provided table.
--- @param t The table to search in
--- @param value The value to search for
--- @return boolean - True if the value is found in the table, false otherwise
+-- @param t (table) The table to search in
+-- @param value (mixed) The value to search for
+-- @return (boolean) True if the value is found in the table, false otherwise
 function table.containsvalue(t, p_value)
     local errorHead = "table.containsvalue(table, value) : "
 
@@ -85,12 +85,12 @@ function table.containsvalue(t, p_value)
 end
 
 -- Returns the length of a table, which is the numbers of keys for which the value is non-nil.
--- The keyType argument can be "all", nil (default to "all") or any Lua type (as a string).
+-- The keyType argument can be "all" (default to "all"), nil (same effect as "all") or any Lua type (as a string).
 -- The function returns only count the number of keys of values for which the key has the specified.
 -- Dependent of table.constainsvalue()
--- @param t The table
--- @param keyType (optionnal) See function description
--- @return number - The table length
+-- @param t (table) The table
+-- @param keyType [optionnal] (string="all") See function description
+-- @return (number) The table length
 function table.length(t, keyType)
     local errorHead = "table.length(table, keyType) : "
 
@@ -120,7 +120,7 @@ end
 
 -- Print all key/value pairs within the provided table.
 -- Dependent of table.length().
--- @param t The table.
+-- @param t (table) The table.
 function table.print(t)
     errorHead = "table.print(table) : "
 
@@ -139,14 +139,19 @@ function table.print(t)
         return
     end
 
+    print("===== "..errorHead.."Start =====")
+    print(t)
+
     for key, value in pairs(t) do
         print(key, value)
     end
+
+    print("===== "..errorHead.."End =====")
 end
 
 -- Print the metatable of the provided table.
 -- Dependent of table.length().
--- @param t The table.
+-- @param t (table) The table.
 function table.printmetatable(t)
     errorHead = "table.printmetatable(table) : "
 
@@ -179,8 +184,8 @@ end
 -- Join two or more tables into one.
 -- Integer keys are not overrided.
 -- Dependent of math.isinterger().
--- @param (optionnal) At least two tables to join together. Non-table arguments are ignored.
--- @return table - The new table
+-- @param [optionnal] (table) At least two tables to join together. Non-table arguments are ignored.
+-- @return (table) The new table
 function table.join(...)
     if arg == nil then 
         error("table.join(...) : No argument provided. Need at least two.")
@@ -205,9 +210,9 @@ end
 
 -- Compare table1 and table2. Returns true if they have the exact same keys which have the exact same values.
 -- Dependant of table.length().
--- @param The first table to compare
--- @param The second table to compare to the first table
--- @return boolean - True if the two table have the same content
+-- @param table1 (table) The first table to compare
+-- @param table2 (table) The second table to compare to the first table
+-- @return (boolean) True if the two table have the same content
 function table.compare(table1, table2)
     local errorHead = "table.compare(table1, table2) : "
     
