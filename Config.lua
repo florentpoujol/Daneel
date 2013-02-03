@@ -3,6 +3,13 @@
 
 Daneel.config = {
 
+    hudCameraName = "HUD Camera",
+    textMapName = "textMap",
+
+    charactersModelPath = "Daneel/Characters",
+
+
+
     componentTypes = {
         "ScriptedBehavior",
         "ModelRenderer",
@@ -25,8 +32,9 @@ Daneel.config = {
         "ModelAnimation",
         "Map",
         "TileSet",
-        "Sound",
         "Scene",
+        "Sound",
+        "Document"
     },
 
     assetObjects = {

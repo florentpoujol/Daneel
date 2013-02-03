@@ -91,7 +91,7 @@ local function ApplyParamsToGameObject(go, params, errorHead)
             end
         end
 
-        if type(params.parentKeepLocalTransform) == "boolean" then
+        if type(params.parentKeepLocalTransm) == "boolean" then
             go:SetParent(parent, params.keepLocalTransform)
         else
             go:SetParent(parent)
@@ -326,7 +326,7 @@ function GameObject:BroadcastMessage(methodName, data)
 
     local allChildren = table.join({self}, self:GetChildrenRecursive())
 
-    for i, child in allChildren do
+    for i, child in ipairs(allChildren) do
         child:SendMessage(methodName, data)
     end
 end
@@ -337,6 +337,7 @@ end
 -- Add a component to the gameObject and optionnaly set the model, map or script asset.
 -- @param componentType (string) The Component type.
 -- @param asset [optionnal] (string or asset) The model, map or script name or asset to initialize the new component with.
+-- @return (table) The component.
 function GameObject:AddComponent(componentType, asset)
     local errorHead = "GameObject:AddComponent(componentType[, asset or asset name]) : "
 
@@ -385,6 +386,7 @@ end
 
 -- Add a ScriptedBehavior to the gameObject.
 -- @param assetNameOrAsset (string or asset) The script name or asset.
+-- @return (table) The component.
 function GameObject:AddScriptedBehavior(assetNameOrAsset)
     local errorHead = "GameObject:AddScriptedBehavior(assetNameOrAsset) : "
 
@@ -401,6 +403,7 @@ end
 
 -- Add a ScriptedBehavior to the gameObject.
 -- @param assetNameOrAsset (string or asset) The script name or asset.
+-- @return (table) The component.
 function GameObject:AddScript(assetNameOrAsset)
     local errorHead = "GameObject:AddScript(assetNameOrAsset) : "
 
@@ -416,6 +419,7 @@ function GameObject:AddScript(assetNameOrAsset)
 end
 
 -- Add a ModelRenderer component to the gameObject.
+-- @return (table) The component.
 function GameObject:AddModelRenderer()
     local errorHead = "GameObject:AddModelRenderer() : "
 
@@ -428,6 +432,7 @@ end
 
 -- Add a ModelRenderer component to the gameObject and set its model.
 -- @param assetNameOrAsset (string or asset) The model name or asset.
+-- @return (table) The component.
 function GameObject:AddModel(assetNameOrAsset)
     local errorHead = "GameObject:AddModel(assetNameOrAsset) : "
 
@@ -443,6 +448,7 @@ function GameObject:AddModel(assetNameOrAsset)
 end
 
 -- Add a MapRenderer to the gameObject.
+-- @return (table) The component.
 function GameObject:AddMapRenderer()
     local errorHead = "GameObject:AddMapRenderer() : "
 
@@ -455,6 +461,7 @@ end
 
 -- Add a MapRenderer component to the gameObject and set its map.
 -- @param assetNameOrAsset (string or asset) The model name or asset.
+-- @return (table) The component.
 function GameObject:AddMap(assetNameOrAsset)
     local errorHead = "GameObject:AddMap(assetNameOrAsset) : "
 
@@ -470,6 +477,7 @@ function GameObject:AddMap(assetNameOrAsset)
 end
 
 -- Add a Camera component to the gameObject.
+-- @return (table) The component.
 function GameObject:AddCamera()
     local errorHead = "GameObject:AddCamera() : "
 
@@ -507,31 +515,6 @@ function GameObject:GetScriptedBehaviorByName(scriptNameOrAsset)
 
     return self:GetScriptedBehavior(script)
 end
-
--- Get the specified ScriptedBehavior instance attached to the gameObject.
--- @param scriptNameOrAsset (string or asset) The script name or asset.
--- @return (ScriptedBehavior) The ScriptedBehavior instance.
--- function GameObject:GetScript(scriptNameOrAsset)
---     local errorHead = "GameObject:GetScript(scriptNameOrAsset) : "
-
---     if getmetatable(self) ~= GameObject then 
---         error(errorHead..gameObjectCallSyntaxError.."GetScript()")
---     end
-
---     if scriptNameOrAsset == nil then
---         error(errorHead.."Argument 'scriptNameOrAsset' is nil. Must be the script name or the script asset")
---     end
-
---     if scriptNameOrAsset ~= nil and type(scriptNameOrAsset) == "string" then
---         local script = CraftStudio.FindAsset(scriptNameOrAsset, "Script")
-        
---         if script == nil then
---             error(errorHead.."Script asset not found. Script name='"..scriptNameOrAsset.."'")
---         end
---     end
-
---     return self:GetScriptedBehavior(script)
--- end
 
 -- Get the first ModelRenderer component attached to the gameObject.
 -- @return (ModelRenderer) The ModelRenderer component.
@@ -629,20 +612,25 @@ function GameObject:DestroyComponent(input, strict)
     -- decide if input is a component or an asset
     if argType == "table" then 
         -- input is a component 
-        if table.containsvalue(Daneel.config.componentObjects, input) then
-            component = input
+        -- Components have a gameObject and a inner variable
+        -- But I find no way to check if the table is actally a component or not, or which component is it
+        if input.inner ~= nil and input.gameObject ~= nil then
+            component = input    
 
         -- input is a script asset
-        elseif input.inner ~= nil and tostring(input.inner):find("CraftStudioCommon.ProjectData.Script") ~= nil then
+        elseif Asset.IsScript(input) then
             component = self:GetScriptedBehavior(input)
 
             if component == nil then
                 stringError = errorHead.."Couldn't find a ScriptedBehavior corresponding to the specified Script asset on this gameObject."
             end
+
         else
             stringError = errorHead.."Argument 'input' is a table but not a component nor a script asset."
         end
-    else -- string (component type or script name)
+
+    -- string (component type or script name)
+    else 
         input = Daneel.core.CaseProof(input, Daneel.config.componentTypes)
 
         if table.containsvalue(Daneel.config.componentTypes, input) then
@@ -651,7 +639,7 @@ function GameObject:DestroyComponent(input, strict)
             if component == nil then
                 stringError = errorHead.."Couldn't find the specified component type '"..input.."' on this gameObject."
             end
-        else -- must an script asset name
+        else -- must be a script asset name
             component = self:GetScriptedBehaviorByName(input)
 
             if component == nil then
