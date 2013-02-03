@@ -1,7 +1,7 @@
 
--- Tell wether the provided number is an integer
--- @param number The number to check
--- @param strict [optionnal] (boolean=false) If true, the function returns an error when the 'number' argument is not a number
+-- Tell wether the provided number is an integer.
+-- @param number The number to check.
+-- @param strict [optionnal] (boolean=false) If true, the function returns an error when the 'number' argument is not a number.
 function math.isinteger(number, strict)
     local argType = type(number)
     if argType ~= "number" then

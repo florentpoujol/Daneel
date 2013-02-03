@@ -1,7 +1,7 @@
 
--- Get the asset of the specified name and type
--- @param assetName (string) The full asset name
--- @param assetType [optionnal] (string) The asset type (Model, Map, TileSet, ModelAnimation, Scene, Sound, Script)
+-- Get the asset of the specified name and type.
+-- @param assetName (string) The full asset name.
+-- @param assetType [optionnal] (string) The asset type (Model, Map, TileSet, ModelAnimation, Scene, Sound, Script).
 function Asset.Get(assetName, assetType, g)
     if assetName == Asset then
         assetName = assetType
@@ -23,8 +23,8 @@ function Asset.Get(assetName, assetType, g)
     return CraftSudio.FindAsset(assetName, assetType)
 end
 
--- Get the script asset of the specified name
--- @param assetName (string) The full asset name
+-- Get the script asset of the specified name.
+-- @param assetName (string) The full asset name.
 function Asset.GetScript(assetName, g)
     if assetName == Asset then
         assetName = g
@@ -40,8 +40,8 @@ function Asset.GetScript(assetName, g)
     return Asset.Get(assetName, "Script")
 end
 
--- Get the model asset of the specified name
--- @param assetName (string) The full asset name
+-- Get the model asset of the specified name.
+-- @param assetName (string) The full asset name.
 function Asset.GetModel(assetName, g)
     if assetName == Asset then
         assetName = g
@@ -57,8 +57,8 @@ function Asset.GetModel(assetName, g)
     return Asset.Get(assetName, "Model")
 end
 
--- Get the ModelAnimation asset of the specified name
--- @param assetName (string) The full asset name
+-- Get the ModelAnimation asset of the specified name.
+-- @param assetName (string) The full asset name.
 function Asset.GetAnimation(assetName, g)
     if assetName == Asset then
         assetName = g
@@ -74,8 +74,8 @@ function Asset.GetAnimation(assetName, g)
     return Asset.Get(assetName, "ModelAnimation")
 end
 
--- Get the Map asset of the specified name
--- @param assetName (string) The full asset name
+-- Get the Map asset of the specified name.
+-- @param assetName (string) The full asset name.
 function Asset.GetMap(assetName, g)
     if assetName == Asset then
         assetName = g
@@ -91,8 +91,8 @@ function Asset.GetMap(assetName, g)
     return Asset.Get(assetName, "Map")
 end
 
--- Get the TileSet asset of the specified name
--- @param assetName (string) The full asset name
+-- Get the TileSet asset of the specified name.
+-- @param assetName (string) The full asset name.
 function Asset.GetTileSet(assetName, g)
     if assetName == Asset then
         assetName = g
@@ -108,8 +108,8 @@ function Asset.GetTileSet(assetName, g)
     return Asset.Get(assetName, "TileSet")
 end
 
--- Get the Sound asset of the specified name
--- @param assetName (string) The full asset name
+-- Get the Sound asset of the specified name.
+-- @param assetName (string) The full asset name.
 function Asset.GetSound(assetName, g)
     if assetName == Asset then
         assetName = g
@@ -125,8 +125,8 @@ function Asset.GetSound(assetName, g)
     return Asset.Get(assetName, "Sound")
 end
 
--- Get the Scene asset of the specified name
--- @param assetName (string) The full asset name
+-- Get the Scene asset of the specified name.
+-- @param assetName (string) The full asset name.
 function Asset.GetScene(assetName, g)
     if assetName == Asset then
         assetName = g
