@@ -5,79 +5,6 @@ local gameObjectCallSyntaxError = "Function not called from a gameObject. Your m
 
 -- Create new gameObject 
 
--- Create a new gameObject with optionnal initialisation parameters.
--- @param name (string) The GameObject name.
--- @param params (table) The initialisation parameters.
--- @return The new gameObject (GameObject).
-function GameObject.New(name, params, g)
-    if name == GameObject then
-        name = params
-        params = g
-    end
-
-    -- errors
-    local errorHead = "GameObject.New(name[, params]) : "
-
-    local argType = type(name)
-    if name == nil or argType ~= "string" then
-        error(errorHead.."Argument 'name' is of type '"..argType.."' instead of 'string'. Must be the gameObject name.")
-    end
-
-    if params == nil then params = {} end
-
-    argType = type(params)
-    if argType ~= "table" then
-        error(errorHead.."Argument 'params' is of type '"..argType.."' instead of 'table'. This argument is optionnal but if set, it must be a table.")
-    end
-    
-    --
-    local go = CraftStudio.CreateGameObject(name)
-
-    go = ApplyParamsToGameObject(go, params, errorHead)    
-
-    return go
-end
-
--- Add a scene as a new gameObject with optionnal initialisation parameters.
--- @param goName (string) The gameObject name.
--- @param sceneName (string) The scene name.
--- @param params (table) The initialisation parameters.
--- @return (GameObject) The new gameObject.
-function GameObject.Instantiate(goName, sceneName, params, g)
-    if goName == GameObject then
-        goName = sceneName
-        sceneName = params
-        params = g
-    end
-
-    -- errors
-    local errorHead = "GameObject.Instantiate(gameObjectName, sceneName[, params]) : "
-
-    local argType = type(goName)
-    if goName == nil or argType ~= "string" then
-        error(errorHead.."Argument 'gameObjectName' is of type '"..argType.."' instead of 'string'. Must be the gameObject name.")
-    end
-
-    argType = type(sceneName)
-    if sceneName == nil or argType ~= "string" then
-        error(errorHead.."Argument 'sceneName' is of type '"..argType.."' instead of 'string'. Must be the scene name.")
-    end
-
-    if params == nil then params = {} end
-
-    argType = type(params)
-    if argType ~= "table" then
-        error(errorHead.."Argument 'params' is of type '"..argType.."' instead of 'table'. This argument is optionnal but if set, it must be a table.")
-    end
-    
-    --
-    local go = CraftStudio.Instantiate(goName, sceneName)
-
-    go = ApplyParamsToGameObject(go, params, errorHead) 
-
-    return go
-end
-
 -- Apply the content of params to the gameObject in argument.
 local function ApplyParamsToGameObject(go, params, errorHead)
     if params.parent ~= nil then
@@ -183,6 +110,79 @@ local function ApplyParamsToGameObject(go, params, errorHead)
 
         go:CreateScripteBehavior(script)
     end 
+
+    return go
+end
+
+-- Create a new gameObject with optionnal initialisation parameters.
+-- @param name (string) The GameObject name.
+-- @param params (table) The initialisation parameters.
+-- @return The new gameObject (GameObject).
+function GameObject.New(name, params, g)
+    if name == GameObject then
+        name = params
+        params = g
+    end
+
+    -- errors
+    local errorHead = "GameObject.New(name[, params]) : "
+
+    local argType = type(name)
+    if name == nil or argType ~= "string" then
+        error(errorHead.."Argument 'name' is of type '"..argType.."' instead of 'string'. Must be the gameObject name.")
+    end
+
+    if params == nil then params = {} end
+
+    argType = type(params)
+    if argType ~= "table" then
+        error(errorHead.."Argument 'params' is of type '"..argType.."' instead of 'table'. This argument is optionnal but if set, it must be a table.")
+    end
+    
+    --
+    local go = CraftStudio.CreateGameObject(name)
+
+    go = ApplyParamsToGameObject(go, params, errorHead)    
+
+    return go
+end
+
+-- Add a scene as a new gameObject with optionnal initialisation parameters.
+-- @param goName (string) The gameObject name.
+-- @param sceneName (string) The scene name.
+-- @param params (table) The initialisation parameters.
+-- @return (GameObject) The new gameObject.
+function GameObject.Instantiate(goName, sceneName, params, g)
+    if goName == GameObject then
+        goName = sceneName
+        sceneName = params
+        params = g
+    end
+
+    -- errors
+    local errorHead = "GameObject.Instantiate(gameObjectName, sceneName[, params]) : "
+
+    local argType = type(goName)
+    if goName == nil or argType ~= "string" then
+        error(errorHead.."Argument 'gameObjectName' is of type '"..argType.."' instead of 'string'. Must be the gameObject name.")
+    end
+
+    argType = type(sceneName)
+    if sceneName == nil or argType ~= "string" then
+        error(errorHead.."Argument 'sceneName' is of type '"..argType.."' instead of 'string'. Must be the scene name.")
+    end
+
+    if params == nil then params = {} end
+
+    argType = type(params)
+    if argType ~= "table" then
+        error(errorHead.."Argument 'params' is of type '"..argType.."' instead of 'table'. This argument is optionnal but if set, it must be a table.")
+    end
+    
+    --
+    local go = CraftStudio.Instantiate(goName, sceneName)
+
+    go = ApplyParamsToGameObject(go, params, errorHead) 
 
     return go
 end

@@ -4,11 +4,12 @@
 Daneel.config = {
 
     hudCameraName = "HUD Camera",
-    textMapName = "textMap",
+    hudCameraOrthographicScale = "10",
+    guiTextMapName = "Daneel/GUITextMap",
 
     charactersModelPath = "Daneel/Characters",
 
-
+    
 
     componentTypes = {
         "ScriptedBehavior",

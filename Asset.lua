@@ -1,4 +1,6 @@
 
+Asset = {}
+
 -- Get the asset of the specified name and type.
 -- @param assetName (string) The full asset name.
 -- @param assetType [optionnal] (string) The asset type (Model, Map, TileSet, ModelAnimation, Scene, Sound, Script).
@@ -20,7 +22,7 @@ function Asset.Get(assetName, assetType, g)
         error(errorHead.."Argument 'assetType' is of type '" .. argType .. "' instead of 'string'. Must the asset type.")
     end
 
-    return CraftSudio.FindAsset(assetName, assetType)
+    return CraftStudio.FindAsset(assetName, assetType)
 end
 
 -- Get the script asset of the specified name.
