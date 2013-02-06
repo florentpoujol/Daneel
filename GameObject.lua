@@ -7,14 +7,18 @@ local gameObjectCallSyntaxError = "Function not called from a gameObject. Your m
 
 -- Apply the content of params to the gameObject in argument.
 local function ApplyParamsToGameObject(go, params, errorHead)
+    if params == nil then 
+        return go 
+    end
+
     if params.parent ~= nil then
         local parent = params.parent
 
         if type(parent) == "string" then
-            parent = CraftStudio.FindGameObject(parent)
+            parent = GameObject.Get(parent)
 
             if parent == nil then
-                error(errorHead.."parent name in parameters '"..params.parent.."' does not match any gameObject.")
+                error(errorHead.."Argument 'params.parent' with value '"..params.parent.."' does not match any gameObject.")
             end
         end
 
@@ -25,90 +29,146 @@ local function ApplyParamsToGameObject(go, params, errorHead)
         end
     end
 
-    --  position
-    if params.position ~= nil then
-        go.transform:SetPosition(params.position)
-    end
+    local argType = nil
 
-    if params.localPosition ~= nil then
-        go.transform:SetLocalPosition(params.localPosition)
-    end
-
-    -- orientation
-    if params.orientation ~= nil then
-        go.transform:SetOrientation(params.orientation)
-    end
-
-    if params.localOrientation ~= nil then
-        go.transform:SetLocalOrientation(params.localOrientation)
-    end
-
-    -- Euler Angles
-    if params.eulerAngles ~= nil then
-        go.transform:SetEulerAngles(params.eulerAngles)
-    end
-
-    if params.localEulerAngles ~= nil then
-        go.transform:SetLocalEulerAngles(params.localEulerAngles)
-    end
-
-    -- scale
-    if params.scale ~= nil then
-        go.transform:SetLocalScale(params.scale)
-    end
-
-    -- components
-    if params.model ~= nil then
-        local model = params.model
-
-        if type(model) == "string" then
-            model = CraftStudio.FindAsset(model, "Model")
-
-            if model == nil then
-                error(errorHead.."model name in parameters '"..params.model.."' does not match any model.")
+    if params.transform ~= nil then
+        --  position
+        if params.transform.position ~= nil then
+            argType = type(params.transform.position)
+            if argType ~= "table" then
+                error(errorHead.."Argument 'params.transform.position' is of type '"..argType.."' with value '"..tostring(params.transform.position).."' instead of 'table' (Vector3).")
             end
+
+            go.transform:SetPosition(params.transform.position)
         end
 
-        go:CreateComponent("ModelRenderer"):SetModel(model)
-    end
-
-    if params.map ~= nil then
-        local map = params.map
-
-        if type(map) == "string" then
-            map = CraftStudio.FindAsset(map, "Map")
-
-            if map == nil then
-                error(errorHead.."map name in parameters '"..params.map.."' does not match any map.")
+        if params.transform.localPosition ~= nil then
+            argType = type(params.transform.localPosition)
+            if argType ~= "table" then
+                error(errorHead.."Argument 'params.transform.localPosition' is of type '"..argType.."' with value '"..tostring(params.transform.localPosition).."' instead of 'table' (Vector3).")
             end
+
+            go.transform:SetLocalPosition(params.transform.localPosition)
         end
 
-        go:CreateComponent("MapRenderer"):SetMap(map)
+        -- orientation
+        if params.transform.orientation ~= nil then
+            argType = type(params.transform.orientation)
+            if argType ~= "table" then
+                error(errorHead.."Argument 'params.transform.orientation' is of type '"..argType.."' with value '"..tostring(params.transform.orientation).."' instead of 'table' (Quaternion).")
+            end
+
+            go.transform:SetOrientation(params.transform.orientation)
+        end
+
+        if params.transform.localOrientation ~= nil then
+            argType = type(params.transform.localOrientation)
+            if argType ~= "table" then
+                error(errorHead.."Argument 'params.transform.localOrientation' is of type '"..argType.."' with value '"..tostring(params.transform.localOrientation).."' instead of 'table' (Quaternion).")
+            end
+
+            go.transform:SetLocalOrientation(params.transform.localOrientation)
+        end
+
+        -- Euler Angles
+        if params.transform.eulerAngles ~= nil then
+            argType = type(params.transform.eulerAngles)
+            if argType ~= "table" then
+                error(errorHead.."Argument 'params.transform.eulerAngles' is of type '"..argType.."' with value '"..tostring(params.transform.eulerAngles).."' instead of 'table' (Vector3).")
+            end
+
+            go.transform:SetEulerAngles(params.transform.eulerAngles)
+        end
+
+        if params.transform.localEulerAngles ~= nil then
+            argType = type(params.transform.localEulerAngles)
+            if argType ~= "table" then
+                error(errorHead.."Argument 'params.transform.localEulerAngles' is of type '"..argType.."' with value '"..tostring(params.transform.localEulerAngles).."' instead of 'table' (Vector3).")
+            end
+
+            go.transform:SetLocalEulerAngles(params.transform.localEulerAngles)
+        end
+
+        -- scale
+        if params.transform.localScale ~= nil then
+            if type(params.transform.localScale) == "number" then
+                params.transform.localScale = Vector3:New(params.transform.localScale)
+            end
+
+            argType = type(params.transform.localScale)
+            if argType ~= "table" then
+                error(errorHead.."Argument 'params.transform.localScale' is of type '"..argType.."' with value '"..tostring(params.transform.localScale).."' instead of 'table' (Vector3).")
+            end
+
+            go.transform:SetLocalScale(params.transform.localScale)
+        end
+    end -- end if params.transform ~= nil
+
+    -- other components
+    if params.modelRenderer ~= nil then
+        argType = type(params.modelRenderer)
+
+        if argType == "boolean" then
+            if params.modelRenderer == true then
+                go:AddComponent("ModelRenderer")
+            end
+        else
+            if argType ~= "string" and argType ~= "table" then
+                error(errorHead.."Argument 'params.modelRenderer' is of type '"..argType.."' with value '"..tostring(params.modelRenderer).."' instead of 'string' or 'table'.")
+            end
+
+            go:AddComponent("ModelRenderer", params.modelRenderer)
+        end
+    end
+
+    if params.mapRenderer ~= nil then
+        argType = type(params.mapRenderer)
+
+        if argType == "boolean" then
+            if params.mapRenderer == true then
+                go:AddComponent("MapRenderer")
+            end
+        else
+            if argType ~= "string" and argType ~= "table" then
+                error(errorHead.."Argument 'params.mapRenderer' is of type '"..argType.."' with value '"..tostring(params.mapRenderer).."' instead of 'string' or 'table'.")
+            end
+
+            go:AddComponent("MapRenderer", params.mapRenderer)
+        end
     end
 
     if params.camera ~= nil then
-        go:CreateComponent("Camera")
+        argType = type(params.camera)
+
+        if argType == "boolean" then
+            if params.camera == true then
+                go:AddComponent("Camera")
+            end
+        else
+            if argType ~= "string" and argType ~= "table" then
+                error(errorHead.."Argument 'params.camera' is of type '"..argType.."' with value '"..tostring(params.camera).."' instead of 'string' or 'table'.")
+            end
+
+            go:AddComponent("Camera", params.camera)
+        end
     end
 
     -- scripts
-    if params.scripts == nil then
-        params.scripts = {}
+    if params.scriptedBehaviors == nil then
+        params.scriptedBehaviors = {}
     end
 
-    if params.script ~= nil then
-        table.insert(params.scripts, params.script)
+    if params.scriptedBehavior ~= nil then
+        table.insert(params.scriptedBehaviors, params.scriptedBehavior)
     end
 
-    for i, script in ipairs(params.scripts) do
-        if type(script) ==  "string" then
-            script = CraftStudio.FindAsset(script, "ScriptedBehavior")
-
-            if script == nil then
-                error(errorHead.."script name in parameters '"..script.."' does not match any script.")
-            end
+    for i, scriptNameOrAsset in ipairs(params.scriptedBehaviors) do
+        argType = type(scriptNameOrAsset)
+        if argType ~= "string" and argType ~= "table" then
+            error(errorHead.."Item n°"..i.." in argument 'params.scriptedBehaviors' is of type '"..argType.."' with value '"..tostring(scriptNameOrAsset).."' instead of 'string' or 'table'.")
         end
 
-        go:CreateScripteBehavior(script)
+        go:AddComponent("ScriptedBehavior", scriptNameOrAsset)
     end 
 
     return go
@@ -129,14 +189,14 @@ function GameObject.New(name, params, g)
 
     local argType = type(name)
     if name == nil or argType ~= "string" then
-        error(errorHead.."Argument 'name' is of type '"..argType.."' instead of 'string'. Must be the gameObject name.")
+        error(errorHead.."Argument 'name' is of type '"..argType.."' with value '"..tostring(name).."' instead of 'string'. Must be the gameObject name.")
     end
 
     if params == nil then params = {} end
 
     argType = type(params)
     if argType ~= "table" then
-        error(errorHead.."Argument 'params' is of type '"..argType.."' instead of 'table'. This argument is optional but if set, it must be a table.")
+        error(errorHead.."Argument 'params' is of type '"..argType.."' with value '"..tostring(params).."' instead of 'table'. This argument is optional but if set, it must be a table.")
     end
     
     --
@@ -164,19 +224,19 @@ function GameObject.Instantiate(goName, sceneName, params, g)
 
     local argType = type(goName)
     if goName == nil or argType ~= "string" then
-        error(errorHead.."Argument 'gameObjectName' is of type '"..argType.."' instead of 'string'. Must be the gameObject name.")
+        error(errorHead.."Argument 'gameObjectName' is of type '"..argType.."' with value '"..tostring(name).."' instead of 'string'. Must be the gameObject name.")
     end
 
     argType = type(sceneName)
     if sceneName == nil or argType ~= "string" then
-        error(errorHead.."Argument 'sceneName' is of type '"..argType.."' instead of 'string'. Must be the scene name.")
+        error(errorHead.."Argument 'sceneName' is of type '"..argType.."' with value '"..tostring(sceneName).."' instead of 'string'. Must be the scene name.")
     end
 
     if params == nil then params = {} end
 
     argType = type(params)
     if argType ~= "table" then
-        error(errorHead.."Argument 'params' is of type '"..argType.."' instead of 'table'. This argument is optional but if set, it must be a table.")
+        error(errorHead.."Argument 'params' is of type '"..argType.."' with value '"..tostring(params).."' instead of 'table'. This argument is optional but if set, it must be a table.")
     end
     
     --
@@ -398,7 +458,7 @@ function GameObject:AddComponent(componentType, params)
             local animation = params.animation
             
             if type(animation) == "string" then
-                animation = Asset.GetModelAnimation(params.animation)
+                animation = Asset.Get(params.animation, "ModelAnimation")
             end
 
             if animation == nil or not Asset.IsModelAnimation(animation) then
@@ -436,7 +496,7 @@ function GameObject:AddComponent(componentType, params)
             local model = params.model
             
             if type(model) == "string" then
-                model = Asset.GetModel(params.model)
+                model = Asset.Get(params.model, "Model")
             end
 
             if model == nil or not Asset.IsModel(model) then
@@ -462,7 +522,7 @@ function GameObject:AddComponent(componentType, params)
             local map = params.map
             
             if type(map) == "string" then
-                map = Asset.GetMap(params.map)
+                map = Asset.Get(params.map, "Map")
             end
 
             if map == nil or not Asset.IsMap(map) then
@@ -477,7 +537,7 @@ function GameObject:AddComponent(componentType, params)
             local tileSet = params.tileSet
             
             if type(tileSet) == "string" then
-                tileSet = Asset.GetTileSet(params.tileSet)
+                tileSet = Asset.Get(params.tileSet, "TileSet")
             end
 
             if tileSet == nil or not Asset.IsTileSet(tileSet) then
