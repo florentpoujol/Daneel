@@ -1,6 +1,7 @@
 
 Asset = {}
 
+-- Alias of CraftStudio.FindAsset(assetName, assetType)
 -- Get the asset of the specified name and type.
 -- @param assetName (string) The full asset name.
 -- @param assetType [optionnal] (string) The asset type (Model, Map, TileSet, ModelAnimation, Scene, Sound, Script).
@@ -187,6 +188,8 @@ function Asset.IsOfType(asset, assetType, g)
         error(errorHead.."Argument 'assetType' is of type '" .. argType .. "' instead of 'string'. Must the asset type.")
     end
 
+    --
+
     local assetTypes = Daneel.config.assetTypes
     assetType = Daneel.core.CaseProof(assetType, assetTypes)
 
@@ -358,7 +361,7 @@ function Asset.GetType(asset, g)
 
     local argType = type(asset)
     if argType ~= "table" then
-        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' instead of 'table'. Must the asset.")
+        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' with value '"..tostring(asset).."' instead of 'table'. Must the asset.")
     end
 
 
@@ -366,7 +369,7 @@ function Asset.GetType(asset, g)
 
     if inner ~= nil then
         for key, assetType in ipairs(Daneel.config.assetTypes) do
-            if innet:find(assetType) ~= nil then
+            if inner:find(assetType) ~= nil then
                 return assetType
             end
         end

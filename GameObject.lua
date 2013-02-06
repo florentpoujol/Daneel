@@ -114,9 +114,9 @@ local function ApplyParamsToGameObject(go, params, errorHead)
     return go
 end
 
--- Create a new gameObject with optionnal initialisation parameters.
+-- Create a new gameObject with optional initialisation parameters.
 -- @param name (string) The GameObject name.
--- @param params (table) The initialisation parameters.
+-- @param params (string or table) The parent gameObject The initialisation parameters.
 -- @return The new gameObject (GameObject).
 function GameObject.New(name, params, g)
     if name == GameObject then
@@ -136,7 +136,7 @@ function GameObject.New(name, params, g)
 
     argType = type(params)
     if argType ~= "table" then
-        error(errorHead.."Argument 'params' is of type '"..argType.."' instead of 'table'. This argument is optionnal but if set, it must be a table.")
+        error(errorHead.."Argument 'params' is of type '"..argType.."' instead of 'table'. This argument is optional but if set, it must be a table.")
     end
     
     --
@@ -147,7 +147,7 @@ function GameObject.New(name, params, g)
     return go
 end
 
--- Add a scene as a new gameObject with optionnal initialisation parameters.
+-- Add a scene as a new gameObject with optional initialisation parameters.
 -- @param goName (string) The gameObject name.
 -- @param sceneName (string) The scene name.
 -- @param params (table) The initialisation parameters.
@@ -176,7 +176,7 @@ function GameObject.Instantiate(goName, sceneName, params, g)
 
     argType = type(params)
     if argType ~= "table" then
-        error(errorHead.."Argument 'params' is of type '"..argType.."' instead of 'table'. This argument is optionnal but if set, it must be a table.")
+        error(errorHead.."Argument 'params' is of type '"..argType.."' instead of 'table'. This argument is optional but if set, it must be a table.")
     end
     
     --
@@ -209,7 +209,7 @@ end
 -- Set the gameOject's parent. 
 -- Optionnaly carry over the gameObject's local transform instead of the global one.
 -- @param name (string) The parent name.
--- @param keepLocalTransform [optionnal] (boolean) Carry over the game object's local transform instead of the global one.
+-- @param keepLocalTransform [optional] (boolean) Carry over the game object's local transform instead of the global one.
 function GameObject:SetParentByName(name, keepLocalTransform)
     local errorHead = "GameObject:SetParentByName(name[, keepLocalTransform]) : "
 
@@ -242,7 +242,7 @@ end
 -- Alias of GameObject:FindChild().
 -- Find the first gameObject's child with the specified name.
 -- @param name (string) The child name.
--- @param recursive [optionnal] (boolean=false) Search for the child in all descendants.
+-- @param recursive [optional] (boolean=false) Search for the child in all descendants.
 -- @return (GameObject) The child or nil if none is found.
 function GameObject:GetChild(name, recursive)
     local errorHead = "GameObject:GetChild(name[, recursive]) : "
@@ -266,7 +266,7 @@ end
 
 
 -- Get all descendants of the gameObject.
--- @param includeSelf [optionnal] (boolean=false) Include the gameObject in the children.
+-- @param includeSelf [optional] (boolean=false) Include the gameObject in the children.
 -- @return (table) The children.
 function GameObject:GetChildrenRecursive(includeSelf)
     local errorHead = "GameObject:GetChildrenRecursive() : "
@@ -304,7 +304,7 @@ end
 -- If none of the scripted behaviors attached to the game object or its children have a method matching the specified name, nothing happens. 
 -- Uses GameObject:SendMessage() on the gameObject and all children of its children.
 -- @param methodName (string) The method name.
--- @param data [optionnal] (table) The data to pass along the method call.
+-- @param data [optional] (table) The data to pass along the method call.
 function GameObject:BroadcastMessage(methodName, data)
     local errorHead = "GameObject:BroadcastMessage(methodName[, data]) : "
 
@@ -334,12 +334,12 @@ end
 
 -- Add components
 
--- Add a component to the gameObject and optionnaly set the model, map or script asset.
+-- Add a component to the gameObject and optionaly set the model, map or script asset.
 -- @param componentType (string) The Component type.
--- @param asset [optionnal] (string or asset) The model, map or script name or asset to initialize the new component with.
+-- @param params [optional] (string or table) The Script, Model or Map name or asset, or a table of parameters to initialize the new component with.
 -- @return (table) The component.
-function GameObject:AddComponent(componentType, asset)
-    local errorHead = "GameObject:AddComponent(componentType[, asset or asset name]) : "
+function GameObject:AddComponent(componentType, params)
+    local errorHead = "GameObject:AddComponent(componentType[, params]) : "
 
     if getmetatable(self) ~= GameObject then 
         error(errorHead..gameObjectCallSyntaxError.."AddComponent()")
@@ -347,37 +347,223 @@ function GameObject:AddComponent(componentType, asset)
 
     local argType = type(componentType)
     if argType ~= "string" then
-        error(errorHead.."Argument 'componentType' is of type '" .. argType .. "' instead of 'string'. Must the component type.")
+        error(errorHead.."Argument 'componentType' is of type '"..argType.."' with value '"..tostring(componentType).."' instead of 'string'. Must the component type.")
     end
 
     componentType = Daneel.core.CaseProof(componentType, Daneel.config.componentTypes)
 
-    -- get the asset if name is given
-    -- it's done here because we need the asset right away if it's a script
-    if asset ~= nil and type(asset) == "string" then
-        local assetType = Daneel.config.componentTypeToAssetType[componentType]
-        local assetName = asset
-        asset = CraftStudio.FindAsset(assetName, assetType)
-
-        if asset == nil then
-            error(errorHead.."Asset not found. Component type='"..componentType.."', asset type='"..assetType.."', asset name'"..assetName.."'")
-        end
+    if not table.containsvalue(Daneel.config.componentTypes, componentType) then
+        error(errorHead.."Argument 'componentType' ["..componentType.."] is not one of the valid component types : "..table.concat(componentType, ", "))
     end
 
-    -- 
-    local component = nil
 
-    if Daneel.core.IsScript(componentType) then
-        component = self:CreateScriptedBehavior(asset)
-    else
-        component = self:CreateComponent(componentType)
+    if params == nil then params = {} end
 
-        if asset ~= nil then
-            if componentType == "ModelRenderer" then
-                component:SetModel(asset)
-            elseif componentType == "MapRenderer" then
-                component:SetMap(asset)
+    -- params is asset name (script model or map)
+    if type(params) == "string" then
+        local assetType = Daneel.config.componentTypeToAssetType[componentType]
+        local assetName = params
+        local asset = Asset.Get(assetName, assetType)
+        
+        if asset == nil then
+            error(errorHead.."Asset not found. Component type='"..componentType.."', asset type='"..assetType.."', asset name='"..assetName.."'.")
+        end
+
+        params = { [assetType:lower()] = asset }
+    end
+
+    -- params is asset (script model or map)
+    if type(params) == "table" then
+        local assetType = Asset.GetType(params)
+
+        if assetType ~= nil and table.containsvalue({"string", "model", "map"}, assetType, true) then
+            params = { [assetType:lower()] = params }
+        end
+        -- else : should be a params table
+    end
+
+
+    -- ScriptedBehavior
+    if componentType == "ScriptedBehavior" then
+        return self:CreateScriptedBehavior(params.script)
+    end
+
+    -- other componentTypes
+    local component = self:CreateComponent(componentType)
+
+    -- apply params
+    if componentType == "ModelRenderer" then
+        -- animation
+        if params.animation ~= nil then
+            local animation = params.animation
+            
+            if type(animation) == "string" then
+                animation = Asset.GetModelAnimation(params.animation)
             end
+
+            if animation == nil or not Asset.IsModelAnimation(animation) then
+                error(errorHead.."Argument 'params.animation' ["..tostring(params.animation).."] is not a ModelAnimation asset or name.")
+            end
+
+            component:SetAnimation(animation)
+        end
+
+        -- AnimationPlayback
+        if params.startAnimationPlayback ~= nil then
+            local startAnimationPlayback = params.startAnimationPlayback
+            
+            argType = type(startAnimationPlayback)
+            if argType ~= "boolean" then
+                error(errorHead.."Argument 'params.startAnimationPlayback' is of type '"..argType.."' with value '"..tostring(startAnimationPlayback).."' instead of 'boolean'.")
+            end
+
+            component:StartAnimationPlayback(startAnimationPlayback)
+        end
+
+        -- AnimationTime
+        if params.setAnimationTime ~= nil then
+            local setAnimationTime = tonumber(params.setAnimationTime)
+            
+            if type(setAnimationTime) ~= "number"  then
+                error(errorHead.."Could not convert argument 'params.setAnimationTime' to number because it is of type '"..type(params.setAnimationTime).."' with value '"..tostring(params.setAnimationTime)..".")
+            end
+
+            component:SetAnimationTime(setAnimationTime)
+        end
+
+        -- Model
+        if params.model ~= nil then
+            local model = params.model
+            
+            if type(model) == "string" then
+                model = Asset.GetModel(params.model)
+            end
+
+            if model == nil or not Asset.IsModel(model) then
+                error(errorHead.."Argument 'params.model' of type '"..type(params.model).."' with value '"..tostring(params.model).."' is not a Model asset or name.")
+            end
+
+            component:SetModel(model)
+        end
+
+        -- Opacity
+        if params.opacity ~= nil then
+            local opacity = tonumber(params.opacity)
+            
+            if type(opacity) ~= "number" then
+                error(errorHead.."Could not convert argument 'params.opacity' to number because it is of type '"..type(params.opacity).."' with value '"..tostring(params.opacity)..".")
+            end
+
+            component:SetOpacity(opacity)
+        end
+    elseif componentType == "MapRenderer" then
+        -- Map
+        if params.map ~= nil then
+            local map = params.map
+            
+            if type(map) == "string" then
+                map = Asset.GetMap(params.map)
+            end
+
+            if map == nil or not Asset.IsMap(map) then
+                error(errorHead.."Argument 'params.map' of type '"..type(params.map).."' with value '"..tostring(params.map).."' is not a Map asset or name.")
+            end
+
+            component:SetMap(map)
+        end
+
+        -- TileSet
+        if params.tileSet ~= nil then
+            local tileSet = params.tileSet
+            
+            if type(tileSet) == "string" then
+                tileSet = Asset.GetTileSet(params.tileSet)
+            end
+
+            if tileSet == nil or not Asset.IsTileSet(tileSet) then
+                error(errorHead.."Argument 'params.tileSet' of type '"..type(params.tileSet).."' with value '"..tostring(params.tileSet).."' is not a TileSet asset or name.")
+            end
+
+            component:SetTileSet(tileSet)
+        end
+
+        -- Opacity
+        if params.opacity ~= nil then
+            local opacity = tonumber(params.opacity)
+            
+            if type(opacity) ~= "number" then
+                error(errorHead.."Could not convert argument 'params.opacity' to number because it is of type '"..type(params.opacity).."' with value '"..tostring(params.opacity)..".")
+            end
+
+            component:SetOpacity(opacity)
+        end
+    elseif componentType == "Camera" then
+        if params.projectionMode ~= nil then
+            local projectionMode = params.projectionMode
+            
+            if params.projectionMode ~= Camera.ProjectionMode.Perspective and params.projectionMode ~= Camera.ProjectionMode.Orthographic then
+                error(errorHead.."Argument 'params.projectionMode' is not 'Camera.ProjectionMode.Perspective' or 'Camera.ProjectionMode.Orthographic'. Must be one of those.")
+            end
+
+            component:SetProjectionMode(params.projectionMode)
+        end
+
+        -- fov
+        if params.fov ~= nil then
+            local fov = tonumber(params.fov)
+            
+            if type(fov) ~= "number" then
+                error(errorHead.."Could not convert argument 'params.fov' to number because it is of type '"..type(params.fov).."' with value '"..tostring(params.fov)..".")
+            end
+
+            component:SetFov(fov)
+        end
+
+        -- orthographicScale
+        if params.orthographicScale ~= nil then
+            local orthographicScale = tonumber(params.orthographicScale)
+            
+            if type(orthographicScale) ~= "number" then
+                error(errorHead.."Could not convert argument 'params.orthographicScale' to number because it is of type '"..type(params.orthographicScale).."' with value '"..tostring(params.orthographicScale)..".")
+            end
+
+            component:SetOrthographicScale(orthographicScale)
+        end
+
+        -- renderViewportPosition
+        if params.renderViewportPosition ~= nil then
+            local renderViewportPosition = params.renderViewportPosition)
+            
+            if type(renderViewportPosition) ~= "table" then
+                error(errorHead.."Argument 'params.renderViewportPosition' is of type '"..type(params.renderViewportPosition).."' with value '"..tostring(params.renderViewportPosition).." instead of 'table'.")
+            end
+
+            renderViewportPosition.x = tonumber(renderViewportPosition.x)
+            renderViewportPosition.y = tonumber(renderViewportPosition.y)
+
+            if renderViewportPosition.x == nil or renderViewportPosition.y == nil then
+                error(errorHead.."Argument 'params.renderViewportPosition' is missing key 'x' and/or 'y'. Their value must be number or string.")
+            end
+
+            component:SetRenderViewportPosition(renderViewportPosition.x, renderViewportPosition.y)
+        end
+
+        -- renderViewportSize
+        if params.renderViewportSize ~= nil then
+            local renderViewportSize = params.renderViewportSize)
+            
+            if type(renderViewportSize) ~= "table" then
+                error(errorHead.."Argument 'params.renderViewportSize' is of type '"..type(params.renderViewportSize).."' with value '"..tostring(params.renderViewportSize).." instead of 'table'.")
+            end
+
+            renderViewportSize.width = tonumber(renderViewportSize.width)
+            renderViewportSize.height = tonumber(renderViewportSize.height)
+
+            if renderViewportSize.width == nil or renderViewportSize.height == nil then
+                error(errorHead.."Argument 'params.renderViewportSize' is missing key 'width' and/or 'height'. Their value must be number or string.")
+            end
+
+            component:SetRenderViewportSize(renderViewportSize.width, renderViewportSize.height)
         end
     end
 
@@ -401,91 +587,44 @@ function GameObject:AddScriptedBehavior(assetNameOrAsset)
     return self:AddComponent("ScriptedBehavior", assetNameOrAsset)
 end
 
--- Add a ScriptedBehavior to the gameObject.
--- @param assetNameOrAsset (string or asset) The script name or asset.
+-- Add a ModelRenderer component to the gameObject and optionaly set its model.
+-- @param params [optional] (table) The model name or asset, or a table of parameters to initialize the new ModelRenderer with.
 -- @return (table) The component.
-function GameObject:AddScript(assetNameOrAsset)
-    local errorHead = "GameObject:AddScript(assetNameOrAsset) : "
-
-    if getmetatable(self) ~= GameObject then
-        error(errorHead..gameObjectCallSyntaxError.."AddScript()")
-    end
-
-    if type(assetNameOrAsset) == nil then
-        error(errorHead.."Argument 'assetNameOrAsset' is nil. Must be the script name or the script asset.")
-    end
-
-    return self:AddComponent("ScriptedBehavior", assetNameOrAsset)
-end
-
--- Add a ModelRenderer component to the gameObject.
--- @return (table) The component.
-function GameObject:AddModelRenderer()
-    local errorHead = "GameObject:AddModelRenderer() : "
+function GameObject:AddModelRenderer(params)
+    local errorHead = "GameObject:AddModelRenderer([params]) : "
 
     if getmetatable(self) ~= GameObject then
         error(errorHead..gameObjectCallSyntaxError.."AddModelRenderer()")
     end
 
-    return self:AddComponent("ModelRenderer")
-end
-
--- Add a ModelRenderer component to the gameObject and set its model.
--- @param assetNameOrAsset (string or asset) The model name or asset.
--- @return (table) The component.
-function GameObject:AddModel(assetNameOrAsset)
-    local errorHead = "GameObject:AddModel(assetNameOrAsset) : "
-
-    if getmetatable(self) ~= GameObject then
-        error(errorHead..gameObjectCallSyntaxError.."AddModel()")
-    end
-
-    if type(assetNameOrAsset) == nil then
-        error(errorHead.."Argument 'assetNameOrAsset' is nil. Must be the model name or the model asset.")
-    end
-
-    return self:AddComponent("ModelRenderer", assetNameOrAsset)
+    return self:AddComponent("ModelRenderer", params)
 end
 
 -- Add a MapRenderer to the gameObject.
+-- @param params [optional] (table) The map name or asset, or a table of parameters to initialize the new MapRenderer with.
 -- @return (table) The component.
-function GameObject:AddMapRenderer()
-    local errorHead = "GameObject:AddMapRenderer() : "
+function GameObject:AddMapRenderer(params)
+    local errorHead = "GameObject:AddMapRenderer([params]) : "
 
     if getmetatable(self) ~= GameObject then
         error(errorHead..gameObjectCallSyntaxError.."AddMapRenderer()")
     end
 
-    return self:AddComponent("MapRenderer")
+    return self:AddComponent("MapRenderer", params)
 end
 
--- Add a MapRenderer component to the gameObject and set its map.
--- @param assetNameOrAsset (string or asset) The model name or asset.
--- @return (table) The component.
-function GameObject:AddMap(assetNameOrAsset)
-    local errorHead = "GameObject:AddMap(assetNameOrAsset) : "
-
-    if getmetatable(self) ~= GameObject then
-        error(errorHead..gameObjectCallSyntaxError.."AddMap()")
-    end
-
-    if type(assetNameOrAsset) == nil then
-        error(errorHead.."Argument 'assetNameOrAsset' is nil. Must be the map name or the map asset.")
-    end
-
-    return self:AddComponent("MapRenderer", assetNameOrAsset)
-end
 
 -- Add a Camera component to the gameObject.
+-- @param params [optional] (table) A table of parameters to initialize the new camera with.
 -- @return (table) The component.
-function GameObject:AddCamera()
-    local errorHead = "GameObject:AddCamera() : "
+function GameObject:AddCamera(params)
+    local errorHead = "GameObject:AddCamera([params]) : "
 
     if getmetatable(self) ~= GameObject then
         error(errorHead..gameObjectCallSyntaxError.."AddCamera()")
     end
 
-    return self:AddComponent("MapRenderer")
+    return self:AddComponent("Camera", params)
 end
 
 
@@ -585,7 +724,7 @@ end
 -- a script asset (a table) the function will destroy the ScriptedBehavior that uses this Script,
 -- the name of a script asset (a string) the function will destroy the ScriptedBehavior that uses the Script asset of the specified name.
 -- @param input (mixed) See function description.
--- @param strict [optionnal] (boolean=false) If true, returns an error when the function can't find the component to destroy.
+-- @param strict [optional] (boolean=false) If true, returns an error when the function can't find the component to destroy.
 -- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
 function GameObject:DestroyComponent(input, strict)
     local errorHead = "GameObject:DestroyComponent(input) : "
@@ -670,7 +809,7 @@ end
 -- Destroy a ScriptedBehavior form the gameObject.
 -- If argument 'scriptNameOrAsset' is set with a script name or a script asset, the function will try to destroy the ScriptedBehavior that use this script.
 -- If the argument is not set, it will destroy the first ScriptedBehavior on this gameObejct
--- @param scriptNameOrAsset [optionnal] (string=nil) The script name or asset.
+-- @param scriptNameOrAsset [optional] (string=nil) The script name or asset.
 -- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
 function GameObject:DestroyScriptedBehavior(scriptNameOrAsset)
     local errorHead = "GameObject.DestroyScriptedBehavior(scriptNameOrAsset) : "

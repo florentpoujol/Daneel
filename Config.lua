@@ -1,7 +1,7 @@
 
 
 
-Daneel.config = {
+Daneel.config = table.new({
 
     hudCameraName = "HUD Camera",
     hudCameraOrthographicScale = "10",
@@ -55,7 +55,7 @@ Daneel.config = {
         ModelRenderer = "Model",
         MapRenderer = "Map",
     }
-}
+})
 
 
 

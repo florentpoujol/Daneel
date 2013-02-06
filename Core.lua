@@ -1,6 +1,5 @@
 Daneel = {}
 
-
 Daneel.core = {}
 
 -- Make sure that the case of the provided name is correct.
