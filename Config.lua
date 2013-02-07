@@ -51,7 +51,6 @@ Daneel.config = table.new({
 
     -- Correspondance between the component type (the keys) and the asset type (the values)
     componentTypeToAssetType = table.new({
-        Script = "Script",
         ScriptedBehavior = "Script",
         ModelRenderer = "Model",
         MapRenderer = "Map",
