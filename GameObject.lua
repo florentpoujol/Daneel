@@ -19,7 +19,7 @@ local function ApplyParamsToGameObject(go, params, errorHead)
 
     -- parent
     if params.parent == nil then 
-        local parentType = cstype(params.parent)
+        local parentType = type(params.parent)
         if parentType ~= "string" and parentType ~= "GameObject" then
             error(errorHead.."Argument 'params.parent' is of type '"..parentType.."' with value '"..tostring(params.parent).."' instead of 'string' (the parent name) or 'GameObject'.")
         end
@@ -49,7 +49,7 @@ local function ApplyParamsToGameObject(go, params, errorHead)
     if params.transform ~= nil then
         --  position
         if params.transform.position ~= nil then
-            argType = cstype(params.transform.position)
+            argType = type(params.transform.position)
             if argType ~= "Vector3" then
                 error(errorHead.."Argument 'params.transform.position' is of type '"..argType.."' with value '"..tostring(params.transform.position).."' instead of 'Vector3'.")
             end
@@ -58,7 +58,7 @@ local function ApplyParamsToGameObject(go, params, errorHead)
         end
 
         if params.transform.localPosition ~= nil then
-            argType = cstype(params.transform.localPosition)
+            argType = type(params.transform.localPosition)
             if argType ~= "Vector3" then
                 error(errorHead.."Argument 'params.transform.localPosition' is of type '"..argType.."' with value '"..tostring(params.transform.localPosition).."' instead of 'Vector3'.")
             end
@@ -68,7 +68,7 @@ local function ApplyParamsToGameObject(go, params, errorHead)
 
         -- orientation
         if params.transform.orientation ~= nil then
-            argType = cstype(params.transform.orientation)
+            argType = type(params.transform.orientation)
             if argType ~= "Quaternion" then
                 error(errorHead.."Argument 'params.transform.orientation' is of type '"..argType.."' with value '"..tostring(params.transform.orientation).."' instead of 'Quaternion'.")
             end
@@ -77,7 +77,7 @@ local function ApplyParamsToGameObject(go, params, errorHead)
         end
 
         if params.transform.localOrientation ~= nil then
-            argType = cstype(params.transform.localOrientation)
+            argType = type(params.transform.localOrientation)
             if argType ~= "Quaternion" then
                 error(errorHead.."Argument 'params.transform.localOrientation' is of type '"..argType.."' with value '"..tostring(params.transform.localOrientation).."' instead of 'Quaternion'.")
             end
@@ -87,7 +87,7 @@ local function ApplyParamsToGameObject(go, params, errorHead)
 
         -- Euler Angles
         if params.transform.eulerAngles ~= nil then
-            argType = cstype(params.transform.eulerAngles)
+            argType = type(params.transform.eulerAngles)
             if argType ~= "Vector3" then
                 error(errorHead.."Argument 'params.transform.eulerAngles' is of type '"..argType.."' with value '"..tostring(params.transform.eulerAngles).."' instead of 'Vector3'.")
             end
@@ -96,7 +96,7 @@ local function ApplyParamsToGameObject(go, params, errorHead)
         end
 
         if params.transform.localEulerAngles ~= nil then
-            argType = cstype(params.transform.localEulerAngles)
+            argType = type(params.transform.localEulerAngles)
             if argType ~= "Vector3" then
                 error(errorHead.."Argument 'params.transform.localEulerAngles' is of type '"..argType.."' with value '"..tostring(params.transform.localEulerAngles).."' instead of 'Vector3'.")
             end
@@ -110,7 +110,7 @@ local function ApplyParamsToGameObject(go, params, errorHead)
                 params.transform.localScale = Vector3:New(params.transform.localScale)
             end
 
-            argType = cstype(params.transform.localScale)
+            argType = type(params.transform.localScale)
             if argType ~= "Vector3" then
                 error(errorHead.."Argument 'params.transform.localScale' is of type '"..argType.."' with value '"..tostring(params.transform.localScale).."' instead of 'Vector3'.")
             end
@@ -178,7 +178,7 @@ local function ApplyParamsToGameObject(go, params, errorHead)
     end
 
     for i, scriptNameOrAsset in ipairs(params.scriptedBehaviors) do
-        argType = cstype(scriptNameOrAsset)
+        argType = type(scriptNameOrAsset)
         if argType ~= "string" and argType ~= "Script" then
             error(errorHead.."Item n°"..i.." in argument 'params.scriptedBehaviors' is of type '"..argType.."' with value '"..tostring(scriptNameOrAsset).."' instead of 'string' or 'table/Script'.")
         end
@@ -231,7 +231,7 @@ function GameObject.Instantiate(goName, scene, params, g)
         error(errorHead.."Argument 'gameObjectName' is of type '"..argType.."' with value '"..tostring(name).."' instead of 'string'. Must be the gameObject name.")
     end
 
-    argType = cstype(scene)
+    argType = type(scene)
     if argType ~= "string" or argType ~= "Scene" then
         error(errorHead.."Argument 'scene' is of type '"..argType.."' with value '"..tostring(scene).."' instead of 'string' (the scene name) or 'Scene'.")
     end
@@ -262,7 +262,7 @@ function GameObject.Get(name, g)
 
     local argType = type(name)
     if name == nil or argType ~= "string" then
-        error("GameObject.Get(gameObjectName) : Argument 'gameObjectName' is of type '"..argType.."' with value '"..tostring(name).."' instead of 'string'. Must be the gameObject name.")
+        error("GameObject.Get(name) : Argument 'name' is of type '"..argType.."' with value '"..tostring(name).."' instead of 'string'. Must be the gameObject name.")
     end
 
     return CraftStudio.FindGameObject(name)
@@ -276,7 +276,7 @@ end
 function GameObject:SetParentByName(name, keepLocalTransform)
     local errorHead = "GameObject:SetParentByName(name[, keepLocalTransform]) : "
 
-    if cstype(self) ~= "GameObject" then
+    if type(self) ~= "GameObject" then
         error(errorHead..gameObjectCallSyntaxError.."SetParentByName()")
     end
 
@@ -308,7 +308,7 @@ end
 function GameObject:GetChild(name, recursive)
     local errorHead = "GameObject:GetChild(name[, recursive]) : "
 
-    if cstype(self) ~= "GameObject" then
+    if type(self) ~= "GameObject" then
         error(errorHead..gameObjectCallSyntaxError.."GetChild()")
     end
 
@@ -332,7 +332,7 @@ end
 function GameObject:GetChildrenRecursive(includeSelf)
     local errorHead = "GameObject:GetChildrenRecursive() : "
 
-    if cstype(self) ~= "GameObject" then
+    if type(self) ~= "GameObject" then
         error(errorHead..gameObjectCallSyntaxError.."GetChildrenRecursive()")
     end
 
@@ -367,7 +367,7 @@ end
 function GameObject:BroadcastMessage(methodName, data)
     local errorHead = "GameObject:BroadcastMessage(methodName[, data]) : "
 
-    if cstype(self) ~= "GameObject" then
+    if type(self) ~= "GameObject" then
         error(errorHead..gameObjectCallSyntaxError.."BroadcastMessage()")
     end
 
@@ -398,7 +398,7 @@ end
 function GameObject:AddComponent(componentType, params)
     local errorHead = "GameObject:AddComponent(componentType[, params]) : "
 
-    if cstype(self) ~= "GameObject" then 
+    if type(self) ~= "GameObject" then 
         error(errorHead..gameObjectCallSyntaxError.."AddComponent()")
     end
 
@@ -415,7 +415,7 @@ function GameObject:AddComponent(componentType, params)
 
 
     if params == nil then params = {} end
-    argType = cstype(params)
+    argType = type(params)
 
     -- params is the asset name (script model or map)
     if argType == "string" then
@@ -459,8 +459,8 @@ function GameObject:AddComponent(componentType, params)
                 animation = Asset.Get(params.animation, "ModelAnimation")
             end
 
-            if cstype(animation) ~= "ModelAnimation" then
-                error(errorHead.."Argument 'params.animation' is of type '"..cstype(params.animation).."' with value '"..tostring(params.animation).."' instead of 'string' (ModelAnimatin name) or 'ModelAnimation'.")
+            if type(animation) ~= "ModelAnimation" then
+                error(errorHead.."Argument 'params.animation' is of type '"..type(params.animation).."' with value '"..tostring(params.animation).."' instead of 'string' (ModelAnimatin name) or 'ModelAnimation'.")
             end
 
             component:SetAnimation(animation)
@@ -497,7 +497,7 @@ function GameObject:AddComponent(componentType, params)
                 model = Asset.Get(params.model, "Model")
             end
 
-            if cstype(model) ~= "Model" then
+            if type(model) ~= "Model" then
                 error(errorHead.."Argument 'params.model' is of type '"..type(params.model).."' with value '"..tostring(params.model).."' instead of 'string' (the model name) of 'Model'.")
             end
 
@@ -523,7 +523,7 @@ function GameObject:AddComponent(componentType, params)
                 map = Asset.Get(params.map, "Map")
             end
 
-            if cstype(map) ~= "Map" then
+            if type(map) ~= "Map" then
                 error(errorHead.."Argument 'params.map' is of type '"..type(params.map).."' with value '"..tostring(params.map).."' instead of 'string' (the Map name) or 'Map'.")
             end
 
@@ -538,7 +538,7 @@ function GameObject:AddComponent(componentType, params)
                 tileSet = Asset.Get(params.tileSet, "TileSet")
             end
 
-            if cstype(tileSet) ~= "TileSet" then
+            if type(tileSet) ~= "TileSet" then
                 error(errorHead.."Argument 'params.tileSet' is of type '"..type(params.tileSet).."' with value '"..tostring(params.tileSet).."' instead of 'string' (the TileSet name) or 'TileSet'.")
             end
 
@@ -634,11 +634,11 @@ end
 function GameObject:AddScriptedBehavior(assetNameOrAsset)
     local errorHead = "GameObject:AddScriptedBehavior(assetNameOrAsset) : "
 
-    if cstype(self) ~= "GameObject" then
+    if type(self) ~= "GameObject" then
         error(errorHead..gameObjectCallSyntaxError.."AddScriptedBehavior()")
     end
 
-    local argType = cstype(assetNameOrAsset)
+    local argType = type(assetNameOrAsset)
     if argType ~= "string" and argType ~= "ScriptedBehavior" then
         error(errorHead.."Argument 'assetNameOrAsset' is of type '"..argType.."' with value '"..tostring(assetNameOrAsset).."' instead of 'string' (the Script name) or 'Script'.")
     end
@@ -652,7 +652,7 @@ end
 function GameObject:AddModelRenderer(params)
     local errorHead = "GameObject:AddModelRenderer([params]) : "
 
-    if cstype(self) ~= "GameObject" then
+    if type(self) ~= "GameObject" then
         error(errorHead..gameObjectCallSyntaxError.."AddModelRenderer()")
     end
 
@@ -665,7 +665,7 @@ end
 function GameObject:AddMapRenderer(params)
     local errorHead = "GameObject:AddMapRenderer([params]) : "
 
-    if cstype(self) ~= "GameObject" then
+    if type(self) ~= "GameObject" then
         error(errorHead..gameObjectCallSyntaxError.."AddMapRenderer()")
     end
 
@@ -679,7 +679,7 @@ end
 function GameObject:AddCamera(params)
     local errorHead = "GameObject:AddCamera([params]) : "
 
-    if cstype(self) ~= "GameObject" then
+    if type(self) ~= "GameObject" then
         error(errorHead..gameObjectCallSyntaxError.."AddCamera()")
     end
 
@@ -695,11 +695,11 @@ end
 function GameObject:GetScriptedBehaviorByName(scriptNameOrAsset)
     local errorHead = "GameObject:GetScriptedBehavior(scriptNameOrAsset) : "
 
-    if cstype(self) ~= "GameObject" then 
+    if type(self) ~= "GameObject" then 
         error(errorHead..gameObjectCallSyntaxError.."GetScriptedBehavior()")
     end
 
-    local argType = cstype(scriptNameOrAsset)
+    local argType = type(scriptNameOrAsset)
     if argType ~= "string" and argType ~= "ScriptedBehavior" then
         error(errorHead.."Argument 'scriptNameOrAsset' is of type '"..argType.."' with value '"..tostring(scriptNameOrAsset).."' instead of 'string' (the Script name) or 'Script'.")
     end
@@ -720,7 +720,7 @@ end
 function GameObject:GetModelRenderer()
     local errorHead = "GameObject:GetModelRenderer() : "
 
-    if cstype(self) ~= "GameObject" then 
+    if type(self) ~= "GameObject" then 
         error(errorHead..gameObjectCallSyntaxError.."GetModelRenderer()")
     end
 
@@ -732,7 +732,7 @@ end
 function GameObject:GetMapRenderer()
     local errorHead = "GameObject:GetMapRenderer() : "
 
-    if cstype(self) ~= "GameObject" then 
+    if type(self) ~= "GameObject" then 
         error(errorHead..gameObjectCallSyntaxError.."GetMapRenderer()")
     end
 
@@ -744,7 +744,7 @@ end
 function GameObject:GetCamera()
     local errorHead = "GameObject:GetCamera() : "
 
-    if cstype(self) ~= "GameObject" then 
+    if type(self) ~= "GameObject" then 
         error(errorHead..gameObjectCallSyntaxError.."GetCamera()")
     end
 
@@ -756,7 +756,7 @@ end
 function GameObject:GetTransform()
     local errorHead = "GameObject:GetTransform() : "
 
-    if cstype(self) ~= "GameObject" then 
+    if type(self) ~= "GameObject" then 
         error(errorHead..gameObjectCallSyntaxError.."GetTransform()")
     end
 
@@ -770,7 +770,7 @@ end
 function GameObject:Destroy()
     local errorHead = "GameObject:Destroy() : "
 
-    if cstype(self) ~= "GameObject" then 
+    if type(self) ~= "GameObject" then 
         error(errorHead..gameObjectCallSyntaxError.."Destroy()")
     end
 
@@ -790,11 +790,11 @@ end
 function GameObject:DestroyComponent(input, strict)
     local errorHead = "GameObject:DestroyComponent(input[, strict]) : "
 
-    if cstype(self) ~= "GameObject" then
+    if type(self) ~= "GameObject" then
         error(errorHead..gameObjectCallSyntaxError.."DestroyComponent()")
     end
 
-    local argType = cstype(input)
+    local argType = type(input)
     local allowedTypes = {"string", "Script", "table"}
     
     if not table.constainsvalue(allowedTypes, argType) then
@@ -810,7 +810,7 @@ function GameObject:DestroyComponent(input, strict)
 
     local component = nil
     local stringError = ""
-    local argType = cstype(input)
+    local argType = type(input)
 
     -- input is a component ?
     if argType == "table" then 
@@ -880,11 +880,11 @@ end
 function GameObject:DestroyScriptedBehavior(scriptNameOrAsset)
     local errorHead = "GameObject.DestroyScriptedBehavior([scriptNameOrAsset]) : "
 
-    if cstype(self) ~= "GameObject" then
+    if type(self) ~= "GameObject" then
         error(errorHead..gameObjectCallSyntaxError.."DestroyScriptedBehavior()")
     end
 
-    local argType = cstype(scriptNameOrAsset)
+    local argType = type(scriptNameOrAsset)
     if argType ~= nil and argType ~= "string" and argType ~= "Script" then
         error(errorHead.."Argument 'scriptNameOrAsset' is of type '"..argType.."' with value '"..tostring(scriptNameOrAsset).."' instead of 'string' or 'Script'.")
     end
@@ -901,7 +901,7 @@ end
 function GameObject:DestroyModelRenderer()
     local errorHead = "GameObject.DestroyModelRenderer() : "
 
-    if cstype(self) ~= "GameObject" then
+    if type(self) ~= "GameObject" then
         error(errorHead..gameObjectCallSyntaxError.."DestroyModelRenderer()")
     end
 
@@ -913,7 +913,7 @@ end
 function GameObject:DestroyMapRenderer()
     local errorHead = "GameObject.DestroyMapRenderer() : "
 
-    if cstype(self) ~= "GameObject" then
+    if type(self) ~= "GameObject" then
         error(errorHead..gameObjectCallSyntaxError.."DestroyMapRenderer()")
     end
 
@@ -925,7 +925,7 @@ end
 function GameObject:DestroyCamera()
     local errorHead = "GameObject.DestroyCamera() : "
 
-    if cstype(self) ~= "GameObject" then
+    if type(self) ~= "GameObject" then
         error(errorHead..gameObjectCallSyntaxError.."DestroyCamera()")
     end
 

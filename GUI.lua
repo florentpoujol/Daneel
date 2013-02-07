@@ -9,22 +9,23 @@ GUI = {}
 
 GUIText = {}
 GUIText.__index = GUIText
+GUIText.__tostring = function(go) return "GUIText at position '"..tostring(go.transform:GetPosition()) end
 
 local guiTextCallSyntaxError = "Function not called from a GUIText. Your must use a colon ( : ) between the GUIText instance and the method name. Ie : guiText:"
 
 
 -- Create a new GUIText
--- @param [optionnal] (table) A table with initialisation position, text and scale
--- @return (table) The new GUIText
+-- @param [optional] (table) A table with initialisation position, text and scale
+-- @return (GUIText) The new GUIText
 function GUIText.New(params, g)
     if params == GUIText then
         params = g
     end
     
     local errorHead = "GUIText.New([params]) : "
-    local guiTextMap = Asset.GetMap(Daneel.config.guiTextMapName)
+    local guiTextMap = Asset.Get(Daneel.config.guiTextMapName, "Map")
     if guiTextMap == nil then
-        error(errorHead.."Can't find the GUIText Map asset. Its name should be '"..Daneel.config.guiTextMapName.."' or update the 'guiTextMapName' variabe in the config.")
+        error(errorHead.."Can't find the GUIText Map asset. Its name should be '"..Daneel.config.guiTextMapName.."' or update the 'guiTextMapName' variable in the config.")
     end
 
     local guiText = {
@@ -40,8 +41,8 @@ function GUIText.New(params, g)
     }
     
     local argType = type(params)
-    if params ~= nil and argType ~= "table" then
-        error(errorHead.."Optionnal argument 'params' is of type '"..argType.."' instead of 'table'.")
+    if argType ~= nil and argType ~= "table" then
+        error(errorHead.."Optionnal argument 'params' is of type '"..argType.."' with value '"..tostring(params).."' instead of 'table'.")
     end
     
     if params ~= nil then
@@ -68,7 +69,7 @@ end
 function GUIText:Destroy()
     local errorHead = "GUIText:Destroy() : "
 
-    if getmetatable(self) ~= GUIText then
+    if type(self) ~= "GUIText" then
         error(errorHead..guiTextCallSyntaxError.."Destroy()")
     end
 
@@ -79,7 +80,7 @@ end
 function GUIText:Refresh()
     local errorHead = "GUIText:Refresh() : "
 
-    if getmetatable(self) ~= GUIText then
+    if type(self) ~= "GUIText" then
         error(errorHead..guiTextCallSyntaxError.."SetText()")
     end
 
@@ -90,10 +91,12 @@ end
 
 
 -- 0, 0 is the middle of the screen
+-- @param x (table or number) if table, must have x and y keys
+-- @param y [optional] (number) If x is number, y must be number
 function GUIText:SetPosition(x, y)
     local errorHead = "GUIText:SetPosition([position]) : "
 
-    if getmetatable(self) ~= GUIText then
+    if type(self) ~= "GUIText" then
         error(errorHead..guiTextCallSyntaxError.."SetPosition()")
     end
     
@@ -104,12 +107,10 @@ function GUIText:SetPosition(x, y)
         self.position.x = tonumber(x)
         self.position.y = tonumber(y)
     end
-    
-    
-    
+        
     local screenSize = Daneel.config.screenSize
     local cameraScale = Daneel.config.hudCameraOrthographicScale -- cameraScale is the with in unit of the camera viewport
-    local unitX = screenSize.x / cameraScale --unitX is the number of pixel that take one unit in 3D world
+    local unitX = screenSize.x / cameraScale -- (pixels/unit) unitX is the size in pixel of one unit in 3D world  (1 3Dunit = unitX pixels)
     local unitY = screenSize.y / cameraScale
     
     local position3D = Vector3:New(self.position.x / unitX, self.position.y / unitY, -5)
@@ -118,10 +119,12 @@ function GUIText:SetPosition(x, y)
 end
 
 
+-- Set the text of the GUIText
+-- @param (mixed) Something to display (converted to string with tostring())
 function GUIText:SetText(text)
     local errorHead = "GUIText:SetText([text]) : "
 
-    if getmetatable(self) ~= GUIText then
+    if type(self) ~= "GUIText" then
         error(errorHead..guiTextCallSyntaxError.."SetText()")
     end
 
@@ -130,7 +133,11 @@ function GUIText:SetText(text)
     end
 
     for i = 1, self.text:len() do
-        self.map:SetBlockAt(i, 0, 0, self.text:byte(i), Map.BlockOrientation.North)
+        local byte = self.text:byte(i)
+
+        if byte > 255 then byte = string.byte("?", 1) end -- should be 64
+
+        self.map:SetBlockAt(i, 0, 0, byte, Map.BlockOrientation.North)
     end
 end
 

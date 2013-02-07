@@ -72,8 +72,15 @@ Daneel.config = table.new({
         Plane,
         Ray,
     }),
+    
 
+    daneelTypes = table.new({
+        "GUIText",
+    }),
 
+    daneelObjects = table.new({
+        GUIText,
+    }),
     
 })
 

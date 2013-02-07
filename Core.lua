@@ -77,21 +77,23 @@ function Daneel.core.GetAllCraftStudioTypesAndObjects()
     local t = table.new()
     t = t:join(table.combine(Daneel.config.assetTypes, Daneel.config.assetObjects))
     t = t:join(table.combine(Daneel.config.craftStudioCoreTypes, Daneel.config.craftStudioCoreObjects))
-    
+    t = t:join(table.combine(Daneel.config.daneelTypes, Daneel.config.daneelObjects))
     return t
 end
 
 -- Return the craftStudio Type of the provided argument
 -- @param The argument to get the type
-function cstype(arg)
-    argType = type(arg)
+local oldTypeFunction = type
+
+function type(arg)
+    argType = oldTypeFunction(arg)
 
     if argType == "table" then
         local mt = getmetatable(arg)
 
         if mt ~= nil then
             local csto = GetAllCraftStudioTypesAndObjects()
-            
+
             for csType, csObject in pairs(csto) do
                 if mt == csObject then
                     return csType
