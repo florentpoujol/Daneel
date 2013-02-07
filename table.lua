@@ -31,7 +31,7 @@ end
 function table.copy(t)    
     local argType = type(t)
     if argType ~= "table" then
-        error("table.copy(table) : Argument 'table' is of type '"..argType.."' instead of table.")
+        error("table.copy(table) : Argument 'table' is of type '"..argType.."' with value '"..tostring(t).."' instead of ttablet.")
     end
 
     return table.new(t)
@@ -46,12 +46,12 @@ function table.containskey(t, p_key)
 
     local argType = type(t)
     if argType ~= "table" then
-        error(errorHead.."Argument 'table' is of type '"..argType.."' instead of 'table'.")
+        error(errorHead.."Argument 'table' is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'.")
     end
     
     argType = type(p_key)
     if argType ~= "string" then
-        error(errorHead.."Argument 'key' is of type '"..argType.."' instead of 'string'.")
+        error(errorHead.."Argument 'key' is of type '"..argType.."' with value '"..tostring(p_key).."' instead of 'string'.")
     end
     
     for key, value in pairs(t) do
@@ -71,7 +71,7 @@ function table.containsvalue(t, p_value, ignoreCase)
 
     local argType = type(t)
     if argType ~= "table" then
-        error(errorHead.."Argument 'table' is of type '"..argType.."' instead of 'table'.")
+        error(errorHead.."Argument 'table' is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'.")
     end
     
     if p_value == nil then
@@ -80,12 +80,12 @@ function table.containsvalue(t, p_value, ignoreCase)
 
     argType = type(ignoreCase)
     if ignoreCase ~= nil and argType ~= 'boolean' then
-        error(errorHead.."Argument 'ignoreCase' is of type '"..argType.."' instead of 'booelan'.")
+        error(errorHead.."Argument 'ignoreCase' is of type '"..argType.."' with value '"..tostring(ignoreCase).."' instead of 'booelan'.")
     end
 
     argType = type(p_value)
     if ignoreCase == true and argType ~= 'string' then
-        error(errorHead.."Argument 'ignoreCase' is true but argument 'value' is of type '"..argType.."' instead of 'string'.")
+        error(errorHead.."Argument 'ignoreCase' is true but argument 'value' is of type '"..argType.."' with value '"..tostring(p_value).."' instead of 'string'.")
     end
     
     for key, value in pairs(t) do
@@ -112,7 +112,7 @@ function table.length(t, keyType)
 
     local argType = type(t)
     if argType ~= 'table' then
-        error(errorHead.."Argument 'table' is of type '"..argType.."' instead of 'table'.")
+        error(errorHead.."Argument 'table' is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'.")
     end
         
     if keyType == nil then
@@ -147,7 +147,7 @@ function table.print(t)
 
     local argType = type(t)
     if argType ~= 'table' then
-        error(errorHead.."Argument 'table' is of type '"..argType.."' instead of 'table'.")
+        error(errorHead.."Argument 'table' is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'.")
     end
     
     if table.length(t) == 0 then
@@ -178,7 +178,7 @@ function table.printmetatable(t)
 
     local argType = type(t)
     if argType ~= 'table' then
-        error(errorHead.."Argument 'table' is of type '"..argType.."' instead of 'table'.")
+        error(errorHead.."Argument 'table' is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'.")
     end
     
     local mt = getmetatable(table)
@@ -200,7 +200,7 @@ end
 -- Join two or more tables into one.
 -- Integer keys are not overrided.
 -- Dependent of math.isinterger().
--- @param [optionnal] (table) At least two tables to join together. Non-table arguments are ignored.
+-- @param ... [optionnal] (table) At least two tables to join together. Non-table arguments are ignored.
 -- @return (table) The new table.
 function table.join(...)
     if arg == nil then 
@@ -234,12 +234,12 @@ function table.compare(table1, table2)
     
     local argType = type(table1)
     if argType ~= "table" then
-        error(errorHead.."Argument 'table1' is of type '"..argType.."' instead of 'table'.")
+        error(errorHead.."Argument 'table1' is of type '"..argType.."' with value '"..tostring(table1).."' instead of 'table'.")
     end
 
     argType = type(table2)
     if argType ~= "table" then
-        error(errorHead.."Argument 'table2' is of type '"..argType.."' instead of 'table'.")
+        error(errorHead.."Argument 'table2' is of type '"..argType.."' with value '"..tostring(table2).."' instead of 'table'.")
     end
 
     if table.length(table1) ~= table.length(table2) then
@@ -254,3 +254,38 @@ function table.compare(table1, table2)
     
     return true
 end
+
+-- Create an associative table for the provided keys and values table
+-- @param keys (table) The keys of the future table
+-- @param values (table) The values of the future table
+-- @param strict [optional] (boolean=false) If true, the function returns false if the keys and values table have different length
+-- @return (table or boolean) The combined table or false if the table have different length
+function table.combine(keys, values, strict)
+    local errorHead = "table.combine(keys, values[, strict]) : "
+    
+    local argType = type(keys)
+    if argType ~= "table" then
+        error(errorHead.."Argument 'keys' is of type '"..argType.."' with value '"..tostring(keys).."' instead of 'table'.")
+    end
+
+    argType = type(values)
+    if argType ~= "table" then
+        error(errorHead.."Argument 'values' is of type '"..argType.."' with value '"..tostring(values).."' instead of 'table'.")
+    end
+
+    if table.length(keys) ~= table.length(values) then
+        print(errorHead.."Arguments 'keys' and 'values' have different length.")
+
+        if strict == true then return false end
+    end
+
+    local newTable = table.new()
+
+    for i, key in ipairs(keys) do
+        newTable[key] = values[i]
+    end
+
+    return newTable
+end
+
+
