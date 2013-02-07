@@ -11,41 +11,56 @@ local function ApplyParamsToGameObject(go, params, errorHead)
         return go 
     end
 
-    if params.parent ~= nil then
-        local parent = params.parent
-
-        if type(parent) == "string" then
-            parent = GameObject.Get(parent)
-
-            if parent == nil then
-                error(errorHead.."Argument 'params.parent' with value '"..params.parent.."' does not match any gameObject.")
-            end
-        end
-
-        if type(params.parentKeepLocalTransm) == "boolean" then
-            go:SetParent(parent, params.keepLocalTransform)
-        else
-            go:SetParent(parent)
-        end
+    if errorHead == nil then
+        errorHead = "ApplyParamsToGameObject(go, params) : "
     end
 
     local argType = nil
 
+    -- parent
+    if params.parent == nil then 
+        local parentType = cstype(params.parent)
+        if parentType ~= "string" and parentType ~= "GameObject" then
+            error(errorHead.."Argument 'params.parent' is of type '"..parentType.."' with value '"..tostring(params.parent).."' instead of 'string' (the parent name) or 'GameObject'.")
+        end
+
+        if parentType == "string" then
+            local parentName = params.parent
+            local params.parent = GameObject.Get(parentName)
+            
+            if params.parent == nil then
+                error(errorHead.."Argument 'params.parent' : Parent GameObject with name '"..parentName.."' was not found.")
+            end
+
+            parentType = "GameObject"
+        end
+
+        if parentType == "GameObject" then
+            argType = type(params.parentKeepLocalTransform)
+            if argType ~= nil and argType ~= "boolean" then
+                error(errorHead.."Argument 'params.parentKeepLocalTransform' is of type '"..argType.."' with value '"..tostring(params.parentKeepLocalTransform).."' instead of 'boolean'.")
+            end
+
+            go:SetParent(parent, params.parentKeepLocalTransform)
+        end
+    end
+
+    -- transform
     if params.transform ~= nil then
         --  position
         if params.transform.position ~= nil then
-            argType = type(params.transform.position)
-            if argType ~= "table" then
-                error(errorHead.."Argument 'params.transform.position' is of type '"..argType.."' with value '"..tostring(params.transform.position).."' instead of 'table' (Vector3).")
+            argType = cstype(params.transform.position)
+            if argType ~= "Vector3" then
+                error(errorHead.."Argument 'params.transform.position' is of type '"..argType.."' with value '"..tostring(params.transform.position).."' instead of 'Vector3'.")
             end
 
             go.transform:SetPosition(params.transform.position)
         end
 
         if params.transform.localPosition ~= nil then
-            argType = type(params.transform.localPosition)
-            if argType ~= "table" then
-                error(errorHead.."Argument 'params.transform.localPosition' is of type '"..argType.."' with value '"..tostring(params.transform.localPosition).."' instead of 'table' (Vector3).")
+            argType = cstype(params.transform.localPosition)
+            if argType ~= "Vector3" then
+                error(errorHead.."Argument 'params.transform.localPosition' is of type '"..argType.."' with value '"..tostring(params.transform.localPosition).."' instead of 'Vector3'.")
             end
 
             go.transform:SetLocalPosition(params.transform.localPosition)
@@ -53,18 +68,18 @@ local function ApplyParamsToGameObject(go, params, errorHead)
 
         -- orientation
         if params.transform.orientation ~= nil then
-            argType = type(params.transform.orientation)
-            if argType ~= "table" then
-                error(errorHead.."Argument 'params.transform.orientation' is of type '"..argType.."' with value '"..tostring(params.transform.orientation).."' instead of 'table' (Quaternion).")
+            argType = cstype(params.transform.orientation)
+            if argType ~= "Quaternion" then
+                error(errorHead.."Argument 'params.transform.orientation' is of type '"..argType.."' with value '"..tostring(params.transform.orientation).."' instead of 'Quaternion'.")
             end
 
             go.transform:SetOrientation(params.transform.orientation)
         end
 
         if params.transform.localOrientation ~= nil then
-            argType = type(params.transform.localOrientation)
-            if argType ~= "table" then
-                error(errorHead.."Argument 'params.transform.localOrientation' is of type '"..argType.."' with value '"..tostring(params.transform.localOrientation).."' instead of 'table' (Quaternion).")
+            argType = cstype(params.transform.localOrientation)
+            if argType ~= "Quaternion" then
+                error(errorHead.."Argument 'params.transform.localOrientation' is of type '"..argType.."' with value '"..tostring(params.transform.localOrientation).."' instead of 'Quaternion'.")
             end
 
             go.transform:SetLocalOrientation(params.transform.localOrientation)
@@ -72,18 +87,18 @@ local function ApplyParamsToGameObject(go, params, errorHead)
 
         -- Euler Angles
         if params.transform.eulerAngles ~= nil then
-            argType = type(params.transform.eulerAngles)
-            if argType ~= "table" then
-                error(errorHead.."Argument 'params.transform.eulerAngles' is of type '"..argType.."' with value '"..tostring(params.transform.eulerAngles).."' instead of 'table' (Vector3).")
+            argType = cstype(params.transform.eulerAngles)
+            if argType ~= "Vector3" then
+                error(errorHead.."Argument 'params.transform.eulerAngles' is of type '"..argType.."' with value '"..tostring(params.transform.eulerAngles).."' instead of 'Vector3'.")
             end
 
             go.transform:SetEulerAngles(params.transform.eulerAngles)
         end
 
         if params.transform.localEulerAngles ~= nil then
-            argType = type(params.transform.localEulerAngles)
-            if argType ~= "table" then
-                error(errorHead.."Argument 'params.transform.localEulerAngles' is of type '"..argType.."' with value '"..tostring(params.transform.localEulerAngles).."' instead of 'table' (Vector3).")
+            argType = cstype(params.transform.localEulerAngles)
+            if argType ~= "Vector3" then
+                error(errorHead.."Argument 'params.transform.localEulerAngles' is of type '"..argType.."' with value '"..tostring(params.transform.localEulerAngles).."' instead of 'Vector3'.")
             end
 
             go.transform:SetLocalEulerAngles(params.transform.localEulerAngles)
@@ -95,9 +110,9 @@ local function ApplyParamsToGameObject(go, params, errorHead)
                 params.transform.localScale = Vector3:New(params.transform.localScale)
             end
 
-            argType = type(params.transform.localScale)
-            if argType ~= "table" then
-                error(errorHead.."Argument 'params.transform.localScale' is of type '"..argType.."' with value '"..tostring(params.transform.localScale).."' instead of 'table' (Vector3).")
+            argType = cstype(params.transform.localScale)
+            if argType ~= "Vector3" then
+                error(errorHead.."Argument 'params.transform.localScale' is of type '"..argType.."' with value '"..tostring(params.transform.localScale).."' instead of 'Vector3'.")
             end
 
             go.transform:SetLocalScale(params.transform.localScale)
@@ -163,9 +178,9 @@ local function ApplyParamsToGameObject(go, params, errorHead)
     end
 
     for i, scriptNameOrAsset in ipairs(params.scriptedBehaviors) do
-        argType = type(scriptNameOrAsset)
-        if argType ~= "string" and argType ~= "table" then
-            error(errorHead.."Item n°"..i.." in argument 'params.scriptedBehaviors' is of type '"..argType.."' with value '"..tostring(scriptNameOrAsset).."' instead of 'string' or 'table'.")
+        argType = cstype(scriptNameOrAsset)
+        if argType ~= "string" and argType ~= "Script" then
+            error(errorHead.."Item n°"..i.." in argument 'params.scriptedBehaviors' is of type '"..argType.."' with value '"..tostring(scriptNameOrAsset).."' instead of 'string' or 'table/Script'.")
         end
 
         go:AddComponent("ScriptedBehavior", scriptNameOrAsset)
@@ -176,7 +191,7 @@ end
 
 -- Create a new gameObject with optional initialisation parameters.
 -- @param name (string) The GameObject name.
--- @param params (string or table) The parent gameObject The initialisation parameters.
+-- @param params (string, GameObject or table) The parent gameObject name, or parent GameObject or a table with parameters to initialize the new gameObject with.
 -- @return The new gameObject (GameObject).
 function GameObject.New(name, params, g)
     if name == GameObject then
@@ -184,7 +199,6 @@ function GameObject.New(name, params, g)
         params = g
     end
 
-    -- errors
     local errorHead = "GameObject.New(name[, params]) : "
 
     local argType = type(name)
@@ -192,27 +206,17 @@ function GameObject.New(name, params, g)
         error(errorHead.."Argument 'name' is of type '"..argType.."' with value '"..tostring(name).."' instead of 'string'. Must be the gameObject name.")
     end
 
-    if params == nil then params = {} end
-
-    argType = type(params)
-    if argType ~= "table" then
-        error(errorHead.."Argument 'params' is of type '"..argType.."' with value '"..tostring(params).."' instead of 'table'. This argument is optional but if set, it must be a table.")
-    end
-    
-    --
     local go = CraftStudio.CreateGameObject(name)
 
-    go = ApplyParamsToGameObject(go, params, errorHead)    
-
-    return go
+    return ApplyParamsToGameObject(go, params, errorHead)
 end
 
 -- Add a scene as a new gameObject with optional initialisation parameters.
 -- @param goName (string) The gameObject name.
--- @param sceneName (string) The scene name.
--- @param params (table) The initialisation parameters.
+-- @param scene (string or Scene) The scene name or scene asset.
+-- @param params [optional] (string, GameObject or table) The parent gameObject name, or parent GameObject or a table with parameters to initialize the new gameObject with.
 -- @return (GameObject) The new gameObject.
-function GameObject.Instantiate(goName, sceneName, params, g)
+function GameObject.Instantiate(goName, scene, params, g)
     if goName == GameObject then
         goName = sceneName
         sceneName = params
@@ -223,28 +227,27 @@ function GameObject.Instantiate(goName, sceneName, params, g)
     local errorHead = "GameObject.Instantiate(gameObjectName, sceneName[, params]) : "
 
     local argType = type(goName)
-    if goName == nil or argType ~= "string" then
+    if argType ~= "string" then
         error(errorHead.."Argument 'gameObjectName' is of type '"..argType.."' with value '"..tostring(name).."' instead of 'string'. Must be the gameObject name.")
     end
 
-    argType = type(sceneName)
-    if sceneName == nil or argType ~= "string" then
-        error(errorHead.."Argument 'sceneName' is of type '"..argType.."' with value '"..tostring(sceneName).."' instead of 'string'. Must be the scene name.")
+    argType = cstype(scene)
+    if argType ~= "string" or argType ~= "Scene" then
+        error(errorHead.."Argument 'scene' is of type '"..argType.."' with value '"..tostring(scene).."' instead of 'string' (the scene name) or 'Scene'.")
     end
 
-    if params == nil then params = {} end
+    if argType == "string" then
+        local sceneName = scene
+        scene = Asset.Get(sceneName, "Scene")
 
-    argType = type(params)
-    if argType ~= "table" then
-        error(errorHead.."Argument 'params' is of type '"..argType.."' with value '"..tostring(params).."' instead of 'table'. This argument is optional but if set, it must be a table.")
+        if scene == nil then
+            error(errorHead.."Argument 'scene' : Scene asset with name '"..sceneName.."' was not found.")
+        end
     end
     
-    --
     local go = CraftStudio.Instantiate(goName, sceneName)
 
-    go = ApplyParamsToGameObject(go, params, errorHead) 
-
-    return go
+    return ApplyParamsToGameObject(go, params, errorHead)
 end
 
 
@@ -340,8 +343,6 @@ function GameObject:GetChildrenRecursive(includeSelf)
         error(errorHead.."Argument 'includeSelf' is of type '"..argType.."' instead of 'boolean'.")
     end
 
-    -- 
-
     local allChildren = {}
 
     if includeSelf == true then
@@ -381,8 +382,6 @@ function GameObject:BroadcastMessage(methodName, data)
     if data ~= nil and argType ~= "table" then
         error(errorHead.."Argument 'data' is of type '"..argType.."' instead of 'table'. If set, must be a table.")
     end
-
-    --
 
     local allChildren = table.join({self}, self:GetChildrenRecursive())
 

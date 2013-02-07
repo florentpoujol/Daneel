@@ -200,7 +200,7 @@ end
 -- Join two or more tables into one.
 -- Integer keys are not overrided.
 -- Dependent of math.isinterger().
--- @param ... [optionnal] (table) At least two tables to join together. Non-table arguments are ignored.
+-- @param ... (table) At least two tables to join together. Non-table arguments are ignored.
 -- @return (table) The new table.
 function table.join(...)
     if arg == nil then 

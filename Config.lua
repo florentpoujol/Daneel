@@ -11,23 +11,24 @@ Daneel.config = table.new({
 
     
 
-    componentTypes = {
+    componentTypes = table.new({
         "ScriptedBehavior",
         "ModelRenderer",
         "MapRenderer",
         "Camera",
         "Transform"
-    },
+    }),
 
-    componentObjects = {
+    componentObjects = table.new({
         ScriptedBehavior,
         ModelRenderer,
         MapRenderer,
         Camera,
         Transform,
-    },
+    }),
 
-    assetTypes = {
+
+    assetTypes = table.new({
         "Script",
         "Model",
         "ModelAnimation",
@@ -36,9 +37,9 @@ Daneel.config = table.new({
         "Scene",
         "Sound",
         "Document"
-    },
+    }),
 
-    assetObjects = {
+    assetObjects = table.new({
         Script,
         Model,
         ModelAnimation,
@@ -46,15 +47,35 @@ Daneel.config = table.new({
         TileSet,
         Sound,
         Scene,
-    },
+    }),
 
     -- Correspondance between the component type (the keys) and the asset type (the values)
-    componentTypeToAssetType = {
+    componentTypeToAssetType = table.new({
         Script = "Script",
         ScriptedBehavior = "Script",
         ModelRenderer = "Model",
         MapRenderer = "Map",
-    }
+    }),
+
+
+    craftStudioCoreTypes = table.new({
+        "GameObject",
+        "Vector3",
+        "Ray",
+        "Plane",
+        "Quaternion",
+    }),
+
+    craftStudioCoreObjects = table.new({
+        GameObject,
+        Vector3,
+        Quaternion,
+        Plane,
+        Ray,
+    }),
+
+
+    
 })
 
 

@@ -15,12 +15,12 @@ function Asset.Get(assetName, assetType, g)
 
     local argType = type(assetName)
     if argType ~= "string" then
-        error(errorHead.."Argument 'assetName' is of type '" .. argType .. "' instead of 'string'. Must the fully-qualified asset name.")
+        error(errorHead.."Argument 'assetName' is of type '" .. argType .. "' with value '"..tostring(assetName).."' instead of 'string'. Must the fully-qualified asset name.")
     end
 
     argType = type(assetType)
     if assetType ~= nil and argType ~= "string" then
-        error(errorHead.."Argument 'assetType' is of type '" .. argType .. "' instead of 'string'. Must the asset type.")
+        error(errorHead.."Argument 'assetType' is of type '" .. argType .. "' with value '"..tostring(assetType).."' instead of 'string'. Must the asset type.")
     end
 
     return CraftStudio.FindAsset(assetName, assetType)
@@ -37,7 +37,7 @@ function Asset.GetScript(assetName, g)
 
     local argType = type(assetName)
     if argType ~= "string" then
-        error(errorHead.."Argument 'assetName' is of type '" .. argType .. "' instead of 'string'. Must the fully-qualified script name.")
+        error(errorHead.."Argument 'assetName' is of type '" .. argType .. "' with value '"..tostring(assetName).."' instead of 'string'. Must the fully-qualified script name.")
     end
 
     return Asset.Get(assetName, "Script")
@@ -54,7 +54,7 @@ function Asset.GetModel(assetName, g)
 
     local argType = type(assetName)
     if argType ~= "string" then
-        error(errorHead.."Argument 'assetName' is of type '" .. argType .. "' instead of 'string'. Must the fully-qualified model name.")
+        error(errorHead.."Argument 'assetName' is of type '" .. argType .. "' with value '"..tostring(assetName).."' instead of 'string'. Must the fully-qualified model name.")
     end
 
     return Asset.Get(assetName, "Model")
@@ -71,7 +71,7 @@ function Asset.GetModelAnimation(assetName, g)
 
     local argType = type(assetName)
     if argType ~= "string" then
-        error(errorHead.."Argument 'assetName' is of type '" .. argType .. "' instead of 'string'. Must the fully-qualified ModelAnimation name.")
+        error(errorHead.."Argument 'assetName' is of type '" .. argType .. "' with value '"..tostring(assetName).."' instead of 'string'. Must the fully-qualified ModelAnimation name.")
     end
 
     return Asset.Get(assetName, "ModelAnimation")
@@ -88,7 +88,7 @@ function Asset.GetMap(assetName, g)
 
     local argType = type(assetName)
     if argType ~= "string" then
-        error(errorHead.."Argument 'assetName' is of type '" .. argType .. "' instead of 'string'. Must the fully-qualified map name.")
+        error(errorHead.."Argument 'assetName' is of type '" .. argType .. "' with value '"..tostring(assetName).."' instead of 'string'. Must the fully-qualified map name.")
     end
 
     return Asset.Get(assetName, "Map")
@@ -105,7 +105,7 @@ function Asset.GetTileSet(assetName, g)
 
     local argType = type(assetName)
     if argType ~= "string" then
-        error(errorHead.."Argument 'assetName' is of type '" .. argType .. "' instead of 'string'. Must the fully-qualified TileSet name.")
+        error(errorHead.."Argument 'assetName' is of type '" .. argType .. "' with value '"..tostring(assetName).."' instead of 'string'. Must the fully-qualified TileSet name.")
     end
 
     return Asset.Get(assetName, "TileSet")
@@ -122,7 +122,7 @@ function Asset.GetScene(assetName, g)
 
     local argType = type(assetName)
     if argType ~= "string" then
-        error(errorHead.."Argument 'assetName' is of type '" .. argType .. "' instead of 'string'. Must the fully-qualified scene name.")
+        error(errorHead.."Argument 'assetName' is of type '" .. argType .. "' with value '"..tostring(assetName).."' instead of 'string'. Must the fully-qualified scene name.")
     end
 
     return Asset.Get(assetName, "Scene")
@@ -139,7 +139,7 @@ function Asset.GetSound(assetName, g)
 
     local argType = type(assetName)
     if argType ~= "string" then
-        error(errorHead.."Argument 'assetName' is of type '" .. argType .. "' instead of 'string'. Must the fully-qualified Sound name.")
+        error(errorHead.."Argument 'assetName' is of type '" .. argType .. "' with value '"..tostring(assetName).."' instead of 'string'. Must the fully-qualified Sound name.")
     end
 
     return Asset.Get(assetName, "Sound")
@@ -156,7 +156,7 @@ function Asset.GetDocument(assetName, g)
 
     local argType = type(assetName)
     if argType ~= "string" then
-        error(errorHead.."Argument 'assetName' is of type '" .. argType .. "' instead of 'string'. Must the fully-qualified Document name.")
+        error(errorHead.."Argument 'assetName' is of type '" .. argType .. "' with value '"..tostring(assetName).."' instead of 'string'. Must the fully-qualified Document name.")
     end
 
     return Asset.Get(assetName, "Document")
@@ -180,12 +180,12 @@ function Asset.IsOfType(asset, assetType, g)
 
     local argType = type(asset)
     if argType ~= "table" then
-        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' instead of 'table'. Must the asset.")
+        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' with value '"..tostring(asset).."' instead of 'table'. Must the asset.")
     end
 
     argType = type(assetType)
     if argType ~= "string" then
-        error(errorHead.."Argument 'assetType' is of type '" .. argType .. "' instead of 'string'. Must the asset type.")
+        error(errorHead.."Argument 'assetType' is of type '" .. argType .. "' with value '"..tostring(assetType).."' instead of 'string'. Must the asset type.")
     end
 
     --
@@ -216,7 +216,7 @@ function Asset.IsScript(asset, g)
 
     local argType = type(asset)
     if argType ~= "table" then
-        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' instead of 'table'. Must the asset.")
+        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' with value '"..tostring(asset).."' instead of 'table'. Must the asset.")
     end
 
     return Asset.IsOfType(asset, "Script")
@@ -234,7 +234,7 @@ function Asset.IsModel(asset, g)
 
     local argType = type(asset)
     if argType ~= "table" then
-        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' instead of 'table'. Must the asset.")
+        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' with value '"..tostring(asset).."' instead of 'table'. Must the asset.")
     end
 
     return Asset.IsOfType(asset, "Model")
@@ -252,7 +252,7 @@ function Asset.IsModelAnimation(asset, g)
 
     local argType = type(asset)
     if argType ~= "table" then
-        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' instead of 'table'. Must the asset.")
+        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' with value '"..tostring(asset).."' instead of 'table'. Must the asset.")
     end
 
     return Asset.IsOfType(asset, "ModelAnimation")
@@ -270,7 +270,7 @@ function Asset.IsMap(asset, g)
 
     local argType = type(asset)
     if argType ~= "table" then
-        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' instead of 'table'. Must the asset.")
+        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' with value '"..tostring(asset).."' instead of 'table'. Must the asset.")
     end
 
     return Asset.IsOfType(asset, "Map")
@@ -288,7 +288,7 @@ function Asset.IsTileSet(asset, g)
 
     local argType = type(asset)
     if argType ~= "table" then
-        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' instead of 'table'. Must the asset.")
+        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' with value '"..tostring(asset).."' instead of 'table'. Must the asset.")
     end
 
     return Asset.IsOfType(asset, "TileSet")
@@ -306,7 +306,7 @@ function Asset.IsScene(asset, g)
 
     local argType = type(asset)
     if argType ~= "table" then
-        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' instead of 'table'. Must the asset.")
+        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' with value '"..tostring(asset).."' instead of 'table'. Must the asset.")
     end
 
     return Asset.IsOfType(asset, "Scene")
@@ -324,7 +324,7 @@ function Asset.IsSound(asset, g)
 
     local argType = type(asset)
     if argType ~= "table" then
-        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' instead of 'table'. Must the asset.")
+        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' with value '"..tostring(asset).."' instead of 'table'. Must the asset.")
     end
 
     return Asset.IsOfType(asset, "Sound")
@@ -342,7 +342,7 @@ function Asset.IsDocument(asset, g)
 
     local argType = type(asset)
     if argType ~= "table" then
-        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' instead of 'table'. Must the asset.")
+        error(errorHead.."Argument 'asset' is of type '" .. argType .. "' with value '"..tostring(asset).."' instead of 'table'. Must the asset.")
     end
 
     return Asset.IsOfType(asset, "Document")

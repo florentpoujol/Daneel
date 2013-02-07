@@ -2,6 +2,7 @@ Daneel = {}
 
 Daneel.core = {}
 
+
 -- Make sure that the case of the provided name is correct.
 -- by checking against value in the provided set.
 -- @param name (string) The name to check the case.
@@ -68,4 +69,36 @@ function Daneel.core.IsScript(name)
     end
 
     return false
+end
+
+
+-- 
+function Daneel.core.GetAllCraftStudioTypesAndObjects()
+    local t = table.new()
+    t = t:join(table.combine(Daneel.config.assetTypes, Daneel.config.assetObjects))
+    t = t:join(table.combine(Daneel.config.craftStudioCoreTypes, Daneel.config.craftStudioCoreObjects))
+    
+    return t
+end
+
+-- Return the craftStudio Type of the provided argument
+-- @param The argument to get the type
+function cstype(arg)
+    argType = type(arg)
+
+    if argType == "table" then
+        local mt = getmetatable(arg)
+
+        if mt ~= nil then
+            local csto = GetAllCraftStudioTypesAndObjects()
+            
+            for csType, csObject in pairs(csto) do
+                if mt == csObject then
+                    return csType
+                end
+            end
+        end
+    end
+
+    return argType
 end
