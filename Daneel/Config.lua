@@ -4,10 +4,11 @@
 Daneel.config = table.new({
 
     hudCameraName = "HUD Camera",
+    hudCameraGo = nil, -- set in DaneelBehavior.Start()
     hudCameraOrthographicScale = "10",
-    guiTextMapName = "Daneel/GUITextMap",
+    guiLabelMapName = "Daneel/GUILabelMap",
 
-    charactersModelPath = "Daneel/Characters",
+    --charactersModelPath = "Daneel/Characters",
 
     
 
@@ -75,11 +76,11 @@ Daneel.config = table.new({
     
 
     daneelTypes = table.new({
-        "GUIText",
+        "GUILabel",
     }),
 
     daneelObjects = table.new({
-        GUIText,
+        GUILabel,
     }),
     
 })

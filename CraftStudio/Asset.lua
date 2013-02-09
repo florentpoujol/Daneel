@@ -191,7 +191,7 @@ function Asset.IsOfType(asset, assetType, g)
     --
 
     local assetTypes = Daneel.config.assetTypes
-    assetType = Daneel.core.CaseProof(assetType, assetTypes)
+    assetType = Daneel.Utilities.CaseProof(assetType, assetTypes)
 
     if not table.containsvalue(Daneel.config.assetTypes, assetType) then
         error(errorHead.."Argument 'assetType' ["..assetType.."] is not one of the valid asset types : "..table.concat(assetTypes, ", "))

@@ -1,5 +1,38 @@
 
--- DEPENDENCIES : table.join(), table.containsvalue()
+--GameObjectMetatable = { __tostring = function() return "GameObject object" end }
+
+
+function GameObject.__tostring()
+    return "GameObject instance" 
+end
+
+
+function GameObject.__index(gameObject, key) 
+    local funcName = "Get"..key:ucfirst()
+    
+    if GameObject[funcName] ~= nil then
+        return GameObject[funcName](t)
+    elseif GameObject[key] ~= nil then
+        return GameObject[key] -- have to return the function here, not the function return value !
+    end
+    
+    return rawget(gameObject, key)
+end
+
+
+function GameObject.__newindex(t, key, value)
+    local funcName = "Set"..key:ucfirst()
+    -- ie: variable "name" call "SetName"
+    
+    if GameObject[funcName] ~= nil then
+        return GameObject[funcName](t, value)
+    end
+    
+    rawset(t, key, value)
+end
+
+
+
 local gameObjectCallSyntaxError = "Function not called from a gameObject. Your must use a colon ( : ) between the gameObject and the method name. Ie : self.gameObject:"
 
 
@@ -251,6 +284,11 @@ function GameObject.Instantiate(goName, scene, params, g)
 end
 
 
+
+----------------------------------------------------------------------------------
+-- Miscellaneous
+
+
 -- Alias of CraftStudio.FindGameObject(name).
 -- Get the first gameObject with the specified name.
 -- @param name (string) The gameObject name.
@@ -389,7 +427,10 @@ function GameObject:BroadcastMessage(methodName, data)
 end
 
 
+
+----------------------------------------------------------------------------------
 -- Add components
+
 
 -- Add a component to the gameObject and optionaly initialize it.
 -- @param componentType (string) The Component type.
@@ -407,7 +448,7 @@ function GameObject:AddComponent(componentType, params)
         error(errorHead.."Argument 'componentType' is of type '"..argType.."' with value '"..tostring(componentType).."' instead of 'string'. Must the component type.")
     end
 
-    componentType = Daneel.core.CaseProof(componentType, Daneel.config.componentTypes)
+    componentType = Daneel.Utilities.CaseProof(componentType, Daneel.config.componentTypes)
 
     if not table.containsvalue(Daneel.config.componentTypes, componentType) then
         error(errorHead.."Argument 'componentType' with value '"..componentType.."' is not one of the valid component types : "..table.concat(componentType, ", "))
@@ -687,7 +728,10 @@ function GameObject:AddCamera(params)
 end
 
 
+
+----------------------------------------------------------------------------------
 -- Get components
+
 
 -- Get the specified ScriptedBehavior instance attached to the gameObject.
 -- @param scriptNameOrAsset (string or Script) The script name or asset.
@@ -716,7 +760,7 @@ function GameObject:GetScriptedBehaviorByName(scriptNameOrAsset)
 end
 
 -- Get the first ModelRenderer component attached to the gameObject.
--- @return (ModelRenderer) The ModelRenderer component.
+-- @return (ModelRenderer) The ModelRenderer component or nil if none is found.
 function GameObject:GetModelRenderer()
     local errorHead = "GameObject:GetModelRenderer() : "
 
@@ -728,7 +772,7 @@ function GameObject:GetModelRenderer()
 end
 
 -- Get the first MapRenderer component attached to the gameObject.
--- @return (MapRenderer) The MapRenderer component.
+-- @return (MapRenderer) The MapRenderer component or nil if none is found.
 function GameObject:GetMapRenderer()
     local errorHead = "GameObject:GetMapRenderer() : "
 
@@ -740,7 +784,7 @@ function GameObject:GetMapRenderer()
 end
 
 -- Get the first Camera component attached to the gameObject.
--- @return (Camera) The Camera component.
+-- @return (Camera) The Camera component or nil if none is found.
 function GameObject:GetCamera()
     local errorHead = "GameObject:GetCamera() : "
 
@@ -752,7 +796,7 @@ function GameObject:GetCamera()
 end
 
 -- Get the Transform component attached to the gameObject.
--- @return (Transform) The Transform component.
+-- @return (Transform) The Transform component or nil if none is found.
 function GameObject:GetTransform()
     local errorHead = "GameObject:GetTransform() : "
 
@@ -764,7 +808,88 @@ function GameObject:GetTransform()
 end
 
 
--- Destroy things
+
+----------------------------------------------------------------------------------
+-- Has component
+
+
+-- Check if the gameObject has the specified component.
+-- @param componentType (string) The Component type.
+-- @return (boolean) True if the gameObject has the component, false otherwise
+function GameObject:HasComponent(componentType)
+    local errorHead = "GameObject:HasComponent(componentType) : "
+
+    if type(self) ~= "GameObject" then 
+        error(errorHead..gameObjectCallSyntaxError.."HasComponent()")
+    end
+
+    local argType = type(componentType)
+    if argType ~= "string" then
+        error(errorHead.."Argument 'componentType' is of type '"..argType.."' with value '"..tostring(componentType).."' instead of 'string'. Must the component type.")
+    end
+
+    componentType = Daneel.Utilities.CaseProof(componentType, Daneel.config.componentTypes)
+
+    if not componentType:isOneOf(Daneel.config.componentTypes) then
+        error(errorHead.."Argument 'componentType' with value '"..componentType.."' is not one of the valid component types : "..table.concat(componentType, ", "))
+    end
+
+    return (self:GetComponent(componentType) ~= nil)
+end
+
+-- Check if the gameObject has a ScriptedBehavior.
+-- @return (boolean) True if the gameObject has a ScriptedBehavior, false otherwise
+function GameObject:HasScriptedBehavior()
+    local errorHead = "GameObject:HasScriptedBehavior() : "
+
+    if type(self) ~= "GameObject" then 
+        error(errorHead..gameObjectCallSyntaxError.."HasScriptedBehavior()")
+    end
+
+    return (self:GetComponent("ScriptedBehavior") ~= nil)
+end
+
+-- Check if the gameObject has a ModelRenderer.
+-- @return (boolean) True if the gameObject has a ModelRenderer, false otherwise
+function GameObject:HasModelRenderer()
+    local errorHead = "GameObject:HasModelRenderer() : "
+
+    if type(self) ~= "GameObject" then 
+        error(errorHead..gameObjectCallSyntaxError.."HasModelRenderer()")
+    end
+
+    return (self:GetComponent("ModelRenderer") ~= nil)
+end
+
+-- Check if the gameObject has a MapRenderer.
+-- @return (boolean) True if the gameObject has a MapRenderer, false otherwise
+function GameObject:HasMapRenderer()
+    local errorHead = "GameObject:HasMapRenderer() : "
+
+    if type(self) ~= "GameObject" then 
+        error(errorHead..gameObjectCallSyntaxError.."HasMapRenderer()")
+    end
+
+    return (self:GetComponent("MapRenderer") ~= nil)
+end
+
+-- Check if the gameObject has a Camera.
+-- @return (boolean) True if the gameObject has a Camera, false otherwise
+function GameObject:HasCamera()
+    local errorHead = "GameObject:HasCamera() : "
+
+    if type(self) ~= "GameObject" then 
+        error(errorHead..gameObjectCallSyntaxError.."HasCamera()")
+    end
+
+    return (self:GetComponent("Camera") ~= nil)
+end
+
+
+
+----------------------------------------------------------------------------------
+-- Destroy gameObjects and components
+
 
 -- Destroy the gameObject
 function GameObject:Destroy()
@@ -833,7 +958,7 @@ function GameObject:DestroyComponent(input, strict)
 
     -- string (component type or script name)
     elseif argType == "string" then
-        input = Daneel.core.CaseProof(input, Daneel.config.componentTypes)
+        input = Daneel.Utilities.CaseProof(input, Daneel.config.componentTypes)
 
         -- component type
         if table.containsvalue(Daneel.config.componentTypes, input) then

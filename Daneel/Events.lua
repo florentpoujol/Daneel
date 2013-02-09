@@ -1,17 +1,17 @@
 
-Event = { events = {} }
+Daneel.Events = { events = {} }
 
 -- Make the specified function listen to the specified event.
 -- The function will be called whenever the specified event will be fired.
 -- @param eventName (string) The event name.
 -- @param _function (function) The function, not the function name.
-function Event.Listen(eventName, _function, g) -- g for garbage
-    if eventName == Event then -- when users call the function with a colon, script = EventName, eventName = script, ...
+function Daneel.Events.Listen(eventName, _function, g) -- g for garbage
+    if eventName == Daneel.Events then 
         eventName = func
         func = g
     end
 
-    local errorHead = "Event.Listen(eventName, function) : "
+    local errorHead = "Daneel.Events.Listen(eventName, function) : "
     
     local varType = type(eventName)
     if eventName == nil or type(eventName) ~= "string" then
@@ -23,24 +23,24 @@ function Event.Listen(eventName, _function, g) -- g for garbage
         error(errorHead .. "Argument 'function' is of type '" .. varType .. "' instead of 'function'. Must be the function, not the function name.")
     end
 
-    if Event.events[eventName] == nil then
-        Event.events[eventName] = {}
+    if Daneel.Events.events[eventName] == nil then
+        Daneel.Events.events[eventName] = {}
     end
 
-    table.insert(Event.events[eventName], _function)
+    table.insert(Daneel.Events.events[eventName], _function)
 end
 -- TODO check if a global function, registered several times for the same event is called several times
 
 -- Make the specified function to stop listen to the specified event.
 -- @param eventName (string) The event name.
 -- @param _function (function) The function, not the function name.
-function Event.StopListen(eventName, _function, g)
-    if eventName == Event then
+function Daneel.Events.StopListen(eventName, _function, g)
+    if eventName == Daneel.Events then
         eventName = func
         func = g
     end
 
-    local errorHead = "Event.StopListen(eventName, function) : "
+    local errorHead = "Daneel.Events.StopListen(eventName, function) : "
     
     local varType = type(eventName)
     if eventName == nil or type(eventName) ~= "string" then
@@ -54,19 +54,19 @@ function Event.StopListen(eventName, _function, g)
 
     --
 
-    for i, storedFunc in ipairs(Event.events[eventName]) do
+    for i, storedFunc in ipairs(Daneel.Events.events[eventName]) do
         if func == storedFunc then
-            table.remove(Event.events[eventName], i)
+            table.remove(Daneel.Events.events[eventName], i)
         end
     end
 end
 
 -- Fire the specified event transmitting along all subsequent parameters to 'eventName' if some exists. 
--- All functions that listen to this event with Event.Listen() will be called and receive all parameters.
+-- All functions that listen to this event with Daneel.Events.Listen() will be called and receive all parameters.
 -- @param eventName (string) The event name.
 -- @param ... [optionnal] a list of parameters to pass along.
-function Event.Fire(eventName, ...)
-    if eventName == Event then
+function Daneel.Events.Fire(eventName, ...)
+    if eventName == Daneel.Events then
         if arg ~= nill then
             eventName = arg[1]
             table.remove(arg, 1)
@@ -77,12 +77,12 @@ function Event.Fire(eventName, ...)
     
     local varType = type(eventName)
     if eventName == nil or type(eventName) ~= "string" then
-        error("Event.Fire(eventName[, parameters]) : Argument 'eventName' is of type '" .. varType .. "' instead of 'string'. Must be the event name.")
+        error("Daneel.Events.Fire(eventName[, parameters]) : Argument 'eventName' is of type '" .. varType .. "' instead of 'string'. Must be the event name.")
     end
     
-    if Event.events[eventName] == nil then return end
+    if Daneel.Events.events[eventName] == nil then return end
     
-    for i, func in ipairs(Event.events[eventName]) do
+    for i, func in ipairs(Daneel.Events.events[eventName]) do
         func(unpack(arg))
     end
 end

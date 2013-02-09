@@ -1,16 +1,31 @@
 
--- DEPENDENCIES : math.isinteger() in table.join()
+
+-- Dynamic properties
+
+-- Built-in table have no metatable
+-- The new() function add 'table' as the metatable
+
+function table.__index(t, key) 
+    if key == "length" then
+        return table.length(t)
+    end
+
+    return rawget(table, key)
+end
+
+-- Allow tbale1 + table2
+function table.__add(t1, t2)
+    return table.join(t1, t2)
+end
+
 
 
 -- Constructor for tables that allows to use the functions in the table table on the table copies.
 -- @param ... [optionnal] (mixed) A single table, or 2 or more values to fill the new table with.
 -- @return (table) The new table.
 function table.new(...)
-    local table_mt = {}
-    table_mt.__index = table
-
     if arg == nil then 
-        return setmetatable({}, table_mt)
+        return setmetatable({}, table)
     end
 
     arg.n = nil
@@ -22,7 +37,7 @@ function table.new(...)
         end
     end
 
-    return setmetatable(newTable, table_mt)
+    return setmetatable(newTable, table)
 end
 
 -- Return a copy of the provided table.
@@ -31,7 +46,7 @@ end
 function table.copy(t)    
     local argType = type(t)
     if argType ~= "table" then
-        error("table.copy(table) : Argument 'table' is of type '"..argType.."' with value '"..tostring(t).."' instead of ttablet.")
+        error("table.copy(table) : Argument 'table' is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'.")
     end
 
     return table.new(t)

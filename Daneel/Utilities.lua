@@ -1,6 +1,6 @@
 Daneel = {}
 
-Daneel.core = {}
+Daneel.Utilities = {}
 
 
 -- Make sure that the case of the provided name is correct.
@@ -8,8 +8,8 @@ Daneel.core = {}
 -- @param name (string) The name to check the case.
 -- @param set (table) A table of value to check the name against.
 -- @param scriptProof [optionnal] (boolean=false) Check that Script is converted to ScriptedBehavior.
-function Daneel.core.CaseProof(name, set, scriptProof)
-    local errorHead = "Daneel.core.CaseProof(name, set, scriptProof) : "
+function Daneel.Utilities.CaseProof(name, set, scriptProof)
+    local errorHead = "Daneel.Utilities.CaseProof(name, set, scriptProof) : "
     
     local argType = type(name)
     if argType ~= "string" then
@@ -33,7 +33,7 @@ function Daneel.core.CaseProof(name, set, scriptProof)
     end
     
     if scriptProof then
-        name = Daneel.core.ScriptProof(name)
+        name = Daneel.Utilities.ScriptProof(name)
     end
 
     return name
@@ -42,10 +42,10 @@ end
 -- If the provided name is 'Script', returns 'ScriptedBehavior'.
 -- @param name (string) The name to check.
 -- @return (string) The new name.
-function Daneel.core.ScriptProof(name)
+function Daneel.Utilities.ScriptProof(name)
     local argType = type(name)
     if argType ~= "string" then
-        error("Daneel.core.ScriptProof(name) : Argument 'name' is of type '"..argType.."' instead of 'string'.")
+        error("Daneel.Utilities.ScriptProof(name) : Argument 'name' is of type '"..argType.."' instead of 'string'.")
     end
 
     if name:lower() == "script" then
@@ -58,10 +58,10 @@ end
 -- Tell wether the provided name is 'script' or 'scriptedbehavior', case-insensitive.
 -- @param name (string) The name to check.
 -- @return (boolean) True if the provided name is either 'script' or 'scriptedbehavior', false otherwise.
-function Daneel.core.IsScript(name)
+function Daneel.Utilities.IsScript(name)
     local argType = type(name)
     if argType ~= "string" then
-        error("Daneel.core.IsScript(name) : Argument 'name' is of type '"..argType.."' instead of 'string'.")
+        error("Daneel.Utilities.IsScript(name) : Argument 'name' is of type '"..argType.."' instead of 'string'.")
     end
 
     if name:lower() == "script" or name:lower() == "scriptedbehavior" then
@@ -73,7 +73,7 @@ end
 
 
 -- 
-function Daneel.core.GetAllCraftStudioTypesAndObjects()
+function Daneel.Utilities.GetAllCraftStudioTypesAndObjects()
     local t = table.new()
     t = t:join(table.combine(Daneel.config.assetTypes, Daneel.config.assetObjects))
     t = t:join(table.combine(Daneel.config.craftStudioCoreTypes, Daneel.config.craftStudioCoreObjects))
