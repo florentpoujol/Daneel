@@ -1,4 +1,5 @@
-Daneel = {}
+
+if Daneel == nil then Daneel = {} end
 
 Daneel.Utilities = {}
 
@@ -74,31 +75,45 @@ end
 
 -- 
 function Daneel.Utilities.GetAllCraftStudioTypesAndObjects()
-    local t = table.new()
+    local t = Daneel.config.allCraftStudioTypesAndObjects
+
+    if t ~= nil then
+        return t
+    end
+
+    t = table.new()
     t = t:join(table.combine(Daneel.config.assetTypes, Daneel.config.assetObjects))
     t = t:join(table.combine(Daneel.config.craftStudioCoreTypes, Daneel.config.craftStudioCoreObjects))
     t = t:join(table.combine(Daneel.config.daneelTypes, Daneel.config.daneelObjects))
+
+    Daneel.config.allCraftStudioTypesAndObjects = t
+
     return t
 end
 
 -- Return the craftStudio Type of the provided argument
 -- @param The argument to get the type
-local oldTypeFunction = type
-
-function type(arg)
-    argType = oldTypeFunction(arg)
+function cstype(arg)
+    argType = type(arg)
 
     if argType == "table" then
         local mt = getmetatable(arg)
 
         if mt ~= nil then
-            local csto = GetAllCraftStudioTypesAndObjects()
+            local csto = Daneel.Utilities.GetAllCraftStudioTypesAndObjects()
 
             for csType, csObject in pairs(csto) do
                 if mt == csObject then
                     return csType
                 end
             end
+        end
+
+        -- Assets don't have metatable
+        local assetType = Asset.GetType(arg)
+
+        if assetType ~= nil then
+            return assetType
         end
     end
 

@@ -1,4 +1,6 @@
 
+if Daneel == nil then Daneel = {} end
+
 Daneel.Events = { events = {} }
 
 -- Make the specified function listen to the specified event.
@@ -14,7 +16,7 @@ function Daneel.Events.Listen(eventName, _function, g) -- g for garbage
     local errorHead = "Daneel.Events.Listen(eventName, function) : "
     
     local varType = type(eventName)
-    if eventName == nil or type(eventName) ~= "string" then
+    if eventName == nil or varType ~= "string" then
         error(errorHead .. "Argument 'eventName' is of type '" .. varType .. "' instead of 'string'. Must be the event name.")
     end
 

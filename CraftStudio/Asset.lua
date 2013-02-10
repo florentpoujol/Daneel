@@ -1,5 +1,7 @@
 
 Asset = {}
+Asset.__index = Asset
+
 
 -- Alias of CraftStudio.FindAsset(assetName, assetType)
 -- Get the asset of the specified name and type.
@@ -23,7 +25,13 @@ function Asset.Get(assetName, assetType, g)
         error(errorHead.."Argument 'assetType' is of type '" .. argType .. "' with value '"..tostring(assetType).."' instead of 'string'. Must the asset type.")
     end
 
-    return CraftStudio.FindAsset(assetName, assetType)
+    local asset = CraftStudio.FindAsset(assetName, assetType)
+
+    if asset == nil then
+        return nil
+    end
+
+    return setmetatable(asset, Asset)
 end
 
 -- Get the script asset of the specified name.

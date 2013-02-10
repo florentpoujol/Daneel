@@ -227,7 +227,7 @@ function table.join(...)
     for i, t in ipairs(arg) do
         if type(t) == "table" then
             for key, value in pairs(t) do
-                if math.isinterger(key) then
+                if math.isinteger(key) then
                     table.insert(fullTable, value)
                 else
                     fullTable[key] = value

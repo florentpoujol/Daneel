@@ -15,7 +15,7 @@ function Ray.RegisterCastableGameObject(gameObject, g)
 
     local errorHead = "Ray.RegisterCastableGameObject(gameObject) : "
 
-    local argType = type(GameObject)
+    local argType = cstype(GameObject)
     if argType ~= "GameObject" then
         error(errorHead.."Argument 'gameObject' is of type '"..argType.."' with value '"..tostring(gameObject).."' instead of 'GameObject'.")
     end
@@ -29,7 +29,7 @@ end
 function Ray:Cast()
     local errorHead = "Ray:Cast() : "
 
-    local argType = type(self)
+    local argType = cstype(self)
     if argType ~= "Ray" then
         error(errorHead..rayCallSyntaxError.."Cast()")
     end
@@ -53,7 +53,7 @@ end
 function Ray:IntersectsGameObject(gameObject)
     local errorHead = "Ray:IntersectsGameObject(gameObject) : "
 
-    local argType = type(self)
+    local argType = cstype(self)
     if argType ~= "Ray" then
         error(errorHead..rayCallSyntaxError.."Cast()")
     end

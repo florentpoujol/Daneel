@@ -28,7 +28,7 @@ function string.totable(s, g)
     end
 
     local strLen = s:len()
-    local t = {}
+    local t = table.new()
 
     for i = 1, strLen do
         table.insert(t, s:sub(i, i))
@@ -87,7 +87,7 @@ function string.ucfirst(s, g)
     end
 
     t = s:totable()
-    t[0] = t[0]:upper()
+    t[1] = t[1]:upper()
     return t:concat()
 end
 

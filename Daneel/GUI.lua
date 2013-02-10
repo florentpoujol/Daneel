@@ -1,4 +1,6 @@
 
+if Daneel == nil then Daneel = {} end
+
 Daneel.GUI = {}
 
 
@@ -103,7 +105,7 @@ end
 function GUILabel:Destroy()
     local errorHead = "GUILabel:Destroy() : "
 
-    if type(self) ~= "GUILabel" then
+    if cstype(self) ~= "GUILabel" then
         error(errorHead..guiLabelCallSyntaxError.."Destroy()")
     end
 
@@ -114,7 +116,7 @@ end
 function GUILabel:Refresh()
     local errorHead = "GUILabel:Refresh() : "
 
-    if type(self) ~= "GUILabel" then
+    if cstype(self) ~= "GUILabel" then
         error(errorHead..guiLabelCallSyntaxError.."SetText()")
     end
 
@@ -130,7 +132,7 @@ end
 function GUILabel:SetPosition(x, y)
     local errorHead = "GUILabel:SetPosition([position]) : "
 
-    if type(self) ~= "GUILabel" then
+    if cstype(self) ~= "GUILabel" then
         error(errorHead..guiLabelCallSyntaxError.."SetPosition()")
     end
     
@@ -158,7 +160,7 @@ end
 function GUILabel:SetText(text)
     local errorHead = "GUILabel:SetText([text]) : "
 
-    if type(self) ~= "GUILabel" then
+    if cstype(self) ~= "GUILabel" then
         error(errorHead..guiLabelCallSyntaxError.."SetText()")
     end
 
@@ -180,7 +182,7 @@ end
 function GUILabel:SetScale(scale)
     local errorHead = "GUILabel:SetScale(scale) : "
 
-    if type(self) ~= "GUILabel" then
+    if cstype(self) ~= "GUILabel" then
         error(errorHead..guiLabelCallSyntaxError.."SetScale()")
     end
 
@@ -188,7 +190,7 @@ function GUILabel:SetScale(scale)
         self.scale = scale
     end
 
-    argType = type(self.scale)
+    argType = cstype(self.scale)
     if argType ~= "number" and argType ~= "Vector3" then
         error(errorHead.."Argument 'scale' is of type '"..argType.."' with value '"..tostring(scale).."' instead of 'number' or 'Vector3'.")
     end

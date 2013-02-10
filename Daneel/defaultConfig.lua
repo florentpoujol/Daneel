@@ -1,7 +1,7 @@
 
+if Daneel == nil then Daneel = {} end
 
-
-Daneel.config = table.new({
+Daneel.defaultConfig = table.new({
 
     hudCameraName = "HUD Camera",
     hudCameraGo = nil, -- set in DaneelBehavior.Start()
@@ -48,6 +48,7 @@ Daneel.config = table.new({
         TileSet,
         Sound,
         Scene,
+        Document
     }),
 
     -- Correspondance between the component type (the keys) and the asset type (the values)
