@@ -1,9 +1,10 @@
 
 
-function GameObject.__tostring()
-    return "GameObject instance" 
+function GameObject.__tostring(go)
+    return "GameObject instance '"..go:GetName().."'"
 end
 
+-- Dynamic properties for Getters and Setters
 
 function GameObject.__index(go, key) 
     local funcName = "Get"..key:ucfirst()
@@ -29,6 +30,9 @@ function GameObject.__newindex(go, key, value)
     rawset(go, key, value)
 end
 
+
+
+----------------------------------------------------------------------------------
 
 
 local gameObjectCallSyntaxError = "Function not called from a gameObject. Your must use a colon ( : ) between the gameObject and the method name. Ie : self.gameObject:"
@@ -68,7 +72,7 @@ local function ApplyParamsToGameObject(go, params, errorHead)
 
         if parentType == "GameObject" then
             argType = type(params.parentKeepLocalTransform)
-            if argType ~= nil and argType ~= "boolean" then
+            if argType ~= "nil" and argType ~= "boolean" then
                 error(errorHead.."Argument 'params.parentKeepLocalTransform' is of type '"..argType.."' with value '"..tostring(params.parentKeepLocalTransform).."' instead of 'boolean'.")
             end
 
@@ -305,34 +309,45 @@ function GameObject.Get(name, g)
 end
 
 
--- Set the gameOject's parent by name. 
--- Optionnaly carry over the gameObject's local transform instead of the global one.
--- @param name (string) The parent name.
--- @param keepLocalTransform [optional default=false] (boolean) Carry over the game object's local transform instead of the global one.
-function GameObject:SetParentByName(name, keepLocalTransform)
-    local errorHead = "GameObject:SetParentByName(name[, keepLocalTransform]) : "
+local OldSetParent = GameObject.SetParent
 
-    if cstype(self) ~= "GameObject" then
-        error(errorHead..gameObjectCallSyntaxError.."SetParentByName()")
+-- Set the gameOject's parent. 
+-- Optionnaly carry over the gameObject's local transform instead of the global one.
+-- @param go (GameObject) The GameObject
+-- @param parentNameOrObject (string or GameObject) The parent name or GameObject.
+-- @param keepLocalTransform [optional default=false] (boolean) Carry over the game object's local transform instead of the global one.
+function GameObject.SetParent(go, parentNameOrObject, keepLocalTransform)
+    local errorHead = "GameObject:SetParent(parentNameOrObject[, keepLocalTransform]) : "
+
+    if cstype(go) ~= "GameObject" then
+        error(errorHead..gameObjectCallSyntaxError.."SetParent()")
     end
 
-    local argType = type(name)
-    if argType ~= "string" then
-        error(errorHead.."Argument 'name' is of type '"..argType.."' with value '"..tostring(name).."' instead of 'string'. Must the parent gameObject name.")
+    local argType = cstype(parentNameOrObject)
+    if argType ~= "string" and argType ~= "GameObject" then
+        error(errorHead.."Argument 'parentNameOrObject' is of type '"..argType.."' with value '"..tostring(parentNameOrObject).."' instead of 'string' or 'GameObject'. Must the parent gameObject name or GameObject.")
     end
 
     argType = type(keepLocalTransform)
-    if argType ~= nil and argType ~= "boolean" then
+    if argType ~= "nil" and argType ~= "boolean" then
         error(errorHead.."Argument 'keepLocalTransform' is of type '"..argType.."' with value '"..tostring(keepLocalTransform).."' instead of 'boolean'.")
     end
-
-    local parent = GameObject.Get(name)
-
-    if parent == nil then
-        error(errorHead.."Argument 'name' : Parent GameObject with name '"..name.."' was not found.")
+    
+    if keepLocalTransform == nil then
+        keepLocalTransform = false
     end
 
-    self:SetParent(go, keepLocalTransform)
+    local parent = parentNameOrObject
+
+    if type(parent) == "string" then
+        parent = GameObject.Get(parentNameOrObject)
+
+        if parent == nil then
+            error(errorHead.."Argument 'parentNameOrObject' : Parent GameObject with name '"..parentNameOrObject.."' was not found.")
+        end
+    end
+      
+    OldSetParent(go, parent, keepLocalTransform)
 end
 
 
@@ -927,7 +942,7 @@ function GameObject:DestroyComponent(input, strict)
     end
 
     local argType = type(strict)
-    if argType ~= nil and argType ~= "boolean" then
+    if argType ~= "nil" and argType ~= "boolean" then
         error(errorHead.."Argument 'strict' is of type '"..argType.."' with value '"..tostring(strict).."' instead of 'boolean'.")
     end
 
@@ -1010,7 +1025,7 @@ function GameObject:DestroyScriptedBehavior(scriptNameOrAsset)
     end
 
     local argType = cstype(scriptNameOrAsset)
-    if argType ~= nil and argType ~= "string" and argType ~= "Script" then
+    if argType ~= "nil" and argType ~= "string" and argType ~= "Script" then
         error(errorHead.."Argument 'scriptNameOrAsset' is of type '"..argType.."' with value '"..tostring(scriptNameOrAsset).."' instead of 'string' or 'Script'.")
     end
 
