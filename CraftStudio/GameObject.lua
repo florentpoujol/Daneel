@@ -76,7 +76,7 @@ local function ApplyParamsToGameObject(go, params, errorHead)
                 error(errorHead.."Argument 'params.parentKeepLocalTransform' is of type '"..argType.."' with value '"..tostring(params.parentKeepLocalTransform).."' instead of 'boolean'.")
             end
 
-            go:SetParent(parent, params.parentKeepLocalTransform)
+            go:SetParent(params.parent, params.parentKeepLocalTransform)
         end
     end
 
@@ -309,14 +309,13 @@ function GameObject.Get(name, g)
 end
 
 
-local OldSetParent = GameObject.SetParent
+local OriginalSetParent = GameObject.SetParent
 
 -- Set the gameOject's parent. 
 -- Optionnaly carry over the gameObject's local transform instead of the global one.
--- @param go (GameObject) The GameObject
 -- @param parentNameOrObject (string or GameObject) The parent name or GameObject.
 -- @param keepLocalTransform [optional default=false] (boolean) Carry over the game object's local transform instead of the global one.
-function GameObject.SetParent(go, parentNameOrObject, keepLocalTransform)
+function GameObject:SetParent(parentNameOrObject, keepLocalTransform)
     local errorHead = "GameObject:SetParent(parentNameOrObject[, keepLocalTransform]) : "
 
     if cstype(go) ~= "GameObject" then
@@ -347,7 +346,7 @@ function GameObject.SetParent(go, parentNameOrObject, keepLocalTransform)
         end
     end
       
-    OldSetParent(go, parent, keepLocalTransform)
+    OriginalSetParent(go, parent, keepLocalTransform)
 end
 
 
@@ -377,31 +376,44 @@ function GameObject:GetChild(name, recursive)
 end
 
 
+local OriginalGetChildren = GameObject.GetChildren
+
 -- Get all descendants of the gameObject.
+-- @param recursive [optional default=false] (boolean) Look for all descendants instead of just the first generation
 -- @param includeSelf [optional default=false] (boolean) Include the gameObject in the children.
 -- @return (table) The children.
-function GameObject:GetChildrenRecursive(includeSelf)
-    local errorHead = "GameObject:GetChildrenRecursive() : "
+function GameObject:GetChildren(recursive, includeSelf)
+    local errorHead = "GameObject:GetChildrenRecursive([recursive]) : "
 
     if cstype(self) ~= "GameObject" then
         error(errorHead..gameObjectCallSyntaxError.."GetChildrenRecursive()")
     end
 
-    local argType = type(includeSelf)
+    local argType = type(recursive)
+    if recursive ~= nil and argType ~= "boolean" then
+        error(errorHead.."Argument 'recursive' is of type '"..argType.."' with value '"..tostring(includeSelf).."' instead of 'boolean'.")
+    end
+
+    argType = type(includeSelf)
     if includeSelf ~= nil and argType ~= "boolean" then
         error(errorHead.."Argument 'includeSelf' is of type '"..argType.."' with value '"..tostring(includeSelf).."' instead of 'boolean'.")
     end
 
-    local allChildren = {}
-
+    local allChildren = table.new()
+    
     if includeSelf == true then
-        allChildren = {self}
+        allChildren = table.new({self})
     end
 
-    local selfChildren = self:GetChildren()
+    local selfChildren = OriginalGetChildren(self)
     
-    for i, child in ipairs(selfChildren) do
-        allChildren = table.join(allChildren, child:GetChildrenRecursive(true))
+    if recursive == true then
+        -- get the rest of the children
+        for i, child in ipairs(selfChildren) do
+            allChildren = table.join(allChildren, child:GetChildren(true, true))
+        end
+    else
+        allChildren = allChildren:join(selfChildren)
     end
 
     return allChildren
@@ -432,7 +444,7 @@ function GameObject:BroadcastMessage(methodName, data)
         error(errorHead.."Argument 'data' is of type '"..argType.."' with value '"..tostring(data).."' instead of 'table'. If set, must be a table.")
     end
 
-    local allChildren = table.join({self}, self:GetChildrenRecursive())
+    local allChildren = table.join({self}, self:GetChildren())
 
     for i, child in ipairs(allChildren) do
         child:SendMessage(methodName, data)
