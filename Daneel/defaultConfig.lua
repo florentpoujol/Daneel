@@ -10,6 +10,9 @@ Daneel.defaultConfig = table.new({
 
     --charactersModelPath = "Daneel/Characters",
 
+
+    -- StackTrace
+    stackTraceLength = 10,
     
 
     componentTypes = table.new({

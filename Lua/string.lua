@@ -1,26 +1,37 @@
 
--- Dynamic properties
-
 local stringMetatable = getmetatable("") -- the 'string' class is origininally stringMetatable.__index
 
---
-function stringMetatable.__index(s, key) 
-    if key == "length" then
-        return string.len(s)
+-- Allow to build a string by repeating sevral times a strring segment
+-- @param s (string) The string
+-- @param num (number) The multiplier
+-- @return (string) The new string
+function stringMetatable.__mul(s, multiplier)
+    local errorHead = "[metatable of strings].__mul(string, multiplier) : "
+
+    local argType = type(s)
+    if argType ~= "string" then
+        error(errorHead.."Argument 'string' is of type '"..argType.."' with value '"..tostring(s).."' instead of 'string'.")
     end
 
-    return rawget(string, key)
-end
+    argType = type(multiplier)
+    if argType ~= "number" then
+        error(errorHead.."Argument 'multiplier' is of type '"..argType.."' with value '"..tostring(multiplier).."' instead of 'number'.")
+    end
 
-   
+    local fullString = ""
+
+    for i=1, multiplier do
+        fullString = fullString .. s
+    end
+
+    return fullString
+end
 
 -- Turn a string into a table, one character per index
 -- @param s (string) The string
 -- @return (table) The table
-function string.totable(s, g)
-    if s == string then
-        s = g
-    end
+function string.totable(s)
+    Daneel.StackTrace.BeginFunction("string.totable", s)
 
     local argType = type(s)
     if argType ~= "string" then
@@ -34,6 +45,7 @@ function string.totable(s, g)
         table.insert(t, s:sub(i, i))
     end 
 
+    Daneel.StackTrace.EndFunction("string.totable", t)
     return t
 end
 
@@ -43,13 +55,8 @@ end
 -- @param t (table) The table conataining the values to check against argument 'string'.
 -- @param ignoreCase [optional=false] (boolean) Ignore the case
 -- @return (boolean) True if 's' is found in 't', false otherwise
-function string.isOneOf(s, t, ignoreCase, g)
-    if s == string then
-        s = t
-        t = ignoreCase
-        ignoreCase = g
-    end
-
+function string.isOneOf(s, t, ignoreCase)
+    Daneel.StackTrace.BeginFunction("string.isOneOf", s, t, ignoreCase)
     local errorHead = "string.isOneOf(string, table[, ignoreCase]) : "
 
     local argType = type(s)
@@ -64,21 +71,19 @@ function string.isOneOf(s, t, ignoreCase, g)
 
     argType = type(ignoreCase)
     if argType ~= nil and argType ~= "boolean" then
-        error(errorHead.."Argument 'string' is of type '"..argType.."' with value '"..tostring(s).."' instead of 'string'.")
+        error(errorHead.."Argument 'string' is of type '"..argType.."' with value '"..tostring(s).."' instead of 'boolean'.")
     end
 
-    return table.constainsvalue(t, s, ignoreCase)
+    local isOneOf = table.constainsvalue(t, s, ignoreCase)
+    Daneel.StackTrace.EndFunction("string.isOneOf", isOneOf)
+    return isOneOf
 end
-
 
 -- Make the first letter uppercase
 -- @param s (string) The string
 -- @return (string) The string
-function string.ucfirst(s, g)
-    if s == string then
-        s = g
-    end
-
+function string.ucfirst(s)
+    Daneel.StackTrace.BeginFunction("string.ucfirst", s)
     local errorHead = "string.ucfirst(string) : "
 
     local argType = type(s)
@@ -88,6 +93,9 @@ function string.ucfirst(s, g)
 
     t = s:totable()
     t[1] = t[1]:upper()
-    return t:concat()
+    s = t:concat()
+
+    Daneel.StackTrace.EndFunction("string.ucfirst", s)
+    return s
 end
 

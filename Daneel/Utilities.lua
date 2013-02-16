@@ -119,3 +119,90 @@ function cstype(arg)
 
     return argType
 end
+
+
+----------------------------------------------------------------------------------
+-- StackTrace
+
+Daneel.StackTrace = { 
+    messages = {},
+    depth = 1,
+}
+
+
+function Daneel.StackTrace.BeginFunction(functionName, ...)
+    local errorHead = "Daneel.StackTrace.BeginFunction(functionName[, ...]) : "
+
+    local argType = type(functionName)
+    if argType ~= "string" then
+        error(errorHead.."Argument 'functionName' is of type '"..argType.."' with value '"..tostring(functionName).."' instead of 'string'. Must the function name.")
+    end
+
+    Daneel.StackTrace.depth = Daneel.StackTrace.depth + 1
+
+    local msg = "-"*Daneel.StackTrace.depth.." Call to "..functionName.."("
+
+    if #arg > 0 then
+        for argument in iparis(arg) do
+            msg = msg..tostring(argument)..", "
+        end
+
+        msg = msg:sub(1, #msg-2) -- removes the last coma+space
+    end
+
+    msg = msg..")"
+
+    table.insert(Daneel.StackTrace.messages, msg)
+end
+
+
+function Daneel.StackTrace.EndFunction(functionName, ...)
+    local errorHead = "Daneel.StackTrace.EndFunction(functionName[, ...]) : "
+
+    local argType = type(functionName)
+    if argType ~= "string" then
+        error(errorHead.."Argument 'functionName' is of type '"..argType.."' with value '"..tostring(functionName).."' instead of 'string'. Must the function name.")
+    end
+
+    local msg = "-"*Daneel.StackTrace.depth..functionName.."() returns "
+
+    if #arg > 0 then
+        for argument in iparis(arg) do
+            msg = msg..tostring(argument)..", "
+        end
+
+        msg = msg:sub(1, #msg-2)
+    end
+
+    table.insert(Daneel.StackTrace.messages, msg)
+    Daneel.StackTrace.depth = Daneel.StackTrace.depth - 1
+end
+
+
+function Daneel.StackTrace.Print(length)
+    --if #Daneel.StackTrace.messages <= 0 then return end
+
+    if length == nil then
+        length = Daneel.config.stackTraceLength
+    end
+    
+    print("~~~~~ Daneel.StackTrace ~~~~~ Begin ~~~~~")
+
+    for i = length, 1, -1 do
+        local traceText = Daneel.StackTrace.messages[i]
+        
+        if traceText ~= nil then
+            print(traceText)
+        end
+    end
+
+    print("~~~~~ Daneel.StackTrace ~~~~~ End ~~~~~")
+end
+
+
+local OriginalError = error
+
+function error(text)
+    Daneel.StackTrace.Print()
+    OriginalError(text)
+end
