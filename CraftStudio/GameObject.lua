@@ -42,7 +42,10 @@ local gameObjectCallSyntaxError = "Function not called from a gameObject. Your m
 
 -- Apply the content of params to the gameObject in argument.
 local function ApplyParamsToGameObject(go, params, errorHead)
-    if params == nil then 
+    Daneel.StackTrace.BeginFunction("ApplyParamsToGameObject", go, params, errorHead)
+    
+    if params == nil then
+        Daneel.StackTrace.EndFunction("ApplyParamsToGameObject", go)
         return go 
     end
 
@@ -221,6 +224,7 @@ local function ApplyParamsToGameObject(go, params, errorHead)
         go:AddComponent("ScriptedBehavior", scriptNameOrAsset)
     end 
 
+    Daneel.StackTrace.EndFunction("ApplyParamsToGameObject", go)
     return go
 end
 
@@ -228,12 +232,8 @@ end
 -- @param name (string) The GameObject name.
 -- @param params (string, GameObject or table) The parent gameObject name, or parent GameObject or a table with parameters to initialize the new gameObject with.
 -- @return (GameObject) The new gameObject.
-function GameObject.New(name, params, g)
-    if name == GameObject then
-        name = params
-        params = g
-    end
-
+function GameObject.New(name, params)
+    Daneel.StackTrace.BeginFunction("GameObject.New", name, params)
     local errorHead = "GameObject.New(name[, params]) : "
 
     local argType = type(name)
@@ -242,8 +242,10 @@ function GameObject.New(name, params, g)
     end
 
     local go = CraftStudio.CreateGameObject(name)
+    go = ApplyParamsToGameObject(go, params, errorHead)
 
-    return ApplyParamsToGameObject(go, params, errorHead)
+    Daneel.StackTrace.EndFunction("GameObject.New", go)
+    return go
 end
 
 -- Add a scene as a new gameObject with optional initialisation parameters.
@@ -251,14 +253,8 @@ end
 -- @param scene (string or Scene) The scene name or scene asset.
 -- @param params [optional default=nil] (string, GameObject or table) The parent gameObject name, or parent GameObject or a table with parameters to initialize the new gameObject with.
 -- @return (GameObject) The new gameObject.
-function GameObject.Instantiate(goName, scene, params, g)
-    if goName == GameObject then
-        goName = sceneName
-        sceneName = params
-        params = g
-    end
-
-    -- errors
+function GameObject.Instantiate(goName, scene, params)
+    Daneel.StackTrace.BeginFunction("GameObject.Instantiate", goName, scene, params)
     local errorHead = "GameObject.Instantiate(gameObjectName, sceneName[, params]) : "
 
     local argType = type(goName)
@@ -281,8 +277,10 @@ function GameObject.Instantiate(goName, scene, params, g)
     end
     
     local go = CraftStudio.Instantiate(goName, sceneName)
+    go = ApplyParamsToGameObject(go, params, errorHead)
 
-    return ApplyParamsToGameObject(go, params, errorHead)
+    Daneel.StackTrace.EndFunction("GameObject.Instantiate", go)
+    return go
 end
 
 
@@ -295,17 +293,18 @@ end
 -- Get the first gameObject with the specified name.
 -- @param name (string) The gameObject name.
 -- @return (GameObject) The gameObject or nil if none is found.
-function GameObject.Get(name, g)
-    if name == GameObject then
-        name = g
-    end
+function GameObject.Get(name)
+    Daneel.StackTrace.BeginFunction("GameObject.Get", name)
 
     local argType = type(name)
     if name == nil or argType ~= "string" then
         error("GameObject.Get(name) : Argument 'name' is of type '"..argType.."' with value '"..tostring(name).."' instead of 'string'. Must be the gameObject name.")
     end
 
-    return CraftStudio.FindGameObject(name)
+    local go = CraftStudio.FindGameObject(name)
+
+    Daneel.StackTrace.EndFunction("GameObject.Get", go)
+    return go
 end
 
 
@@ -313,16 +312,19 @@ local OriginalSetParent = GameObject.SetParent
 
 -- Set the gameOject's parent. 
 -- Optionnaly carry over the gameObject's local transform instead of the global one.
+-- @param gameObject (GameObject) The gameObject
 -- @param parentNameOrObject (string or GameObject) The parent name or GameObject.
 -- @param keepLocalTransform [optional default=false] (boolean) Carry over the game object's local transform instead of the global one.
-function GameObject:SetParent(parentNameOrObject, keepLocalTransform)
-    local errorHead = "GameObject:SetParent(parentNameOrObject[, keepLocalTransform]) : "
+function GameObject.SetParent(go, parentNameOrObject, keepLocalTransform)
+    Daneel.StackTrace.EndFunction("GameObject.SetParent", go, parentNameOrObject, keepLocalTransform)
+    local errorHead = "GameObject.SetParent(gameObject, parentNameOrObject[, keepLocalTransform]) : "
 
-    if cstype(go) ~= "GameObject" then
-        error(errorHead..gameObjectCallSyntaxError.."SetParent()")
+    local argType = cstype(go)
+    if argType ~= "GameObject" then
+        error(errorHead.."Argument 'gameObject' is of type '"..argType.."' with value '"..tostring(parentNameOrObject).."' instead of 'GameObject'.")
     end
 
-    local argType = cstype(parentNameOrObject)
+    argType = cstype(parentNameOrObject)
     if argType ~= "string" and argType ~= "GameObject" then
         error(errorHead.."Argument 'parentNameOrObject' is of type '"..argType.."' with value '"..tostring(parentNameOrObject).."' instead of 'string' or 'GameObject'. Must the parent gameObject name or GameObject.")
     end
@@ -347,22 +349,26 @@ function GameObject:SetParent(parentNameOrObject, keepLocalTransform)
     end
       
     OriginalSetParent(go, parent, keepLocalTransform)
+    Daneel.StackTrace.EndFunction("GameObject.SetParent")
 end
 
 
 -- Alias of GameObject:FindChild().
 -- Find the first gameObject's child with the specified name.
+-- @param gameObject (GameObject) The gameObject
 -- @param name (string) The child name.
 -- @param recursive [optional default=false] (boolean) Search for the child in all descendants.
 -- @return (GameObject) The child or nil if none is found.
-function GameObject:GetChild(name, recursive)
-    local errorHead = "GameObject:GetChild(name[, recursive]) : "
+function GameObject.GetChild(go, name, recursive)
+    Daneel.StackTrace.BeginFunction("GameObject.GetChild", go, name, recursive)
+    local errorHead = "GameObject.GetChild(gameObject, name[, recursive]) : "
 
-    if cstype(self) ~= "GameObject" then
-        error(errorHead..gameObjectCallSyntaxError.."GetChild()")
+    local argType = cstype(go)
+    if argType ~= "GameObject" then
+        error(errorHead.."Argument 'gameObject' is of type '"..argType.."' with value '"..tostring(parentNameOrObject).."' instead of 'GameObject'.")
     end
 
-    local argType = type(name)
+    argType = type(name)
     if argType ~= "string" then
         error(errorHead.."Argument 'name' is of type '"..argType.."' with value '"..tostring(name).."' instead of 'string'. Must the child gameObject name.")
     end
@@ -372,24 +378,30 @@ function GameObject:GetChild(name, recursive)
         error(errorHead.."Argument 'recursive' is of type '"..argType.."' with value '"..tostring(recursive).."' instead of 'boolean'.")
     end
 
-    return self:FindChild(name, recursive)
+    local child = go:FindChild(name, recursive)
+
+    Daneel.StackTrace.EndFunction("GameObject.GetChild", child)
+    return child
 end
 
 
 local OriginalGetChildren = GameObject.GetChildren
 
 -- Get all descendants of the gameObject.
+-- @param gameObject (GameObject) The gameObject
 -- @param recursive [optional default=false] (boolean) Look for all descendants instead of just the first generation
 -- @param includeSelf [optional default=false] (boolean) Include the gameObject in the children.
 -- @return (table) The children.
-function GameObject:GetChildren(recursive, includeSelf)
-    local errorHead = "GameObject:GetChildrenRecursive([recursive]) : "
+function GameObject.GetChildren(go, recursive, includeSelf)
+    Daneel.StackTrace.BeginFunction("GameObject.GetChildren", go, recursive, includeSelf)
+    local errorHead = "GameObject.GetChildrenRecursive(gameObject, [recursive]) : "
 
-    if cstype(self) ~= "GameObject" then
-        error(errorHead..gameObjectCallSyntaxError.."GetChildrenRecursive()")
+    local argType = cstype(go)
+    if argType ~= "GameObject" then
+        error(errorHead.."Argument 'gameObject' is of type '"..argType.."' with value '"..tostring(parentNameOrObject).."' instead of 'GameObject'.")
     end
 
-    local argType = type(recursive)
+    argType = type(recursive)
     if recursive ~= nil and argType ~= "boolean" then
         error(errorHead.."Argument 'recursive' is of type '"..argType.."' with value '"..tostring(includeSelf).."' instead of 'boolean'.")
     end
@@ -402,10 +414,10 @@ function GameObject:GetChildren(recursive, includeSelf)
     local allChildren = table.new()
     
     if includeSelf == true then
-        allChildren = table.new({self})
+        allChildren = table.new({go})
     end
 
-    local selfChildren = OriginalGetChildren(self)
+    local selfChildren = OriginalGetChildren(go)
     
     if recursive == true then
         -- get the rest of the children
@@ -416,6 +428,7 @@ function GameObject:GetChildren(recursive, includeSelf)
         allChildren = allChildren:join(selfChildren)
     end
 
+    Daneel.StackTrace.EndFunction("GameObject.GetChildren", allChildren)
     return allChildren
 end
 
@@ -425,13 +438,16 @@ end
 -- The data argument can be nil or a table you want the method to receive as its first (and only) argument.
 -- If none of the scripted behaviors attached to the game object or its children have a method matching the specified name, nothing happens. 
 -- Uses GameObject:SendMessage() on the gameObject and all children of its children.
+-- @param gameObject (GameObject) The gameObject
 -- @param methodName (string) The method name.
 -- @param data [optional] (table) The data to pass along the method call.
-function GameObject:BroadcastMessage(methodName, data)
-    local errorHead = "GameObject:BroadcastMessage(methodName[, data]) : "
+function GameObject.BroadcastMessage(go, methodName, data)
+    Daneel.StackTrace.BeginFunction("GameObject.BroadcastMessage", go, methodName, data)
+    local errorHead = "GameObject.BroadcastMessage(gameObject, methodName[, data]) : "
 
-    if cstype(self) ~= "GameObject" then
-        error(errorHead..gameObjectCallSyntaxError.."BroadcastMessage()")
+    local argType = cstype(go)
+    if argType ~= "GameObject" then
+        error(errorHead.."Argument 'gameObject' is of type '"..argType.."' with value '"..tostring(parentNameOrObject).."' instead of 'GameObject'.")
     end
 
     local argType = type(methodName)
@@ -449,6 +465,8 @@ function GameObject:BroadcastMessage(methodName, data)
     for i, child in ipairs(allChildren) do
         child:SendMessage(methodName, data)
     end
+
+    Daneel.StackTrace.EndFunction("GameObject.BroadcastMessage")
 end
 
 
@@ -458,6 +476,7 @@ end
 
 
 -- Add a component to the gameObject and optionaly initialize it.
+-- @param gameObject (GameObject) The gameObject
 -- @param componentType (string) The Component type.
 -- @param params [optional] (string, Script, Model, Map or table) The Script, Model or Map name or asset, or a table of parameters to initialize the new component with.
 -- @return (ScriptedBehavior, Model, Map or Camera) The component .
@@ -697,6 +716,7 @@ function GameObject:AddComponent(componentType, params)
 end
 
 -- Add a ScriptedBehavior to the gameObject.
+-- @param gameObject (GameObject) The gameObject
 -- @param assetNameOrAsset (string or asset) The script name or asset.
 -- @return (ScriptedBehavior) The ScriptedBehavior component.
 function GameObject:AddScriptedBehavior(assetNameOrAsset)
