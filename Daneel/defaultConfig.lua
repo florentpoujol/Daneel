@@ -1,7 +1,9 @@
 
-if Daneel == nil then Daneel = {} end
+if Daneel == nil then
+    Daneel = {}
+end
 
-Daneel.defaultConfig = table.new({
+Daneel.defaultConfig = {
 
     hudCameraName = "HUD Camera",
     hudCameraGo = nil, -- set in DaneelBehavior.Start()
@@ -15,24 +17,24 @@ Daneel.defaultConfig = table.new({
     stackTraceLength = 10,
     
 
-    componentTypes = table.new({
+    componentTypes = {
         "ScriptedBehavior",
         "ModelRenderer",
         "MapRenderer",
         "Camera",
         "Transform"
-    }),
+    },
 
-    componentObjects = table.new({
+    componentObjects = {
         ScriptedBehavior,
         ModelRenderer,
         MapRenderer,
         Camera,
         Transform,
-    }),
+    },
 
 
-    assetTypes = table.new({
+    assetTypes = {
         "Script",
         "Model",
         "ModelAnimation",
@@ -41,9 +43,9 @@ Daneel.defaultConfig = table.new({
         "Scene",
         "Sound",
         "Document"
-    }),
+    },
 
-    assetObjects = table.new({
+    assetObjects = {
         Script,
         Model,
         ModelAnimation,
@@ -52,42 +54,39 @@ Daneel.defaultConfig = table.new({
         Sound,
         Scene,
         Document
-    }),
+    },
 
     -- Correspondance between the component type (the keys) and the asset type (the values)
-    componentTypeToAssetType = table.new({
+    componentTypeToAssetType = {
         ScriptedBehavior = "Script",
         ModelRenderer = "Model",
         MapRenderer = "Map",
-    }),
+    },
 
 
-    craftStudioCoreTypes = table.new({
+    craftStudioCoreTypes = {
         "GameObject",
         "Vector3",
         "Ray",
         "Plane",
         "Quaternion",
-    }),
+    },
 
-    craftStudioCoreObjects = table.new({
+    craftStudioCoreObjects = {
         GameObject,
         Vector3,
         Quaternion,
         Plane,
         Ray,
-    }),
+    },
     
 
-    daneelTypes = table.new({
+    daneelTypes = {
         "GUILabel",
-    }),
+    },
 
-    daneelObjects = table.new({
+    daneelObjects = {
         GUILabel,
-    }),
+    },
     
-})
-
-
-
+}
