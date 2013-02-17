@@ -6,14 +6,13 @@ end
 function Daneel.Awake()
     Daneel.StackTrace.BeginFunction("Daneel.Awake")
 
-    -- Config
-    if Daneel.config == nil then
-        Daneel.config = table.new()
-    end
 
+    -- Config
+    Daneel.config = table.new(Daneel.config)
     setmetatable(Daneel.config, { __index = Daneel.defaultConfig })
     
 
+    -- Screen
     if Daneel.config.screenSize ~= nil then
         CraftStudio.Screen.SetSize(Daneel.config.screenSize.x, Daneel.config.screenSize.y)
     else
@@ -21,6 +20,14 @@ function Daneel.Awake()
     end
 
     Daneel.config.hudCameraGo = GameObject.Get(Daneel.config.hudCameraName)
+
+
+    -- Helpers functions
+    Asset.CreateGetHelpers()
+    Asset.CreateIsOfTypeHelpers()
+
+    Component.CreateDynamicGettersAndSetter()
+
 
     Daneel.StackTrace.EndFunction("Daneel.Awake")
 end

@@ -4,7 +4,7 @@ local rayCallSyntaxError = "Function not called from a Ray. Your must use a colo
 
 
 -- list of castable gameObjects  that are checked for collision with a ray by Ray:Cast()
-Ray.catablesGameObjects = table.new()
+Ray.catablesGameObjects = {}
 
 -- Add a gameObject to the castableGameObject list.
 -- @param gameObject (GameObject) The gameObject to add to the list.
@@ -12,12 +12,12 @@ function Ray.RegisterCastableGameObject(gameObject)
     Daneel.StackTrace.BeginFunction("Ray.RegisterCastableGameObject", gameObject)
     local errorHead = "Ray.RegisterCastableGameObject(gameObject) : "
 
-    local argType = cstype(GameObject)
+    local argType = cstype(gameObject)
     if argType ~= "GameObject" then
         error(errorHead.."Argument 'gameObject' is of type '"..argType.."' with value '"..tostring(gameObject).."' instead of 'GameObject'.")
     end
 
-    Ray.catablesGameObjects:insert(gameObject)
+    table.insert(Ray.catablesGameObjects, gameObject)
     Daneel.StackTrace.EndFunction("Ray.RegisterCastableGameObject")
 end
 
@@ -53,6 +53,7 @@ end
 -- check if the ray intersect the specified gameObject
 -- @param ray (Ray) The ray
 -- @param gameObject (GameObject) The gameObject instance
+-- @return
 function Ray.IntersectsGameObject(ray, gameObject)
     Daneel.StackTrace.BeginFunction("Ray.IntersectsGameObject", ray, gameObject)
     local errorHead = "Ray.IntersectsGameObject(ray, gameObject) : "
@@ -60,7 +61,11 @@ function Ray.IntersectsGameObject(ray, gameObject)
     local argType = cstype(ray)
     if argType ~= "Ray" then
         error(errorHead.."Argument 'ray' is of type '"..argType.."' with value '"..tostring(ray).."' instead of 'Ray'.")
-        --error(errorHead..rayCallSyntaxError.."Cast()")
+    end
+
+    argType = cstype(gameObject)
+    if argType ~= "GameObject" then
+        error(errorHead.."Argument 'gameObject' is of type '"..argType.."' with value '"..tostring(gameObject).."' instead of 'GameObject'.")
     end
 
     local component = gameObject:GetComponent("ModelRenderer")
@@ -76,6 +81,8 @@ function Ray.IntersectsGameObject(ray, gameObject)
         Daneel.StackTrace.EndFunction("Ray.IntersectsGameObject", distance, normal, hitBlockLocation, adjacentBlockLocation)
         return distance, normal, hitBlockLocation, adjacentBlockLocation
     end
+
+    Daneel.StackTrace.EndFunction("Ray.IntersectsGameObject")
 end
 
 
