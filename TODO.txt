@@ -1,8 +1,6 @@
 
+mettre en place reco des component
+mettre un variable "componentType" sur ModelRenderer et the likes
 
 
 
-
-Stack trace
-
-Lorsque erreur, affiche la stack trace, c'est à dire la liste des méthodes appelées 

@@ -25,8 +25,13 @@ function Daneel.Awake()
     -- Helpers functions
     Asset.CreateGetHelpers()
     Asset.CreateIsOfTypeHelpers()
-
+    
     Component.CreateDynamicGettersAndSetter()
+
+    GameObject.CreateAddComponentHelpers()
+    GameObject.CreateGetComponentHelpers()
+    GameObject.CreateHasComponentHelpers()
+    GameObject.CreateDestroyComponentHelpers()
 
 
     Daneel.StackTrace.EndFunction("Daneel.Awake")

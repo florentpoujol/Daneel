@@ -445,22 +445,11 @@ function GameObject.BroadcastMessage(go, methodName, data)
     Daneel.StackTrace.BeginFunction("GameObject.BroadcastMessage", go, methodName, data)
     local errorHead = "GameObject.BroadcastMessage(gameObject, methodName[, data]) : "
 
-    local argType = cstype(go)
-    if argType ~= "GameObject" then
-        error(errorHead.."Argument 'gameObject' is of type '"..argType.."' with value '"..tostring(parentNameOrObject).."' instead of 'GameObject'.")
-    end
+    Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
+    Daneel.Debug.CheckArgType(methodName, "methodName", "string", errorHead)
+    Daneel.Debug.CheckOptionalArgType(data, "data", "table", errorHead)
 
-    local argType = type(methodName)
-    if argType ~= "string" then
-        error(errorHead.."Argument 'name' is of type '"..argType.."' with value '"..tostring(methodName).."' instead of 'string'. Must the method name.")
-    end
-
-    argType = type(data)
-    if data ~= nil and argType ~= "table" then
-        error(errorHead.."Argument 'data' is of type '"..argType.."' with value '"..tostring(data).."' instead of 'table'. If set, must be a table.")
-    end
-
-    local allChildren = table.join({self}, self:GetChildren())
+    local allChildren = table.join({go}, go:GetChildren())
 
     for i, child in ipairs(allChildren) do
         child:SendMessage(methodName, data)
@@ -480,29 +469,23 @@ end
 -- @param componentType (string) The Component type.
 -- @param params [optional] (string, Script, Model, Map or table) The Script, Model or Map name or asset, or a table of parameters to initialize the new component with.
 -- @return (ScriptedBehavior, Model, Map or Camera) The component .
-function GameObject:AddComponent(componentType, params)
-    local errorHead = "GameObject:AddComponent(componentType[, params]) : "
+function GameObject.AddComponent(go, componentType, params)
+    Daneel.StackTrace.BeginFunction("GameObject.AddComponent")
+    local errorHead = "GameObject.AddComponent(gameObject, componentType[, params]) : "
 
-    if cstype(self) ~= "GameObject" then 
-        error(errorHead..gameObjectCallSyntaxError.."AddComponent()")
-    end
-
-    local argType = type(componentType)
-    if argType ~= "string" then
-        error(errorHead.."Argument 'componentType' is of type '"..argType.."' with value '"..tostring(componentType).."' instead of 'string'. Must the component type.")
-    end
-
+    Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
+    Daneel.Debug.CheckArgType(componentType, "componentType", "string", errorHead)
+    
     componentType = Daneel.Utilities.CaseProof(componentType, Daneel.config.componentTypes)
 
     if not table.containsvalue(Daneel.config.componentTypes, componentType) then
         error(errorHead.."Argument 'componentType' with value '"..componentType.."' is not one of the valid component types : "..table.concat(componentType, ", "))
     end
 
-
     if params == nil then params = {} end
     argType = cstype(params)
 
-    -- params is the asset name (script model or map)
+    -- params is the asset name (script, model or map)
     if argType == "string" then
         local assetType = Daneel.config.componentTypeToAssetType[componentType]
         local assetName = params
@@ -525,14 +508,14 @@ function GameObject:AddComponent(componentType, params)
     -- ScriptedBehavior
     if componentType == "ScriptedBehavior" then
         if params.script == nil then
-            error(errorHead.."Argument 'componenetType' is 'ScriptedBehavior' but argument 'params.script' is nil.")
+            error(errorHead.."Argument 'componentType' is 'ScriptedBehavior' but argument 'params.script' is nil.")
         end
         
-        return self:CreateScriptedBehavior(params.script)
+        return go:CreateScriptedBehavior(params.script)
     end
 
     -- other componentTypes
-    local component = self:CreateComponent(componentType)
+    local component = go:CreateComponent(componentType)
 
 
     -- apply params
@@ -712,66 +695,29 @@ function GameObject:AddComponent(componentType, params)
         end
     end
 
+    Daneel.StackTrace.EndFunction("GameObject.AddComponent")
     return component
 end
 
--- Add a ScriptedBehavior to the gameObject.
--- @param gameObject (GameObject) The gameObject
--- @param assetNameOrAsset (string or asset) The script name or asset.
--- @return (ScriptedBehavior) The ScriptedBehavior component.
-function GameObject:AddScriptedBehavior(assetNameOrAsset)
-    local errorHead = "GameObject:AddScriptedBehavior(assetNameOrAsset) : "
+-- Add AddComponent helpers
+-- ie : go:AddModelRenderer()
+function GameObject.CreateAddComponentHelpers()
+    for i, componentType in ipairs(Daneel.config.componentTypes) do
+        if componentType ~= "Transform" then
+            
+            GameObject["Add"..componentType] = function(go, params)
+                Daneel.StackTrace.BeginFunction("GameObject.Add"..componentType, go, params)
+                local errorHead = "GameObject.Add"..componentType.."(gameObject[, params]) : "
+                
+                Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
 
-    if cstype(self) ~= "GameObject" then
-        error(errorHead..gameObjectCallSyntaxError.."AddScriptedBehavior()")
+                local component = go:AddComponent(componentType, params)
+                Daneel.StackTrace.EndFunction("GameObject.Add"..componentType)
+                return component
+            end
+
+        end
     end
-
-    local argType = cstype(assetNameOrAsset)
-    if argType ~= "string" and argType ~= "ScriptedBehavior" then
-        error(errorHead.."Argument 'assetNameOrAsset' is of type '"..argType.."' with value '"..tostring(assetNameOrAsset).."' instead of 'string' (the Script name) or 'Script'.")
-    end
-
-    return self:AddComponent("ScriptedBehavior", assetNameOrAsset)
-end
-
--- Add a ModelRenderer component to the gameObject and optionaly initialize it.
--- @param params [optional] (string, Model or table) The model name or asset, or a table of parameters to initialize the new ModelRenderer with.
--- @return (ModelRenderer) The ModelRenderer component.
-function GameObject:AddModelRenderer(params)
-    local errorHead = "GameObject:AddModelRenderer([params]) : "
-
-    if cstype(self) ~= "GameObject" then
-        error(errorHead..gameObjectCallSyntaxError.."AddModelRenderer()")
-    end
-
-    return self:AddComponent("ModelRenderer", params)
-end
-
--- Add a MapRenderer to the gameObject and optionaly initialize it.
--- @param params [optional] (string, Map or table) The map name or asset, or a table of parameters to initialize the new MapRenderer with.
--- @return (Map) The Map component.
-function GameObject:AddMapRenderer(params)
-    local errorHead = "GameObject:AddMapRenderer([params]) : "
-
-    if cstype(self) ~= "GameObject" then
-        error(errorHead..gameObjectCallSyntaxError.."AddMapRenderer()")
-    end
-
-    return self:AddComponent("MapRenderer", params)
-end
-
-
--- Add a Camera component to the gameObject and optionaly initialize it.
--- @param params [optional] (table) A table of parameters to initialize the new camera with.
--- @return (Camera) The Camera component.
-function GameObject:AddCamera(params)
-    local errorHead = "GameObject:AddCamera([params]) : "
-
-    if cstype(self) ~= "GameObject" then
-        error(errorHead..gameObjectCallSyntaxError.."AddCamera()")
-    end
-
-    return self:AddComponent("Camera", params)
 end
 
 
@@ -780,78 +726,57 @@ end
 -- Get components
 
 
+local OriginalGetScriptedBehavior = GameObject.GetScriptedBehavior
+
 -- Get the specified ScriptedBehavior instance attached to the gameObject.
+-- @param gameObject (GameObject) The gameObject
 -- @param scriptNameOrAsset (string or Script) The script name or asset.
 -- @return (ScriptedBehavior) The ScriptedBehavior instance.
-function GameObject:GetScriptedBehaviorByName(scriptNameOrAsset)
-    local errorHead = "GameObject:GetScriptedBehavior(scriptNameOrAsset) : "
+function GameObject.GetScriptedBehavior(go, scriptNameOrAsset)
+    Daneel.StackTrace.BeginFunction("GameObject.GetScriptedBehavior", go, scriptNameOrAsset)
+    local errorHead = "GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset) : "
 
-    if cstype(self) ~= "GameObject" then 
-        error(errorHead..gameObjectCallSyntaxError.."GetScriptedBehavior()")
-    end
+    Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
 
     local argType = cstype(scriptNameOrAsset)
-    if argType ~= "string" and argType ~= "ScriptedBehavior" then
+    if argType ~= "string" and argType ~= "Script" then
         error(errorHead.."Argument 'scriptNameOrAsset' is of type '"..argType.."' with value '"..tostring(scriptNameOrAsset).."' instead of 'string' (the Script name) or 'Script'.")
     end
 
+    local script = scriptNameOrAsset
+
     if argType == "string" then
-        local script = Asset.Get(scriptNameOrAsset, "Script")
+        script = Asset.Get(scriptNameOrAsset, "Script")
         
         if script == nil then
             error(errorHead.."Argument 'scriptNameOrAsset' : Script asset with name '"..scriptNameOrAsset.."' was not found.")
         end
     end
 
-    return self:GetScriptedBehavior(script)
+    local component = OriginalGetScriptedBehavior(go, script)
+    Daneel.StackTrace.EndFunction("GameObject.GetScriptedBehavior", component)
+    return component
 end
 
--- Get the first ModelRenderer component attached to the gameObject.
--- @return (ModelRenderer) The ModelRenderer component or nil if none is found.
-function GameObject:GetModelRenderer()
-    local errorHead = "GameObject:GetModelRenderer() : "
+-- Add GetComponent helpers
+-- ie : go:GetModelRenderer()
+function GameObject.CreateGetComponentHelpers()
+    for i, componentType in ipairs(Daneel.config.componentTypes) do
+        if componentType ~= "ScriptedBehavior" then
 
-    if cstype(self) ~= "GameObject" then 
-        error(errorHead..gameObjectCallSyntaxError.."GetModelRenderer()")
+            GameObject["Get"..componentType] = function(go)
+                Daneel.StackTrace.BeginFunction("GameObject.Get"..componentType, go)
+                local errorHead = "GameObject.Get"..componentType.."(gameObject) : "
+                
+                Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
+
+                local component = go:GetComponent(componentType)
+                Daneel.StackTrace.EndFunction("GameObject.Get"..componentType)
+                return component
+            end
+
+        end
     end
-
-    return self:GetComponent("ModelRenderer")
-end
-
--- Get the first MapRenderer component attached to the gameObject.
--- @return (MapRenderer) The MapRenderer component or nil if none is found.
-function GameObject:GetMapRenderer()
-    local errorHead = "GameObject:GetMapRenderer() : "
-
-    if cstype(self) ~= "GameObject" then 
-        error(errorHead..gameObjectCallSyntaxError.."GetMapRenderer()")
-    end
-
-    return self:GetComponent("MapRenderer")
-end
-
--- Get the first Camera component attached to the gameObject.
--- @return (Camera) The Camera component or nil if none is found.
-function GameObject:GetCamera()
-    local errorHead = "GameObject:GetCamera() : "
-
-    if cstype(self) ~= "GameObject" then 
-        error(errorHead..gameObjectCallSyntaxError.."GetCamera()")
-    end
-
-    return self:GetComponent("Camera")
-end
-
--- Get the Transform component attached to the gameObject.
--- @return (Transform) The Transform component or nil if none is found.
-function GameObject:GetTransform()
-    local errorHead = "GameObject:GetTransform() : "
-
-    if cstype(self) ~= "GameObject" then 
-        error(errorHead..gameObjectCallSyntaxError.."GetTransform()")
-    end
-
-    return self:GetComponent("Transform")
 end
 
 
@@ -861,75 +786,45 @@ end
 
 
 -- Check if the gameObject has the specified component.
+-- @param gameObject (GameObject) The gameObject
 -- @param componentType (string) The Component type.
 -- @return (boolean) True if the gameObject has the component, false otherwise
-function GameObject:HasComponent(componentType)
-    local errorHead = "GameObject:HasComponent(componentType) : "
+function GameObject.HasComponent(go, componentType)
+    Daneel.StackTrace.BeginFunction("GameObject.HasComponent", go, componentType)
+    local errorHead = "GameObject.HasComponent(gameObject, componentType) : "
 
-    if cstype(self) ~= "GameObject" then 
-        error(errorHead..gameObjectCallSyntaxError.."HasComponent()")
+    Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
+    Daneel.Debug.CheckArgType(componentType, "componentType", "string", errorHead)
+
+    local componentTypes = Daneel.config.componentTypes
+    componentType = Daneel.Utilities.CaseProof(componentType, componentTypes)
+
+    if not componentType:isOneOf(componentTypes) then
+        error(errorHead.."Argument 'componentType' with value '"..componentType.."' is not one of the valid component types : "..table.concat(componentTypes, ", "))
     end
 
-    local argType = type(componentType)
-    if argType ~= "string" then
-        error(errorHead.."Argument 'componentType' is of type '"..argType.."' with value '"..tostring(componentType).."' instead of 'string'. Must the component type.")
-    end
-
-    componentType = Daneel.Utilities.CaseProof(componentType, Daneel.config.componentTypes)
-
-    if not componentType:isOneOf(Daneel.config.componentTypes) then
-        error(errorHead.."Argument 'componentType' with value '"..componentType.."' is not one of the valid component types : "..table.concat(componentType, ", "))
-    end
-
-    return (self:GetComponent(componentType) ~= nil)
+    local hasComponent = (go:GetComponent(componentType) ~= nil)
+    Daneel.StackTrace.EndFunction("GameObject.HasComponent", hasComponent)
+    return hasComponent
 end
 
--- Check if the gameObject has a ScriptedBehavior.
--- @return (boolean) True if the gameObject has a ScriptedBehavior, false otherwise
-function GameObject:HasScriptedBehavior()
-    local errorHead = "GameObject:HasScriptedBehavior() : "
+-- Add GetComponent helpers
+-- ie : go:GetModelRenderer()
+function GameObject.CreateHasComponentHelpers()
+    for i, componentType in ipairs(Daneel.config.componentTypes) do
+        
+        GameObject["Has"..componentType] = function(go)
+            Daneel.StackTrace.BeginFunction("GameObject.Has"..componentType, go)
+            local errorHead = "GameObject.Has"..componentType.."(gameObject) : "
+            
+            Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
 
-    if cstype(self) ~= "GameObject" then 
-        error(errorHead..gameObjectCallSyntaxError.."HasScriptedBehavior()")
+            local hasComponent = go:HasComponent(componentType)
+            Daneel.StackTrace.EndFunction("GameObject.Has"..componentType, hasComponent)
+            return hasComponent
+        end
+
     end
-
-    return (self:GetComponent("ScriptedBehavior") ~= nil)
-end
-
--- Check if the gameObject has a ModelRenderer.
--- @return (boolean) True if the gameObject has a ModelRenderer, false otherwise
-function GameObject:HasModelRenderer()
-    local errorHead = "GameObject:HasModelRenderer() : "
-
-    if cstype(self) ~= "GameObject" then 
-        error(errorHead..gameObjectCallSyntaxError.."HasModelRenderer()")
-    end
-
-    return (self:GetComponent("ModelRenderer") ~= nil)
-end
-
--- Check if the gameObject has a MapRenderer.
--- @return (boolean) True if the gameObject has a MapRenderer, false otherwise
-function GameObject:HasMapRenderer()
-    local errorHead = "GameObject:HasMapRenderer() : "
-
-    if cstype(self) ~= "GameObject" then 
-        error(errorHead..gameObjectCallSyntaxError.."HasMapRenderer()")
-    end
-
-    return (self:GetComponent("MapRenderer") ~= nil)
-end
-
--- Check if the gameObject has a Camera.
--- @return (boolean) True if the gameObject has a Camera, false otherwise
-function GameObject:HasCamera()
-    local errorHead = "GameObject:HasCamera() : "
-
-    if cstype(self) ~= "GameObject" then 
-        error(errorHead..gameObjectCallSyntaxError.."HasCamera()")
-    end
-
-    return (self:GetComponent("Camera") ~= nil)
 end
 
 
@@ -939,14 +834,15 @@ end
 
 
 -- Destroy the gameObject
-function GameObject:Destroy()
-    local errorHead = "GameObject:Destroy() : "
-
-    if cstype(self) ~= "GameObject" then 
-        error(errorHead..gameObjectCallSyntaxError.."Destroy()")
-    end
-
-    CraftSudio.Destroy(self)
+-- @param gameObject (GameObject) The gameObject
+function GameObject.Destroy(go)
+    Daneel.StackTrace.BeginFunction("GameObject.Destroy", go)
+    local errorHead = "GameObject.Destroy(gameObject) : "
+    
+    Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
+    
+    CraftSudio.Destroy(go)
+    Daneel.StackTrace.EndFunction("GameObject.Destroy")
 end
 
 
@@ -956,39 +852,36 @@ end
 -- the component itself (ScriptedBehavior, Model, Map or Camera),
 -- or a script name or asset (string or Script) (the function will destroy the ScriptedBehavior that uses this Script),
 -- 
+-- @param gameObject (GameObject) The gameObject
 -- @param input (mixed) See function description.
 -- @param strict [optional default=false] (boolean) If true, returns an error when the function can't find the component to destroy.
 -- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
-function GameObject:DestroyComponent(input, strict)
-    local errorHead = "GameObject:DestroyComponent(input[, strict]) : "
+function GameObject.DestroyComponent(go, input, strict)
+    Daneel.StackTrace.BeginFunction("GameObject.DestroyComponent", go, input, strict)
+    local errorHead = "GameObject.DestroyComponent(gameObject, input[, strict]) : "
 
-    if cstype(self) ~= "GameObject" then
-        error(errorHead..gameObjectCallSyntaxError.."DestroyComponent()")
-    end
+    Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
 
     local argType = cstype(input)
     local allowedTypes = {"string", "Script", "table"}
     
-    if not table.constainsvalue(allowedTypes, argType) then
+    if not argType:IsOneOf(allowedTypes) then
         error(errorHead.."Argument 'input' is of type '"..argType.."' with value '"..tostring(input).."' instead of '"..table.concat(allowedTypes, "', '").."'.")
     end
 
-    local argType = type(strict)
-    if argType ~= "nil" and argType ~= "boolean" then
-        error(errorHead.."Argument 'strict' is of type '"..argType.."' with value '"..tostring(strict).."' instead of 'boolean'.")
-    end
+    Daneel.Debug.CheckOptionalArgType(strict, "strict", "boolean", errorHead)
 
     if strict == nil then strict = false end
 
     local component = nil
     local stringError = ""
-    local argType = cstype(input)
+    --argType = cstype(input)
 
     -- input is a component ?
     if argType == "table" then 
-
         -- Components have a gameObject and a inner variable
-        -- But I find no way to check if the table is actally a component or not, or which component is it
+        -- But I found no way to check if the table is actally a component or not, or which component is it
+        -- because the metatable on components is hidden
         if input.inner ~= nil and input.gameObject ~= nil then
             component = input    
         else
@@ -997,7 +890,7 @@ function GameObject:DestroyComponent(input, strict)
 
     -- input is a script asset
     elseif argType == "Script" then
-        component = self:GetScriptedBehavior(input)
+        component = go:GetScriptedBehavior(input)
 
         if component == nil then
             stringError = errorHead.."Argument 'input' : Couldn't find a ScriptedBehavior corresponding to the specified Script asset on this gameObject."
@@ -1009,7 +902,7 @@ function GameObject:DestroyComponent(input, strict)
 
         -- component type
         if table.containsvalue(Daneel.config.componentTypes, input) then
-            component = self:GetComponent(input)
+            component = go:GetComponent(input)
 
             if component == nil then
                 stringError = errorHead.."Argument 'input' : Couldn't find the specified component type '"..input.."' on this gameObject."
@@ -1017,7 +910,7 @@ function GameObject:DestroyComponent(input, strict)
 
         -- or script name
         else 
-            component = self:GetScriptedBehaviorByName(input)
+            component = go:GetScriptedBehaviorByName(input)
 
             if component == nil then
                 stringError = errorHead.."Argument 'input' with value '"..input.."' is a string but not a component type nor a script asset name."
@@ -1039,6 +932,7 @@ function GameObject:DestroyComponent(input, strict)
     end
 
     CraftStudio.Destroy(component)
+    Daneel.StackTrace.EndFunction("GameObject.DestroyComponent", true)
     return true
 end
 
@@ -1047,60 +941,46 @@ end
 -- Destroy a ScriptedBehavior form the gameObject.
 -- If argument 'scriptNameOrAsset' is set with a script name or a script asset, the function will try to destroy the ScriptedBehavior that use this script.
 -- If the argument is not set, it will destroy the first ScriptedBehavior on this gameObejct
+-- @param gameObject (GameObject) The gameObject
 -- @param scriptNameOrAsset [optional] (string or Script) The script name or asset.
 -- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
-function GameObject:DestroyScriptedBehavior(scriptNameOrAsset)
-    local errorHead = "GameObject.DestroyScriptedBehavior([scriptNameOrAsset]) : "
+function GameObject.DestroyScriptedBehavior(go, scriptNameOrAsset)
+    Daneel.StackTrace.BeginFunction("GameObject.DestroyScriptedBehavior", go, scriptNameOrAsset)
+    local errorHead = "GameObject.DestroyScriptedBehavior(go[, scriptNameOrAsset]) : "
 
-    if cstype(self) ~= "GameObject" then
-        error(errorHead..gameObjectCallSyntaxError.."DestroyScriptedBehavior()")
-    end
+    Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
 
     local argType = cstype(scriptNameOrAsset)
     if argType ~= "nil" and argType ~= "string" and argType ~= "Script" then
-        error(errorHead.."Argument 'scriptNameOrAsset' is of type '"..argType.."' with value '"..tostring(scriptNameOrAsset).."' instead of 'string' or 'Script'.")
+        error(errorHead.."Optional argument 'scriptNameOrAsset' is of type '"..argType.."' with value '"..tostring(scriptNameOrAsset).."' instead of 'string' or 'Script'.")
     end
 
     if scriptNameOrAsset == nil then
-        return self:DestroyComponent("ScriptedBehavior")
-    else
-        return self:DestroyComponent(scriptNameOrAsset)
+        scriptNameOrAsset = "ScriptedBehavior"
+    end
+    
+    go:DestroyComponent(scriptNameOrAsset)
+    Daneel.StackTrace.EndFunction("GameObject.DestroyScriptedBehavior")
+end
+
+-- Add DestroyComponent helpers
+-- ie : go:DestroyModelRenderer()
+function GameObject.CreateDestroyComponentHelpers()
+    for i, componentType in ipairs(Daneel.config.componentTypes) do
+        if componentType ~= "Transform" or componentType ~= "ScriptedBehavior" then
+
+            GameObject["Destroy"..componentType] = function(go)
+                Daneel.StackTrace.BeginFunction("GameObject.Destroy"..componentType, go)
+                local errorHead = "GameObject.Destroy"..componentType.."(gameObject) : "
+                
+                Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
+
+                go:DestroyComponent(componentType)
+                Daneel.StackTrace.EndFunction("GameObject.Destroy"..componentType)
+            end
+
+        end
     end
 end
 
--- Destroy the first ModelRenderer component from the gameObject.
--- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
-function GameObject:DestroyModelRenderer()
-    local errorHead = "GameObject.DestroyModelRenderer() : "
-
-    if cstype(self) ~= "GameObject" then
-        error(errorHead..gameObjectCallSyntaxError.."DestroyModelRenderer()")
-    end
-
-    return self:DestroyComponent("ModelRenderer")
-end
-
--- Destroy the first MapRenderer component from the gameObject.
--- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
-function GameObject:DestroyMapRenderer()
-    local errorHead = "GameObject.DestroyMapRenderer() : "
-
-    if cstype(self) ~= "GameObject" then
-        error(errorHead..gameObjectCallSyntaxError.."DestroyMapRenderer()")
-    end
-
-    return self:DestroyComponent("MapRenderer")
-end
-
--- Destroy the first Camera component from the gameObject.
--- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
-function GameObject:DestroyCamera()
-    local errorHead = "GameObject.DestroyCamera() : "
-
-    if cstype(self) ~= "GameObject" then
-        error(errorHead..gameObjectCallSyntaxError.."DestroyCamera()")
-    end
-
-    return self:DestroyComponent("Camera")
-end
 
