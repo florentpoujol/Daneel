@@ -1,7 +1,9 @@
 
 
 function GameObject.__tostring(go)
-    return "GameObject instance '"..go:GetName().."'"
+    -- same story as components
+    local id = tostring(go.inner):sub(2,20)
+    return "GameObject: '"..go:GetName().."' "..id
 end
 
 -- Dynamic properties for Getters and Setters
@@ -701,7 +703,7 @@ end
 
 -- Add AddComponent helpers
 -- ie : go:AddModelRenderer()
-function GameObject.CreateAddComponentHelpers()
+local function CreateAddComponentHelpers()
     for i, componentType in ipairs(Daneel.config.componentTypes) do
         if componentType ~= "Transform" then
             
@@ -760,7 +762,7 @@ end
 
 -- Add GetComponent helpers
 -- ie : go:GetModelRenderer()
-function GameObject.CreateGetComponentHelpers()
+local function CreateGetComponentHelpers()
     for i, componentType in ipairs(Daneel.config.componentTypes) do
         if componentType ~= "ScriptedBehavior" then
 
@@ -810,7 +812,7 @@ end
 
 -- Add GetComponent helpers
 -- ie : go:GetModelRenderer()
-function GameObject.CreateHasComponentHelpers()
+local function CreateHasComponentHelpers()
     for i, componentType in ipairs(Daneel.config.componentTypes) do
         
         GameObject["Has"..componentType] = function(go)
@@ -965,7 +967,7 @@ end
 
 -- Add DestroyComponent helpers
 -- ie : go:DestroyModelRenderer()
-function GameObject.CreateDestroyComponentHelpers()
+local function CreateDestroyComponentHelpers()
     for i, componentType in ipairs(Daneel.config.componentTypes) do
         if componentType ~= "Transform" or componentType ~= "ScriptedBehavior" then
 
@@ -983,4 +985,14 @@ function GameObject.CreateDestroyComponentHelpers()
     end
 end
 
+
+
+----------------------------------------------------------------------------------
+
+function GameObject.Init()
+    CreateAddComponentHelpers()
+    CreateGetComponentHelpers()
+    CreateHasComponentHelpers()
+    CreateDestroyComponentHelpers()
+end
 

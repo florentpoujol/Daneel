@@ -125,18 +125,11 @@ function cstype(arg)
             end
         end
 
-        -- Assets don't have metatable
-        local assetType = Asset.GetType(arg)
-
-        if assetType ~= nil then
-            Daneel.StackTrace.EndFunction("cstype", assetType)
-            return assetType
-        end
-
-        -- Component have a hidden metatable, can only gues if it looks like a component
-        if arg.inner ~= nil and arg.gameObject ~= nil then
-            Daneel.StackTrace.EndFunction("cstype", "Component ?")
-            return "Component ?"
+        -- the csType variable on component is set during Compoenent.Init(), 
+        -- because the component's metatable is hidden
+        if arg.csType ~= nil and table.containsvalue(Daneel.config.componentTypes, arg.csType) then
+            Daneel.StackTrace.EndFunction("cstype", arg.csType)
+            return arg.csType
         end
     end
 

@@ -1,6 +1,5 @@
 
-mettre en place reco des component
-mettre un variable "componentType" sur ModelRenderer et the likes
+
 
 
 
