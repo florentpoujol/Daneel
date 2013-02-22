@@ -211,7 +211,7 @@ function Daneel.StackTrace.Print(length)
         local traceText = messages[i]
         
         if traceText ~= nil then
-            print(traceText)
+            print("#"..i.." "..traceText)
         end
     end
 
@@ -320,4 +320,26 @@ function Daneel.Debug.CheckOptionalArgType(arg, argName, expectedArgType, errorS
     end
 end
 
+
+----------------------------------------------------------------------------------
+-- Triggers    GameObject that check their distance against triggerableGameObject and send
+
+Daneel.Triggers = {}
+
+Daneel.Triggers.triggerableGameObjects = {}
+
+-- Add a gameObject to the castableGameObject list.
+-- @param gameObject (GameObject) The gameObject to add to the list.
+function Daneel.Triggers.RegisterTriggerableGameObject(gameObject)
+    Daneel.StackTrace.BeginFunction("Daneel.Trigger.RegisterTriggerableGameObject", gameObject)
+    local errorHead = "Daneel.Trigger.RegisterTriggerableGameObject(gameObject) : "
+
+    local argType = cstype(gameObject)
+    if argType ~= "GameObject" then
+        error(errorHead.."Argument 'gameObject' is of type '"..argType.."' with value '"..tostring(gameObject).."' instead of 'GameObject'.")
+    end
+
+    table.insert(Daneel.Trigger.triggerableGameObjects, gameObject)
+    Daneel.StackTrace.EndFunction("Ray.RegisterCastableGameObject")
+end
 

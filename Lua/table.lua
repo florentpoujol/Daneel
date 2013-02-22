@@ -376,3 +376,43 @@ function table.combine(keys, values, strict)
     return newTable
 end
 
+
+-- Remove the specified value from the provided table
+-- @param t (table) The table
+-- @param values (mixed) The value to remove
+-- @param singleRemove [optional default=false] (boolean) Tell wether to remove all occurences of the value(s) or just the first one
+-- @return (table) The table
+function table.removevalue(t, value, singleRemove)
+    Daneel.StackTrace.BeginFunction("table.removevalue", t, values, singleRemove)
+    local errorHead = "table.removevalue(t, value) : "
+    
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
+    Daneel.Debug.CheckOptionalArgType(singleRemove, "singleRemove", "boolean", errorHead)
+    
+    if value == nil then
+        return false
+    end
+
+    for key, _value in pairs(t) do
+        if _value == value then
+            if math.isinteger(key) then
+                table.remove(t, key)
+            else
+                t[key] = nil
+            end
+
+            if singleRemove == true then
+                break
+            end
+        end
+    end
+
+    Daneel.StackTrace.EndFunction("table.removevalue", t)
+    return t
+end
+
+
+
+
+
+

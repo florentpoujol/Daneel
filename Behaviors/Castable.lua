@@ -1,4 +1,4 @@
 
 function Behavior:Awake()
-    Ray.RegisterCastableGameObject(self.gameObject)
+    Trigger.RegisterCastableGameObject(self.gameObject)
 end

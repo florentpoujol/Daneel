@@ -701,26 +701,7 @@ function GameObject.AddComponent(go, componentType, params)
     return component
 end
 
--- Add AddComponent helpers
--- ie : go:AddModelRenderer()
-local function CreateAddComponentHelpers()
-    for i, componentType in ipairs(Daneel.config.componentTypes) do
-        if componentType ~= "Transform" then
-            
-            GameObject["Add"..componentType] = function(go, params)
-                Daneel.StackTrace.BeginFunction("GameObject.Add"..componentType, go, params)
-                local errorHead = "GameObject.Add"..componentType.."(gameObject[, params]) : "
-                
-                Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
-
-                local component = go:AddComponent(componentType, params)
-                Daneel.StackTrace.EndFunction("GameObject.Add"..componentType)
-                return component
-            end
-
-        end
-    end
-end
+-- + helpers, see in Init() below
 
 
 
@@ -760,26 +741,7 @@ function GameObject.GetScriptedBehavior(go, scriptNameOrAsset)
     return component
 end
 
--- Add GetComponent helpers
--- ie : go:GetModelRenderer()
-local function CreateGetComponentHelpers()
-    for i, componentType in ipairs(Daneel.config.componentTypes) do
-        if componentType ~= "ScriptedBehavior" then
-
-            GameObject["Get"..componentType] = function(go)
-                Daneel.StackTrace.BeginFunction("GameObject.Get"..componentType, go)
-                local errorHead = "GameObject.Get"..componentType.."(gameObject) : "
-                
-                Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
-
-                local component = go:GetComponent(componentType)
-                Daneel.StackTrace.EndFunction("GameObject.Get"..componentType)
-                return component
-            end
-
-        end
-    end
-end
+-- + helpers, see in Init() below
 
 
 
@@ -810,24 +772,7 @@ function GameObject.HasComponent(go, componentType)
     return hasComponent
 end
 
--- Add GetComponent helpers
--- ie : go:GetModelRenderer()
-local function CreateHasComponentHelpers()
-    for i, componentType in ipairs(Daneel.config.componentTypes) do
-        
-        GameObject["Has"..componentType] = function(go)
-            Daneel.StackTrace.BeginFunction("GameObject.Has"..componentType, go)
-            local errorHead = "GameObject.Has"..componentType.."(gameObject) : "
-            
-            Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
-
-            local hasComponent = go:HasComponent(componentType)
-            Daneel.StackTrace.EndFunction("GameObject.Has"..componentType, hasComponent)
-            return hasComponent
-        end
-
-    end
-end
+-- + helpers 
 
 
 
@@ -965,34 +910,74 @@ function GameObject.DestroyScriptedBehavior(go, scriptNameOrAsset)
     Daneel.StackTrace.EndFunction("GameObject.DestroyScriptedBehavior")
 end
 
--- Add DestroyComponent helpers
--- ie : go:DestroyModelRenderer()
-local function CreateDestroyComponentHelpers()
-    for i, componentType in ipairs(Daneel.config.componentTypes) do
-        if componentType ~= "Transform" or componentType ~= "ScriptedBehavior" then
-
-            GameObject["Destroy"..componentType] = function(go)
-                Daneel.StackTrace.BeginFunction("GameObject.Destroy"..componentType, go)
-                local errorHead = "GameObject.Destroy"..componentType.."(gameObject) : "
-                
-                Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
-
-                go:DestroyComponent(componentType)
-                Daneel.StackTrace.EndFunction("GameObject.Destroy"..componentType)
-            end
-
-        end
-    end
-end
+-- + helpers
 
 
 
 ----------------------------------------------------------------------------------
 
 function GameObject.Init()
-    CreateAddComponentHelpers()
-    CreateGetComponentHelpers()
-    CreateHasComponentHelpers()
-    CreateDestroyComponentHelpers()
+    
+    for i, componentType in ipairs(Daneel.config.componentTypes) do
+        
+        -- AddComponent helpers
+        -- ie : go:AddModelRenderer()
+        if componentType ~= "Transform" then 
+            GameObject["Add"..componentType] = function(go, params)
+                Daneel.StackTrace.BeginFunction("GameObject.Add"..componentType, go, params)
+                local errorHead = "GameObject.Add"..componentType.."(gameObject[, params]) : "
+                
+                Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
+
+                local component = go:AddComponent(componentType, params)
+                Daneel.StackTrace.EndFunction("GameObject.Add"..componentType)
+                return component
+            end
+        end
+
+
+        -- GetComponent helpers
+        -- ie : go:GetModelRenderer()
+        if componentType ~= "ScriptedBehavior" then
+            GameObject["Get"..componentType] = function(go)
+                Daneel.StackTrace.BeginFunction("GameObject.Get"..componentType, go)
+                local errorHead = "GameObject.Get"..componentType.."(gameObject) : "
+                
+                Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
+
+                local component = go:GetComponent(componentType)
+                Daneel.StackTrace.EndFunction("GameObject.Get"..componentType)
+                return component
+            end
+        end
+
+
+        -- Add GetComponent helpers
+        -- ie : go:GetModelRenderer()
+        GameObject["Has"..componentType] = function(go)
+            Daneel.StackTrace.BeginFunction("GameObject.Has"..componentType, go)
+            local errorHead = "GameObject.Has"..componentType.."(gameObject) : "
+            
+            Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
+
+            local hasComponent = go:HasComponent(componentType)
+            Daneel.StackTrace.EndFunction("GameObject.Has"..componentType, hasComponent)
+            return hasComponent
+        end
+
+
+        -- Add DestroyComponent helpers
+        -- ie : go:DestroyModelRenderer()
+        GameObject["Destroy"..componentType] = function(go)
+            Daneel.StackTrace.BeginFunction("GameObject.Destroy"..componentType, go)
+            local errorHead = "GameObject.Destroy"..componentType.."(gameObject) : "
+            
+            Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
+
+            go:DestroyComponent(componentType)
+            Daneel.StackTrace.EndFunction("GameObject.Destroy"..componentType)
+        end
+
+    end -- end for
 end
 
