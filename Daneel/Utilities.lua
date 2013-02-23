@@ -282,6 +282,10 @@ end
 -- @param errorStart [optional] (string) The begining of the error message
 -- @param errorEnd [optional] (string) The end of the error message
 function Daneel.Debug.CheckOptionalArgType(arg, argName, expectedArgType, errorStart, errorEnd)
+    if arg == nil then
+        return
+    end
+    
     local errorHead = "Daneel.Debug.CheckArg(arg, argName, expectedArgType, errorStart, errorEnd) : "
 
     local argType = type(argName)
@@ -331,15 +335,15 @@ Daneel.Triggers.triggerableGameObjects = {}
 -- Add a gameObject to the castableGameObject list.
 -- @param gameObject (GameObject) The gameObject to add to the list.
 function Daneel.Triggers.RegisterTriggerableGameObject(gameObject)
-    Daneel.StackTrace.BeginFunction("Daneel.Trigger.RegisterTriggerableGameObject", gameObject)
-    local errorHead = "Daneel.Trigger.RegisterTriggerableGameObject(gameObject) : "
+    Daneel.StackTrace.BeginFunction("Daneel.Triggers.RegisterTriggerableGameObject", gameObject)
+    local errorHead = "Daneel.Triggers.RegisterTriggerableGameObject(gameObject) : "
 
     local argType = cstype(gameObject)
     if argType ~= "GameObject" then
         error(errorHead.."Argument 'gameObject' is of type '"..argType.."' with value '"..tostring(gameObject).."' instead of 'GameObject'.")
     end
 
-    table.insert(Daneel.Trigger.triggerableGameObjects, gameObject)
+    table.insert(Daneel.Triggers.triggerableGameObjects, gameObject)
     Daneel.StackTrace.EndFunction("Ray.RegisterCastableGameObject")
 end
 
