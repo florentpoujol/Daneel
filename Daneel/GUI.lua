@@ -41,7 +41,8 @@ local guiLabelCallSyntaxError = "Function not called from a GUILabel. Your must 
 
 
 -- Create a new GUILabel
--- @param [optional] (table) A table with initialisation position, text and scale
+-- @param name (string) The label name
+-- @param params [optional] (table) A table with initialisation position, text and scale
 -- @return (GUILabel) The new GUILabel
 function GUILabel.New(name, params)
     Daneel.StackTrace.BeginFunction("GUILabel.New", name, params)

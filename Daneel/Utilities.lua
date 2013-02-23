@@ -5,30 +5,17 @@ end
 
 Daneel.Utilities = {}
 
-
 -- Make sure that the case of the provided name is correct.
 -- by checking against value in the provided set.
 -- @param name (string) The name to check the case.
 -- @param set (table) A table of value to check the name against.
--- @param scriptProof [optionnal] (boolean=false) Check that Script is converted to ScriptedBehavior.
+-- @param scriptProof [optional default=false] (boolean) Check that Script is converted to ScriptedBehavior.
 function Daneel.Utilities.CaseProof(name, set, scriptProof)
     Daneel.StackTrace.BeginFunction("Daneel.Utilities.CaseProof", name, set, scriptProof)
-    local errorHead = "Daneel.Utilities.CaseProof(name, set, scriptProof) : "
-    
-    local argType = type(name)
-    if argType ~= "string" then
-        error(errorHead.."Argument 'name' is of type '"..argType.."' with value '"..tostring(name).."' instead of 'string'.")
-    end
-
-    argType = type(set)
-    if argType ~= "table" then
-        error(errorHead.."Argument 'set' is of type '"..argType.."' with value '"..tostring(set).."' instead of 'table'.")
-    end
-
-    argType = type(scriptProof)
-    if scriptProof ~= nil and argType ~= "boolean" then
-        error(errorHead.."Argument 'scriptProof' is of type '"..argType.."' with value '"..tostring(scriptProof).."' instead of 'boolean'.")
-    end
+    local errorHead = "Daneel.Utilities.CaseProof(name, set[, scriptProof]) : " 
+    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
+    Daneel.Debug.CheckArgType(set, "set", "table", errorHead)
+    Daneel.Debug.CheckArgType(scriptProof, "scriptProof", "scriptProof", errorHead)
 
     for i, setItem in ipairs(set) do
         if name:lower() == setItem:lower() then
@@ -49,11 +36,7 @@ end
 -- @return (string) The new name.
 function Daneel.Utilities.ScriptProof(name)
     Daneel.StackTrace.BeginFunction("Daneel.Utilities.ScriptProof", name)
-
-    local argType = type(name)
-    if argType ~= "string" then
-        error("Daneel.Utilities.ScriptProof(name) : Argument 'name' is of type '"..argType.."' with value '"..tostring(name).."' instead of 'string'.")
-    end
+    Daneel.Debug.CheckArgType(name, "name", "string", "Daneel.Utilities.ScriptProof(name) : ")
 
     if name:lower() == "script" then
         name = "ScriptedBehavior"
@@ -68,11 +51,7 @@ end
 -- @return (boolean) True if the provided name is either 'script' or 'scriptedbehavior', false otherwise.
 function Daneel.Utilities.IsScript(name)
     Daneel.StackTrace.BeginFunction("Daneel.Utilities.IsScript", name)
-    
-    local argType = type(name)
-    if argType ~= "string" then
-        error("Daneel.Utilities.IsScript(name) : Argument 'name' is of type '"..argType.."' with value '"..tostring(name).."' instead of 'string'.")
-    end
+    Daneel.Debug.CheckArgType(name, "name", "string", "Daneel.Utilities.IsScript(name) : ")
 
     local isScript = false
 
@@ -83,7 +62,6 @@ function Daneel.Utilities.IsScript(name)
     Daneel.StackTrace.EndFunction("Daneel.Utilities.IsScript", isScript)
     return isScript
 end
-
 
 -- 
 function Daneel.Utilities.GetAllCraftStudioTypesAndObjects()
@@ -105,39 +83,6 @@ function Daneel.Utilities.GetAllCraftStudioTypesAndObjects()
     return t
 end
 
--- Return the craftStudio Type of the provided argument
--- @param The argument to get the type
-function cstype(arg)
-    Daneel.StackTrace.BeginFunction("cstype", arg)
-    argType = type(arg)
-
-    if argType == "table" then
-        local mt = getmetatable(arg)
-
-        if mt ~= nil then
-            local csto = Daneel.Utilities.GetAllCraftStudioTypesAndObjects()
-
-            for csType, csObject in pairs(csto) do
-                if mt == csObject then
-                    Daneel.StackTrace.EndFunction("cstype", csType)
-                    return csType
-                end
-            end
-        end
-
-        -- the csType variable on component is set during Compoenent.Init(), 
-        -- because the component's metatable is hidden
-        if arg.csType ~= nil and table.containsvalue(Daneel.config.componentTypes, arg.csType) then
-            Daneel.StackTrace.EndFunction("cstype", arg.csType)
-            return arg.csType
-        end
-    end
-
-    Daneel.StackTrace.EndFunction("cstype", argType)
-    return argType
-end
-
-
 
 
 ----------------------------------------------------------------------------------
@@ -148,14 +93,12 @@ Daneel.StackTrace = {
     depth = 1,
 }
 
-
+-- Register a function input in the stack trace
+-- @param functionName (string) The function name
+-- @param ... [optional] (mixed) Arguments received by the function
 function Daneel.StackTrace.BeginFunction(functionName, ...)
     local errorHead = "Daneel.StackTrace.BeginFunction(functionName[, ...]) : "
-
-    local argType = type(functionName)
-    if argType ~= "string" then
-        error(errorHead.."Argument 'functionName' is of type '"..argType.."' with value '"..tostring(functionName).."' instead of 'string'. Must the function name.")
-    end
+    Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
 
     Daneel.StackTrace.depth = Daneel.StackTrace.depth + 1
 
@@ -174,14 +117,12 @@ function Daneel.StackTrace.BeginFunction(functionName, ...)
     table.insert(Daneel.StackTrace.messages, msg)
 end
 
-
+-- Register a function output in the stack trace
+-- @param functionName (string) The function name
+-- @param ... [optional] (mixed) Variable returned by the function
 function Daneel.StackTrace.EndFunction(functionName, ...)
     local errorHead = "Daneel.StackTrace.EndFunction(functionName[, ...]) : "
-
-    local argType = type(functionName)
-    if argType ~= "string" then
-        error(errorHead.."Argument 'functionName' is of type '"..argType.."' with value '"..tostring(functionName).."' instead of 'string'. Must the function name.")
-    end
+    Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
 
     local msg = "- "*Daneel.StackTrace.depth.." "..functionName.."() returns "
 
@@ -197,7 +138,8 @@ function Daneel.StackTrace.EndFunction(functionName, ...)
     Daneel.StackTrace.depth = Daneel.StackTrace.depth - 1
 end
 
-
+-- Print Daneel's StackTrace
+-- @param length [optional default=Daneel.config.stackTraceLength] (number) The number of StackTrace entries to print
 function Daneel.StackTrace.Print(length)
     if length == nil then
         length = Daneel.config.stackTraceLength
@@ -218,14 +160,12 @@ function Daneel.StackTrace.Print(length)
     print("~~~~~ Daneel.StackTrace ~~~~~ End ~~~~~")
 end
 
-
-local OriginalError = error
-
-function error(text)
+-- Alias for error() but print Daneel's stack trace first
+-- @param msg (string) The error message
+function daneelerror(msg)
     Daneel.StackTrace.Print()
-    OriginalError(text)
+    error(msg)
 end
-
 
 
 
@@ -234,7 +174,6 @@ end
 
 Daneel.Debug = {}
 
-
 -- Check the provided argument's type against the provided type and display error if they don't match
 -- @param arg (mixed) The argument to check
 -- @param argName (string) The argument name
@@ -242,7 +181,7 @@ Daneel.Debug = {}
 -- @param errorStart [optional] (string) The begining of the error message
 -- @param errorEnd [optional] (string) The end of the error message
 function Daneel.Debug.CheckArgType(arg, argName, expectedArgType, errorStart, errorEnd)
-    local errorHead = "Daneel.Debug.CheckArg(arg, argName, expectedArgType, errorStart, errorEnd) : "
+    local errorHead = "Daneel.Debug.CheckArg(arg, argName, expectedArgType[, errorStart, errorEnd]) : "
 
     local argType = type(argName)
     if argType ~= "string" then
@@ -270,10 +209,9 @@ function Daneel.Debug.CheckArgType(arg, argName, expectedArgType, errorStart, er
 
     argType = cstype(arg)
     if argType ~= expectedArgType then
-        error(errorStart.."Argument '"..argName.."' is of type '"..argType.."' with value '"..tostring(arg).."' instead of '"..expectedArgType.."'. "..errorEnd)
+        daneelerror(errorStart.."Argument '"..argName.."' is of type '"..argType.."' with value '"..tostring(arg).."' instead of '"..expectedArgType.."'. "..errorEnd)
     end
 end
-
 
 -- Check the provided argument's type against the provided type and display error if they don't match
 -- @param arg (mixed) The argument to check
@@ -316,10 +254,41 @@ function Daneel.Debug.CheckOptionalArgType(arg, argName, expectedArgType, errorS
 
     argType = cstype(arg)
     if argType ~= nil and argType ~= expectedArgType then
-        error(errorStart.."Optional argument '"..argName.."' is of type '"..argType.."' with value '"..tostring(arg).."' instead of '"..expectedArgType.."'. "..errorEnd)
+        daneelerror(errorStart.."Optional argument '"..argName.."' is of type '"..argType.."' with value '"..tostring(arg).."' instead of '"..expectedArgType.."'. "..errorEnd)
     end
 end
 
+-- Return the craftStudio Type of the provided argument
+-- @param The argument to get the type
+function cstype(arg)
+    Daneel.StackTrace.BeginFunction("cstype", arg)
+    argType = type(arg)
+
+    if argType == "table" then
+        local mt = getmetatable(arg)
+
+        if mt ~= nil then
+            local csto = Daneel.Utilities.GetAllCraftStudioTypesAndObjects()
+
+            for csType, csObject in pairs(csto) do
+                if mt == csObject then
+                    --Daneel.StackTrace.EndFunction("cstype", csType)
+                    return csType
+                end
+            end
+        end
+
+        -- the csType variable on component is set during Compoenent.Init(), 
+        -- because the component's metatable is hidden
+        if arg.csType ~= nil and table.containsvalue(Daneel.config.componentTypes, arg.csType) then
+            --Daneel.StackTrace.EndFunction("cstype", arg.csType)
+            return arg.csType
+        end
+    end
+
+    --Daneel.StackTrace.EndFunction("cstype", argType)
+    return argType
+end
 
 ----------------------------------------------------------------------------------
 -- Triggers    GameObject that check their distance against triggerableGameObject and send
@@ -333,11 +302,7 @@ Daneel.Triggers.triggerableGameObjects = {}
 function Daneel.Triggers.RegisterTriggerableGameObject(gameObject)
     Daneel.StackTrace.BeginFunction("Daneel.Trigger.RegisterTriggerableGameObject", gameObject)
     local errorHead = "Daneel.Trigger.RegisterTriggerableGameObject(gameObject) : "
-
-    local argType = cstype(gameObject)
-    if argType ~= "GameObject" then
-        error(errorHead.."Argument 'gameObject' is of type '"..argType.."' with value '"..tostring(gameObject).."' instead of 'GameObject'.")
-    end
+    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
 
     table.insert(Daneel.Trigger.triggerableGameObjects, gameObject)
     Daneel.StackTrace.EndFunction("Ray.RegisterCastableGameObject")

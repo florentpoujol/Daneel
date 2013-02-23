@@ -55,7 +55,7 @@ end
 -- @param t (table) The table conataining the values to check against argument 'string'.
 -- @param ignoreCase [optional=false] (boolean) Ignore the case
 -- @return (boolean) True if 's' is found in 't', false otherwise
-function string.isOneOf(s, t, ignoreCase)
+function string.isoneof(s, t, ignoreCase)
     Daneel.StackTrace.BeginFunction("string.isOneOf", s, t, ignoreCase)
     local errorHead = "string.isOneOf(string, table[, ignoreCase]) : "
 

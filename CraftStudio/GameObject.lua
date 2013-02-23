@@ -299,7 +299,7 @@ function GameObject.Get(name)
     Daneel.StackTrace.BeginFunction("GameObject.Get", name)
 
     local argType = type(name)
-    if name == nil or argType ~= "string" then
+    if argType ~= "string" then
         error("GameObject.Get(name) : Argument 'name' is of type '"..argType.."' with value '"..tostring(name).."' instead of 'string'. Must be the gameObject name.")
     end
 
@@ -441,20 +441,20 @@ end
 -- If none of the scripted behaviors attached to the game object or its children have a method matching the specified name, nothing happens. 
 -- Uses GameObject:SendMessage() on the gameObject and all children of its children.
 -- @param gameObject (GameObject) The gameObject
--- @param methodName (string) The method name.
+-- @param functionName (string) The method name.
 -- @param data [optional] (table) The data to pass along the method call.
-function GameObject.BroadcastMessage(go, methodName, data)
-    Daneel.StackTrace.BeginFunction("GameObject.BroadcastMessage", go, methodName, data)
-    local errorHead = "GameObject.BroadcastMessage(gameObject, methodName[, data]) : "
+function GameObject.BroadcastMessage(go, functionName, data)
+    Daneel.StackTrace.BeginFunction("GameObject.BroadcastMessage", go, functionName, data)
+    local errorHead = "GameObject.BroadcastMessage(gameObject, functionName[, data]) : "
 
     Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckArgType(methodName, "methodName", "string", errorHead)
+    Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(data, "data", "table", errorHead)
 
     local allChildren = table.join({go}, go:GetChildren())
 
     for i, child in ipairs(allChildren) do
-        child:SendMessage(methodName, data)
+        child:SendMessage(functionName, data)
     end
 
     Daneel.StackTrace.EndFunction("GameObject.BroadcastMessage")
@@ -796,7 +796,7 @@ end
 -- Destroy a component from the gameObject.
 -- Argument 'input' can be :
 -- the component type (string) (the function will destroy the first component of that type), 
--- the component itself (ScriptedBehavior, Model, Map or Camera),
+-- the component object or instance (ScriptedBehavior, Model, Map or Camera),
 -- or a script name or asset (string or Script) (the function will destroy the ScriptedBehavior that uses this Script),
 -- 
 -- @param gameObject (GameObject) The gameObject

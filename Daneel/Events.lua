@@ -12,16 +12,8 @@ Daneel.Events = { events = {} }
 function Daneel.Events.Listen(eventName, _function) -- g for garbage
     Daneel.StackTrace.BeginFunction("Daneel.Events.Listen", eventName, _function)
     local errorHead = "Daneel.Events.Listen(eventName, function) : "
-    
-    local varType = type(eventName)
-    if eventName == nil or varType ~= "string" then
-        error(errorHead.."Argument 'eventName' is of type '"..varType.."' with value '"..tostring(eventName).."' instead of 'string'. Must be the event name.")
-    end
-
-    local varType = type(_function)
-    if _function == nil or type(func) ~= "function" then
-        error(errorHead.."Argument 'function' is of type '"..varType.."' with value '"..tostring(_function).."' instead of 'function'. Must be the function, not the function name.")
-    end
+    Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
+    Daneel.Debug.CheckArgType(_function, "_function", "function", errorHead, "Must be the function, not the function name.")
 
     if Daneel.Events.events[eventName] == nil then
         Daneel.Events.events[eventName] = {}
@@ -38,16 +30,8 @@ end
 function Daneel.Events.StopListen(eventName, _function)
     Daneel.StackTrace.BeginFunction("Daneel.Events.StopListen", eventName, _function)
     local errorHead = "Daneel.Events.StopListen(eventName, function) : "
-    
-    local varType = type(eventName)
-    if eventName == nil or type(eventName) ~= "string" then
-        error(errorHead.."Argument 'eventName' is of type '"..varType.."' with value '"..tostring(eventName).."' instead of 'string'. Must be the event name.")
-    end
-
-    local varType = type(_function)
-    if _function == nil or type(func) ~= "function" then
-        error(errorHead.."Argument '_function' is of type '"..varType.."' with value '"..tostring(_function).."' instead of 'function'. Must be the function, not the function name.")
-    end
+    Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
+    Daneel.Debug.CheckArgType(_function, "_function", "function", errorHead, "Must be the function, not the function name.")
 
     for i, storedFunc in ipairs(Daneel.Events.events[eventName]) do
         if func == storedFunc then
@@ -61,7 +45,7 @@ end
 -- Fire the specified event transmitting along all subsequent parameters to 'eventName' if some exists. 
 -- All functions that listen to this event with Daneel.Events.Listen() will be called and receive all parameters.
 -- @param eventName (string) The event name.
--- @param ... [optionnal] a list of parameters to pass along.
+-- @param ... [optional] a list of parameters to pass along.
 function Daneel.Events.Fire(eventName, ...)
     if arg == nil then
         Daneel.StackTrace.BeginFunction("Daneel.Events.Fire", eventName, nil)
@@ -69,10 +53,7 @@ function Daneel.Events.Fire(eventName, ...)
         Daneel.StackTrace.BeginFunction("Daneel.Events.Fire", eventName, unpack(arg))
     end
     
-    local varType = type(eventName)
-    if eventName == nil or type(eventName) ~= "string" then
-        error("Daneel.Events.Fire(eventName[, parameters]) : Argument 'eventName' is of type '"..varType.."' with value '"..tostring(eventName).."' instead of 'string'. Must be the event name.")
-    end
+    Daneel.Debug.CheckArgType(eventName, "eventName", "string", "Daneel.Events.Fire(eventName[, parameters]) : ")
     
     if Daneel.Events.events[eventName] == nil then 
         Daneel.StackTrace.EndFunction("Daneel.Events.Fire")

@@ -139,7 +139,7 @@ function Asset.Init()
             return asset
         end
 
-        -- IsOfType helper
+        -- IsOfType helper   -- not much usefull actually
         -- IsModelRenderer() ...
         Asset["Is"..assetType] = function(asset)
             Daneel.StackTrace.BeginFunction("Asset.Is"..assetType, asset)
@@ -156,7 +156,7 @@ function Asset.Init()
         end
 
 
-        -- Dynamic Getters
+        -- Dynamic Getters   -- is this usefull ??
         object["__index"] = function(t, key) 
             local funcName = "Get"..key:ucfirst()
             

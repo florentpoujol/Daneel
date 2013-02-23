@@ -11,11 +11,7 @@ Ray.catablesGameObjects = {}
 function Ray.RegisterCastableGameObject(gameObject)
     Daneel.StackTrace.BeginFunction("Ray.RegisterCastableGameObject", gameObject)
     local errorHead = "Ray.RegisterCastableGameObject(gameObject) : "
-
-    local argType = cstype(gameObject)
-    if argType ~= "GameObject" then
-        error(errorHead.."Argument 'gameObject' is of type '"..argType.."' with value '"..tostring(gameObject).."' instead of 'GameObject'.")
-    end
+    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
 
     table.insert(Ray.catablesGameObjects, gameObject)
     Daneel.StackTrace.EndFunction("Ray.RegisterCastableGameObject")
@@ -28,12 +24,7 @@ end
 function Ray.Cast(ray)
     Daneel.StackTrace.BeginFunction("Ray.Cast", ray)
     local errorHead = "Ray.Cast(ray) : "
-
-    local argType = cstype(ray)
-    if argType ~= "Ray" then
-        error(errorHead.."Argument 'ray' is of type '"..argType.."' with value '"..tostring(ray).."' instead of 'Ray'.")
-        --error(errorHead..rayCallSyntaxError.."Cast()")
-    end
+    Daneel.Debug.CheckArgType(ray, "ray", "Ray", errorHead)
 
     local hits = table.new()
 
@@ -57,16 +48,8 @@ end
 function Ray.IntersectsGameObject(ray, gameObject)
     Daneel.StackTrace.BeginFunction("Ray.IntersectsGameObject", ray, gameObject)
     local errorHead = "Ray.IntersectsGameObject(ray, gameObject) : "
-
-    local argType = cstype(ray)
-    if argType ~= "Ray" then
-        error(errorHead.."Argument 'ray' is of type '"..argType.."' with value '"..tostring(ray).."' instead of 'Ray'.")
-    end
-
-    argType = cstype(gameObject)
-    if argType ~= "GameObject" then
-        error(errorHead.."Argument 'gameObject' is of type '"..argType.."' with value '"..tostring(gameObject).."' instead of 'GameObject'.")
-    end
+    Daneel.Debug.CheckArgType(ray, "ray", "Ray", errorHead)
+    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
 
     local component = gameObject:GetComponent("ModelRenderer")
     if component ~= nil then

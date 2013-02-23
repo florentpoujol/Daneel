@@ -1,5 +1,7 @@
 
 
+ray:cast(goName)
 
+go:GetComponent() avec les component Object au lieu de component type et compo type insensible à la casse 
 
-
+concatenating a GO component will print it
