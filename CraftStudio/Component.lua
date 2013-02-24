@@ -56,15 +56,30 @@ function Component.Init()
 end
 
 
+-- Apply the content of the params argument to the component in argument.
+-- @param component (Scriptedbehavior, ModelRenderer, MapRenderer, Camera or Transform) The component
+-- @param params (table) A table of parameters to initialize the new component with.
+-- @return (Scriptedbehavior, ModelRenderer, MapRenderer, Camera or Transform) The component
+function Component.Set(component, params)
+    if params == nil then
+        return component
+    end
 
-function Component.New(gameObject, componentType, params)
+    Daneel.StackTrace.BeginFunction("Component.Set", component, params)
+    local errorHead = "Component.Set(component, params) : "
+    Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
+    local componentType = cstype(component)
+    local argType = nil
 
+    for key, value in pairs(params) do
+        component[key] = value
+    end
+
+    Daneel.StackTrace.BeginFunction("Component.Set")
 end
 
-function Component.Set(component, params)
-
-    -- transform
-    if params.transform ~= nil then
+-- transform
+    --[[if params.transform ~= nil then
         --  position
         if params.transform.position ~= nil then
             argType = cstype(params.transform.position)
@@ -203,5 +218,185 @@ function Component.Set(component, params)
 
         gameObject:AddComponent("ScriptedBehavior", scriptNameOrAsset)
     end 
-end
+]]
 
+
+-- OLD FROM ADD COMPONENT
+
+-- apply params
+    --[[if componentType == "ModelRenderer" then
+        -- animation
+        if params.animation ~= nil then
+            local animation = params.animation
+            
+            if type(animation) == "string" then
+                animation = Asset.Get(params.animation, "ModelAnimation")
+            end
+
+            if cstype(animation) ~= "ModelAnimation" then
+                error(errorHead.."Argument 'params.animation' is of type '"..cstype(params.animation).."' with value '"..tostring(params.animation).."' instead of 'string' (ModelAnimatin name) or 'ModelAnimation'.")
+            end
+
+            component:SetAnimation(animation)
+        end
+
+        -- AnimationPlayback
+        if params.startAnimationPlayback ~= nil then
+            local startAnimationPlayback = params.startAnimationPlayback
+            
+            argType = type(startAnimationPlayback)
+            if argType ~= "boolean" then
+                error(errorHead.."Argument 'params.startAnimationPlayback' is of type '"..argType.."' with value '"..tostring(startAnimationPlayback).."' instead of 'boolean'.")
+            end
+
+            component:StartAnimationPlayback(startAnimationPlayback)
+        end
+
+        -- AnimationTime
+        if params.setAnimationTime ~= nil then
+            local setAnimationTime = tonumber(params.setAnimationTime)
+            
+            if type(setAnimationTime) ~= "number"  then
+                error(errorHead.."Could not convert argument 'params.setAnimationTime' to number because it is of type '"..type(params.setAnimationTime).."' with value '"..tostring(params.setAnimationTime)..".")
+            end
+
+            component:SetAnimationTime(setAnimationTime)
+        end
+
+        -- Model
+        if params.model ~= nil then
+            local model = params.model
+            
+            if type(model) == "string" then
+                model = Asset.Get(params.model, "Model")
+            end
+
+            if cstype(model) ~= "Model" then
+                error(errorHead.."Argument 'params.model' is of type '"..type(params.model).."' with value '"..tostring(params.model).."' instead of 'string' (the model name) of 'Model'.")
+            end
+
+            component:SetModel(model)
+        end
+
+        -- Opacity
+        if params.opacity ~= nil then
+            local opacity = tonumber(params.opacity)
+            
+            if type(opacity) ~= "number" then
+                error(errorHead.."Could not convert argument 'params.opacity' to number because it is of type '"..type(params.opacity).."' with value '"..tostring(params.opacity)..".")
+            end
+
+            component:SetOpacity(opacity)
+        end
+    elseif componentType == "MapRenderer" then
+        -- Map
+        if params.map ~= nil then
+            local map = params.map
+            
+            if type(map) == "string" then
+                map = Asset.Get(params.map, "Map")
+            end
+
+            if cstype(map) ~= "Map" then
+                error(errorHead.."Argument 'params.map' is of type '"..type(params.map).."' with value '"..tostring(params.map).."' instead of 'string' (the Map name) or 'Map'.")
+            end
+
+            component:SetMap(map)
+        end
+
+        -- TileSet
+        if params.tileSet ~= nil then
+            local tileSet = params.tileSet
+            
+            if type(tileSet) == "string" then
+                tileSet = Asset.Get(params.tileSet, "TileSet")
+            end
+
+            if cstype(tileSet) ~= "TileSet" then
+                error(errorHead.."Argument 'params.tileSet' is of type '"..type(params.tileSet).."' with value '"..tostring(params.tileSet).."' instead of 'string' (the TileSet name) or 'TileSet'.")
+            end
+
+            component:SetTileSet(tileSet)
+        end
+
+        -- Opacity
+        if params.opacity ~= nil then
+            local opacity = tonumber(params.opacity)
+            
+            if type(opacity) ~= "number" then
+                error(errorHead.."Could not convert argument 'params.opacity' to number because it is of type '"..type(params.opacity).."' with value '"..tostring(params.opacity)..".")
+            end
+
+            component:SetOpacity(opacity)
+        end
+    elseif componentType == "Camera" then
+        -- projection mode
+        if params.projectionMode ~= nil then
+            local projectionMode = params.projectionMode
+            
+            if params.projectionMode ~= Camera.ProjectionMode.Perspective and params.projectionMode ~= Camera.ProjectionMode.Orthographic then
+                error(errorHead.."Argument 'params.projectionMode' is not 'Camera.ProjectionMode.Perspective' or 'Camera.ProjectionMode.Orthographic'. Must be one of those.")
+            end
+
+            component:SetProjectionMode(params.projectionMode)
+        end
+
+        -- fov
+        if params.fov ~= nil then
+            local fov = tonumber(params.fov)
+            
+            if type(fov) ~= "number" then
+                error(errorHead.."Could not convert argument 'params.fov' to number because it is of type '"..type(params.fov).."' with value '"..tostring(params.fov)..".")
+            end
+
+            component:SetFov(fov)
+        end
+
+        -- orthographicScale
+        if params.orthographicScale ~= nil then
+            local orthographicScale = tonumber(params.orthographicScale)
+            
+            if type(orthographicScale) ~= "number" then
+                error(errorHead.."Could not convert argument 'params.orthographicScale' to number because it is of type '"..type(params.orthographicScale).."' with value '"..tostring(params.orthographicScale)..".")
+            end
+
+            component:SetOrthographicScale(orthographicScale)
+        end
+
+        -- renderViewportPosition
+        if params.renderViewportPosition ~= nil then
+            local renderViewportPosition = params.renderViewportPosition
+            
+            if type(renderViewportPosition) ~= "table" then
+                error(errorHead.."Argument 'params.renderViewportPosition' is of type '"..type(params.renderViewportPosition).."' with value '"..tostring(params.renderViewportPosition).." instead of 'table'.")
+            end
+
+            renderViewportPosition.x = tonumber(renderViewportPosition.x)
+            renderViewportPosition.y = tonumber(renderViewportPosition.y)
+
+            if renderViewportPosition.x == nil or renderViewportPosition.y == nil or (renderViewportPosition.x == nil and renderViewportPosition.y == nil) then
+                error(errorHead.."Argument 'params.renderViewportPosition' is missing key 'x' and/or 'y'. Their value must be number or string.")
+            end
+
+            component:SetRenderViewportPosition(renderViewportPosition.x, renderViewportPosition.y)
+        end
+
+        -- renderViewportSize
+        if params.renderViewportSize ~= nil then
+            local renderViewportSize = params.renderViewportSize
+            
+            if type(renderViewportSize) ~= "table" then
+                error(errorHead.."Argument 'params.renderViewportSize' is of type '"..type(params.renderViewportSize).."' with value '"..tostring(params.renderViewportSize).." instead of 'table'.")
+            end
+
+            renderViewportSize.width = tonumber(renderViewportSize.width)
+            renderViewportSize.height = tonumber(renderViewportSize.height)
+
+            if renderViewportSize.width == nil or renderViewportSize.height == nil or (renderViewportSize.width == nil and renderViewportSize.height == nil) then
+                error(errorHead.."Argument 'params.renderViewportSize' is missing key 'width' and/or 'height'. Their value must be number or string.")
+            end
+
+            component:SetRenderViewportSize(renderViewportSize.width, renderViewportSize.height)
+        end
+    end
+    ]]
