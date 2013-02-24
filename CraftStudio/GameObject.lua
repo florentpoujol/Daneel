@@ -94,170 +94,34 @@ function GameObject.Instantiate(goName, scene, params)
     return go
 end
 
--- Apply the content of the params argument to the gameObject in argument.
+--- Apply the content of the params argument to the gameObject in argument.
 -- @param gameObject (GameObject) The gameObject
 -- @param params (table)
 -- @return (GameObject) The gameObject
 function GameObject.Set(gameObject, params)
     if params == nil then
-        return go
+        return gameObject
     end
 
     Daneel.StackTrace.BeginFunction("GameObject.Set", gameObject, params)
     local errorHead = "GameObject.Set(gameObject, params) : "
+    Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
     local argType = nil
 
     -- name
     if params.name ~= nil then
         Daneel.Debug.CheckArgType(params.name, "params.name", "string", errorHead)
-        gameObject:SetParent(params.name)
+        gameObject:SetName(params.name)
     end
 
     -- parent
     if params.parent ~= nil then 
         Daneel.Debug.CheckArgType(params.parent, "params.parent", {"string", "GameObject"}, errorHead)
-        local parentType = cstype(params.parent)
-
-        if parentType == "string" then
-            local parentName = params.parent
-            params.parent = GameObject.Get(parentName)
-            
-            if params.parent == nil then
-                daneelerror(errorHead.."Argument 'params.parent' : Parent GameObject with name '"..parentName.."' was not found.")
-            end
-
-            parentType = "GameObject"
-        end
-
-        if parentType == "GameObject" then
-            Daneel.Debug.CheckOptionalArgType(params.parent.keepLocalTransform, "params.parent.keepLocalTransform", "params.parent.keepLocalTransform", errorHead)
-            gameObject:SetParent(params.parent, params.parentKeepLocalTransform)
-        end
+        Daneel.Debug.CheckOptionalArgType(params.parentKeepLocalTransform, "params.parentKeepLocalTransform", "boolean", errorHead)
+        gameObject:SetParent(params.parent, params.parentKeepLocalTransform)
     end
 
-    -- transform
-    if params.transform ~= nil then
-        
-        --  position
-        if params.transform.position ~= nil then
-            argType = cstype(params.transform.position)
-            if argType ~= "Vector3" then
-                error(errorHead.."Argument 'params.transform.position' is of type '"..argType.."' with value '"..tostring(params.transform.position).."' instead of 'Vector3'.")
-            end
-
-            go.transform:SetPosition(params.transform.position)
-        end
-
-        if params.transform.localPosition ~= nil then
-            argType = cstype(params.transform.localPosition)
-            if argType ~= "Vector3" then
-                error(errorHead.."Argument 'params.transform.localPosition' is of type '"..argType.."' with value '"..tostring(params.transform.localPosition).."' instead of 'Vector3'.")
-            end
-
-            go.transform:SetLocalPosition(params.transform.localPosition)
-        end
-
-        -- orientation
-        if params.transform.orientation ~= nil then
-            argType = cstype(params.transform.orientation)
-            if argType ~= "Quaternion" then
-                error(errorHead.."Argument 'params.transform.orientation' is of type '"..argType.."' with value '"..tostring(params.transform.orientation).."' instead of 'Quaternion'.")
-            end
-
-            go.transform:SetOrientation(params.transform.orientation)
-        end
-
-        if params.transform.localOrientation ~= nil then
-            argType = cstype(params.transform.localOrientation)
-            if argType ~= "Quaternion" then
-                error(errorHead.."Argument 'params.transform.localOrientation' is of type '"..argType.."' with value '"..tostring(params.transform.localOrientation).."' instead of 'Quaternion'.")
-            end
-
-            go.transform:SetLocalOrientation(params.transform.localOrientation)
-        end
-
-        -- Euler Angles
-        if params.transform.eulerAngles ~= nil then
-            argType = cstype(params.transform.eulerAngles)
-            if argType ~= "Vector3" then
-                error(errorHead.."Argument 'params.transform.eulerAngles' is of type '"..argType.."' with value '"..tostring(params.transform.eulerAngles).."' instead of 'Vector3'.")
-            end
-
-            go.transform:SetEulerAngles(params.transform.eulerAngles)
-        end
-
-        if params.transform.localEulerAngles ~= nil then
-            argType = cstype(params.transform.localEulerAngles)
-            if argType ~= "Vector3" then
-                error(errorHead.."Argument 'params.transform.localEulerAngles' is of type '"..argType.."' with value '"..tostring(params.transform.localEulerAngles).."' instead of 'Vector3'.")
-            end
-
-            go.transform:SetLocalEulerAngles(params.transform.localEulerAngles)
-        end
-
-        -- scale
-        if params.transform.localScale ~= nil then
-            if type(params.transform.localScale) == "number" then
-                params.transform.localScale = Vector3:New(params.transform.localScale)
-            end
-
-            argType = cstype(params.transform.localScale)
-            if argType ~= "Vector3" then
-                error(errorHead.."Argument 'params.transform.localScale' is of type '"..argType.."' with value '"..tostring(params.transform.localScale).."' instead of 'Vector3'.")
-            end
-
-            go.transform:SetLocalScale(params.transform.localScale)
-        end
-    end -- end if params.transform ~= nil
-
-    -- other components
-    if params.modelRenderer ~= nil then
-        argType = type(params.modelRenderer)
-
-        if argType == "boolean" then
-            if params.modelRenderer == true then
-                gameObject:AddComponent("ModelRenderer")
-            end
-        else
-            if argType ~= "string" and argType ~= "table" then
-                error(errorHead.."Argument 'params.modelRenderer' is of type '"..argType.."' with value '"..tostring(params.modelRenderer).."' instead of 'string' or 'table'.")
-            end
-
-            gameObject:AddComponent("ModelRenderer", params.modelRenderer)
-        end
-    end
-
-    if params.mapRenderer ~= nil then
-        argType = type(params.mapRenderer)
-
-        if argType == "boolean" then
-            if params.mapRenderer == true then
-                gameObject:AddComponent("MapRenderer")
-            end
-        else
-            if argType ~= "string" and argType ~= "table" then
-                error(errorHead.."Argument 'params.mapRenderer' is of type '"..argType.."' with value '"..tostring(params.mapRenderer).."' instead of 'string' or 'table'.")
-            end
-
-            gameObject:AddComponent("MapRenderer", params.mapRenderer)
-        end
-    end
-
-    if params.camera ~= nil then
-        argType = type(params.camera)
-
-        if argType == "boolean" then
-            if params.camera == true then
-                gameObject:AddComponent("Camera")
-            end
-        else
-            if argType ~= "string" and argType ~= "table" then
-                error(errorHead.."Argument 'params.camera' is of type '"..argType.."' with value '"..tostring(params.camera).."' instead of 'string' or 'table'.")
-            end
-
-            gameObject:AddComponent("Camera", params.camera)
-        end
-    end
+    local component = nil
 
     -- scripts
     if params.scriptedBehaviors == nil then
@@ -268,14 +132,48 @@ function GameObject.Set(gameObject, params)
         table.insert(params.scriptedBehaviors, params.scriptedBehavior)
     end
 
-    for i, scriptNameOrAsset in ipairs(params.scriptedBehaviors) do
-        argType = type(scriptNameOrAsset)
-        if argType ~= "string" and argType ~= "Script" then
-            error(errorHead.."Item n°"..i.." in argument 'params.scriptedBehaviors' is of type '"..argType.."' with value '"..tostring(scriptNameOrAsset).."' instead of 'string' or 'table/Script'.")
+    for i, script in pairs(params.scriptedBehaviors) do
+        argType = cstype(script)
+        if argType ~= "string" and argType ~= "Script" and argType ~= "table" then
+            daneelerror(errorHead.."Item n°"..i.." in argument 'params.scriptedBehaviors' is of type '"..argType.."' with value '"..tostring(scriptNameOrAsset).."' instead of 'string', 'Script' or 'table'.")
         end
 
-        gameObject:AddComponent("ScriptedBehavior", scriptNameOrAsset)
+        local scriptParams = nil
+        if argType == "table" then
+            scriptParams = script
+            script = i
+        end
+
+        component = gameObject:GetScriptedBehavior(script)
+        
+        if component == nil then
+            component = gameObject:AddScriptedBehavior(script)
+        end
+
+        if scriptParams ~= nil then
+            component:Set(scriptParams)
+        end
     end 
+
+    -- others components
+    for i, componentType in ipairs({"modelRenderer", "mapRenderer", "camera"}) do
+        if params[componentType] ~= nil then
+            Daneel.Debug.CheckArgType(params[componentType], "params."..componentType, "table", errorHead)
+            local ComponentType = componentType:ucfirst()
+            component = gameObject:GetComponent(ComponentType)
+            
+            if component == nil then
+                component = gameObject:AddComponent(ComponentType)
+            end
+
+            component:Set(params[componentType])
+        end
+    end
+
+    if params.transform ~= nil then
+        Daneel.Debug.CheckArgType(params.transform, "params.transform", "table", errorHead)
+        gameObject.transform:Set(params.transform)
+    end
 
     Daneel.StackTrace.EndFunction("GameObject.Set", gameObject)
     return gameObject
@@ -310,38 +208,26 @@ local OriginalSetParent = GameObject.SetParent
 --- Set the gameOject's parent. 
 -- Optionnaly carry over the gameObject's local transform instead of the global one.
 -- @param gameObject (GameObject) The gameObject
--- @param parentNameOrObject (string or GameObject) The parent name or GameObject.
+-- @param parent (string or GameObject) The parent name or gameObject.
 -- @param keepLocalTransform [optional default=false] (boolean) Carry over the game object's local transform instead of the global one.
-function GameObject.SetParent(go, parentNameOrObject, keepLocalTransform)
-    Daneel.StackTrace.EndFunction("GameObject.SetParent", go, parentNameOrObject, keepLocalTransform)
-    local errorHead = "GameObject.SetParent(gameObject, parentNameOrObject[, keepLocalTransform]) : "
-
-    local argType = cstype(go)
-    if argType ~= "GameObject" then
-        error(errorHead.."Argument 'gameObject' is of type '"..argType.."' with value '"..tostring(parentNameOrObject).."' instead of 'GameObject'.")
-    end
-
-    argType = cstype(parentNameOrObject)
-    if argType ~= "string" and argType ~= "GameObject" then
-        error(errorHead.."Argument 'parentNameOrObject' is of type '"..argType.."' with value '"..tostring(parentNameOrObject).."' instead of 'string' or 'GameObject'. Must the parent gameObject name or GameObject.")
-    end
-
-    argType = type(keepLocalTransform)
-    if argType ~= "nil" and argType ~= "boolean" then
-        error(errorHead.."Argument 'keepLocalTransform' is of type '"..argType.."' with value '"..tostring(keepLocalTransform).."' instead of 'boolean'.")
-    end
+-- @return (GameObject) The gameObject.
+function GameObject.SetParent(gameObject, parent, keepLocalTransform)
+    Daneel.StackTrace.EndFunction("GameObject.SetParent", gameObject, parent, keepLocalTransform)
+    local errorHead = "GameObject.SetParent(gameObject, parent[, keepLocalTransform]) : "
+    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+    Daneel.Debug.CheckArgType(parent, "parent", {"string", "GameObject"}, errorHead)
+    Daneel.Debug.CheckOptionalArgType(keepLocalTransform, "keepLocalTransform", "boolean", errorHead)
     
     if keepLocalTransform == nil then
         keepLocalTransform = false
     end
 
-    local parent = parentNameOrObject
-
     if type(parent) == "string" then
-        parent = GameObject.Get(parentNameOrObject)
+        local parentName = parent
+        parent = GameObject.Get(parentName)
 
         if parent == nil then
-            error(errorHead.."Argument 'parentNameOrObject' : Parent GameObject with name '"..parentNameOrObject.."' was not found.")
+            daneelerror(errorHead.."Argument 'parent' : Parent gameObject with name '"..parentName.."' was not found.")
         end
     end
       
@@ -464,241 +350,108 @@ end
 --- Add a component to the gameObject and optionaly initialize it.
 -- @param gameObject (GameObject) The gameObject
 -- @param componentType (string) The Component type.
--- @param params [optional] (string, Script, Model, Map or table) The Script, Model or Map name or asset, or a table of parameters to initialize the new component with.
--- @return (ScriptedBehavior, Model, Map or Camera) The component .
-function GameObject.AddComponent(go, componentType, params)
+-- @param params [optional] (string, Script or table) The script name or asset, or a table of parameters to initialize the new component with. If componentType is 'ScriptedBehavior', this argument is not optional.
+-- @return (ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform) The component.
+function GameObject.AddComponent(gameObject, componentType, params)
     Daneel.StackTrace.BeginFunction("GameObject.AddComponent")
     local errorHead = "GameObject.AddComponent(gameObject, componentType[, params]) : "
-
     Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckArgType(componentType, "componentType", "string", errorHead)
+    Daneel.Debug.CheckArgType(componentType, "componentType", Daneel.config.componentTypes, errorHead)
     
     componentType = Daneel.Utilities.CaseProof(componentType, Daneel.config.componentTypes)
-
-    if not table.containsvalue(Daneel.config.componentTypes, componentType) then
-        error(errorHead.."Argument 'componentType' with value '"..componentType.."' is not one of the valid component types : "..table.concat(componentType, ", "))
+    
+    if componentType == "Transform" then
+        print(errorHead.."WARNING : Can't add a transform because gameObjects may only have one transform.")
+        Daneel.StackTrace.EndFunction("GameObject.AddComponent", gameObject.transform)
+        return gameObject.transform
     end
 
-    if params == nil then params = {} end
-    argType = cstype(params)
-
-    -- params is the asset name (script, model or map)
-    if argType == "string" then
-        local assetType = Daneel.config.componentTypeToAssetType[componentType]
-        local assetName = params
-        local asset = Asset.Get(assetName, assetType)
-        
-        if asset == nil then
-            error(errorHead.."Asset not found. Component type='"..componentType.."', asset type='"..assetType.."', asset name='"..assetName.."'.")
-        end
-
-        params = { [assetType:lower()] = asset }
-    end
-
-    -- params is an asset (script model or map)
-    if table.containsvalue({"Script", "Model", "Map"}, argType) then
-        params = { [argType:lower()] = params }
-    end
-    -- else : should be a params table
-
+    local component = nil
 
     -- ScriptedBehavior
     if componentType == "ScriptedBehavior" then
-        if params.script == nil then
-            error(errorHead.."Argument 'componentType' is 'ScriptedBehavior' but argument 'params.script' is nil.")
+        Daneel.Debug.CheckArgType(params, "params", {"string", "Script", "table"}, errorHead)
+        local script = nil
+        if type(params) == "table" then
+            for _script, _params in pairs(params) do
+                script = _script
+                params = _params
+                break
+            end
+
+            -- I shouldn't really use CheckArgType here since they are not really arguments ...
+            Daneel.Debug.CheckArgType(script, "script", {"string", "Script"}, errorHead)
+            Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
         end
-        
-        return go:CreateScriptedBehavior(params.script)
+
+        component = gameObject:CreateScriptedBehavior(script)
+    else
+        -- other componentTypes
+        Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
+        component = gameObject:CreateComponent(componentType)
     end
 
-    -- other componentTypes
-    local component = go:CreateComponent(componentType)
+    if params ~= nil then
+        component:Set(params)
+    end   
 
-
-    -- apply params
-    if componentType == "ModelRenderer" then
-        -- animation
-        if params.animation ~= nil then
-            local animation = params.animation
-            
-            if type(animation) == "string" then
-                animation = Asset.Get(params.animation, "ModelAnimation")
-            end
-
-            if cstype(animation) ~= "ModelAnimation" then
-                error(errorHead.."Argument 'params.animation' is of type '"..cstype(params.animation).."' with value '"..tostring(params.animation).."' instead of 'string' (ModelAnimatin name) or 'ModelAnimation'.")
-            end
-
-            component:SetAnimation(animation)
-        end
-
-        -- AnimationPlayback
-        if params.startAnimationPlayback ~= nil then
-            local startAnimationPlayback = params.startAnimationPlayback
-            
-            argType = type(startAnimationPlayback)
-            if argType ~= "boolean" then
-                error(errorHead.."Argument 'params.startAnimationPlayback' is of type '"..argType.."' with value '"..tostring(startAnimationPlayback).."' instead of 'boolean'.")
-            end
-
-            component:StartAnimationPlayback(startAnimationPlayback)
-        end
-
-        -- AnimationTime
-        if params.setAnimationTime ~= nil then
-            local setAnimationTime = tonumber(params.setAnimationTime)
-            
-            if type(setAnimationTime) ~= "number"  then
-                error(errorHead.."Could not convert argument 'params.setAnimationTime' to number because it is of type '"..type(params.setAnimationTime).."' with value '"..tostring(params.setAnimationTime)..".")
-            end
-
-            component:SetAnimationTime(setAnimationTime)
-        end
-
-        -- Model
-        if params.model ~= nil then
-            local model = params.model
-            
-            if type(model) == "string" then
-                model = Asset.Get(params.model, "Model")
-            end
-
-            if cstype(model) ~= "Model" then
-                error(errorHead.."Argument 'params.model' is of type '"..type(params.model).."' with value '"..tostring(params.model).."' instead of 'string' (the model name) of 'Model'.")
-            end
-
-            component:SetModel(model)
-        end
-
-        -- Opacity
-        if params.opacity ~= nil then
-            local opacity = tonumber(params.opacity)
-            
-            if type(opacity) ~= "number" then
-                error(errorHead.."Could not convert argument 'params.opacity' to number because it is of type '"..type(params.opacity).."' with value '"..tostring(params.opacity)..".")
-            end
-
-            component:SetOpacity(opacity)
-        end
-    elseif componentType == "MapRenderer" then
-        -- Map
-        if params.map ~= nil then
-            local map = params.map
-            
-            if type(map) == "string" then
-                map = Asset.Get(params.map, "Map")
-            end
-
-            if cstype(map) ~= "Map" then
-                error(errorHead.."Argument 'params.map' is of type '"..type(params.map).."' with value '"..tostring(params.map).."' instead of 'string' (the Map name) or 'Map'.")
-            end
-
-            component:SetMap(map)
-        end
-
-        -- TileSet
-        if params.tileSet ~= nil then
-            local tileSet = params.tileSet
-            
-            if type(tileSet) == "string" then
-                tileSet = Asset.Get(params.tileSet, "TileSet")
-            end
-
-            if cstype(tileSet) ~= "TileSet" then
-                error(errorHead.."Argument 'params.tileSet' is of type '"..type(params.tileSet).."' with value '"..tostring(params.tileSet).."' instead of 'string' (the TileSet name) or 'TileSet'.")
-            end
-
-            component:SetTileSet(tileSet)
-        end
-
-        -- Opacity
-        if params.opacity ~= nil then
-            local opacity = tonumber(params.opacity)
-            
-            if type(opacity) ~= "number" then
-                error(errorHead.."Could not convert argument 'params.opacity' to number because it is of type '"..type(params.opacity).."' with value '"..tostring(params.opacity)..".")
-            end
-
-            component:SetOpacity(opacity)
-        end
-    elseif componentType == "Camera" then
-        -- projection mode
-        if params.projectionMode ~= nil then
-            local projectionMode = params.projectionMode
-            
-            if params.projectionMode ~= Camera.ProjectionMode.Perspective and params.projectionMode ~= Camera.ProjectionMode.Orthographic then
-                error(errorHead.."Argument 'params.projectionMode' is not 'Camera.ProjectionMode.Perspective' or 'Camera.ProjectionMode.Orthographic'. Must be one of those.")
-            end
-
-            component:SetProjectionMode(params.projectionMode)
-        end
-
-        -- fov
-        if params.fov ~= nil then
-            local fov = tonumber(params.fov)
-            
-            if type(fov) ~= "number" then
-                error(errorHead.."Could not convert argument 'params.fov' to number because it is of type '"..type(params.fov).."' with value '"..tostring(params.fov)..".")
-            end
-
-            component:SetFov(fov)
-        end
-
-        -- orthographicScale
-        if params.orthographicScale ~= nil then
-            local orthographicScale = tonumber(params.orthographicScale)
-            
-            if type(orthographicScale) ~= "number" then
-                error(errorHead.."Could not convert argument 'params.orthographicScale' to number because it is of type '"..type(params.orthographicScale).."' with value '"..tostring(params.orthographicScale)..".")
-            end
-
-            component:SetOrthographicScale(orthographicScale)
-        end
-
-        -- renderViewportPosition
-        if params.renderViewportPosition ~= nil then
-            local renderViewportPosition = params.renderViewportPosition
-            
-            if type(renderViewportPosition) ~= "table" then
-                error(errorHead.."Argument 'params.renderViewportPosition' is of type '"..type(params.renderViewportPosition).."' with value '"..tostring(params.renderViewportPosition).." instead of 'table'.")
-            end
-
-            renderViewportPosition.x = tonumber(renderViewportPosition.x)
-            renderViewportPosition.y = tonumber(renderViewportPosition.y)
-
-            if renderViewportPosition.x == nil or renderViewportPosition.y == nil or (renderViewportPosition.x == nil and renderViewportPosition.y == nil) then
-                error(errorHead.."Argument 'params.renderViewportPosition' is missing key 'x' and/or 'y'. Their value must be number or string.")
-            end
-
-            component:SetRenderViewportPosition(renderViewportPosition.x, renderViewportPosition.y)
-        end
-
-        -- renderViewportSize
-        if params.renderViewportSize ~= nil then
-            local renderViewportSize = params.renderViewportSize
-            
-            if type(renderViewportSize) ~= "table" then
-                error(errorHead.."Argument 'params.renderViewportSize' is of type '"..type(params.renderViewportSize).."' with value '"..tostring(params.renderViewportSize).." instead of 'table'.")
-            end
-
-            renderViewportSize.width = tonumber(renderViewportSize.width)
-            renderViewportSize.height = tonumber(renderViewportSize.height)
-
-            if renderViewportSize.width == nil or renderViewportSize.height == nil or (renderViewportSize.width == nil and renderViewportSize.height == nil) then
-                error(errorHead.."Argument 'params.renderViewportSize' is missing key 'width' and/or 'height'. Their value must be number or string.")
-            end
-
-            component:SetRenderViewportSize(renderViewportSize.width, renderViewportSize.height)
-        end
-    end
-
-    Daneel.StackTrace.EndFunction("GameObject.AddComponent")
+    Daneel.StackTrace.EndFunction("GameObject.AddComponent", component)
     return component
 end
 
--- + helpers, see in Init() below
+local OriginalCreateScriptedBehavior = GameObject.CreateScriptedBehavior
+
+--- Create a ScritedBahevior on the provided gameObject
+-- @param gameObject (GameObject) The gameObject
+-- @param params (string, Script, table) The script name or asset or a table of parameters to initialize the new component with.
+-- @return (ScriptedBehavior) The component.
+function GameObject.CreateScriptedBehavior(gameObject, script)
+    -- local argType = cstype(params)
+
+    -- if argType == "string" then
+    --     local assetType = Daneel.config.componentTypeToAssetType[componentType]
+    --     local assetName = params
+    --     local asset = Asset.Get(assetName, assetType)
+        
+    --     if asset == nil then
+    --         error(errorHead.."Asset not found. Component type='"..componentType.."', asset type='"..assetType.."', asset name='"..assetName.."'.")
+    --     end
+
+    --     params = { [assetType:lower()] = asset }
+    -- end
 
 
+    -- if params.script == nil then
+    --     error(errorHead.."Argument 'componentType' is 'ScriptedBehavior' but argument 'params.script' is nil.")
+    -- end
+end
+
+--- Add a ScriptedBehavior to the gameObject and optionaly initialize it.
+-- @param gameObject (GameObject) The gameObject
+-- @param params (string, Script, table) The script name or asset or a table of parameters to initialize the new component with.
+-- @return (ScriptedBehavior) The component.
+function GameObject.AddScriptedBehavior(gameObject, params) end
+
+--- Add a ModelRenderer to the gameObject and optionaly initialize it.
+-- @param gameObject (GameObject) The gameObject
+-- @param params [optional] (table) A table of parameters to initialize the new component with.
+-- @return (ModelRenderer) The component.
+function GameObject.AddModelRenderer(gameObject, params) end
+
+--- Add a MapRenderer to the gameObject and optionaly initialize it.
+-- @param gameObject (GameObject) The gameObject
+-- @param params [optional] (table) A table of parameters to initialize the new component with.
+-- @return (MapRenderer) The component.
+function GameObject.AddMapRenderer(gameObject, params) end
+
+--- Add a Camera to the gameObject and optionaly initialize it.
+-- @param gameObject (GameObject) The gameObject
+-- @param params [optional] (table) A table of parameters to initialize the new component with.
+-- @return (Camera) The component.
+function GameObject.AddCamera(gameObject, params) end
+
+-- The actual code of the helpers is generated at runtime in GameObject.Init() below
+-- The declaration are written here to shows up in the documentation generated by LuaDoc
 
 ----------------------------------------------------------------------------------
 -- Get components
@@ -921,7 +674,6 @@ function GameObject.Init()
             GameObject["Add"..componentType] = function(go, params)
                 Daneel.StackTrace.BeginFunction("GameObject.Add"..componentType, go, params)
                 local errorHead = "GameObject.Add"..componentType.."(gameObject[, params]) : "
-                
                 Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
 
                 local component = go:AddComponent(componentType, params)
@@ -937,7 +689,6 @@ function GameObject.Init()
             GameObject["Get"..componentType] = function(go)
                 Daneel.StackTrace.BeginFunction("GameObject.Get"..componentType, go)
                 local errorHead = "GameObject.Get"..componentType.."(gameObject) : "
-                
                 Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
 
                 local component = go:GetComponent(componentType)
@@ -947,12 +698,11 @@ function GameObject.Init()
         end
 
 
-        -- Add GetComponent helpers
+        -- HasComponent helpers
         -- ie : go:GetModelRenderer()
         GameObject["Has"..componentType] = function(go)
             Daneel.StackTrace.BeginFunction("GameObject.Has"..componentType, go)
             local errorHead = "GameObject.Has"..componentType.."(gameObject) : "
-            
             Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
 
             local hasComponent = go:HasComponent(componentType)
@@ -961,7 +711,7 @@ function GameObject.Init()
         end
 
 
-        -- Add DestroyComponent helpers
+        -- DestroyComponent helpers
         -- ie : go:DestroyModelRenderer()
         GameObject["Destroy"..componentType] = function(go)
             Daneel.StackTrace.BeginFunction("GameObject.Destroy"..componentType, go)
