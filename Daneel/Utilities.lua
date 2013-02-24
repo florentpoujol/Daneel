@@ -177,28 +177,32 @@ Daneel.Debug = {}
 -- Check the provided argument's type against the provided type and display error if they don't match
 -- @param arg (mixed) The argument to check
 -- @param argName (string) The argument name
--- @param expectedArgType (string) The expected argument type
--- @param errorStart [optional] (string) The begining of the error message
+-- @param expectedArgTypes (string or table) The expected argument type(s)
+-- @param errorHead [optional] (string) The begining of the error message
 -- @param errorEnd [optional] (string) The end of the error message
-function Daneel.Debug.CheckArgType(arg, argName, expectedArgType, errorStart, errorEnd)
-    local errorHead = "Daneel.Debug.CheckArg(arg, argName, expectedArgType[, errorStart, errorEnd]) : "
+function Daneel.Debug.CheckArgType(arg, argName, expectedArgTypes, errorHead, errorEnd)
+    local errorHead = "Daneel.Debug.CheckArg(arg, argName, expectedArgTypes[, errorHead, errorEnd]) : "
 
     local argType = type(argName)
     if argType ~= "string" then
         error(errorHead.."Argument 'argName' is of type '"..argType.."' with value '"..tostring(argName).."' instead of 'string'.")
     end
 
-    argType = type(expectedArgType)
-    if argType ~= "string" then
-        error(errorHead.."Argument 'expectedArgType' is of type '"..argType.."' with value '"..tostring(expectedArgType).."' instead of 'string'.")
+    argType = type(expectedArgTypes)
+    if argType ~= "string" and argType ~= "table" then
+        error(errorHead.."Argument 'expectedArgTypes' is of type '"..argType.."' with value '"..tostring(expectedArgTypes).."' instead of 'string' or 'table'.")
     end
 
-    argType = type(errorStart)
+    if argType == "string" then
+        expectedArgTypes = {expectedArgTypes}
+    end
+
+    argType = type(errorHead)
     if arType ~= nil and argType ~= "string" then
-        error(errorHead.."Argument 'errorStart' is of type '"..argType.."' with value '"..tostring(errorStart).."' instead of 'string'.")
+        error(errorHead.."Argument 'errorHead' is of type '"..argType.."' with value '"..tostring(errorHead).."' instead of 'string'.")
     end
 
-    if errorStart == nil then errorStart = "" end
+    if errorHead == nil then errorHead = "" end
 
     argType = type(errorEnd)
     if arType ~= nil and argType ~= "string" then
@@ -208,37 +212,41 @@ function Daneel.Debug.CheckArgType(arg, argName, expectedArgType, errorStart, er
     if errorEnd == nil then errorEnd = "" end
 
     argType = cstype(arg)
-    if argType ~= expectedArgType then
-        daneelerror(errorStart.."Argument '"..argName.."' is of type '"..argType.."' with value '"..tostring(arg).."' instead of '"..expectedArgType.."'. "..errorEnd)
+    if not argType:isoneof(expectedArgTypes) then
+        daneelerror(errorHead.."Argument '"..argName.."' is of type '"..argType.."' with value '"..tostring(arg).."' instead of '"..table.concat(expectedArgTypes, "', '").."'. "..errorEnd)
     end
 end
 
 -- Check the provided argument's type against the provided type and display error if they don't match
 -- @param arg (mixed) The argument to check
 -- @param argName (string) The argument name
--- @param expectedArgType (string) The expected argument type
--- @param errorStart [optional] (string) The begining of the error message
+-- @param expectedArgTypes (string) The expected argument type
+-- @param errorHead [optional] (string) The begining of the error message
 -- @param errorEnd [optional] (string) The end of the error message
-function Daneel.Debug.CheckOptionalArgType(arg, argName, expectedArgType, errorStart, errorEnd)
-    local errorHead = "Daneel.Debug.CheckArg(arg, argName, expectedArgType, errorStart, errorEnd) : "
+function Daneel.Debug.CheckOptionalArgType(arg, argName, expectedArgTypes, errorHead, errorEnd)
+    local errorHead = "Daneel.Debug.CheckArg(arg, argName, expectedArgTypes, errorHead, errorEnd) : "
 
     local argType = type(argName)
     if argType ~= "string" then
         error(errorHead.."Argument 'argName' is of type '"..argType.."' with value '"..tostring(argName).."' instead of 'string'.")
     end
 
-    argType = type(expectedArgType)
-    if argType ~= "string" then
-        error(errorHead.."Argument 'expectedArgType' is of type '"..argType.."' with value '"..tostring(expectedArgType).."' instead of 'string'.")
+    argType = type(expectedArgTypes)
+    if argType ~= "string" and argType ~= "table" then
+        error(errorHead.."Argument 'expectedArgTypes' is of type '"..argType.."' with value '"..tostring(expectedArgTypes).."' instead of 'string' r 'table'.")
     end
 
-    argType = type(errorStart)
+    if argType == "string" then
+        expectedArgTypes = {expectedArgTypes}
+    end
+
+    argType = type(errorHead)
     if arType ~= nil and argType ~= "string" then
-        error(errorHead.."Argument 'errorStart' is of type '"..argType.."' with value '"..tostring(errorStart).."' instead of 'string'.")
+        error(errorHead.."Argument 'errorHead' is of type '"..argType.."' with value '"..tostring(errorHead).."' instead of 'string'.")
     end
 
-    if errorStart == nil then
-        errorStart = ""
+    if errorHead == nil then
+        errorHead = ""
     end
 
     argType = type(errorEnd)
@@ -253,8 +261,8 @@ function Daneel.Debug.CheckOptionalArgType(arg, argName, expectedArgType, errorS
     --
 
     argType = cstype(arg)
-    if argType ~= nil and argType ~= expectedArgType then
-        daneelerror(errorStart.."Optional argument '"..argName.."' is of type '"..argType.."' with value '"..tostring(arg).."' instead of '"..expectedArgType.."'. "..errorEnd)
+    if argType ~= nil and not argType:isoneof(expectedArgTypes) then  
+        daneelerror(errorHead.."Optional argument '"..argName.."' is of type '"..argType.."' with value '"..tostring(arg).."' instead of '"..table.concat(expectedArgTypes, "', '").."'. "..errorEnd)
     end
 end
 
