@@ -6,8 +6,7 @@ function GameObject.__tostring(go)
     return "GameObject: '"..go:GetName().."' "..id
 end
 
--- Dynamic properties for Getters and Setters
-
+-- Dynamic getters
 function GameObject.__index(go, key) 
     local funcName = "Get"..key:ucfirst()
     
@@ -20,7 +19,7 @@ function GameObject.__index(go, key)
     return rawget(go, key)
 end
 
-
+-- Dynamic setters
 function GameObject.__newindex(go, key, value)
     local funcName = "Set"..key:ucfirst()
     -- ie: variable "name" call "SetName"
@@ -37,56 +36,108 @@ end
 ----------------------------------------------------------------------------------
 
 
-local gameObjectCallSyntaxError = "Function not called from a gameObject. Your must use a colon ( : ) between the gameObject and the method name. Ie : self.gameObject:"
 
+--- Create a new gameObject with optional initialisation parameters.
+-- @param name (string) The GameObject name.
+-- @param params [optional] (string, GameObject or table) The parent gameObject name, or parent GameObject or a table with parameters to initialize the new gameObject with.
+-- @return (GameObject) The new gameObject.
+function GameObject.New(name, params)
+    Daneel.StackTrace.BeginFunction("GameObject.New", name, params)
+    local errorHead = "GameObject.New(name[, params]) : "
+    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
+    Daneel.Debug.CheckOptionalArgType(params, "params", {"string", "GameObject", "table"}, errorHead)
 
--- Create new gameObject 
+    if params ~= nil and type(params) ~= "table" then -- param is parent name or gameObject
+        params = {parent = params}
+    end
 
--- Apply the content of params to the gameObject in argument.
-local function ApplyParamsToGameObject(go, params, errorHead)
-    Daneel.StackTrace.BeginFunction("ApplyParamsToGameObject", go, params, errorHead)
+    local go = CraftStudio.CreateGameObject(name)
+    if params ~= nil then
+        go:Set(params)
+    end
+
+    Daneel.StackTrace.EndFunction("GameObject.New", go)
+    return go
+end
+
+--- Add a scene as a new gameObject with optional initialisation parameters.
+-- @param goName (string) The gameObject name.
+-- @param scene (string or Scene) The scene name or scene asset.
+-- @param params [optional] (string, GameObject or table) The parent gameObject name, or parent GameObject or a table with parameters to initialize the new gameObject with.
+-- @return (GameObject) The new gameObject.
+function GameObject.Instantiate(goName, scene, params)
+    Daneel.StackTrace.BeginFunction("GameObject.Instantiate", goName, scene, params)
+    local errorHead = "GameObject.Instantiate(gameObjectName, sceneName[, params]) : "
+    Daneel.Debug.CheckArgType(goName, "goName", "string", errorHead)
+    Daneel.Debug.CheckArgType(scene, "scene", {"string", "Scene"}, errorHead)
+    Daneel.Debug.CheckOptionalArgType(params, "params", {"string", "GameObject", "table"}, errorHead)
+
+    if type(scene) == "string" then
+        local sceneName = scene
+        scene = Asset.Get(sceneName, "Scene")
+
+        if scene == nil then
+            daneelerror(errorHead.."Argument 'scene' : Scene asset with name '"..sceneName.."' was not found.")
+        end
+    end
+
+    if params ~= nil and type(params) ~= "table" then -- param is parent name or gameObject
+        params = {parent = params}
+    end
     
+    local go = CraftStudio.Instantiate(goName, scene)
+    if params ~= nil then
+        go:Set(params)
+    end
+
+    Daneel.StackTrace.EndFunction("GameObject.Instantiate", go)
+    return go
+end
+
+-- Apply the content of the params argument to the gameObject in argument.
+-- @param gameObject (GameObject) The gameObject
+-- @param params (table)
+-- @return (GameObject) The gameObject
+function GameObject.Set(gameObject, params)
     if params == nil then
-        Daneel.StackTrace.EndFunction("ApplyParamsToGameObject", go)
-        return go 
+        return go
     end
 
-    if errorHead == nil then
-        errorHead = "ApplyParamsToGameObject(go, params) : "
-    end
-
+    Daneel.StackTrace.BeginFunction("GameObject.Set", gameObject, params)
+    local errorHead = "GameObject.Set(gameObject, params) : "
     local argType = nil
+
+    -- name
+    if params.name ~= nil then
+        Daneel.Debug.CheckArgType(params.name, "params.name", "string", errorHead)
+        gameObject:SetParent(params.name)
+    end
 
     -- parent
     if params.parent ~= nil then 
+        Daneel.Debug.CheckArgType(params.parent, "params.parent", {"string", "GameObject"}, errorHead)
         local parentType = cstype(params.parent)
-        if parentType ~= "string" and parentType ~= "GameObject" then
-            error(errorHead.."Argument 'params.parent' is of type '"..parentType.."' with value '"..tostring(params.parent).."' instead of 'string' (the parent name) or 'GameObject'.")
-        end
 
         if parentType == "string" then
             local parentName = params.parent
             params.parent = GameObject.Get(parentName)
             
             if params.parent == nil then
-                error(errorHead.."Argument 'params.parent' : Parent GameObject with name '"..parentName.."' was not found.")
+                daneelerror(errorHead.."Argument 'params.parent' : Parent GameObject with name '"..parentName.."' was not found.")
             end
 
             parentType = "GameObject"
         end
 
         if parentType == "GameObject" then
-            argType = type(params.parentKeepLocalTransform)
-            if argType ~= "nil" and argType ~= "boolean" then
-                error(errorHead.."Argument 'params.parentKeepLocalTransform' is of type '"..argType.."' with value '"..tostring(params.parentKeepLocalTransform).."' instead of 'boolean'.")
-            end
-
-            go:SetParent(params.parent, params.parentKeepLocalTransform)
+            Daneel.Debug.CheckOptionalArgType(params.parent.keepLocalTransform, "params.parent.keepLocalTransform", "params.parent.keepLocalTransform", errorHead)
+            gameObject:SetParent(params.parent, params.parentKeepLocalTransform)
         end
     end
 
     -- transform
     if params.transform ~= nil then
+        
         --  position
         if params.transform.position ~= nil then
             argType = cstype(params.transform.position)
@@ -165,14 +216,14 @@ local function ApplyParamsToGameObject(go, params, errorHead)
 
         if argType == "boolean" then
             if params.modelRenderer == true then
-                go:AddComponent("ModelRenderer")
+                gameObject:AddComponent("ModelRenderer")
             end
         else
             if argType ~= "string" and argType ~= "table" then
                 error(errorHead.."Argument 'params.modelRenderer' is of type '"..argType.."' with value '"..tostring(params.modelRenderer).."' instead of 'string' or 'table'.")
             end
 
-            go:AddComponent("ModelRenderer", params.modelRenderer)
+            gameObject:AddComponent("ModelRenderer", params.modelRenderer)
         end
     end
 
@@ -181,14 +232,14 @@ local function ApplyParamsToGameObject(go, params, errorHead)
 
         if argType == "boolean" then
             if params.mapRenderer == true then
-                go:AddComponent("MapRenderer")
+                gameObject:AddComponent("MapRenderer")
             end
         else
             if argType ~= "string" and argType ~= "table" then
                 error(errorHead.."Argument 'params.mapRenderer' is of type '"..argType.."' with value '"..tostring(params.mapRenderer).."' instead of 'string' or 'table'.")
             end
 
-            go:AddComponent("MapRenderer", params.mapRenderer)
+            gameObject:AddComponent("MapRenderer", params.mapRenderer)
         end
     end
 
@@ -197,14 +248,14 @@ local function ApplyParamsToGameObject(go, params, errorHead)
 
         if argType == "boolean" then
             if params.camera == true then
-                go:AddComponent("Camera")
+                gameObject:AddComponent("Camera")
             end
         else
             if argType ~= "string" and argType ~= "table" then
                 error(errorHead.."Argument 'params.camera' is of type '"..argType.."' with value '"..tostring(params.camera).."' instead of 'string' or 'table'.")
             end
 
-            go:AddComponent("Camera", params.camera)
+            gameObject:AddComponent("Camera", params.camera)
         end
     end
 
@@ -223,75 +274,19 @@ local function ApplyParamsToGameObject(go, params, errorHead)
             error(errorHead.."Item n°"..i.." in argument 'params.scriptedBehaviors' is of type '"..argType.."' with value '"..tostring(scriptNameOrAsset).."' instead of 'string' or 'table/Script'.")
         end
 
-        go:AddComponent("ScriptedBehavior", scriptNameOrAsset)
+        gameObject:AddComponent("ScriptedBehavior", scriptNameOrAsset)
     end 
 
-    Daneel.StackTrace.EndFunction("ApplyParamsToGameObject", go)
-    return go
+    Daneel.StackTrace.EndFunction("GameObject.Set", gameObject)
+    return gameObject
 end
-
--- Create a new gameObject with optional initialisation parameters.
--- @param name (string) The GameObject name.
--- @param params (string, GameObject or table) The parent gameObject name, or parent GameObject or a table with parameters to initialize the new gameObject with.
--- @return (GameObject) The new gameObject.
-function GameObject.New(name, params)
-    Daneel.StackTrace.BeginFunction("GameObject.New", name, params)
-    local errorHead = "GameObject.New(name[, params]) : "
-
-    local argType = type(name)
-    if name == nil or argType ~= "string" then
-        error(errorHead.."Argument 'name' is of type '"..argType.."' with value '"..tostring(name).."' instead of 'string'. Must be the gameObject name.")
-    end
-
-    local go = CraftStudio.CreateGameObject(name)
-    go = ApplyParamsToGameObject(go, params, errorHead)
-
-    Daneel.StackTrace.EndFunction("GameObject.New", go)
-    return go
-end
-
--- Add a scene as a new gameObject with optional initialisation parameters.
--- @param goName (string) The gameObject name.
--- @param scene (string or Scene) The scene name or scene asset.
--- @param params [optional default=nil] (string, GameObject or table) The parent gameObject name, or parent GameObject or a table with parameters to initialize the new gameObject with.
--- @return (GameObject) The new gameObject.
-function GameObject.Instantiate(goName, scene, params)
-    Daneel.StackTrace.BeginFunction("GameObject.Instantiate", goName, scene, params)
-    local errorHead = "GameObject.Instantiate(gameObjectName, sceneName[, params]) : "
-
-    local argType = type(goName)
-    if argType ~= "string" then
-        error(errorHead.."Argument 'gameObjectName' is of type '"..argType.."' with value '"..tostring(name).."' instead of 'string'. Must be the gameObject name.")
-    end
-
-    argType = cstype(scene)
-    if argType ~= "string" or argType ~= "Scene" then
-        error(errorHead.."Argument 'scene' is of type '"..argType.."' with value '"..tostring(scene).."' instead of 'string' (the scene name) or 'Scene'.")
-    end
-
-    if argType == "string" then
-        local sceneName = scene
-        scene = Asset.Get(sceneName, "Scene")
-
-        if scene == nil then
-            error(errorHead.."Argument 'scene' : Scene asset with name '"..sceneName.."' was not found.")
-        end
-    end
-    
-    local go = CraftStudio.Instantiate(goName, sceneName)
-    go = ApplyParamsToGameObject(go, params, errorHead)
-
-    Daneel.StackTrace.EndFunction("GameObject.Instantiate", go)
-    return go
-end
-
 
 
 ----------------------------------------------------------------------------------
 -- Miscellaneous
 
 
--- Alias of CraftStudio.FindGameObject(name).
+--- Alias of CraftStudio.FindGameObject(name).
 -- Get the first gameObject with the specified name.
 -- @param name (string) The gameObject name.
 -- @return (GameObject) The gameObject or nil if none is found.
@@ -312,7 +307,7 @@ end
 
 local OriginalSetParent = GameObject.SetParent
 
--- Set the gameOject's parent. 
+--- Set the gameOject's parent. 
 -- Optionnaly carry over the gameObject's local transform instead of the global one.
 -- @param gameObject (GameObject) The gameObject
 -- @param parentNameOrObject (string or GameObject) The parent name or GameObject.
@@ -355,7 +350,7 @@ function GameObject.SetParent(go, parentNameOrObject, keepLocalTransform)
 end
 
 
--- Alias of GameObject:FindChild().
+--- Alias of GameObject:FindChild().
 -- Find the first gameObject's child with the specified name.
 -- @param gameObject (GameObject) The gameObject
 -- @param name (string) The child name.
@@ -389,7 +384,7 @@ end
 
 local OriginalGetChildren = GameObject.GetChildren
 
--- Get all descendants of the gameObject.
+--- Get all descendants of the gameObject.
 -- @param gameObject (GameObject) The gameObject
 -- @param recursive [optional default=false] (boolean) Look for all descendants instead of just the first generation
 -- @param includeSelf [optional default=false] (boolean) Include the gameObject in the children.
@@ -435,7 +430,7 @@ function GameObject.GetChildren(go, recursive, includeSelf)
 end
 
 
--- Tries to call a method with the specified name on all the scripted behaviors attached to the gameObject
+--- Tries to call a method with the specified name on all the scripted behaviors attached to the gameObject
 -- or any of its descendants. 
 -- The data argument can be nil or a table you want the method to receive as its first (and only) argument.
 -- If none of the scripted behaviors attached to the game object or its children have a method matching the specified name, nothing happens. 
@@ -466,7 +461,7 @@ end
 -- Add components
 
 
--- Add a component to the gameObject and optionaly initialize it.
+--- Add a component to the gameObject and optionaly initialize it.
 -- @param gameObject (GameObject) The gameObject
 -- @param componentType (string) The Component type.
 -- @param params [optional] (string, Script, Model, Map or table) The Script, Model or Map name or asset, or a table of parameters to initialize the new component with.
@@ -711,7 +706,7 @@ end
 
 local OriginalGetScriptedBehavior = GameObject.GetScriptedBehavior
 
--- Get the specified ScriptedBehavior instance attached to the gameObject.
+--- Get the specified ScriptedBehavior instance attached to the gameObject.
 -- @param gameObject (GameObject) The gameObject
 -- @param scriptNameOrAsset (string or Script) The script name or asset.
 -- @return (ScriptedBehavior) The ScriptedBehavior instance.
@@ -749,7 +744,7 @@ end
 -- Has component
 
 
--- Check if the gameObject has the specified component.
+--- Check if the gameObject has the specified component.
 -- @param gameObject (GameObject) The gameObject
 -- @param componentType (string) The Component type.
 -- @return (boolean) True if the gameObject has the component, false otherwise
@@ -780,7 +775,7 @@ end
 -- Destroy gameObjects and components
 
 
--- Destroy the gameObject
+--- Destroy the gameObject
 -- @param gameObject (GameObject) The gameObject
 function GameObject.Destroy(go)
     Daneel.StackTrace.BeginFunction("GameObject.Destroy", go)
@@ -793,7 +788,7 @@ function GameObject.Destroy(go)
 end
 
 
--- Destroy a component from the gameObject.
+--- Destroy a component from the gameObject.
 -- Argument 'input' can be :
 -- the component type (string) (the function will destroy the first component of that type), 
 -- the component object or instance (ScriptedBehavior, Model, Map or Camera),
@@ -885,7 +880,7 @@ end
 
 -- TODO vérifier les instances des component
 
--- Destroy a ScriptedBehavior form the gameObject.
+--- Destroy a ScriptedBehavior form the gameObject.
 -- If argument 'scriptNameOrAsset' is set with a script name or a script asset, the function will try to destroy the ScriptedBehavior that use this script.
 -- If the argument is not set, it will destroy the first ScriptedBehavior on this gameObejct
 -- @param gameObject (GameObject) The gameObject
