@@ -1,4 +1,4 @@
-[craftsudio]: http://craftstu.io
+[craftstudio]: http://craftstu.io
 [CSscriptingreference]: http://craftstudio.wikia.com/wiki/Scripting_Reference/Index
 [Daneelscriptingreference]: http://a.com
 
