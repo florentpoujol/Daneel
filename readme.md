@@ -182,7 +182,7 @@ Arguments between square brackets are optional.
 ### string
 
 * string.totable(string)
-* string.isoneof(string, table[, ignoreCase])
+* string.isoneof(string, set[, ignoreCase])
 * string.ucfirst(string)
 
 ### table
@@ -198,5 +198,5 @@ Arguments between square brackets are optional.
 * table.compare(table1, table2)
 * table.combine(keys, values[, strict])
 * table.removevalue(table, value[, singleRemove])
-
+* table.getkey(table, value)
 

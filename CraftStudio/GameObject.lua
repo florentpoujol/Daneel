@@ -470,7 +470,21 @@ function GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset)
     return component
 end
 
--- + helpers, see in Init() below
+--- Get the first ModelRenderer component attached to the gameObject.
+-- @param gameObject (GameObject) The gameObject
+-- @return (ModelRenderer) The ModelRenderer component.
+function GameObject.GetModelRenderer(gameObject) end
+
+--- Get the first MapRenderer component attached to the gameObject.
+-- @param gameObject (GameObject) The gameObject
+-- @return (MapRenderer) The MapRenderer component.
+function GameObject.GetMapRenderer(gameObject) end
+
+--- Get the first Camera component attached to the gameObject.
+-- @param gameObject (GameObject) The gameObject
+-- @return (Camera) The Camera component.
+function GameObject.GetCamera(gameObject) end
+
 
 
 ----------------------------------------------------------------------------------
@@ -599,7 +613,7 @@ function GameObject.Init()
         
         -- AddComponent helpers
         -- ie : gameObject:AddModelRenderer()
-        if componentType ~= "Transform" then 
+        if componentType ~= "Transform" and componentType ~= "ScriptedBehavior" then 
             GameObject["Add"..componentType] = function(gameObject, params)
                 Daneel.StackTrace.BeginFunction("GameObject.Add"..componentType, gameObject, params)
                 local errorHead = "GameObject.Add"..componentType.."(gameObject[, params]) : "
@@ -613,7 +627,7 @@ function GameObject.Init()
 
         -- GetComponent helpers
         -- ie : gameObject:GetModelRenderer()
-        if componentType ~= "ScriptedBehavior" then
+        if componentType ~= "Transform" and componentType ~= "ScriptedBehavior" then
             GameObject["Get"..componentType] = function(gameObject)
                 Daneel.StackTrace.BeginFunction("GameObject.Get"..componentType, gameObject)
                 local errorHead = "GameObject.Get"..componentType.."(gameObject) : "
