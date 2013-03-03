@@ -463,28 +463,22 @@ local OriginalGetScriptedBehavior = GameObject.GetScriptedBehavior
 -- @param gameObject (GameObject) The gameObject
 -- @param scriptNameOrAsset (string or Script) The script name or asset.
 -- @return (ScriptedBehavior) The ScriptedBehavior instance.
-function GameObject.GetScriptedBehavior(go, scriptNameOrAsset)
-    Daneel.StackTrace.BeginFunction("GameObject.GetScriptedBehavior", go, scriptNameOrAsset)
+function GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset)
+    Daneel.StackTrace.BeginFunction("GameObject.GetScriptedBehavior", gameObject, scriptNameOrAsset)
     local errorHead = "GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset) : "
-
-    Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
-
-    local argType = Daneel.Debug.GetType(scriptNameOrAsset)
-    if argType ~= "string" and argType ~= "Script" then
-        error(errorHead.."Argument 'scriptNameOrAsset' is of type '"..argType.."' with value '"..tostring(scriptNameOrAsset).."' instead of 'string' (the Script name) or 'Script'.")
-    end
+    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+    Daneel.Debug.CheckArgType(scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead)
 
     local script = scriptNameOrAsset
 
-    if argType == "string" then
+    if type(scriptNameOrAsset) == "string" then
         script = Asset.Get(scriptNameOrAsset, "Script")
-        
         if script == nil then
-            error(errorHead.."Argument 'scriptNameOrAsset' : Script asset with name '"..scriptNameOrAsset.."' was not found.")
+            Daneel.Debug.PrintError(errorHead.."Argument 'scriptNameOrAsset' : Script asset with name '"..scriptNameOrAsset.."' was not found.")
         end
     end
 
-    local component = OriginalGetScriptedBehavior(go, script)
+    local component = OriginalGetScriptedBehavior(gameObject, script)
     Daneel.StackTrace.EndFunction("GameObject.GetScriptedBehavior", component)
     return component
 end
@@ -511,85 +505,58 @@ end
 
 --- Destroy a component from the gameObject.
 -- Argument 'input' can be :
--- the component type (string) (the function will destroy the first component of that type), 
--- the component object or instance (ScriptedBehavior, Model, Map or Camera),
+-- the component object (possible values : ScriptedBehavior, Model, Map or Camera),
+-- the component type as a case-insensitive string (the function will destroy the first component of that type), 
+-- the component instance (of type ScriptedBehavior, Model, Map or Camera),
 -- or a script name or asset (string or Script) (the function will destroy the ScriptedBehavior that uses this Script),
--- 
 -- @param gameObject (GameObject) The gameObject
 -- @param input (mixed) See function description.
 -- @param strict [optional default=false] (boolean) If true, returns an error when the function can't find the component to destroy.
 -- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
-function GameObject.DestroyComponent(go, input, strict)
-    Daneel.StackTrace.BeginFunction("GameObject.DestroyComponent", go, input, strict)
+function GameObject.DestroyComponent(gameObject, input, strict)
+    Daneel.StackTrace.BeginFunction("GameObject.DestroyComponent", gameObject, input, strict)
     local errorHead = "GameObject.DestroyComponent(gameObject, input[, strict]) : "
-
-    Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
-
-    local argType = Daneel.Debug.GetType(input)
-    local allowedTypes = {"string", "Script", "table"}
-    
-    if not argType:IsOneOf(allowedTypes) then
-        error(errorHead.."Argument 'input' is of type '"..argType.."' with value '"..tostring(input).."' instead of '"..table.concat(allowedTypes, "', '").."'.")
-    end
-
+    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     Daneel.Debug.CheckOptionalArgType(strict, "strict", "boolean", errorHead)
-
-    if strict == nil then strict = false end
-
-    local component = nil
-    local stringError = ""
-    --argType = Daneel.Debug.GetType(input)
-
-    -- input is a component ?
-    if argType == "table" then 
-        -- Components have a gameObject and a inner variable
-        -- But I found no way to check if the table is actally a component or not, or which component is it
-        -- because the metatable on components is hidden
-        if input.inner ~= nil and input.gameObject ~= nil then
-            component = input    
-        else
-            stringError = errorHead.."Argument 'input' is of type 'table' with value '"..tostring(input).."' but not a component."
-        end
-
-    -- input is a script asset
-    elseif argType == "Script" then
-        component = go:GetScriptedBehavior(input)
-
-        if component == nil then
-            stringError = errorHead.."Argument 'input' : Couldn't find a ScriptedBehavior corresponding to the specified Script asset on this gameObject."
-        end
-
-    -- string (component type or script name)
-    elseif argType == "string" then
-        input = Daneel.Utilities.CaseProof(input, Daneel.config.componentTypes)
-
-        -- component type
-        if table.containsvalue(Daneel.config.componentTypes, input) then
-            component = go:GetComponent(input)
-
-            if component == nil then
-                stringError = errorHead.."Argument 'input' : Couldn't find the specified component type '"..input.."' on this gameObject."
-            end
-
-        -- or script name
-        else 
-            component = go:GetScriptedBehaviorByName(input)
-
-            if component == nil then
-                stringError = errorHead.."Argument 'input' with value '"..input.."' is a string but not a component type nor a script asset name."
-            end
-        end
+    if strict == nil then 
+        strict = false 
     end
 
+    local inputType = Daneel.Debug.GetType(input)
+    local component = nil
+
+    -- input is component object ?
+    if table.containsvalue(Daneel.config.componentObjects, input) then
+        component = gameObject:GetComponent(
+            table.getkey(Daneel.config.components, input)
+        )
+    
+    -- input is component type ?
+    elseif input:isoneof(Daneel.config.componentTypes, true) then
+        component = gameObject:GetComponent(
+            Danel.Utilities.CaseProof(input, Daneel.config.componentTypes)
+        )
+
+    -- input is script name or asset ?
+    elseif inputType == "string" or inputType == "Script" then
+        component = gameObject:GetScriptedBehavior(input)
+    
+    -- at this point input must be component instance
+
+    -- not a component instance ?
+    elseif not inputType:isoneof(Daneel.config.componentTypes) then
+        Daneel.Debug.PrintError(errorHead.."Argument 'input' not correct. It is of type '"..inputType.."' with value '"..tostring(input).."'. Check the function description for allowed values.")
+    end
+
+  
     if component == nil then
-        if stringError == "" then
-            stringError = errorHead.."Couldn't find the component to destroy on this gameObject."
-        end
-        
+        _error = errorHead.."Couldn't find the component to destroy on this gameObject."
+                
         if strict then
-            error(stringError)
+            Daneel.Debug.PrintError(_error)
         else
-            print(stringError)
+            print("WARNING : ".._error)
+            Daneel.StackTrace.EndFunction("GameObject.DestroyComponent", false)
             return false
         end
     end
@@ -601,32 +568,28 @@ end
 
 -- TODO vérifier les instances des component
 
---- Destroy a ScriptedBehavior form the gameObject.
+--- Destroy a ScriptedBehavior from the gameObject.
 -- If argument 'scriptNameOrAsset' is set with a script name or a script asset, the function will try to destroy the ScriptedBehavior that use this script.
 -- If the argument is not set, it will destroy the first ScriptedBehavior on this gameObejct
 -- @param gameObject (GameObject) The gameObject
--- @param scriptNameOrAsset [optional] (string or Script) The script name or asset.
+-- @param scriptNameOrAsset [optional default=ScriptedBehavior] (string or Script) The script name or asset.
 -- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
 function GameObject.DestroyScriptedBehavior(go, scriptNameOrAsset)
     Daneel.StackTrace.BeginFunction("GameObject.DestroyScriptedBehavior", go, scriptNameOrAsset)
     local errorHead = "GameObject.DestroyScriptedBehavior(go[, scriptNameOrAsset]) : "
-
     Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
-
-    local argType = Daneel.Debug.GetType(scriptNameOrAsset)
-    if argType ~= "nil" and argType ~= "string" and argType ~= "Script" then
-        error(errorHead.."Optional argument 'scriptNameOrAsset' is of type '"..argType.."' with value '"..tostring(scriptNameOrAsset).."' instead of 'string' or 'Script'.")
-    end
-
+    Daneel.Debug.CheckOptionalArgType(scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead)
+    
     if scriptNameOrAsset == nil then
         scriptNameOrAsset = "ScriptedBehavior"
     end
     
-    go:DestroyComponent(scriptNameOrAsset)
-    Daneel.StackTrace.EndFunction("GameObject.DestroyScriptedBehavior")
+    local success = go:DestroyComponent(scriptNameOrAsset)
+    Daneel.StackTrace.EndFunction("GameObject.DestroyScriptedBehavior", success)
+    return success
 end
 
--- + helpers
+-- + other helpers
 
 
 
@@ -669,11 +632,11 @@ function GameObject.Init()
         GameObject["Destroy"..componentType] = function(go)
             Daneel.StackTrace.BeginFunction("GameObject.Destroy"..componentType, go)
             local errorHead = "GameObject.Destroy"..componentType.."(gameObject) : "
-            
             Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
 
-            go:DestroyComponent(componentType)
-            Daneel.StackTrace.EndFunction("GameObject.Destroy"..componentType)
+            local success = go:DestroyComponent(componentType)
+            Daneel.StackTrace.EndFunction("GameObject.Destroy"..componentType, success)
+            return success
         end
 
     end -- end for
