@@ -162,8 +162,6 @@ end
 
 
 
-
-
 ----------------------------------------------------------------------------------
 -- Debug
 
@@ -255,6 +253,43 @@ function Daneel.Debug.PrintError(message)
     Daneel.StackTrace.Print()
     error(message)
 end
+
+-- Check the value of 'componentType' and throw error if it is not one of the valid component types or objects.
+-- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera, Transform)
+-- @return (string) The component type as a string
+function Daneel.Debug.CheckComponentType(componentType)
+    Daneel.StackTrace.BeginFunction("Daneel.Debug.CheckComponentType", componentType)
+    local errorHead = "Daneel.Debug.CheckComponentType(componentType) : "
+
+    if type(componentType) == "string" then
+        local componentTypes = Daneel.config.componentTypes
+        componentType = Daneel.Utilities.CaseProof(componentType, componentTypes)
+        if not componentType:isoneof(componentTypes) then
+            Daneel.Debug.PrintError(errorHead.."Argument 'componentType' with value '"..componentType.."' is not one of the valid component types : "..table.concat(componentTypes, ", "))
+        end
+
+    -- component object, maybe
+    else
+        local stringComponentType = ""
+        for _componentType, componentObject in pairs(Daneel.config.components) do
+            if componentType == componentObject then
+                stringComponentType = _componentType
+            end
+        end
+
+        if stringComponentType == "" then
+            -- componentType was not a componentObject
+            Daneel.Debug.PrintError(errorHead.."Argument 'componentType' of type '"..Daneel.Debug.GetType(componentType).."' with value '"..tostring(componentType).."' is not one of the valid component types nor a valid component object.")
+        else
+            componentType = stringComponentType
+        end
+    end
+
+    Daneel.StackTrace.EndFunction("Daneel.Debug.CheckComponentType", componentType)
+    return componentType
+end
+
+
 
 ----------------------------------------------------------------------------------
 -- Triggers    GameObject that check their distance against triggerableGameObject and send
