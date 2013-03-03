@@ -6,24 +6,10 @@ local stringMetatable = getmetatable("") -- the 'string' class is origininally s
 -- @param num (number) The multiplier
 -- @return (string) The new string
 function stringMetatable.__mul(s, multiplier)
-    local errorHead = "[metatable of strings].__mul(string, multiplier) : "
-
-    local argType = type(s)
-    if argType ~= "string" then
-        error(errorHead.."Argument 'string' is of type '"..argType.."' with value '"..tostring(s).."' instead of 'string'.")
-    end
-
-    argType = type(multiplier)
-    if argType ~= "number" then
-        error(errorHead.."Argument 'multiplier' is of type '"..argType.."' with value '"..tostring(multiplier).."' instead of 'number'.")
-    end
-
     local fullString = ""
-
     for i=1, multiplier do
         fullString = fullString .. s
     end
-
     return fullString
 end
 
@@ -32,19 +18,12 @@ end
 -- @return (table) The table
 function string.totable(s)
     Daneel.StackTrace.BeginFunction("string.totable", s)
-
-    local argType = type(s)
-    if argType ~= "string" then
-        error("string.totable(string) : Argument 'string' is of type '"..argType.."' with value '"..tostring(s).."' instead of 'string'.")
-    end
-
+    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
     local strLen = s:len()
     local t = table.new()
-
     for i = 1, strLen do
         table.insert(t, s:sub(i, i))
     end 
-
     Daneel.StackTrace.EndFunction("string.totable", t)
     return t
 end
@@ -56,26 +35,13 @@ end
 -- @param ignoreCase [optional default=false] (boolean) Ignore the case
 -- @return (boolean) True if 's' is found in 't', false otherwise
 function string.isoneof(s, t, ignoreCase)
-    Daneel.StackTrace.BeginFunction("string.isOneOf", s, t, ignoreCase)
-    local errorHead = "string.isOneOf(string, table[, ignoreCase]) : "
-
-    local argType = type(s)
-    if argType ~= "string" then
-        error(errorHead.."Argument 'string' is of type '"..argType.."' with value '"..tostring(s).."' instead of 'string'.")
-    end
-
-    argType = type(t)
-    if argType ~= "table" then
-        error(errorHead.."Argument 'table' is of type '"..argType.."' with value '"..tostring(s).."' instead of 'table'.")
-    end
-
-    argType = type(ignoreCase)
-    if argType ~= nil and argType ~= "boolean" then
-        error(errorHead.."Argument 'string' is of type '"..argType.."' with value '"..tostring(s).."' instead of 'boolean'.")
-    end
-
+    Daneel.StackTrace.BeginFunction("string.isoneof", s, t, ignoreCase)
+    local errorHead = "string.isoneff(string, table[, ignoreCase]) : "
+    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
+    Daneel.Debug.CheckArgType(t, "t", "table", errorHead)
+    Daneel.Debug.CheckOptionalArgType(ignoreCase, "ignoreCase", "boolean", errorHead)
     local isOneOf = table.constainsvalue(t, s, ignoreCase)
-    Daneel.StackTrace.EndFunction("string.isOneOf", isOneOf)
+    Daneel.StackTrace.EndFunction("string.isoneof", isOneOf)
     return isOneOf
 end
 
@@ -85,16 +51,10 @@ end
 function string.ucfirst(s)
     Daneel.StackTrace.BeginFunction("string.ucfirst", s)
     local errorHead = "string.ucfirst(string) : "
-
-    local argType = type(s)
-    if argType ~= "string" then
-        error(errorHead.."Argument 'string' is of type '"..argType.."' with value '"..tostring(s).."' instead of 'string'.")
-    end
-
+    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
     t = s:totable()
     t[1] = t[1]:upper()
     s = t:concat()
-
     Daneel.StackTrace.EndFunction("string.ucfirst", s)
     return s
 end

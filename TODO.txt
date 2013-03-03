@@ -33,3 +33,4 @@ Package manager
 - définit des standards (appel, initialisation, config, indépendant de l'ordre de lecture des fichiers (acune dépendance globale))
 - permet de désactiver tout ou partie des fichiers facilement (code d'un fichier placé dans fonction appelée at runtime)
 
+
