@@ -16,7 +16,7 @@ function Asset.Get(assetName, assetType)
     local assetTypes = table.getKeys(assets)
     Daneel.Debug.CheckOptionalArgType(assetType, "assetType", {"string", unpack(assetTypes)}, errorHead)
     
-    if assetType ~= nil then     
+    if assetType ~= nil then
         if type(assetType) ~= "string" then
             for _assetType, assetObject in pairs(assets) do
                 if assetType == assetObject then
@@ -40,79 +40,49 @@ end
 
 -- Tell if the specified asset is of the specified type.
 -- @param asset (table) The asset.
--- @param assetType (string) The asset type.
+-- @param assetType (string, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document) The asset type as a case-insensitive string or the asset object.
 -- @return (boolean) True if the specified asset is of the specified type, false otherwise
 function Asset.IsOfType(asset, assetType)
     Daneel.StackTrace.BeginFunction("Asset.IsOfType", asset, assetType)
     local errorHead = "Asset.IsOfType(asset, assetType) : "
-
-    local argType = type(asset)
-    if argType ~= "table" then
-        error(errorHead.."Argument 'asset' is of type '"..argType.."' with value '"..tostring(asset).."' instead of 'table'. Must the asset.")
-    end
-
-    argType = type(assetType)
-    if argType ~= "string" then
-        error(errorHead.."Argument 'assetType' is of type '"..argType.."' with value '"..tostring(assetType).."' instead of 'string'. Must the asset type.")
-    end
+    Daneel.Debug.CheckArgType(asset, "asset", Daneel.config.assetTypes, errorHead)
+    Daneel.Debug.CheckArgType(assetType, "assetType", "string", errorHead)
 
     local assetTypes = Daneel.config.assetTypes
     assetType = Daneel.Utilities.CaseProof(assetType, assetTypes)
 
-    if not table.containsvalue(assetTypes, assetType) then
-        error(errorHead.."Argument 'assetType' with value '"..assetType.."' is not one of the valid asset types : "..table.concat(assetTypes, ", "))
+    if not assetType:isoneof(assetTypes) then
+        Daneel.Debug.PrintError(errorHead.."Argument 'assetType' with value '"..assetType.."' is not one of the valid asset types : "..table.concat(assetTypes, ", "))
     end
 
-    local isProvidedAssetType = false
-
-    if asset.inner ~= nil and tostring(asset.inner):find("CraftStudioCommon.ProjectData."..assetType) ~= nil then
-        isProvidedAssetType = true
-    end
-
+    local isProvidedAssetType = (Daneel.Debug.GetType(asset) == assetType)
     Daneel.StackTrace.EndFunction("Asset.IsOfType", isProvidedAssetType)
     return isProvidedAssetType
 end
 
 
 -- Return the type of the provided asset
--- @param asset (table) The asset
+-- @param asset (Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document) The asset
 -- @return (string) The asset type or nil
 function Asset.GetType(asset)
     Daneel.StackTrace.BeginFunction("Asset.GetType", asset)
     local errorHead = "Asset.GetType(asset) : "
+    Daneel.Debug.CheckArgType(asset, "asset", Daneel.config.assetTypes, errorHead)
 
-    local argType = type(asset)
-    if argType ~= "table" then
-        error(errorHead.."Argument 'asset' is of type '"..argType.."' with value '"..tostring(asset).."' instead of 'table'. Must the asset.")
-    end
-
-    local mt = getmetatbale(asset)
-    local assetType = nil
-    local assets = table.combine(Daneel.config.assetTypes, Daneel.config.assetObjects)
-
-    for type, object in pairs(assets) do
-        if object == mt then
-            assetType = type
-            break
-        end
-    end
-
+    local assetType = Daneel.Debug.GetType(asset)
     Daneel.StackTrace.EndFunction("Asset.GetType", assetType)
     return assetType
 end
--- Can also do like in __tostring()
+
 
 
 ----------------------------------------------------------------------------------
 
 -- Called from Daneel.Awake()
 function Asset.Init()
-    local assets = table.combine(Daneel.config.assetTypes, Daneel.config.assetObjects)
-
-    for assetType, object in pairs(assets) do
+    for assetType, object in pairs(Daneel.config.assets) do
         
         setmetatable(object, Asset)
-
 
         -- Get helpers
         -- GetModelRenderer() ...

@@ -8,8 +8,7 @@ function Daneel.Awake()
 
 
     -- Config
-    Daneel.config = table.new(Daneel.config)
-    setmetatable(Daneel.config, { __index = Daneel.defaultConfig })
+    Daneel.defaultConfig.Init()
     
 
     -- Screen
