@@ -385,4 +385,21 @@ function table.getvalues(t)
     return values
 end
 
+-- Get the key associated with the provided value
+-- @param t (table) The table
+-- @param value (mixed) The value
+function table.getkey(t, value)
+    Daneel.StackTrace.BeginFunction("table.getkey", t, value)
+    local errorHead = "table.getkey(t, value) : "
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
 
+    local key = nil
+    for k, v in pairs(t) do
+        if value == v then
+            key = k
+        end
+    end
+
+    Daneel.StackTrace.EndFunction("table.getkey", key)
+    return key
+end
