@@ -33,6 +33,14 @@ Daneel.defaultConfig = {
         Transform,
     },
 
+    components = {
+        ScriptedBehavior = ScriptedBehavior,
+        ModelRenderer = ModelRenderer,
+        MapRenderer = MapRenderer,
+        Camera = Camera,
+        Transform = Transform,
+    },
+
 
     assetTypes = {
         "Script",
@@ -54,6 +62,17 @@ Daneel.defaultConfig = {
         Sound,
         Scene,
         Document
+    },
+
+    assets = {
+        Script = Script,
+        Model = Model,
+        ModelAnimation = ModelAnimation,
+        Map = Map,
+        TileSet = TileSet,
+        Sound = Sound,
+        Scene = Scene,
+        Document = Document
     },
 
     -- Correspondance between the component type (the keys) and the asset type (the values)

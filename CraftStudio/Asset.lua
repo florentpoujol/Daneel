@@ -5,28 +5,30 @@ Asset.__index = Asset
 
 -- Alias of CraftStudio.FindAsset(assetName, assetType)
 -- Get the asset of the specified name and type.
--- @param assetName (string) The full asset name.
--- @param assetType [optionnal] (string) The asset type (Model, Map, TileSet, ModelAnimation, Scene, Sound, Script).
+-- @param assetName (string) The fully-qualified asset name.
+-- @param assetType [optional] (string, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document) The asset type as a case-insensitive string or the asset object.
 function Asset.Get(assetName, assetType)
     Daneel.StackTrace.BeginFunction("Asset.Get", assetName, assetType)
     local errorHead = "Asset.Get(assetName[, assetType]) : "
+    Daneel.Debug.CheckArgType(assetName, "assetName", "string", errorHead)
 
-    local argType = type(assetName)
-    if argType ~= "string" then
-        error(errorHead.."Argument 'assetName' is of type '"..argType.."' with value '"..tostring(assetName).."' instead of 'string'. Must the fully-qualified asset name.")
-    end
+    local assets = Daneel.config.assets
+    local assetTypes = table.getKeys(assets)
+    Daneel.Debug.CheckOptionalArgType(assetType, "assetType", {"string", unpack(assetTypes)}, errorHead)
+    
+    if assetType ~= nil then     
+        if type(assetType) ~= "string" then
+            for _assetType, assetObject in pairs(assets) do
+                if assetType == assetObject then
+                    assetType = _assetType
+                end
+            end
+        else
+            assetType = Daneel.Utilities.CaseProof(assetType, assetTypes)
+        end
 
-    argType = type(assetType)
-    if assetType ~= nil and argType ~= "string" then
-        error(errorHead.."Argument 'assetType' is of type '"..argType.."' with value '"..tostring(assetType).."' instead of 'string'. Must the asset type.")
-    end
-
-    if assetType ~= nil then
-        local assetTypes = Daneel.config.assetTypes
-        assetType = Daneel.Utilities.CaseProof(assetType, assetTypes)
-
-        if not table.containsvalue(assetTypes, assetType) then
-            error(errorHead.."Argument 'assetType' with value '"..assetType.."' is not one of the valid asset types : "..table.concat(assetTypes, ", "))
+        if not assetType:isoneof(assetTypes) then
+            Daneel.Debug.PrintError(errorHead.."Argument 'assetType' with value '"..assetType.."' is not one of the valid asset types : "..table.concat(assetTypes, ", "))
         end
     end
 
@@ -90,21 +92,10 @@ function Asset.GetType(asset)
 
     for type, object in pairs(assets) do
         if object == mt then
-            assetTtype = type
+            assetType = type
             break
         end
     end
-    --[[ local inner = tostring(asset.inner)
-    
-
-    if inner ~= nil then
-        for key, _assetType in ipairs(Daneel.config.assetTypes) do
-            if inner:find("CraftStudioCommon.ProjectData.".._assetType) ~= nil then
-                assetType = _assetType
-                break
-            end
-        end
-    end ]]--
 
     Daneel.StackTrace.EndFunction("Asset.GetType", assetType)
     return assetType
@@ -184,7 +175,7 @@ function Asset.Init()
         object["__tostring"] = function(asset)
             -- this has the advantage to return the asset ID that follows the asset Type
             -- ie : "Model: 123456789"
-            -- asset.inner is "CraftStudioCommon.ProjectData.AssetType: [some ID]"
+            -- asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
             -- CraftStudioCommon.ProjectData. is 30 characters long
             return tostring(asset.inner):sub(31, 60)
         end
