@@ -6,6 +6,10 @@ function GameObject.__tostring(gameObject)
     return "GameObject: '"..gameObject:GetName().."' "..id
 end
 
+-- list of ScriptedBehavior instances
+-- key = names, value = instances
+
+
 -- Dynamic getters
 function GameObject.__index(gameObject, key) 
     local funcName = "Get"..key:ucfirst()
@@ -15,7 +19,23 @@ function GameObject.__index(gameObject, key)
     elseif GameObject[key] ~= nil then
         return GameObject[key] -- have to return the function here, not the function return value !
     end
-    
+
+    -- maybe the key is a Script name used to acces the Behavior instance
+    scriptName = key:ucfirst()
+    if gameObject.scriptedBehaviors == nil then
+        gameObject.scriptedBehaviors = {}
+    end
+
+    if gameObject.scriptedBehaviors[scriptName] == nil then
+        local behavior = gameObject:GetScriptedBehavior(scriptName)
+        if behavior ~= nil then
+            gameObject.scriptedBehaviors[scriptName] = behavior
+            return behavior
+        end
+    else
+        return gameObject.scriptedBehaviors[scriptName]
+    end
+        
     return rawget(gameObject, key)
 end
 
@@ -26,6 +46,22 @@ function GameObject.__newindex(gameObject, key, value)
     
     if GameObject[funcName] ~= nil then
         return GameObject[funcName](gameObject, value)
+    end
+
+    -- maybe the key is a Script name used to acces the Behavior instance
+    scriptName = key:ucfirst()
+    if gameObject.scriptedBehaviors == nil then
+        gameObject.scriptedBehaviors = {}
+    end
+
+    if gameObject.scriptedBehaviors[scriptName] == nil then
+        local behavior = gameObject:GetScriptedBehavior(scriptName)
+        if behavior ~= nil then
+            gameObject.scriptedBehaviors[scriptName] = behavior
+            return behavior[key] = value
+        end
+    else
+        return gameObject.scriptedBehaviors[scriptName][key] = value
     end
     
     rawset(gameObject, key, value)

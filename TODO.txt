@@ -7,8 +7,7 @@ go:GetComponent() avec les component Object au lieu de component type et compo t
 concatenating a GO component will print it
 
 
-setModel
-setMap to accept model or map name
+setModel et setMap to accept model or map name
 
 
 accès au scriptedBehaviors
