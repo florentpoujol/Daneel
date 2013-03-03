@@ -349,44 +349,47 @@ end
 
 --- Add a component to the gameObject and optionaly initialize it.
 -- @param gameObject (GameObject) The gameObject
--- @param componentType (string) The Component type.
+-- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera) The case-insensitive component type (as a string) or component object.
 -- @param params [optional] (string, Script or table) The script name or asset, or a table of parameters to initialize the new component with. If componentType is 'ScriptedBehavior', this argument is not optional.
--- @return (ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform) The component.
-function GameObject.AddComponent(gameObject, componentType, params)
-    Daneel.StackTrace.BeginFunction("GameObject.AddComponent")
-    local errorHead = "GameObject.AddComponent(gameObject, componentType[, params]) : "
+-- @param scriptedBehaviorParams [optional] A table of parameters to initialize the new ScriptedBehavior with.
+-- @return (ScriptedBehavior, ModelRenderer, MapRenderer or Camera) The component.
+function GameObject.AddComponent(gameObject, componentType, params, scriptedBehaviorParams)
+    Daneel.StackTrace.BeginFunction("GameObject.AddComponent", gameObject, componentType, params, scriptedBehaviorParams)
+    local errorHead = "GameObject.AddComponent(gameObject, componentType[, params, scriptedBehaviorParams]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckArgType(componentType, "componentType", Daneel.config.componentTypes, errorHead)
     
-    componentType = Daneel.Utilities.CaseProof(componentType, Daneel.config.componentTypes)
+    if type(componentType) == "string" then
+        local componentTypes = Daneel.config.componentTypes
+        componentType = Daneel.Utilities.CaseProof(componentType, componentTypes)
+        if not componentType:isoneof(componentTypes) then
+            Daneel.Debug.PrintError(errorHead.."Argument 'componentType' with value '"..componentType.."' is not one of the valid component types : "..table.concat(componentTypes, ", "))
+        end
+
+    -- component object
+    else
+        for _componentType, componentObject in pairs(Daneel.config.components) do
+            if componentType == componentObject then
+                componentType = _componentType
+            end
+        end
+    end
     
     if componentType == "Transform" then
-        print(errorHead.."WARNING : Can't add a transform because gameObjects may only have one transform.")
-        Daneel.StackTrace.EndFunction("GameObject.AddComponent", gameObject.transform)
-        return gameObject.transform
+        Daneel.Debug.PrintError(errorHead.."WARNING : Can't add a transform because gameObjects may only have one transform.")
     end
 
     local component = nil
 
     -- ScriptedBehavior
     if componentType == "ScriptedBehavior" then
-        Daneel.Debug.CheckArgType(params, "params", {"string", "Script", "table"}, errorHead)
-        local script = nil
-        if type(params) == "table" then
-            for _script, _params in pairs(params) do
-                script = _script
-                params = _params
-                break
-            end
-
-            -- I shouldn't really use CheckArgType here since they are not really arguments ...
-            Daneel.Debug.CheckArgType(script, "script", {"string", "Script"}, errorHead)
-            Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
-        end
-
+        Daneel.Debug.CheckArgType(params, "params", {"string", "Script"}, errorHead)
+        local script = params
+        params = scriptedBehaviorParams
+        Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
         component = gameObject:CreateScriptedBehavior(script)
+        
+    -- other componentTypes
     else
-        -- other componentTypes
         Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
         component = gameObject:CreateComponent(componentType)
     end
@@ -401,9 +404,20 @@ end
 
 --- Add a ScriptedBehavior to the gameObject and optionaly initialize it.
 -- @param gameObject (GameObject) The gameObject
--- @param params (string, Script, table) The script name or asset or a table of parameters to initialize the new component with.
+-- @param scriptNameOrAsset (string or Script) The script name or asset
+-- @param params [optional] (table) A table of parameters to initialize the new component with.
 -- @return (ScriptedBehavior) The component.
-function GameObject.AddScriptedBehavior(gameObject, params) end
+function GameObject.AddScriptedBehavior(gameObject, scriptNameOrAsset, params) 
+    local componentType = "ScriptedBehavior"
+    
+    Daneel.StackTrace.BeginFunction("GameObject.AddScriptedBehavior", gameObject, scriptNameOrAsset, params)
+    local errorHead = "GameObject.AddScriptedBehavior(gameObject, scriptNameOrAsset[, params]) : "
+    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+
+    local component = gameObject:AddComponent(componentType, scriptNameOrAsset, params)
+    Daneel.StackTrace.EndFunction("GameObject.AddScriptedBehavior", component)
+    return component
+end
 
 --- Add a ModelRenderer to the gameObject and optionaly initialize it.
 -- @param gameObject (GameObject) The gameObject
@@ -592,7 +606,7 @@ function GameObject.Init()
                 Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
 
                 local component = gameObject:AddComponent(componentType, params)
-                Daneel.StackTrace.EndFunction("GameObject.Add"..componentType)
+                Daneel.StackTrace.EndFunction("GameObject.Add"..componentType, component)
                 return component
             end
         end
@@ -606,7 +620,7 @@ function GameObject.Init()
                 Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
 
                 local component = gameObject:GetComponent(componentType)
-                Daneel.StackTrace.EndFunction("GameObject.Get"..componentType)
+                Daneel.StackTrace.EndFunction("GameObject.Get"..componentType, component)
                 return component
             end
         end

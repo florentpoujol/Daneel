@@ -94,6 +94,10 @@ Arguments between square brackets are optional.
 * Asset.GetType(asset)
 * Asset.IsOfType(asset, assetType)
 
+### Component
+
+* Component.Set(component, params)
+
 ### Daneel.Debug
 
 * Daneel.Debug.CheckArgType(argument, argumentName, expectArgumenType[, errorHead, errorEnd])
@@ -128,8 +132,8 @@ Arguments between square brackets are optional.
 * gameObject:GetChildren([recursive, includeSelf])
 * gameObject:BroadcastMessage(functionName[, data])
 
-* gameObject:AddComponent(componentType[, params])
-* gameObject:AddScriptedBehavior([params])
+* gameObject:AddComponent(componentType[, params, scriptedBehaviorParams])
+* gameObject:AddScriptedBehavior(scriptNameOrAsset[, params])
 * gameObject:AddModelRenderer([params])
 * gameObject:AddMapRenderer([params])
 * gameObject:AddCamera([params])

@@ -54,7 +54,6 @@ end
 -- Apply the content of the params argument to the component in argument.
 -- @param component (Scriptedbehavior, ModelRenderer, MapRenderer, Camera or Transform) The component
 -- @param params (table) A table of parameters to initialize the new component with.
--- @return (Scriptedbehavior, ModelRenderer, MapRenderer, Camera or Transform) The component
 function Component.Set(component, params)
     if params == nil then
         return component
