@@ -107,8 +107,8 @@ Arguments between square brackets are optional.
 
 ### Daneel.Events
 
-* Daneel.Events.Listen(eventName, function)
-* Daneel.Events.StopListen(eventName, function)
+* Daneel.Events.Listen(eventName, function) / Daneel.Events.Listen(eventName, gameObject[, functionName, broadcast])
+* Daneel.Events.StopListen(eventName, functionOrGameObject)
 * Daneel.Events.Fire(eventName[, ...])
 
 ### Daneel.StackTrace

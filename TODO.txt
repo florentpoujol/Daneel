@@ -1,7 +1,5 @@
 
 
-ray:cast(goName)
-
 event.listen(evantname, gameobject, functionname)
 
 go:GetComponent() avec les component Object au lieu de component type et compo type insensible à la casse 
@@ -24,6 +22,12 @@ stacktrace endfunction sans devoir mettre le nom de la fonction
 voir pour Lua minifier
 
 
+
+
+Events
+    Fire
+    - vérifier que la suppression d'entrées dans events ne provoque pas de problèmes
+    - vérif lors de l'appel de function ou GO détruites
 
 
 
