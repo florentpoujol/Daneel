@@ -2,10 +2,6 @@
 Component = {}
 Component.__index = Component
 
-function Component.__tostring(component)
-    -- this has the advantage to return the asset ID that follows the
-    return tostring(asset.inner):sub(31, 60)
-end
 
 -- Create dynamic Getters and Setter
 -- Set the key __index and __newindex on all components objects
@@ -19,9 +15,8 @@ function Component.Init()
         -- component instances have the coresponding object (ie :ModelRenderer for a ModelRenderer instance)
         -- as metatable but it is hidden.
         -- Plus, the inner variable is unreadable, at least not like it is for the Assets (CraftStudioCommon.ProjectData.[AssetType])
-        -- The purpose of the Daneel.Debug.GetType variable here is to be read by Daneel.Debug.GetType() function (in the Utilities script)
-        object.Daneel.Debug.GetType = componentType
-
+        -- The purpose of the componentType variable here is to be read by Daneel.Debug.GetType() function (in the Utilities script)
+        object.componentType = componentType
 
         -- Dynamic Getters
         object["__index"] = function(t, key) 
@@ -50,7 +45,7 @@ function Component.Init()
         object["__tostring"] = function(component)
             -- returns something like "ModelRenderer: 123456789"
             -- component.inner is "?: [some ID]"
-            return Daneel.Debug.GetType(component)..tostring(component.inner):sub(2,20)
+            return Daneel.Debug.GetType(component)..": "..tostring(component.inner):sub(2,20)
         end
     end
 end
@@ -75,5 +70,5 @@ function Component.Set(component, params)
         component[key] = value
     end
 
-    Daneel.StackTrace.BeginFunction("Component.Set")
+    Daneel.StackTrace.EndFunction("Component.Set")
 end
