@@ -325,7 +325,7 @@ end
 -- @return (table) The table
 function table.removevalue(t, value, singleRemove)
     Daneel.StackTrace.BeginFunction("table.removevalue", t, values, singleRemove)
-    local errorHead = "table.removevalue(t, value) : "
+    local errorHead = "table.removevalue(t, value[, singleRemove]) : "
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
     Daneel.Debug.CheckOptionalArgType(singleRemove, "singleRemove", "boolean", errorHead)
     
@@ -351,8 +351,38 @@ function table.removevalue(t, value, singleRemove)
     return t
 end
 
+-- Return all the keys of the provided table
+-- @param t (table) The table
+-- @return (table) The keys
+function table.getkeys(t)
+    Daneel.StackTrace.BeginFunction("table.getkeys", t)
+    local errorHead = "table.getkeys(t) : "
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
 
+    local keys = table.new()
+    for key, value in pairs(t) do
+        keys:insert(key)
+    end
 
+    Daneel.StackTrace.EndFunction("table.getkeys", keys)
+    return keys
+end
 
+-- Return all the values of the provided table
+-- @param t (table) The table
+-- @return (table) The values
+function table.getvalues(t)
+    Daneel.StackTrace.BeginFunction("table.getvalues", t)
+    local errorHead = "table.getvalues(t) : "
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
+
+    local values = table.new()
+    for key, value in pairs(t) do
+        values:insert(value)
+    end
+
+    Daneel.StackTrace.EndFunction("table.getvalues", values)
+    return values
+end
 
 

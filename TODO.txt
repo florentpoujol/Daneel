@@ -15,6 +15,9 @@ self.gameObject.scriptName.public_var
 self.gameObject.scriptedBehaviors["scriptName"].public_var
 
 
+stacktrace endfunction sans devoir mettre le nom de la fonction
+
+
 voir pour Lua minifier
 
 
