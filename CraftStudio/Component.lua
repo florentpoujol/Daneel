@@ -19,8 +19,8 @@ function Component.Init()
         -- component instances have the coresponding object (ie :ModelRenderer for a ModelRenderer instance)
         -- as metatable but it is hidden.
         -- Plus, the inner variable is unreadable, at least not like it is for the Assets (CraftStudioCommon.ProjectData.[AssetType])
-        -- The purpose of the csType variable here is to be read by cstype() function (in the Utilities script)
-        object.csType = componentType
+        -- The purpose of the Daneel.Debug.GetType variable here is to be read by Daneel.Debug.GetType() function (in the Utilities script)
+        object.Daneel.Debug.GetType = componentType
 
 
         -- Dynamic Getters
@@ -50,7 +50,7 @@ function Component.Init()
         object["__tostring"] = function(component)
             -- returns something like "ModelRenderer: 123456789"
             -- component.inner is "?: [some ID]"
-            return cstype(component)..tostring(component.inner):sub(2,20)
+            return Daneel.Debug.GetType(component)..tostring(component.inner):sub(2,20)
         end
     end
 end
@@ -68,7 +68,7 @@ function Component.Set(component, params)
     Daneel.StackTrace.BeginFunction("Component.Set", component, params)
     local errorHead = "Component.Set(component, params) : "
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
-    local componentType = cstype(component)
+    local componentType = Daneel.Debug.GetType(component)
     local argType = nil
 
     for key, value in pairs(params) do

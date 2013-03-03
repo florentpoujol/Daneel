@@ -111,7 +111,7 @@ function GUILabel.Destroy(guiLabel)
     Daneel.StackTrace.BeginFunction("GUILabel.Destroy", guiLabel)
     local errorHead = "GUILabel.Destroy(guiLabel) : "
 
-    local argType = cstype(guiLabel)
+    local argType = Daneel.Debug.GetType(guiLabel)
     if argType ~= "GUILabel" then
         error(errorHead.."Argument 'guiLabel' is of type '"..argType.."' with value '"..tostring(guiLabel).."' instead of 'GUILabel'.")
     end
@@ -127,7 +127,7 @@ function GUILabel.Refresh(guiLabel)
     Daneel.StackTrace.BeginFunction("GUILabel.Refresh", guiLabel)
     local errorHead = "GUILabel:Refresh() : "
 
-    local argType = cstype(guiLabel)
+    local argType = Daneel.Debug.GetType(guiLabel)
     if argType ~= "GUILabel" then
         error(errorHead.."Argument 'guiLabel' is of type '"..argType.."' with value '"..tostring(guiLabel).."' instead of 'GUILabel'.")
     end
@@ -147,7 +147,7 @@ function GUILabel.SetPosition(guiLabel, x, y)
     Daneel.StackTrace.BeginFunction("GUILabel.SetPosition", guiLabel, x, y)
     local errorHead = "GUILabel.SetPosition(guiLabel, x[, y]) : "
 
-    local argType = cstype(guiLabel)
+    local argType = Daneel.Debug.GetType(guiLabel)
     if argType ~= "GUILabel" then
         error(errorHead.."Argument 'guiLabel' is of type '"..argType.."' with value '"..tostring(guiLabel).."' instead of 'GUILabel'.")
     end
@@ -179,7 +179,7 @@ function GUILabel.SetText(guiLabeel, text)
     Daneel.StackTrace.BeginFunction("GUILabel.SetText", guiLabel)
     local errorHead = "GUILabel.SetText(guiLabel[, text]) : "
 
-    local argType = cstype(guiLabel)
+    local argType = Daneel.Debug.GetType(guiLabel)
     if argType ~= "GUILabel" then
         error(errorHead.."Argument 'guiLabel' is of type '"..argType.."' with value '"..tostring(guiLabel).."' instead of 'GUILabel'.")
     end
@@ -206,7 +206,7 @@ function GUILabel.SetScale(guiLabel, scale)
     Daneel.StackTrace.BeginFunction("GUILabel.SetScale", guiLabel)
     local errorHead = "GUILabel.SetScale(guiLabel[, scale]) : "
 
-    local argType = cstype(guiLabel)
+    local argType = Daneel.Debug.GetType(guiLabel)
     if argType ~= "GUILabel" then
         error(errorHead.."Argument 'guiLabel' is of type '"..argType.."' with value '"..tostring(guiLabel).."' instead of 'GUILabel'.")
     end
@@ -215,7 +215,7 @@ function GUILabel.SetScale(guiLabel, scale)
         guiLabel.scale = scale
     end
 
-    argType = cstype(guiLabel.scale)
+    argType = Daneel.Debug.GetType(guiLabel.scale)
     if argType ~= "number" and argType ~= "Vector3" then
         error(errorHead.."Argument 'scale' is of type '"..argType.."' with value '"..tostring(scale).."' instead of 'number' or 'Vector3'.")
     end

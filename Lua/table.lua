@@ -145,7 +145,7 @@ function table.length(t, keyType)
     for key, value in pairs(t) do
         if keyType == nil then
             length = length + 1
-        elseif cstype(key) == keyType then
+        elseif Daneel.Debug.GetType(key) == keyType then
             length = length + 1
         end
     end

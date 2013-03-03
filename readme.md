@@ -1,4 +1,4 @@
-[craftstudio]: http://craftstu.io
+[craftstudio]: http://craftstud.io
 [CSscriptingreference]: http://craftstudio.wikia.com/wiki/Scripting_Reference/Index
 [Daneelscriptingreference]: http://a.com
 
@@ -18,7 +18,7 @@ For consistency sake, some convention are observed throughout the framework :
 
 * Every getter fonctions are called GetSomething() and not FindSomething().
 * Every object and function names are camel-cased, except for functions added to Lua's standard libraries which are all lowercase.
-* Every time an argument has to be an asset instance, you may pass the fully-qualified asset name instead.
+* Every time an argument has to be an asset, you may pass the fully-qualified asset name instead.
 * Every time an argument has to be a gameObject instance, you may pass the gameObject name instead.
 * Every time an argument has to be an asset or component type, you may pass the asset or component **object** instead (ie : ModelRenderer instead of "ModelRenderer"). And When you do pass the type as a string, it is case insensitive.
 * Every optional boolean arguments default to false.
@@ -26,11 +26,11 @@ For consistency sake, some convention are observed throughout the framework :
 
 ## Dynamic getters and setters
 
-Getters and setters functions (functions that begins by Get or Set) may be used on gameOject and components as if they were variables :
+Getters and setters functions (functions that begins by Get or Set) may be used on gameOjects and components as if they were variables :
 
-    self.gameObject:GetComponent("ModelRenderer"):SetModel(CraftStudio.FindAsset("model name"))
-    -- this line above may be written as below :
     self.gameObject.modelRenderer.model = "model name"
+    -- is a shortcut for :
+    self.gameObject:GetComponent("ModelRenderer"):SetModel(CraftStudio.FindAsset("model name", "Model"))
 
 
 ## Debugging
@@ -77,7 +77,7 @@ Here are they keys
 ##  List of functions
 
 [See the full scripting reference][daneelscriptingreference] for full explanation on arguments and returned values.  
-Arguments between brackets are optional.
+Arguments between square brackets are optional.
 
 ### Asset
 
@@ -98,7 +98,8 @@ Arguments between brackets are optional.
 
 * Daneel.Debug.CheckArgType(argument, argumentName, expectArgumenType[, errorHead, errorEnd])
 * Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectArgumenType[, errorHead, errorEnd])
-* cstype() 
+* Daneel.Debug.GetType(object) 
+* Daneel.Debug.PrintError(errorMsg)
 
 ### Daneel.Events
 
@@ -111,7 +112,6 @@ Arguments between brackets are optional.
 * Daneel.StackTrace.BeginFunction(functionName[, ...])
 * Daneel.StackTrace.EndFunction(functionName[, ...])
 * Daneel.StackTrace.Print(length)
-* daneelerror()
 
 ### Daneel.Utilities
 
@@ -134,24 +134,17 @@ Arguments between brackets are optional.
 * gameObject:AddMapRenderer([params])
 * gameObject:AddCamera([params])
 
-* gameObject:SetComponent(componentType[, params])
+* gameObject:SetComponent(componentType, params)
 * gameObject:SetModelRenderer(params)
 * gameObject:SetMapRenderer(params)
 * gameObject:SetCamera(params)
 * gameObject:SetTransform(params)
 
-* gameObject:HasComponent(componentType)
-* gameObject:HasScriptedBehavior()
-* gameObject:HasModelRenderer()
-* gameObject:HasMapRenderer()
-* gameObject:HasCamera()
-
-* gameObject:GetComponent(componentType)
+* gameObject:GetComponent(componentType[, scriptNameOrAsset])
 * gameObject:GetScriptedBehavior(scriptNameOrAsset)
 * gameObject:GetModelRenderer()
 * gameObject:GetMapRenderer()
 * gameObject:GetCamera()
-* gameObject:GetTransform()
 
 * gameObject:Destroy()
 * gameObject:DestroyComponent(input[, strict])
@@ -190,16 +183,16 @@ Arguments between brackets are optional.
 
 ### table
 
-* table.combine(keys, values[, strict])
-* table.compare(table1, table2)
+* table.new([...])
+* table.copy(table)
 * table.constainskey(table, key)
 * table.constainsvalue(table, value[, ignoreCase])
-* table.copy(table)
 * table.length(table[, keyType])
-* table.merge(...)
-* table.new([...])
 * table.print(table)
 * table.printmetatable(table)
+* table.merge(...)
+* table.compare(table1, table2)
+* table.combine(keys, values[, strict])
 * table.removevalue(table, value[, singleRemove])
 
 

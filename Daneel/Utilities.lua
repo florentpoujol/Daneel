@@ -211,7 +211,7 @@ function Daneel.Debug.CheckArgType(arg, argName, expectedArgTypes, errorHead, er
 
     if errorEnd == nil then errorEnd = "" end
 
-    argType = cstype(arg)
+    argType = Daneel.Debug.GetType(arg)
     if not argType:isoneof(expectedArgTypes) then
         daneelerror(errorHead.."Argument '"..argName.."' is of type '"..argType.."' with value '"..tostring(arg).."' instead of '"..table.concat(expectedArgTypes, "', '").."'. "..errorEnd)
     end
@@ -258,9 +258,7 @@ function Daneel.Debug.CheckOptionalArgType(arg, argName, expectedArgTypes, error
         errorEnd = ""
     end
 
-    --
-
-    argType = cstype(arg)
+    argType = Daneel.Debug.GetType(arg)
     if argType ~= nil and not argType:isoneof(expectedArgTypes) then  
         daneelerror(errorHead.."Optional argument '"..argName.."' is of type '"..argType.."' with value '"..tostring(arg).."' instead of '"..table.concat(expectedArgTypes, "', '").."'. "..errorEnd)
     end
@@ -268,8 +266,8 @@ end
 
 -- Return the craftStudio Type of the provided argument
 -- @param The argument to get the type
-function cstype(arg)
-    Daneel.StackTrace.BeginFunction("cstype", arg)
+function Daneel.Debug.GetType(arg)
+    Daneel.StackTrace.BeginFunction("Daneel.Debug.GetType", arg)
     argType = type(arg)
 
     if argType == "table" then
@@ -278,23 +276,23 @@ function cstype(arg)
         if mt ~= nil then
             local csto = Daneel.Utilities.GetAllCraftStudioTypesAndObjects()
 
-            for csType, csObject in pairs(csto) do
+            for Daneel.Debug.GetType, csObject in pairs(csto) do
                 if mt == csObject then
-                    --Daneel.StackTrace.EndFunction("cstype", csType)
-                    return csType
+                    --Daneel.StackTrace.EndFunction("Daneel.Debug.GetType", Daneel.Debug.GetType)
+                    return Daneel.Debug.GetType
                 end
             end
         end
 
-        -- the csType variable on component is set during Compoenent.Init(), 
+        -- the Daneel.Debug.GetType variable on component is set during Compoenent.Init(), 
         -- because the component's metatable is hidden
-        if arg.csType ~= nil and table.containsvalue(Daneel.config.componentTypes, arg.csType) then
-            --Daneel.StackTrace.EndFunction("cstype", arg.csType)
-            return arg.csType
+        if arg.Daneel.Debug.GetType ~= nil and table.containsvalue(Daneel.config.componentTypes, arg.Daneel.Debug.GetType) then
+            --Daneel.StackTrace.EndFunction("Daneel.Debug.GetType", arg.Daneel.Debug.GetType)
+            return arg.Daneel.Debug.GetType
         end
     end
 
-    --Daneel.StackTrace.EndFunction("cstype", argType)
+    --Daneel.StackTrace.EndFunction("Daneel.Debug.GetType", argType)
     return argType
 end
 

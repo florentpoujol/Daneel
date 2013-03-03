@@ -30,8 +30,7 @@ Daneel is a framework for [CraftStudio](http://craftstu.io) that aims to sweeten
 ***
 # Dynamic getters and setters
 
-Getters and setters functions (functions that begins by Get or Set) may be used on gameOject and components as if they were variable.
-Ie :  
+Getters and setters functions (functions GetSomething() and SetSomething()) may be used on gameOjects, components and scriptedBehaviors as if they were variables :
     self.gameObject:GetComponent("ModelRenderer"):SetModel(CraftStudio.FindAsset("model name"))
     -- this line above can be written as the one below :
     self.gameObject.modelRenderer.model = "model name"
@@ -68,7 +67,7 @@ See the scripting reference for full explation on arguments and returned values.
 
 * Daneel.Debug.CheckArgType(argument, argumentName, expectArgumenType[, errorStart, errorEnd])
 * Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectArgumenType[, errorStart, errorEnd])
-* cstype() 
+* Daneel.Debug.GetType() 
 
 ## Daneel.Events
 

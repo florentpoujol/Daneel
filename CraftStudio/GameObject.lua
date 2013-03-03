@@ -133,7 +133,7 @@ function GameObject.Set(gameObject, params)
     end
 
     for i, script in pairs(params.scriptedBehaviors) do
-        argType = cstype(script)
+        argType = Daneel.Debug.GetType(script)
         if argType ~= "string" and argType ~= "Script" and argType ~= "table" then
             daneelerror(errorHead.."Item n°"..i.." in argument 'params.scriptedBehaviors' is of type '"..argType.."' with value '"..tostring(scriptNameOrAsset).."' instead of 'string', 'Script' or 'table'.")
         end
@@ -246,7 +246,7 @@ function GameObject.GetChild(go, name, recursive)
     Daneel.StackTrace.BeginFunction("GameObject.GetChild", go, name, recursive)
     local errorHead = "GameObject.GetChild(gameObject, name[, recursive]) : "
 
-    local argType = cstype(go)
+    local argType = Daneel.Debug.GetType(go)
     if argType ~= "GameObject" then
         error(errorHead.."Argument 'gameObject' is of type '"..argType.."' with value '"..tostring(parentNameOrObject).."' instead of 'GameObject'.")
     end
@@ -279,7 +279,7 @@ function GameObject.GetChildren(go, recursive, includeSelf)
     Daneel.StackTrace.BeginFunction("GameObject.GetChildren", go, recursive, includeSelf)
     local errorHead = "GameObject.GetChildrenRecursive(gameObject, [recursive]) : "
 
-    local argType = cstype(go)
+    local argType = Daneel.Debug.GetType(go)
     if argType ~= "GameObject" then
         error(errorHead.."Argument 'gameObject' is of type '"..argType.."' with value '"..tostring(parentNameOrObject).."' instead of 'GameObject'.")
     end
@@ -406,7 +406,7 @@ local OriginalCreateScriptedBehavior = GameObject.CreateScriptedBehavior
 -- @param params (string, Script, table) The script name or asset or a table of parameters to initialize the new component with.
 -- @return (ScriptedBehavior) The component.
 function GameObject.CreateScriptedBehavior(gameObject, script)
-    -- local argType = cstype(params)
+    -- local argType = Daneel.Debug.GetType(params)
 
     -- if argType == "string" then
     --     local assetType = Daneel.config.componentTypeToAssetType[componentType]
@@ -469,7 +469,7 @@ function GameObject.GetScriptedBehavior(go, scriptNameOrAsset)
 
     Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
 
-    local argType = cstype(scriptNameOrAsset)
+    local argType = Daneel.Debug.GetType(scriptNameOrAsset)
     if argType ~= "string" and argType ~= "Script" then
         error(errorHead.."Argument 'scriptNameOrAsset' is of type '"..argType.."' with value '"..tostring(scriptNameOrAsset).."' instead of 'string' (the Script name) or 'Script'.")
     end
@@ -490,38 +490,6 @@ function GameObject.GetScriptedBehavior(go, scriptNameOrAsset)
 end
 
 -- + helpers, see in Init() below
-
-
-
-----------------------------------------------------------------------------------
--- Has component
-
-
---- Check if the gameObject has the specified component.
--- @param gameObject (GameObject) The gameObject
--- @param componentType (string) The Component type.
--- @return (boolean) True if the gameObject has the component, false otherwise
-function GameObject.HasComponent(go, componentType)
-    Daneel.StackTrace.BeginFunction("GameObject.HasComponent", go, componentType)
-    local errorHead = "GameObject.HasComponent(gameObject, componentType) : "
-
-    Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckArgType(componentType, "componentType", "string", errorHead)
-
-    local componentTypes = Daneel.config.componentTypes
-    componentType = Daneel.Utilities.CaseProof(componentType, componentTypes)
-
-    if not componentType:isOneOf(componentTypes) then
-        error(errorHead.."Argument 'componentType' with value '"..componentType.."' is not one of the valid component types : "..table.concat(componentTypes, ", "))
-    end
-
-    local hasComponent = (go:GetComponent(componentType) ~= nil)
-    Daneel.StackTrace.EndFunction("GameObject.HasComponent", hasComponent)
-    return hasComponent
-end
-
--- + helpers 
-
 
 
 ----------------------------------------------------------------------------------
@@ -557,7 +525,7 @@ function GameObject.DestroyComponent(go, input, strict)
 
     Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
 
-    local argType = cstype(input)
+    local argType = Daneel.Debug.GetType(input)
     local allowedTypes = {"string", "Script", "table"}
     
     if not argType:IsOneOf(allowedTypes) then
@@ -570,7 +538,7 @@ function GameObject.DestroyComponent(go, input, strict)
 
     local component = nil
     local stringError = ""
-    --argType = cstype(input)
+    --argType = Daneel.Debug.GetType(input)
 
     -- input is a component ?
     if argType == "table" then 
@@ -645,7 +613,7 @@ function GameObject.DestroyScriptedBehavior(go, scriptNameOrAsset)
 
     Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
 
-    local argType = cstype(scriptNameOrAsset)
+    local argType = Daneel.Debug.GetType(scriptNameOrAsset)
     if argType ~= "nil" and argType ~= "string" and argType ~= "Script" then
         error(errorHead.."Optional argument 'scriptNameOrAsset' is of type '"..argType.."' with value '"..tostring(scriptNameOrAsset).."' instead of 'string' or 'Script'.")
     end
@@ -682,7 +650,6 @@ function GameObject.Init()
             end
         end
 
-
         -- GetComponent helpers
         -- ie : go:GetModelRenderer()
         if componentType ~= "ScriptedBehavior" then
@@ -696,20 +663,6 @@ function GameObject.Init()
                 return component
             end
         end
-
-
-        -- HasComponent helpers
-        -- ie : go:GetModelRenderer()
-        GameObject["Has"..componentType] = function(go)
-            Daneel.StackTrace.BeginFunction("GameObject.Has"..componentType, go)
-            local errorHead = "GameObject.Has"..componentType.."(gameObject) : "
-            Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
-
-            local hasComponent = go:HasComponent(componentType)
-            Daneel.StackTrace.EndFunction("GameObject.Has"..componentType, hasComponent)
-            return hasComponent
-        end
-
 
         -- DestroyComponent helpers
         -- ie : go:DestroyModelRenderer()
