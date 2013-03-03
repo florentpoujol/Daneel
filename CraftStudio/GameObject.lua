@@ -566,30 +566,41 @@ function GameObject.DestroyComponent(gameObject, input, strict)
     return true
 end
 
--- TODO vérifier les instances des component
-
 --- Destroy a ScriptedBehavior from the gameObject.
 -- If argument 'scriptNameOrAsset' is set with a script name or a script asset, the function will try to destroy the ScriptedBehavior that use this script.
 -- If the argument is not set, it will destroy the first ScriptedBehavior on this gameObejct
 -- @param gameObject (GameObject) The gameObject
 -- @param scriptNameOrAsset [optional default=ScriptedBehavior] (string or Script) The script name or asset.
 -- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
-function GameObject.DestroyScriptedBehavior(go, scriptNameOrAsset)
-    Daneel.StackTrace.BeginFunction("GameObject.DestroyScriptedBehavior", go, scriptNameOrAsset)
-    local errorHead = "GameObject.DestroyScriptedBehavior(go[, scriptNameOrAsset]) : "
-    Daneel.Debug.CheckArgType(go, "gameObject", "GameObject", errorHead)
+function GameObject.DestroyScriptedBehavior(gameObject, scriptNameOrAsset)
+    Daneel.StackTrace.BeginFunction("GameObject.DestroyScriptedBehavior", gameObject, scriptNameOrAsset)
+    local errorHead = "GameObject.DestroyScriptedBehavior(gameObject[, scriptNameOrAsset]) : "
+    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     Daneel.Debug.CheckOptionalArgType(scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead)
     
     if scriptNameOrAsset == nil then
         scriptNameOrAsset = "ScriptedBehavior"
     end
     
-    local success = go:DestroyComponent(scriptNameOrAsset)
+    local success = gameObject:DestroyComponent(scriptNameOrAsset)
     Daneel.StackTrace.EndFunction("GameObject.DestroyScriptedBehavior", success)
     return success
 end
 
--- + other helpers
+--- Destroy the first ModelRenderer from the gameObject.
+-- @param gameObject (GameObject) The gameObject
+-- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
+function GameObject.DestroyModelRenderer(gameObject) end
+
+--- Destroy the first MapRenderer from the gameObject.
+-- @param gameObject (GameObject) The gameObject
+-- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
+function GameObject.DestroyMapRenderer(gameObject) end
+
+--- Destroy the first Camera from the gameObject.
+-- @param gameObject (GameObject) The gameObject
+-- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
+function GameObject.DestroyCamera(gameObject) end
 
 
 
