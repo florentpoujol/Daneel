@@ -21,21 +21,11 @@ function GameObject.__index(gameObject, key)
     end
 
     -- maybe the key is a Script name used to acces the Behavior instance
-    scriptName = key:ucfirst()
-    if gameObject.scriptedBehaviors == nil then
-        gameObject.scriptedBehaviors = {}
+    local behavior = gameObject:GetScriptedBehavior(key:ucfirst())
+    if behavior ~= nil then
+        return behavior
     end
-
-    if gameObject.scriptedBehaviors[scriptName] == nil then
-        local behavior = gameObject:GetScriptedBehavior(scriptName)
-        if behavior ~= nil then
-            gameObject.scriptedBehaviors[scriptName] = behavior
-            return behavior
-        end
-    else
-        return gameObject.scriptedBehaviors[scriptName]
-    end
-        
+    
     return rawget(gameObject, key)
 end
 
@@ -49,19 +39,9 @@ function GameObject.__newindex(gameObject, key, value)
     end
 
     -- maybe the key is a Script name used to acces the Behavior instance
-    scriptName = key:ucfirst()
-    if gameObject.scriptedBehaviors == nil then
-        gameObject.scriptedBehaviors = {}
-    end
-
-    if gameObject.scriptedBehaviors[scriptName] == nil then
-        local behavior = gameObject:GetScriptedBehavior(scriptName)
-        if behavior ~= nil then
-            gameObject.scriptedBehaviors[scriptName] = behavior
-            return behavior[key] = value
-        end
-    else
-        return gameObject.scriptedBehaviors[scriptName][key] = value
+    local behavior = gameObject:GetScriptedBehavior(key:ucfirst())
+    if behavior ~= nil then
+        return behavior[key] = value
     end
     
     rawset(gameObject, key, value)
