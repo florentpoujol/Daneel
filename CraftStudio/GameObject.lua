@@ -12,8 +12,8 @@ end
 
 -- Dynamic getters
 function GameObject.__index(gameObject, key)
-    local Key = key:ucfirst()
-    local funcName = "Get"..Key
+    local ucKey = key:ucfirst()
+    local funcName = "Get"..ucKey
     
     if GameObject[funcName] ~= nil then
         return GameObject[funcName](gameObject)
@@ -22,7 +22,7 @@ function GameObject.__index(gameObject, key)
     end
 
     -- maybe the key is a Script name used to acces the Behavior instance
-    local behavior = gameObject:GetScriptedBehavior(Key)
+    local behavior = gameObject:GetScriptedBehavior(ucKey)
     if behavior ~= nil then
         return behavior
     end

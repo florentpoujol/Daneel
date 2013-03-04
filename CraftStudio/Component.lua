@@ -51,7 +51,7 @@ function Component.Init()
 end
 
 
--- Apply the content of the params argument to the component in argument.
+--- Apply the content of the params argument to the component in argument.
 -- @param component (Scriptedbehavior, ModelRenderer, MapRenderer, Camera or Transform) The component
 -- @param params (table) A table of parameters to initialize the new component with.
 function Component.Set(component, params)
@@ -73,6 +73,55 @@ function Component.Set(component, params)
 end
 
 
+----------------------------------------------------------------------------------
+-- ModelRenderer
+
+local OriginalSetModel = ModelRenderer.SetModel
+
+--- Attach the provided model to the provided modelRenderer
+-- @param modelRenderer (ModelRenderer) The modelRenderer
+-- @param modelNameOrAsset (string or Model) The model name or asset
+function ModelRenderer.SetModel(modelRenderer, modelNameOrAsset)
+    Daneel.StackTrace.BeginFunction("ModelRenderer.SetModel", modelRenderer, modelNameOrAsset)
+    local errorHead = "ModelRenderer.SetModel(modelRenderer, modelNameOrAsset) : "
+    Daneel.Debug.CheckArgType(modelRenderer, "modelRenderer", "ModelRenderer", errorHead)
+    Daneel.Debug.CheckArgType(modelNameOrAsset, "modelNameOrAsset", {"string", "Model"}, errorHead)
+
+    local model = modelNameOrAsset
+    if type(modelNameOrAsset) == "string" then
+        model = Asset.Get(modelNameOrAsset, "Model")
+        if model == nil then
+            Daneel.Debug.PrintError(errorHead.."Argument 'modelNameOrAsset' : model with name '"..modelNameOrAsset.."' was not found.")
+        end
+    end
+
+    OriginalSetModel(modelRenderer, model)
+end
 
 
+
+----------------------------------------------------------------------------------
+-- MapRenderer
+
+local OriginalSetMap = MapRenderer.SetMap
+
+--- Attach the provided map to the provided mapRenderer
+-- @param mapRenderer (MapRenderer) The mapRenderer
+-- @param mapNameOrAsset (string or Map) The map name or asset
+function MapRenderer.SetMap(mapRenderer, mapNameOrAsset)
+    Daneel.StackTrace.BeginFunction("MapRenderer.SetMap", mapRenderer, mapNameOrAsset)
+    local errorHead = "MapRenderer.SetMap(mapRenderer, mapNameOrAsset) : "
+    Daneel.Debug.CheckArgType(mapRenderer, "mapRenderer", "MapRenderer", errorHead)
+    Daneel.Debug.CheckArgType(mapNameOrAsset, "mapNameOrAsset", {"string", "Map"}, errorHead)
+ 
+    local map = mapNameOrAsset
+    if type(mapNameOrAsset) == "string" then
+        map = Asset.Get(mapNameOrAsset, "Model")
+        if map == nil then
+            Daneel.Debug.PrintError(errorHead.."Argument 'mapNameOrAsset' : map with name '"..mapNameOrAsset.."' was not found.")
+        end
+    end
+
+    OriginalSetMap(mapRenderer, map)
+end
 

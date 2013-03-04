@@ -1,20 +1,9 @@
 
-
-event.listen(evantname, gameobject, functionname)
-
-go:GetComponent() avec les component Object au lieu de component type et compo type insensible à la casse 
-
 concatenating a GO component will print it
-
-
-setModel et setMap to accept model or map name
-
 
 stacktrace endfunction sans devoir mettre le nom de la fonction
 
-
 voir pour Lua minifier
-
 
 
 
