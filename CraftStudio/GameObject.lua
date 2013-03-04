@@ -11,8 +11,9 @@ end
 
 
 -- Dynamic getters
-function GameObject.__index(gameObject, key) 
-    local funcName = "Get"..key:ucfirst()
+function GameObject.__index(gameObject, key)
+    local Key = key:ucfirst()
+    local funcName = "Get"..Key
     
     if GameObject[funcName] ~= nil then
         return GameObject[funcName](gameObject)
@@ -21,11 +22,23 @@ function GameObject.__index(gameObject, key)
     end
 
     -- maybe the key is a Script name used to acces the Behavior instance
-    local behavior = gameObject:GetScriptedBehavior(key:ucfirst())
+    local behavior = gameObject:GetScriptedBehavior(Key)
     if behavior ~= nil then
         return behavior
     end
-    
+
+    -- maybe the key is a script alias
+    local aliases = Daneel.config.scriptedBehaviorsAliases
+    if aliases ~= nil then
+        local path = aliases[key]
+        if path ~= nil then
+            behavior = gameObject:GetScriptedBehavior(path)
+            if behavior ~= nil then
+                return behavior
+            end
+        end
+    end
+
     return rawget(gameObject, key)
 end
 
@@ -37,13 +50,7 @@ function GameObject.__newindex(gameObject, key, value)
     if GameObject[funcName] ~= nil then
         return GameObject[funcName](gameObject, value)
     end
-
-    -- maybe the key is a Script name used to acces the Behavior instance
-    local behavior = gameObject:GetScriptedBehavior(key:ucfirst())
-    if behavior ~= nil then
-        return behavior[key] = value
-    end
-    
+   
     rawset(gameObject, key, value)
 end
 
@@ -451,6 +458,7 @@ local OriginalGetComponent = GameObject.GetComponent
 
 --- Get the first component of the specified type attached to the gameObject.
 -- @param gameObject (GameObject) The gameObject
+-- @param componentType (string, ModelRenderer, MapRenderer, Camera, Transform)
 -- @param scriptNameOrAsset [optional] (string or Script) The script name or asset. This argument is mandatory if componentType is "ScriptedBehavior".
 -- @return (ScriptedBehavior, ModelRenderer, MapRenderer, Camera) The component instance.
 function GameObject.GetComponent(gameObject, componentType[, scriptNameOrAsset])

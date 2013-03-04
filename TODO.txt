@@ -10,11 +10,6 @@ concatenating a GO component will print it
 setModel et setMap to accept model or map name
 
 
-accès au scriptedBehaviors
-self.gameObject.scriptName.public_var
-self.gameObject.scriptedBehaviors["scriptName"].public_var
-
-
 stacktrace endfunction sans devoir mettre le nom de la fonction
 
 

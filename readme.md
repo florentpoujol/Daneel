@@ -24,13 +24,48 @@ For consistency sake, some convention are observed throughout the framework :
 * Every optional boolean arguments default to false.
 
 
-## Dynamic getters and setters
+## Dynamic getters, setters and access to scriptedBehaviors
 
-Getters and setters functions (functions that begins by Get or Set) may be used on gameOjects and components as if they were variables :
+Getters and setters functions (functions that begins by Get or Set) may be used on gameOjects, components and any scriptedBehaviors as if they were variables :
+    
+    self.gameObject.name = "a new name"
+    -- is the same as 
+    self.gameObject:SetName("a new name")
+    -- note that this only works for functions that accepts only one argument (in addition to the working object)
+
+    print( self.gameObject.transform.localPosition )
+    -- is the same as
+    print( self.gameObject.transform:GetLocalPosition() )
+
+As Daneel introduce new gameObject:Get[componentType]() functions, you may now access any components via their variable, like the transform :
 
     self.gameObject.modelRenderer.model = "model name"
-    -- is a shortcut for :
+    -- is the same as
     self.gameObject:GetComponent("ModelRenderer"):SetModel(CraftStudio.FindAsset("model name", "Model"))
+
+### ScriptedBehaviors
+
+ScriptedBehaviors whose name are camel-cased and are nested in a folder may be accessed in the same way. For instance, with a Script whose name is 'MyScript'.
+
+    self.gameObject.myScript.something = "data"
+    -- is the same as
+    self.gameObject:GetScriptedBehavior(CraftStudio.FindAsset("MyScript", "Script")):SetSomething("data")
+
+You may define aliases for other ScriptedBehaviors (those who are nested in folders or name are not camel-cased) in the config. Those scriptedBehaviors become accessible throught their aliases :
+
+    -- in the config, set the 'scriptedBehaviorAliases' table which must contains the aliases as the keys and the fully-qualified Script path as the values
+    Daneel.config = {
+        scriptedBehaviorAliases = {
+            -- alias = "script path",
+            scriptName = "folder/script name",
+        }
+    }
+
+    -- in your script, access the scripteBehavior with its alias
+    self.gameObject.scriptName.something = "data"
+    -- note that in this case only (not in the others cases aboves), the case of the alias and especially its first letter matters
+    -- In this example, self.gameObject.ScriptName won't get access to the scriptedBehavior
+    -- but self.gameObject.ModelRenderer will get access to the modelRenderer
 
 
 ## Debugging
