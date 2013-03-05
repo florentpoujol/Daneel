@@ -131,54 +131,35 @@ function GameObject.Set(gameObject, params)
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
     local argType = nil
 
-    -- name
-    if params.name ~= nil then
-        Daneel.Debug.CheckArgType(params.name, "params.name", "string", errorHead)
-        gameObject:SetName(params.name)
+
+    -- scriptedBehaviors
+    if params.scriptedBehaviors ~= nil then
+        Daneel.Debug.CheckArgType(params.scriptedBehaviors, "params.scriptedBehaviors", "table", errorHead)
+
+        for i, script in pairs(params.scriptedBehaviors) do
+            argType = Daneel.Debug.GetType(script)
+            if argType ~= "string" and argType ~= "Script" and argType ~= "table" then
+                daneelerror(errorHead.."Item n°"..i.." in argument 'params.scriptedBehaviors' is of type '"..argType.."' with value '"..tostring(script).."' instead of 'string', 'Script' or 'table'.")
+            end
+
+            local scriptParams = nil
+            if argType == "table" then
+                scriptParams = script
+                scriptNameOrAsset = i
+            end
+
+            component = gameObject:GetScriptedBehavior(scriptNameOrAsset)
+            if component == nil then
+                component = gameObject:AddScriptedBehavior(scriptNameOrAsset)
+            end
+
+            if scriptParams ~= nil then
+                component:Set(scriptParams)
+            end
+        end 
     end
 
-    -- parent
-    if params.parent ~= nil then 
-        Daneel.Debug.CheckArgType(params.parent, "params.parent", {"string", "GameObject"}, errorHead)
-        Daneel.Debug.CheckOptionalArgType(params.parentKeepLocalTransform, "params.parentKeepLocalTransform", "boolean", errorHead)
-        gameObject:SetParent(params.parent, params.parentKeepLocalTransform)
-    end
-
-    local component = nil
-
-    -- scripts
-    if params.scriptedBehaviors == nil then
-        params.scriptedBehaviors = {}
-    end
-
-    if params.scriptedBehavior ~= nil then
-        table.insert(params.scriptedBehaviors, params.scriptedBehavior)
-    end
-
-    for i, script in pairs(params.scriptedBehaviors) do
-        argType = Daneel.Debug.GetType(script)
-        if argType ~= "string" and argType ~= "Script" and argType ~= "table" then
-            daneelerror(errorHead.."Item n°"..i.." in argument 'params.scriptedBehaviors' is of type '"..argType.."' with value '"..tostring(scriptNameOrAsset).."' instead of 'string', 'Script' or 'table'.")
-        end
-
-        local scriptParams = nil
-        if argType == "table" then
-            scriptParams = script
-            script = i
-        end
-
-        component = gameObject:GetScriptedBehavior(script)
-        
-        if component == nil then
-            component = gameObject:AddScriptedBehavior(script)
-        end
-
-        if scriptParams ~= nil then
-            component:Set(scriptParams)
-        end
-    end 
-
-    -- others components
+    -- components
     for i, componentType in ipairs({"modelRenderer", "mapRenderer", "camera"}) do
         if params[componentType] ~= nil then
             Daneel.Debug.CheckArgType(params[componentType], "params."..componentType, "table", errorHead)
@@ -190,13 +171,33 @@ function GameObject.Set(gameObject, params)
             end
 
             component:Set(params[componentType])
+            params[componentType] = nil
         end
     end
 
     if params.transform ~= nil then
         Daneel.Debug.CheckArgType(params.transform, "params.transform", "table", errorHead)
         gameObject.transform:Set(params.transform)
+        params.transform = nil
     end
+
+
+    for key, value in pairs(params) do
+        if key == "name" then
+            Daneel.Debug.CheckArgType(value, "params.name", "string", errorHead)
+            gameObject:SetName(value)
+        end
+
+        if key == "parent" then 
+            Daneel.Debug.CheckArgType(value, "params.parent", {"string", "GameObject"}, errorHead)
+            Daneel.Debug.CheckOptionalArgType(params.parentKeepLocalTransform, "params.parentKeepLocalTransform", "boolean", errorHead)
+            gameObject:SetParent(value, params.parentKeepLocalTransform)
+        end
+    end -- end for
+
+    
+
+
 
     Daneel.StackTrace.EndFunction("GameObject.Set", gameObject)
     return gameObject

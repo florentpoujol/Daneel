@@ -20,7 +20,7 @@ For consistency sake, some convention are observed throughout the framework :
 * Every object and function names are camel-cased, except for functions added to Lua's standard libraries which are all lowercase.
 * Every time an argument has to be an asset, you may pass the fully-qualified asset name instead.
 * Every time an argument has to be a gameObject instance, you may pass the gameObject name instead.
-* Every time an argument has to be an asset or component type, you may pass the asset or component **object** instead (ie : ModelRenderer instead of "ModelRenderer"). And When you do pass the type as a string, it is case insensitive.
+* Every time an argument has to be an asset or component type, you may pass the asset or component **object** instead (ie : ModelRenderer instead of "ModelRenderer"). And when you do pass the type as a string, it is case insensitive.
 * Every optional boolean arguments default to false.
 
 
@@ -28,16 +28,18 @@ For consistency sake, some convention are observed throughout the framework :
 
 Getters and setters functions (functions that begins by Get or Set) may be used on gameOjects, components and any scriptedBehaviors as if they were variables :
     
-    self.gameObject.name = "a new name"
-    -- is the same as 
-    self.gameObject:SetName("a new name")
-    -- note that this only works for functions that accepts only one argument (in addition to the working object)
-
     print( self.gameObject.transform.localPosition )
     -- is the same as
     print( self.gameObject.transform:GetLocalPosition() )
 
-As Daneel introduce new gameObject:Get[componentType]() functions, you may now access any components via their variable, like the transform :
+    self.gameObject.name = "a new name"
+    -- is the same as 
+    self.gameObject:SetName("a new name")
+    -- note that only one argument (in addition to the working object) can be passed in this way.
+
+This works even for your own getters or setter. For instance, if you have a GetMana()/SetMana() couple, you can just access them via the 'mana' variable.
+
+As Daneel introduce the new GetModelRenderer(), GetMapRenderer() and GetCamera() functions on gameObjects, you may now access any components via their variable, like the transform :
 
     self.gameObject.modelRenderer.model = "model name"
     -- is the same as
@@ -45,13 +47,13 @@ As Daneel introduce new gameObject:Get[componentType]() functions, you may now a
 
 ### ScriptedBehaviors
 
-ScriptedBehaviors whose name are camel-cased and are nested in a folder may be accessed in the same way. For instance, with a Script whose name is 'MyScript'.
+ScriptedBehaviors whose name are camel-cased and are not nested in a folder may be accessed in the same way. For instance, with a Script whose name is 'MyScript'.
 
     self.gameObject.myScript.something = "data"
     -- is the same as
     self.gameObject:GetScriptedBehavior(CraftStudio.FindAsset("MyScript", "Script")):SetSomething("data")
 
-You may define aliases for other ScriptedBehaviors (those who are nested in folders or name are not camel-cased) in the config. Those scriptedBehaviors become accessible throught their aliases :
+You may define aliases for other ScriptedBehaviors (those who are nested in folders and/or name are not camel-cased) in the config. Those scriptedBehaviors become accessible throught their aliases as above :
 
     -- in the config, set the 'scriptedBehaviorAliases' table which must contains the aliases as the keys and the fully-qualified Script path as the values
     Daneel.config = {
@@ -63,9 +65,10 @@ You may define aliases for other ScriptedBehaviors (those who are nested in fold
 
     -- in your script, access the scripteBehavior with its alias
     self.gameObject.scriptName.something = "data"
-    -- note that in this case only (not in the others cases aboves), the case of the alias and especially its first letter matters
-    -- In this example, self.gameObject.ScriptName won't get access to the scriptedBehavior
-    -- but self.gameObject.ModelRenderer will get access to the modelRenderer
+Note that in this case only (not in the others cases aboves), the case of the alias and especially its first letter matters
+In this example, self.gameObject.ScriptName won't get access to the scriptedBehavior but self.gameObject.ModelRenderer will get access to the modelRenderer.
+
+You may also access the first scriptedBehavior on the gameObject, whatever its name is, via `self.gameObject.scriptedBehavior`.
 
 
 ## Debugging
@@ -73,7 +76,7 @@ You may define aliases for other ScriptedBehaviors (those who are nested in fold
 Daneel's functions features extensive debugging capability.  
 Every arguments are checked for type and value and a comprehensive error message is thrown if needed.
 
-For instance, passing false as the gameObject's name with gmeObject:GetChild() would trigger the following error :  
+For instance, passing false instead of the gameObject's name with gameObject:GetChild() would trigger the following error :  
 
     GameObject.GetChild(gameObject, name[, recursive]) : Argument 'name' is of type 'boolean' with value 'false' instead of 'string'.
 
@@ -83,28 +86,37 @@ When an error is triggered, Daneel print a Stack Trace in the Runtime Report.
 The Stack Trace nicely shows of the histoy of function calls whithin the framework and display values recieved as argument as well as returned values.
 
 
-## Mass-Setting
+## Mass-setting on gameObjects and components
 
-Functions GameObject.New(), GameObject.Instanciate() and GameObject.AddComponent() accept an optional argument "params" that may have diffferent kind of values.
-Params may be the gameObject's parent's name (as a string) or instance (GameObject) or a table to fully initialize the new gameObject or its components.
+Functions gameObject:Set() and component:Set() accept a "params" argument of type table which allow to set variables or call setters in mass.
 
-Here are they keys
-* parent : the gameObject's parent's name (as a string) or instance (GameObject)
-* transform : a tabe with data to initialize the transform component with. Keys may include
- * position : a Vector3
- * localPosition : a Quaternion
- * orientation : a Quaternion
- * localOrientation : a Vector3
- * euleurAngles : a Vector3
- * localEulerAngles : a Vector3
- * localScale : a Vector3 or a number
+ gameObject:Set({
+    parent = "my parent name", -- Set the parent via SetParent()
+    health = 100
+ })
 
-* modelRenderer : true to add an empty component, 
- *
+ modelRenderer:Set({
+    localOrientation = Quaternion:New(1,2,3,4), -- set the local orientation via SetLocalOrientation()
+    randomVariable = "random value"
+ })
+
+
+These function are used by GameObject.New(), GameObject.Instanciate() and gameObject:AddComponent() to optionnaly initialize the new gameObjects/components before returning them.
 
 
 
 
+
+If you want to add one scriptedBehavior, you may set the variable 'scriptedBehavior' with the script name or asset as value.
+If you want to set one or more scriptedBehaviors and maybe initialize them, set the variable 'scriptedBehaviors' (with an 's' at the end) whose value is a table. This table may contains just the scripts name or asset if you don't want to initialize then or the script name or asset as key and the initialization table as value. 
+
+
+ {
+    "script1",
+    ["Script 2"] = {
+        variable = value
+    }
+ } 
 
 
 ---
@@ -184,6 +196,7 @@ Arguments between square brackets are optional.
 * gameObject:GetModelRenderer()
 * gameObject:GetMapRenderer()
 * gameObject:GetCamera()
+* gameObject:GetTransform()
 
 * gameObject:Destroy()
 * gameObject:DestroyComponent(input[, strict])
@@ -204,6 +217,14 @@ Arguments between square brackets are optional.
 ### math
 
 * math.isinteger(value[, strict])
+
+### MapRenderer
+
+* mapRenderer:SetMap(mapNameOrAsset)
+
+### ModelRenderer
+
+* modelRenderer:SetModel(modelNameOrAsset)
 
 ### Ray
 
@@ -233,5 +254,7 @@ Arguments between square brackets are optional.
 * table.compare(table1, table2)
 * table.combine(keys, values[, strict])
 * table.removevalue(table, value[, singleRemove])
+* table.getkeys(table)
+* table.getvalues(table)
 * table.getkey(table, value)
 

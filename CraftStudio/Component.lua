@@ -96,6 +96,7 @@ function ModelRenderer.SetModel(modelRenderer, modelNameOrAsset)
     end
 
     OriginalSetModel(modelRenderer, model)
+    Daneel.StackTrace.EndFunction("ModelRenderer.SetModel")
 end
 
 
@@ -116,12 +117,13 @@ function MapRenderer.SetMap(mapRenderer, mapNameOrAsset)
  
     local map = mapNameOrAsset
     if type(mapNameOrAsset) == "string" then
-        map = Asset.Get(mapNameOrAsset, "Model")
+        map = Asset.Get(mapNameOrAsset, "Map")
         if map == nil then
             Daneel.Debug.PrintError(errorHead.."Argument 'mapNameOrAsset' : map with name '"..mapNameOrAsset.."' was not found.")
         end
     end
 
     OriginalSetMap(mapRenderer, map)
+    Daneel.StackTrace.EndFunction("MapRenderer.SetMap")
 end
 
