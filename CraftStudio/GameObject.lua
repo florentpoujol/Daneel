@@ -131,7 +131,6 @@ function GameObject.Set(gameObject, params)
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
     local argType = nil
 
-
     -- scriptedBehaviors
     if params.scriptedBehaviors ~= nil then
         Daneel.Debug.CheckArgType(params.scriptedBehaviors, "params.scriptedBehaviors", "table", errorHead)
@@ -160,7 +159,7 @@ function GameObject.Set(gameObject, params)
     end
 
     -- components
-    for i, componentType in ipairs({"modelRenderer", "mapRenderer", "camera"}) do
+    for i, componentType in ipairs({"modelRenderer", "mapRenderer", "camera", "transform"}) do
         if params[componentType] ~= nil then
             Daneel.Debug.CheckArgType(params[componentType], "params."..componentType, "table", errorHead)
             local ComponentType = componentType:ucfirst()
@@ -168,6 +167,10 @@ function GameObject.Set(gameObject, params)
             
             if component == nil then
                 component = gameObject:AddComponent(ComponentType)
+
+                if componentType == "scriptedBehavior" then
+                    component = 
+                end
             end
 
             component:Set(params[componentType])
@@ -175,29 +178,10 @@ function GameObject.Set(gameObject, params)
         end
     end
 
-    if params.transform ~= nil then
-        Daneel.Debug.CheckArgType(params.transform, "params.transform", "table", errorHead)
-        gameObject.transform:Set(params.transform)
-        params.transform = nil
-    end
-
-
+    -- all other keys/values
     for key, value in pairs(params) do
-        if key == "name" then
-            Daneel.Debug.CheckArgType(value, "params.name", "string", errorHead)
-            gameObject:SetName(value)
-        end
-
-        if key == "parent" then 
-            Daneel.Debug.CheckArgType(value, "params.parent", {"string", "GameObject"}, errorHead)
-            Daneel.Debug.CheckOptionalArgType(params.parentKeepLocalTransform, "params.parentKeepLocalTransform", "boolean", errorHead)
-            gameObject:SetParent(value, params.parentKeepLocalTransform)
-        end
-    end -- end for
-
-    
-
-
+        gameObject[key] = value
+    end
 
     Daneel.StackTrace.EndFunction("GameObject.Set", gameObject)
     return gameObject

@@ -8,8 +8,8 @@
 
 Daneel is a framework for [CraftStudio][] that aims to extend and render more flexible to use the API, as well as to bring news fonctionnalities.
 
-Daneel never deprecate anything from the current CraftStudio's API which remains usable in its entirety [as decribed in the scripting reference][CSscriptingreference] on the offical wiki.  
-Daneel mostly add new objects, new functions on existing objects and sometimes allow to pass different argument types on existing functions.
+Daneel never deprecate anything from the current CraftStudio's API which remains usable in its entirety [as decribed in the scripting reference][CSscriptingreference] on the offical wiki.
+Daneel mostly add new objects, new functions on existing objects and sometimes allow to pass different argument types and new arguments on existing functions.
 
 
 ## Conventions
@@ -24,20 +24,20 @@ For consistency sake, some convention are observed throughout the framework :
 * Every optional boolean arguments default to false.
 
 
-## Dynamic getters, setters and access to scriptedBehaviors
+## Dynamic getters and setters
 
 Getters and setters functions (functions that begins by Get or Set) may be used on gameOjects, components and any scriptedBehaviors as if they were variables :
     
-    print( self.gameObject.transform.localPosition )
+    self.gameObject.transform.localPosition
     -- is the same as
-    print( self.gameObject.transform:GetLocalPosition() )
+    self.gameObject.transform:GetLocalPosition()
 
     self.gameObject.name = "a new name"
     -- is the same as 
     self.gameObject:SetName("a new name")
-    -- note that only one argument (in addition to the working object) can be passed in this way.
+    -- note that only one argument (in addition to the working object) can be passed to the function.
 
-This works even for your own getters or setter. For instance, if you have a GetMana()/SetMana() couple, you can just access them via the 'mana' variable.
+This works even for your own getters or setter. For instance, if you have GetMana()/SetMana(), you can just access them via the 'mana' variable.
 
 As Daneel introduce the new GetModelRenderer(), GetMapRenderer() and GetCamera() functions on gameObjects, you may now access any components via their variable, like the transform :
 
@@ -45,13 +45,14 @@ As Daneel introduce the new GetModelRenderer(), GetMapRenderer() and GetCamera()
     -- is the same as
     self.gameObject:GetComponent("ModelRenderer"):SetModel(CraftStudio.FindAsset("model name", "Model"))
 
-### ScriptedBehaviors
+
+## Dynamic access to ScriptedBehaviors
 
 ScriptedBehaviors whose name are camel-cased and are not nested in a folder may be accessed in the same way. For instance, with a Script whose name is 'MyScript'.
 
-    self.gameObject.myScript.something = "data"
+    self.gameObject.myScript.something
     -- is the same as
-    self.gameObject:GetScriptedBehavior(CraftStudio.FindAsset("MyScript", "Script")):SetSomething("data")
+    self.gameObject:GetScriptedBehavior(CraftStudio.FindAsset("MyScript", "Script")):GetSomething()
 
 You may define aliases for other ScriptedBehaviors (those who are nested in folders and/or name are not camel-cased) in the config. Those scriptedBehaviors become accessible throught their aliases as above :
 
@@ -64,8 +65,9 @@ You may define aliases for other ScriptedBehaviors (those who are nested in fold
     }
 
     -- in your script, access the scripteBehavior with its alias
-    self.gameObject.scriptName.something = "data"
-Note that in this case only (not in the others cases aboves), the case of the alias and especially its first letter matters
+    self.gameObject.scriptName
+
+Note that with the scriptedBehaviors only (not with the gatters or setters), the case of the alias and especially its first letter matters
 In this example, self.gameObject.ScriptName won't get access to the scriptedBehavior but self.gameObject.ModelRenderer will get access to the modelRenderer.
 
 You may also access the first scriptedBehavior on the gameObject, whatever its name is, via `self.gameObject.scriptedBehavior`.
@@ -92,7 +94,9 @@ Functions gameObject:Set() and component:Set() accept a "params" argument of typ
 
  gameObject:Set({
     parent = "my parent name", -- Set the parent via SetParent()
-    health = 100
+    myScript = {
+        health = 100 -- Set the variable health on the 'MyScript' scriptedBaheavior or call SetHealth(100) if it exists
+    }
  })
 
  modelRenderer:Set({
@@ -101,22 +105,46 @@ Functions gameObject:Set() and component:Set() accept a "params" argument of typ
  })
 
 
-These function are used by GameObject.New(), GameObject.Instanciate() and gameObject:AddComponent() to optionnaly initialize the new gameObjects/components before returning them.
+### Component mass-creation and setting on gameObjects
+
+Example :
+
+ gameObject:Set({
+    modelRenderer = {
+        model = "Model name"
+    }, -- will create a modelRenderer if it does not yet exists, then set its model
+
+    camera = {}, -- will create a camera component or do nothing
+
+    scriptedBehavior = "Script name", -- will create a ScriptedBehavior with the "Script name" script and if it does not yet exists
+    
+    scriptedBehaviors = {
+        "script name 2",
+        "script name 3", -- will create those ScriptedBehaviors if they don't yet exists
+        
+        ["script name 4"] = {
+            variableOrSetter = value
+        } -- will create a ScriptedBehavior if it does not yet exists, then set it
+    },
+
+    scriptAlias = {
+        variableOrSetter = value
+    } -- will set the ScriptedBehavior whose name or alias is 'ScriptAlias'
+ })
 
 
+'''Components'''
 
+Just set the variable of the same name as the component with the first letter lower case. Set the value as a table of parameters. If the component does not yet exists, it will be created. If you want to create a component without initializing it, just leave the table empty.
 
+You can mass-set existing components on gameObject via gameObject:SetComponent() and its helpers (SetModelRenderer() and the likes).
 
-If you want to add one scriptedBehavior, you may set the variable 'scriptedBehavior' with the script name or asset as value.
-If you want to set one or more scriptedBehaviors and maybe initialize them, set the variable 'scriptedBehaviors' (with an 's' at the end) whose value is a table. This table may contains just the scripts name or asset if you don't want to initialize then or the script name or asset as key and the initialization table as value. 
+'''ScriptedBehaviors'''
 
-
- {
-    "script1",
-    ["Script 2"] = {
-        variable = value
-    }
- } 
+If you want to add one scriptedBehavior, set the variable 'scriptedBehavior' with the script name or asset as value.
+If you want to create one or more scriptedBehaviors and maybe initialize them or set existing ScriptedBehaviors, set the variable 'scriptedBehaviors' (with an 's' at the end) with a table as value.
+This table may contains the scripts name or asset of new ScriptedBehaviors if you don't want to initialize them or the script name or asset as key and the parameters table as value (for new or existing ScriptedBehaviors).
+Existing ScriptedBehaviors may also be set via their name or alias.
 
 
 ---
@@ -186,6 +214,7 @@ Arguments between square brackets are optional.
 * gameObject:AddCamera([params])
 
 * gameObject:SetComponent(componentType, params)
+* gameObject:SetScriptedBehavior(scriptNameOrAsset, params)
 * gameObject:SetModelRenderer(params)
 * gameObject:SetMapRenderer(params)
 * gameObject:SetCamera(params)

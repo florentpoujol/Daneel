@@ -20,6 +20,12 @@ function Daneel.Awake()
 
     Daneel.config.hudCameraGo = GameObject.Get(Daneel.config.hudCameraName)
 
+    --
+    if Daneel.config.input == nil then
+        Daneel.config.input = {}
+    end
+
+    
 
     -- Helpers functions
     Asset.Init()
@@ -36,7 +42,11 @@ function Daneel.Start()
 end 
 
 function Daneel.Update()
-    
+    -- triger an event whenever a registered button is pressed
+    for buttonKey, buttonName in pairs(Daneel.config.input) do
+        if CraftStudio.Input.WasButtonJustPressed(buttonName) then
+            Daneel.Events.Fire("On"..buttonKey:ucfirst().."ButtonPressed")
+        end
+    end
 end
-
 

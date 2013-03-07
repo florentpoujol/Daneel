@@ -5,7 +5,11 @@ stacktrace endfunction sans devoir mettre le nom de la fonction
 
 voir pour Lua minifier
 
+implémenter gameObject SetComponent()
 
+mass-set components with  self.gameObject.component = {}
+
+vérifier que la suppression de go dans la liste des trigerable or mousehoverable gameobject n provoque pas de problèmes
 
 Events
     Fire
@@ -21,3 +25,8 @@ Package manager
 - permet de désactiver tout ou partie des fichiers facilement (code d'un fichier placé dans fonction appelée at runtime)
 
 
+
+complèter doc sur mass-setting
+ajouter mouseoverrble script (nom à changer)
+ajouté triger button event dans Daneel.lua
+corriger Component.set()

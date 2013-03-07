@@ -69,7 +69,8 @@ function Component.Set(component, params)
         component[key] = value
     end
 
-    Daneel.StackTrace.EndFunction("Component.Set")
+    Daneel.StackTrace.EndFunction("Component.Set", component)
+    return component
 end
 
 
