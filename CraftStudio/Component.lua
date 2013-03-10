@@ -42,9 +42,9 @@ function Component.Init()
         end
 
         object["__tostring"] = function(component)
-            -- returns something like "ModelRenderer: 123456789"
+            -- returns something like "ModelRenderer: 123456789 - table: 051C42D0"
             -- component.inner is "?: [some ID]"
-            return Daneel.Debug.GetType(component)..": "..tostring(component.inner):sub(2,20)
+            return Daneel.Debug.GetType(component)..": "..tostring(component.inner):sub(2,20).." - "..tostring(component)
         end
     end
 

@@ -1,14 +1,10 @@
 
 
 function GameObject.__tostring(gameObject)
-    -- same story as components
+    -- returns something like "GameObject: 'MyName' 123456789 - table: 051C42D0"
     local id = tostring(gameObject.inner):sub(2,20)
-    return "GameObject: '"..gameObject:GetName().."' "..id
+    return "GameObject: '"..gameObject:GetName().."' "..id.." - "..tostring(gameObject)
 end
-
--- list of ScriptedBehavior instances
--- key = names, value = instances
-
 
 -- Dynamic getters
 function GameObject.__index(gameObject, key)
@@ -55,9 +51,8 @@ function GameObject.__newindex(gameObject, key, value)
 end
 
 
+
 ----------------------------------------------------------------------------------
-
-
 
 --- Create a new gameObject with optional initialisation parameters.
 -- @param name (string) The GameObject name.
@@ -187,6 +182,7 @@ function GameObject.Set(gameObject, params)
     Daneel.Debug.StackTrace.EndFunction("GameObject.Set", gameObject)
     return gameObject
 end
+
 
 
 ----------------------------------------------------------------------------------

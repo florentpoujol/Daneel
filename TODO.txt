@@ -1,13 +1,15 @@
 
-concatenating a GO component will print it
+- implémenter gameObject SetComponent()
+- finir readme sur les events et les boutton avec les mouseoverable
+- tester tout ça
+
+
 
 stacktrace endfunction sans devoir mettre le nom de la fonction
 
 voir pour Lua minifier
 
-implémenter gameObject SetComponent()
 
-mass-set components with  self.gameObject.component = {}
 
 vérifier que la suppression de go dans la liste des trigerable or mousehoverable gameobject n provoque pas de problèmes
 
@@ -17,16 +19,9 @@ Events
     - vérif lors de l'appel de function ou GO détruites
 
 
-The metatable of the scripted behaviors is Behavior and not scriptedBehavior
-
 
 Package manager
 - faciliter l'intégration de frameworks ou de scripts en plusieurs partie
 - définit des standards (appel, initialisation, config, indépendant de l'ordre de lecture des fichiers (acune dépendance globale))
 - permet de désactiver tout ou partie des fichiers facilement (code d'un fichier placé dans fonction appelée at runtime)
 
-
-
-readme
-ray
-gameobject
