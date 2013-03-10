@@ -12,7 +12,7 @@ Daneel.Events = { events = {} }
 -- @param functionName [optional default="On[eventName]"] (string) If '_function' is a gameObject name or instance, the name of the function to send the message to
 -- @param broadcast [optional default=false] (boolean) If '_function' is a gameObject name or instance, broadcast the message to all the gameObject's childrens
 function Daneel.Events.Listen(eventName, _function, functionName, broadcast)
-    Daneel.StackTrace.BeginFunction("Daneel.Events.Listen", eventName, _function)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Events.Listen", eventName, _function)
     local errorHead = "Daneel.Events.Listen(eventName, function) : "
     Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
 
@@ -51,7 +51,7 @@ function Daneel.Events.Listen(eventName, _function, functionName, broadcast)
         })
     end
 
-    Daneel.StackTrace.EndFunction("Daneel.Events.Listen")
+    Daneel.Debug.StackTrace.EndFunction("Daneel.Events.Listen")
 end
 -- TODO check if a global function, registered several times for the same event is called several times
 
@@ -59,7 +59,7 @@ end
 -- @param eventName (string) The event name.
 -- @param functionOrGameObject (function, string or GameObject) The function, or the gameObject name or instance.
 function Daneel.Events.StopListen(eventName, functionOrGameObject)
-    Daneel.StackTrace.BeginFunction("Daneel.Events.StopListen", eventName, functionOrGameObject)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Events.StopListen", eventName, functionOrGameObject)
     local errorHead = "Daneel.Events.StopListen(eventName, functionOrGameObject) : "
     Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
     
@@ -88,7 +88,7 @@ function Daneel.Events.StopListen(eventName, functionOrGameObject)
         end
     end
 
-    Daneel.StackTrace.EndFunction("Daneel.Events.StopListen")
+    Daneel.Debug.StackTrace.EndFunction("Daneel.Events.StopListen")
 end
 
 -- Fire the specified event transmitting along all subsequent parameters to 'eventName' if some exists. 
@@ -97,16 +97,16 @@ end
 -- @param ... [optional] a list of parameters to pass along.
 function Daneel.Events.Fire(eventName, ...)
     if arg == nil then
-        Daneel.StackTrace.BeginFunction("Daneel.Events.Fire", eventName, nil)
+        Daneel.Debug.StackTrace.BeginFunction("Daneel.Events.Fire", eventName, nil)
         arg = {}
     else
-        Daneel.StackTrace.BeginFunction("Daneel.Events.Fire", eventName, unpack(arg))
+        Daneel.Debug.StackTrace.BeginFunction("Daneel.Events.Fire", eventName, unpack(arg))
     end
     
     Daneel.Debug.CheckArgType(eventName, "eventName", "string", "Daneel.Events.Fire(eventName[, parameters]) : ")
     
     if Daneel.Events.events[eventName] == nil then 
-        Daneel.StackTrace.EndFunction("Daneel.Events.Fire")
+        Daneel.Debug.StackTrace.EndFunction("Daneel.Events.Fire")
         return
     end
     
@@ -130,7 +130,7 @@ function Daneel.Events.Fire(eventName, ...)
         end
     end
 
-    Daneel.StackTrace.EndFunction("Daneel.Events.Fire")
+    Daneel.Debug.StackTrace.EndFunction("Daneel.Events.Fire")
 end
 -- TODO check proper arguments passing with behavior functions
 

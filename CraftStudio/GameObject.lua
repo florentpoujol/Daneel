@@ -50,10 +50,9 @@ function GameObject.__newindex(gameObject, key, value)
     if GameObject[funcName] ~= nil then
         return GameObject[funcName](gameObject, value)
     end
-   
+
     rawset(gameObject, key, value)
 end
-
 
 
 ----------------------------------------------------------------------------------
@@ -65,7 +64,7 @@ end
 -- @param params [optional] (string, GameObject or table) The parent gameObject name, or parent GameObject or a table with parameters to initialize the new gameObject with.
 -- @return (GameObject) The new gameObject.
 function GameObject.New(name, params)
-    Daneel.StackTrace.BeginFunction("GameObject.New", name, params)
+    Daneel.Debug.StackTrace.BeginFunction("GameObject.New", name, params)
     local errorHead = "GameObject.New(name[, params]) : "
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", {"string", "GameObject", "table"}, errorHead)
@@ -79,7 +78,7 @@ function GameObject.New(name, params)
         gameObject:Set(params)
     end
 
-    Daneel.StackTrace.EndFunction("GameObject.New", gameObject)
+    Daneel.Debug.StackTrace.EndFunction("GameObject.New", gameObject)
     return gameObject
 end
 
@@ -89,7 +88,7 @@ end
 -- @param params [optional] (string, GameObject or table) The parent gameObject name, or parent GameObject or a table with parameters to initialize the new gameObject with.
 -- @return (GameObject) The new gameObject.
 function GameObject.Instantiate(gameObjectName, scene, params)
-    Daneel.StackTrace.BeginFunction("GameObject.Instantiate", gameObjectName, scene, params)
+    Daneel.Debug.StackTrace.BeginFunction("GameObject.Instantiate", gameObjectName, scene, params)
     local errorHead = "GameObject.Instantiate(gameObjectName, sceneName[, params]) : "
     Daneel.Debug.CheckArgType(gameObjectName, "gameObjectName", "string", errorHead)
     Daneel.Debug.CheckArgType(scene, "scene", {"string", "Scene"}, errorHead)
@@ -113,7 +112,7 @@ function GameObject.Instantiate(gameObjectName, scene, params)
         gameObject:Set(params)
     end
 
-    Daneel.StackTrace.EndFunction("GameObject.Instantiate", gameObject)
+    Daneel.Debug.StackTrace.EndFunction("GameObject.Instantiate", gameObject)
     return gameObject
 end
 
@@ -122,11 +121,13 @@ end
 -- @param params (table)
 -- @return (GameObject) The gameObject
 function GameObject.Set(gameObject, params)
+    Daneel.Debug.StackTrace.BeginFunction("GameObject.Set", gameObject, params)
+    
     if params == nil then
+        Daneel.Debug.StackTrace.EndFunction("GameObject.Set", gameObject)
         return gameObject
     end
 
-    Daneel.StackTrace.BeginFunction("GameObject.Set", gameObject, params)
     local errorHead = "GameObject.Set(gameObject, params) : "
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
     local argType = nil
@@ -183,7 +184,7 @@ function GameObject.Set(gameObject, params)
         gameObject[key] = value
     end
 
-    Daneel.StackTrace.EndFunction("GameObject.Set", gameObject)
+    Daneel.Debug.StackTrace.EndFunction("GameObject.Set", gameObject)
     return gameObject
 end
 
@@ -197,7 +198,7 @@ end
 -- @param name (string) The gameObject name.
 -- @return (GameObject) The gameObject or nil if none is found.
 function GameObject.Get(name)
-    Daneel.StackTrace.BeginFunction("GameObject.Get", name)
+    Daneel.Debug.StackTrace.BeginFunction("GameObject.Get", name)
 
     local argType = type(name)
     if argType ~= "string" then
@@ -206,7 +207,7 @@ function GameObject.Get(name)
 
     local gameObject = CraftStudio.FindGameObject(name)
 
-    Daneel.StackTrace.EndFunction("GameObject.Get", gameObject)
+    Daneel.Debug.StackTrace.EndFunction("GameObject.Get", gameObject)
     return gameObject
 end
 
@@ -220,7 +221,7 @@ local OriginalSetParent = GameObject.SetParent
 -- @param keepLocalTransform [optional default=false] (boolean) Carry over the game object's local transform instead of the global one.
 -- @return (GameObject) The gameObject.
 function GameObject.SetParent(gameObject, parent, keepLocalTransform)
-    Daneel.StackTrace.EndFunction("GameObject.SetParent", gameObject, parent, keepLocalTransform)
+    Daneel.Debug.StackTrace.EndFunction("GameObject.SetParent", gameObject, parent, keepLocalTransform)
     local errorHead = "GameObject.SetParent(gameObject, parent[, keepLocalTransform]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     Daneel.Debug.CheckArgType(parent, "parent", {"string", "GameObject"}, errorHead)
@@ -240,7 +241,7 @@ function GameObject.SetParent(gameObject, parent, keepLocalTransform)
     end
       
     OriginalSetParent(gameObject, parent, keepLocalTransform)
-    Daneel.StackTrace.EndFunction("GameObject.SetParent")
+    Daneel.Debug.StackTrace.EndFunction("GameObject.SetParent")
 end
 
 
@@ -251,7 +252,7 @@ end
 -- @param recursive [optional default=false] (boolean) Search for the child in all descendants.
 -- @return (GameObject) The child or nil if none is found.
 function GameObject.GetChild(gameObject, name, recursive)
-    Daneel.StackTrace.BeginFunction("GameObject.GetChild", gameObject, name, recursive)
+    Daneel.Debug.StackTrace.BeginFunction("GameObject.GetChild", gameObject, name, recursive)
     local errorHead = "GameObject.GetChild(gameObject, name[, recursive]) : "
 
     local argType = Daneel.Debug.GetType(gameObject)
@@ -271,7 +272,7 @@ function GameObject.GetChild(gameObject, name, recursive)
 
     local child = gameObject:FindChild(name, recursive)
 
-    Daneel.StackTrace.EndFunction("GameObject.GetChild", child)
+    Daneel.Debug.StackTrace.EndFunction("GameObject.GetChild", child)
     return child
 end
 
@@ -284,7 +285,7 @@ local OriginalGetChildren = GameObject.GetChildren
 -- @param includeSelf [optional default=false] (boolean) Include the gameObject in the children.
 -- @return (table) The children.
 function GameObject.GetChildren(gameObject, recursive, includeSelf)
-    Daneel.StackTrace.BeginFunction("GameObject.GetChildren", gameObject, recursive, includeSelf)
+    Daneel.Debug.StackTrace.BeginFunction("GameObject.GetChildren", gameObject, recursive, includeSelf)
     local errorHead = "GameObject.GetChildrenRecursive(gameObject, [recursive]) : "
 
     local argType = Daneel.Debug.GetType(gameObject)
@@ -319,7 +320,7 @@ function GameObject.GetChildren(gameObject, recursive, includeSelf)
         allChildren = allChildren:join(selfChildren)
     end
 
-    Daneel.StackTrace.EndFunction("GameObject.GetChildren", allChildren)
+    Daneel.Debug.StackTrace.EndFunction("GameObject.GetChildren", allChildren)
     return allChildren
 end
 
@@ -333,7 +334,7 @@ end
 -- @param functionName (string) The method name.
 -- @param data [optional] (table) The data to pass along the method call.
 function GameObject.BroadcastMessage(gameObject, functionName, data)
-    Daneel.StackTrace.BeginFunction("GameObject.BroadcastMessage", gameObject, functionName, data)
+    Daneel.Debug.StackTrace.BeginFunction("GameObject.BroadcastMessage", gameObject, functionName, data)
     local errorHead = "GameObject.BroadcastMessage(gameObject, functionName[, data]) : "
 
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
@@ -346,7 +347,7 @@ function GameObject.BroadcastMessage(gameObject, functionName, data)
         child:SendMessage(functionName, data)
     end
 
-    Daneel.StackTrace.EndFunction("GameObject.BroadcastMessage")
+    Daneel.Debug.StackTrace.EndFunction("GameObject.BroadcastMessage")
 end
 
 
@@ -362,7 +363,7 @@ end
 -- @param scriptedBehaviorParams [optional] A table of parameters to initialize the new ScriptedBehavior with.
 -- @return (ScriptedBehavior, ModelRenderer, MapRenderer or Camera) The component.
 function GameObject.AddComponent(gameObject, componentType, params, scriptedBehaviorParams)
-    Daneel.StackTrace.BeginFunction("GameObject.AddComponent", gameObject, componentType, params, scriptedBehaviorParams)
+    Daneel.Debug.StackTrace.BeginFunction("GameObject.AddComponent", gameObject, componentType, params, scriptedBehaviorParams)
     local errorHead = "GameObject.AddComponent(gameObject, componentType[, params, scriptedBehaviorParams]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     componentType = Daneel.Debug.CheckComponentType(componentType)
@@ -391,7 +392,7 @@ function GameObject.AddComponent(gameObject, componentType, params, scriptedBeha
         component:Set(params)
     end   
 
-    Daneel.StackTrace.EndFunction("GameObject.AddComponent", component)
+    Daneel.Debug.StackTrace.EndFunction("GameObject.AddComponent", component)
     return component
 end
 
@@ -403,12 +404,12 @@ end
 function GameObject.AddScriptedBehavior(gameObject, scriptNameOrAsset, params) 
     local componentType = "ScriptedBehavior"
     
-    Daneel.StackTrace.BeginFunction("GameObject.AddScriptedBehavior", gameObject, scriptNameOrAsset, params)
+    Daneel.Debug.StackTrace.BeginFunction("GameObject.AddScriptedBehavior", gameObject, scriptNameOrAsset, params)
     local errorHead = "GameObject.AddScriptedBehavior(gameObject, scriptNameOrAsset[, params]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
 
     local component = gameObject:AddComponent(componentType, scriptNameOrAsset, params)
-    Daneel.StackTrace.EndFunction("GameObject.AddScriptedBehavior", component)
+    Daneel.Debug.StackTrace.EndFunction("GameObject.AddScriptedBehavior", component)
     return component
 end
 
@@ -447,7 +448,7 @@ local OriginalGetComponent = GameObject.GetComponent
 -- @param scriptNameOrAsset [optional] (string or Script) The script name or asset. This argument is mandatory if componentType is "ScriptedBehavior".
 -- @return (ScriptedBehavior, ModelRenderer, MapRenderer, Camera) The component instance.
 function GameObject.GetComponent(gameObject, componentType[, scriptNameOrAsset])
-    Daneel.StackTrace.BeginFunction("GameObject.GetComponent", gameObject, componentType, scriptNameOrAsset)
+    Daneel.Debug.StackTrace.BeginFunction("GameObject.GetComponent", gameObject, componentType, scriptNameOrAsset)
     local errorHead = "GameObject.GetComponent(gameObject, componentType[, scriptNameOrAsset]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     componentType = Daneel.Debug.CheckComponentType(componentType)
@@ -460,7 +461,7 @@ function GameObject.GetComponent(gameObject, componentType[, scriptNameOrAsset])
         component = OriginalGetComponent(gameObject, componentType)
     end
 
-    Daneel.StackTrace.EndFunction("GameObject.GetComponent", component)
+    Daneel.Debug.StackTrace.EndFunction("GameObject.GetComponent", component)
     return component
 end
 
@@ -471,7 +472,7 @@ local OriginalGetScriptedBehavior = GameObject.GetScriptedBehavior
 -- @param scriptNameOrAsset (string or Script) The script name or asset.
 -- @return (ScriptedBehavior) The ScriptedBehavior instance.
 function GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset)
-    Daneel.StackTrace.BeginFunction("GameObject.GetScriptedBehavior", gameObject, scriptNameOrAsset)
+    Daneel.Debug.StackTrace.BeginFunction("GameObject.GetScriptedBehavior", gameObject, scriptNameOrAsset)
     local errorHead = "GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     Daneel.Debug.CheckArgType(scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead)
@@ -486,7 +487,7 @@ function GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset)
     end
 
     local component = OriginalGetScriptedBehavior(gameObject, script)
-    Daneel.StackTrace.EndFunction("GameObject.GetScriptedBehavior", component)
+    Daneel.Debug.StackTrace.EndFunction("GameObject.GetScriptedBehavior", component)
     return component
 end
 
@@ -514,13 +515,13 @@ function GameObject.GetCamera(gameObject) end
 --- Destroy the gameObject
 -- @param gameObject (GameObject) The gameObject
 function GameObject.Destroy(gameObject)
-    Daneel.StackTrace.BeginFunction("GameObject.Destroy", gameObject)
+    Daneel.Debug.StackTrace.BeginFunction("GameObject.Destroy", gameObject)
     local errorHead = "GameObject.Destroy(gameObject) : "
     
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     
     CraftSudio.Destroy(gameObject)
-    Daneel.StackTrace.EndFunction("GameObject.Destroy")
+    Daneel.Debug.StackTrace.EndFunction("GameObject.Destroy")
 end
 
 
@@ -535,7 +536,7 @@ end
 -- @param strict [optional default=false] (boolean) If true, returns an error when the function can't find the component to destroy.
 -- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
 function GameObject.DestroyComponent(gameObject, input, strict)
-    Daneel.StackTrace.BeginFunction("GameObject.DestroyComponent", gameObject, input, strict)
+    Daneel.Debug.StackTrace.BeginFunction("GameObject.DestroyComponent", gameObject, input, strict)
     local errorHead = "GameObject.DestroyComponent(gameObject, input[, strict]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     Daneel.Debug.CheckOptionalArgType(strict, "strict", "boolean", errorHead)
@@ -577,13 +578,13 @@ function GameObject.DestroyComponent(gameObject, input, strict)
             Daneel.Debug.PrintError(_error)
         else
             print("WARNING : ".._error)
-            Daneel.StackTrace.EndFunction("GameObject.DestroyComponent", false)
+            Daneel.Debug.StackTrace.EndFunction("GameObject.DestroyComponent", false)
             return false
         end
     end
 
     CraftStudio.Destroy(component)
-    Daneel.StackTrace.EndFunction("GameObject.DestroyComponent", true)
+    Daneel.Debug.StackTrace.EndFunction("GameObject.DestroyComponent", true)
     return true
 end
 
@@ -594,7 +595,7 @@ end
 -- @param scriptNameOrAsset [optional default=ScriptedBehavior] (string or Script) The script name or asset.
 -- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
 function GameObject.DestroyScriptedBehavior(gameObject, scriptNameOrAsset)
-    Daneel.StackTrace.BeginFunction("GameObject.DestroyScriptedBehavior", gameObject, scriptNameOrAsset)
+    Daneel.Debug.StackTrace.BeginFunction("GameObject.DestroyScriptedBehavior", gameObject, scriptNameOrAsset)
     local errorHead = "GameObject.DestroyScriptedBehavior(gameObject[, scriptNameOrAsset]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     Daneel.Debug.CheckOptionalArgType(scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead)
@@ -604,7 +605,7 @@ function GameObject.DestroyScriptedBehavior(gameObject, scriptNameOrAsset)
     end
     
     local success = gameObject:DestroyComponent(scriptNameOrAsset)
-    Daneel.StackTrace.EndFunction("GameObject.DestroyScriptedBehavior", success)
+    Daneel.Debug.StackTrace.EndFunction("GameObject.DestroyScriptedBehavior", success)
     return success
 end
 
@@ -635,12 +636,12 @@ function GameObject.Init()
         -- ie : gameObject:AddModelRenderer()
         if componentType ~= "Transform" and componentType ~= "ScriptedBehavior" then 
             GameObject["Add"..componentType] = function(gameObject, params)
-                Daneel.StackTrace.BeginFunction("GameObject.Add"..componentType, gameObject, params)
+                Daneel.Debug.StackTrace.BeginFunction("GameObject.Add"..componentType, gameObject, params)
                 local errorHead = "GameObject.Add"..componentType.."(gameObject[, params]) : "
                 Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
 
                 local component = gameObject:AddComponent(componentType, params)
-                Daneel.StackTrace.EndFunction("GameObject.Add"..componentType, component)
+                Daneel.Debug.StackTrace.EndFunction("GameObject.Add"..componentType, component)
                 return component
             end
         end
@@ -649,12 +650,12 @@ function GameObject.Init()
         -- ie : gameObject:GetModelRenderer()
         if componentType ~= "Transform" and componentType ~= "ScriptedBehavior" then
             GameObject["Get"..componentType] = function(gameObject)
-                Daneel.StackTrace.BeginFunction("GameObject.Get"..componentType, gameObject)
+                Daneel.Debug.StackTrace.BeginFunction("GameObject.Get"..componentType, gameObject)
                 local errorHead = "GameObject.Get"..componentType.."(gameObject) : "
                 Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
 
                 local component = gameObject:GetComponent(componentType)
-                Daneel.StackTrace.EndFunction("GameObject.Get"..componentType, component)
+                Daneel.Debug.StackTrace.EndFunction("GameObject.Get"..componentType, component)
                 return component
             end
         end
@@ -662,12 +663,12 @@ function GameObject.Init()
         -- DestroyComponent helpers
         -- ie : gameObject:DestroyModelRenderer()
         GameObject["Destroy"..componentType] = function(gameObject)
-            Daneel.StackTrace.BeginFunction("GameObject.Destroy"..componentType, gameObject)
+            Daneel.Debug.StackTrace.BeginFunction("GameObject.Destroy"..componentType, gameObject)
             local errorHead = "GameObject.Destroy"..componentType.."(gameObject) : "
             Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
 
             local success = gameObject:DestroyComponent(componentType)
-            Daneel.StackTrace.EndFunction("GameObject.Destroy"..componentType, success)
+            Daneel.Debug.StackTrace.EndFunction("GameObject.Destroy"..componentType, success)
             return success
         end
 

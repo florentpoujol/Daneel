@@ -55,6 +55,15 @@ Daneel.defaultConfig = {
         RaycastHit = RayCastHit,
     },
     
+
+    -- Triggers
+    triggerableGameObjects = {}
+
+
+    -- Input
+    input = {
+        buttons = {}
+    }
 }
 
 -- called from Daneel.Awake()
@@ -78,10 +87,10 @@ function Daneel.defaultConfig.Init()
 
 
     -- assetTypes, assetObjects
-    Daneel.defaultConfig.assetTypes = table.getkeys(Daneel.defaultConfig.assets)
-    Daneel.defaultConfig.assetObjects = table.getvalues(Daneel.defaultConfig.assets)
-    Daneel.defaultConfig.componentTypes = table.getkeys(Daneel.defaultConfig.components)
-    Daneel.defaultConfig.componentObjects = table.getvalues(Daneel.defaultConfig.components)
+    Daneel.defaultConfig.assetTypes = table.getkeys(Daneel.defaultConfig.assetObjects)
+    --Daneel.defaultConfig.assetObjects = table.getvalues(Daneel.defaultConfig.assets)
+    Daneel.defaultConfig.componentTypes = table.getkeys(Daneel.defaultConfig.componentObjects)
+    --Daneel.defaultConfig.componentObjects = table.getvalues(Daneel.defaultConfig.components)
 
 end
 

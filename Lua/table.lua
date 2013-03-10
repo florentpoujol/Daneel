@@ -18,9 +18,9 @@ end
 -- @param t2 (table) The right table
 -- @return t (table) The new table
 function table.__add(t1, t2)
-    Daneel.StackTrace.BeginFunction("table.__add", t1, t2)
+    Daneel.Debug.StackTrace.BeginFunction("table.__add", t1, t2)
     local t = table.merge(t1, t2)
-    Daneel.StackTrace.EndFunction("table.__add", t)
+    Daneel.Debug.StackTrace.EndFunction("table.__add", t)
     return t
 end
 
@@ -31,13 +31,13 @@ function table.new(...)
     local t = arg
     
     if t == nil then
-        Daneel.StackTrace.BeginFunction("table.new")
+        Daneel.Debug.StackTrace.BeginFunction("table.new")
         t = setmetatable({}, table)
-        Daneel.StackTrace.EndFunction("table.new", t)
+        Daneel.Debug.StackTrace.EndFunction("table.new", t)
         return t
     end
 
-    Daneel.StackTrace.BeginFunction("table.new", unpack(arg))
+    Daneel.Debug.StackTrace.BeginFunction("table.new", unpack(arg))
 
     t.n = nil
     
@@ -49,7 +49,7 @@ function table.new(...)
     end
 
     t = setmetatable(t, table)
-    Daneel.StackTrace.EndFunction("table.new", t)
+    Daneel.Debug.StackTrace.EndFunction("table.new", t)
     return t
 end
 
@@ -57,11 +57,11 @@ end
 -- Dependent of table.new().
 -- @param t (table) The table to copy.
 function table.copy(t)
-    Daneel.StackTrace.BeginFunction("table.copy", t)
+    Daneel.Debug.StackTrace.BeginFunction("table.copy", t)
     Daneel.Debug.CheckArgType(t, "t", "table", "table.copy(table) : ")
 
     t = table.new(t)
-    Daneel.StackTrace.EndFunction("table.copy", t)
+    Daneel.Debug.StackTrace.EndFunction("table.copy", t)
     return t
 end
 
@@ -70,7 +70,7 @@ end
 -- @param key (mixed) The key to search for.
 -- @return (boolean) True if the key is found in the table, false otherwise.
 function table.containskey(t, p_key)
-    Daneel.StackTrace.BeginFunction("table.containskey", t, p_key)
+    Daneel.Debug.StackTrace.BeginFunction("table.containskey", t, p_key)
     local errorHead = "table.containskey(table, key) : "
     Daneel.Debug.CheckArgType(t, "t", "table", errorHead)
     
@@ -86,7 +86,7 @@ function table.containskey(t, p_key)
             break
         end
     end
-    Daneel.StackTrace.EndFunction("table.containskey", containsKey)
+    Daneel.Debug.StackTrace.EndFunction("table.containskey", containsKey)
     return containsKey
 end
 
@@ -96,7 +96,7 @@ end
 -- @param ignoreCase [optionnal default=false] (boolean) Ignore the case of the value. If true, the value must be of type 'string'.
 -- @return (boolean) True if the value is found in the table, false otherwise.
 function table.containsvalue(t, p_value, ignoreCase)
-    Daneel.StackTrace.BeginFunction("table.constainsvalue", t, p_value, ignoreCase)
+    Daneel.Debug.StackTrace.BeginFunction("table.constainsvalue", t, p_value, ignoreCase)
     local errorHead = "table.containsvalue(table, value) : "
     Daneel.Debug.CheckArgType(t, "t", "table", errorHead)
     
@@ -127,7 +127,7 @@ function table.containsvalue(t, p_value, ignoreCase)
         end
     end
     
-    Daneel.StackTrace.EndFunction("table.containsvalue", containsValue)
+    Daneel.Debug.StackTrace.EndFunction("table.containsvalue", containsValue)
     return containsValue
 end
 
@@ -136,7 +136,7 @@ end
 -- @param keyType [optional] (string) Any Lua or CraftStudio type.
 -- @return (number) The table length.
 function table.length(t, keyType)
-    Daneel.StackTrace.BeginFunction("table.length", t, keyType)
+    Daneel.Debug.StackTrace.BeginFunction("table.length", t, keyType)
     local errorHead = "table.length(table, keyType) : "
     Daneel.Debug.CheckArgType(t, "t", "table", errorHead)
     
@@ -150,19 +150,19 @@ function table.length(t, keyType)
         end
     end
 
-    Daneel.StackTrace.EndFunction("table.length", length)
+    Daneel.Debug.StackTrace.EndFunction("table.length", length)
     return length
 end
 
 -- Print all key/value pairs within the provided table.
 -- @param t (table) The table.
 function table.print(t)
-    Daneel.StackTrace.BeginFunction("table.print", t)
+    Daneel.Debug.StackTrace.BeginFunction("table.print", t)
     local errorHead = "table.print(table) : "
 
     if t == nil then
         print(errorHead.."Provided table is nil.")
-        Daneel.StackTrace.EndFunction("table.print")
+        Daneel.Debug.StackTrace.EndFunction("table.print")
         return
     end
 
@@ -182,19 +182,19 @@ function table.print(t)
 
     print("~~~~~ table.print() ~~~~~ End ~~~~~")
 
-    Daneel.StackTrace.EndFunction("table.print")
+    Daneel.Debug.StackTrace.EndFunction("table.print")
 end
 
 -- Print the metatable of the provided table.
 -- Dependent of table.length().
 -- @param t (table) The table.
 function table.printmetatable(t)
-    Daneel.StackTrace.BeginFunction("table.printmetatable", t)
+    Daneel.Debug.StackTrace.BeginFunction("table.printmetatable", t)
     errorHead = "table.printmetatable(table) : "
 
     if t == nil then
         print(errorHead.."Provided table is nil.")
-        Daneel.StackTrace.EndFunction("table.printmetatable")
+        Daneel.Debug.StackTrace.EndFunction("table.printmetatable")
         return
     end
 
@@ -203,13 +203,13 @@ function table.printmetatable(t)
     local mt = getmetatable(t)
     if mt == nil then
         print(errorHead.."Provided table '"..tostring(t).."' has no metatable attached.")
-        Daneel.StackTrace.EndFunction("table.printmetatable")
+        Daneel.Debug.StackTrace.EndFunction("table.printmetatable")
         return
     end
 
     if table.length(mt) == 0 then
         print(errorHead.."The metatable of the provided table is empty.")
-        Daneel.StackTrace.EndFunction("table.printmetatable")
+        Daneel.Debug.StackTrace.EndFunction("table.printmetatable")
         return
     end
    
@@ -227,7 +227,7 @@ function table.printmetatable(t)
 
     print("~~~~~ table.printmetatable() ~~~~~ End ~~~~~")
 
-    Daneel.StackTrace.EndFunction("table.printmetatable")
+    Daneel.Debug.StackTrace.EndFunction("table.printmetatable")
 end
 
 -- Merge two or more tables into one. Integer keys are not overrided.
@@ -235,11 +235,11 @@ end
 -- @return (table) The new table.
 function table.merge(...)
     if arg == nil then
-        Daneel.StackTrace.BeginFunction("table.merge")
+        Daneel.Debug.StackTrace.BeginFunction("table.merge")
         daneelerror("table.merge(...) : No argument provided. Need at least two.")
     end
 
-    Daneel.StackTrace.BeginFunction("table.merge", unpack(arg))
+    Daneel.Debug.StackTrace.BeginFunction("table.merge", unpack(arg))
     
     local fullTable = table.new()
     
@@ -255,7 +255,7 @@ function table.merge(...)
         end
     end
     
-    Daneel.StackTrace.EndFunction("table.merge", fullTable)
+    Daneel.Debug.StackTrace.EndFunction("table.merge", fullTable)
     return fullTable
 end
 
@@ -264,7 +264,7 @@ end
 -- @param table2 (table) The second table to compare to the first table.
 -- @return (boolean) True if the two table have the same content.
 function table.compare(table1, table2)
-    Daneel.StackTrace.BeginFunction("table.compare", table1, table2)
+    Daneel.Debug.StackTrace.BeginFunction("table.compare", table1, table2)
     local errorHead = "table.compare(table1, table2) : "
     Daneel.Debug.CheckArgType(table1, "table1", "table", errorHead)
     Daneel.Debug.CheckArgType(table2, "table2", "table", errorHead)
@@ -272,7 +272,7 @@ function table.compare(table1, table2)
     local areEqual = true
 
     if table.length(table1) ~= table.length(table2) then
-        Daneel.StackTrace.EndFunction("table.compare", false)
+        Daneel.Debug.StackTrace.EndFunction("table.compare", false)
         return false
     end
 
@@ -283,7 +283,7 @@ function table.compare(table1, table2)
         end
     end
     
-    Daneel.StackTrace.EndFunction("table.compare", areEqual)
+    Daneel.Debug.StackTrace.EndFunction("table.compare", areEqual)
     return areEqual
 end
 
@@ -293,7 +293,7 @@ end
 -- @param strict [optional default=false] (boolean) If true, the function returns false if the keys and values table have different length
 -- @return (table or boolean) The combined table or false if the table have different length
 function table.combine(keys, values, strict)
-    Daneel.StackTrace.BeginFunction("table.combine", keys, values, strict)
+    Daneel.Debug.StackTrace.BeginFunction("table.combine", keys, values, strict)
     local errorHead = "table.combine(keys, values[, strict]) : "
     Daneel.Debug.CheckArgType(keys, "keys", "table", errorHead)
     Daneel.Debug.CheckArgType(values, "values", "table", errorHead)
@@ -303,7 +303,7 @@ function table.combine(keys, values, strict)
         print(errorHead.."Arguments 'keys' and 'values' have different length.")
 
         if strict == true then
-            Daneel.StackTrace.EndFunction("table.combine", false)
+            Daneel.Debug.StackTrace.EndFunction("table.combine", false)
             return false
         end
     end
@@ -314,7 +314,7 @@ function table.combine(keys, values, strict)
         newTable[key] = values[i]
     end
 
-    Daneel.StackTrace.EndFunction("table.compare", newTable)
+    Daneel.Debug.StackTrace.EndFunction("table.compare", newTable)
     return newTable
 end
 
@@ -324,7 +324,7 @@ end
 -- @param singleRemove [optional default=false] (boolean) Tell wether to remove all occurences of the value or just the first one
 -- @return (table) The table
 function table.removevalue(t, value, singleRemove)
-    Daneel.StackTrace.BeginFunction("table.removevalue", t, values, singleRemove)
+    Daneel.Debug.StackTrace.BeginFunction("table.removevalue", t, values, singleRemove)
     local errorHead = "table.removevalue(t, value[, singleRemove]) : "
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
     Daneel.Debug.CheckOptionalArgType(singleRemove, "singleRemove", "boolean", errorHead)
@@ -347,7 +347,7 @@ function table.removevalue(t, value, singleRemove)
         end
     end
 
-    Daneel.StackTrace.EndFunction("table.removevalue", t)
+    Daneel.Debug.StackTrace.EndFunction("table.removevalue", t)
     return t
 end
 
@@ -355,7 +355,7 @@ end
 -- @param t (table) The table
 -- @return (table) The keys
 function table.getkeys(t)
-    Daneel.StackTrace.BeginFunction("table.getkeys", t)
+    Daneel.Debug.StackTrace.BeginFunction("table.getkeys", t)
     local errorHead = "table.getkeys(t) : "
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
 
@@ -364,7 +364,7 @@ function table.getkeys(t)
         keys:insert(key)
     end
 
-    Daneel.StackTrace.EndFunction("table.getkeys", keys)
+    Daneel.Debug.StackTrace.EndFunction("table.getkeys", keys)
     return keys
 end
 
@@ -372,7 +372,7 @@ end
 -- @param t (table) The table
 -- @return (table) The values
 function table.getvalues(t)
-    Daneel.StackTrace.BeginFunction("table.getvalues", t)
+    Daneel.Debug.StackTrace.BeginFunction("table.getvalues", t)
     local errorHead = "table.getvalues(t) : "
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
 
@@ -381,7 +381,7 @@ function table.getvalues(t)
         values:insert(value)
     end
 
-    Daneel.StackTrace.EndFunction("table.getvalues", values)
+    Daneel.Debug.StackTrace.EndFunction("table.getvalues", values)
     return values
 end
 
@@ -389,7 +389,7 @@ end
 -- @param t (table) The table
 -- @param value (mixed) The value
 function table.getkey(t, value)
-    Daneel.StackTrace.BeginFunction("table.getkey", t, value)
+    Daneel.Debug.StackTrace.BeginFunction("table.getkey", t, value)
     local errorHead = "table.getkey(t, value) : "
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
 
@@ -400,6 +400,6 @@ function table.getkey(t, value)
         end
     end
 
-    Daneel.StackTrace.EndFunction("table.getkey", key)
+    Daneel.Debug.StackTrace.EndFunction("table.getkey", key)
     return key
 end

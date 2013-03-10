@@ -8,7 +8,7 @@ Asset.__index = Asset
 -- @param assetName (string) The fully-qualified asset name.
 -- @param assetType [optional] (string, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document) The asset type as a case-insensitive string or the asset object.
 function Asset.Get(assetName, assetType)
-    Daneel.StackTrace.BeginFunction("Asset.Get", assetName, assetType)
+    Daneel.Debug.StackTrace.BeginFunction("Asset.Get", assetName, assetType)
     local errorHead = "Asset.Get(assetName[, assetType]) : "
     Daneel.Debug.CheckArgType(assetName, "assetName", "string", errorHead)
 
@@ -33,7 +33,7 @@ function Asset.Get(assetName, assetType)
     end
 
     local asset = CraftStudio.FindAsset(assetName, assetType)
-    Daneel.StackTrace.EndFunction("Asset.Get", asset)
+    Daneel.Debug.StackTrace.EndFunction("Asset.Get", asset)
     return asset
 end
 
@@ -43,7 +43,7 @@ end
 -- @param assetType (string, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document) The asset type as a case-insensitive string or the asset object.
 -- @return (boolean) True if the specified asset is of the specified type, false otherwise
 function Asset.IsOfType(asset, assetType)
-    Daneel.StackTrace.BeginFunction("Asset.IsOfType", asset, assetType)
+    Daneel.Debug.StackTrace.BeginFunction("Asset.IsOfType", asset, assetType)
     local errorHead = "Asset.IsOfType(asset, assetType) : "
     Daneel.Debug.CheckArgType(asset, "asset", Daneel.config.assetTypes, errorHead)
     Daneel.Debug.CheckArgType(assetType, "assetType", "string", errorHead)
@@ -56,7 +56,7 @@ function Asset.IsOfType(asset, assetType)
     end
 
     local isProvidedAssetType = (Daneel.Debug.GetType(asset) == assetType)
-    Daneel.StackTrace.EndFunction("Asset.IsOfType", isProvidedAssetType)
+    Daneel.Debug.StackTrace.EndFunction("Asset.IsOfType", isProvidedAssetType)
     return isProvidedAssetType
 end
 
@@ -65,12 +65,12 @@ end
 -- @param asset (Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document) The asset
 -- @return (string) The asset type or nil
 function Asset.GetType(asset)
-    Daneel.StackTrace.BeginFunction("Asset.GetType", asset)
+    Daneel.Debug.StackTrace.BeginFunction("Asset.GetType", asset)
     local errorHead = "Asset.GetType(asset) : "
     Daneel.Debug.CheckArgType(asset, "asset", Daneel.config.assetTypes, errorHead)
 
     local assetType = Daneel.Debug.GetType(asset)
-    Daneel.StackTrace.EndFunction("Asset.GetType", assetType)
+    Daneel.Debug.StackTrace.EndFunction("Asset.GetType", assetType)
     return assetType
 end
 
@@ -87,7 +87,7 @@ function Asset.Init()
         -- Get helpers
         -- GetModelRenderer() ...
         Asset["Get"..assetType] = function(assetName)
-            Daneel.StackTrace.BeginFunction("Asset.Get"..assetType, assetName)
+            Daneel.Debug.StackTrace.BeginFunction("Asset.Get"..assetType, assetName)
             local errorHead = "Asset.Get"..assetType.."(assetName) : "
 
             local argType = type(assetName)
@@ -96,14 +96,14 @@ function Asset.Init()
             end
 
             local asset = Asset.Get(assetName, assetType)
-            Daneel.StackTrace.EndFunction("Asset.Get"..assetType, asset)
+            Daneel.Debug.StackTrace.EndFunction("Asset.Get"..assetType, asset)
             return asset
         end
 
         -- IsOfType helper   -- not much usefull actually
         -- IsModelRenderer() ...
         Asset["Is"..assetType] = function(asset)
-            Daneel.StackTrace.BeginFunction("Asset.Is"..assetType, asset)
+            Daneel.Debug.StackTrace.BeginFunction("Asset.Is"..assetType, asset)
             local errorHead = "Asset.Is"..assetType.."(asset) : "
 
             local argType = type(asset)
@@ -112,7 +112,7 @@ function Asset.Init()
             end
 
             local isAsset = Asset.IsOfType(asset, assetType)
-            Daneel.StackTrace.EndFunction("Asset.Is"..assetType, isAsset)
+            Daneel.Debug.StackTrace.EndFunction("Asset.Is"..assetType, isAsset)
             return isAsset
         end
 

@@ -11,7 +11,7 @@ Daneel.Utilities = {}
 -- @param set (table) A table of value to check the name against.
 -- @param scriptProof [optional default=false] (boolean) Check that Script is converted to ScriptedBehavior.
 function Daneel.Utilities.CaseProof(name, set, scriptProof)
-    Daneel.StackTrace.BeginFunction("Daneel.Utilities.CaseProof", name, set, scriptProof)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.CaseProof", name, set, scriptProof)
     local errorHead = "Daneel.Utilities.CaseProof(name, set[, scriptProof]) : " 
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckArgType(set, "set", "table", errorHead)
@@ -27,7 +27,7 @@ function Daneel.Utilities.CaseProof(name, set, scriptProof)
         name = Daneel.Utilities.ScriptProof(name)
     end
 
-    Daneel.StackTrace.EndFunction("Daneel.Utilities.CaseProof", name)
+    Daneel.Debug.StackTrace.EndFunction("Daneel.Utilities.CaseProof", name)
     return name
 end
 
@@ -35,14 +35,14 @@ end
 -- @param name (string) The name to check.
 -- @return (string) The new name.
 function Daneel.Utilities.ScriptProof(name)
-    Daneel.StackTrace.BeginFunction("Daneel.Utilities.ScriptProof", name)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.ScriptProof", name)
     Daneel.Debug.CheckArgType(name, "name", "string", "Daneel.Utilities.ScriptProof(name) : ")
 
     if name:lower() == "script" then
         name = "ScriptedBehavior"
     end
 
-    Daneel.StackTrace.EndFunction("Daneel.Utilities.ScriptProof", name)
+    Daneel.Debug.StackTrace.EndFunction("Daneel.Utilities.ScriptProof", name)
     return name
 end
 
@@ -50,7 +50,7 @@ end
 -- @param name (string) The name to check.
 -- @return (boolean) True if the provided name is either 'script' or 'scriptedbehavior', false otherwise.
 function Daneel.Utilities.IsScript(name)
-    Daneel.StackTrace.BeginFunction("Daneel.Utilities.IsScript", name)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.IsScript", name)
     Daneel.Debug.CheckArgType(name, "name", "string", "Daneel.Utilities.IsScript(name) : ")
 
     local isScript = false
@@ -59,13 +59,13 @@ function Daneel.Utilities.IsScript(name)
         isScript = true
     end
 
-    Daneel.StackTrace.EndFunction("Daneel.Utilities.IsScript", isScript)
+    Daneel.Debug.StackTrace.EndFunction("Daneel.Utilities.IsScript", isScript)
     return isScript
 end
 
 -- 
 function Daneel.Utilities.GetAllCraftStudioTypesAndObjects()
-    Daneel.StackTrace.BeginFunction("Daneel.Utilities.GetAllCraftStudioTypesAndObjects")
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.GetAllCraftStudioTypesAndObjects")
     local t = Daneel.config.allCraftStudioTypesAndObjects
 
     if t ~= nil then
@@ -80,85 +80,8 @@ function Daneel.Utilities.GetAllCraftStudioTypesAndObjects()
 
     Daneel.config.allCraftStudioTypesAndObjects = t
 
-    Daneel.StackTrace.EndFunction("Daneel.Utilities.GetAllCraftStudioTypesAndObjects", t)
+    Daneel.Debug.StackTrace.EndFunction("Daneel.Utilities.GetAllCraftStudioTypesAndObjects", t)
     return t
-end
-
-
-
-----------------------------------------------------------------------------------
--- StackTrace
-
-Daneel.StackTrace = { 
-    messages = {},
-    depth = 1,
-}
-
--- Register a function input in the stack trace
--- @param functionName (string) The function name
--- @param ... [optional] (mixed) Arguments received by the function
-function Daneel.StackTrace.BeginFunction(functionName, ...)
-    local errorHead = "Daneel.StackTrace.BeginFunction(functionName[, ...]) : "
-    Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
-
-    Daneel.StackTrace.depth = Daneel.StackTrace.depth + 1
-
-    local msg = "- "*Daneel.StackTrace.depth.." "..functionName.."("
-
-    if #arg > 0 then
-        for argument in ipairs(arg) do
-            msg = msg..tostring(argument)..", "
-        end
-
-        msg = msg:sub(1, #msg-2) -- removes the last coma+space
-    end
-
-    msg = msg..")"
-
-    table.insert(Daneel.StackTrace.messages, msg)
-end
-
--- Register a function output in the stack trace
--- @param functionName (string) The function name
--- @param ... [optional] (mixed) Variable returned by the function
-function Daneel.StackTrace.EndFunction(functionName, ...)
-    local errorHead = "Daneel.StackTrace.EndFunction(functionName[, ...]) : "
-    Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
-
-    local msg = "- "*Daneel.StackTrace.depth.." "..functionName.."() returns "
-
-    if #arg > 0 then
-        for argument in ipairs(arg) do
-            msg = msg..tostring(argument)..", "
-        end
-
-        msg = msg:sub(1, #msg-2)
-    end
-
-    table.insert(Daneel.StackTrace.messages, msg)
-    Daneel.StackTrace.depth = Daneel.StackTrace.depth - 1
-end
-
--- Print Daneel's StackTrace
--- @param length [optional default=Daneel.config.stackTraceLength] (number) The number of StackTrace entries to print
-function Daneel.StackTrace.Print(length)
-    if length == nil then
-        length = Daneel.config.stackTraceLength
-    end
-    
-    local messages = Daneel.StackTrace.messages
-    
-    print("~~~~~ Daneel.StackTrace ~~~~~ Begin ~~~~~")
-
-    for i = #messages-length, #messages do
-        local traceText = messages[i]
-        
-        if traceText ~= nil then
-            print("#"..i.." "..traceText)
-        end
-    end
-
-    print("~~~~~ Daneel.StackTrace ~~~~~ End ~~~~~")
 end
 
 
@@ -296,7 +219,7 @@ end
 -- Alias for error() but print Daneel's stack trace first
 -- @param message (string) The error message
 function Daneel.Debug.PrintError(message)
-    Daneel.StackTrace.Print()
+    Daneel.Debug.StackTrace.Print()
     error(message)
 end
 
@@ -304,7 +227,7 @@ end
 -- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera, Transform)
 -- @return (string) The component type as a string
 function Daneel.Debug.CheckComponentType(componentType)
-    Daneel.StackTrace.BeginFunction("Daneel.Debug.CheckComponentType", componentType)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckComponentType", componentType)
     local errorHead = "Daneel.Debug.CheckComponentType(componentType) : "
 
     if type(componentType) == "string" then
@@ -331,27 +254,82 @@ function Daneel.Debug.CheckComponentType(componentType)
         end
     end
 
-    Daneel.StackTrace.EndFunction("Daneel.Debug.CheckComponentType", componentType)
+    Daneel.Debug.StackTrace.EndFunction("Daneel.Debug.CheckComponentType", componentType)
     return componentType
 end
 
 
-
 ----------------------------------------------------------------------------------
--- Triggers    GameObject that check their distance against triggerableGameObject and send
+-- StackTrace
 
-Daneel.Triggers = {}
+Daneel.Debug.StackTrace = { 
+    messages = {},
+    depth = 1,
+}
 
-Daneel.Triggers.triggerableGameObjects = {}
+-- Register a function input in the stack trace
+-- @param functionName (string) The function name
+-- @param ... [optional] (mixed) Arguments received by the function
+function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
+    local errorHead = "Daneel.Debug.StackTrace.BeginFunction(functionName[, ...]) : "
+    Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
 
--- Add a gameObject to the castableGameObject list.
--- @param gameObject (GameObject) The gameObject to add to the list.
-function Daneel.Triggers.RegisterTriggerableGameObject(gameObject)
-    Daneel.StackTrace.BeginFunction("Daneel.Trigger.RegisterTriggerableGameObject", gameObject)
-    local errorHead = "Daneel.Trigger.RegisterTriggerableGameObject(gameObject) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+    Daneel.Debug.StackTrace.depth = Daneel.Debug.StackTrace.depth + 1
 
-    table.insert(Daneel.Trigger.triggerableGameObjects, gameObject)
-    Daneel.StackTrace.EndFunction("Ray.RegisterCastableGameObject")
+    local msg = "- "*Daneel.Debug.StackTrace.depth.." "..functionName.."("
+
+    if #arg > 0 then
+        for argument in ipairs(arg) do
+            msg = msg..tostring(argument)..", "
+        end
+
+        msg = msg:sub(1, #msg-2) -- removes the last coma+space
+    end
+
+    msg = msg..")"
+
+    table.insert(Daneel.Debug.StackTrace.messages, msg)
 end
 
+-- Register a function output in the stack trace
+-- @param functionName (string) The function name
+-- @param ... [optional] (mixed) Variable returned by the function
+function Daneel.Debug.StackTrace.EndFunction(functionName, ...)
+    local errorHead = "Daneel.Debug.StackTrace.EndFunction(functionName[, ...]) : "
+    Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
+
+    local msg = "- "*Daneel.Debug.StackTrace.depth.." "..functionName.."() returns "
+
+    if #arg > 0 then
+        for argument in ipairs(arg) do
+            msg = msg..tostring(argument)..", "
+        end
+
+        msg = msg:sub(1, #msg-2)
+    end
+
+    table.insert(Daneel.Debug.StackTrace.messages, msg)
+    Daneel.Debug.StackTrace.depth = Daneel.Debug.StackTrace.depth - 1
+end
+
+-- Print Daneel's StackTrace
+-- @param length [optional default=Daneel.config.stackTraceLength] (number) The number of StackTrace entries to print
+function Daneel.Debug.StackTrace.Print(length)
+    if length == nil then
+        length = Daneel.config.stackTraceLength
+    end
+    
+    local messages = Daneel.Debug.StackTrace.messages
+    
+    print("~~~~~ Daneel.Debug.StackTrace ~~~~~ Begin ~~~~~")
+
+    for i = #messages-length, #messages do
+        local traceText = messages[i]
+        
+        if traceText ~= nil then
+            print("#"..i.." "..traceText)
+        end
+    end
+
+    print("~~~~~ Daneel.Debug.StackTrace ~~~~~ End ~~~~~")
+end

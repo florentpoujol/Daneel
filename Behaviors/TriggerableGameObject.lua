@@ -1,4 +1,4 @@
 
 function Behavior:Awake()
-    Daneel.Trigger.RegisterTriggerableGameObject(self.gameObject)
+    table.insert(Daneel.config.triggerableGameObjects, self.gameObject)
 end

@@ -1,15 +1,15 @@
 
 -- public properties :
--- distance
+-- radius
 
 function Behavior:Awake()
     -- the gameObject that touches this trigger
-    self.gameObjects = table.new()
+    self.gameObjectsInRange = table.new()
 end
 
 
 function Behavior:Update()
-    local tObject = Daneel.Trigger.triggerableGameObjects
+    local tObject = Daneel.config.triggerableGameObjects
 
     for i, gameObject in ipairs(tObject) do
         if gameObject ~= nil then
@@ -19,9 +19,9 @@ function Behavior:Update()
                 -- and if this is the first time it enters this trigger
                 -- or if it was already inside it the last frame
 
-                if self.gameObjects:containsvalue(gameObject) == false then
+                if self.gameObjectsInRange:containsvalue(gameObject) == false then
                     -- just entered the trigger
-                    self.gameObjects:insert(gameObject)
+                    self.gameObjectsInRange:insert(gameObject)
                     gameObject:SendMessage("OnTriggerEnter", {gameObject = self.gameObject})
                 else
                     -- already in this trigger
@@ -30,13 +30,13 @@ function Behavior:Update()
 
             else
                 -- was the gameObject still in this trigger the last frame ?
-                if self.gameObjects:containsvalue(gameObject) == true then
-                    self.gameObjects = self.gameObjects:removevalue(gameObject)
+                if self.gameObjectsInRange:containsvalue(gameObject) == true then
+                    self.gameObjectsInRange = self.gameObjectsInRange:removevalue(gameObject)
                     gameObject:SendMessage("OnTriggerExit", {gameObject = self.gameObject})
                 end
             end
         else
-            table.remove(Daneel.Trigger.triggerableGameObjects, i)
+            table.remove(Daneel.config.triggerableGameObjects, i)
         end
     end
     

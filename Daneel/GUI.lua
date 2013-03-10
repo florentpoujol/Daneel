@@ -8,7 +8,7 @@ Daneel.GUI = {}
 
 -- create a ray and check its colision with any gui element
 function Daneel.GUI.CheckRayFromCamera()
-    Daneel.StackTrace.BeginFunction("Daneel.GUI.CheckRayFromCamera")
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckRayFromCamera")
     
     local ray = Daneel.config.hudCameraGO:GetComponent("Camera"):CreateRay(CraftStudio.Input.GetMousePosition())
     local guiLabels = Daneel.GUI.labels
@@ -19,7 +19,7 @@ function Daneel.GUI.CheckRayFromCamera()
         end
     end
 
-    Daneel.StackTrace.EndFunction("Daneel.GUI.CheckRayFromCamera")
+    Daneel.Debug.StackTrace.EndFunction("Daneel.GUI.CheckRayFromCamera")
 end
 
 
@@ -45,7 +45,7 @@ local guiLabelCallSyntaxError = "Function not called from a GUILabel. Your must 
 -- @param params [optional] (table) A table with initialisation position, text and scale
 -- @return (GUILabel) The new GUILabel
 function GUILabel.New(name, params)
-    Daneel.StackTrace.BeginFunction("GUILabel.New", name, params)
+    Daneel.Debug.StackTrace.BeginFunction("GUILabel.New", name, params)
     local errorHead = "GUILabel.New(name, [params]) : "
 
     local argType = type(name)
@@ -56,7 +56,7 @@ function GUILabel.New(name, params)
     local guiLabel = Daneel.GUI.labels[name]
 
     if guiLabel ~= nil then
-        Daneel.StackTrace.EndFunction("GUILabel.New", guiLabel)
+        Daneel.Debug.StackTrace.EndFunction("GUILabel.New", guiLabel)
         return guiLabel
     end
     
@@ -100,7 +100,7 @@ function GUILabel.New(name, params)
     guiLabel = setmetatable(guiLabel, GUILabel)
     guiLabel:Refresh()
 
-    Daneel.StackTrace.EndFunction("GUILabel.New", guiLabel)
+    Daneel.Debug.StackTrace.EndFunction("GUILabel.New", guiLabel)
     return guiLabel
 end
 
@@ -108,7 +108,7 @@ end
 -- Destroy the GUILabel
 -- @param guiLabel (GUILabel) The GUILabel
 function GUILabel.Destroy(guiLabel)
-    Daneel.StackTrace.BeginFunction("GUILabel.Destroy", guiLabel)
+    Daneel.Debug.StackTrace.BeginFunction("GUILabel.Destroy", guiLabel)
     local errorHead = "GUILabel.Destroy(guiLabel) : "
 
     local argType = Daneel.Debug.GetType(guiLabel)
@@ -117,14 +117,14 @@ function GUILabel.Destroy(guiLabel)
     end
 
     guiLabel.gameObject:Destroy()
-    Daneel.StackTrace.EbndFunction("GUILabel.Destroy")
+    Daneel.Debug.StackTrace.EbndFunction("GUILabel.Destroy")
 end
 
 
 -- Set the stored position, text and scale of the GUILabel
 -- @param guiLabel (GUILabel) The GUILabel
 function GUILabel.Refresh(guiLabel)
-    Daneel.StackTrace.BeginFunction("GUILabel.Refresh", guiLabel)
+    Daneel.Debug.StackTrace.BeginFunction("GUILabel.Refresh", guiLabel)
     local errorHead = "GUILabel:Refresh() : "
 
     local argType = Daneel.Debug.GetType(guiLabel)
@@ -135,7 +135,7 @@ function GUILabel.Refresh(guiLabel)
     guiLabel:SetPosition()
     guiLabel:SetText()
     guiLabel:SetScale()
-    Daneel.StackTrace.EndFunction("GUILabel.Refresh")
+    Daneel.Debug.StackTrace.EndFunction("GUILabel.Refresh")
 end
 
 
@@ -144,7 +144,7 @@ end
 -- @param x (table or number) if table, must have x and y keys
 -- @param y [optional] (number) If x is number, y must be number
 function GUILabel.SetPosition(guiLabel, x, y)
-    Daneel.StackTrace.BeginFunction("GUILabel.SetPosition", guiLabel, x, y)
+    Daneel.Debug.StackTrace.BeginFunction("GUILabel.SetPosition", guiLabel, x, y)
     local errorHead = "GUILabel.SetPosition(guiLabel, x[, y]) : "
 
     local argType = Daneel.Debug.GetType(guiLabel)
@@ -168,7 +168,7 @@ function GUILabel.SetPosition(guiLabel, x, y)
     local position3D = Vector3:New(guiLabel.position.x / unitX, guiLabel.position.y / unitY, -5)
     
     guiLabel.gameObject.transform:SetPosition(position3D)
-    Daneel.StackTrace.EndFunction("GUILabel.SetPosition")
+    Daneel.Debug.StackTrace.EndFunction("GUILabel.SetPosition")
 end
 
 
@@ -176,7 +176,7 @@ end
 -- @param guiLabel (GUILabel) The guiLabel
 -- @param text [optional] (mixed) Something to display (converted to string with tostring())
 function GUILabel.SetText(guiLabeel, text)
-    Daneel.StackTrace.BeginFunction("GUILabel.SetText", guiLabel)
+    Daneel.Debug.StackTrace.BeginFunction("GUILabel.SetText", guiLabel)
     local errorHead = "GUILabel.SetText(guiLabel[, text]) : "
 
     local argType = Daneel.Debug.GetType(guiLabel)
@@ -196,14 +196,14 @@ function GUILabel.SetText(guiLabeel, text)
         guiLabel.map:SetBlockAt(i, 0, 0, byte, Map.BlockOrientation.North)
     end
 
-    Daneel.StackTrace.EndFunction("GUILabel.SetText")
+    Daneel.Debug.StackTrace.EndFunction("GUILabel.SetText")
 end
 
 -- Set the gameOject's local scale
 -- @param guiLabel (GUILabel) The guiLabel
 -- @param scale [optional] (number or Vector3) The local scale
 function GUILabel.SetScale(guiLabel, scale)
-    Daneel.StackTrace.BeginFunction("GUILabel.SetScale", guiLabel)
+    Daneel.Debug.StackTrace.BeginFunction("GUILabel.SetScale", guiLabel)
     local errorHead = "GUILabel.SetScale(guiLabel[, scale]) : "
 
     local argType = Daneel.Debug.GetType(guiLabel)
@@ -225,7 +225,7 @@ function GUILabel.SetScale(guiLabel, scale)
     end
 
     guiLabel.gameObject.transform:SetLocalScale(guiLabel.scale)
-    Daneel.StackTrace.EndFunction("GUILabel.SetScale")
+    Daneel.Debug.StackTrace.EndFunction("GUILabel.SetScale")
 end
 
 

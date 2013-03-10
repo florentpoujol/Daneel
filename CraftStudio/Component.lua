@@ -105,7 +105,7 @@ function Component.Set(component, params)
         return component
     end
 
-    Daneel.StackTrace.BeginFunction("Component.Set", component, params)
+    Daneel.Debug.StackTrace.BeginFunction("Component.Set", component, params)
     local errorHead = "Component.Set(component, params) : "
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
     local componentType = Daneel.Debug.GetType(component)
@@ -115,7 +115,7 @@ function Component.Set(component, params)
         component[key] = value
     end
 
-    Daneel.StackTrace.EndFunction("Component.Set", component)
+    Daneel.Debug.StackTrace.EndFunction("Component.Set", component)
     return component
 end
 
@@ -129,7 +129,7 @@ local OriginalSetModel = ModelRenderer.SetModel
 -- @param modelRenderer (ModelRenderer) The modelRenderer
 -- @param modelNameOrAsset (string or Model) The model name or asset
 function ModelRenderer.SetModel(modelRenderer, modelNameOrAsset)
-    Daneel.StackTrace.BeginFunction("ModelRenderer.SetModel", modelRenderer, modelNameOrAsset)
+    Daneel.Debug.StackTrace.BeginFunction("ModelRenderer.SetModel", modelRenderer, modelNameOrAsset)
     local errorHead = "ModelRenderer.SetModel(modelRenderer, modelNameOrAsset) : "
     Daneel.Debug.CheckArgType(modelRenderer, "modelRenderer", "ModelRenderer", errorHead)
     Daneel.Debug.CheckArgType(modelNameOrAsset, "modelNameOrAsset", {"string", "Model"}, errorHead)
@@ -143,7 +143,7 @@ function ModelRenderer.SetModel(modelRenderer, modelNameOrAsset)
     end
 
     OriginalSetModel(modelRenderer, model)
-    Daneel.StackTrace.EndFunction("ModelRenderer.SetModel")
+    Daneel.Debug.StackTrace.EndFunction("ModelRenderer.SetModel")
 end
 
 
@@ -157,7 +157,7 @@ local OriginalSetMap = MapRenderer.SetMap
 -- @param mapRenderer (MapRenderer) The mapRenderer
 -- @param mapNameOrAsset (string or Map) The map name or asset
 function MapRenderer.SetMap(mapRenderer, mapNameOrAsset)
-    Daneel.StackTrace.BeginFunction("MapRenderer.SetMap", mapRenderer, mapNameOrAsset)
+    Daneel.Debug.StackTrace.BeginFunction("MapRenderer.SetMap", mapRenderer, mapNameOrAsset)
     local errorHead = "MapRenderer.SetMap(mapRenderer, mapNameOrAsset) : "
     Daneel.Debug.CheckArgType(mapRenderer, "mapRenderer", "MapRenderer", errorHead)
     Daneel.Debug.CheckArgType(mapNameOrAsset, "mapNameOrAsset", {"string", "Map"}, errorHead)
@@ -171,6 +171,6 @@ function MapRenderer.SetMap(mapRenderer, mapNameOrAsset)
     end
 
     OriginalSetMap(mapRenderer, map)
-    Daneel.StackTrace.EndFunction("MapRenderer.SetMap")
+    Daneel.Debug.StackTrace.EndFunction("MapRenderer.SetMap")
 end
 

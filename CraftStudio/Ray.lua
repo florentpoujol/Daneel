@@ -9,12 +9,12 @@ Ray.castableGameObjects = {}
 -- Add a gameObject to the castableGameObject list.
 -- @param gameObject (GameObject) The gameObject to add to the list.
 function Ray.RegisterCastableGameObject(gameObject)
-    Daneel.StackTrace.BeginFunction("Ray.RegisterCastableGameObject", gameObject)
+    Daneel.Debug.StackTrace.BeginFunction("Ray.RegisterCastableGameObject", gameObject)
     local errorHead = "Ray.RegisterCastableGameObject(gameObject) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
 
     table.insert(Ray.castableGameObjects, gameObject)
-    Daneel.StackTrace.EndFunction("Ray.RegisterCastableGameObject")
+    Daneel.Debug.StackTrace.EndFunction("Ray.RegisterCastableGameObject")
 end
 
 
@@ -23,7 +23,7 @@ end
 -- @param gameObjects (table) [optional default=Ray.castableGameObjects] The set of gameObjects to cast the ray against
 -- @return (table) The table of RaycastHits (will be empty if the ray didn't intersects anything)
 function Ray.Cast(ray, gameObjects)
-    Daneel.StackTrace.BeginFunction("Ray.Cast", ray, gameObjects)
+    Daneel.Debug.StackTrace.BeginFunction("Ray.Cast", ray, gameObjects)
     local errorHead = "Ray.Cast(ray) : "
     Daneel.Debug.CheckArgType(ray, "ray", "Ray", errorHead)
 
@@ -43,7 +43,7 @@ function Ray.Cast(ray, gameObjects)
         end
     end
 
-    Daneel.StackTrace.EndFunction("Ray.Cast", hits)
+    Daneel.Debug.StackTrace.EndFunction("Ray.Cast", hits)
     return hits
 end
 
@@ -53,7 +53,7 @@ end
 -- @param gameObject (GameObject) The gameObject instance
 -- @return
 function Ray.IntersectsGameObject(ray, gameObject)
-    Daneel.StackTrace.BeginFunction("Ray.IntersectsGameObject", ray, gameObject)
+    Daneel.Debug.StackTrace.BeginFunction("Ray.IntersectsGameObject", ray, gameObject)
     local errorHead = "Ray.IntersectsGameObject(ray, gameObject) : "
     Daneel.Debug.CheckArgType(ray, "ray", "Ray", errorHead)
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
@@ -61,18 +61,18 @@ function Ray.IntersectsGameObject(ray, gameObject)
     local component = gameObject:GetComponent("ModelRenderer")
     if component ~= nil then
         local distance, normal = ray:IntersectsModelRenderer(component)
-        Daneel.StackTrace.EndFunction("Ray.IntersectsGameObject", distance, normal)
+        Daneel.Debug.StackTrace.EndFunction("Ray.IntersectsGameObject", distance, normal)
         return distance, normal
     end
 
     component = gameObject:GetComponent("MapRenderer")
     if component ~= nil then
         local distance, normal, hitBlockLocation, adjacentBlockLocation = ray:IntersectsMapRenderer(component)
-        Daneel.StackTrace.EndFunction("Ray.IntersectsGameObject", distance, normal, hitBlockLocation, adjacentBlockLocation)
+        Daneel.Debug.StackTrace.EndFunction("Ray.IntersectsGameObject", distance, normal, hitBlockLocation, adjacentBlockLocation)
         return distance, normal, hitBlockLocation, adjacentBlockLocation
     end
 
-    Daneel.StackTrace.EndFunction("Ray.IntersectsGameObject")
+    Daneel.Debug.StackTrace.EndFunction("Ray.IntersectsGameObject")
 end
 
 
@@ -88,7 +88,7 @@ function RaycastHit.__tostring()
 end
 
 function RaycastHit.New(distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject)
-    Daneel.StackTrace.BeginFunction("RaycastHit.New", distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject)
+    Daneel.Debug.StackTrace.BeginFunction("RaycastHit.New", distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject)
 
     local raycastHit = table.new({
         distance = distance,
@@ -104,7 +104,7 @@ function RaycastHit.New(distance, normal, hitBlockLocation, adjacentBlockLocatio
         raycastHit.component = "ModelRenderer"
     end
 
-    Daneel.StackTrace.EndFunction("RaycastHit.New", raycastHit)
+    Daneel.Debug.StackTrace.EndFunction("RaycastHit.New", raycastHit)
     return raycastHit
 end
 

@@ -37,9 +37,9 @@ Getters and setters functions (functions that begins by Get or Set) may be used 
     self.gameObject:SetName("a new name")
     -- note that only one argument (in addition to the working object) can be passed to the function.
 
-This works even for your own getters (that your defined in your ScriptedBehaviors) but ''does not works'' for your own setters.
+This works even for your own getters (that your defined in your ScriptedBehaviors) but *does not works* for your own setters.
 
-As Daneel introduce the new GetModelRenderer(), GetMapRenderer() and GetCamera() functions on gameObjects, you may now access any components via their variable, like the transform :
+As Daneel introduce the new `GetModelRenderer()`, `GetMapRenderer()` and `GetCamera()` functions on gameObjects, you may now access any components via their variable, like the transform :
 
     self.gameObject.modelRenderer.model = "model name"
     -- is the same as
@@ -54,7 +54,7 @@ ScriptedBehaviors whose name are camel-cased and are not nested in a folder may 
     -- is the same as
     self.gameObject:GetScriptedBehavior(CraftStudio.FindAsset("MyScript", "Script")):GetSomething()
 
-You may define aliases for other ScriptedBehaviors (those who are nested in folders and/or name are not camel-cased) in the config. Those scriptedBehaviors become accessible throught their aliases as above :
+You may define aliases for other ScriptedBehaviors (those who are nested in folders and/or name are not camel-cased) in the config. Those scriptedBehaviors become accessible via their aliases as above :
 
     -- in the config, set the 'scriptedBehaviorAliases' table which must contains the aliases as the keys and the fully-qualified Script path as the values
     Daneel.config = {
@@ -68,7 +68,7 @@ You may define aliases for other ScriptedBehaviors (those who are nested in fold
     self.gameObject.scriptName
 
 Note that with the ScriptedBehaviors only (not with the getters or setters), the case of the alias and especially its first letter matters.
-In this example, self.gameObject.ScriptName won't get access to the scriptedBehavior but self.gameObject.ModelRenderer will get access to the modelRenderer.
+In this example, `self.gameObject.ScriptName` won't get access to the scriptedBehavior but `self.gameObject.ModelRenderer` will get access to the modelRenderer.
 
 You may also access the first scriptedBehavior on the gameObject, whatever its name is, via `self.gameObject.scriptedBehavior`.
 
@@ -78,102 +78,123 @@ You may also access the first scriptedBehavior on the gameObject, whatever its n
 Daneel's functions features extensive debugging capability.  
 Every arguments are checked for type and value and a comprehensive error message is thrown if needed.
 
-For instance, passing false instead of the gameObject's name with gameObject:GetChild() would trigger the following error :  
+For instance, passing false instead of the gameObject's name with `gameObject:GetChild()` would trigger the following error :  
 
     GameObject.GetChild(gameObject, name[, recursive]) : Argument 'name' is of type 'boolean' with value 'false' instead of 'string'.
 
-### Daneel's types
+### Daneel's data types
 
-The function '''Daneel.Debug.GetType(object)''' is an extension of ''type()'' and may returns any of the built-in Lua types or the name of any of the objects introduced by CraftStudio or Daneel : 
+The function `Daneel.Debug.GetType(object)` is an extension of `type()` and may returns any of the built-in Lua types or the name of any of the objects introduced by CraftStudio or Daneel : 
 
 * GameObject
 * ModelRenderer, MapRenderer, Camera, Transform
 * Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document
-* Ray, RayastHit, Vector3, Plane, Quaternion
+* Ray, RaycastHit, Vector3, Plane, Quaternion
 * GUILabel
 
 ### Stack Trace
 
-When an error is triggered by '''Danel.Debug.PrintError(errorMessage)''', Daneel print a Stack Trace in the Runtime Report.
+When an error is triggered by `Danel.Debug.PrintError(errorMessage)`, Daneel print a Stack Trace in the Runtime Report.
 The Stack Trace nicely shows the histoy of function calls whithin the framework and display values recieved as argument as well as returned values.
 
 
 ## Mass-setting on gameObjects and components
 
-Functions gameObject:Set() and component:Set() accept a "params" argument of type table which allow to set variables or call setters in mass.
+Functions `gameObject:Set()` and `component:Set()` accept a "params" argument of type table which allow to set variables or call setters in mass.
 
- gameObject:Set({
-    parent = "my parent name", -- Set the parent via SetParent()
-    myScript = {
-        health = 100 -- Set the variable health on the 'MyScript' scriptedBaheavior or call SetHealth(100) if it exists
-    }
- })
+    gameObject:Set({
+        parent = "my parent name", -- Set the parent via SetParent()
+        myScript = {
+            health = 100 -- Set the variable health on the 'MyScript' scriptedBaheavior or call SetHealth(100) if it exists
+        }
+    })
 
- modelRenderer:Set({
-    localOrientation = Quaternion:New(1,2,3,4), -- set the local orientation via SetLocalOrientation()
-    randomVariable = "random value"
- })
+    modelRenderer:Set({
+        localOrientation = Quaternion:New(1,2,3,4), -- set the local orientation via SetLocalOrientation()
+        randomVariable = "random value"
+    })
 
 
 ### Component mass-creation and setting on gameObjects
 
 Example :
 
- gameObject:Set({
-    modelRenderer = {
-        model = "Model name"
-    }, -- will create a modelRenderer if it does not yet exists, then set its model
+    gameObject:Set({
+        modelRenderer = {
+            model = "Model name"
+        }, -- will create a modelRenderer if it does not yet exists, then set its model
 
-    camera = {}, -- will create a camera component then do nothing, or just do nothing
+        camera = {}, -- will create a camera component then do nothing, or just do nothing
 
-    scriptedBehavior = "Script name", -- will create a ScriptedBehavior with the "Script name" script and if it does not yet exists
-    
-    scriptedBehaviors = {
-        "script name 2",
-        "script name 3", -- will create those ScriptedBehaviors if they don't yet exists
+        scriptedBehavior = "Script name", -- will create a ScriptedBehavior with the "Script name" script and if it does not yet exists
         
-        ["script name 4"] = {
+        scriptedBehaviors = {
+            "script name 2",
+            "script name 3", -- will create those ScriptedBehaviors if they don't yet exists
+            
+            ["script name 4"] = {
+                variableOrSetter = value
+            } -- will create a ScriptedBehavior if it does not yet exists, then set it
+        },
+
+        scriptAlias = {
             variableOrSetter = value
-        } -- will create a ScriptedBehavior if it does not yet exists, then set it
-    },
-
-    scriptAlias = {
-        variableOrSetter = value
-    } -- will set the ScriptedBehavior whose name or alias is 'ScriptAlias'
- })
+        } -- will set the ScriptedBehavior whose name or alias is 'ScriptAlias'
+    })
 
 
-'''Components'''
+**Components**
 
 Just set the variable of the same name as the component with the first letter lower case. Set the value as a table of parameters. If the component does not yet exists, it will be created. If you want to create a component without initializing it, just leave the table empty.
 
-You can mass-set existing components on gameObject via gameObject:SetComponent() or its helpers (SetModelRenderer() and the likes).
+You can mass-set existing components on gameObject via `gameObject:SetComponent()` or its helpers (`SetModelRenderer()` and the likes).
     
     self.gameObject:SetMapRenderer([params])
     -- or, with the dynamic access to the components
     self.gameObject.mapRenderer:Set([params])
 
-'''ScriptedBehaviors'''
+**ScriptedBehaviors**
 
 If you want to add one scriptedBehavior, set the variable "scriptedBehavior" with the script name or asset as value.
-If you want to create one or more scriptedBehaviors and maybe initialize them, or set existing ScriptedBehaviors, set the variable 'scriptedBehaviors' (with an 's' at the end) with a table as value.
+If you want to create one or more scriptedBehaviors and maybe initialize them, or set existing ScriptedBehaviors, set the variable `scriptedBehaviors` (with an 's' at the end) with a table as value.
 This table may contains the scripts name or asset of new ScriptedBehaviors as value (if you don't want to initialize them) or the script name or asset as key and the parameters table as value (for new or existing ScriptedBehaviors).
 Existing ScriptedBehaviors may also be set via their name or alias.
 
 
 ## Raycasting
 
-GameObject who have the "Daneel/Behaviors/CastableGameObject" ScriptedBehavior are known as '''castable gameObjects'''.
-The '''RaycastHit''' object stores the information regarding the collision between a ray and a gameObject. It may contains the keys ''distance'', ''normal'', ''hitBlockLocation'', ''adjacentBlockLocation'', ''gameObject'' and ''component''.
+GameObject who have the "CastableGameObject" ScriptedBehavior are known as **castable gameObjects**.  
+The **RaycastHit** object stores the information regarding the collision between a ray and a gameObject. It may contains the keys *distance*, *normal*, *hitBlockLocation*, *adjacentBlockLocation*, *gameObject* and *component*.
 
-The function ray:Cast([gameObjects]) cast the ray against all castable gameObjects (or against the provided set of gameObjects) and returns a table of RaycastHit (or an empty table if no gameObjects have been hit).
+The function `ray:Cast([gameObjects])` cast the ray against all castable gameObjects (or against the provided set of gameObjects) and returns a table of RaycastHit (which if empty if no gameObjects have been hit).
 
 
 ## Events
 
-Daneel provide a flexible event system.
-You can register any function, including behavior function
+Daneel provide a flexible event system that allows to run functions whenever some events happens (are fired) at runtime.
+You can register any function to be called whenever an event will be fired. You can also register a gameObject to be send a message to when the event is fired.
 
+
+## Triggers
+
+Triggers are gameObject that perform a spherical proximity check each frames against all "triggerable gameObjects".  
+Triggers must have the "Trigger" ScriptedBehavior and you must set the `radius` public property. Triggerable gameObjects must have the "TriggerableGameObject" ScriptedBehavior.
+
+When a gameObject enters a trigger for the first frame (it is in range this frame, but it wasn't the last frame), the message "OnTriggerEnter" is sent on the gameObject.  
+As long as a gameObject stays under a trigger's radius, the message "OnTriggerStay" is sent on the gameObject.
+The frame a gameObject leaves the trigger's radius (it is not in range this frame but was in range the last frame), the message "OnTriggerExit" is send on the gameObject.
+Each of these functions receive a table as argument with the trigger gameObject as value of the `gameObject` key. The messages are sent for each triggers : "OnTriggerStay" will be sent twice if the gameObject is within the range of two triggers.
+
+
+## Mouse events
+
+The "MouseHoverable gameObjects" react when the are hovered by the mouse.
+
+When a mouseHoverable gameObject is hovered for the first frame (it is hovered this frame, but it wasn't the last frame), the message "OnMouseEnter" is sent on the gameObject.
+As long as the mouse stays over the gameObject, the message "OnMouseOver" is sent on the gameObject.
+The frame the mouse stop hovering over a mousehoverable gameObject (it is not hovered this frame but was still hovered the last frame), the message "OnMouseExit" is send on the gameObject.
+
+While the mouse hovers a gameObject, if you press one of the buttons registered in `Daneel.config.input.buttons`, the message "OnMouseOverAnd[button name]Pressed" is sent on the gameObject
 
 ---
 
@@ -185,14 +206,14 @@ Arguments between square brackets are optional.
 ### Asset
 
 * Asset.Get(assetName[, assetType])
-* Asset.GetModel(assetName)
-* Asset.GetModelAnimation(assetName)
-* Asset.GetMap(assetName)
-* Asset.GetTileSet(assetName)
-* Asset.GetScene(assetName)
-* Asset.GetScript(assetName)
-* Asset.GetDocument(assetName)
-* Asset.GetSound(assetName)
+    * Asset.GetModel(assetName)
+    * Asset.GetModelAnimation(assetName)
+    * Asset.GetMap(assetName)
+    * Asset.GetTileSet(assetName)
+    * Asset.GetScene(assetName)
+    * Asset.GetScript(assetName)
+    * Asset.GetDocument(assetName)
+    * Asset.GetSound(assetName)
 
 * Asset.GetType(asset)
 * Asset.IsOfType(asset, assetType)
@@ -208,17 +229,16 @@ Arguments between square brackets are optional.
 * Daneel.Debug.GetType(object)
 * Daneel.Debug.PrintError(message)
 
+* Daneel.Debug.StackTrace.BeginFunction(functionName[, ...])
+* Daneel.Debug.StackTrace.EndFunction(functionName[, ...])
+* Daneel.Debug.StackTrace.Print([length])
+
 ### Daneel.Events
 
 * Daneel.Events.Listen(eventName, function) / Daneel.Events.Listen(eventName, gameObject[, functionName, broadcast])
 * Daneel.Events.StopListen(eventName, functionOrGameObject)
 * Daneel.Events.Fire(eventName[, ...])
 
-### Daneel.StackTrace
-
-* Daneel.StackTrace.BeginFunction(functionName[, ...])
-* Daneel.StackTrace.EndFunction(functionName[, ...])
-* Daneel.StackTrace.Print([length])
 
 ### Daneel.Utilities
 
@@ -236,30 +256,30 @@ Arguments between square brackets are optional.
 * gameObject:BroadcastMessage(functionName[, data])
 
 * gameObject:AddComponent(componentType[, params, scriptedBehaviorParams])
-* gameObject:AddScriptedBehavior(scriptNameOrAsset[, params])
-* gameObject:AddModelRenderer([params])
-* gameObject:AddMapRenderer([params])
-* gameObject:AddCamera([params])
+    * gameObject:AddScriptedBehavior(scriptNameOrAsset[, params])
+    * gameObject:AddModelRenderer([params])
+    * gameObject:AddMapRenderer([params])
+    * gameObject:AddCamera([params])
 
 * gameObject:SetComponent(componentType, params)
-* gameObject:SetScriptedBehavior(scriptNameOrAsset, params)
-* gameObject:SetModelRenderer(params)
-* gameObject:SetMapRenderer(params)
-* gameObject:SetCamera(params)
-* gameObject:SetTransform(params)
+    * gameObject:SetScriptedBehavior(scriptNameOrAsset, params)
+    * gameObject:SetModelRenderer(params)
+    * gameObject:SetMapRenderer(params)
+    * gameObject:SetCamera(params)
+    * gameObject:SetTransform(params)
 
 * gameObject:GetComponent(componentType[, scriptNameOrAsset])
-* gameObject:GetScriptedBehavior(scriptNameOrAsset)
-* gameObject:GetModelRenderer()
-* gameObject:GetMapRenderer()
-* gameObject:GetCamera()
+    * gameObject:GetScriptedBehavior(scriptNameOrAsset)
+    * gameObject:GetModelRenderer()
+    * gameObject:GetMapRenderer()
+    * gameObject:GetCamera()
 
 * gameObject:Destroy()
 * gameObject:DestroyComponent(input[, strict])
-* gameObject:DestroyScriptedBehavior(scriptNameOrAsset)
-* gameObject:DestroyModelRenderer()
-* gameObject:DestroyMapRenderer()
-* gameObject:DestroyCamera()
+    * gameObject:DestroyScriptedBehavior(scriptNameOrAsset)
+    * gameObject:DestroyModelRenderer()
+    * gameObject:DestroyMapRenderer()
+    * gameObject:DestroyCamera()
 
 ### GUILabel
 

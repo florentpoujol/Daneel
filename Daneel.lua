@@ -4,7 +4,7 @@ if Daneel == nil then
 end
 
 function Daneel.Awake()
-    Daneel.StackTrace.BeginFunction("Daneel.Awake")
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Awake")
 
 
     -- Config
@@ -34,7 +34,7 @@ function Daneel.Awake()
     
 
 
-    Daneel.StackTrace.EndFunction("Daneel.Awake")
+    Daneel.Debug.StackTrace.EndFunction("Daneel.Awake")
 end
 
 function Daneel.Start()

@@ -17,14 +17,14 @@ end
 -- @param s (string) The string
 -- @return (table) The table
 function string.totable(s)
-    Daneel.StackTrace.BeginFunction("string.totable", s)
+    Daneel.Debug.StackTrace.BeginFunction("string.totable", s)
     Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
     local strLen = s:len()
     local t = table.new()
     for i = 1, strLen do
         table.insert(t, s:sub(i, i))
     end 
-    Daneel.StackTrace.EndFunction("string.totable", t)
+    Daneel.Debug.StackTrace.EndFunction("string.totable", t)
     return t
 end
 
@@ -35,13 +35,13 @@ end
 -- @param ignoreCase [optional default=false] (boolean) Ignore the case
 -- @return (boolean) True if 's' is found in 't', false otherwise
 function string.isoneof(s, t, ignoreCase)
-    Daneel.StackTrace.BeginFunction("string.isoneof", s, t, ignoreCase)
+    Daneel.Debug.StackTrace.BeginFunction("string.isoneof", s, t, ignoreCase)
     local errorHead = "string.isoneff(string, table[, ignoreCase]) : "
     Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
     Daneel.Debug.CheckArgType(t, "t", "table", errorHead)
     Daneel.Debug.CheckOptionalArgType(ignoreCase, "ignoreCase", "boolean", errorHead)
     local isOneOf = table.constainsvalue(t, s, ignoreCase)
-    Daneel.StackTrace.EndFunction("string.isoneof", isOneOf)
+    Daneel.Debug.StackTrace.EndFunction("string.isoneof", isOneOf)
     return isOneOf
 end
 
@@ -49,13 +49,13 @@ end
 -- @param s (string) The string
 -- @return (string) The string
 function string.ucfirst(s)
-    Daneel.StackTrace.BeginFunction("string.ucfirst", s)
+    Daneel.Debug.StackTrace.BeginFunction("string.ucfirst", s)
     local errorHead = "string.ucfirst(string) : "
     Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
     t = s:totable()
     t[1] = t[1]:upper()
     s = t:concat()
-    Daneel.StackTrace.EndFunction("string.ucfirst", s)
+    Daneel.Debug.StackTrace.EndFunction("string.ucfirst", s)
     return s
 end
 
