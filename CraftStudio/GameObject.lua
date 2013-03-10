@@ -99,7 +99,7 @@ function GameObject.Instantiate(gameObjectName, scene, params)
         scene = Asset.Get(sceneName, "Scene")
 
         if scene == nil then
-            daneelerror(errorHead.."Argument 'scene' : Scene asset with name '"..sceneName.."' was not found.")
+            Daneel.Debug.PrintError(errorHead.."Argument 'scene' : Scene asset with name '"..sceneName.."' was not found.")
         end
     end
 
@@ -139,7 +139,7 @@ function GameObject.Set(gameObject, params)
         for i, script in pairs(params.scriptedBehaviors) do
             argType = Daneel.Debug.GetType(script)
             if argType ~= "string" and argType ~= "Script" and argType ~= "table" then
-                daneelerror(errorHead.."Item n°"..i.." in argument 'params.scriptedBehaviors' is of type '"..argType.."' with value '"..tostring(script).."' instead of 'string', 'Script' or 'table'.")
+                Daneel.Debug.PrintError(errorHead.."Item n°"..i.." in argument 'params.scriptedBehaviors' is of type '"..argType.."' with value '"..tostring(script).."' instead of 'string', 'Script' or 'table'.")
             end
 
             local scriptParams = nil
@@ -236,7 +236,7 @@ function GameObject.SetParent(gameObject, parent, keepLocalTransform)
         parent = GameObject.Get(parentName)
 
         if parent == nil then
-            daneelerror(errorHead.."Argument 'parent' : Parent gameObject with name '"..parentName.."' was not found.")
+            Daneel.Debug.PrintError(errorHead.."Argument 'parent' : Parent gameObject with name '"..parentName.."' was not found.")
         end
     end
       
