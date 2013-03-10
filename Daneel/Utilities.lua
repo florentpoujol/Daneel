@@ -9,79 +9,20 @@ Daneel.Utilities = {}
 -- by checking against value in the provided set.
 -- @param name (string) The name to check the case.
 -- @param set (table) A table of value to check the name against.
--- @param scriptProof [optional default=false] (boolean) Check that Script is converted to ScriptedBehavior.
-function Daneel.Utilities.CaseProof(name, set, scriptProof)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.CaseProof", name, set, scriptProof)
-    local errorHead = "Daneel.Utilities.CaseProof(name, set[, scriptProof]) : " 
+function Daneel.Utilities.CaseProof(name, set)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.CaseProof", name, set)
+    local errorHead = "Daneel.Utilities.CaseProof(name, set) : " 
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckArgType(set, "set", "table", errorHead)
-    Daneel.Debug.CheckArgType(scriptProof, "scriptProof", "scriptProof", errorHead)
 
     for i, setItem in ipairs(set) do
         if name:lower() == setItem:lower() then
             name = setItem
         end
     end
-    
-    if scriptProof then
-        name = Daneel.Utilities.ScriptProof(name)
-    end
 
     Daneel.Debug.StackTrace.EndFunction("Daneel.Utilities.CaseProof", name)
     return name
-end
-
--- If the provided name is 'Script', returns 'ScriptedBehavior'.
--- @param name (string) The name to check.
--- @return (string) The new name.
-function Daneel.Utilities.ScriptProof(name)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.ScriptProof", name)
-    Daneel.Debug.CheckArgType(name, "name", "string", "Daneel.Utilities.ScriptProof(name) : ")
-
-    if name:lower() == "script" then
-        name = "ScriptedBehavior"
-    end
-
-    Daneel.Debug.StackTrace.EndFunction("Daneel.Utilities.ScriptProof", name)
-    return name
-end
-
--- Tell wether the provided name is 'script' or 'scriptedbehavior', case-insensitive.
--- @param name (string) The name to check.
--- @return (boolean) True if the provided name is either 'script' or 'scriptedbehavior', false otherwise.
-function Daneel.Utilities.IsScript(name)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.IsScript", name)
-    Daneel.Debug.CheckArgType(name, "name", "string", "Daneel.Utilities.IsScript(name) : ")
-
-    local isScript = false
-
-    if name:lower() == "script" or name:lower() == "scriptedbehavior" then
-        isScript = true
-    end
-
-    Daneel.Debug.StackTrace.EndFunction("Daneel.Utilities.IsScript", isScript)
-    return isScript
-end
-
--- 
-function Daneel.Utilities.GetAllCraftStudioTypesAndObjects()
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.GetAllCraftStudioTypesAndObjects")
-    local t = Daneel.config.allCraftStudioTypesAndObjects
-
-    if t ~= nil then
-        return t
-    end
-
-    t = table.new()
-    t = t:merge(Daneel.config.assetObjects)
-    t = t:merge(Daneel.config.componentObjects)
-    t = t:merge(Daneel.config.craftStudioObjects))
-    t = t:merge(Daneel.config.daneelObjects))
-
-    Daneel.config.allCraftStudioTypesAndObjects = t
-
-    Daneel.Debug.StackTrace.EndFunction("Daneel.Utilities.GetAllCraftStudioTypesAndObjects", t)
-    return t
 end
 
 
@@ -268,6 +209,8 @@ function Daneel.Debug.CheckAssetType(assetType)
     Daneel.Debug.StackTrace.EndFunction("Daneel.Debug.CheckAssetType", assetType)
     return assetType
 end
+
+
 
 ----------------------------------------------------------------------------------
 -- StackTrace
