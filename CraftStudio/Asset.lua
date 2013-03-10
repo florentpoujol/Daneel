@@ -65,35 +65,6 @@ function Asset.GetSound(assetName) end
 function Asset.GetDocument(assetName) end
 
 
---- Tell if the specified asset is of the specified type.
--- @param asset (table) The asset.
--- @param assetType (string, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document) The asset type as a case-insensitive string or the asset object.
--- @return (boolean) True if the specified asset is of the specified type, false otherwise
-function Asset.IsOfType(asset, assetType)
-    Daneel.Debug.StackTrace.BeginFunction("Asset.IsOfType", asset, assetType)
-    local errorHead = "Asset.IsOfType(asset, assetType) : "
-    Daneel.Debug.CheckArgType(asset, "asset", Daneel.config.assetTypes, errorHead)
-    assetType = Daneel.Debug.CheckAssetType(assetType)
-
-    local isProvidedAssetType = (Daneel.Debug.GetType(asset) == assetType)
-    Daneel.Debug.StackTrace.EndFunction("Asset.IsOfType", isProvidedAssetType)
-    return isProvidedAssetType
-end
-
---- Return the type of the provided asset
--- @param asset (Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document) The asset
--- @return (string) The asset type or nil
-function Asset.GetType(asset)
-    Daneel.Debug.StackTrace.BeginFunction("Asset.GetType", asset)
-    local errorHead = "Asset.GetType(asset) : "
-    Daneel.Debug.CheckArgType(asset, "asset", Daneel.config.assetTypes, errorHead)
-
-    local assetType = Daneel.Debug.GetType(asset)
-    Daneel.Debug.StackTrace.EndFunction("Asset.GetType", assetType)
-    return assetType
-end
-
-
 
 ----------------------------------------------------------------------------------
 
