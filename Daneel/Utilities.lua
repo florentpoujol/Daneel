@@ -5,7 +5,7 @@ end
 
 Daneel.Utilities = {}
 
--- Make sure that the case of the provided name is correct.
+--- Make sure that the case of the provided name is correct.
 -- by checking against value in the provided set.
 -- @param name (string) The name to check the case.
 -- @param set (table) A table of value to check the name against.
@@ -32,7 +32,7 @@ end
 
 Daneel.Debug = {}
 
--- Check the provided argument's type against the provided type and display error if they don't match
+--- Check the provided argument's type against the provided type and display error if they don't match
 -- @param argument (mixed) The argument to check
 -- @param argumentName (string) The argument name
 -- @param expectedArgumentTypes (string or table) The expected argument type(s)
@@ -77,7 +77,7 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
     end
 end
 
--- Check the provided argument's type against the provided type and display error if they don't match
+--- Check the provided argument's type against the provided type and display error if they don't match
 -- @param argument (mixed) The argument to check
 -- @param argumentName (string) The argument name
 -- @param expectedArgumentTypes (string) The expected argument type
@@ -122,7 +122,7 @@ function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgum
     end
 end
 
--- Return the craftStudio Type of the provided argument
+--- Return the craftStudio Type of the provided argument
 -- @param object (mixed) The argument to get the type of
 function Daneel.Debug.GetType(object)
     local argType = type(object)
@@ -157,14 +157,14 @@ function Daneel.Debug.GetType(object)
     return argType
 end
 
--- Alias for error() but print Daneel's stack trace first
+--- Alias for error() but print Daneel's stack trace first
 -- @param message (string) The error message
 function Daneel.Debug.PrintError(message)
     Daneel.Debug.StackTrace.Print()
     error(message)
 end
 
--- Check the value of 'componentType' and throw error if it is not one of the valid component types or objects.
+--- Check the value of 'componentType' and throw error if it is not one of the valid component types or objects.
 -- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform)
 -- @return (string) The component type as a string with the correct case
 function Daneel.Debug.CheckComponentType(componentType)
@@ -187,7 +187,7 @@ function Daneel.Debug.CheckComponentType(componentType)
     return componentType
 end
 
--- Check the value of 'assetType' and throw error if it is not one of the valid asset types or objects.
+--- Check the value of 'assetType' and throw error if it is not one of the valid asset types or objects.
 -- @param assetType (string, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document)
 -- @return (string) The asset type as a string with the correct case
 function Daneel.Debug.CheckAssetType(assetType)
@@ -220,7 +220,7 @@ Daneel.Debug.StackTrace = {
     depth = 1,
 }
 
--- Register a function input in the stack trace
+--- Register a function input in the stack trace
 -- @param functionName (string) The function name
 -- @param ... [optional] (mixed) Arguments received by the function
 function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
@@ -244,10 +244,18 @@ function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
     table.insert(Daneel.Debug.StackTrace.messages, msg)
 end
 
--- Register a function output in the stack trace
+--- Register a function output in the stack trace
 -- @param functionName (string) The function name
 -- @param ... [optional] (mixed) Variable returned by the function
 function Daneel.Debug.StackTrace.EndFunction(functionName, ...)
+    if Daneel.Debug.StackTrace.depth == 2 then
+        -- the depth is now down to 1 a full serie a calls has been done without problems
+        -- time to clear all messages
+        Daneel.Debug.StackTrace.messages = {}
+        Daneel.Debug.StackTrace.depth = 1
+        return
+    end
+
     local errorHead = "Daneel.Debug.StackTrace.EndFunction(functionName[, ...]) : "
     Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
 
@@ -265,23 +273,14 @@ function Daneel.Debug.StackTrace.EndFunction(functionName, ...)
     Daneel.Debug.StackTrace.depth = Daneel.Debug.StackTrace.depth - 1
 end
 
--- Print Daneel's StackTrace
--- @param length [optional default=Daneel.config.stackTraceLength] (number) The number of StackTrace entries to print
-function Daneel.Debug.StackTrace.Print(length)
-    if length == nil then
-        length = Daneel.config.stackTraceLength
-    end
-    
+--- Print the StackTrace
+function Daneel.Debug.StackTrace.Print() 
     local messages = Daneel.Debug.StackTrace.messages
     
     print("~~~~~ Daneel.Debug.StackTrace ~~~~~ Begin ~~~~~")
 
-    for i = #messages-length, #messages do
-        local traceText = messages[i]
-        
-        if traceText ~= nil then
-            print("#"..i.." "..traceText)
-        end
+    for i, msg in iparis(messages) do
+        print("#"..i.." "..msg)
     end
 
     print("~~~~~ Daneel.Debug.StackTrace ~~~~~ End ~~~~~")
