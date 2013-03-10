@@ -226,6 +226,7 @@ Arguments between square brackets are optional.
 
 * Daneel.Debug.CheckArgType(argument, argumentName, expectArgumenType[, errorHead, errorEnd])
 * Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectArgumenType[, errorHead, errorEnd])
+* Daneel.Debug.CheckComponentType(componentType)
 * Daneel.Debug.GetType(object)
 * Daneel.Debug.PrintError(message)
 

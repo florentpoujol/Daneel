@@ -73,10 +73,10 @@ function Daneel.Utilities.GetAllCraftStudioTypesAndObjects()
     end
 
     t = table.new()
-    t = t:join(Daneel.config.assetObjects)
-    t = t:join(Daneel.config.componentObjects)
-    t = t:join(table.combine(Daneel.config.craftStudioCoreTypes, Daneel.config.craftStudioCoreObjects))
-    t = t:join(table.combine(Daneel.config.daneelTypes, Daneel.config.daneelObjects))
+    t = t:merge(Daneel.config.assetObjects)
+    t = t:merge(Daneel.config.componentObjects)
+    t = t:merge(Daneel.config.craftStudioObjects))
+    t = t:merge(Daneel.config.daneelObjects))
 
     Daneel.config.allCraftStudioTypesAndObjects = t
 
@@ -204,10 +204,10 @@ function Daneel.Debug.GetType(object)
             end
 
             -- other types
-            local csto = Daneel.Utilities.GetAllCraftStudioTypesAndObjects()
-            for csType, csObject in pairs(csto) do
-                if mt == csObject then
-                    return Daneel.Debug.GetType
+            local allObjects = Daneel.config.allObjects
+            for type, object in pairs(allObjects) do
+                if mt == object then
+                    return type
                 end
             end
         end
@@ -229,29 +229,17 @@ end
 function Daneel.Debug.CheckComponentType(componentType)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckComponentType", componentType)
     local errorHead = "Daneel.Debug.CheckComponentType(componentType) : "
+    Daneel.Debug.CheckArgType(componentType, "componentType", {"string", unpack(table.getvalues(Daneel.config.componentObjects))}, errorHead)
 
-    if type(componentType) == "string" then
-        local componentTypes = Daneel.config.componentTypes
-        componentType = Daneel.Utilities.CaseProof(componentType, componentTypes)
-        if not componentType:isoneof(componentTypes) then
-            Daneel.Debug.PrintError(errorHead.."Argument 'componentType' with value '"..componentType.."' is not one of the valid component types : "..table.concat(componentTypes, ", "))
-        end
+    -- if componentType is an object
+    if type(componentType) ~= "string" then
+        componentType = table.getkey(Daneel.config.componentObjects, componentType)
+    end
 
-    -- component object, maybe
-    else
-        local stringComponentType = ""
-        for _componentType, componentObject in pairs(Daneel.config.componentObjects) do
-            if componentType == componentObject then
-                stringComponentType = _componentType
-            end
-        end
-
-        if stringComponentType == "" then
-            -- componentType was not a componentObject
-            Daneel.Debug.PrintError(errorHead.."Argument 'componentType' of type '"..Daneel.Debug.GetType(componentType).."' with value '"..tostring(componentType).."' is not one of the valid component types nor a valid component object.")
-        else
-            componentType = stringComponentType
-        end
+    local componentTypes = Daneel.config.componentTypes
+    componentType = Daneel.Utilities.CaseProof(componentType, componentTypes)
+    if not componentType:isoneof(componentTypes) then
+        Daneel.Debug.PrintError(errorHead.."Argument 'componentType' with value '"..componentType.."' is not one of the valid component types : "..table.concat(componentTypes, ", "))
     end
 
     Daneel.Debug.StackTrace.EndFunction("Daneel.Debug.CheckComponentType", componentType)

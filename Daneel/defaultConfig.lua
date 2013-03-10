@@ -7,7 +7,9 @@ Daneel.defaultConfig = {
 
     -- StackTrace
     stackTraceLength = 10,
-    
+
+
+    -- Objects (keys = name, value = object)
     assetOjects = {
         Script = Script,
         Model = Model,
@@ -43,12 +45,17 @@ Daneel.defaultConfig = {
     },
     
     daneelObjects = {
-        GUILabel = GUILabel,
         RaycastHit = RayCastHit,
+        Component = Component,
+        Asset = Asset,
     },
+
+
     
 
     -- Triggers
+    -- list of gameObjects check for rpoximity by the triggers
+    -- filled in TriggerableGameObject script
     triggerableGameObjects = {},
 
 
@@ -57,6 +64,7 @@ Daneel.defaultConfig = {
         buttons = {}
     }
 }
+
 
 -- called from Daneel.Awake()
 function Daneel.defaultConfig.Init()
@@ -78,11 +86,16 @@ function Daneel.defaultConfig.Init()
     end
 
 
-    -- assetTypes, assetObjects
+    -- 
     Daneel.defaultConfig.assetTypes = table.getkeys(Daneel.defaultConfig.assetObjects)
-    --Daneel.defaultConfig.assetObjects = table.getvalues(Daneel.defaultConfig.assets)
     Daneel.defaultConfig.componentTypes = table.getkeys(Daneel.defaultConfig.componentObjects)
-    --Daneel.defaultConfig.componentObjects = table.getvalues(Daneel.defaultConfig.components)
+
+    local t = table.new()
+    t = t:merge(Daneel.defaultConfig.assetObjects)
+    t = t:merge(Daneel.defaultConfig.componentObjects)
+    t = t:merge(Daneel.defaultConfig.craftStudioObjects)
+    t = t:merge(Daneel.defaultConfig.daneelObjects)
+    Daneel.defaultConfig.allObjects = t
 
 end
 
