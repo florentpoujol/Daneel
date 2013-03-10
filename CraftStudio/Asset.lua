@@ -3,10 +3,11 @@ Asset = {}
 Asset.__index = Asset
 
 
--- Alias of CraftStudio.FindAsset(assetName, assetType)
+--- Alias of CraftStudio.FindAsset(assetName, assetType)
 -- Get the asset of the specified name and type.
 -- @param assetName (string) The fully-qualified asset name.
--- @param assetType [optional] (string, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document) The asset type as a case-insensitive string or the asset object.
+-- @param assetType [optional] (string, Script, Model, ModelAnimation, Map, TileSet, Scene or Sound) The asset type as a case-insensitive string or the asset object.
+-- @return (Script, Model, ModelAnimation, Map, TileSet, Scene or Sound) The asset, or nil if none is found
 function Asset.Get(assetName, assetType)
     Daneel.Debug.StackTrace.BeginFunction("Asset.Get", assetName, assetType)
     local errorHead = "Asset.Get(assetName[, assetType]) : "
@@ -21,8 +22,50 @@ function Asset.Get(assetName, assetType)
     return asset
 end
 
+-- Get helpers are generated in Asset.Init() below
 
--- Tell if the specified asset is of the specified type.
+--- Get the Script asset of the specified name
+-- @param assetName (string) The fully-qualified asset name.
+-- @return (Script) The asset, or nil if none is found
+function Asset.GetScript(assetName) end
+
+--- Get the Model asset of the specified name
+-- @param assetName (string) The fully-qualified asset name.
+-- @return (Model) The asset, or nil if none is found
+function Asset.GetModel(assetName) end
+
+--- Get the ModelAnimation asset of the specified name
+-- @param assetName (string) The fully-qualified asset name.
+-- @return (ModelAnimation) The asset, or nil if none is found
+function Asset.GetModelAnimation(assetName) end
+
+--- Get the Map asset of the specified name
+-- @param assetName (string) The fully-qualified asset name.
+-- @return (Map) The asset, or nil if none is found
+function Asset.GetMap(assetName) end
+
+--- Get the TileSet asset of the specified name
+-- @param assetName (string) The fully-qualified asset name.
+-- @return (TileSet) The asset, or nil if none is found
+function Asset.GetTileSet(assetName) end
+
+--- Get the Scene asset of the specified name
+-- @param assetName (string) The fully-qualified asset name.
+-- @return (Scene) The asset, or nil if none is found
+function Asset.GetScene(assetName) end
+
+--- Get the Sound asset of the specified name
+-- @param assetName (string) The fully-qualified asset name.
+-- @return (Sound) The asset, or nil if none is found
+function Asset.GetSound(assetName) end
+
+--- Get the Document asset of the specified name
+-- @param assetName (string) The fully-qualified asset name.
+-- @return (Document) The asset, or nil if none is found
+function Asset.GetDocument(assetName) end
+
+
+--- Tell if the specified asset is of the specified type.
 -- @param asset (table) The asset.
 -- @param assetType (string, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document) The asset type as a case-insensitive string or the asset object.
 -- @return (boolean) True if the specified asset is of the specified type, false otherwise
@@ -37,8 +80,7 @@ function Asset.IsOfType(asset, assetType)
     return isProvidedAssetType
 end
 
-
--- Return the type of the provided asset
+--- Return the type of the provided asset
 -- @param asset (Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document) The asset
 -- @return (string) The asset type or nil
 function Asset.GetType(asset)
@@ -75,47 +117,6 @@ function Asset.Init()
             local asset = Asset.Get(assetName, assetType)
             Daneel.Debug.StackTrace.EndFunction("Asset.Get"..assetType, asset)
             return asset
-        end
-
-        -- IsOfType helper   -- not much usefull actually
-        -- IsModelRenderer() ...
-        Asset["Is"..assetType] = function(asset)
-            Daneel.Debug.StackTrace.BeginFunction("Asset.Is"..assetType, asset)
-            local errorHead = "Asset.Is"..assetType.."(asset) : "
-
-            local argType = type(asset)
-            if argType ~= "table" then
-                error(errorHead.."Argument 'asset' is of type '"..argType.."' with value '"..tostring(asset).."' instead of 'table'. Must the asset.")
-            end
-
-            local isAsset = Asset.IsOfType(asset, assetType)
-            Daneel.Debug.StackTrace.EndFunction("Asset.Is"..assetType, isAsset)
-            return isAsset
-        end
-
-
-        -- Dynamic Getters   -- is this usefull ??
-        object["__index"] = function(t, key) 
-            local funcName = "Get"..key:ucfirst()
-            
-            if object[funcName] ~= nil then
-                return object[funcName](t)
-            elseif object[key] ~= nil then
-                return object[key] -- have to return the function here, not the function return value !
-            end
-            
-            return rawget(t, key)
-        end
-
-        -- Dynamic Setters
-        object["__newindex"] = function(t, key, value)
-            local funcName = "Set"..key:ucfirst()
-            
-            if object[funcName] ~= nil then
-                return object[funcName](t, value)
-            end
-            
-            return rawset(t, key, value)
         end
 
         -- tostring
