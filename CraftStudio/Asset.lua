@@ -3,7 +3,7 @@ Asset = {}
 Asset.__index = Asset
 
 
---- Alias of CraftStudio.FindAsset(assetName, assetType)
+--- Alias of CraftStudio.FindAsset(assetName[, assetType])
 -- Get the asset of the specified name and type.
 -- @param assetName (string) The fully-qualified asset name.
 -- @param assetType [optional] (string, Script, Model, ModelAnimation, Map, TileSet, Scene or Sound) The asset type as a case-insensitive string or the asset object.
@@ -72,19 +72,12 @@ function Asset.GetDocument(assetName) end
 function Asset.Init()
     for assetType, object in pairs(Daneel.config.assetObjects) do
         
-        setmetatable(object, Asset)
-
         -- Get helpers
         -- GetModelRenderer() ...
         Asset["Get"..assetType] = function(assetName)
             Daneel.Debug.StackTrace.BeginFunction("Asset.Get"..assetType, assetName)
             local errorHead = "Asset.Get"..assetType.."(assetName) : "
-
-            local argType = type(assetName)
-            if argType ~= "string" then
-                error(errorHead.."Argument 'assetName' is of type '"..argType.."' with value '"..tostring(assetName).."' instead of 'string'. Must the fully-qualified "..type.." name.")
-            end
-
+            Daneel.Debug.CheckArgType(assetName, "assetName", "string", errorHead)
             local asset = Asset.Get(assetName, assetType)
             Daneel.Debug.StackTrace.EndFunction("Asset.Get"..assetType, asset)
             return asset
@@ -92,11 +85,10 @@ function Asset.Init()
 
         -- tostring
         object["__tostring"] = function(asset)
-            -- this has the advantage to return the asset ID that follows the asset Type
-            -- ie : "Model: 123456789"
+            -- print something like : "Model: 123456789 - table: 0512A528"
             -- asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
             -- CraftStudioCommon.ProjectData. is 30 characters long
-            return tostring(asset.inner):sub(31, 60)
+            return tostring(asset.inner):sub(31, 60).." - ".. tostring(asset)
         end
         
     end

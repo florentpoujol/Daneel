@@ -206,12 +206,12 @@ Arguments between square brackets are optional.
 ### Asset
 
 * Asset.Get(assetName[, assetType])
+    * Asset.GetScript(assetName)
     * Asset.GetModel(assetName)
     * Asset.GetModelAnimation(assetName)
     * Asset.GetMap(assetName)
     * Asset.GetTileSet(assetName)
     * Asset.GetScene(assetName)
-    * Asset.GetScript(assetName)
     * Asset.GetDocument(assetName)
     * Asset.GetSound(assetName)
 
