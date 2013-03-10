@@ -12,7 +12,7 @@ function Asset.Get(assetName, assetType)
     local errorHead = "Asset.Get(assetName[, assetType]) : "
     Daneel.Debug.CheckArgType(assetName, "assetName", "string", errorHead)
 
-    local assets = Daneel.config.assets
+    local assets = Daneel.config.assetObjects
     local assetTypes = table.getKeys(assets)
     Daneel.Debug.CheckOptionalArgType(assetType, "assetType", {"string", unpack(assetTypes)}, errorHead)
     
@@ -80,7 +80,7 @@ end
 
 -- Called from Daneel.Awake()
 function Asset.Init()
-    for assetType, object in pairs(Daneel.config.assets) do
+    for assetType, object in pairs(Daneel.config.assetObjects) do
         
         setmetatable(object, Asset)
 

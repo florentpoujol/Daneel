@@ -6,40 +6,42 @@ Component.__index = Component
 -- Create dynamic Getters and Setter
 -- Set the key __index and __newindex on all components objects
 function Component.Init()
-    local components = table.combine(Daneel.config.componentTypes, Daneel.config.componentObjects)
+    local components = Daneel.config.componentObjects
 
     for componentType, object in pairs(components) do
 
         setmetatable(object, Component)
 
-        -- component instances have the coresponding object (ie :ModelRenderer for a ModelRenderer instance)
-        -- as metatable but it is hidden.
-        -- Plus, the inner variable is unreadable, at least not like it is for the Assets (CraftStudioCommon.ProjectData.[AssetType])
-        -- The purpose of the componentType variable here is to be read by Daneel.Debug.GetType() function (in the Utilities script)
-        object.componentType = componentType
+        if componentType ~= "Script" then
+            -- component instances have the coresponding object (ie :ModelRenderer for a ModelRenderer instance)
+            -- as metatable but it is hidden (except for ScriptedBehaviors).
+            -- Plus, the inner variable is unreadable, at least not like it is for the Assets (CraftStudioCommon.ProjectData.[AssetType])
+            -- The purpose of the componentType variable here is to be read by Daneel.Debug.GetType() function (in the Utilities script)
+            object.componentType = componentType
 
-        -- Dynamic Getters
-        object["__index"] = function(t, key) 
-            local funcName = "Get"..key:ucfirst()
-            
-            if object[funcName] ~= nil then
-                return object[funcName](t)
-            elseif object[key] ~= nil then
-                return object[key] -- have to return the function here, not the function return value !
+            -- Dynamic Getters
+            object["__index"] = function(t, key) 
+                local funcName = "Get"..key:ucfirst()
+                
+                if object[funcName] ~= nil then
+                    return object[funcName](t)
+                elseif object[key] ~= nil then
+                    return object[key] -- have to return the function here, not the function return value !
+                end
+                
+                return rawget(t, key)
             end
-            
-            return rawget(t, key)
-        end
 
-        -- Dynamic Setters
-        object["__newindex"] = function(t, key, value)
-            local funcName = "Set"..key:ucfirst()
-            
-            if object[funcName] ~= nil then
-                return object[funcName](t, value)
+            -- Dynamic Setters
+            object["__newindex"] = function(t, key, value)
+                local funcName = "Set"..key:ucfirst()
+                
+                if object[funcName] ~= nil then
+                    return object[funcName](t, value)
+                end
+                
+                return rawset(t, key, value)
             end
-            
-            return rawset(t, key, value)
         end
 
         object["__tostring"] = function(component)
@@ -48,7 +50,51 @@ function Component.Init()
             return Daneel.Debug.GetType(component)..": "..tostring(component.inner):sub(2,20)
         end
     end
+
+    -- Dynamic getters on ScriptedBehaviors
+    function Script.__index(scriptAsset, key)
+        local funcName = "Get"..key:ucfirst()
+        
+        if rawget(scriptAsset, funcName) ~= nil then
+            return scriptAsset[funcName](scriptAsset)
+        elseif rawget(scriptAsset, key) ~= nil then
+            return scriptAsset[key]
+        end
+        
+        -- not found on the behavior, look in the Script
+        -- note that this alow to override (bypass) Script functions in Behaviors
+        if Script[funcName] ~= nil then
+            return Script[funcName](scriptAsset)
+        elseif Script[key] ~= nil then
+            return Script[key]
+        end
+        
+        return rawget(scriptAsset, key)
+    end
+
+    -- it seems I can't make dynamic setters works on ScriptedBehaviors
 end
+
+--[[
+       -- Dynamic Setters
+        object["__newindex"] = function(t, key, value)
+            local funcName = "Set"..key:ucfirst()
+            
+            pint(t, key, value, funcName)
+            
+            if object[funcName] ~= nil then
+                return object[funcName](t, value)
+            end
+            
+            if object == Script then
+                if t[funcName] ~= nil then
+                    return t[funcName](t, value)
+                end
+            end
+            
+            return rawset(t, key, value)
+        end
+        ]]
 
 
 --- Apply the content of the params argument to the component in argument.

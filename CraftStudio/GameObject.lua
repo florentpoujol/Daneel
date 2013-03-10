@@ -18,7 +18,7 @@ function GameObject.__index(gameObject, key)
     if GameObject[funcName] ~= nil then
         return GameObject[funcName](gameObject)
     elseif GameObject[key] ~= nil then
-        return GameObject[key] -- have to return the function here, not the function return value !
+        return GameObject[key] -- have to return the function here, not the function return value (because of the arguments that may be passed to the fuction)
     end
 
     -- maybe the key is a Script name used to acces the Behavior instance
@@ -29,7 +29,7 @@ function GameObject.__index(gameObject, key)
 
     -- maybe the key is a script alias
     local aliases = Daneel.config.scriptedBehaviorsAliases
-    if aliases ~= nil then
+    if aliases ~= nil and type(aliases) == "table" then
         local path = aliases[key]
         if path ~= nil then
             behavior = gameObject:GetScriptedBehavior(path)
@@ -549,7 +549,7 @@ function GameObject.DestroyComponent(gameObject, input, strict)
     -- input is component object ?
     if table.containsvalue(Daneel.config.componentObjects, input) then
         component = gameObject:GetComponent(
-            table.getkey(Daneel.config.components, input)
+            table.getkey(Daneel.config.componentObjects, input)
         )
     
     -- input is component type ?

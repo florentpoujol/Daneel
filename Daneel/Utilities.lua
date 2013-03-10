@@ -73,7 +73,8 @@ function Daneel.Utilities.GetAllCraftStudioTypesAndObjects()
     end
 
     t = table.new()
-    t = t:join(table.combine(Daneel.config.assetTypes, Daneel.config.assetObjects))
+    t = t:join(Daneel.config.assetObjects)
+    t = t:join(Daneel.config.componentObjects)
     t = t:join(table.combine(Daneel.config.craftStudioCoreTypes, Daneel.config.craftStudioCoreObjects))
     t = t:join(table.combine(Daneel.config.daneelTypes, Daneel.config.daneelObjects))
 
@@ -175,19 +176,38 @@ Daneel.Debug = {}
 -- @param errorEnd [optional] (string) The end of the error message
 function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd)
     local _errorHead = "Daneel.Debug.CheckArgType(arg, argName, expectedArgumentTypes[, errorHead, errorEnd]) : "
-    Daneel.Debug.CheckArgType(argumentName, "argumentName", "string", _errorHead)
-    Daneel.Debug.CheckArgType(expectedArgumentTypes, "expectedArgumentTypes", {"string", "table"}, _errorHead)
-    Daneel.Debug.CheckOptionalArgumentType(errorHead, "errorHead", "string", _errorHead)
-    Daneel.Debug.CheckOptionalArgumentType(errorEnd, "errorEnd", "string", _errorHead)
-
-    if type(argumentName) == "string" then
-        expectedArgumentTypes = {expectedArgumentTypes}
+    
+    local argType = type(argName)
+    if argType ~= "string" then
+        error(_errorHead.."Argument 'argName' is of type '"..argType.."' with value '"..tostring(argName).."' instead of 'string'.")
     end
 
-    if _errorHead == nil then errorHead = "" end
+    argType = type(expectedArgTypes)
+    if argType ~= "string" and argType ~= "table" then
+        error(_errorHead.."Argument 'expectedArgTypes' is of type '"..argType.."' with value '"..tostring(expectedArgTypes).."' instead of 'string' or 'table'.")
+    end
+
+    if argType == "string" then
+        expectedArgTypes = {expectedArgTypes}
+    end
+
+    argType = type(errorHead)
+    if arType ~= nil and argType ~= "string" then
+        error(_errorHead.."Argument 'errorHead' is of type '"..argType.."' with value '"..tostring(errorHead).."' instead of 'string'.")
+    end
+
+    if errorHead == nil then errorHead = "" end
+
+    argType = type(errorEnd)
+    if arType ~= nil and argType ~= "string" then
+        error(_errorHead.."Argument 'errorEnd' is of type '"..argType.."' with value '"..tostring(errorEnd).."' instead of 'string'.")
+    end
+
     if errorEnd == nil then errorEnd = "" end
 
-    local argType = Daneel.Debug.GetType(arg)
+    --
+
+    argType = Daneel.Debug.GetType(arg)
     if not argType:isoneof(expectedArgumentTypes) then
         Daneel.Debug.PrintError(_errorHead.."Argument '"..argumentName.."' is of type '"..argumentType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..errorEnd)
     end
@@ -201,46 +221,72 @@ end
 -- @param errorEnd [optional] (string) The end of the error message
 function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd)
     local _errorHead = "Daneel.Debug.CheckOptionalArgType(arg, argName, expectedArgumentTypes, errorHead, errorEnd) : "
-    Daneel.Debug.CheckArgType(argumentName, "argumentName", "string", _errorHead)
-    Daneel.Debug.CheckArgType(expectedArgumentTypes, "expectedArgumentTypes", {"string", "table"}, _errorHead)
-    Daneel.Debug.CheckOptionalArgumentType(errorHead, "errorHead", "string", _errorHead)
-    Daneel.Debug.CheckOptionalArgumentType(errorEnd, "errorEnd", "string", _errorHead)
-
-    if type(argumentName) == "string" then
-        expectedArgumentTypes = {expectedArgumentTypes}
+    
+    local argType = type(argName)
+    if argType ~= "string" then
+        error(_errorHead.."Argument 'argName' is of type '"..argType.."' with value '"..tostring(argName).."' instead of 'string'.")
     end
 
-    if _errorHead == nil then _errorHead = "" end
+    argType = type(expectedArgTypes)
+    if argType ~= "string" and argType ~= "table" then
+        error(_errorHead.."Argument 'expectedArgTypes' is of type '"..argType.."' with value '"..tostring(expectedArgTypes).."' instead of 'string' or 'table'.")
+    end
+
+    if argType == "string" then
+        expectedArgTypes = {expectedArgTypes}
+    end
+
+    argType = type(errorHead)
+    if arType ~= nil and argType ~= "string" then
+        error(_errorHead.."Argument 'errorHead' is of type '"..argType.."' with value '"..tostring(errorHead).."' instead of 'string'.")
+    end
+
+    if errorHead == nil then errorHead = "" end
+
+    argType = type(errorEnd)
+    if arType ~= nil and argType ~= "string" then
+        error(_errorHead.."Argument 'errorEnd' is of type '"..argType.."' with value '"..tostring(errorEnd).."' instead of 'string'.")
+    end
+
     if errorEnd == nil then errorEnd = "" end
 
-    local argType = Daneel.Debug.GetType(argument)
+    --
+
+    argType = Daneel.Debug.GetType(argument)
     if argType ~= nil and not argType:isoneof(expectedArgumentTypes) then  
         Daneel.Debug.PrintError(_errorHead.."Optional argument '"..argumentName.."' is of type '"..argumentType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..errorEnd)
     end
 end
 
 -- Return the craftStudio Type of the provided argument
--- @param object (mixed) The argument to get the type
+-- @param object (mixed) The argument to get the type of
 function Daneel.Debug.GetType(object)
-    Daneel.StackTrace.BeginFunction("Daneel.Debug.GetType", object)
     local argType = type(object)
 
     if argType == "table" then
+        -- the componentType variable on component is set during Component.Init(), 
+        -- because the component's metatable is hidden
+        if object.componentType ~= nil and table.containsvalue(table.getkeys(Daneel.config.componentsObjects), object.componentType) then
+            return object.componentType
+        end
+
+        -- for all other times, the type is defined by the object's metatable
         local mt = getmetatable(object)
 
         if mt ~= nil then
+            -- the metatable of the ScriptedBahaviors is the corresponding asset
+            -- the metatable of all script assets is Script
+            if getmetatable(mt) == Script then
+                return "ScriptedBehavior"
+            end
+
+            -- other types
             local csto = Daneel.Utilities.GetAllCraftStudioTypesAndObjects()
             for csType, csObject in pairs(csto) do
                 if mt == csObject then
                     return Daneel.Debug.GetType
                 end
             end
-        end
-
-        -- the componentType variable on component is set during Component.Init(), 
-        -- because the component's metatable is hidden
-        if object.componentType ~= nil and table.containsvalue(Daneel.config.componentTypes, object.componentType) then
-            return object.componentType
         end
     end
 
@@ -271,7 +317,7 @@ function Daneel.Debug.CheckComponentType(componentType)
     -- component object, maybe
     else
         local stringComponentType = ""
-        for _componentType, componentObject in pairs(Daneel.config.components) do
+        for _componentType, componentObject in pairs(Daneel.config.componentObjects) do
             if componentType == componentObject then
                 stringComponentType = _componentType
             end

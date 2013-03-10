@@ -17,6 +17,7 @@ Events
     - vérif lors de l'appel de function ou GO détruites
 
 
+The metatable of the scripted behaviors is Behavior and not scriptedBehavior
 
 
 Package manager
@@ -26,7 +27,6 @@ Package manager
 
 
 
-complèter doc sur mass-setting
-ajouter mouseoverrble script (nom à changer)
-ajouté triger button event dans Daneel.lua
-corriger Component.set()
+readme
+ray
+gameobject

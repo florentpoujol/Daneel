@@ -16,7 +16,7 @@ Daneel.defaultConfig = {
     -- StackTrace
     stackTraceLength = 10,
     
-    assets = {
+    assetOjects = {
         Script = Script,
         Model = Model,
         ModelAnimation = ModelAnimation,
@@ -26,17 +26,14 @@ Daneel.defaultConfig = {
         Scene = Scene,
         Document = Document
     },
-
-    components = {
+    
+    componentObjects = {
         ScriptedBehavior = ScriptedBehavior,
         ModelRenderer = ModelRenderer,
         MapRenderer = MapRenderer,
         Camera = Camera,
         Transform = Transform,
     },
-
-    
-
     
     -- Correspondance between the component type (the keys) and the asset type (the values)
     componentTypeToAssetType = {
@@ -44,31 +41,18 @@ Daneel.defaultConfig = {
         ModelRenderer = "Model",
         MapRenderer = "Map",
     },
-
-
-    craftStudioCoreTypes = {
-        "GameObject",
-        "Vector3",
-        "Ray",
-        "Plane",
-        "Quaternion",
-    },
-
-    craftStudioCoreObjects = {
-        GameObject,
-        Vector3,
-        Quaternion,
-        Plane,
-        Ray,
+    
+    craftStudioObjects = {
+        GameObject = GameObject,
+        Vector3 = Vector3,
+        Quaternion = Quaternion,
+        Plane = Plane,
+        Ray = Ray,
     },
     
-
-    daneelTypes = {
-        "GUILabel",
-    },
-
     daneelObjects = {
-        GUILabel,
+        GUILabel = GUILabel,
+        RaycastHit = RayCastHit,
     },
     
 }

@@ -4,7 +4,7 @@ local rayCallSyntaxError = "Function not called from a Ray. Your must use a colo
 
 
 -- list of castable gameObjects  that are checked for collision with a ray by Ray:Cast()
-Ray.catablesGameObjects = {}
+Ray.castableGameObjects = {}
 
 -- Add a gameObject to the castableGameObject list.
 -- @param gameObject (GameObject) The gameObject to add to the list.
@@ -13,22 +13,29 @@ function Ray.RegisterCastableGameObject(gameObject)
     local errorHead = "Ray.RegisterCastableGameObject(gameObject) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
 
-    table.insert(Ray.catablesGameObjects, gameObject)
+    table.insert(Ray.castableGameObjects, gameObject)
     Daneel.StackTrace.EndFunction("Ray.RegisterCastableGameObject")
 end
 
 
 -- check the collision of the ray against all castable gameObject
 -- @param ray (Ray) The ray
+-- @param gameObjects (table) [optional default=Ray.castableGameObjects] The set of gameObjects to cast the ray against
 -- @return (table) The table of RaycastHits (will be empty if the ray didn't intersects anything)
-function Ray.Cast(ray)
-    Daneel.StackTrace.BeginFunction("Ray.Cast", ray)
+function Ray.Cast(ray, gameObjects)
+    Daneel.StackTrace.BeginFunction("Ray.Cast", ray, gameObjects)
     local errorHead = "Ray.Cast(ray) : "
     Daneel.Debug.CheckArgType(ray, "ray", "Ray", errorHead)
 
+    if gameObjects == nil then
+        gameObjects = Ray.castableGameObjects
+    else
+        gameObjects = Daneel.Debug.CheckArgType(gameObjects, "gameObjects", "table", errorHead)
+    end
+
     local hits = table.new()
 
-    for i, gameObject in ipairs(Ray.catablesGameObjects) do
+    for i, gameObject in ipairs(gameObjects) do
         local distance, normal, hitBlockLocation, adjacentBlockLocation = ray:IntersectsGameObject(gameObject)
 
         if distance ~= nil then
@@ -36,7 +43,7 @@ function Ray.Cast(ray)
         end
     end
 
-    Daneel.StackTrace.EndFunction("Ray.RegisterCastableGameObject", hits)
+    Daneel.StackTrace.EndFunction("Ray.Cast", hits)
     return hits
 end
 

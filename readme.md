@@ -37,7 +37,7 @@ Getters and setters functions (functions that begins by Get or Set) may be used 
     self.gameObject:SetName("a new name")
     -- note that only one argument (in addition to the working object) can be passed to the function.
 
-This works even for your own getters or setter. For instance, if you have GetMana()/SetMana(), you can just access them via the 'mana' variable.
+This works even for your own getters (that your defined in your ScriptedBehaviors) but ''does not works'' for your own setters.
 
 As Daneel introduce the new GetModelRenderer(), GetMapRenderer() and GetCamera() functions on gameObjects, you may now access any components via their variable, like the transform :
 
@@ -48,7 +48,7 @@ As Daneel introduce the new GetModelRenderer(), GetMapRenderer() and GetCamera()
 
 ## Dynamic access to ScriptedBehaviors
 
-ScriptedBehaviors whose name are camel-cased and are not nested in a folder may be accessed in the same way. For instance, with a Script whose name is 'MyScript'.
+ScriptedBehaviors whose name are camel-cased and are not nested in a folder may be accessed in the same way as the getters. For instance, with a Script whose name is 'MyScript' :
 
     self.gameObject.myScript.something
     -- is the same as
@@ -59,7 +59,7 @@ You may define aliases for other ScriptedBehaviors (those who are nested in fold
     -- in the config, set the 'scriptedBehaviorAliases' table which must contains the aliases as the keys and the fully-qualified Script path as the values
     Daneel.config = {
         scriptedBehaviorAliases = {
-            -- alias = "script path",
+            -- alias = "fully-qualified Script path",
             scriptName = "folder/script name",
         }
     }
@@ -67,7 +67,7 @@ You may define aliases for other ScriptedBehaviors (those who are nested in fold
     -- in your script, access the scripteBehavior with its alias
     self.gameObject.scriptName
 
-Note that with the scriptedBehaviors only (not with the gatters or setters), the case of the alias and especially its first letter matters
+Note that with the ScriptedBehaviors only (not with the getters or setters), the case of the alias and especially its first letter matters.
 In this example, self.gameObject.ScriptName won't get access to the scriptedBehavior but self.gameObject.ModelRenderer will get access to the modelRenderer.
 
 You may also access the first scriptedBehavior on the gameObject, whatever its name is, via `self.gameObject.scriptedBehavior`.
@@ -82,10 +82,20 @@ For instance, passing false instead of the gameObject's name with gameObject:Get
 
     GameObject.GetChild(gameObject, name[, recursive]) : Argument 'name' is of type 'boolean' with value 'false' instead of 'string'.
 
+### Daneel's types
+
+The function '''Daneel.Debug.GetType(object)''' is an extension of ''type()'' and may returns any of the built-in Lua types or the name of any of the objects introduced by CraftStudio or Daneel : 
+
+* GameObject
+* ModelRenderer, MapRenderer, Camera, Transform
+* Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document
+* Ray, RayastHit, Vector3, Plane, Quaternion
+* GUILabel
+
 ### Stack Trace
 
-When an error is triggered, Daneel print a Stack Trace in the Runtime Report.
-The Stack Trace nicely shows of the histoy of function calls whithin the framework and display values recieved as argument as well as returned values.
+When an error is triggered by '''Danel.Debug.PrintError(errorMessage)''', Daneel print a Stack Trace in the Runtime Report.
+The Stack Trace nicely shows the histoy of function calls whithin the framework and display values recieved as argument as well as returned values.
 
 
 ## Mass-setting on gameObjects and components
@@ -114,7 +124,7 @@ Example :
         model = "Model name"
     }, -- will create a modelRenderer if it does not yet exists, then set its model
 
-    camera = {}, -- will create a camera component or do nothing
+    camera = {}, -- will create a camera component then do nothing, or just do nothing
 
     scriptedBehavior = "Script name", -- will create a ScriptedBehavior with the "Script name" script and if it does not yet exists
     
@@ -137,14 +147,32 @@ Example :
 
 Just set the variable of the same name as the component with the first letter lower case. Set the value as a table of parameters. If the component does not yet exists, it will be created. If you want to create a component without initializing it, just leave the table empty.
 
-You can mass-set existing components on gameObject via gameObject:SetComponent() and its helpers (SetModelRenderer() and the likes).
+You can mass-set existing components on gameObject via gameObject:SetComponent() or its helpers (SetModelRenderer() and the likes).
+    
+    self.gameObject:SetMapRenderer([params])
+    -- or, with the dynamic access to the components
+    self.gameObject.mapRenderer:Set([params])
 
 '''ScriptedBehaviors'''
 
-If you want to add one scriptedBehavior, set the variable 'scriptedBehavior' with the script name or asset as value.
-If you want to create one or more scriptedBehaviors and maybe initialize them or set existing ScriptedBehaviors, set the variable 'scriptedBehaviors' (with an 's' at the end) with a table as value.
-This table may contains the scripts name or asset of new ScriptedBehaviors if you don't want to initialize them or the script name or asset as key and the parameters table as value (for new or existing ScriptedBehaviors).
+If you want to add one scriptedBehavior, set the variable "scriptedBehavior" with the script name or asset as value.
+If you want to create one or more scriptedBehaviors and maybe initialize them, or set existing ScriptedBehaviors, set the variable 'scriptedBehaviors' (with an 's' at the end) with a table as value.
+This table may contains the scripts name or asset of new ScriptedBehaviors as value (if you don't want to initialize them) or the script name or asset as key and the parameters table as value (for new or existing ScriptedBehaviors).
 Existing ScriptedBehaviors may also be set via their name or alias.
+
+
+## Raycasting
+
+GameObject who have the "Daneel/Behaviors/CastableGameObject" ScriptedBehavior are known as '''castable gameObjects'''.
+The '''RaycastHit''' object stores the information regarding the collision between a ray and a gameObject. It may contains the keys ''distance'', ''normal'', ''hitBlockLocation'', ''adjacentBlockLocation'', ''gameObject'' and ''component''.
+
+The function ray:Cast([gameObjects]) cast the ray against all castable gameObjects (or against the provided set of gameObjects) and returns a table of RaycastHit (or an empty table if no gameObjects have been hit).
+
+
+## Events
+
+Daneel provide a flexible event system.
+You can register any function, including behavior function
 
 
 ---
@@ -177,7 +205,7 @@ Arguments between square brackets are optional.
 
 * Daneel.Debug.CheckArgType(argument, argumentName, expectArgumenType[, errorHead, errorEnd])
 * Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectArgumenType[, errorHead, errorEnd])
-* Daneel.Debug.GetType(object) 
+* Daneel.Debug.GetType(object)
 * Daneel.Debug.PrintError(message)
 
 ### Daneel.Events
@@ -190,7 +218,7 @@ Arguments between square brackets are optional.
 
 * Daneel.StackTrace.BeginFunction(functionName[, ...])
 * Daneel.StackTrace.EndFunction(functionName[, ...])
-* Daneel.StackTrace.Print(length)
+* Daneel.StackTrace.Print([length])
 
 ### Daneel.Utilities
 
@@ -225,7 +253,6 @@ Arguments between square brackets are optional.
 * gameObject:GetModelRenderer()
 * gameObject:GetMapRenderer()
 * gameObject:GetCamera()
-* gameObject:GetTransform()
 
 * gameObject:Destroy()
 * gameObject:DestroyComponent(input[, strict])
@@ -257,7 +284,7 @@ Arguments between square brackets are optional.
 
 ### Ray
 
-* ray:Cast()
+* ray:Cast([gameObjects])
 * ray:IntersectsGameObject(gameObject)
 
 ### RaycastHit
