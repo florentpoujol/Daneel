@@ -2,7 +2,7 @@
 -- Built-in table have no metatable
 -- The table.new() function add the 'table' object as the metatable
 
--- Allow to use .length as a shortcut for the length method
+--- Allow to use .length as a shortcut for the length method
 -- @param t (table) The Table
 -- @param key (string) The key
 function table.__index(t, key) 
@@ -13,7 +13,7 @@ function table.__index(t, key)
     return rawget(table, key)
 end
 
--- Allow to do table1 + table2, shortcut for table.merge()
+--- Allow to do table1 + table2, shortcut for table.merge()
 -- @param t1 (table) The left table
 -- @param t2 (table) The right table
 -- @return t (table) The new table
@@ -24,7 +24,7 @@ function table.__add(t1, t2)
     return t
 end
 
--- Constructor for dynamic tables that allow to use the functions in the table library on the table copies.
+--- Constructor for dynamic tables that allow to use the functions in the table library on the table copies.
 -- @param ... [optional] (mixed) A single table, or 0 or more values to fill the new table with.
 -- @return (table) The new table.
 function table.new(...)
@@ -53,7 +53,7 @@ function table.new(...)
     return t
 end
 
--- Return a copy of the provided table.
+--- Return a copy of the provided table.
 -- Dependent of table.new().
 -- @param t (table) The table to copy.
 function table.copy(t)
@@ -65,7 +65,7 @@ function table.copy(t)
     return t
 end
 
--- Tells wether the provided key is found within the provided table.
+--- Tells wether the provided key is found within the provided table.
 -- @param t (table) The table to search in.
 -- @param key (mixed) The key to search for.
 -- @return (boolean) True if the key is found in the table, false otherwise.
@@ -90,7 +90,7 @@ function table.containskey(t, p_key)
     return containsKey
 end
 
--- Tells wether the provided value is found within the provided table.
+--- Tells wether the provided value is found within the provided table.
 -- @param t (table) The table to search in.
 -- @param value (any) The value to search for.
 -- @param ignoreCase [optionnal default=false] (boolean) Ignore the case of the value. If true, the value must be of type 'string'.
@@ -131,7 +131,7 @@ function table.containsvalue(t, p_value, ignoreCase)
     return containsValue
 end
 
--- Returns the length of a table, which is the numbers of keys of the specified type (or of any type), for which the value is non-nil.
+--- Returns the length of a table, which is the numbers of keys of the specified type (or of any type), for which the value is non-nil.
 -- @param t (table) The table.
 -- @param keyType [optional] (string) Any Lua or CraftStudio type.
 -- @return (number) The table length.
@@ -154,7 +154,7 @@ function table.length(t, keyType)
     return length
 end
 
--- Print all key/value pairs within the provided table.
+--- Print all key/value pairs within the provided table.
 -- @param t (table) The table.
 function table.print(t)
     Daneel.Debug.StackTrace.BeginFunction("table.print", t)
@@ -185,7 +185,7 @@ function table.print(t)
     Daneel.Debug.StackTrace.EndFunction("table.print")
 end
 
--- Print the metatable of the provided table.
+--- Print the metatable of the provided table.
 -- Dependent of table.length().
 -- @param t (table) The table.
 function table.printmetatable(t)
@@ -212,7 +212,7 @@ function table.printmetatable(t)
         Daneel.Debug.StackTrace.EndFunction("table.printmetatable")
         return
     end
-   
+    
     print("~~~~~ table.printmetatable() ~~~~~ Start ~~~~~")
     print("Metatable : "..tostring(mt))
     print("~~~~~")
@@ -230,7 +230,7 @@ function table.printmetatable(t)
     Daneel.Debug.StackTrace.EndFunction("table.printmetatable")
 end
 
--- Merge two or more tables into one. Integer keys are not overrided.
+--- Merge two or more tables into one. Integer keys are not overrided.
 -- @param ... (table) At least two tables to merge together. Non-table arguments are ignored.
 -- @return (table) The new table.
 function table.merge(...)
@@ -259,7 +259,7 @@ function table.merge(...)
     return fullTable
 end
 
--- Compare table1 and table2. Returns true if they have the exact same keys which have the exact same values.
+--- Compare table1 and table2. Returns true if they have the exact same keys which have the exact same values.
 -- @param table1 (table) The first table to compare.
 -- @param table2 (table) The second table to compare to the first table.
 -- @return (boolean) True if the two table have the same content.
@@ -287,7 +287,7 @@ function table.compare(table1, table2)
     return areEqual
 end
 
--- Create an associative table with the provided keys and values table
+--- Create an associative table with the provided keys and values table
 -- @param keys (table) The keys of the future table
 -- @param values (table) The values of the future table
 -- @param strict [optional default=false] (boolean) If true, the function returns false if the keys and values table have different length
@@ -318,7 +318,7 @@ function table.combine(keys, values, strict)
     return newTable
 end
 
--- Remove the specified value from the provided table
+--- Remove the specified value from the provided table
 -- @param t (table) The table
 -- @param value (mixed) The value to remove
 -- @param singleRemove [optional default=false] (boolean) Tell wether to remove all occurences of the value or just the first one
@@ -351,7 +351,7 @@ function table.removevalue(t, value, singleRemove)
     return t
 end
 
--- Return all the keys of the provided table
+--- Return all the keys of the provided table
 -- @param t (table) The table
 -- @return (table) The keys
 function table.getkeys(t)
@@ -368,7 +368,7 @@ function table.getkeys(t)
     return keys
 end
 
--- Return all the values of the provided table
+--- Return all the values of the provided table
 -- @param t (table) The table
 -- @return (table) The values
 function table.getvalues(t)
@@ -385,7 +385,7 @@ function table.getvalues(t)
     return values
 end
 
--- Get the key associated with the provided value
+--- Get the key associated with the provided value
 -- @param t (table) The table
 -- @param value (mixed) The value
 function table.getkey(t, value)

@@ -1,7 +1,7 @@
 
 local stringMetatable = getmetatable("") -- the 'string' class is origininally stringMetatable.__index
 
--- Allow to build a string by repeating sevral times a strring segment
+--- Allow to build a string by repeating several times a strring segment
 -- @param s (string) The string
 -- @param num (number) The multiplier
 -- @return (string) The new string
@@ -13,7 +13,7 @@ function stringMetatable.__mul(s, multiplier)
     return fullString
 end
 
--- Turn a string into a table, one character per index
+--- Turn a string into a table, one character per index
 -- @param s (string) The string
 -- @return (table) The table
 function string.totable(s)
@@ -28,7 +28,7 @@ function string.totable(s)
     return t
 end
 
--- Alias of table.containsvalue().
+--- Alias of table.containsvalue().
 -- Tell wether the specified table contains the specified string. 
 -- @param s (string) The string
 -- @param t (table) The table conataining the values to check against argument 'string'.
@@ -45,7 +45,7 @@ function string.isoneof(s, t, ignoreCase)
     return isOneOf
 end
 
--- Make the first letter uppercase
+--- Make the first letter uppercase
 -- @param s (string) The string
 -- @return (string) The string
 function string.ucfirst(s)

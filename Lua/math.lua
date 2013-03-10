@@ -1,5 +1,5 @@
 
--- Tell wether the provided number is an integer.
+--- Tell wether the provided number is an integer.
 -- @param number The number to check.
 -- @param strict [optionnal default=false] (boolean) If true, the function returns an error when the 'number' argument is not a number.
 function math.isinteger(number, strict)
