@@ -12,24 +12,8 @@ function Asset.Get(assetName, assetType)
     local errorHead = "Asset.Get(assetName[, assetType]) : "
     Daneel.Debug.CheckArgType(assetName, "assetName", "string", errorHead)
 
-    local assets = Daneel.config.assetObjects
-    local assetTypes = table.getKeys(assets)
-    Daneel.Debug.CheckOptionalArgType(assetType, "assetType", {"string", unpack(assetTypes)}, errorHead)
-    
     if assetType ~= nil then
-        if type(assetType) ~= "string" then
-            for _assetType, assetObject in pairs(assets) do
-                if assetType == assetObject then
-                    assetType = _assetType
-                end
-            end
-        else
-            assetType = Daneel.Utilities.CaseProof(assetType, assetTypes)
-        end
-
-        if not assetType:isoneof(assetTypes) then
-            Daneel.Debug.PrintError(errorHead.."Argument 'assetType' with value '"..assetType.."' is not one of the valid asset types : "..table.concat(assetTypes, ", "))
-        end
+        assetType = Daneel.Debug.CheckAssetType(assetType)
     end
 
     local asset = CraftStudio.FindAsset(assetName, assetType)
@@ -46,14 +30,7 @@ function Asset.IsOfType(asset, assetType)
     Daneel.Debug.StackTrace.BeginFunction("Asset.IsOfType", asset, assetType)
     local errorHead = "Asset.IsOfType(asset, assetType) : "
     Daneel.Debug.CheckArgType(asset, "asset", Daneel.config.assetTypes, errorHead)
-    Daneel.Debug.CheckArgType(assetType, "assetType", "string", errorHead)
-
-    local assetTypes = Daneel.config.assetTypes
-    assetType = Daneel.Utilities.CaseProof(assetType, assetTypes)
-
-    if not assetType:isoneof(assetTypes) then
-        Daneel.Debug.PrintError(errorHead.."Argument 'assetType' with value '"..assetType.."' is not one of the valid asset types : "..table.concat(assetTypes, ", "))
-    end
+    assetType = Daneel.Debug.CheckAssetType(assetType)
 
     local isProvidedAssetType = (Daneel.Debug.GetType(asset) == assetType)
     Daneel.Debug.StackTrace.EndFunction("Asset.IsOfType", isProvidedAssetType)

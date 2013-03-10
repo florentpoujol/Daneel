@@ -224,8 +224,8 @@ function Daneel.Debug.PrintError(message)
 end
 
 -- Check the value of 'componentType' and throw error if it is not one of the valid component types or objects.
--- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera, Transform)
--- @return (string) The component type as a string
+-- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform)
+-- @return (string) The component type as a string with the correct case
 function Daneel.Debug.CheckComponentType(componentType)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckComponentType", componentType)
     local errorHead = "Daneel.Debug.CheckComponentType(componentType) : "
@@ -246,6 +246,28 @@ function Daneel.Debug.CheckComponentType(componentType)
     return componentType
 end
 
+-- Check the value of 'assetType' and throw error if it is not one of the valid asset types or objects.
+-- @param assetType (string, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document)
+-- @return (string) The asset type as a string with the correct case
+function Daneel.Debug.CheckAssetType(assetType)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckAssetType", assetType)
+    local errorHead = "Daneel.Debug.CheckAssetType(assetType) : "
+    Daneel.Debug.CheckArgType(assetType, "assetType", {"string", unpack(table.getvalues(Daneel.config.assetObjects))}, errorHead)
+
+    -- if assetType is an object
+    if type(assetType) ~= "string" then
+        assetType = table.getkey(Daneel.config.assetObjects, assetType)
+    end
+
+    local assetTypes = Daneel.config.assetTypes
+    assetType = Daneel.Utilities.CaseProof(assetType, assetTypes)
+    if not assetType:isoneof(assetTypes) then
+        Daneel.Debug.PrintError(errorHead.."Argument 'assetType' with value '"..assetType.."' is not one of the valid asset types : "..table.concat(assetTypes, ", "))
+    end
+
+    Daneel.Debug.StackTrace.EndFunction("Daneel.Debug.CheckAssetType", assetType)
+    return assetType
+end
 
 ----------------------------------------------------------------------------------
 -- StackTrace
