@@ -200,7 +200,7 @@ While the mouse hovers a gameObject, if you press one of the buttons registered 
 
 ##  List of functions
 
-[See the full scripting reference][daneelscriptingreference] for full explanation on arguments and returned values.  
+[See the full scripting reference][daneelscriptingreference] for full explanation on arguments and returned values. 
 Arguments between square brackets are optional.
 
 ### Asset
@@ -238,7 +238,6 @@ Arguments between square brackets are optional.
 * Daneel.Events.Listen(eventName, function) / Daneel.Events.Listen(eventName, gameObject[, functionName, broadcast])
 * Daneel.Events.StopListen(eventName, functionOrGameObject)
 * Daneel.Events.Fire(eventName[, ...])
-
 
 ### Daneel.Utilities
 
@@ -280,15 +279,6 @@ Arguments between square brackets are optional.
     * gameObject:DestroyModelRenderer()
     * gameObject:DestroyMapRenderer()
     * gameObject:DestroyCamera()
-
-### GUILabel
-
-* GUILabel.New(name[, params])
-* guiLabel:Refresh()
-* guiLabel:SetPosition()
-* guiLabel:SetScale(scale)
-* guiLabel:SetText(text)
-* guiLabel:Destroy()
 
 ### math
 

@@ -5,14 +5,6 @@ end
 
 Daneel.defaultConfig = {
 
-    hudCameraName = "HUD Camera",
-    hudCameraGo = nil, -- set in DaneelBehavior.Start()
-    hudCameraOrthographicScale = "10",
-    guiLabelMapName = "Daneel/GUILabelMap",
-
-    --charactersModelPath = "Daneel/Characters",
-
-
     -- StackTrace
     stackTraceLength = 10,
     
@@ -57,7 +49,7 @@ Daneel.defaultConfig = {
     
 
     -- Triggers
-    triggerableGameObjects = {}
+    triggerableGameObjects = {},
 
 
     -- Input
