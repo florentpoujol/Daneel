@@ -5,10 +5,6 @@ end
 
 Daneel.defaultConfig = {
 
-    -- StackTrace
-    stackTraceLength = 10,
-
-
     -- Objects (keys = name, value = object)
     assetOjects = {
         Script = Script,
@@ -20,20 +16,13 @@ Daneel.defaultConfig = {
         Scene = Scene,
         Document = Document
     },
-    
+
     componentObjects = {
         ScriptedBehavior = ScriptedBehavior,
         ModelRenderer = ModelRenderer,
         MapRenderer = MapRenderer,
         Camera = Camera,
         Transform = Transform,
-    },
-    
-    -- Correspondance between the component type (the keys) and the asset type (the values)
-    componentTypeToAssetType = {
-        ScriptedBehavior = "Script",
-        ModelRenderer = "Model",
-        MapRenderer = "Map",
     },
     
     craftStudioObjects = {
@@ -51,18 +40,10 @@ Daneel.defaultConfig = {
     },
 
 
-    
-
     -- Triggers
     -- list of gameObjects check for rpoximity by the triggers
-    -- filled in TriggerableGameObject script
+    -- filled in the TriggerableGameObject script
     triggerableGameObjects = {},
-
-
-    -- Input
-    input = {
-        buttons = {}
-    }
 }
 
 

@@ -7,10 +7,7 @@ Component.__index = Component
 -- Set the key __index and __newindex on all components objects
 function Component.Init()
     local components = Daneel.config.componentObjects
-
     for componentType, object in pairs(components) do
-
-        setmetatable(object, Component)
 
         if componentType ~= "Script" then
             -- component instances have the coresponding object (ie :ModelRenderer for a ModelRenderer instance)
@@ -51,51 +48,39 @@ function Component.Init()
         end
     end
 
-    -- Dynamic getters on ScriptedBehaviors
-    function Script.__index(scriptAsset, key)
-        local funcName = "Get"..key:ucfirst()
-        
-        if rawget(scriptAsset, funcName) ~= nil then
-            return scriptAsset[funcName](scriptAsset)
-        elseif rawget(scriptAsset, key) ~= nil then
-            return scriptAsset[key]
-        end
-        
-        -- not found on the behavior, look in the Script
-        -- note that this alow to override (bypass) Script functions in Behaviors
-        if Script[funcName] ~= nil then
-            return Script[funcName](scriptAsset)
-        elseif Script[key] ~= nil then
-            return Script[key]
-        end
-        
-        return rawget(scriptAsset, key)
-    end
+    -- Dynamic getters and setter on Scripts
+    for i, path in ipairs(Daneel.config.scriptPaths) do
+        local script = Asset.Get(path, "Script")
 
-    -- it seems I can't make dynamic setters works on ScriptedBehaviors
-end
-
---[[
-       -- Dynamic Setters
-        object["__newindex"] = function(t, key, value)
-            local funcName = "Set"..key:ucfirst()
-            
-            pint(t, key, value, funcName)
-            
-            if object[funcName] ~= nil then
-                return object[funcName](t, value)
-            end
-            
-            if object == Script then
-                if t[funcName] ~= nil then
-                    return t[funcName](t, value)
+        if script ~= nil then
+            -- Dynamic getters
+            function script.__index(scriptedBehavior, key)
+                local funcName = "Get"..key:ucfirst()
+                              
+                if script[funcName] ~= nil then
+                    return script[funcName](scriptedBehavior)
+                elseif script[key] ~= nil then
+                    return script[key]
                 end
+                
+                return rawget(scriptedBehavior, key)
             end
-            
-            return rawset(t, key, value)
-        end
-        ]]
 
+            -- Dynamic setters
+            function script.__newindex(scriptedBehavior, key, value)
+                local funcName = "Set"..key:ucfirst()
+                              
+                if script[funcName] ~= nil then
+                    return script[funcName](scriptedBehavior, value)
+                end
+                
+                return rawset(scriptedBehavior, key, value)
+            end
+        else
+            print("WARNING : item n°"..i.." with value '"..path.."' in Daneel.config.scriptPaths is not a valid script path.")
+        end
+    end
+end
 
 --- Apply the content of the params argument to the component in argument.
 -- @param component (Scriptedbehavior, ModelRenderer, MapRenderer, Camera or Transform) The component
@@ -118,6 +103,7 @@ function Component.Set(component, params)
     Daneel.Debug.StackTrace.EndFunction("Component.Set", component)
     return component
 end
+
 
 
 ----------------------------------------------------------------------------------
