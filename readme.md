@@ -155,9 +155,13 @@ Just set the variable of the same name as the component with the first letter lo
 
 You can also mass-set existing components on gameObject via `gameObject:SetComponent()` or its helpers (`SetModelRenderer()` and the likes).
     
-    self.gameObject:SetMapRenderer([params])
-    -- or, with the dynamic access to the components
-    self.gameObject.mapRenderer:Set([params])
+    self.gameObject:SetMapRenderer({params})
+    
+    -- or (with the dynamic component getters)
+    self.gameObject.mapRenderer:Set({params})
+
+    -- or even (with the dynamic component setters) (don't work for ScriptedBehaviors)
+    self.gameObject.mapRenderer = {params}
 
 **ScriptedBehaviors**
 
@@ -167,18 +171,18 @@ This table may contains the scripts name or asset of new ScriptedBehaviors as va
 Existing ScriptedBehaviors may also be set via their name or alias.
 
 
+## Events
+
+Daneel provide a flexible event system that allows to run functions whenever some events happens during runtime.
+You can register any function to be called or messages to be sent on gameObjects whenever an event will be fired.
+
+
 ## Raycasting
 
 GameObject who have the `CastableGameObject` ScriptedBehavior are known as **castable gameObjects**.  
 The **RaycastHit** object stores the information regarding the collision between a ray and a gameObject. It may contains the keys *distance*, *normal*, *hitBlockLocation*, *adjacentBlockLocation*, *gameObject* and *component*.
 
 The function `ray:Cast([gameObjects])` cast the ray against all castable gameObjects (or against the provided set of gameObjects) and returns a table of RaycastHit (which wil be empty if no gameObjects have been hit).
-
-
-## Events
-
-Daneel provide a flexible event system that allows to run functions whenever some events happens (are fired) at runtime.
-You can register any function to be called whenever an event will be fired. You can also register a gameObject to be send a message to when the event is fired.
 
 
 ## Triggers
@@ -260,13 +264,13 @@ Arguments between square brackets are optional.
 * gameObject:GetChildren([recursive, includeSelf])
 * gameObject:BroadcastMessage(functionName[, data])
 
-* gameObject:AddComponent(componentType[, params, scriptedBehaviorParams])
+* gameObject:AddComponent(componentType[, params, scriptedBehaviorParams]) / gameObject:AddComponent("ScriptedBehavior", scriptNameorAsset[, params])
     * gameObject:AddScriptedBehavior(scriptNameOrAsset[, params])
     * gameObject:AddModelRenderer([params])
     * gameObject:AddMapRenderer([params])
     * gameObject:AddCamera([params])
 
-* gameObject:SetComponent(componentType, params)
+* gameObject:SetComponent(componentType, params) / gameObject:SetComponent("ScriptedBehavior", scriptNameorAsset, params)
     * gameObject:SetScriptedBehavior(scriptNameOrAsset, params)
     * gameObject:SetModelRenderer(params)
     * gameObject:SetMapRenderer(params)
