@@ -101,7 +101,6 @@ function Component.Set(component, params)
     end
 
     Daneel.Debug.StackTrace.EndFunction("Component.Set", component)
-    return component
 end
 
 
