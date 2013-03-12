@@ -5,9 +5,9 @@
 - finir readme sur les events et les boutton avec les mouseoverable
 - tester tout ça
 
+- ajouter exemple pour la stacktrace
 
 
-stacktrace endfunction sans devoir mettre le nom de la fonction
 
 voir pour Lua minifier
 

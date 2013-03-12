@@ -58,8 +58,9 @@ Daneel.defaultConfig = {
 
     -- Input
     input = {
+        -- list of the button name you defined in the Administration>Game Controls tab of your project
         buttons = {
-
+            "forward",
         }
     }
 }

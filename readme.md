@@ -88,13 +88,7 @@ For instance, passing false instead of the gameObject's name with `gameObject:Ge
 
 ### Daneel's data types
 
-The function `Daneel.Debug.GetType(object)` is an extension of `type()` and may returns any of the built-in Lua types or the name of any of the objects introduced by CraftStudio or Daneel : 
-
-* GameObject
-* ModelRenderer, MapRenderer, Camera, Transform
-* Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document
-* Ray, RaycastHit, Vector3, Plane, Quaternion
-* GUILabel
+The function `Daneel.Debug.GetType(object)` is an extension of `type()` and may returns any of the built-in Lua types or the name of any of the objects introduced by CraftStudio or Daneel : GameObject, ModelRenderer, MapRenderer, Camera, Transform, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document, Ray, RaycastHit, Vector3, Plane, Quaternion
 
 ### Stack Trace
 
