@@ -187,7 +187,7 @@ The function `ray:Cast([gameObjects])` cast the ray against all castable gameObj
 
 ## Triggers
 
-GameObject who have the `TriggerableGameObject` ScriptedBehavior are known as **triggerable gameObjects**. 
+GameObjects who have the `TriggerableGameObject` ScriptedBehavior are known as **triggerable gameObjects**. 
 Triggers are gameObjects that perform a spherical proximity check each frames against all triggerable gameObjects.  
 Triggers must have the `Trigger` ScriptedBehavior and you must set its `radius` public property.
 
@@ -199,13 +199,18 @@ Each of these functions receive a table as argument with the trigger gameObject 
 
 ## Mouse events
 
-GameObject who have the `MouseHoverableGameObject` ScriptedBehavior are known as **mousehoverable gameObjects**. They react when the are hovered by the mouse.
+GameObjects who have the `MouseHoverableGameObject` ScriptedBehavior are known as **mousehoverable gameObjects**. They react when they are hovered by the mouse.
 
 When a mousehoverable gameObject is hovered for the first frame (it is hovered this frame, but it wasn't the last frame), the message **OnMouseEnter** is sent on the gameObject.
 As long as the mouse stays over the gameObject, the message **OnMouseOver** is sent on the gameObject.
 The frame the mouse stop hovering over a mousehoverable gameObject (it is not hovered this frame but was hovered the last frame), the message **OnMouseExit** is send on the gameObject.
 
 While the mouse hovers a gameObject, if you press one of the buttons registered in `Daneel.config.input.buttons`, the message "OnMouseOverAnd[button name]Pressed" is sent on the gameObject
+
+
+## Hotkeys
+
+
 
 ---
 
@@ -223,12 +228,13 @@ Arguments between square brackets are optional.
     * Asset.GetMap(assetName)
     * Asset.GetTileSet(assetName)
     * Asset.GetScene(assetName)
-    * Asset.GetDocument(assetName)
     * Asset.GetSound(assetName)
+    * Asset.GetDocument(assetName)
 
 ### Component
 
 * Component.Set(component, params)
+* component:Destroy()
 
 ### Daneel.Debug
 
@@ -284,8 +290,6 @@ Arguments between square brackets are optional.
     * gameObject:GetCamera()
 
 * gameObject:Destroy()
-* component:Destroy()
-
 
 ### math
 

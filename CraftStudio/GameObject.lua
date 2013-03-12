@@ -372,6 +372,13 @@ function GameObject.AddComponent(gameObject, componentType, params, scriptedBeha
     if componentType == "ScriptedBehavior" then
         Daneel.Debug.CheckArgType(params, "params", {"string", "Script"}, errorHead)
         local script = params
+        if type(script) == "string" then
+            script = Asset.Get(script, "Script")
+            if script == nil then
+                Daneel.Debug.PrintError(errorHead.."Argument 'params' : Script asset with name '"..params.."' was not found.")
+            end
+        end
+
         Daneel.Debug.CheckOptionalArgType(scriptedBehaviorParams, "scriptedBehaviorParams", "table", errorHead)
         params = scriptedBehaviorParams
         component = gameObject:CreateScriptedBehavior(script)
@@ -450,6 +457,13 @@ function GameObject.SetComponent(gameObject, componentType, params, scriptedBeha
     if componentType == "ScriptedBehavior" then
         Daneel.Debug.CheckArgType(params, "params", {"string", "Script"}, errorHead)
         local script = params
+        if type(script) == "string" then
+            script = Asset.Get(script, "Script")
+            if script == nil then
+                Daneel.Debug.PrintError(errorHead.."Argument 'params' : Script asset with name '"..params.."' was not found.")
+            end
+        end
+
         Daneel.Debug.CheckArgType(scriptedBehaviorParams, "scriptedBehaviorParams", "table", errorHead)
         params = scriptedBehaviorParams
         component = gameObject:GetScriptedBehavior(script)
@@ -468,7 +482,7 @@ end
 --- Set the ScriptedBehavior component on the gameObject with the provided parameters.
 -- @param gameObject (GameObject) The gameObject
 -- @param params (table) A table of parameters to set the component with.
-function GameObject.SetScriptedBehavior(gameObject, scriptNameOrAsset, params)   
+function GameObject.SetScriptedBehavior(gameObject, scriptNameOrAsset, params)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.SetScriptedBehavior", gameObject, scriptNameOrAsset, params)
     local errorHead = "GameObject.SetScriptedBehavior(gameObject, scriptNameOrAsset, params) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)

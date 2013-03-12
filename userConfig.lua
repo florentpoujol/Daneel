@@ -14,8 +14,6 @@ Daneel.config = {
     },
 
     
-
-
     -- Input
     input = {
         buttons = {

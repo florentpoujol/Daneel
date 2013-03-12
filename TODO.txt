@@ -1,8 +1,6 @@
 
-- corrioger script dans addcomponent
-- verif script dans (add,set,get,destroy)
 
-- vérifier l'utiliser de DestroyComponent() -> juste mettre Destroy() sur Component
+- hotkeys : send events when hotkeys are pressed
 
 - finir readme sur les events et les boutton avec les mouseoverable
 - tester tout ça
