@@ -572,7 +572,7 @@ function GameObject.GetCamera(gameObject) end
 
 
 ----------------------------------------------------------------------------------
--- Destroy gameObjects and components
+-- Destroy gameObject
 
 
 --- Destroy the gameObject
@@ -580,119 +580,16 @@ function GameObject.GetCamera(gameObject) end
 function GameObject.Destroy(gameObject)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.Destroy", gameObject)
     local errorHead = "GameObject.Destroy(gameObject) : "
-    
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    
     CraftSudio.Destroy(gameObject)
     Daneel.Debug.StackTrace.EndFunction("GameObject.Destroy")
 end
-
-
---- Destroy a component from the gameObject.
--- Argument 'input' can be :
--- the component object (possible values : ScriptedBehavior, Model, Map or Camera),
--- the component type as a case-insensitive string (the function will destroy the first component of that type), 
--- the component instance (of type ScriptedBehavior, Model, Map or Camera),
--- or a script name or asset (string or Script) (the function will destroy the ScriptedBehavior that uses this Script),
--- @param gameObject (GameObject) The gameObject
--- @param input (mixed) See function description.
--- @param strict [optional default=false] (boolean) If true, returns an error when the function can't find the component to destroy.
--- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
-function GameObject.DestroyComponent(gameObject, input, strict)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.DestroyComponent", gameObject, input, strict)
-    local errorHead = "GameObject.DestroyComponent(gameObject, input[, strict]) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckOptionalArgType(strict, "strict", "boolean", errorHead)
-    if strict == nil then 
-        strict = false 
-    end
-
-    local inputType = Daneel.Debug.GetType(input)
-    local component = nil
-
-    -- input is component object ?
-    if table.containsvalue(Daneel.config.componentObjects, input) then
-        component = gameObject:GetComponent(
-            table.getkey(Daneel.config.componentObjects, input)
-        )
-    
-    -- input is component type ?
-    elseif input:isoneof(Daneel.config.componentTypes, true) then
-        component = gameObject:GetComponent(
-            Danel.Utilities.CaseProof(input, Daneel.config.componentTypes)
-        )
-
-    -- input is script name or asset ?
-    elseif inputType == "string" or inputType == "Script" then
-        component = gameObject:GetScriptedBehavior(input)
-    
-    -- at this point input must be component instance
-
-    -- not a component instance ?
-    elseif not inputType:isoneof(Daneel.config.componentTypes) then
-        Daneel.Debug.PrintError(errorHead.."Argument 'input' not correct. It is of type '"..inputType.."' with value '"..tostring(input).."'. Check the function description for allowed values.")
-    end
-
-  
-    if component == nil then
-        _error = errorHead.."Couldn't find the component to destroy on this gameObject."
-                
-        if strict then
-            Daneel.Debug.PrintError(_error)
-        else
-            print("WARNING : ".._error)
-            Daneel.Debug.StackTrace.EndFunction("GameObject.DestroyComponent", false)
-            return false
-        end
-    end
-
-    CraftStudio.Destroy(component)
-    Daneel.Debug.StackTrace.EndFunction("GameObject.DestroyComponent", true)
-    return true
-end
-
---- Destroy a ScriptedBehavior from the gameObject.
--- If argument 'scriptNameOrAsset' is set with a script name or a script asset, the function will try to destroy the ScriptedBehavior that use this script.
--- If the argument is not set, it will destroy the first ScriptedBehavior on this gameObejct
--- @param gameObject (GameObject) The gameObject
--- @param scriptNameOrAsset [optional default=ScriptedBehavior] (string or Script) The script name or asset.
--- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
-function GameObject.DestroyScriptedBehavior(gameObject, scriptNameOrAsset)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.DestroyScriptedBehavior", gameObject, scriptNameOrAsset)
-    local errorHead = "GameObject.DestroyScriptedBehavior(gameObject[, scriptNameOrAsset]) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckOptionalArgType(scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead)
-    
-    if scriptNameOrAsset == nil then
-        scriptNameOrAsset = "ScriptedBehavior"
-    end
-    
-    local success = gameObject:DestroyComponent(scriptNameOrAsset)
-    Daneel.Debug.StackTrace.EndFunction("GameObject.DestroyScriptedBehavior", success)
-    return success
-end
-
---- Destroy the first ModelRenderer from the gameObject.
--- @param gameObject (GameObject) The gameObject
--- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
-function GameObject.DestroyModelRenderer(gameObject) end
-
---- Destroy the first MapRenderer from the gameObject.
--- @param gameObject (GameObject) The gameObject
--- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
-function GameObject.DestroyMapRenderer(gameObject) end
-
---- Destroy the first Camera from the gameObject.
--- @param gameObject (GameObject) The gameObject
--- @return (boolean) True if the component has been succesfully destroyed, false otherwise.
-function GameObject.DestroyCamera(gameObject) end
 
 
 
 ----------------------------------------------------------------------------------
 
 function GameObject.Init()
-    
     for i, componentType in ipairs(Daneel.config.componentTypes) do
         
         -- AddComponent helpers
@@ -735,19 +632,6 @@ function GameObject.Init()
                 return component
             end
         end
-
-        -- DestroyComponent helpers
-        -- ie : gameObject:DestroyModelRenderer()
-        GameObject["Destroy"..componentType] = function(gameObject)
-            Daneel.Debug.StackTrace.BeginFunction("GameObject.Destroy"..componentType, gameObject)
-            local errorHead = "GameObject.Destroy"..componentType.."(gameObject) : "
-            Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-
-            local success = gameObject:DestroyComponent(componentType)
-            Daneel.Debug.StackTrace.EndFunction("GameObject.Destroy"..componentType, success)
-            return success
-        end
-
     end -- end for
 end
 
