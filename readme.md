@@ -160,7 +160,7 @@ You can also mass-set existing components on gameObject via `gameObject:SetCompo
     -- or (with the dynamic component getters)
     self.gameObject.mapRenderer:Set({params})
 
-    -- or even (with the dynamic component setters) (don't work for ScriptedBehaviors)
+    -- or even (with the dynamic component setters) (this does not works for ScriptedBehaviors)
     self.gameObject.mapRenderer = {params}
 
 **ScriptedBehaviors**
@@ -284,11 +284,8 @@ Arguments between square brackets are optional.
     * gameObject:GetCamera()
 
 * gameObject:Destroy()
-* gameObject:DestroyComponent(input[, strict])
-    * gameObject:DestroyScriptedBehavior(scriptNameOrAsset)
-    * gameObject:DestroyModelRenderer()
-    * gameObject:DestroyMapRenderer()
-    * gameObject:DestroyCamera()
+* component:Destroy()
+
 
 ### math
 

@@ -103,6 +103,16 @@ function Component.Set(component, params)
     Daneel.Debug.StackTrace.EndFunction("Component.Set", component)
 end
 
+--- Destory the provided component, removing it from the gameObject
+-- @param component (ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform) The component
+function Component.Destroy(component)
+    Daneel.Debug.StackTrace.BeginFunction("Component.Destroy(component)", component)
+    local errorHead = "Component.Destroy(component) : "
+    Daneel.Debug.CheckArgType(component, "component", {"ScriptedBehavior", "ModelRenderer", "MapRenderer", "Camera", "Transform"}, errorHead)
+    CraftStudio.Destroy(component)
+    Daneel.Debug.StackTrace.EndFunction("Component.Destroy(component)")
+end
+
 
 
 ----------------------------------------------------------------------------------
