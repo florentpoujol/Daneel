@@ -26,6 +26,21 @@ function Behavior:Update()
                 else
                     -- already in this trigger
                     gameObject:SendMessage("OnTriggerStay", {gameObject = self.gameObject})
+
+                    -- check inputs while in trigger
+                    for i, buttonName in ipairs(Daneel.config.input.buttons) do
+                        if CraftStudio.Input.IsButtonDown(buttonName) then
+                            gameObject:SendMessage("OnTriggerStayAnd"..buttonName:ucfirst().."ButtonDown", {gameObject = self.gameObject})
+                        end
+
+                        if CraftStudio.Input.WasButtonJustPressed(buttonName) then
+                            gameObject:SendMessage("OnTriggerStayAnd"..buttonName:ucfirst().."ButtonJustPressed", {gameObject = self.gameObject})
+                        end
+
+                        if CraftStudio.Input.WasButtonJustReleased(buttonName) then
+                            gameObject:SendMessage("OnTriggerStayAnd"..buttonName:ucfirst().."ButtonJustReleased", {gameObject = self.gameObject})
+                        end
+                    end
                 end
 
             else

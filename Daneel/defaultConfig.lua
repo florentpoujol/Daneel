@@ -55,12 +55,15 @@ Daneel.defaultConfig = {
     -- filled in the TriggerableGameObject script
     triggerableGameObjects = {},
 
+    -- list of gameObject that react to the mouse input
+    mousehoverableGameObjects = {},
+
 
     -- Input
     input = {
         -- list of the button name you defined in the Administration>Game Controls tab of your project
         buttons = {
-            "forward",
+            
         }
     }
 }
