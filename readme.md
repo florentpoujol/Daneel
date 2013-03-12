@@ -167,11 +167,36 @@ Existing ScriptedBehaviors may also be set via their name or alias.
 
 ## Events
 
-Daneel provide a flexible event system that allows to run functions whenever some events happens during runtime.
-You can register any function (global, local or Behavior functions) to be called or messages to be sent on gameObjects whenever an event is be fired.  
+Daneel provide a flexible event system that allows to run functions or messages on gameObjects whenever some events happens during runtime.
+You can register any function (global, local or Behavior functions) to be called whenever an event is be fired (the function is said to listen to the event).  
+Any parameters may be passed to the function when the event is fired. 
 Ie :
+    
+    local function ALocalFunction(text)
+        print(text)
+    end
 
     function Behavior:Awake()
+        Daneel.Event.Listen("EventName", ALocalFunction) -- same for global functions
+        Daneel.Event.Listen("EventName", self.APublicFunction) -- do not add the parenthesis after the function name
+
+        -- to fire the event EventName, just call the Fire() function
+        -- and optionally pass the argument(s) after the event name
+        Daneel.Event.Fire("EventName", "Brace for this event !")
+    end
+
+    function Behavior:APublicFunction(text)
+        print(text)
+    end
+
+You can also make gameObjects to listen to events. By default, the message "On[Event name]" will be sent (and optionnaly broadcasted) to that gameObject.
+Ie :
+    
+    function Behavior:Awake()
+        Daneel.Event.Listen("EventName", self.gameObject) -- the message "OnEventName" will be sent to this gameObject only
+        Daneel.Event.Listen("EventName", self.gameObject, "AnotherMessage") -- the message "AnotherMessage" will be sent to this gameObject only
+        Daneel.Event.Listen("EventName", self.gameObject, "AnotherMessage", true) -- the message "AnotherMessage" will be sent to this gameObject and all of its children
+    end
 
 
 ## Raycasting
@@ -179,7 +204,7 @@ Ie :
 GameObject who have the `CastableGameObject` ScriptedBehavior are known as **castable gameObjects**.  
 The **RaycastHit** object stores the information regarding the collision between a ray and a gameObject. It may contains the keys *distance*, *normal*, *hitBlockLocation*, *adjacentBlockLocation*, *gameObject* and *component*.
 
-The function `ray:Cast([gameObjects])` cast the ray against all castable gameObjects (or against the provided set of gameObjects) and returns a table of RaycastHit (which wil be empty if no gameObjects have been hit).
+The function `ray:Cast([gameObjects])` cast the ray against all castable gameObjects (or against the provided set of gameObjects) and returns a table of RaycastHit (which will be empty if no gameObjects have been hit).
 
 
 ## Button setting in the config
