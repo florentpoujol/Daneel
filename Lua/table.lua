@@ -2,27 +2,6 @@
 -- Built-in table have no metatable
 -- The table.new() function add the 'table' object as the metatable
 
---- Allow to use .length as a shortcut for the length method
--- @param t (table) The Table
--- @param key (string) The key
-function table.__index(t, key) 
-    if key == "length" then
-        return table.length(t)
-    end
-
-    return rawget(table, key)
-end
-
---- Allow to do table1 + table2, shortcut for table.merge()
--- @param t1 (table) The left table
--- @param t2 (table) The right table
--- @return t (table) The new table
-function table.__add(t1, t2)
-    Daneel.Debug.StackTrace.BeginFunction("table.__add", t1, t2)
-    local t = table.merge(t1, t2)
-    Daneel.Debug.StackTrace.EndFunction("table.__add", t)
-    return t
-end
 
 --- Constructor for dynamic tables that allow to use the functions in the table library on the table copies.
 -- @param ... [optional] (mixed) A single table, or 0 or more values to fill the new table with.
