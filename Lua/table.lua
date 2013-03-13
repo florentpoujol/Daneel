@@ -2,6 +2,8 @@
 -- Built-in table have no metatable
 -- The table.new() function add the 'table' object as the metatable
 
+table.__index = table
+
 --- Constructor for dynamic tables that allow to use the functions in the table library on the table copies.
 -- @param ... [optional] (mixed) A single table, or 0 or more values to fill the new table with.
 -- @return (table) The new table.
@@ -299,7 +301,7 @@ end
 -- @return (table) The table
 function table.removevalue(t, value, singleRemove)
     Daneel.Debug.StackTrace.BeginFunction("table.removevalue", t, values, singleRemove)
-    local errorHead = "table.removevalue(t, value[, singleRemove]) : "
+    local errorHead = "table.removevalue(table, value[, singleRemove]) : "
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
     Daneel.Debug.CheckOptionalArgType(singleRemove, "singleRemove", "boolean", errorHead)
     
@@ -330,7 +332,7 @@ end
 -- @return (table) The keys
 function table.getkeys(t)
     Daneel.Debug.StackTrace.BeginFunction("table.getkeys", t)
-    local errorHead = "table.getkeys(t) : "
+    local errorHead = "table.getkeys(table) : "
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
 
     local keys = table.new()
@@ -364,7 +366,7 @@ end
 -- @param value (mixed) The value
 function table.getkey(t, value)
     Daneel.Debug.StackTrace.BeginFunction("table.getkey", t, value)
-    local errorHead = "table.getkey(t, value) : "
+    local errorHead = "table.getkey(table, value) : "
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
 
     local key = nil

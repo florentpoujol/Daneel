@@ -72,7 +72,14 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
     --
 
     argType = Daneel.Debug.GetType(argument)
-    if not argType:isoneof(expectedArgumentTypes) then
+    local isOfExpectedType = false
+    for i, expectedType in ipairs(expectedArgumentTypes) do
+        if argType == expectedType then
+            isOfExpectedType = true
+        end
+    end
+    
+    if isOfExpectedType == false then
         Daneel.Debug.PrintError(_errorHead.."Argument '"..argumentName.."' is of type '"..argumentType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..errorEnd)
     end
 end
@@ -84,6 +91,10 @@ end
 -- @param errorHead [optional] (string) The begining of the error message
 -- @param errorEnd [optional] (string) The end of the error message
 function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd)
+    if argument == nil then
+        return
+    end
+
     local _errorHead = "Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd) : "
     
     local argType = type(argumentName)
@@ -117,7 +128,14 @@ function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgum
     --
 
     argType = Daneel.Debug.GetType(argument)
-    if argType ~= nil and not argType:isoneof(expectedArgumentTypes) then  
+    local isOfExpectedType = false
+    for i, expectedType in ipairs(expectedArgumentTypes) do
+        if argType == expectedType then
+            isOfExpectedType = true
+        end
+    end
+    
+    if isOfExpectedType == false then
         Daneel.Debug.PrintError(_errorHead.."Optional argument '"..argumentName.."' is of type '"..argumentType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..errorEnd)
     end
 end
@@ -232,7 +250,7 @@ function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
     local msg = "- "*Daneel.Debug.StackTrace.depth.." "..functionName.."("
 
     if #arg > 0 then
-        for argument in ipairs(arg) do
+        for i, argument in ipairs(arg) do
             msg = msg..tostring(argument)..", "
         end
 
@@ -248,28 +266,20 @@ end
 -- @param functionName (string) The function name
 -- @param ... [optional] (mixed) Variable returned by the function
 function Daneel.Debug.StackTrace.EndFunction(functionName, ...)
-    if Daneel.Debug.StackTrace.depth == 2 then
-        -- the depth is now down to 1 a full serie a calls has been done without problems
-        -- time to clear all messages
-        Daneel.Debug.StackTrace.messages = {}
-        Daneel.Debug.StackTrace.depth = 1
-        return
-    end
-
     local errorHead = "Daneel.Debug.StackTrace.EndFunction(functionName[, ...]) : "
     Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
 
     local msg = "- "*Daneel.Debug.StackTrace.depth.." "..functionName.."() returns "
 
     if #arg > 0 then
-        for argument in ipairs(arg) do
+        for i, argument in ipairs(arg) do
             msg = msg..tostring(argument)..", "
         end
 
         msg = msg:sub(1, #msg-2)
     end
 
-    table.insert(Daneel.Debug.StackTrace.messages, msg)
+    Daneel.Debug.StackTrace.messages[Daneel.Debug.StackTrace.depth] = nil
     Daneel.Debug.StackTrace.depth = Daneel.Debug.StackTrace.depth - 1
 end
 
@@ -280,6 +290,9 @@ function Daneel.Debug.StackTrace.Print()
     print("~~~~~ Daneel.Debug.StackTrace ~~~~~ Begin ~~~~~")
 
     for i, msg in ipairs(messages) do
+        if i < 10 then
+            i = "0"..i
+        end
         print("#"..i.." "..msg)
     end
 

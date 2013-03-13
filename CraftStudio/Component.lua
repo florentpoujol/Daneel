@@ -49,7 +49,7 @@ function Component.Init()
     end
 
     -- Dynamic getters and setter on Scripts
-    for i, path in ipairs(Daneel.config.scriptPaths) do
+    for i, path in ipairs(Daneel.config.scripts) do
         local script = Asset.Get(path, "Script")
 
         if script ~= nil then

@@ -6,7 +6,7 @@ end
 Daneel.defaultConfig = {
 
     -- Objects (keys = name, value = object)
-    assetOjects = {
+    assetObjects = {
         Script = Script,
         Model = Model,
         ModelAnimation = ModelAnimation,
@@ -39,10 +39,9 @@ Daneel.defaultConfig = {
         Asset = Asset,
     },
 
-
     -- Cast
     castableGameObjects = {},
-
+    
     -- Triggers
     -- list of gameObjects check for rpoximity by the triggers
     -- filled in the TriggerableGameObject script
@@ -70,26 +69,14 @@ Daneel.defaultConfig = {
     },
 }
 
+Daneel.defaultConfig.__index = Daneel.defaultConfig
+
 
 -- called from Daneel.Awake()
 function Daneel.defaultConfig.Init()
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.defaultConfig.Init")
     Daneel.config = table.new(Daneel.config)
     setmetatable(Daneel.config, Daneel.defaultConfig)
-
-   
-    -- allow dynamic getters on Daneel.defaultConfig
-    function Daneel.defaultConfig.__index(t, key)
-        local funcName = "Get"..key:ucfirst()
-        
-        if Daneel.defaultConfig[funcName] ~= nil then
-            return Daneel.defaultConfig[funcName](t)
-        elseif Daneel.defaultConfig[key] ~= nil then
-            return Daneel.defaultConfig[key] -- have to return the function here, not the function return value !
-        end
-        
-        return rawget(t, key)
-    end
-
 
     -- 
     Daneel.defaultConfig.assetTypes = table.getkeys(Daneel.defaultConfig.assetObjects)
@@ -101,7 +88,8 @@ function Daneel.defaultConfig.Init()
     t = t:merge(Daneel.defaultConfig.craftStudioObjects)
     t = t:merge(Daneel.defaultConfig.daneelObjects)
     Daneel.defaultConfig.allObjects = t
-
+    
+    Daneel.Debug.StackTrace.EndFunction("Daneel.defaultConfig.Init")
 end
 
 

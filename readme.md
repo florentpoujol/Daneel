@@ -100,7 +100,7 @@ The function `Daneel.Debug.GetType(object)` is an extension of Lua's built-in `t
 ### Stack Trace
 
 When an error is triggered by `Danel.Debug.PrintError(errorMessage)`, Daneel print a Stack Trace in the Runtime Report.
-The Stack Trace nicely shows the histoy of function calls whithin the framework and display values recieved as argument as well as returned values.
+The Stack Trace nicely shows the histoy of function calls whithin the framework that lead to the error and display values recieved as argument as well as returned values.
 
 
 ## Mass-setting on gameObjects and components
