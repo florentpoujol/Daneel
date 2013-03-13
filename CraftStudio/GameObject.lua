@@ -520,7 +520,7 @@ local OriginalGetComponent = GameObject.GetComponent
 -- @param componentType (string, ModelRenderer, MapRenderer, Camera, Transform)
 -- @param scriptNameOrAsset [optional] (string or Script) The script name or asset. This argument is mandatory if componentType is "ScriptedBehavior".
 -- @return (ScriptedBehavior, ModelRenderer, MapRenderer, Camera) The component instance.
-function GameObject.GetComponent(gameObject, componentType[, scriptNameOrAsset])
+function GameObject.GetComponent(gameObject, componentType, scriptNameOrAsset)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.GetComponent", gameObject, componentType, scriptNameOrAsset)
     local errorHead = "GameObject.GetComponent(gameObject, componentType[, scriptNameOrAsset]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)

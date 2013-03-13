@@ -2,23 +2,17 @@
 -- Built-in table have no metatable
 -- The table.new() function add the 'table' object as the metatable
 
-
 --- Constructor for dynamic tables that allow to use the functions in the table library on the table copies.
 -- @param ... [optional] (mixed) A single table, or 0 or more values to fill the new table with.
 -- @return (table) The new table.
 function table.new(...)
-    local t = nil
-
-    if arg == nil then
-        Daneel.Debug.StackTrace.BeginFunction("table.new")
-        t = setmetatable({}, table)
-        Daneel.Debug.StackTrace.EndFunction("table.new", t)
-        return t
-    end
+    local t = {}
 
     if arg[2] ~= nil then -- at least two arguments
         Daneel.Debug.StackTrace.BeginFunction("table.new", unpack(arg))
         t = arg
+    elseif arg[1] == nil then
+       Daneel.Debug.StackTrace.BeginFunction("table.new")
     else
         -- only one argument, must be a table
         Daneel.Debug.StackTrace.BeginFunction("table.new", arg[1])
@@ -60,7 +54,7 @@ function table.containskey(t, p_key)
     
     local containsKey = false
 
-    for key, value in pairs(t)
+    for key, value in pairs(t) do
         if p_key == key then
             containsKey = true
             break

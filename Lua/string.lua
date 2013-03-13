@@ -36,9 +36,9 @@ end
 -- @return (boolean) True if 's' is found in 't', false otherwise
 function string.isoneof(s, t, ignoreCase)
     Daneel.Debug.StackTrace.BeginFunction("string.isoneof", s, t, ignoreCase)
-    local errorHead = "string.isoneff(string, table[, ignoreCase]) : "
+    local errorHead = "string.isoneof(string, table[, ignoreCase]) : "
     Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
-    Daneel.Debug.CheckArgType(t, "t", "table", errorHead)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
     Daneel.Debug.CheckOptionalArgType(ignoreCase, "ignoreCase", "boolean", errorHead)
     local isOneOf = table.constainsvalue(t, s, ignoreCase)
     Daneel.Debug.StackTrace.EndFunction("string.isoneof", isOneOf)

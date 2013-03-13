@@ -39,20 +39,20 @@ Daneel.Debug = {}
 -- @param errorHead [optional] (string) The begining of the error message
 -- @param errorEnd [optional] (string) The end of the error message
 function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd)
-    local _errorHead = "Daneel.Debug.CheckArgType(arg, argName, expectedArgumentTypes[, errorHead, errorEnd]) : "
+    local _errorHead = "Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes[, errorHead, errorEnd]) : "
     
-    local argType = type(argName)
+    local argType = type(argumentName)
     if argType ~= "string" then
-        error(_errorHead.."Argument 'argName' is of type '"..argType.."' with value '"..tostring(argName).."' instead of 'string'.")
+        error(_errorHead.."Argument 'argumentName' is of type '"..argType.."' with value '"..tostring(argumentName).."' instead of 'string'.")
     end
 
-    argType = type(expectedArgTypes)
+    argType = type(expectedArgumentTypes)
     if argType ~= "string" and argType ~= "table" then
-        error(_errorHead.."Argument 'expectedArgTypes' is of type '"..argType.."' with value '"..tostring(expectedArgTypes).."' instead of 'string' or 'table'.")
+        error(_errorHead.."Argument 'expectedArgumentTypes' is of type '"..argType.."' with value '"..tostring(expectedArgumentTypes).."' instead of 'string' or 'table'.")
     end
 
     if argType == "string" then
-        expectedArgTypes = {expectedArgTypes}
+        expectedArgumentTypes = {expectedArgumentTypes}
     end
 
     argType = type(errorHead)
@@ -71,7 +71,7 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
 
     --
 
-    argType = Daneel.Debug.GetType(arg)
+    argType = Daneel.Debug.GetType(argument)
     if not argType:isoneof(expectedArgumentTypes) then
         Daneel.Debug.PrintError(_errorHead.."Argument '"..argumentName.."' is of type '"..argumentType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..errorEnd)
     end
@@ -84,11 +84,11 @@ end
 -- @param errorHead [optional] (string) The begining of the error message
 -- @param errorEnd [optional] (string) The end of the error message
 function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd)
-    local _errorHead = "Daneel.Debug.CheckOptionalArgType(arg, argName, expectedArgumentTypes, errorHead, errorEnd) : "
+    local _errorHead = "Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd) : "
     
-    local argType = type(argName)
+    local argType = type(argumentName)
     if argType ~= "string" then
-        error(_errorHead.."Argument 'argName' is of type '"..argType.."' with value '"..tostring(argName).."' instead of 'string'.")
+        error(_errorHead.."Argument 'argumentName' is of type '"..argType.."' with value '"..tostring(argumentName).."' instead of 'string'.")
     end
 
     argType = type(expectedArgTypes)
@@ -279,7 +279,7 @@ function Daneel.Debug.StackTrace.Print()
     
     print("~~~~~ Daneel.Debug.StackTrace ~~~~~ Begin ~~~~~")
 
-    for i, msg in iparis(messages) do
+    for i, msg in ipairs(messages) do
         print("#"..i.." "..msg)
     end
 
