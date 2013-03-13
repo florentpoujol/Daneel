@@ -43,7 +43,7 @@ end
 
 function Daneel.Update()
     -- triger an event whenever a registered button is pressed
-    for i, buttonName in ipairs(Daneel.config.input.buttons) do
+    for i, buttonName in ipairs(Daneel.config.buttons) do
         if CraftStudio.Input.IsButtonDown(buttonName) then
             Daneel.Events.Fire("On"..buttonName:ucfirst().."ButtonDown")
         end

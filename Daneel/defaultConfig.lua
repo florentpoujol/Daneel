@@ -40,15 +40,8 @@ Daneel.defaultConfig = {
     },
 
 
-    -- list of the Scripts path as value and optionaly the script alias as the key
-    -- It enabled dynamic getters and setters on these ScriptedBehaviors
-    -- and if the alias is set, allows to acces the ScriptedBehavior as a variable on the gameObjects
-    scripts = {
-        -- "fully-qualified Script path"
-        -- or
-        -- alias = "fully-qualified Script path"
-    },
-
+    -- Cast
+    castableGameObjects = {},
 
     -- Triggers
     -- list of gameObjects check for rpoximity by the triggers
@@ -59,13 +52,22 @@ Daneel.defaultConfig = {
     mousehoverableGameObjects = {},
 
 
-    -- Input
-    input = {
-        -- list of the button name you defined in the Administration>Game Controls tab of your project
-        buttons = {
-            
-        }
-    }
+    ----------------------------------------------------------------------------------
+    -- user config
+    
+    -- list of the Scripts path as value and optionaly the script alias as the key
+    -- It enabled dynamic getters and setters on these ScriptedBehaviors
+    -- and if the alias is set, allows to acces the ScriptedBehavior as a variable on the gameObjects
+    scripts = {
+        -- "fully-qualified Script path"
+        -- or
+        -- alias = "fully-qualified Script path"
+    },
+
+    -- list of the button name you defined in the Administration>Game Controls tab of your project
+    buttons = {
+        
+    },
 }
 
 

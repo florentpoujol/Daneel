@@ -5,7 +5,7 @@ end
 
 Daneel.Events = { events = {} }
 
--- Make the specified function listen to the specified event.
+--- Make the specified function listen to the specified event.
 -- The function will be called whenever the specified event will be fired.
 -- @param eventName (string) The event name.
 -- @param _function (function, string or GameObject) The function or the gameObject name or instance.
@@ -55,7 +55,7 @@ function Daneel.Events.Listen(eventName, _function, functionName, broadcast)
 end
 -- TODO check if a global function, registered several times for the same event is called several times
 
--- Make the specified function to stop listen to the specified event.
+--- Make the specified function to stop listen to the specified event.
 -- @param eventName (string) The event name.
 -- @param functionOrGameObject (function, string or GameObject) The function, or the gameObject name or instance.
 function Daneel.Events.StopListen(eventName, functionOrGameObject)
@@ -91,7 +91,7 @@ function Daneel.Events.StopListen(eventName, functionOrGameObject)
     Daneel.Debug.StackTrace.EndFunction("Daneel.Events.StopListen")
 end
 
--- Fire the specified event transmitting along all subsequent parameters to 'eventName' if some exists. 
+--- Fire the specified event transmitting along all subsequent parameters to 'eventName' if some exists. 
 -- All functions that listen to this event with Daneel.Events.Listen() will be called and receive all parameters.
 -- @param eventName (string) The event name.
 -- @param ... [optional] a list of parameters to pass along.

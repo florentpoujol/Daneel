@@ -7,24 +7,23 @@
 -- @param ... [optional] (mixed) A single table, or 0 or more values to fill the new table with.
 -- @return (table) The new table.
 function table.new(...)
-    local t = arg
-    
-    if t == nil then
+    local t = nil
+
+    if arg == nil then
         Daneel.Debug.StackTrace.BeginFunction("table.new")
         t = setmetatable({}, table)
         Daneel.Debug.StackTrace.EndFunction("table.new", t)
         return t
     end
 
-    Daneel.Debug.StackTrace.BeginFunction("table.new", unpack(arg))
-
-    t.n = nil
-    
-    if arg[2] == nil and type(arg[1]) == "table" then -- the only argument is the table
-        t = {}
-        for key,value in pairs(arg[1]) do
-            t[key] = value
-        end
+    if arg[2] ~= nil then -- at least two arguments
+        Daneel.Debug.StackTrace.BeginFunction("table.new", unpack(arg))
+        t = arg
+    else
+        -- only one argument, must be a table
+        Daneel.Debug.StackTrace.BeginFunction("table.new", arg[1])
+        Daneel.Debug.CheckArgType(arg[1], "...", "table", "table.new([...]) : ", "When passing only one argument, it must be a table.")
+        t = arg[1]
     end
 
     t = setmetatable(t, table)
@@ -38,10 +37,12 @@ end
 function table.copy(t)
     Daneel.Debug.StackTrace.BeginFunction("table.copy", t)
     Daneel.Debug.CheckArgType(t, "t", "table", "table.copy(table) : ")
-
-    t = table.new(t)
-    Daneel.Debug.StackTrace.EndFunction("table.copy", t)
-    return t
+    local t2 = table.new()
+    for key, value in pairs(t) do
+        t2[key] = value
+    end  
+    Daneel.Debug.StackTrace.EndFunction("table.copy", t2)
+    return t2
 end
 
 --- Tells wether the provided key is found within the provided table.

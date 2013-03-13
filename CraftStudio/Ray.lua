@@ -1,10 +1,5 @@
 
 
-local rayCallSyntaxError = "Function not called from a Ray. Your must use a colon ( : ) between the Ray instance and the method name. Ie : ray:"
-
-
--- list of castable gameObjects  that are checked for collision with a ray by Ray:Cast()
-Ray.castableGameObjects = {}
 
 -- Add a gameObject to the castableGameObject list.
 -- @param gameObject (GameObject) The gameObject to add to the list.
@@ -13,14 +8,14 @@ function Ray.RegisterCastableGameObject(gameObject)
     local errorHead = "Ray.RegisterCastableGameObject(gameObject) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
 
-    table.insert(Ray.castableGameObjects, gameObject)
+    table.insert(Daneel.config.castableGameObjects, gameObject)
     Daneel.Debug.StackTrace.EndFunction("Ray.RegisterCastableGameObject")
 end
 
 
 -- check the collision of the ray against all castable gameObject
 -- @param ray (Ray) The ray
--- @param gameObjects (table) [optional default=Ray.castableGameObjects] The set of gameObjects to cast the ray against
+-- @param gameObjects (table) [optional default=Daneel.config.castableGameObjects] The set of gameObjects to cast the ray against
 -- @return (table) The table of RaycastHits (will be empty if the ray didn't intersects anything)
 function Ray.Cast(ray, gameObjects)
     Daneel.Debug.StackTrace.BeginFunction("Ray.Cast", ray, gameObjects)
@@ -28,7 +23,7 @@ function Ray.Cast(ray, gameObjects)
     Daneel.Debug.CheckArgType(ray, "ray", "Ray", errorHead)
 
     if gameObjects == nil then
-        gameObjects = Ray.castableGameObjects
+        gameObjects = Daneel.config.castableGameObjects
     else
         gameObjects = Daneel.Debug.CheckArgType(gameObjects, "gameObjects", "table", errorHead)
     end

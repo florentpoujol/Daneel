@@ -4,7 +4,7 @@ if Daneel == nil then
 end
 
 Daneel.config = {
-    -- list of the Scripts path as value and optionaly the script alias as the key
+    -- List of the Scripts path as value and optionaly the script alias as the key
     -- It enabled dynamic getters and setters on these ScriptedBehaviors
     -- and if the alias is set, allows to acces the ScriptedBehavior as a variable on the gameObjects
     scripts = {
@@ -14,10 +14,8 @@ Daneel.config = {
     },
 
     
-    -- Input
-    input = {
-        buttons = {
+    -- List of the button names as they appear in CraftStudio in the "Game Controls" tab
+    buttons = {
 
-        }
     }
 }

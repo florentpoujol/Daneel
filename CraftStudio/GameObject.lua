@@ -162,10 +162,6 @@ function GameObject.Set(gameObject, params)
             
             if component == nil then
                 component = gameObject:AddComponent(ComponentType)
-
-                if componentType == "scriptedBehavior" then
-                    component = 
-                end
             end
 
             component:Set(params[componentType])
@@ -211,26 +207,26 @@ local OriginalSetParent = GameObject.SetParent
 --- Set the gameOject's parent. 
 -- Optionnaly carry over the gameObject's local transform instead of the global one.
 -- @param gameObject (GameObject) The gameObject
--- @param parent (string or GameObject) The parent name or gameObject.
+-- @param parentNameOrObject (string or GameObject) The parent name or gameObject.
 -- @param keepLocalTransform [optional default=false] (boolean) Carry over the game object's local transform instead of the global one.
 -- @return (GameObject) The gameObject.
-function GameObject.SetParent(gameObject, parent, keepLocalTransform)
-    Daneel.Debug.StackTrace.EndFunction("GameObject.SetParent", gameObject, parent, keepLocalTransform)
-    local errorHead = "GameObject.SetParent(gameObject, parent[, keepLocalTransform]) : "
+function GameObject.SetParent(gameObject, parentNameOrObject, keepLocalTransform)
+    Daneel.Debug.StackTrace.EndFunction("GameObject.SetParent", gameObject, parentNameOrObject, keepLocalTransform)
+    local errorHead = "GameObject.SetParent(gameObject, parentNameOrObject[, keepLocalTransform]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckArgType(parent, "parent", {"string", "GameObject"}, errorHead)
+    Daneel.Debug.CheckArgType(parentNameOrObject, "parentNameOrObject", {"string", "GameObject"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(keepLocalTransform, "keepLocalTransform", "boolean", errorHead)
     
     if keepLocalTransform == nil then
         keepLocalTransform = false
     end
 
+    local parent = parentNameOrObject
     if type(parent) == "string" then
-        local parentName = parent
-        parent = GameObject.Get(parentName)
+        parent = GameObject.Get(parentNameOrObject)
 
         if parent == nil then
-            Daneel.Debug.PrintError(errorHead.."Argument 'parent' : Parent gameObject with name '"..parentName.."' was not found.")
+            Daneel.Debug.PrintError(errorHead.."Argument 'parent' : Parent gameObject with name '"..parentNameOrObject.."' was not found.")
         end
     end
       

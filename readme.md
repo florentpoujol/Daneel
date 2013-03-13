@@ -24,6 +24,12 @@ Some convention are observed throughout the framework :
 * Every optional boolean arguments default to false.
 
 
+## Configuration
+
+Some features are only available if a few configuration is done .  
+Currently, all that has to be done is to edit the `userConfig` script and make the list of the scripts and button names of your game.
+
+
 ## Dynamic getters and setters
 
 Getters and setters functions (functions that begins by Get or Set) may be used on gameOjects, components as if they were variables :
@@ -236,7 +242,8 @@ Ie :
 
 ## Mouse messages
 
-GameObjects who have the `MousehoverableGameObject` ScriptedBehavior are known as **mousehoverable gameObjects**. They react when they are hovered by the mouse.
+GameObjects who have the `MousehoverableGameObject` ScriptedBehavior are known as **mousehoverable gameObjects**. They react when they are hovered by the mouse.  
+The main camera of your scene must have the `CameraMouseOver` ScriptedBehavior.
 
 * When a mousehoverable gameObject is hovered for the first frame (it is hovered this frame, but it wasn't the last frame), the message `OnMouseEnter` is sent on the gameObject.
 * As long as the mouse stays over the gameObject, the message `OnMouseOver` is sent on the gameObject.
@@ -245,19 +252,29 @@ GameObjects who have the `MousehoverableGameObject` ScriptedBehavior are known a
 
 ## Hotkeys events
 
-Whenever you press one of the button whose name is set in `Daneel.config.input.buttons`, the events nammed `On[Button name]ButtonDown`, `On[Button name]ButtonJustPressed` and `On[Button name]ButtonJustReleased` are fired.
+Whenever you press one of the button whose name is set in `Daneel.config.buttons`, the events nammed `On[Button name]ButtonDown`, `On[Button name]ButtonJustPressed` and `On[Button name]ButtonJustReleased` are fired.
 
-The table `Daneel.config.input.buttons` may be filled with the button names that you defined in the `Administration > Game Controls` tab.
+The table `Daneel.config.buttons` may be filled with the button names that you defined in the `Administration > Game Controls` tab. Ie :
 
-Ie :
-
-    Daneel.config.input = {
+    Daneel.config = {
         buttons = {
             -- the list of the button names as they appear in CraftStudio in the "Game Controls" tab :
             "Action",
             "fire",
         }
     }
+
+
+## Tables as object
+
+Tables returned by table.new() or any new table functions that returns a table introduced by Daneel may be used in an object-oriented way. You can also turn any standard table to a dynamic table by passing it as argument to table.new().  
+Ie :
+
+    -- you always can do this :
+    table.insert(myTable, value)
+
+    -- now, you can also do this (like with strings)
+    myTable:insert(value)
 
 
 ---
@@ -290,10 +307,10 @@ Arguments between square brackets are optional.
 * Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectArgumentType[, errorHead, errorEnd])
 * Daneel.Debug.CheckComponentType(componentType)
 * Daneel.Debug.CheckAssetType(assetType)
-  
+
 * Daneel.Debug.GetType(object)
 * Daneel.Debug.PrintError(message)
-  
+
 * Daneel.Debug.StackTrace.BeginFunction(functionName[, ...])
 * Daneel.Debug.StackTrace.EndFunction(functionName[, ...])
 * Daneel.Debug.StackTrace.Print()
@@ -310,8 +327,8 @@ Arguments between square brackets are optional.
 
 ### GameObject
 
-* GameObject.New(name[, params])
-* GameObject.Instanciate(name, sceneName[, params])
+* GameObject.New(name[, parentNameOrObject]) / GameObject.New(name[, params])
+* GameObject.Instanciate(name, sceneNameOrObject[, parentNameOrObject]) / GameObject.Instanciate(name, sceneNameOrObject[, params])
 * GameObject.Get(name)
 
 * gameObject:SetParent(parentNameOrObject[, keepLocalTransform])
