@@ -22,32 +22,17 @@ function Behavior:Update()
                 if self.gameObjectsInRange:containsvalue(gameObject) == false then
                     -- just entered the trigger
                     self.gameObjectsInRange:insert(gameObject)
-                    gameObject:SendMessage("OnTriggerEnter", {gameObject = self.gameObject})
+                    gameObject:SendMessage("OnTriggerEnter", self.gameObject)
                 else
                     -- already in this trigger
-                    gameObject:SendMessage("OnTriggerStay", {gameObject = self.gameObject})
-
-                    -- check inputs while in trigger
-                    for i, buttonName in ipairs(Daneel.config.input.buttons) do
-                        if CraftStudio.Input.IsButtonDown(buttonName) then
-                            gameObject:SendMessage("OnTriggerStayAnd"..buttonName:ucfirst().."ButtonDown", {gameObject = self.gameObject})
-                        end
-
-                        if CraftStudio.Input.WasButtonJustPressed(buttonName) then
-                            gameObject:SendMessage("OnTriggerStayAnd"..buttonName:ucfirst().."ButtonJustPressed", {gameObject = self.gameObject})
-                        end
-
-                        if CraftStudio.Input.WasButtonJustReleased(buttonName) then
-                            gameObject:SendMessage("OnTriggerStayAnd"..buttonName:ucfirst().."ButtonJustReleased", {gameObject = self.gameObject})
-                        end
-                    end
+                    gameObject:SendMessage("OnTriggerStay", self.gameObject)
                 end
 
             else
                 -- was the gameObject still in this trigger the last frame ?
                 if self.gameObjectsInRange:containsvalue(gameObject) == true then
                     self.gameObjectsInRange = self.gameObjectsInRange:removevalue(gameObject)
-                    gameObject:SendMessage("OnTriggerExit", {gameObject = self.gameObject})
+                    gameObject:SendMessage("OnTriggerExit", self.gameObject)
                 end
             end
         else

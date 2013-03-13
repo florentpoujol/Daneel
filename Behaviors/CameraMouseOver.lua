@@ -10,21 +10,6 @@ function Behavior:Update()
             -- also on the user's input (clicks) while it hovers the gameObject
             if gameObject.onMouseOver == true then
                 gameObject:SendMessage("OnMouseOver")
-
-                -- check inputs while hovering
-                for i, buttonName in ipairs(Daneel.config.input.buttons) do
-                    if CraftStudio.Input.IsButtonDown(buttonName) then
-                        gameObject:SendMessage("OnMouseOverAnd"..buttonName:ucfirst().."ButtonDown")
-                    end
-
-                    if CraftStudio.Input.WasButtonJustPressed(buttonName) then
-                        gameObject:SendMessage("OnMouseOverAnd"..buttonName:ucfirst().."ButtonJustPressed")
-                    end
-
-                    if CraftStudio.Input.WasButtonJustReleased(buttonName) then
-                        gameObject:SendMessage("OnMouseOverAnd"..buttonName:ucfirst().."ButtonJustReleased")
-                    end
-                end
             else
                 gameObject.onMouseOver = true
                 gameObject:SendMessage("OnMouseEnter")

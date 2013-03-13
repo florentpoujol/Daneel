@@ -207,20 +207,6 @@ The ``RaycastHit` object stores the information regarding the collision between 
 The function `ray:Cast([gameObjects])` cast the ray against all castable gameObjects (or against the provided set of gameObjects) and returns a table of RaycastHit (which will be empty if no gameObjects have been hit).
 
 
-## Button setting in the config
-
-You may want to fill the `Daneel.config.input.buttons` table with the button names that you defined in the `Administration > Game Controls` tab. This will come handy when used with triggers, the mouse or hotkeys events.
-
-    -- in the config :
-    Daneel.config.input = {
-        buttons = {
-            -- the list of the button names as they appear in CraftStudio in the "Game Controls" tab :
-            "Action",
-            "fire",
-        }
-    }
-
-
 ## Trigger messages
 
 GameObjects who have the `TriggerableGameObject` ScriptedBehavior are known as **triggerable gameObjects**. They react when they are near triggers.  
@@ -231,19 +217,19 @@ Triggers must have the `Trigger` ScriptedBehavior and you must set its `radius` 
 * As long as a gameObject stays under a trigger's radius, the message `OnTriggerStay` is sent on the gameObject (each frame, by each trigger the gameObject is in range of).
 * The frame a gameObject leaves the trigger's radius (it is not in range this frame but was in range the last frame), the message `OnTriggerExit` is send on the gameObject.
 
-While the gameObject stays inside at least one trigger, if you press one of the buttons registered in `Daneel.config.input.buttons`, the messages `OnTriggerStayAnd[Button name]ButtonDown`, `OnTriggerStayAnd[Button name]ButtonJustPressed`, `OnTriggerStayAnd[Button name]ButtonJustReleased` are sent on the gameObject. The first letter of the button name is set uppercase. 
-
-Each of these functions receive a table as argument with the trigger gameObject as value of the `gameObject` key.
+Each of these functions receive the trigger gameObject as argument.
 
 Ie :
 
     -- in a ScriptedBehavior attached to a triggerable gameObjects :
     function Behavior:OnTriggerEnter(trigger)
-        print("The gameObject of name '"..self.gameObject.name.."' just reach the trigger of name '"..trigger.gameObject.name.."'.")
+        print("The gameObject of name '"..self.gameObject.name.."' just reach the trigger of name '"..trigger.name.."'.")
     end
 
-    function Behavior:OnTriggerStayAndActionButtonJustReleased(trigger)
-        print("The 'Action' button was just released while the gameObject of name '"..self.gameObject.name.."' is inside the trigger of name '"..trigger.gameObject.name.."'.")
+    function Behavior:OnTriggerStay(trigger)
+        if CraftStudio.Input.WasButtonJustRealeased("Action") then
+            print("The 'Action' button was just released while the gameObject of name '"..self.gameObject.name.."' is inside the trigger of name '"..trigger.name.."'.")
+        end
     end
     -- a typical use for this is any mechanism that the player can use if he is close enought and press a key
 
@@ -256,25 +242,22 @@ GameObjects who have the `MousehoverableGameObject` ScriptedBehavior are known a
 * As long as the mouse stays over the gameObject, the message `OnMouseOver` is sent on the gameObject.
 * The frame the mouse stop hovering over a mousehoverable gameObject (it is not hovered this frame but was hovered the last frame), the message `OnMouseExit` is send on the gameObject.
 
-While the mouse hovers a gameObject, if you press one of the buttons registered in `Daneel.config.input.buttons`, the messages `OnMouseOverAnd[Button name]ButtonDown`, `OnMouseOverAnd[Button name]ButtonJustPressed` and `OnMouseOverAnd[Button name]ButtonJustReleased` are sent on the gameObject. The first letter of the button name is set uppercase.
-
-Ie :
-
-    -- in a ScriptedBehavior attached to your mousehoverable gameObjects :
-    function Behavior:OnMouseOverAndLeftClickButtonDown()
-        print("The 'left click' button is down while the mouse hovers the gameObject of name '"..self.gameObject.name.."'.")
-    end
-
-    function Behavior:OnMouseExit()
-        print("The mouse just stopped hovering the gameObject of name '"..self.gameObject.name.."'.")
-    end
-
 
 ## Hotkeys events
 
 Whenever you press one of the button whose name is set in `Daneel.config.input.buttons`, the events nammed `On[Button name]ButtonDown`, `On[Button name]ButtonJustPressed` and `On[Button name]ButtonJustReleased` are fired.
 
+The table `Daneel.config.input.buttons` may be filled with the button names that you defined in the `Administration > Game Controls` tab.
 
+Ie :
+
+    Daneel.config.input = {
+        buttons = {
+            -- the list of the button names as they appear in CraftStudio in the "Game Controls" tab :
+            "Action",
+            "fire",
+        }
+    }
 
 
 ---
@@ -336,7 +319,7 @@ Arguments between square brackets are optional.
 * gameObject:GetChildren([recursive, includeSelf])
 * gameObject:BroadcastMessage(functionName[, data])
 
-* gameObject:AddComponent(componentType[, params, scriptedBehaviorParams]) / gameObject:AddComponent("ScriptedBehavior", scriptNameorAsset[, params])
+* gameObject:AddComponent(componentType[, params]) / gameObject:AddComponent("ScriptedBehavior", scriptNameorAsset[, params])
     * gameObject:AddScriptedBehavior(scriptNameOrAsset[, params])
     * gameObject:AddModelRenderer([params])
     * gameObject:AddMapRenderer([params])
