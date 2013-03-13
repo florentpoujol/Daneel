@@ -32,7 +32,7 @@ end
 -- @param t (table) The table to copy.
 function table.copy(t)
     Daneel.Debug.StackTrace.BeginFunction("table.copy", t)
-    Daneel.Debug.CheckArgType(t, "t", "table", "table.copy(table) : ")
+    Daneel.Debug.CheckArgType(t, "table", "table", "table.copy(table) : ", nil, true)
     local t2 = table.new()
     for key, value in pairs(t) do
         t2[key] = value
@@ -48,7 +48,7 @@ end
 function table.containskey(t, p_key)
     Daneel.Debug.StackTrace.BeginFunction("table.containskey", t, p_key)
     local errorHead = "table.containskey(table, key) : "
-    Daneel.Debug.CheckArgType(t, "t", "table", errorHead)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead, nil, true)
     
     if p_key == nil then
         Daneel.Debug.PrintError(errorHead.."Argument 'p_key' is 'nil'.")
@@ -74,7 +74,7 @@ end
 function table.containsvalue(t, p_value, ignoreCase)
     Daneel.Debug.StackTrace.BeginFunction("table.constainsvalue", t, p_value, ignoreCase)
     local errorHead = "table.containsvalue(table, value) : "
-    Daneel.Debug.CheckArgType(t, "t", "table", errorHead)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead, nil, true)
     
     if p_value == nil then
         Daneel.Debug.PrintError(errorHead.."Argument 'value' is nil.")
@@ -114,7 +114,7 @@ end
 function table.length(t, keyType)
     Daneel.Debug.StackTrace.BeginFunction("table.length", t, keyType)
     local errorHead = "table.length(table, keyType) : "
-    Daneel.Debug.CheckArgType(t, "t", "table", errorHead)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead, nil, true)
     
     local length = 0
     
@@ -142,7 +142,7 @@ function table.print(t)
         return
     end
 
-    Daneel.Debug.CheckArgType(t, "t", "table", errorHead)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead, nil, true)
     
     print("~~~~~ table.print() ~~~~~ Start ~~~~~")
     print("Table : "..tostring(t))
@@ -174,7 +174,7 @@ function table.printmetatable(t)
         return
     end
 
-    Daneel.Debug.CheckArgType(t, "t", "table", errorHead)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead, nil, true)
     
     local mt = getmetatable(t)
     if mt == nil then
@@ -242,8 +242,8 @@ end
 function table.compare(table1, table2)
     Daneel.Debug.StackTrace.BeginFunction("table.compare", table1, table2)
     local errorHead = "table.compare(table1, table2) : "
-    Daneel.Debug.CheckArgType(table1, "table1", "table", errorHead)
-    Daneel.Debug.CheckArgType(table2, "table2", "table", errorHead)
+    Daneel.Debug.CheckArgType(table1, "table1", "table", errorHead, nil, true)
+    Daneel.Debug.CheckArgType(table2, "table2", "table", errorHead, nil, true)
 
     local areEqual = true
 
@@ -271,8 +271,8 @@ end
 function table.combine(keys, values, strict)
     Daneel.Debug.StackTrace.BeginFunction("table.combine", keys, values, strict)
     local errorHead = "table.combine(keys, values[, strict]) : "
-    Daneel.Debug.CheckArgType(keys, "keys", "table", errorHead)
-    Daneel.Debug.CheckArgType(values, "values", "table", errorHead)
+    Daneel.Debug.CheckArgType(keys, "keys", "table", errorHead, nil, true)
+    Daneel.Debug.CheckArgType(values, "values", "table", errorHead, nil, true)
     Daneel.Debug.CheckOptionalArgType(strict, "strict", "boolean", errorHead)
 
     if table.length(keys) ~= table.length(values) then
@@ -302,7 +302,7 @@ end
 function table.removevalue(t, value, singleRemove)
     Daneel.Debug.StackTrace.BeginFunction("table.removevalue", t, values, singleRemove)
     local errorHead = "table.removevalue(table, value[, singleRemove]) : "
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead, nil, true)
     Daneel.Debug.CheckOptionalArgType(singleRemove, "singleRemove", "boolean", errorHead)
     
     if value == nil then
@@ -333,7 +333,7 @@ end
 function table.getkeys(t)
     Daneel.Debug.StackTrace.BeginFunction("table.getkeys", t)
     local errorHead = "table.getkeys(table) : "
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead, nil, true)
 
     local keys = table.new()
     for key, value in pairs(t) do
@@ -350,7 +350,7 @@ end
 function table.getvalues(t)
     Daneel.Debug.StackTrace.BeginFunction("table.getvalues", t)
     local errorHead = "table.getvalues(t) : "
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead, nil, true)
 
     local values = table.new()
     for key, value in pairs(t) do
@@ -367,7 +367,7 @@ end
 function table.getkey(t, value)
     Daneel.Debug.StackTrace.BeginFunction("table.getkey", t, value)
     local errorHead = "table.getkey(table, value) : "
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead, nil, true)
 
     local key = nil
     for k, v in pairs(t) do

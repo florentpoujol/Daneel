@@ -38,7 +38,7 @@ Daneel.Debug = {}
 -- @param expectedArgumentTypes (string or table) The expected argument type(s)
 -- @param errorHead [optional] (string) The begining of the error message
 -- @param errorEnd [optional] (string) The end of the error message
-function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd)
+function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd, getOnlyLuaType)
     local _errorHead = "Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes[, errorHead, errorEnd]) : "
     
     local argType = type(argumentName)
@@ -69,19 +69,17 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
 
     if errorEnd == nil then errorEnd = "" end
 
+
     --
 
-    argType = Daneel.Debug.GetType(argument)
-    local isOfExpectedType = false
+    argType = Daneel.Debug.GetType(argument, getOnlyLuaType)
     for i, expectedType in ipairs(expectedArgumentTypes) do
         if argType == expectedType then
-            isOfExpectedType = true
+            return
         end
     end
     
-    if isOfExpectedType == false then
-        Daneel.Debug.PrintError(_errorHead.."Argument '"..argumentName.."' is of type '"..argumentType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..errorEnd)
-    end
+    Daneel.Debug.PrintError(errorHead.."Argument '"..argumentName.."' is of type '"..argumentType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..errorEnd)
 end
 
 --- Check the provided argument's type against the provided type and display error if they don't match
@@ -128,24 +126,32 @@ function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgum
     --
 
     argType = Daneel.Debug.GetType(argument)
-    local isOfExpectedType = false
     for i, expectedType in ipairs(expectedArgumentTypes) do
         if argType == expectedType then
-            isOfExpectedType = true
+            return
         end
     end
     
-    if isOfExpectedType == false then
-        Daneel.Debug.PrintError(_errorHead.."Optional argument '"..argumentName.."' is of type '"..argumentType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..errorEnd)
-    end
+    Daneel.Debug.PrintError(errorHead.."Optional argument '"..argumentName.."' is of type '"..argumentType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..errorEnd)
 end
 
 --- Return the craftStudio Type of the provided argument
 -- @param object (mixed) The argument to get the type of
-function Daneel.Debug.GetType(object)
-    local argType = type(object)
+-- @param getOnlyLuaType [optional default=false] (boolean) Tell wether to look only for Lua's type
+-- @return (string) The type
+function Daneel.Debug.GetType(object, getOnlyLuaType)
+    local errorHead = "Daneel.Debug.GetType(object[, getOnlyLuaType]) : "
+    local argType = type(getOnlyLuaType)
+    if arType ~= nil and argType ~= "boolean" then
+        error(errorHead.."Argument 'getOnlyLuaType' is of type '"..argType.."' with value '"..tostring(getOnlyLuaType).."' instead of 'boolean'.")
+    end
 
-    if argType == "table" then
+    if getOnlyLuaType == nil then getOnlyLuaType = false end
+
+    --
+    argType = type(object)
+
+    if getOnlyLuaType == false and argType == "table" then
         -- the componentType variable on component is set during Component.Init(), 
         -- because the component's metatable is hidden
         if object.componentType ~= nil and table.containsvalue(table.getkeys(Daneel.config.componentsObjects), object.componentType) then

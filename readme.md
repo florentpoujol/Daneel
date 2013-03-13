@@ -14,8 +14,6 @@ Daneel mostly add new objects, new functions on existing objects and sometimes a
 
 ## Conventions
 
-Some convention are observed throughout the framework :
-
 * Every getter fonctions are called GetSomething() and not FindSomething().
 * Every object and function names are camel-cased, except for functions added to Lua's standard libraries which are all lowercase.
 * Every time an argument has to be an asset (like with `modelRenderer:SetModel()`), you may pass the fully-qualified asset name instead.
