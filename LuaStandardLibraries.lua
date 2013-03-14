@@ -1,4 +1,102 @@
 
+----------------------------------------------------------------------------------
+-- math
+
+
+--- Tell wether the provided number is an integer.
+-- @param number The number to check.
+-- @param strict [optionnal default=false] (boolean) If true, the function returns an error when the 'number' argument is not a number.
+function math.isinteger(number, strict)
+    Daneel.Debug.StackTrace.BeginFunction("math.isinteger", number, strict)
+    
+    local argType = type(number)
+    if argType ~= "number" then
+        if strict ~= nil and strict == true then
+            error("math.isinterger(number[, strict]) : Argument 'number' is of type '"..argType.."' instead of 'number'.")
+        else
+            Daneel.Debug.StackTrace.EndFunction("math.isinteger", false)
+            return false
+        end
+    end
+
+    local isinteger = number == math.floor(number)
+    Daneel.Debug.StackTrace.EndFunction("math.isinteger", isinteger)
+    return isinteger
+end
+
+
+----------------------------------------------------------------------------------
+-- string
+
+
+
+local stringMetatable = getmetatable("") -- the 'string' class is origininally stringMetatable.__index
+
+--- Allow to build a string by repeating several times a strring segment
+-- @param s (string) The string
+-- @param num (number) The multiplier
+-- @return (string) The new string
+function stringMetatable.__mul(s, multiplier)
+    local fullString = ""
+    for i=1, multiplier do
+        fullString = fullString .. s
+    end
+    return fullString
+end
+
+--- Turn a string into a table, one character per index
+-- @param s (string) The string
+-- @return (table) The table
+function string.totable(s)
+    Daneel.Debug.StackTrace.BeginFunction("string.totable", s)
+    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
+    local strLen = s:len()
+    local t = table.new()
+    for i = 1, strLen do
+        table.insert(t, s:sub(i, i))
+    end 
+    Daneel.Debug.StackTrace.EndFunction("string.totable", t)
+    return t
+end
+
+--- Alias of table.containsvalue().
+-- Tell wether the specified table contains the specified string. 
+-- @param s (string) The string
+-- @param t (table) The table conataining the values to check against argument 'string'.
+-- @param ignoreCase [optional default=false] (boolean) Ignore the case
+-- @return (boolean) True if 's' is found in 't', false otherwise
+function string.isoneof(s, t, ignoreCase)
+    Daneel.Debug.StackTrace.BeginFunction("string.isoneof", s, t, ignoreCase)
+    local errorHead = "string.isoneof(string, table[, ignoreCase]) : "
+    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
+    Daneel.Debug.CheckOptionalArgType(ignoreCase, "ignoreCase", "boolean", errorHead)
+    local isOneOf = table.constainsvalue(t, s, ignoreCase)
+    Daneel.Debug.StackTrace.EndFunction("string.isoneof", isOneOf)
+    return isOneOf
+end
+
+--- Make the first letter uppercase
+-- @param s (string) The string
+-- @return (string) The string
+function string.ucfirst(s)
+    Daneel.Debug.StackTrace.BeginFunction("string.ucfirst", s)
+    local errorHead = "string.ucfirst(string) : "
+    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
+    t = s:totable()
+    t[1] = t[1]:upper()
+    s = t:concat()
+    Daneel.Debug.StackTrace.EndFunction("string.ucfirst", s)
+    return s
+end
+
+
+
+----------------------------------------------------------------------------------
+-- table
+
+
+
 -- Built-in table have no metatable
 -- The table.new() function add the 'table' object as the metatable
 
@@ -379,3 +477,4 @@ function table.getkey(t, value)
     Daneel.Debug.StackTrace.EndFunction("table.getkey", key)
     return key
 end
+
