@@ -3,11 +3,15 @@
 function GameObject.__tostring(gameObject)
     -- returns something like "GameObject: 'MyName' 123456789 - table: 051C42D0"
     local id = tostring(gameObject.inner):sub(2,20)
-    return "GameObject: '"..gameObject:GetName().."' "..id.." - "..tostring(gameObject)
+    return "GameObject: '"..gameObject:GetName().."' "..id
 end
 
 -- Dynamic getters
 function GameObject.__index(gameObject, key)
+    -- voire si la clé contient déjà Get au début
+    -- retourner nil dans ce cas
+    
+
     local ucKey = key:ucfirst()
     local funcName = "Get"..ucKey
     
@@ -24,7 +28,7 @@ function GameObject.__index(gameObject, key)
     end
 
     -- maybe the key is a script alias
-    local aliases = Daneel.config.scriptedBehaviorsAliases
+    local aliases = Daneel.config.scripts
     if aliases ~= nil and type(aliases) == "table" then
         local path = aliases[key]
         if path ~= nil then

@@ -88,7 +88,7 @@ function Asset.Init()
             -- print something like : "Model: 123456789 - table: 0512A528"
             -- asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
             -- CraftStudioCommon.ProjectData. is 30 characters long
-            return tostring(asset.inner):sub(31, 60).." - ".. tostring(asset)
+            return tostring(asset.inner):sub(31, 60)
         end
         
     end

@@ -81,7 +81,12 @@ Daneel.defaultConfig.__index = Daneel.defaultConfig
 -- called from Daneel.Awake()
 function Daneel.defaultConfig.Init()
     Daneel.Debug.StackTrace.BeginFunction("Daneel.defaultConfig.Init")
-    Daneel.config = table.new(Daneel.config)
+    
+    if Daneel.config == nil then
+        Daneel.config = table.new()
+    else
+        Daneel.config = table.new(Daneel.config)
+    end
     setmetatable(Daneel.config, Daneel.defaultConfig)
 
     -- 
@@ -133,6 +138,7 @@ end
 
 Daneel.Debug = {}
 
+
 --- Check the provided argument's type against the provided type and display error if they don't match
 -- @param argument (mixed) The argument to check
 -- @param argumentName (string) The argument name
@@ -140,6 +146,8 @@ Daneel.Debug = {}
 -- @param errorHead [optional] (string) The begining of the error message
 -- @param errorEnd [optional] (string) The end of the error message
 function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd, getOnlyLuaType)
+    if Daneel.config.debug == false then return end
+
     local _errorHead = "Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes[, errorHead, errorEnd]) : "
     
     local argType = type(argumentName)
@@ -174,13 +182,14 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
     --
 
     argType = Daneel.Debug.GetType(argument, getOnlyLuaType)
+    
     for i, expectedType in ipairs(expectedArgumentTypes) do
         if argType == expectedType then
             return
         end
     end
     
-    Daneel.Debug.PrintError(errorHead.."Argument '"..argumentName.."' is of type '"..argumentType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..errorEnd)
+    Daneel.Debug.PrintError(errorHead.."Argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..errorEnd)
 end
 
 --- Check the provided argument's type against the provided type and display error if they don't match
@@ -190,7 +199,7 @@ end
 -- @param errorHead [optional] (string) The begining of the error message
 -- @param errorEnd [optional] (string) The end of the error message
 function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd)
-    if argument == nil then
+    if argument == nil or Daneel.config.debug == false then
         return
     end
 
@@ -233,7 +242,7 @@ function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgum
         end
     end
     
-    Daneel.Debug.PrintError(errorHead.."Optional argument '"..argumentName.."' is of type '"..argumentType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..errorEnd)
+    Daneel.Debug.PrintError(errorHead.."Optional argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..errorEnd)
 end
 
 --- Return the craftStudio Type of the provided argument
@@ -241,6 +250,10 @@ end
 -- @param getOnlyLuaType [optional default=false] (boolean) Tell wether to look only for Lua's type
 -- @return (string) The type
 function Daneel.Debug.GetType(object, getOnlyLuaType)
+    if Daneel.config.debug == false then
+        return type(object)
+    end
+
     local errorHead = "Daneel.Debug.GetType(object[, getOnlyLuaType]) : "
     local argType = type(getOnlyLuaType)
     if arType ~= nil and argType ~= "boolean" then
@@ -255,7 +268,7 @@ function Daneel.Debug.GetType(object, getOnlyLuaType)
     if getOnlyLuaType == false and argType == "table" then
         -- the componentType variable on component is set during Component.Init(), 
         -- because the component's metatable is hidden
-        if object.componentType ~= nil and table.containsvalue(table.getkeys(Daneel.config.componentsObjects), object.componentType) then
+        if object.componentType ~= nil and table.containsvalue(table.getkeys(Daneel.config.componentObjects), object.componentType) then
             return object.componentType
         end
 
@@ -285,6 +298,7 @@ end
 --- Alias for error() but print Daneel's stack trace first
 -- @param message (string) The error message
 function Daneel.Debug.PrintError(message)
+    if Daneel.config.debug == false then return end
     Daneel.Debug.StackTrace.Print()
     error(message)
 end
@@ -295,7 +309,7 @@ end
 function Daneel.Debug.CheckComponentType(componentType)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckComponentType", componentType)
     local errorHead = "Daneel.Debug.CheckComponentType(componentType) : "
-    Daneel.Debug.CheckArgType(componentType, "componentType", {"string", unpack(table.getvalues(Daneel.config.componentObjects))}, errorHead)
+    Daneel.Debug.CheckArgType(componentType, "componentType", {"string", unpack(Daneel.config.componentTypes)}, errorHead)
 
     -- if componentType is an object
     if type(componentType) ~= "string" then
@@ -318,7 +332,7 @@ end
 function Daneel.Debug.CheckAssetType(assetType)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckAssetType", assetType)
     local errorHead = "Daneel.Debug.CheckAssetType(assetType) : "
-    Daneel.Debug.CheckArgType(assetType, "assetType", {"string", unpack(table.getvalues(Daneel.config.assetObjects))}, errorHead)
+    Daneel.Debug.CheckArgType(assetType, "assetType", {"string", unpack(Daneel.config.assetTypes)}, errorHead)
 
     -- if assetType is an object
     if type(assetType) ~= "string" then
@@ -340,6 +354,7 @@ end
 ----------------------------------------------------------------------------------
 -- StackTrace
 
+
 Daneel.Debug.StackTrace = { 
     messages = {},
     depth = 1,
@@ -349,13 +364,13 @@ Daneel.Debug.StackTrace = {
 -- @param functionName (string) The function name
 -- @param ... [optional] (mixed) Arguments received by the function
 function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
-    if Daneel.config.useStackTrace == false then return end
+    if Daneel.config.debug == false then return end
     local errorHead = "Daneel.Debug.StackTrace.BeginFunction(functionName[, ...]) : "
     Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
 
     Daneel.Debug.StackTrace.depth = Daneel.Debug.StackTrace.depth + 1
 
-    local msg = "- "*Daneel.Debug.StackTrace.depth.." "..functionName.."("
+    local msg = functionName.."("
 
     if #arg > 0 then
         for i, argument in ipairs(arg) do
@@ -374,11 +389,11 @@ end
 -- @param functionName (string) The function name
 -- @param ... [optional] (mixed) Variable returned by the function
 function Daneel.Debug.StackTrace.EndFunction(functionName, ...)
-    if Daneel.config.useStackTrace == false then return end
+    if Daneel.config.debug == false then return end
     local errorHead = "Daneel.Debug.StackTrace.EndFunction(functionName[, ...]) : "
     Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
 
-    local msg = "- "*Daneel.Debug.StackTrace.depth.." "..functionName.."() returns "
+    local msg = functionName.."() returns "
 
     if #arg > 0 then
         for i, argument in ipairs(arg) do
@@ -393,10 +408,11 @@ function Daneel.Debug.StackTrace.EndFunction(functionName, ...)
 end
 
 --- Print the StackTrace
-function Daneel.Debug.StackTrace.Print() 
+function Daneel.Debug.StackTrace.Print()
+    if Daneel.config.debug == false then return end
     local messages = Daneel.Debug.StackTrace.messages
     
-    print("~~~~~ Daneel.Debug.StackTrace ~~~~~ Begin ~~~~~")
+    print("~~~~~ Daneel.Debug.StackTrace ~~~~~")
 
     for i, msg in ipairs(messages) do
         if i < 10 then
@@ -404,8 +420,6 @@ function Daneel.Debug.StackTrace.Print()
         end
         print("#"..i.." "..msg)
     end
-
-    print("~~~~~ Daneel.Debug.StackTrace ~~~~~ End ~~~~~")
 end
 
 
@@ -561,11 +575,13 @@ function Daneel.Awake()
     Component.Init()
     GameObject.Init()
     
+    print("End Daneel Awake")
     Daneel.Debug.StackTrace.EndFunction("Daneel.Awake")
 end
 
 function Daneel.Start()
 
+    print("End Daneel Start")
 end 
 
 function Daneel.Update()
