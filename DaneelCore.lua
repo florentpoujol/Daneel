@@ -280,15 +280,6 @@ function Daneel.Debug.GetType(object, getOnlyLuaType)
                 end
             end
         end
-
-        -- the componentType variable on component is set during Component.Init(), 
-        -- because the component's metatable is hidden
-
-        -- This code HAS to be after the metatable check because it would throw a stack overflow if object is a gameObject (and debug active)
-        -- (go.__index would call GetScriptedBehavior, which would check the type of the go argument, which would call GetType, and check compoenentType...)
-        if object.componentType ~= nil and table.containsvalue(Daneel.config.componentTypes, object.componentType) then
-            return object.componentType
-        end
     end
 
     return argType
@@ -348,6 +339,24 @@ function Daneel.Debug.CheckAssetType(assetType)
     return assetType
 end
 
+--- Bypass the __tostring function that may exists on the data's metatable
+-- @param data (mixed) The data to be converted to string
+-- @return (string) The string 
+function Daneel.Debug.ToRawString(data)
+    local text = tostring(data)
+    
+    local mt = getmetatable(data)
+    if mt ~= nil then
+        if mt.__tostring ~= nil then
+            local mttostring = mt.__tostring
+            mt.__tostring = nil
+            text = tostring(data)
+            mt.__tostring = mttostring
+        end
+    end
+    
+    return text
+end
 
 
 ----------------------------------------------------------------------------------

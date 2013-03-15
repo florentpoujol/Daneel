@@ -1,7 +1,7 @@
 
 
 function GameObject.__tostring(gameObject)
-    -- returns something like "GameObject: 'MyName' 123456789 - table: 051C42D0"
+    -- returns something like "GameObject: 'MyName' 123456789"
     local id = tostring(gameObject.inner):sub(2,20)
     return "GameObject: '"..gameObject:GetName().."' "..id
 end
@@ -44,10 +44,6 @@ end
 
 -- Dynamic setters
 function GameObject.__newindex(gameObject, key, value)
-    if key:sub(0, 3) == "Set" then
-        return nil
-    end
-
     local funcName = "Set"..key:ucfirst()
     -- ie: variable "name" call "SetName"
     

@@ -71,7 +71,6 @@ function Asset.GetDocument(assetName) end
 -- Called from Daneel.Awake()
 function Asset.Init()
     for assetType, object in pairs(Daneel.config.assetObjects) do
-        
         -- Get helpers
         -- GetModelRenderer() ...
         Asset["Get"..assetType] = function(assetName)

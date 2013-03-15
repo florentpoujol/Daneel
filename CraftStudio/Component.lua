@@ -10,12 +10,6 @@ function Component.Init()
     for componentType, object in pairs(components) do
 
         if componentType ~= "Script" then
-            -- component instances have the coresponding object (ie :ModelRenderer for a ModelRenderer instance)
-            -- as metatable but it is hidden (except for ScriptedBehaviors).
-            -- Plus, the inner variable is unreadable, at least not like it is for the Assets (CraftStudioCommon.ProjectData.[AssetType])
-            -- The purpose of the componentType variable here is to be read by Daneel.Debug.GetType() function (in the Utilities script)
-            object.componentType = componentType
-
             -- Dynamic Getters
             object["__index"] = function(component, key) 
                 if key:sub(0, 3) == "Get" then
@@ -49,9 +43,9 @@ function Component.Init()
         end
 
         object["__tostring"] = function(component)
-            -- returns something like "ModelRenderer: 123456789 - table: 051C42D0"
+            -- returns something like "ModelRenderer: 123456789"
             -- component.inner is "?: [some ID]"
-            return component.componentType..": "..tostring(component.inner):sub(2,20)
+            return Daneel.Debug.GetType(component)..tostring(component.inner):sub(2,20)
         end
     end
 
