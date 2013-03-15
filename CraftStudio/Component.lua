@@ -17,34 +17,41 @@ function Component.Init()
             object.componentType = componentType
 
             -- Dynamic Getters
-            object["__index"] = function(t, key) 
+            object["__index"] = function(component, key) 
+                if key:sub(0, 3) == "Get" then
+                    return nil
+                end
                 local funcName = "Get"..key:ucfirst()
                 
                 if object[funcName] ~= nil then
-                    return object[funcName](t)
+                    return object[funcName](component)
                 elseif object[key] ~= nil then
                     return object[key] -- have to return the function here, not the function return value !
                 end
                 
-                return rawget(t, key)
+                return rawget(component, key)
             end
 
             -- Dynamic Setters
-            object["__newindex"] = function(t, key, value)
+            object["__newindex"] = function(component, key, value)
+                if key:sub(0, 3) == "Get" then
+                    return nil
+                end
+
                 local funcName = "Set"..key:ucfirst()
                 
                 if object[funcName] ~= nil then
-                    return object[funcName](t, value)
+                    return object[funcName](component, value)
                 end
                 
-                return rawset(t, key, value)
+                return rawset(component, key, value)
             end
         end
 
         object["__tostring"] = function(component)
             -- returns something like "ModelRenderer: 123456789 - table: 051C42D0"
             -- component.inner is "?: [some ID]"
-            return Daneel.Debug.GetType(component)..": "..tostring(component.inner):sub(2,20)
+            return component.componentType..": "..tostring(component.inner):sub(2,20)
         end
     end
 

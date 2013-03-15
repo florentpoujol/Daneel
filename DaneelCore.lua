@@ -3,7 +3,6 @@ if Daneel == nil then
 end
 
 
-
 ----------------------------------------------------------------------------------
 -- Config
 
@@ -183,7 +182,9 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
 
     argType = Daneel.Debug.GetType(argument, getOnlyLuaType)
     
-    for i, expectedType in ipairs(expectedArgumentTypes) do
+    --for i, expectedType in ipairs(expectedArgumentTypes) do
+    for i = 1, #expectedArgumentTypes do
+        expectedType = expectedArgumentTypes[i]
         if argType == expectedType then
             return
         end
@@ -250,10 +251,6 @@ end
 -- @param getOnlyLuaType [optional default=false] (boolean) Tell wether to look only for Lua's type
 -- @return (string) The type
 function Daneel.Debug.GetType(object, getOnlyLuaType)
-    if Daneel.config.debug == false then
-        return type(object)
-    end
-
     local errorHead = "Daneel.Debug.GetType(object[, getOnlyLuaType]) : "
     local argType = type(getOnlyLuaType)
     if arType ~= nil and argType ~= "boolean" then
@@ -266,29 +263,31 @@ function Daneel.Debug.GetType(object, getOnlyLuaType)
     argType = type(object)
 
     if getOnlyLuaType == false and argType == "table" then
-        -- the componentType variable on component is set during Component.Init(), 
-        -- because the component's metatable is hidden
-        if object.componentType ~= nil and table.containsvalue(table.getkeys(Daneel.config.componentObjects), object.componentType) then
-            return object.componentType
-        end
-
-        -- for all other times, the type is defined by the object's metatable
+        -- for all other cases, the type is defined by the object's metatable
         local mt = getmetatable(object)
 
         if mt ~= nil then
-            -- the metatable of the ScriptedBahaviors is the corresponding asset
+            -- the metatable of the ScriptedBahaviors is the corresponding script asset
             -- the metatable of all script assets is Script
             if getmetatable(mt) == Script then
                 return "ScriptedBehavior"
             end
 
             -- other types
-            local allObjects = Daneel.config.allObjects
-            for type, object in pairs(allObjects) do
+            for type, object in pairs(Daneel.config.allObjects) do
                 if mt == object then
                     return type
                 end
             end
+        end
+
+        -- the componentType variable on component is set during Component.Init(), 
+        -- because the component's metatable is hidden
+
+        -- This code HAS to be after the metatable check because it would throw a stack overflow if object is a gameObject (and debug active)
+        -- (go.__index would call GetScriptedBehavior, which would check the type of the go argument, which would call GetType, and check compoenentType...)
+        if object.componentType ~= nil and table.containsvalue(Daneel.config.componentTypes, object.componentType) then
+            return object.componentType
         end
     end
 
@@ -373,7 +372,9 @@ function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
     local msg = functionName.."("
 
     if #arg > 0 then
-        for i, argument in ipairs(arg) do
+        -- for i, argument in ipairs(arg) do
+        for i = 1, #arg do
+            argument = arg[i]
             msg = msg..tostring(argument)..", "
         end
 
@@ -396,7 +397,9 @@ function Daneel.Debug.StackTrace.EndFunction(functionName, ...)
     local msg = functionName.."() returns "
 
     if #arg > 0 then
-        for i, argument in ipairs(arg) do
+        -- for i, argument in ipairs(arg) do
+        for i = 1, #arg do
+            argument = arg[i]
             msg = msg..tostring(argument)..", "
         end
 
@@ -575,13 +578,11 @@ function Daneel.Awake()
     Component.Init()
     GameObject.Init()
     
-    print("End Daneel Awake")
     Daneel.Debug.StackTrace.EndFunction("Daneel.Awake")
 end
 
 function Daneel.Start()
 
-    print("End Daneel Start")
 end 
 
 function Daneel.Update()

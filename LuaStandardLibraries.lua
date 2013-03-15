@@ -171,7 +171,7 @@ end
 -- @param t (table) The table.
 function table.print(t)
     if t == nil then
-        print(errorHead.."Provided table is nil.")
+        print("table.print(t) : Provided table is nil.")
         return
     end
     print("~~~~~ table.print() ~~~~~ Start ~~~~~")
@@ -191,6 +191,7 @@ end
 -- Dependent of table.length().
 -- @param t (table) The table.
 function table.printmetatable(t)
+    local errorHead = "table.printmetatable(t) : "
     if t == nil then
         print(errorHead.."Provided table is nil.")   
         return
@@ -336,4 +337,20 @@ function table.getkey(t, value)
         end
     end
     return key
+end
+
+
+
+function table.dump(t)
+    
+    print("~~~~~ table.print() ~~~~~ Start ~~~~~")
+    if t == nil then
+        print("Provided table is nil.")
+        t = {}
+    end
+
+    for key, value in pairs(t) do
+        print(key, value)
+    end
+    print("~~~~~ table.print() ~~~~~ End ~~~~~")
 end

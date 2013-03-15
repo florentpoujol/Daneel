@@ -8,21 +8,21 @@ end
 
 -- Dynamic getters
 function GameObject.__index(gameObject, key)
-    -- voire si la clé contient déjà Get au début
-    -- retourner nil dans ce cas
-    
+    -- return nil if the key already begins by "Get"
+    -- that means __index has already been called once and check if GameObject[funcName] exist
+    -- and it doesn't, so it called __index in loop, causing a stack overflow evrytime un unknow variable is accessed on GameObject
+    if type(GameObject[key]) ~= "nil" then
+        return GameObject[key]
+    end 
 
     local ucKey = key:ucfirst()
     local funcName = "Get"..ucKey
-    
-    if GameObject[funcName] ~= nil then
+    if type(GameObject[funcName]) ~= "nil" then
         return GameObject[funcName](gameObject)
-    elseif GameObject[key] ~= nil then
-        return GameObject[key] -- have to return the function here, not the function return value (because of the arguments that may be passed to the fuction)
     end
 
     -- maybe the key is a Script name used to acces the Behavior instance
-    local behavior = gameObject:GetScriptedBehavior(ucKey)
+    local behavior = gameObject:GetScriptedBehavior(ucKey, true)
     if behavior ~= nil then
         return behavior
     end
@@ -32,18 +32,22 @@ function GameObject.__index(gameObject, key)
     if aliases ~= nil and type(aliases) == "table" then
         local path = aliases[key]
         if path ~= nil then
-            behavior = gameObject:GetScriptedBehavior(path)
+            behavior = gameObject:GetScriptedBehavior(path, true)
             if behavior ~= nil then
                 return behavior
             end
         end
     end
 
-    return rawget(gameObject, key)
+    return nil
 end
 
 -- Dynamic setters
 function GameObject.__newindex(gameObject, key, value)
+    if key:sub(0, 3) == "Set" then
+        return nil
+    end
+
     local funcName = "Set"..key:ucfirst()
     -- ie: variable "name" call "SetName"
     
@@ -548,23 +552,31 @@ local OriginalGetScriptedBehavior = GameObject.GetScriptedBehavior
 -- @param gameObject (GameObject) The gameObject
 -- @param scriptNameOrAsset (string or Script) The script name or asset.
 -- @return (ScriptedBehavior) The ScriptedBehavior instance.
-function GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.GetScriptedBehavior", gameObject, scriptNameOrAsset)
-    local errorHead = "GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckArgType(scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead)
+function GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset, calledFrom__index)
+    if calledFrom__index ~= true then
+        Daneel.Debug.StackTrace.BeginFunction("GameObject.GetScriptedBehavior", gameObject, scriptNameOrAsset)
+        local errorHead = "GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset) : "
+        Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+        Daneel.Debug.CheckArgType(scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead)
+    end
 
     local script = scriptNameOrAsset
 
     if type(scriptNameOrAsset) == "string" then
         script = Asset.Get(scriptNameOrAsset, "Script")
         if script == nil then
-            Daneel.Debug.PrintError(errorHead.."Argument 'scriptNameOrAsset' : Script asset with name '"..scriptNameOrAsset.."' was not found.")
+            if calledFrom__index == true then
+                return nil
+            else
+                Daneel.Debug.PrintError(errorHead.."Argument 'scriptNameOrAsset' : Script asset with name '"..scriptNameOrAsset.."' was not found.")
+            end 
         end
     end
 
     local component = OriginalGetScriptedBehavior(gameObject, script)
-    Daneel.Debug.StackTrace.EndFunction("GameObject.GetScriptedBehavior", component)
+    if calledFrom__index ~= true then
+        Daneel.Debug.StackTrace.EndFunction("GameObject.GetScriptedBehavior", component)
+    end
     return component
 end
 
