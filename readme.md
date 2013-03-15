@@ -275,6 +275,10 @@ Ie :
     myTable:insert(value)
 
 
+## Miscellaneous
+
+
+
 ---
 
 ##  List of functions
@@ -308,6 +312,7 @@ Arguments between square brackets are optional.
 
 * Daneel.Debug.GetType(object)
 * Daneel.Debug.PrintError(message)
+* Daneel.Debug.ToRawString(object)
 
 * Daneel.Debug.StackTrace.BeginFunction(functionName[, ...])
 * Daneel.Debug.StackTrace.EndFunction(functionName[, ...])

@@ -50,7 +50,7 @@ function Component.Init()
     end
 
     -- Dynamic getters and setter on Scripts
-    for i, path in ipairs(Daneel.config.scripts) do
+    for i, path in pairs(Daneel.config.scripts) do
         local script = Asset.Get(path, "Script")
 
         if script ~= nil then
@@ -64,7 +64,7 @@ function Component.Init()
                     return script[key]
                 end
                 
-                return rawget(scriptedBehavior, key)
+                return nil
             end
 
             -- Dynamic setters
@@ -78,7 +78,7 @@ function Component.Init()
                 return rawset(scriptedBehavior, key, value)
             end
         else
-            print("WARNING : item n°"..i.." with value '"..path.."' in Daneel.config.scriptPaths is not a valid script path.")
+            print("WARNING : item with key '"..i.."' and value '"..path.."' in Daneel.config.scripts is not a valid script path.")
         end
     end
 end
