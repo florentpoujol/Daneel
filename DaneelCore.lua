@@ -1,10 +1,44 @@
-if Daneel == nil then
-    Daneel = {}
-end
+
+Daneel = {}
+
 
 
 ----------------------------------------------------------------------------------
--- Config
+-- User Config
+
+
+Daneel.config = {
+
+    -- List of the Scripts paths as values and optionally the script alias as the keys
+    scripts = {
+        -- "fully-qualified Script path"
+        -- alias = "fully-qualified Script path"
+    },
+
+    
+    -- List of the button names you defined in the "Administration > Game Controls" tab of your project
+    buttons = {
+
+    },
+
+
+    -- Set to true to enable the framework's advanced debugging capabilities.
+    -- Set to false when you ship the game.
+    debug = false,
+}
+
+
+
+----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+-------------------------- DO NOT EDIT BELOW THIS POINT --------------------------
+----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------------
+-- Defaul Config
+
 
 Daneel.defaultConfig = {
 
@@ -54,24 +88,13 @@ Daneel.defaultConfig = {
     mousehoverableGameObjects = {},
 
 
-    ----------------------------------------------------------------------------------
-    -- user config
-    
-    -- list of the Scripts path as value and optionaly the script alias as the key
-    -- It enabled dynamic getters and setters on these ScriptedBehaviors
-    -- and if the alias is set, allows to acces the ScriptedBehavior as a variable on the gameObjects
-    scripts = {
-        -- "fully-qualified Script path"
-        -- or
-        -- alias = "fully-qualified Script path"
-    },
-
-    -- list of the button name you defined in the Administration>Game Controls tab of your project
-    buttons = {
-        
-    },
-
-    useStackTrace = true,
+    -- Scripts
+    daneelScripts = {
+        "Trigger",
+        "TriggerableGameObject",
+        "CastableGameObject",
+        "MousehoverableGameObject",
+    }
 }
 
 Daneel.defaultConfig.__index = Daneel.defaultConfig
@@ -98,6 +121,8 @@ function Daneel.defaultConfig.Init()
     t = t:merge(Daneel.defaultConfig.craftStudioObjects)
     t = t:merge(Daneel.defaultConfig.daneelObjects)
     Daneel.defaultConfig.allObjects = t
+
+    Daneel.config.scripts = table.merge(Daneel.config.daneelScripts, Daneel.config.scripts)
     
     Daneel.Debug.StackTrace.EndFunction("Daneel.defaultConfig.Init")
 end
@@ -144,7 +169,7 @@ Daneel.Debug = {}
 -- @param expectedArgumentTypes (string or table) The expected argument type(s)
 -- @param errorHead [optional] (string) The begining of the error message
 -- @param errorEnd [optional] (string) The end of the error message
-function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd, getOnlyLuaType)
+function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd, getLuaTypeOnly)
     if Daneel.config.debug == false then return end
 
     local _errorHead = "Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes[, errorHead, errorEnd]) : "
@@ -180,7 +205,7 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
 
     --
 
-    argType = Daneel.Debug.GetType(argument, getOnlyLuaType)
+    argType = Daneel.Debug.GetType(argument, getLuaTypeOnly)
     
     --for i, expectedType in ipairs(expectedArgumentTypes) do
     for i = 1, #expectedArgumentTypes do
@@ -248,21 +273,21 @@ end
 
 --- Return the craftStudio Type of the provided argument
 -- @param object (mixed) The argument to get the type of
--- @param getOnlyLuaType [optional default=false] (boolean) Tell wether to look only for Lua's type
+-- @param getLuaTypeOnly [optional default=false] (boolean) Tell wether to look only for Lua's type
 -- @return (string) The type
-function Daneel.Debug.GetType(object, getOnlyLuaType)
-    local errorHead = "Daneel.Debug.GetType(object[, getOnlyLuaType]) : "
-    local argType = type(getOnlyLuaType)
+function Daneel.Debug.GetType(object, getLuaTypeOnly)
+    local errorHead = "Daneel.Debug.GetType(object[, getLuaTypeOnly]) : "
+    local argType = type(getLuaTypeOnly)
     if arType ~= nil and argType ~= "boolean" then
-        error(errorHead.."Argument 'getOnlyLuaType' is of type '"..argType.."' with value '"..tostring(getOnlyLuaType).."' instead of 'boolean'.")
+        error(errorHead.."Argument 'getLuaTypeOnly' is of type '"..argType.."' with value '"..tostring(getLuaTypeOnly).."' instead of 'boolean'.")
     end
 
-    if getOnlyLuaType == nil then getOnlyLuaType = false end
+    if getLuaTypeOnly == nil then getLuaTypeOnly = false end
 
     --
     argType = type(object)
 
-    if getOnlyLuaType == false and argType == "table" then
+    if getLuaTypeOnly == false and argType == "table" then
         -- for all other cases, the type is defined by the object's metatable
         local mt = getmetatable(object)
 

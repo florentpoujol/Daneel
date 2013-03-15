@@ -9,12 +9,9 @@ function Component.Init()
     local components = Daneel.config.componentObjects
     for componentType, object in pairs(components) do
 
-        if componentType ~= "Script" then
+        if componentType ~= "ScriptedBehavior" then
             -- Dynamic Getters
             object["__index"] = function(component, key) 
-                if key:sub(0, 3) == "Get" then
-                    return nil
-                end
                 local funcName = "Get"..key:ucfirst()
                 
                 if object[funcName] ~= nil then
@@ -22,16 +19,18 @@ function Component.Init()
                 elseif object[key] ~= nil then
                     return object[key] -- have to return the function here, not the function return value !
                 end
+
+                if Component[funcName] ~= nil then
+                    return Component[funcName](component)
+                elseif Component[key] ~= nil then
+                    return Component[key] -- have to return the function here, not the function return value !
+                end
                 
-                return rawget(component, key)
+                return nil
             end
 
             -- Dynamic Setters
             object["__newindex"] = function(component, key, value)
-                if key:sub(0, 3) == "Get" then
-                    return nil
-                end
-
                 local funcName = "Set"..key:ucfirst()
                 
                 if object[funcName] ~= nil then
@@ -62,6 +61,18 @@ function Component.Init()
                     return script[funcName](scriptedBehavior)
                 elseif script[key] ~= nil then
                     return script[key]
+                end
+
+                if Script[funcName] ~= nil then
+                    return Script[funcName](scriptedBehavior)
+                elseif Script[key] ~= nil then
+                    return Script[key]
+                end
+
+                if Component[funcName] ~= nil then
+                    return Component[funcName](scriptedBehavior)
+                elseif Component[key] ~= nil then
+                    return Component[key]
                 end
                 
                 return nil

@@ -1,9 +1,9 @@
 
 
 function GameObject.__tostring(gameObject)
-    -- returns something like "GameObject: 'MyName' 123456789"
-    local id = tostring(gameObject.inner):sub(2,20)
-    return "GameObject: '"..gameObject:GetName().."' "..id
+    -- returns something like "GameObject: 'MyName': 123456789"
+    local id = tostring(gameObject.inner):sub(3,20)
+    return "GameObject: '"..gameObject:GetName().."'"..id
 end
 
 -- Dynamic getters

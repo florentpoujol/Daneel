@@ -24,13 +24,33 @@ Daneel mostly add new objects, new functions on existing objects and sometimes a
 
 ## Configuration
 
-Some features are only available if a few configuration is done .  
-Currently, all that has to be done is to edit the `userConfig` script and make the list of the scripts and button names of your game.
+Some features are only available if a few configuration is done first.
+Currently, all that has to be done is to edit the top of the `DaneelCore` script (just the `Daneel.config` table) and make the list of the scripts and/or button names of your game.
+    
+    Daneel.config = {
+
+        -- List of the Scripts paths as values and optionally the script alias as the keys
+        scripts = {
+            -- "fully-qualified Script path"
+            -- alias = "fully-qualified Script path"
+        },
+
+        
+        -- List of the button names you defined in the "Administration > Game Controls" tab of your project
+        buttons = {
+
+        },
+
+
+        -- Set to true to enable the framework's advanced debugging features.
+        -- Set to false when you ship the game.
+        debug = false,
+    }
 
 
 ## Dynamic getters and setters
 
-Getters and setters functions (functions that begins by Get or Set) may be used on gameOjects, components as if they were variables :
+Getters and setters functions (functions that begins by Get or Set) may be used on gameOjects and components as if they were variables :
     
     self.gameObject.transform.localPosition
     -- is the same as
@@ -41,13 +61,7 @@ Getters and setters functions (functions that begins by Get or Set) may be used 
     self.gameObject:SetName("a new name")
     -- note that only one argument (in addition to the working object) can be passed to the function.
 
-As Daneel introduce the new `gameObject:GetModelRenderer()`, `gameObject:GetMapRenderer()` and `gameObject:GetCamera()` functions, you may now access any components via their variable, like the transform :
-
-    self.gameObject.modelRenderer.model = "model name"
-    -- is the same as
-    self.gameObject:GetComponent("ModelRenderer"):SetModel(CraftStudio.FindAsset("model name", "Model"))
-
-Dynamic getters and setters will also work for your scripts (not just the ScriptedBehaviors) provided you add their fully-qualified path in `Daneel.config.scripts` :
+Dynamic getters and setters will also work for your ScriptedBehaviors provided you add their Script's fully-qualified path in `Daneel.config.scripts` :
 
     Daneel.config = {
         scripts = {
@@ -56,49 +70,41 @@ Dynamic getters and setters will also work for your scripts (not just the Script
         }
     }
 
+For this feature to work, your getter/setter names must begins by "Get" or "Set" and have the forth letter uppercase (underscore is allowed). Ie : GetSomething() and Get_something() will works, but Getsomething() or getSomething() won't work.
 
-## Dynamic access to ScriptedBehaviors
 
-ScriptedBehaviors whose name are camel-cased and are not nested in a folder may be accessed as if they were variable. For instance, with a Script whose name is 'MyScript' :
+## Dynamic access to components 
+
+As Daneel introduce the new `gameObject:GetModelRenderer()`, `gameObject:GetMapRenderer()` and `gameObject:GetCamera()` functions, you may now access any component via its variable, like the transform :
+
+    self.gameObject.modelRenderer.model = Asset.GetModel("model name")
+    -- is the same as
+    self.gameObject:GetComponent("ModelRenderer"):SetModel(CraftStudio.FindAsset("model name", "Model"))
+
+### ScriptedBehaviors
+
+ScriptedBehaviors may also be accessed this way.  
+It just works right away for those who are not nested in a folder and name is camel-cased. For instance, with a Script whose name is 'MyScript' :
 
     self.gameObject.myScript
     -- is the same as
     self.gameObject:GetScriptedBehavior(CraftStudio.FindAsset("MyScript", "Script"))
 
-You may define aliases for other ScriptedBehaviors (those who are nested in folders and/or name are not camel-cased) in `Daneel.config.scripts`. Those scriptedBehaviors become accessible via their aliases as above :
+ScriptedBehaviors who are nested in folders and/or name are not camel-cased, may be accessed via their aliases as you define them in `Daneel.config.scripts`.
 
     -- alias = "fully-qualified Script path"
     Daneel.config = {
         scripts = {
             "MyScript",
-            myOtherScript = "folder/MyOtherScript",
+            otherScript = "folder/my other script",
         }
     }
 
     -- in your script, access the scripteBehavior with its alias :
-    self.gameObject.myOtherScript
+    self.gameObject.otherScript
 
-Note that with the ScriptedBehaviors only (not with the getters or setters), the case of the alias and especially its first letter matters.  
-In this example, `self.gameObject.MyOtherScript` won't get access to the scriptedBehavior but `self.gameObject.ModelRenderer` will get access to the modelRenderer.
-
-
-## Debugging
-
-Daneel's functions features extensive debugging capability.  
-Every arguments are checked for type and value and a comprehensive error message is thrown if needed.
-
-For instance, passing false instead of the gameObject's name with `gameObject:GetChild()` would trigger the following error :  
-
-    GameObject.GetChild(gameObject, name[, recursive]) : Argument 'name' is of type 'boolean' with value 'false' instead of 'string'.
-
-### Data types
-
-The function `Daneel.Debug.GetType(object)` is an extension of Lua's built-in `type()` and may returns any of the built-in Lua types or the name of any of the objects introduced by CraftStudio or Daneel : GameObject, ModelRenderer, MapRenderer, Camera, Transform, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document, Ray, RaycastHit, Vector3, Plane, Quaternion
-
-### Stack Trace
-
-When an error is triggered by `Danel.Debug.PrintError(errorMessage)`, Daneel print a Stack Trace in the Runtime Report.
-The Stack Trace nicely shows the histoy of function calls whithin the framework that lead to the error and display values recieved as argument as well as returned values.
+Note that the case of the alias and especially its first letter matters.  
+In this example, `self.gameObject.OtherScript` won't get access to the scriptedBehavior but `self.gameObject.ModelRenderer` will get access to the modelRenderer.
 
 
 ## Mass-setting on gameObjects and components
@@ -167,6 +173,42 @@ You can also mass-set existing components on gameObjects via `gameObject:SetComp
 If you want to add one scriptedBehavior, set the variable `scriptedBehavior` with the script name or asset as value.  
 If you want to add one or more scriptedBehaviors and maybe initialize them, or set existing ScriptedBehaviors, set the variable `scriptedBehaviors` (with an "s" at the end) with a table as value.  
 This table may contains the script name or asset of new ScriptedBehaviors as value (if you don't want to initialize them) or the script name or asset as key and the parameters table as value (for new or existing ScriptedBehaviors). Existing ScriptedBehaviors may also be set via their name or alias.
+
+
+## Debugging
+
+Daneel feature extensive error reporting plus a stack trace but these features are pretty heavy on function calls so you can turn these on and off (and should disable debug when you ship your game).
+It's turned off by default, so just set the value of the variable `Daneel.config.debug` to `true` to enable it.
+
+This affect the functions `Daneel.Debug.CheckArgType()`, `Daneel.Debug.CheckOptionalArgType()`, `Daneel.Debug.PrintError()` plus the functions in `Daneel.Debug.StackTrace`.
+
+## Error reporting
+
+Every arguments are checked for type and value and a standardized, comprehensive error message is thrown if needed.  
+For instance, passing false instead of the gameObject's name with `gameObject:GetChild()` would trigger the following error :  
+
+    GameObject.GetChild(gameObject, name[, recursive]) : Argument 'name' is of type 'boolean' with value 'false' instead of 'string'.
+
+### Stack Trace
+
+When an error is triggered by `Danel.Debug.PrintError(message)`, Daneel print a "stack trace" in the Runtime Report.
+The stack trace nicely shows the histoy of function calls whithin the framework that lead to the error and display values recieved as argument as well as returned values.  
+For instance, when trying to set the model of a ModelRenderer (to a Model that does not exists) via gameObject:Set() :
+
+    ~~~~~ Daneel.Debug.StackTrace ~~~~~
+    #01 string.ucfirst(transform)
+    #02 GameObject.Set(GameObject: 'Object1': 14476932, table: 04DAC148)
+    #03 Component.Set(ModelRenderer: 31780825, table: 04DAC238)
+    #04 ModelRenderer.SetModel(ModelRenderer: 31780825, UnknowModel)
+    [string "Behavior Daneel/DaneelCore (0)"]:293: ModelRenderer.SetModel(modelRenderer, modelNameOrAsset) : Argument 'modelNameOrAsset' : model with name 'UnknowModel' was not found.
+
+Note that the error location will always be in DaneelCore, just pay attention to the function name in the stack trace to locate the source of the error.
+
+### Data types
+
+The function `Daneel.Debug.GetType(object)` is an extension of Lua's built-in `type()` and may returns any of the built-in Lua types or the name of any of the names of the objects introduced by CraftStudio or Daneel : GameObject, ModelRenderer, MapRenderer, Camera, Transform, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document, Ray, RaycastHit, Vector3, Plane, Quaternion
+
+
 
 
 ## Events
@@ -310,7 +352,7 @@ Arguments between square brackets are optional.
 * Daneel.Debug.CheckComponentType(componentType)
 * Daneel.Debug.CheckAssetType(assetType)
 
-* Daneel.Debug.GetType(object)
+* Daneel.Debug.GetType(object, getLuaTypeOnly)
 * Daneel.Debug.PrintError(message)
 * Daneel.Debug.ToRawString(object)
 
