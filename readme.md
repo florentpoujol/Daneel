@@ -177,7 +177,7 @@ This table may contains the script name or asset of new ScriptedBehaviors as val
 
 ## Debugging
 
-Daneel feature extensive error reporting plus a stack trace but these features are pretty heavy on function calls so you can turn these on and off (and should disable debug when you ship your game).
+For an easy debugging during development, Daneel feature extensive error reporting and a stack trace. Since these features are pretty heavy on function calls, you can turn these on and off (and should disable debug when you ship your game).
 It's turned off by default, so just set the value of the variable `Daneel.config.debug` to `true` to enable it.
 
 This affect the functions `Daneel.Debug.CheckArgType()`, `Daneel.Debug.CheckOptionalArgType()`, `Daneel.Debug.PrintError()` plus the functions in `Daneel.Debug.StackTrace`.

@@ -407,10 +407,12 @@ function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
     local msg = functionName.."("
 
     if #arg > 0 then
-        -- for i, argument in ipairs(arg) do
-        for i = 1, #arg do
-            argument = arg[i]
-            msg = msg..tostring(argument)..", "
+        for i, argument in ipairs(arg) do
+            if type(argument) == "string" then
+                msg = msg..'"'..tostring(argument)..'", '
+            else
+                msg = msg..tostring(argument)..", "
+            end
         end
 
         msg = msg:sub(1, #msg-2) -- removes the last coma+space
@@ -421,26 +423,10 @@ function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
     table.insert(Daneel.Debug.StackTrace.messages, msg)
 end
 
---- Register a function output in the stack trace
--- @param functionName (string) The function name
--- @param ... [optional] (mixed) Variable returned by the function
-function Daneel.Debug.StackTrace.EndFunction(functionName, ...)
+-- Register a function output in the stack trace
+function Daneel.Debug.StackTrace.EndFunction()
     if Daneel.config.debug == false then return end
-    local errorHead = "Daneel.Debug.StackTrace.EndFunction(functionName[, ...]) : "
-    Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
-
-    local msg = functionName.."() returns "
-
-    if #arg > 0 then
-        -- for i, argument in ipairs(arg) do
-        for i = 1, #arg do
-            argument = arg[i]
-            msg = msg..tostring(argument)..", "
-        end
-
-        msg = msg:sub(1, #msg-2)
-    end
-
+    -- since 16/05/2013 no arguments is needed anymore, but 
     Daneel.Debug.StackTrace.messages[Daneel.Debug.StackTrace.depth] = nil
     Daneel.Debug.StackTrace.depth = Daneel.Debug.StackTrace.depth - 1
 end
