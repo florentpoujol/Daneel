@@ -44,7 +44,7 @@ function Component.Init()
         object["__tostring"] = function(component)
             -- returns something like "ModelRenderer: 123456789"
             -- component.inner is "?: [some ID]"
-            return Daneel.Debug.GetType(component)..tostring(component.inner):sub(2,20)
+            return Daneel.Debug.GetType(component)..tostring(component.inner):sub(2, 20) -- leave 2 as the starting index, only the transform ahave an extra space
         end
     end
 

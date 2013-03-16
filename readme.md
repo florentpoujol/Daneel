@@ -103,9 +103,6 @@ ScriptedBehaviors who are nested in folders and/or name are not camel-cased, may
     -- in your script, access the scripteBehavior with its alias :
     self.gameObject.otherScript
 
-Note that the case of the alias and especially its first letter matters.  
-In this example, `self.gameObject.OtherScript` won't get access to the scriptedBehavior but `self.gameObject.ModelRenderer` will get access to the modelRenderer.
-
 
 ## Mass-setting on gameObjects and components
 
@@ -165,7 +162,7 @@ You can also mass-set existing components on gameObjects via `gameObject:SetComp
     -- or (with the dynamic component getters)
     self.gameObject.mapRenderer:Set({params})
 
-    -- or even (with the dynamic component setters) (this does not works for ScriptedBehaviors)
+    -- note that you CAN NOT do the following since the components are cached in the gameObject (the variable actually exists on the gameObject, so the dynamic call to Set[ComponentType]() won't work) :
     self.gameObject.mapRenderer = {params}
 
 **ScriptedBehaviors**
@@ -184,7 +181,7 @@ This affect the functions `Daneel.Debug.CheckArgType()`, `Daneel.Debug.CheckOpti
 
 ## Error reporting
 
-Every arguments are checked for type and value and a standardized, comprehensive error message is thrown if needed.  
+Every arguments are checked for type and value and a comprehensive error message is thrown if needed.  
 For instance, passing false instead of the gameObject's name with `gameObject:GetChild()` would trigger the following error :  
 
     GameObject.GetChild(gameObject, name[, recursive]) : Argument 'name' is of type 'boolean' with value 'false' instead of 'string'.
@@ -196,13 +193,13 @@ The stack trace nicely shows the histoy of function calls whithin the framework 
 For instance, when trying to set the model of a ModelRenderer (to a Model that does not exists) via gameObject:Set() :
 
     ~~~~~ Daneel.Debug.StackTrace ~~~~~
-    #01 string.ucfirst(transform)
+    #01 string.ucfirst("transform")
     #02 GameObject.Set(GameObject: 'Object1': 14476932, table: 04DAC148)
     #03 Component.Set(ModelRenderer: 31780825, table: 04DAC238)
-    #04 ModelRenderer.SetModel(ModelRenderer: 31780825, UnknowModel)
+    #04 ModelRenderer.SetModel(ModelRenderer: 31780825, "UnknowModel")
     [string "Behavior Daneel/DaneelCore (0)"]:293: ModelRenderer.SetModel(modelRenderer, modelNameOrAsset) : Argument 'modelNameOrAsset' : model with name 'UnknowModel' was not found.
 
-Note that the error location will always be in DaneelCore, just pay attention to the function name in the stack trace to locate the source of the error.
+Note that the error location will always be in the `DaneelCore` script, just pay attention to the function name in the stack trace to locate the source of the error.
 
 ### Data types
 
@@ -213,8 +210,9 @@ The function `Daneel.Debug.GetType(object)` is an extension of Lua's built-in `t
 
 ## Events
 
-Daneel provide a flexible event system that allows to run functions or messages on gameObjects whenever some events happens during runtime.  
-You can register any function (global, local or Behavior functions) to be called whenever an event is fired (the function is said to listen to the event).  
+Daneel provide a event system that allows to run functions or messages on gameObjects whenever some events happens during runtime.
+
+You can register global or local functions to be called whenever an event is fired (the function is said to listen to the event).  
 Any arguments may be passed to the function when the event is fired.  
 Ie :
     
@@ -222,13 +220,8 @@ Ie :
         print(text)
     end
 
-    function Behavior:APublicFunction(text)
-        print(text)
-    end
-
     function Behavior:Awake()
         Daneel.Event.Listen("EventName", ALocalFunction) -- same for global functions
-        Daneel.Event.Listen("EventName", self.APublicFunction) -- do not add the parenthesis after the function name
 
         -- to fire an event, just call the Fire() function
         -- and optionally pass the argument(s) after the event name

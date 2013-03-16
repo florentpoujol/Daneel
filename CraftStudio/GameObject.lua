@@ -8,9 +8,6 @@ end
 
 -- Dynamic getters
 function GameObject.__index(gameObject, key)
-    -- return nil if the key already begins by "Get"
-    -- that means __index has already been called once and check if GameObject[funcName] exist
-    -- and it doesn't, so it called __index in loop, causing a stack overflow evrytime un unknow variable is accessed on GameObject
     if type(GameObject[key]) ~= "nil" then
         return GameObject[key]
     end 
@@ -18,12 +15,18 @@ function GameObject.__index(gameObject, key)
     local ucKey = key:ucfirst()
     local funcName = "Get"..ucKey
     if type(GameObject[funcName]) ~= "nil" then
-        return GameObject[funcName](gameObject)
+        if funcName:isoneof({"GetModelRenderer", "GetMapRenderer", "GetCamera"}) then
+            rawset(gameObject, key, GameObject[funcName](gameObject))
+            return gameObject[key]
+        else
+            return GameObject[funcName](gameObject)
+        end
     end
 
     -- maybe the key is a Script name used to acces the Behavior instance
     local behavior = gameObject:GetScriptedBehavior(ucKey, true)
     if behavior ~= nil then
+        rawset(gameObject, key, behavior)
         return behavior
     end
 
@@ -34,6 +37,7 @@ function GameObject.__index(gameObject, key)
         if path ~= nil then
             behavior = gameObject:GetScriptedBehavior(path, true)
             if behavior ~= nil then
+                rawset(gameObject, key, behavior)
                 return behavior
             end
         end
@@ -48,7 +52,12 @@ function GameObject.__newindex(gameObject, key, value)
     -- ie: variable "name" call "SetName"
     
     if GameObject[funcName] ~= nil then
-        return GameObject[funcName](gameObject, value)
+        if key == "transform" then
+            rawset(gameObject, key, value) 
+            -- needed for SetTransform because CraftStudio.CreateGameObject set the transfom variable on new gameObjects
+        else
+            return GameObject[funcName](gameObject, value)
+        end
     end
 
     rawset(gameObject, key, value)
@@ -57,6 +66,11 @@ end
 
 
 ----------------------------------------------------------------------------------
+
+-- original gameObject seems to take two args
+-- The GameObject table
+-- the internal representation of the gameObject (the content of the inner variable)
+local OriginalNew = GameObject.New
 
 --- Create a new gameObject with optional initialisation parameters.
 -- @param name (string) The GameObject name.
@@ -474,7 +488,11 @@ function GameObject.SetComponent(gameObject, componentType, params, scriptedBeha
         component = gameObject:GetComponent(componentType)
     end
 
-    component:Set(params)
+    if component == nil then
+        Daneel.Debug.PrintError(errorHead.."Component of type '"..componentType.."' was not found.")
+    else
+        component:Set(params)
+    end
 
     Daneel.Debug.StackTrace.EndFunction("GameObject.SetComponent")
 end

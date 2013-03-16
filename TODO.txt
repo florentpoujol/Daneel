@@ -1,11 +1,6 @@
 
 
-- tester tout ça
-
-- ajouter exemple pour la stacktrace
-
-
-- option de débug : retourner erreur ou juste nil quand argument texte nom d'une go, asset est pas trouver
+- permettre l'appel de Behavior functions lors de l'appel aux Events
 
 
 

@@ -243,9 +243,12 @@ function table.print(t)
 
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead, nil, true)
     
-    print("~~~~~ table.print() ~~~~~ Start ~~~~~")
-    print("Table : "..tostring(t))
-    print("~~~~~")
+    local tableString = tostring(t)
+    local rawTableString = Daneel.Debug.ToRawString(t)
+    if tableString ~= RawTableString then
+        tableString = tableString.." / "..rawTableString
+    end
+    print("~~~~~ table.print("..tableString..") ~~~~~ Start ~~~~~")
 
     if table.length(t) == 0 then
         print("Provided table is empty.")
@@ -255,7 +258,7 @@ function table.print(t)
         end
     end
 
-    print("~~~~~ table.print() ~~~~~ End ~~~~~")
+    print("~~~~~ table.print("..tableString..") ~~~~~ End ~~~~~")
 
     Daneel.Debug.StackTrace.EndFunction("table.print")
 end

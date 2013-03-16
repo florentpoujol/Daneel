@@ -90,10 +90,10 @@ Daneel.defaultConfig = {
 
     -- Scripts
     daneelScripts = {
-        "Trigger",
-        "TriggerableGameObject",
-        "CastableGameObject",
-        "MousehoverableGameObject",
+        "Daneel/Behaviors/Trigger",
+        "Daneel/Behaviors/TriggerableGameObject",
+        "Daneel/Behaviors/CastableGameObject",
+        "Daneel/Behaviors/MousehoverableGameObject",
     }
 }
 
@@ -176,12 +176,12 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
     
     local argType = type(argumentName)
     if argType ~= "string" then
-        error(_errorHead.."Argument 'argumentName' is of type '"..argType.."' with value '"..tostring(argumentName).."' instead of 'string'.")
+        Daneel.Debug.PrintError(_errorHead.."Argument 'argumentName' is of type '"..argType.."' with value '"..tostring(argumentName).."' instead of 'string'.")
     end
 
     argType = type(expectedArgumentTypes)
     if argType ~= "string" and argType ~= "table" then
-        error(_errorHead.."Argument 'expectedArgumentTypes' is of type '"..argType.."' with value '"..tostring(expectedArgumentTypes).."' instead of 'string' or 'table'.")
+        Daneel.Debug.PrintError(_errorHead.."Argument 'expectedArgumentTypes' is of type '"..argType.."' with value '"..tostring(expectedArgumentTypes).."' instead of 'string' or 'table'.")
     end
 
     if argType == "string" then
@@ -190,14 +190,14 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
 
     argType = type(errorHead)
     if arType ~= nil and argType ~= "string" then
-        error(_errorHead.."Argument 'errorHead' is of type '"..argType.."' with value '"..tostring(errorHead).."' instead of 'string'.")
+        Daneel.Debug.PrintError(_errorHead.."Argument 'errorHead' is of type '"..argType.."' with value '"..tostring(errorHead).."' instead of 'string'.")
     end
 
     if errorHead == nil then errorHead = "" end
 
     argType = type(errorEnd)
     if arType ~= nil and argType ~= "string" then
-        error(_errorHead.."Argument 'errorEnd' is of type '"..argType.."' with value '"..tostring(errorEnd).."' instead of 'string'.")
+        Daneel.Debug.PrintError(_errorHead.."Argument 'errorEnd' is of type '"..argType.."' with value '"..tostring(errorEnd).."' instead of 'string'.")
     end
 
     if errorEnd == nil then errorEnd = "" end
@@ -233,28 +233,28 @@ function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgum
     
     local argType = type(argumentName)
     if argType ~= "string" then
-        error(_errorHead.."Argument 'argumentName' is of type '"..argType.."' with value '"..tostring(argumentName).."' instead of 'string'.")
+        Daneel.Debug.PrintError(_errorHead.."Argument 'argumentName' is of type '"..argType.."' with value '"..tostring(argumentName).."' instead of 'string'.")
     end
 
-    argType = type(expectedArgTypes)
+    argType = type(expectedArgumentTypes)
     if argType ~= "string" and argType ~= "table" then
-        error(_errorHead.."Argument 'expectedArgTypes' is of type '"..argType.."' with value '"..tostring(expectedArgTypes).."' instead of 'string' or 'table'.")
+        Daneel.Debug.PrintError(_errorHead.."Argument 'expectedArgumentTypes' is of type '"..argType.."' with value '"..tostring(expectedArgumentTypes).."' instead of 'string' or 'table'.")
     end
 
     if argType == "string" then
-        expectedArgTypes = {expectedArgTypes}
+        expectedArgumentTypes = {expectedArgumentTypes}
     end
 
     argType = type(errorHead)
     if arType ~= nil and argType ~= "string" then
-        error(_errorHead.."Argument 'errorHead' is of type '"..argType.."' with value '"..tostring(errorHead).."' instead of 'string'.")
+        Daneel.Debug.PrintError(_errorHead.."Argument 'errorHead' is of type '"..argType.."' with value '"..tostring(errorHead).."' instead of 'string'.")
     end
 
     if errorHead == nil then errorHead = "" end
 
     argType = type(errorEnd)
     if arType ~= nil and argType ~= "string" then
-        error(_errorHead.."Argument 'errorEnd' is of type '"..argType.."' with value '"..tostring(errorEnd).."' instead of 'string'.")
+        Daneel.Debug.PrintError(_errorHead.."Argument 'errorEnd' is of type '"..argType.."' with value '"..tostring(errorEnd).."' instead of 'string'.")
     end
 
     if errorEnd == nil then errorEnd = "" end
@@ -566,9 +566,9 @@ function Daneel.Events.Fire(eventName, ...)
         elseif functionType == "table" then
             if func.gameObject ~= nil then
                 if func.broadcast then
-                    gameObject:BroadcastMessage(func.functionName, arg)
+                    func.gameObject:BroadcastMessage(func.functionName, arg)
                 else
-                    gameObject:SendMessage(func.functionName, arg)
+                    func.gameObject:SendMessage(func.functionName, arg)
                 end
             else
                 table.remove(Daneel.Events.events[eventName], i)
@@ -614,11 +614,11 @@ function Daneel.Update()
         end
 
         if CraftStudio.Input.WasButtonJustPressed(buttonName) then
-            Daneel.Events.Fire("On"..buttonName:ucfirst().."ButtonDown")
+            Daneel.Events.Fire("On"..buttonName:ucfirst().."ButtonJustPressed")
         end
 
-        if CraftStudio.Input.WasButtonJustPressed(buttonName) then
-            Daneel.Events.Fire("On"..buttonName:ucfirst().."ButtonDown")
+        if CraftStudio.Input.WasButtonJustReleased(buttonName) then
+            Daneel.Events.Fire("On"..buttonName:ucfirst().."ButtonJustReleased")
         end
     end
 end
