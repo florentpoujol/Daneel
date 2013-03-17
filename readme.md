@@ -11,6 +11,47 @@ Daneel is a framework for [CraftStudio][] that aims to extend and render more fl
 Daneel never deprecate anything from the current CraftStudio's API which remains usable in its entirety [as decribed in the scripting reference][CSscriptingreference] on the offical wiki.  
 Daneel mostly add new objects, new functions on existing objects and sometimes allow to pass different argument types and new arguments on existing functions.
 
+## Overview
+
+Call getters and setters as if they were variable :
+    
+    self.gameObject.name -- same as self.gameObject:GetName()
+    self.gameObject.name = "new name" -- same as self.gameObject:SetName("new name")
+
+Access any component (including ScriptedBehaviors with a few configuration)on the gameObject in a similar way, like you can already do with the transform :
+
+    self.gameObject.modelRenderer
+
+    -- the "getters/setters as variable" thing also works on components :
+    self.gameObject.mapRenderer.map = "folder/map name" -- you can also see here that you can use the map name instead of the map asset
+    
+    -- writing this same line "the old way" takes twice as much characters :
+    self.gameObject:GetComponent("MapRenderer"):SetMap(CraftStudio.FindAsset("folder/map name", "Map"))
+
+Set variable or call setters in mass on gameObjects and components.
+    
+    gameObject:Set({
+        parent = "my parent name",
+
+        modelRenderer = {
+            model = "model name"
+        }
+
+        myScript = {
+            health = 100
+        }
+    })
+
+
+Also :
+
+- Use the gameObject or asset name instead of the actual object with some functions
+- Simpler raycasting with `ray:InstersectsGameObject()` or `ray:Cast()`
+- Triggers (proximity check and interaction with the gameObject in range)
+- Easily interact with gameObjects hovered by the mouse
+- Events
+- Hotkeys (fire events when pressing buttons)
+
 
 ## Conventions
 
