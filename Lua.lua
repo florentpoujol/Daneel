@@ -98,36 +98,26 @@ end
 
 
 
--- Built-in table have no metatable
--- The table.new() function add the 'table' object as the metatable
-
 table.__index = table
 
 --- Constructor for dynamic tables that allow to use the functions in the table library on the table copies.
--- @param ... [optional] (mixed) A single table, or 0 or more values to fill the new table with.
+-- @param t [optional] (table) A table.
 -- @return (table) The new table.
-function table.new(...)
-    local t = {}
-
-    if arg[2] ~= nil then -- at least two arguments
-        Daneel.Debug.StackTrace.BeginFunction("table.new", unpack(arg))
-        t = arg
-    elseif arg[1] == nil then
-       Daneel.Debug.StackTrace.BeginFunction("table.new")
+function table.new(t)
+    Daneel.Debug.StackTrace.BeginFunction("table.new", t)
+    local newTable = t
+    if newTable == nil then
+        newTable = {}
     else
-        -- only one argument, must be a table
-        Daneel.Debug.StackTrace.BeginFunction("table.new", arg[1])
-        Daneel.Debug.CheckArgType(arg[1], "...", "table", "table.new([...]) : ", "When passing only one argument, it must be a table.")
-        t = arg[1]
+        Daneel.Debug.CheckArgType(t, "table", "table", "table.new([table]) : ")
     end
 
-    t = setmetatable(t, table)
-    Daneel.Debug.StackTrace.EndFunction("table.new", t)
-    return t
+    newTable = setmetatable(t, table)
+    Daneel.Debug.StackTrace.EndFunction("table.new", newTable)
+    return newTable
 end
 
 --- Return a copy of the provided table.
--- Dependent of table.new().
 -- @param t (table) The table to copy.
 function table.copy(t)
     Daneel.Debug.StackTrace.BeginFunction("table.copy", t)
@@ -135,7 +125,7 @@ function table.copy(t)
     local t2 = table.new()
     for key, value in pairs(t) do
         t2[key] = value
-    end  
+    end
     Daneel.Debug.StackTrace.EndFunction("table.copy", t2)
     return t2
 end
@@ -147,7 +137,7 @@ end
 function table.containskey(t, p_key)
     Daneel.Debug.StackTrace.BeginFunction("table.containskey", t, p_key)
     local errorHead = "table.containskey(table, key) : "
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead, nil, true)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
     
     if p_key == nil then
         Daneel.Debug.PrintError(errorHead.."Argument 'p_key' is 'nil'.")
@@ -173,7 +163,7 @@ end
 function table.containsvalue(t, p_value, ignoreCase)
     Daneel.Debug.StackTrace.BeginFunction("table.constainsvalue", t, p_value, ignoreCase)
     local errorHead = "table.containsvalue(table, value) : "
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead, nil, true)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
     
     if p_value == nil then
         Daneel.Debug.PrintError(errorHead.."Argument 'value' is nil.")
@@ -213,7 +203,7 @@ end
 function table.length(t, keyType)
     Daneel.Debug.StackTrace.BeginFunction("table.length", t, keyType)
     local errorHead = "table.length(table, keyType) : "
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead, nil, true)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
     
     local length = 0
     
@@ -241,7 +231,7 @@ function table.print(t)
         return
     end
 
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead, nil, true)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
     
     local tableString = tostring(t)
     local rawTableString = Daneel.Debug.ToRawString(t)
@@ -276,7 +266,7 @@ function table.printmetatable(t)
         return
     end
 
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead, nil, true)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
     
     local mt = getmetatable(t)
     if mt == nil then
@@ -284,26 +274,23 @@ function table.printmetatable(t)
         Daneel.Debug.StackTrace.EndFunction("table.printmetatable")
         return
     end
-
-    if table.length(mt) == 0 then
-        print(errorHead.."The metatable of the provided table is empty.")
-        Daneel.Debug.StackTrace.EndFunction("table.printmetatable")
-        return
-    end
     
-    print("~~~~~ table.printmetatable() ~~~~~ Start ~~~~~")
-    print("Metatable : "..tostring(mt))
-    print("~~~~~")
+    local tableString = tostring(mt)
+    local rawTableString = Daneel.Debug.ToRawString(mt)
+    if tableString ~= RawTableString then
+        tableString = tableString.." / "..rawTableString
+    end
+    print("~~~~~ table.printmetatable("..tableString..") ~~~~~ Start ~~~~~")
 
     if table.length(t) == 0 then
         print("The metatable is empty.")
     else
-        for key, value in pairs(mt) do
+        for key, value in pairs(t) do
             print(key, value)
         end
     end
 
-    print("~~~~~ table.printmetatable() ~~~~~ End ~~~~~")
+    print("~~~~~ table.printmetatable("..tableString..") ~~~~~ End ~~~~~")
 
     Daneel.Debug.StackTrace.EndFunction("table.printmetatable")
 end
@@ -322,7 +309,8 @@ function table.merge(...)
     local fullTable = table.new()
     
     for i, t in ipairs(arg) do
-        if type(t) == "table" then
+        local argType = type(t)
+        if argType == "table" then
             for key, value in pairs(t) do
                 if math.isinteger(key) then
                     table.insert(fullTable, value)
@@ -330,6 +318,8 @@ function table.merge(...)
                     fullTable[key] = value
                 end
             end
+        else
+            print("table.merge(...) : WARNING : Argument n°"..i.." is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'. The argument as been ignored.")
         end
     end
     
@@ -344,8 +334,8 @@ end
 function table.compare(table1, table2)
     Daneel.Debug.StackTrace.BeginFunction("table.compare", table1, table2)
     local errorHead = "table.compare(table1, table2) : "
-    Daneel.Debug.CheckArgType(table1, "table1", "table", errorHead, nil, true)
-    Daneel.Debug.CheckArgType(table2, "table2", "table", errorHead, nil, true)
+    Daneel.Debug.CheckArgType(table1, "table1", "table", errorHead)
+    Daneel.Debug.CheckArgType(table2, "table2", "table", errorHead)
 
     local areEqual = true
 
@@ -365,20 +355,20 @@ function table.compare(table1, table2)
     return areEqual
 end
 
---- Create an associative table with the provided keys and values table
--- @param keys (table) The keys of the future table
--- @param values (table) The values of the future table
--- @param strict [optional default=false] (boolean) If true, the function returns false if the keys and values table have different length
--- @return (table or boolean) The combined table or false if the table have different length
+--- Create an associative table with the provided keys and values table.
+-- @param keys (table) The keys of the future table.
+-- @param values (table) The values of the future table.
+-- @param strict [optional default=false] (boolean) If true, the function returns false if the keys and values table have different length.
+-- @return (table or boolean) The combined table or false if the table have different length.
 function table.combine(keys, values, strict)
     Daneel.Debug.StackTrace.BeginFunction("table.combine", keys, values, strict)
     local errorHead = "table.combine(keys, values[, strict]) : "
-    Daneel.Debug.CheckArgType(keys, "keys", "table", errorHead, nil, true)
-    Daneel.Debug.CheckArgType(values, "values", "table", errorHead, nil, true)
+    Daneel.Debug.CheckArgType(keys, "keys", "table", errorHead)
+    Daneel.Debug.CheckArgType(values, "values", "table", errorHead)
     Daneel.Debug.CheckOptionalArgType(strict, "strict", "boolean", errorHead)
 
     if table.length(keys) ~= table.length(values) then
-        print(errorHead.."Arguments 'keys' and 'values' have different length.")
+        print(errorHead.."WARNING : Arguments 'keys' and 'values' have different length.")
 
         if strict == true then
             Daneel.Debug.StackTrace.EndFunction("table.combine", false)
@@ -396,15 +386,15 @@ function table.combine(keys, values, strict)
     return newTable
 end
 
---- Remove the specified value from the provided table
--- @param t (table) The table
--- @param value (mixed) The value to remove
--- @param singleRemove [optional default=false] (boolean) Tell wether to remove all occurences of the value or just the first one
--- @return (table) The table
+--- Remove the specified value from the provided table.
+-- @param t (table) The table.
+-- @param value (mixed) The value to remove.
+-- @param singleRemove [optional default=false] (boolean) Tell wether to remove all occurences of the value or just the first one.
+-- @return (table) The table.
 function table.removevalue(t, value, singleRemove)
-    Daneel.Debug.StackTrace.BeginFunction("table.removevalue", t, values, singleRemove)
+    Daneel.Debug.StackTrace.BeginFunction("table.removevalue", t, value, singleRemove)
     local errorHead = "table.removevalue(table, value[, singleRemove]) : "
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead, nil, true)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
     Daneel.Debug.CheckOptionalArgType(singleRemove, "singleRemove", "boolean", errorHead)
     
     if value == nil then
@@ -429,13 +419,13 @@ function table.removevalue(t, value, singleRemove)
     return t
 end
 
---- Return all the keys of the provided table
--- @param t (table) The table
--- @return (table) The keys
+--- Return all the keys of the provided table.
+-- @param t (table) The table.
+-- @return (table) The keys.
 function table.getkeys(t)
     Daneel.Debug.StackTrace.BeginFunction("table.getkeys", t)
     local errorHead = "table.getkeys(table) : "
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead, nil, true)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
 
     local keys = table.new()
     for key, value in pairs(t) do
@@ -446,13 +436,13 @@ function table.getkeys(t)
     return keys
 end
 
---- Return all the values of the provided table
--- @param t (table) The table
--- @return (table) The values
+--- Return all the values of the provided table.
+-- @param t (table) The table.
+-- @return (table) The values.
 function table.getvalues(t)
     Daneel.Debug.StackTrace.BeginFunction("table.getvalues", t)
     local errorHead = "table.getvalues(t) : "
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead, nil, true)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
 
     local values = table.new()
     for key, value in pairs(t) do
@@ -463,14 +453,18 @@ function table.getvalues(t)
     return values
 end
 
---- Get the key associated with the provided value
--- @param t (table) The table
--- @param value (mixed) The value
+--- Get the key associated with the first occurence of the provided value.
+-- @param t (table) The table.
+-- @param value (mixed) The value.
 function table.getkey(t, value)
     Daneel.Debug.StackTrace.BeginFunction("table.getkey", t, value)
     local errorHead = "table.getkey(table, value) : "
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead, nil, true)
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
 
+    if value == nil then
+        Daneel.Debug.PrintError(errorHead.."Argument 'value' is nil.")
+    end
+    
     local key = nil
     for k, v in pairs(t) do
         if value == v then
