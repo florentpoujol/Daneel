@@ -319,7 +319,7 @@ end
 --- Add a component to the gameObject and optionaly initialize it.
 -- @param gameObject (GameObject) The gameObject.
 -- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer or Camera) The case-insensitive component type (as a string) or component object.
--- @param params [optional] (string, Script or table) A table of parameters to initialize the new component with or, If componentType is 'ScriptedBehavior', the mandatory script name or asset.
+-- @param params [optional] (string, Script or table) A table of parameters to initialize the new component with or, if componentType is 'ScriptedBehavior', the mandatory script name or asset.
 -- @param scriptedBehaviorParams [optional] (table) A table of parameters to initialize the new ScriptedBehavior with.
 -- @return (ScriptedBehavior, ModelRenderer, MapRenderer or Camera) The component.
 function GameObject.AddComponent(gameObject, componentType, params, scriptedBehaviorParams)
@@ -364,7 +364,7 @@ end
 
 --- Add a ScriptedBehavior to the gameObject and optionaly initialize it.
 -- @param gameObject (GameObject) The gameObject.
--- @param scriptNameOrAsset (string or Script) The script name or asset
+-- @param scriptNameOrAsset (string or Script) The script name or asset.
 -- @param params [optional] (table) A table of parameters to initialize the new component with.
 -- @return (ScriptedBehavior) The component.
 function GameObject.AddScriptedBehavior(gameObject, scriptNameOrAsset, params) 
@@ -407,9 +407,8 @@ function GameObject.AddCamera(gameObject, params) end
 --- Set the component of the specified type on the gameObject with the provided parameters.
 -- @param gameObject (GameObject) The gameObject.
 -- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform)
--- @param params (table) A table of parameters to set the component with.
--- @param params (string, Script or table) The script name or asset (if componentType is 'ScriptedBehavior'), or a table of parameters to set the new component with.
--- @param scriptedBehaviorParams [optional] (table) A table of parameters to set the ScriptedBehavior with. If componentType is 'ScriptedBehavior', this argument is mandatory.
+-- @param params (string, Script or table) A table of parameters to set the component with or, if componentType is 'ScriptedBehavior', the script name or asset.
+-- @param scriptedBehaviorParams [optional] (table) If componentType is 'ScriptedBehavior', the mandatory table of parameters to set the ScriptedBehavior with.
 function GameObject.SetComponent(gameObject, componentType, params, scriptedBehaviorParams)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.SetComponent", gameObject, componentType, params, scriptedBehaviorParams)
     local errorHead = "GameObject.SetComponent(gameObject, componentType, params[, scriptedBehaviorParams]) : "
@@ -450,6 +449,7 @@ end
 
 --- Set the ScriptedBehavior component on the gameObject with the provided parameters.
 -- @param gameObject (GameObject) The gameObject.
+-- @param scriptNameOrAsset (string or Script) The script name or asset.
 -- @param params (table) A table of parameters to set the component with.
 function GameObject.SetScriptedBehavior(gameObject, scriptNameOrAsset, params)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.SetScriptedBehavior", gameObject, scriptNameOrAsset, params)
