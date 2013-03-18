@@ -493,7 +493,7 @@ local OriginalGetComponent = GameObject.GetComponent
 -- @param gameObject (GameObject) The gameObject.
 -- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform)
 -- @param scriptNameOrAsset [optional] (string or Script) If componentType is "ScriptedBehavior", the mandatory script name or asset.
--- @return (ScriptedBehavior, ModelRenderer, MapRenderer, Camera) The component instance.
+-- @return (ScriptedBehavior, ModelRenderer, MapRenderer, Camera) The component instance, or nil if none is found.
 function GameObject.GetComponent(gameObject, componentType, scriptNameOrAsset)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.GetComponent", gameObject, componentType, scriptNameOrAsset)
     local errorHead = "GameObject.GetComponent(gameObject, componentType[, scriptNameOrAsset]) : "
@@ -547,6 +547,7 @@ function GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset, calledFro
     return component
 end
 
+-- GetComponent helpers does not exists since the component are cached on the gameObject by __index()
 
 
 ----------------------------------------------------------------------------------
