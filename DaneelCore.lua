@@ -209,10 +209,10 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
     Daneel.Debug.PrintError(p_errorHead.."Argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..p_errorEnd)
 end
 
---- Check the provided argument's type against the provided type and display error if they don't match.
+--- Check the provided argument's type against the provided type and display error if they don't match and the provided argument is non nil.
 -- @param argument (mixed) The argument to check.
 -- @param argumentName (string) The argument name.
--- @param expectedArgumentTypes (string) The expected argument type.
+-- @param expectedArgumentTypes (string) The expected argument type(s).
 -- @param p_errorHead [optional] (string) The begining of the error message.
 -- @param p_errorEnd [optional] (string) The end of the error message.
 function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, p_errorHead, p_errorEnd)
@@ -262,7 +262,7 @@ function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgum
     Daneel.Debug.PrintError(p_errorHead.."Optional argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..p_errorEnd)
 end
 
---- Return the craftStudio type of the provided argument.
+--- Return the "CraftStudio" type of the provided argument.
 -- @param object (mixed) The argument to get the type of.
 -- @param returnLuaTypeOnly [optional default=false] (boolean) Tell wether to return only Lua's built-in type.
 -- @return (string) The type.
@@ -309,9 +309,9 @@ function Daneel.Debug.PrintError(message)
     error(message)
 end
 
---- Check the value of 'componentType' and throw error if it is not one of the valid component types or objects.
--- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform) The component type as a string or the asset obejct.
--- @return (string) The component type as a string with the correct case.
+--- Check the value of 'componentType', correct its case or convert it to string and throw error if it is not one of the valid component types or objects.
+-- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform) The component type as a string or the asset object.
+-- @return (string) The correct component type.
 function Daneel.Debug.CheckComponentType(componentType)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckComponentType", componentType)
     local errorHead = "Daneel.Debug.CheckComponentType(componentType) : "
@@ -332,9 +332,9 @@ function Daneel.Debug.CheckComponentType(componentType)
     return componentType
 end
 
---- Check the value of 'assetType' and throw error if it is not one of the valid asset types or objects.
--- @param assetType (string, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document) The asset type as string or the asset object.
--- @return (string) The asset type as a string with the correct case.
+--- Check the value of 'assetType', correct its case or convert it to string and throw error if it is not one of the valid asset types or objects.
+-- @param assetType (string, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document) The asset type as a string or the asset object.
+-- @return (string) The coorect asset type.
 function Daneel.Debug.CheckAssetType(assetType)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckAssetType", assetType)
     local errorHead = "Daneel.Debug.CheckAssetType(assetType) : "
@@ -417,7 +417,8 @@ end
 -- Register a function output in the stack trace.
 function Daneel.Debug.StackTrace.EndFunction()
     if Daneel.config.debug == false then return end
-    -- since 16/05/2013 no arguments is needed anymore, but 
+    -- since 16/05/2013 no arguments is needed anymore, since the StackTrace only keeps open functions calls and never keep returned values
+    -- I didn't rewrote all the calls to EndFunction() 
     Daneel.Debug.StackTrace.messages[Daneel.Debug.StackTrace.depth] = nil
     Daneel.Debug.StackTrace.depth = Daneel.Debug.StackTrace.depth - 1
 end
