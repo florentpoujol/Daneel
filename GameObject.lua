@@ -88,7 +88,7 @@ function GameObject.New(name, params)
     return gameObject
 end
 
---- Add a scene as a new gameObject with optional initialisation parameters.
+--- Add a scene to the existing scene as a new gameObject with optional initialisation parameters.
 -- @param gameObjectName (string) The gameObject name.
 -- @param scene (string or Scene) The scene name or scene asset.
 -- @param params [optional] (string, GameObject or table) The parent gameObject name, or parent GameObject or a table with parameters to initialize the new gameObject with.
@@ -195,14 +195,8 @@ end
 -- @return (GameObject) The gameObject or nil if none is found.
 function GameObject.Get(name)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.Get", name)
-
-    local argType = type(name)
-    if argType ~= "string" then
-        error("GameObject.Get(name) : Argument 'name' is of type '"..argType.."' with value '"..tostring(name).."' instead of 'string'. Must be the gameObject name.")
-    end
-
+    Daneel.Debug.CheckArgType(name, "name", "string", "GameObject.Get(name) :")
     local gameObject = CraftStudio.FindGameObject(name)
-
     Daneel.Debug.StackTrace.EndFunction("GameObject.Get", gameObject)
     return gameObject
 end
