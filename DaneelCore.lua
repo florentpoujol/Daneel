@@ -137,19 +137,18 @@ end
 
 Daneel.Utilities = {}
 
---- Make sure that the case of the provided name is correct.
--- by checking against value in the provided set.
+--- Make sure that the case of the provided name is correct by checking against the values in the provided set.
 -- @param name (string) The name to check the case.
--- @param set (table) A table of value to check the name against.
+-- @param set (table) A table of values to check the name against.
 function Daneel.Utilities.CaseProof(name, set)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.CaseProof", name, set)
     local errorHead = "Daneel.Utilities.CaseProof(name, set) : " 
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckArgType(set, "set", "table", errorHead)
 
-    for i, setItem in ipairs(set) do
-        if name:lower() == setItem:lower() then
-            name = setItem
+    for i, item in ipairs(set) do
+        if name:lower() == item:lower() then
+            name = item
         end
     end
 
