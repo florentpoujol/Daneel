@@ -158,12 +158,12 @@ end
 Daneel.Debug = {}
 
 
---- Check the provided argument's type against the provided type and display error if they don't match
--- @param argument (mixed) The argument to check
--- @param argumentName (string) The argument name
--- @param expectedArgumentTypes (string or table) The expected argument type(s)
--- @param p_errorHead [optional] (string) The begining of the error message
--- @param p_errorEnd [optional] (string) The end of the error message
+--- Check the provided argument's type against the provided type and display error if they don't match.
+-- @param argument (mixed) The argument to check.
+-- @param argumentName (string) The argument name.
+-- @param expectedArgumentTypes (string or table) The expected argument type(s).
+-- @param p_errorHead [optional] (string) The begining of the error message.
+-- @param p_errorEnd [optional] (string) The end of the error message.
 function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes, p_errorHead, p_errorEnd)
     if Daneel.config.debug == false then return end
 
@@ -209,12 +209,12 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
     Daneel.Debug.PrintError(p_errorHead.."Argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..p_errorEnd)
 end
 
---- Check the provided argument's type against the provided type and display error if they don't match
--- @param argument (mixed) The argument to check
--- @param argumentName (string) The argument name
--- @param expectedArgumentTypes (string) The expected argument type
--- @param p_errorHead [optional] (string) The begining of the error message
--- @param p_errorEnd [optional] (string) The end of the error message
+--- Check the provided argument's type against the provided type and display error if they don't match.
+-- @param argument (mixed) The argument to check.
+-- @param argumentName (string) The argument name.
+-- @param expectedArgumentTypes (string) The expected argument type.
+-- @param p_errorHead [optional] (string) The begining of the error message.
+-- @param p_errorEnd [optional] (string) The end of the error message.
 function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, p_errorHead, p_errorEnd)
     if argument == nil or Daneel.config.debug == false then
         return
@@ -264,8 +264,8 @@ end
 
 --- Return the craftStudio type of the provided argument.
 -- @param object (mixed) The argument to get the type of.
--- @param returnLuaTypeOnly [optional default=false] (boolean) Tell wether to return only Lua's built-in type
--- @return (string) The type
+-- @param returnLuaTypeOnly [optional default=false] (boolean) Tell wether to return only Lua's built-in type.
+-- @return (string) The type.
 function Daneel.Debug.GetType(object, returnLuaTypeOnly)
     local errorHead = "Daneel.Debug.GetType(object[, returnLuaTypeOnly]) : "
     local argType = type(returnLuaTypeOnly)
@@ -301,8 +301,8 @@ function Daneel.Debug.GetType(object, returnLuaTypeOnly)
     return argType
 end
 
---- Alias for error() but print Daneel's stack trace first
--- @param message (string) The error message
+--- Alias for error() but print Daneel's stack trace first.
+-- @param message (string) The error message.
 function Daneel.Debug.PrintError(message)
     if Daneel.config.debug == false then return end
     Daneel.Debug.StackTrace.Print()
@@ -310,8 +310,8 @@ function Daneel.Debug.PrintError(message)
 end
 
 --- Check the value of 'componentType' and throw error if it is not one of the valid component types or objects.
--- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform)
--- @return (string) The component type as a string with the correct case
+-- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform) The component type as a string or the asset obejct.
+-- @return (string) The component type as a string with the correct case.
 function Daneel.Debug.CheckComponentType(componentType)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckComponentType", componentType)
     local errorHead = "Daneel.Debug.CheckComponentType(componentType) : "
@@ -333,8 +333,8 @@ function Daneel.Debug.CheckComponentType(componentType)
 end
 
 --- Check the value of 'assetType' and throw error if it is not one of the valid asset types or objects.
--- @param assetType (string, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document)
--- @return (string) The asset type as a string with the correct case
+-- @param assetType (string, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document) The asset type as string or the asset object.
+-- @return (string) The asset type as a string with the correct case.
 function Daneel.Debug.CheckAssetType(assetType)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckAssetType", assetType)
     local errorHead = "Daneel.Debug.CheckAssetType(assetType) : "
@@ -355,9 +355,9 @@ function Daneel.Debug.CheckAssetType(assetType)
     return assetType
 end
 
---- Bypass the __tostring function that may exists on the data's metatable
--- @param data (mixed) The data to be converted to string
--- @return (string) The string 
+--- Bypass the __tostring function that may exists on the data's metatable.
+-- @param data (mixed) The data to be converted to string.
+-- @return (string) The string.
 function Daneel.Debug.ToRawString(data)
     local text = tostring(data)
     
@@ -385,9 +385,9 @@ Daneel.Debug.StackTrace = {
     depth = 1,
 }
 
---- Register a function input in the stack trace
--- @param functionName (string) The function name
--- @param ... [optional] (mixed) Arguments received by the function
+--- Register a function input in the stack trace.
+-- @param functionName (string) The function name.
+-- @param ... [optional] (mixed) Arguments received by the function.
 function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
     if Daneel.config.debug == false then return end
     local errorHead = "Daneel.Debug.StackTrace.BeginFunction(functionName[, ...]) : "
@@ -414,7 +414,7 @@ function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
     table.insert(Daneel.Debug.StackTrace.messages, msg)
 end
 
--- Register a function output in the stack trace
+-- Register a function output in the stack trace.
 function Daneel.Debug.StackTrace.EndFunction()
     if Daneel.config.debug == false then return end
     -- since 16/05/2013 no arguments is needed anymore, but 
@@ -422,7 +422,7 @@ function Daneel.Debug.StackTrace.EndFunction()
     Daneel.Debug.StackTrace.depth = Daneel.Debug.StackTrace.depth - 1
 end
 
---- Print the StackTrace
+--- Print the StackTrace.
 function Daneel.Debug.StackTrace.Print()
     if Daneel.config.debug == false then return end
     local messages = Daneel.Debug.StackTrace.messages
@@ -449,8 +449,8 @@ Daneel.Events = { events = {} }
 -- The function will be called whenever the specified event will be fired.
 -- @param eventName (string) The event name.
 -- @param _function (function, string or GameObject) The function or the gameObject name or instance.
--- @param functionName [optional default="On[eventName]"] (string) If '_function' is a gameObject name or instance, the name of the function to send the message to
--- @param broadcast [optional default=false] (boolean) If '_function' is a gameObject name or instance, broadcast the message to all the gameObject's childrens
+-- @param functionName [optional default="On[eventName]"] (string) If '_function' is a gameObject name or instance, the name of the function to send the message to.
+-- @param broadcast [optional default=false] (boolean) If '_function' is a gameObject name or instance, broadcast the message to all the gameObject's childrens.
 function Daneel.Events.Listen(eventName, _function, functionName, broadcast)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Events.Listen", eventName, _function)
     local errorHead = "Daneel.Events.Listen(eventName, function) : "
@@ -592,10 +592,6 @@ function Daneel.Awake()
     
     Daneel.Debug.StackTrace.EndFunction("Daneel.Awake")
 end
-
-function Daneel.Start()
-
-end 
 
 function Daneel.Update()
     -- fire an event whenever a registered button is pressed
