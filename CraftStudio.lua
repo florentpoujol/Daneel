@@ -104,12 +104,9 @@ Component = {}
 Component.__index = Component
 
 
--- Create dynamic Getters and Setter
--- Set the key __index and __newindex on all components objects
 function Component.Init()
     local components = Daneel.config.componentObjects
     for componentType, object in pairs(components) do
-
         if componentType ~= "ScriptedBehavior" then
             -- Dynamic Getters
             object["__index"] = function(component, key) 
@@ -196,18 +193,13 @@ function Component.Init()
 end
 
 --- Apply the content of the params argument to the component in argument.
--- @param component (Scriptedbehavior, ModelRenderer, MapRenderer, Camera or Transform) The component
--- @param params (table) A table of parameters to initialize the new component with.
+-- @param component (Scriptedbehavior, ModelRenderer, MapRenderer, Camera or Transform) The component.
+-- @param params (table) A table of parameters to set the component with.
 function Component.Set(component, params)
-    if params == nil then
-        return component
-    end
-
     Daneel.Debug.StackTrace.BeginFunction("Component.Set", component, params)
     local errorHead = "Component.Set(component, params) : "
+    Daneel.Debug.CheckArgType(component, "component", Daneel.config.componentTypes, errorHead)
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
-    local componentType = Daneel.Debug.GetType(component)
-    local argType = nil
 
     for key, value in pairs(params) do
         component[key] = value
@@ -216,12 +208,12 @@ function Component.Set(component, params)
     Daneel.Debug.StackTrace.EndFunction("Component.Set", component)
 end
 
---- Destory the provided component, removing it from the gameObject
--- @param component (ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform) The component
+--- Destory the provided component, removing it from the gameObject.
+-- @param component (ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform) The component.
 function Component.Destroy(component)
     Daneel.Debug.StackTrace.BeginFunction("Component.Destroy", component)
     local errorHead = "Component.Destroy(component) : "
-    Daneel.Debug.CheckArgType(component, "component", {"ScriptedBehavior", "ModelRenderer", "MapRenderer", "Camera", "Transform"}, errorHead)
+    Daneel.Debug.CheckArgType(component, "component", Daneel.config.componentTypes, errorHead)
     CraftStudio.Destroy(component)
     Daneel.Debug.StackTrace.EndFunction("Component.Destroy")
 end
@@ -233,9 +225,9 @@ end
 
 local OriginalSetModel = ModelRenderer.SetModel
 
---- Attach the provided model to the provided modelRenderer
--- @param modelRenderer (ModelRenderer) The modelRenderer
--- @param modelNameOrAsset (string or Model) The model name or asset
+--- Attach the provided model to the provided modelRenderer.
+-- @param modelRenderer (ModelRenderer) The modelRenderer.
+-- @param modelNameOrAsset (string or Model) The model name or asset.
 function ModelRenderer.SetModel(modelRenderer, modelNameOrAsset)
     Daneel.Debug.StackTrace.BeginFunction("ModelRenderer.SetModel", modelRenderer, modelNameOrAsset)
     local errorHead = "ModelRenderer.SetModel(modelRenderer, modelNameOrAsset) : "
@@ -261,9 +253,9 @@ end
 
 local OriginalSetMap = MapRenderer.SetMap
 
---- Attach the provided map to the provided mapRenderer
--- @param mapRenderer (MapRenderer) The mapRenderer
--- @param mapNameOrAsset (string or Map) The map name or asset
+--- Attach the provided map to the provided mapRenderer.
+-- @param mapRenderer (MapRenderer) The mapRenderer.
+-- @param mapNameOrAsset (string or Map) The map name or asset.
 function MapRenderer.SetMap(mapRenderer, mapNameOrAsset)
     Daneel.Debug.StackTrace.BeginFunction("MapRenderer.SetMap", mapRenderer, mapNameOrAsset)
     local errorHead = "MapRenderer.SetMap(mapRenderer, mapNameOrAsset) : "
@@ -288,22 +280,10 @@ end
 -- Ray
 
 
--- Add a gameObject to the castableGameObject list.
--- @param gameObject (GameObject) The gameObject to add to the list.
-function Ray.RegisterCastableGameObject(gameObject)
-    Daneel.Debug.StackTrace.BeginFunction("Ray.RegisterCastableGameObject", gameObject)
-    local errorHead = "Ray.RegisterCastableGameObject(gameObject) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-
-    table.insert(Daneel.config.castableGameObjects, gameObject)
-    Daneel.Debug.StackTrace.EndFunction("Ray.RegisterCastableGameObject")
-end
-
-
--- check the collision of the ray against all castable gameObject
--- @param ray (Ray) The ray
--- @param gameObjects (table) [optional default=Daneel.config.castableGameObjects] The set of gameObjects to cast the ray against
--- @return (table) The table of RaycastHits (will be empty if the ray didn't intersects anything)
+--- Check the collision of the ray against all castable gameObject or against the provided set of gameObject.
+-- @param ray (Ray) The ray.
+-- @param gameObjects (table) [optional default=Daneel.config.castableGameObjects] The set of gameObjects to cast the ray against (or if empty, the castable gameObjects)!;
+-- @return (table) The table of RaycastHits (will be empty if the ray didn't intersects anything).
 function Ray.Cast(ray, gameObjects)
     Daneel.Debug.StackTrace.BeginFunction("Ray.Cast", ray, gameObjects)
     local errorHead = "Ray.Cast(ray) : "
@@ -312,7 +292,7 @@ function Ray.Cast(ray, gameObjects)
     if gameObjects == nil then
         gameObjects = Daneel.config.castableGameObjects
     else
-        gameObjects = Daneel.Debug.CheckArgType(gameObjects, "gameObjects", "table", errorHead)
+        Daneel.Debug.CheckArgType(gameObjects, "gameObjects", "table", errorHead)
     end
 
     local hits = table.new()
@@ -330,28 +310,40 @@ function Ray.Cast(ray, gameObjects)
 end
 
 
--- check if the ray intersect the specified gameObject
--- @param ray (Ray) The ray
--- @param gameObject (GameObject) The gameObject instance
+--- Check if the ray intersect the specified gameObject.
+-- @param ray (Ray) The ray.
+-- @param gameObject (string, GameObject) The gameObject instance or name.
 -- @return
 function Ray.IntersectsGameObject(ray, gameObject)
     Daneel.Debug.StackTrace.BeginFunction("Ray.IntersectsGameObject", ray, gameObject)
     local errorHead = "Ray.IntersectsGameObject(ray, gameObject) : "
     Daneel.Debug.CheckArgType(ray, "ray", "Ray", errorHead)
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+    Daneel.Debug.CheckArgType(gameObject, "gameObject", {"string", "GameObject"}, errorHead)
+
+    if type(gameObject) == "string" then
+        local name = gameObject
+        gameObject = GameObject.Get(name)
+        if gameObject == nil then
+            Daneel.Debug.PrintError(errorHead.."Argument 'gameObject' : gameObject with name '"..name.."' was not found.")
+        end
+    end
 
     local component = gameObject:GetComponent("ModelRenderer")
     if component ~= nil then
         local distance, normal = ray:IntersectsModelRenderer(component)
-        Daneel.Debug.StackTrace.EndFunction("Ray.IntersectsGameObject", distance, normal)
-        return distance, normal
+        if distance ~= nil then
+            Daneel.Debug.StackTrace.EndFunction("Ray.IntersectsGameObject", distance, normal)
+            return distance, normal
+        end
     end
 
     component = gameObject:GetComponent("MapRenderer")
     if component ~= nil then
         local distance, normal, hitBlockLocation, adjacentBlockLocation = ray:IntersectsMapRenderer(component)
-        Daneel.Debug.StackTrace.EndFunction("Ray.IntersectsGameObject", distance, normal, hitBlockLocation, adjacentBlockLocation)
-        return distance, normal, hitBlockLocation, adjacentBlockLocation
+        if distance ~= nil then
+            Daneel.Debug.StackTrace.EndFunction("Ray.IntersectsGameObject", distance, normal, hitBlockLocation, adjacentBlockLocation)
+            return distance, normal, hitBlockLocation, adjacentBlockLocation
+        end
     end
 
     Daneel.Debug.StackTrace.EndFunction("Ray.IntersectsGameObject")
@@ -372,13 +364,14 @@ end
 function RaycastHit.New(distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject)
     Daneel.Debug.StackTrace.BeginFunction("RaycastHit.New", distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject)
 
-    local raycastHit = table.new({
+    local raycastHit = {
         distance = distance,
         normal = normal,
         hitBlockLocation = hitBlockLocation,
         adjacentBlockLocation = adjacentBlockLocation,
         gameObject = gameObject,
-    })
+    }
+    setmetatable(raycastHit, RaycastHit)
 
     if raycastHit.hitBlockLocation ~= nil then
         raycastHit.component = "MapRenderer"
