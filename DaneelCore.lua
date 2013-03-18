@@ -116,13 +116,7 @@ function Daneel.defaultConfig.Init()
     -- 
     Daneel.defaultConfig.assetTypes = table.getkeys(Daneel.defaultConfig.assetObjects)
     Daneel.defaultConfig.componentTypes = table.getkeys(Daneel.defaultConfig.componentObjects)
-
-    local t = table.new()
-    t = t:merge(Daneel.defaultConfig.assetObjects)
-    t = t:merge(Daneel.defaultConfig.componentObjects)
-    t = t:merge(Daneel.defaultConfig.craftStudioObjects)
-    t = t:merge(Daneel.defaultConfig.daneelObjects)
-    Daneel.defaultConfig.allObjects = t
+    Daneel.defaultConfig.allObjects = table.merge(Daneel.defaultConfig.assetObjects, Daneel.defaultConfig.componentObjects, Daneel.defaultConfig.craftStudioObjects, Daneel.defaultConfig.daneelObjects)
 
     Daneel.config.scripts = table.merge(Daneel.config.daneelScripts, Daneel.config.scripts)
     
@@ -168,21 +162,21 @@ Daneel.Debug = {}
 -- @param argument (mixed) The argument to check
 -- @param argumentName (string) The argument name
 -- @param expectedArgumentTypes (string or table) The expected argument type(s)
--- @param errorHead [optional] (string) The begining of the error message
--- @param errorEnd [optional] (string) The end of the error message
-function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd, getLuaTypeOnly)
+-- @param p_errorHead [optional] (string) The begining of the error message
+-- @param p_errorEnd [optional] (string) The end of the error message
+function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes, p_errorHead, p_errorEnd)
     if Daneel.config.debug == false then return end
 
-    local _errorHead = "Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes[, errorHead, errorEnd]) : "
+    local errorHead = "Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes[, errorHead, errorEnd]) : "
     
     local argType = type(argumentName)
     if argType ~= "string" then
-        Daneel.Debug.PrintError(_errorHead.."Argument 'argumentName' is of type '"..argType.."' with value '"..tostring(argumentName).."' instead of 'string'.")
+        Daneel.Debug.PrintError(errorHead.."Argument 'argumentName' is of type '"..argType.."' with value '"..tostring(argumentName).."' instead of 'string'.")
     end
 
     argType = type(expectedArgumentTypes)
     if argType ~= "string" and argType ~= "table" then
-        Daneel.Debug.PrintError(_errorHead.."Argument 'expectedArgumentTypes' is of type '"..argType.."' with value '"..tostring(expectedArgumentTypes).."' instead of 'string' or 'table'.")
+        Daneel.Debug.PrintError(errorHead.."Argument 'expectedArgumentTypes' is of type '"..argType.."' with value '"..tostring(expectedArgumentTypes).."' instead of 'string' or 'table'.")
     end
 
     if argType == "string" then
@@ -191,55 +185,51 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
 
     argType = type(errorHead)
     if arType ~= nil and argType ~= "string" then
-        Daneel.Debug.PrintError(_errorHead.."Argument 'errorHead' is of type '"..argType.."' with value '"..tostring(errorHead).."' instead of 'string'.")
+        Daneel.Debug.PrintError(errorHead.."Argument 'errorHead' is of type '"..argType.."' with value '"..tostring(errorHead).."' instead of 'string'.")
     end
 
     if errorHead == nil then errorHead = "" end
 
     argType = type(errorEnd)
     if arType ~= nil and argType ~= "string" then
-        Daneel.Debug.PrintError(_errorHead.."Argument 'errorEnd' is of type '"..argType.."' with value '"..tostring(errorEnd).."' instead of 'string'.")
+        Daneel.Debug.PrintError(errorHead.."Argument 'errorEnd' is of type '"..argType.."' with value '"..tostring(errorEnd).."' instead of 'string'.")
     end
 
     if errorEnd == nil then errorEnd = "" end
 
-
     --
-
-    argType = Daneel.Debug.GetType(argument, getLuaTypeOnly)
-    
-    --for i, expectedType in ipairs(expectedArgumentTypes) do
-    for i = 1, #expectedArgumentTypes do
-        expectedType = expectedArgumentTypes[i]
-        if argType == expectedType then
+    argType = Daneel.Debug.GetType(argument)
+    local luaArgType = type(argument) -- any object (that are tables) will now pass the test even when Daneel.Debug.GetType(argument) does not return "table" 
+    for i, expectedType in ipairs(expectedArgumentTypes) do
+        if argType == expectedType or luaArgType == expectedType then
             return
         end
     end
     
-    Daneel.Debug.PrintError(errorHead.."Argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..errorEnd)
+    Daneel.Debug.PrintError(p_errorHead.."Argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..p_errorEnd)
 end
 
 --- Check the provided argument's type against the provided type and display error if they don't match
 -- @param argument (mixed) The argument to check
 -- @param argumentName (string) The argument name
 -- @param expectedArgumentTypes (string) The expected argument type
--- @param errorHead [optional] (string) The begining of the error message
--- @param errorEnd [optional] (string) The end of the error message
-function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd)
+-- @param p_errorHead [optional] (string) The begining of the error message
+-- @param p_errorEnd [optional] (string) The end of the error message
+function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, p_errorHead, p_errorEnd)
     if argument == nil or Daneel.config.debug == false then
         return
     end
 
-    local _errorHead = "Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd) : "
+    local errorHead = "Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd) : "
     
     local argType = type(argumentName)
     if argType ~= "string" then
-        Daneel.Debug.PrintError(_errorHead.."Argument 'argumentName' is of type '"..argType.."' with value '"..tostring(argumentName).."' instead of 'string'.")
+        Daneel.Debug.PrintError(errorHead.."Argument 'argumentName' is of type '"..argType.."' with value '"..tostring(argumentName).."' instead of 'string'.")
     end
 
     argType = type(expectedArgumentTypes)
     if argType ~= "string" and argType ~= "table" then
-        Daneel.Debug.PrintError(_errorHead.."Argument 'expectedArgumentTypes' is of type '"..argType.."' with value '"..tostring(expectedArgumentTypes).."' instead of 'string' or 'table'.")
+        Daneel.Debug.PrintError(errorHead.."Argument 'expectedArgumentTypes' is of type '"..argType.."' with value '"..tostring(expectedArgumentTypes).."' instead of 'string' or 'table'.")
     end
 
     if argType == "string" then
@@ -248,47 +238,47 @@ function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgum
 
     argType = type(errorHead)
     if arType ~= nil and argType ~= "string" then
-        Daneel.Debug.PrintError(_errorHead.."Argument 'errorHead' is of type '"..argType.."' with value '"..tostring(errorHead).."' instead of 'string'.")
+        Daneel.Debug.PrintError(errorHead.."Argument 'errorHead' is of type '"..argType.."' with value '"..tostring(errorHead).."' instead of 'string'.")
     end
 
     if errorHead == nil then errorHead = "" end
 
     argType = type(errorEnd)
     if arType ~= nil and argType ~= "string" then
-        Daneel.Debug.PrintError(_errorHead.."Argument 'errorEnd' is of type '"..argType.."' with value '"..tostring(errorEnd).."' instead of 'string'.")
+        Daneel.Debug.PrintError(errorHead.."Argument 'errorEnd' is of type '"..argType.."' with value '"..tostring(errorEnd).."' instead of 'string'.")
     end
 
     if errorEnd == nil then errorEnd = "" end
 
     --
-
     argType = Daneel.Debug.GetType(argument)
+    local luaArgType = type(argument)
     for i, expectedType in ipairs(expectedArgumentTypes) do
-        if argType == expectedType then
+        if argType == expectedType or luaArgType == expectedType then
             return
         end
     end
     
-    Daneel.Debug.PrintError(errorHead.."Optional argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..errorEnd)
+    Daneel.Debug.PrintError(p_errorHead.."Optional argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..p_errorEnd)
 end
 
---- Return the craftStudio Type of the provided argument
--- @param object (mixed) The argument to get the type of
--- @param getLuaTypeOnly [optional default=false] (boolean) Tell wether to look only for Lua's type
+--- Return the craftStudio type of the provided argument.
+-- @param object (mixed) The argument to get the type of.
+-- @param returnLuaTypeOnly [optional default=false] (boolean) Tell wether to return only Lua's built-in type
 -- @return (string) The type
-function Daneel.Debug.GetType(object, getLuaTypeOnly)
-    local errorHead = "Daneel.Debug.GetType(object[, getLuaTypeOnly]) : "
-    local argType = type(getLuaTypeOnly)
+function Daneel.Debug.GetType(object, returnLuaTypeOnly)
+    local errorHead = "Daneel.Debug.GetType(object[, returnLuaTypeOnly]) : "
+    local argType = type(returnLuaTypeOnly)
     if arType ~= nil and argType ~= "boolean" then
-        error(errorHead.."Argument 'getLuaTypeOnly' is of type '"..argType.."' with value '"..tostring(getLuaTypeOnly).."' instead of 'boolean'.")
+        error(errorHead.."Argument 'returnLuaTypeOnly' is of type '"..argType.."' with value '"..tostring(returnLuaTypeOnly).."' instead of 'boolean'.")
     end
 
-    if getLuaTypeOnly == nil then getLuaTypeOnly = false end
+    if returnLuaTypeOnly == nil then returnLuaTypeOnly = false end
 
     --
     argType = type(object)
 
-    if getLuaTypeOnly == false and argType == "table" then
+    if returnLuaTypeOnly == false and argType == "table" then
         -- for all other cases, the type is defined by the object's metatable
         local mt = getmetatable(object)
 
