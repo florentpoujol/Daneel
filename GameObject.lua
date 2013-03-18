@@ -52,10 +52,7 @@ function GameObject.__newindex(gameObject, key, value)
     -- ie: variable "name" call "SetName"
     
     if GameObject[funcName] ~= nil then
-        if key == "transform" then
-            rawset(gameObject, key, value) 
-            -- needed for SetTransform because CraftStudio.CreateGameObject set the transfom variable on new gameObjects
-        else
+        if key ~= "transform" then -- needed because CraftStudio.CreateGameObject() set the transfom variable on new gameObjects
             return GameObject[funcName](gameObject, value)
         end
     end
@@ -67,10 +64,6 @@ end
 
 ----------------------------------------------------------------------------------
 
--- original gameObject seems to take two args
--- The GameObject table
--- the internal representation of the gameObject (the content of the inner variable)
-local OriginalNew = GameObject.New
 
 --- Create a new gameObject with optional initialisation parameters.
 -- @param name (string) The GameObject name.
@@ -110,7 +103,6 @@ function GameObject.Instantiate(gameObjectName, scene, params)
     if type(scene) == "string" then
         local sceneName = scene
         scene = Asset.Get(sceneName, "Scene")
-
         if scene == nil then
             Daneel.Debug.PrintError(errorHead.."Argument 'scene' : Scene asset with name '"..sceneName.."' was not found.")
         end
@@ -129,17 +121,11 @@ function GameObject.Instantiate(gameObjectName, scene, params)
     return gameObject
 end
 
---- Apply the content of the params argument to the gameObject in argument.
+--- Apply the content of the params argument to the provided gameObject.
 -- @param gameObject (GameObject) The gameObject
--- @param params (table)
+-- @param params (table) A table of parameters to set the gameObject with.
 function GameObject.Set(gameObject, params)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.Set", gameObject, params)
-    
-    if params == nil then
-        Daneel.Debug.StackTrace.EndFunction("GameObject.Set", gameObject)
-        return gameObject
-    end
-
     local errorHead = "GameObject.Set(gameObject, params) : "
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
     local argType = nil
@@ -155,6 +141,7 @@ function GameObject.Set(gameObject, params)
             end
 
             local scriptParams = nil
+            local scriptNameOrAsset = script
             if argType == "table" then
                 scriptParams = script
                 scriptNameOrAsset = i
@@ -168,18 +155,19 @@ function GameObject.Set(gameObject, params)
             if scriptParams ~= nil then
                 component:Set(scriptParams)
             end
-        end 
+        end
+
+        params.scriptedBehaviors = nil
     end
 
     -- components
     for i, componentType in ipairs({"modelRenderer", "mapRenderer", "camera", "transform"}) do
         if params[componentType] ~= nil then
             Daneel.Debug.CheckArgType(params[componentType], "params."..componentType, "table", errorHead)
-            local ComponentType = componentType:ucfirst()
-            component = gameObject:GetComponent(ComponentType)
-            
+
+            component = gameObject:GetComponent(componentType)
             if component == nil then
-                component = gameObject:AddComponent(ComponentType)
+                component = gameObject:AddComponent(componentType)
             end
 
             component:Set(params[componentType])
