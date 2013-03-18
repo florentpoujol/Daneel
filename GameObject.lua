@@ -289,26 +289,22 @@ function GameObject.GetChildren(gameObject, recursive, includeSelf)
 end
 
 
---- Tries to call a method with the specified name on all the scripted behaviors attached to the gameObject
--- or any of its descendants. 
+--- Tries to call a method with the specified name on all the scriptedBehaviors attached to the gameObject or any of its descendants. 
 -- The data argument can be nil or a table you want the method to receive as its first (and only) argument.
--- If none of the scripted behaviors attached to the game object or its children have a method matching the specified name, nothing happens. 
--- Uses GameObject:SendMessage() on the gameObject and all children of its children.
+-- If none of the scripteBehaviors attached to the gameObject or its children have a method matching the specified name, nothing happens. 
 -- @param gameObject (GameObject) The gameObject.
 -- @param functionName (string) The method name.
 -- @param data [optional] (table) The data to pass along the method call.
 function GameObject.BroadcastMessage(gameObject, functionName, data)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.BroadcastMessage", gameObject, functionName, data)
     local errorHead = "GameObject.BroadcastMessage(gameObject, functionName[, data]) : "
-
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(data, "data", "table", errorHead)
 
-    local allChildren = table.join({gameObject}, gameObject:GetChildren())
-
-    for i, child in ipairs(allChildren) do
-        child:SendMessage(functionName, data)
+    local allGos = gameObject:GetChildren(true, true) -- the gameObject + all of its children
+    for i, go in ipairs(allGos) do
+        go:SendMessage(functionName, data)
     end
 
     Daneel.Debug.StackTrace.EndFunction("GameObject.BroadcastMessage")
