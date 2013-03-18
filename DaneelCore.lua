@@ -446,14 +446,14 @@ end
 
 Daneel.Events = { events = {} }
 
---- Make the specified function listen to the specified event.
+--- Make the provided function listen to the specified event.
 -- The function will be called whenever the specified event will be fired.
 -- @param eventName (string) The event name.
--- @param _function (function, string or GameObject) The function or the gameObject name or instance.
--- @param functionName [optional default="On[eventName]"] (string) If '_function' is a gameObject name or instance, the name of the function to send the message to.
--- @param broadcast [optional default=false] (boolean) If '_function' is a gameObject name or instance, broadcast the message to all the gameObject's childrens.
-function Daneel.Events.Listen(eventName, _function, functionName, broadcast)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Events.Listen", eventName, _function)
+-- @param p_function (function, string or GameObject) The function (not the function name) or the gameObject name or instance.
+-- @param functionName [optional default="On[eventName]"] (string) If 'p_function' is a gameObject name or instance, the name of the function to send the message to.
+-- @param broadcast [optional default=false] (boolean) If 'p_function' is a gameObject name or instance, tell wether to broadcast the message to all the gameObject's childrens (if true).
+function Daneel.Events.Listen(eventName, p_function, functionName, broadcast)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Events.Listen", eventName, p_function)
     local errorHead = "Daneel.Events.Listen(eventName, function) : "
     Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
 
@@ -461,19 +461,19 @@ function Daneel.Events.Listen(eventName, _function, functionName, broadcast)
         Daneel.Events.events[eventName] = {}
     end
 
-    local functionType = type(_function)
+    local functionType = type(p_function)
     if functionType == "function" then
-        table.insert(Daneel.Events.events[eventName], _function)
+        table.insert(Daneel.Events.events[eventName], p_function)
     else
-        Daneel.Debug.CheckArgType(_function, "_function", {"string", "GameObject"}, errorHead)
+        Daneel.Debug.CheckArgType(p_function, "p_function", {"string", "GameObject"}, errorHead)
         Daneel.Debug.CheckOptionalArgType(functionName, "functionName", "string", errorHead)
         Daneel.Debug.CheckOptionalArgType(broadcast, "broadcast", "boolean", errorHead)
 
-        local gameObject = _function
+        local gameObject = p_function
         if functionType == "string" then
-            gameObject = GameObject.Find(_function)
+            gameObject = GameObject.Find(p_function)
             if gameObject == nil then
-                Daneel.Debug.PrintError(errorHead.."Argument '_function' : gameObject with name '".._function.."' was not found in the scene.")
+                Daneel.Debug.PrintError(errorHead.."Argument 'p_function' : gameObject with name '"..p_function.."' was not found in the scene.")
             end
         end
 
@@ -577,7 +577,7 @@ end
 
 
 ----------------------------------------------------------------------------------
---
+-- Runtime
 
 
 function Daneel.Awake()
@@ -595,6 +595,8 @@ function Daneel.Awake()
 end
 
 function Daneel.Update()
+
+    -- HotKeys
     -- fire an event whenever a registered button is pressed
     for i, buttonName in ipairs(Daneel.config.buttons) do
         if CraftStudio.Input.IsButtonDown(buttonName) then
@@ -610,3 +612,4 @@ function Daneel.Update()
         end
     end
 end
+

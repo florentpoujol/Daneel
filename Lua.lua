@@ -112,7 +112,7 @@ function table.new(t)
         Daneel.Debug.CheckArgType(t, "table", "table", "table.new([table]) : ")
     end
 
-    newTable = setmetatable(t, table)
+    newTable = setmetatable(newTable, table)
     Daneel.Debug.StackTrace.EndFunction("table.new", newTable)
     return newTable
 end
@@ -464,7 +464,7 @@ function table.getkey(t, value)
     if value == nil then
         Daneel.Debug.PrintError(errorHead.."Argument 'value' is nil.")
     end
-    
+
     local key = nil
     for k, v in pairs(t) do
         if value == v then
