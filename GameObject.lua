@@ -10,17 +10,18 @@ end
 function GameObject.__index(gameObject, key)
     if type(GameObject[key]) ~= "nil" then
         return GameObject[key]
-    end 
+    end
+
+    -- cache the component intances
+    if key:isoneof({"modelRenderer", "mapRenderer", "camera"}) then
+        rawset(gameObject, key, gameObject:GetComponent(key))
+        return gameObject[key]
+    end
 
     local ucKey = key:ucfirst()
     local funcName = "Get"..ucKey
     if type(GameObject[funcName]) ~= "nil" then
-        if funcName:isoneof({"GetModelRenderer", "GetMapRenderer", "GetCamera"}) then
-            rawset(gameObject, key, GameObject[funcName](gameObject))
-            return gameObject[key]
-        else
-            return GameObject[funcName](gameObject)
-        end
+        return GameObject[funcName](gameObject)
     end
 
     -- maybe the key is a Script name used to acces the Behavior instance
@@ -490,8 +491,8 @@ local OriginalGetComponent = GameObject.GetComponent
 
 --- Get the first component of the specified type attached to the gameObject.
 -- @param gameObject (GameObject) The gameObject.
--- @param componentType (string, ModelRenderer, MapRenderer, Camera, Transform)
--- @param scriptNameOrAsset [optional] (string or Script) The script name or asset. This argument is mandatory if componentType is "ScriptedBehavior".
+-- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform)
+-- @param scriptNameOrAsset [optional] (string or Script) If componentType is "ScriptedBehavior", the mandatory script name or asset.
 -- @return (ScriptedBehavior, ModelRenderer, MapRenderer, Camera) The component instance.
 function GameObject.GetComponent(gameObject, componentType, scriptNameOrAsset)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.GetComponent", gameObject, componentType, scriptNameOrAsset)
@@ -518,6 +519,7 @@ local OriginalGetScriptedBehavior = GameObject.GetScriptedBehavior
 -- @param scriptNameOrAsset (string or Script) The script name or asset.
 -- @return (ScriptedBehavior) The ScriptedBehavior instance.
 function GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset, calledFrom__index)
+    -- why do I check if the call comes from __index ?
     if calledFrom__index ~= true then
         Daneel.Debug.StackTrace.BeginFunction("GameObject.GetScriptedBehavior", gameObject, scriptNameOrAsset)
         local errorHead = "GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset) : "
@@ -544,21 +546,6 @@ function GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset, calledFro
     end
     return component
 end
-
---- Get the first ModelRenderer component attached to the gameObject.
--- @param gameObject (GameObject) The gameObject.
--- @return (ModelRenderer) The ModelRenderer component.
-function GameObject.GetModelRenderer(gameObject) end
-
---- Get the first MapRenderer component attached to the gameObject.
--- @param gameObject (GameObject) The gameObject.
--- @return (MapRenderer) The MapRenderer component.
-function GameObject.GetMapRenderer(gameObject) end
-
---- Get the first Camera component attached to the gameObject.
--- @param gameObject (GameObject) The gameObject.
--- @return (Camera) The Camera component.
-function GameObject.GetCamera(gameObject) end
 
 
 
@@ -607,20 +594,6 @@ function GameObject.Init()
 
                 local component = gameObject:SetComponent(componentType, params)
                 Daneel.Debug.StackTrace.EndFunction("GameObject.Set"..componentType)
-            end
-        end
-
-        -- GetComponent helpers
-        -- ie : gameObject:GetModelRenderer()
-        if componentType ~= "Transform" and componentType ~= "ScriptedBehavior" then
-            GameObject["Get"..componentType] = function(gameObject)
-                Daneel.Debug.StackTrace.BeginFunction("GameObject.Get"..componentType, gameObject)
-                local errorHead = "GameObject.Get"..componentType.."(gameObject) : "
-                Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-
-                local component = gameObject:GetComponent(componentType)
-                Daneel.Debug.StackTrace.EndFunction("GameObject.Get"..componentType, component)
-                return component
             end
         end
     end -- end for
