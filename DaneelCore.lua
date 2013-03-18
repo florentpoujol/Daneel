@@ -76,15 +76,17 @@ Daneel.defaultConfig = {
         Asset = Asset,
     },
 
-    -- Cast
+    -- Rays
+    -- list of the gameObjects to cast the ray against by default by ray:Cast()
+    -- filled in the CastableGameObjects behavior
     castableGameObjects = {},
     
     -- Triggers
     -- list of gameObjects check for rpoximity by the triggers
-    -- filled in the TriggerableGameObject script
+    -- filled in the TriggerableGameObject behavior
     triggerableGameObjects = {},
 
-    -- list of gameObject that react to the mouse input
+    -- List of gameObject that react to the mouse input
     mousehoverableGameObjects = {},
 
 
