@@ -318,8 +318,8 @@ end
 
 --- Add a component to the gameObject and optionaly initialize it.
 -- @param gameObject (GameObject) The gameObject.
--- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera) The case-insensitive component type (as a string) or component object.
--- @param params [optional] (string, Script or table) The script name or asset, or a table of parameters to initialize the new component with. If componentType is 'ScriptedBehavior', this argument is not optional.
+-- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer or Camera) The case-insensitive component type (as a string) or component object.
+-- @param params [optional] (string, Script or table) A table of parameters to initialize the new component with or, If componentType is 'ScriptedBehavior', the mandatory script name or asset.
 -- @param scriptedBehaviorParams [optional] (table) A table of parameters to initialize the new ScriptedBehavior with.
 -- @return (ScriptedBehavior, ModelRenderer, MapRenderer or Camera) The component.
 function GameObject.AddComponent(gameObject, componentType, params, scriptedBehaviorParams)
@@ -327,9 +327,8 @@ function GameObject.AddComponent(gameObject, componentType, params, scriptedBeha
     local errorHead = "GameObject.AddComponent(gameObject, componentType[, params, scriptedBehaviorParams]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     componentType = Daneel.Debug.CheckComponentType(componentType)
-    
     if componentType == "Transform" then
-        Daneel.Debug.PrintError(errorHead.."WARNING : Can't add a transform because gameObjects may only have one transform.")
+        Daneel.Debug.PrintError(errorHead.."Can't add a transform because gameObjects may only have one transform.")
     end
 
     local component = nil
