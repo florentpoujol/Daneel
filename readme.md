@@ -70,7 +70,15 @@ Also :
 
 ## <a id="install"></a>Installation 
 
-Comin soon.
+You just have to download then import DaneelFramework.cspack. 
+
+Step by step process :
+* Download the file on your computer
+* Go to your project's administration, "Import/Export" section.  
+* Click the import button (top right), navigate to the location you downloaded the pack in then click "Open".  
+* Navigate to the "Script" tab, select all the scripts then click "Import".
+
+Note the the pack also contains a "Readme" document.
 
 
 ## <a id="config"></a>Configuration
@@ -382,7 +390,7 @@ The `table` object has also been extended with many functions that ease the mani
 
 ---
 
-## <a id="functions_list"></a> Functions list
+## <a id="functions_list"></a>Functions list
 
 [See the full scripting reference][daneelscriptingreference] for full explanation on arguments and returned values. 
 Arguments between square brackets are optional.
