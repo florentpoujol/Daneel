@@ -11,20 +11,20 @@ Daneel never deprecate anything from the current CraftStudio's API which remains
 Daneel mostly add new objects, new functions on existing objects and sometimes allow to pass different argument types and new arguments on existing functions.
 
 - [Overview](#overview)
-- [Installation](#install)
-- [Configuration](#config)
+- [Installation](#installation)
+- [Configuration](#configuration)
 - [Conventions](#conventions)
-- [Dynamic getters and setters](#dynamic_get_set)
-- [Dynamic access to components](#dynamic_components)
-- [Mass-setting on gameObjects and components](#mass_setting)
-- [Debugging](#debug)
+- [Dynamic getters and setters](#dynamic-getters-and-setters)
+- [Dynamic access to components](#dynamic-access-to-components)
+- [Mass-setting on gameObjects and components](#mass-setting-on-gameobjects-and-components)
+- [Debugging](#debugging)
 - [Raycasting](#raycasting)
-- [Trigger messages](#triggers)
-- [Mouse messages](#mouse)
+- [Trigger messages](#trigger-messages)
+- [Mouse messages](#mouse-messages)
 - [Events](#events)
 - [Hotkeys](#hotkeys)
 - [Miscellaneous](#miscellaneous)
-- [Function list](#functions_list)
+- [Functions list](#functions-list)
 
 ## <a id="overview"></a>Overview
 
