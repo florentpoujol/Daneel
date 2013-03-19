@@ -51,7 +51,6 @@ Daneel.defaultConfig = {
         TileSet = TileSet,
         Sound = Sound,
         Scene = Scene,
-        Document = Document
     },
 
     componentObjects = {
@@ -599,12 +598,12 @@ function Daneel.Update()
     -- HotKeys
     -- fire an event whenever a registered button is pressed
     for i, buttonName in ipairs(Daneel.config.buttons) do
-        if CraftStudio.Input.IsButtonDown(buttonName) then
-            Daneel.Events.Fire("On"..buttonName:ucfirst().."ButtonDown")
-        end
-
         if CraftStudio.Input.WasButtonJustPressed(buttonName) then
             Daneel.Events.Fire("On"..buttonName:ucfirst().."ButtonJustPressed")
+        end
+
+        if CraftStudio.Input.IsButtonDown(buttonName) then
+            Daneel.Events.Fire("On"..buttonName:ucfirst().."ButtonDown")
         end
 
         if CraftStudio.Input.WasButtonJustReleased(buttonName) then
