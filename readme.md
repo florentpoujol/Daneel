@@ -15,16 +15,16 @@ Daneel mostly add new objects, new functions on existing objects and sometimes a
 - [Configuration](#config)
 - [Conventions](#conventions)
 - [Dynamic getters and setters](#dynamic_get_set)
-- [Dynamic acces to components](#dynamic_components)
-- [Mass-ssetting on gameObjects and components](#mass-setting)
-- [Debuging](#debuging)
+- [Dynamic access to components](#dynamic_components)
+- [Mass-setting on gameObjects and components](#mass_setting)
+- [Debugging](#debug)
 - [Raycasting](#raycasting)
 - [Trigger messages](#triggers)
 - [Mouse messages](#mouse)
 - [Events](#events)
 - [Hotkeys](#hotkeys)
 - [Miscellaneous](#miscellaneous)
-- [Function list](#function-list)
+- [Function list](#functions_list)
 
 ## <a id="overview"></a>Overview
 
@@ -68,7 +68,7 @@ Also :
 - Hotkeys (fire events when pressing buttons)
 
 
-## <a id="install"></a>Instalation 
+## <a id="install"></a>Installation 
 
 Comin soon.
 
@@ -164,7 +164,7 @@ ScriptedBehaviors who are nested in folders and/or name are not pascal-cased, ma
     self.gameObject.otherScript
 
 
-## <a id="masssetting"></a>Mass-setting on gameObjects and components
+## <a id="mass_setting"></a>Mass-setting on gameObjects and components
 
 Functions `gameObject:Set()` and `component:Set()` accept a "params" argument of type table which allow to set variables or call setters in mass.  
 
@@ -378,7 +378,7 @@ The `table` object has also been extended with many functions that ease the mani
 
 ---
 
-## <a id="function-list"></a> Function list
+## <a id="functions_list"></a> Functions list
 
 [See the full scripting reference][daneelscriptingreference] for full explanation on arguments and returned values. 
 Arguments between square brackets are optional.
@@ -463,7 +463,7 @@ Arguments between square brackets are optional.
 ### MapRenderer
 
 * mapRenderer:SetMap(mapNameOrAsset[, keepTileSet])
-* mapRenderer:SetTileSet(tilesetNameOrAsset)
+* mapRenderer:SetTileSet(tileSetNameOrAsset)
 
 ### ModelRenderer
 
