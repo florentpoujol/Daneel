@@ -432,3 +432,29 @@ function RaycastHit.New(distance, normal, hitBlockLocation, adjacentBlockLocatio
 end
 
 
+
+----------------------------------------------------------------------------------
+-- Scene
+
+
+--- Alias of CraftStudio.LoadScene().
+-- Schedules loading the specified scene after the current tick (1/60th of a second) has completed.
+-- When the new scene is loaded, all of the current scene's game objects will be removed.
+-- Calling this function doesn't immediately stops the calling function. As such, you might want to add a return statement afterwards. 
+-- @param sceneNameOrAsset (string or Scene) The scene name or asset
+function Scene.Load(sceneNameOrAsset)
+    Daneel.Debug.StackTrace.BeginFunction("Scene.Load", sceneNameOrAsset)
+    local errorHead = "Scene.Load(sceneNameOrAsset) : "
+    Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
+
+    local scene = sceneNameOrAsset
+    if type(sceneNameOrAsset) == "string" then
+        scene = Asset.Get(sceneNameOrAsset, "Scene")
+        if scene == nil then
+            Daneel.Debug.PrintError(errorHead.."Argument 'sceneNameOrAsset' : scene with name '"..sceneNameOrAsset.."' was not found.")
+        end
+    end
+
+    CraftStudio.LoadScene(scene)
+    Daneel.Debug.StackTrace.EndFunction("Scene.Load")
+end

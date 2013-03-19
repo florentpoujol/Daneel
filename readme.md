@@ -363,6 +363,10 @@ The table `Daneel.config.buttons` may be filled with the button names that you d
 
 Get an asset with `Asset.Get()` or its helpers `Asset.GetScript()`, `Asset.GetModel()`, ...
 
+### Scene
+
+Load a scene with `Scene.Load()`.
+
 ### Tables as object
 
 Tables returned by `table.new()` or any new table functions introduced by Daneel that returns a table may be used in an object-oriented way. You can also turn any standard table to such table by passing it as argument to table.new().  
@@ -478,6 +482,10 @@ Arguments between square brackets are optional.
 ### RaycastHit
 
 * RaycastHit.New([distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject])
+
+## Scene
+
+* Scene.Load(sceneNameOrAsset)
 
 ### string
 
