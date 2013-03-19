@@ -489,3 +489,4 @@ function Scene.Append(sceneNameOrAsset, gameObject)
     CraftStudio.AppendScene(scene, gameObject)
     Daneel.Debug.StackTrace.EndFunction("Scene.Append")
 end
+
