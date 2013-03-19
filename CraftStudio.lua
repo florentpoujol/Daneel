@@ -63,11 +63,6 @@ function Asset.GetScene(assetName) end
 -- @return (Sound) The asset, or nil if none is found
 function Asset.GetSound(assetName) end
 
---- Get the Document asset of the specified name
--- @param assetName (string) The fully-qualified asset name.
--- @return (Document) The asset, or nil if none is found
-function Asset.GetDocument(assetName) end
-
 
 
 -- Called from Daneel.Awake()
@@ -246,7 +241,28 @@ function ModelRenderer.SetModel(modelRenderer, modelNameOrAsset)
     Daneel.Debug.StackTrace.EndFunction("ModelRenderer.SetModel")
 end
 
+local OriginalSetAnimation = ModelRenderer.SetAnimation
 
+--- Set the specified animation for the modelRenderer's current model
+-- @param modelRenderer (ModelRenderer) The modelRenderer.
+-- @param animationNameOrAsset (string or ModelAnimation) The animation name or asset
+function ModelRenderer.SetAnimation(modelRenderer, animationNameOrAsset)
+    Daneel.Debug.StackTrace.BeginFunction("ModelRenderer.SetModelAnimation", modelRenderer, animationNameOrAsset)
+    local errorHead = "ModelRenderer.SetModelAnimation(modelRenderer, animationNameOrAsset) : "
+    Daneel.Debug.CheckArgType(modelRenderer, "modelRenderer", "ModelRenderer", errorHead)
+    Daneel.Debug.CheckArgType(animationNameOrAsset, "animationNameOrAsset", {"string", "ModelAnimation"}, errorHead)
+
+    local animation = animationNameOrAsset
+    if type(animationNameOrAsset) == "string" then
+        animation = Asset.Get(animationNameOrAsset, "ModelAnimation")
+        if animation == nil then
+            Daneel.Debug.PrintError(errorHead.."Argument 'animationNameOrAsset' : animation with name '"..animationNameOrAsset.."' was not found.")
+        end
+    end
+
+    OriginalSetModelAnimation(modelRenderer, animation)
+    Daneel.Debug.StackTrace.EndFunction("ModelRenderer.SetModelAnimation")
+end
 
 ----------------------------------------------------------------------------------
 -- MapRenderer
@@ -256,11 +272,13 @@ local OriginalSetMap = MapRenderer.SetMap
 --- Attach the provided map to the provided mapRenderer.
 -- @param mapRenderer (MapRenderer) The mapRenderer.
 -- @param mapNameOrAsset (string or Map) The map name or asset.
-function MapRenderer.SetMap(mapRenderer, mapNameOrAsset)
+-- @param keepTileSet [optional default=false] (boolean) Keep the currect TileSet
+function MapRenderer.SetMap(mapRenderer, mapNameOrAsset, keepTileSet)
     Daneel.Debug.StackTrace.BeginFunction("MapRenderer.SetMap", mapRenderer, mapNameOrAsset)
     local errorHead = "MapRenderer.SetMap(mapRenderer, mapNameOrAsset) : "
     Daneel.Debug.CheckArgType(mapRenderer, "mapRenderer", "MapRenderer", errorHead)
     Daneel.Debug.CheckArgType(mapNameOrAsset, "mapNameOrAsset", {"string", "Map"}, errorHead)
+    Daneel.Debug.CheckOptionalArgType(keepTileSet, "keepTileSet", "boolean", errorHead)
  
     local map = mapNameOrAsset
     if type(mapNameOrAsset) == "string" then
@@ -270,8 +288,31 @@ function MapRenderer.SetMap(mapRenderer, mapNameOrAsset)
         end
     end
 
-    OriginalSetMap(mapRenderer, map)
+    OriginalSetMap(mapRenderer, map, keepTileSet)
     Daneel.Debug.StackTrace.EndFunction("MapRenderer.SetMap")
+end
+
+local OriginalSetTileSet = MapRenderer.SetTileSet
+
+--- Set the specified tileSet for the mapRenderer's map
+-- @param mapRenderer (MapRenderer) The mapRenderer.
+-- @param tileSetNameOrAsset (string or TileSet) The tileSet name or asset
+function MapRenderer.SetTileSet(mapRenderer, tileSetNameOrAsset)
+    Daneel.Debug.StackTrace.BeginFunction("MapRenderer.SetTileSet", mapRenderer, tileSetNameOrAsset)
+    local errorHead = "MapRenderer.SetTileSet(mapRenderer, tileSetNameOrAsset) : "
+    Daneel.Debug.CheckArgType(mapRenderer, "mapRenderer", "MapRenderer", errorHead)
+    Daneel.Debug.CheckArgType(tileSetNameOrAsset, "tileSetNameOrAsset", {"string", "TileSet"}, errorHead)
+
+    local tileSet = tileSetNameOrAsset
+    if type(tileSetNameOrAsset) == "string" then
+        tileSet = Asset.Get(tileSetNameOrAsset, "TileSet")
+        if tileSet == nil then
+            Daneel.Debug.PrintError(errorHead.."Argument 'tileSetNameOrAsset' : tileSet with name '"..tileSetNameOrAsset.."' was not found.")
+        end
+    end
+
+    OriginalSetTileSet(mapRenderer, tileSet)
+    Daneel.Debug.StackTrace.EndFunction("MapRenderer.SetTileSet")
 end
 
 
