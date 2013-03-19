@@ -95,6 +95,7 @@ end
 ----------------------------------------------------------------------------------
 -- Components
 
+
 Component = {}
 Component.__index = Component
 
@@ -218,6 +219,7 @@ end
 ----------------------------------------------------------------------------------
 -- ModelRenderer
 
+
 local OriginalSetModel = ModelRenderer.SetModel
 
 --- Attach the provided model to the provided modelRenderer.
@@ -264,8 +266,11 @@ function ModelRenderer.SetAnimation(modelRenderer, animationNameOrAsset)
     Daneel.Debug.StackTrace.EndFunction("ModelRenderer.SetModelAnimation")
 end
 
+
+
 ----------------------------------------------------------------------------------
 -- MapRenderer
+
 
 local OriginalSetMap = MapRenderer.SetMap
 
@@ -391,9 +396,11 @@ function Ray.IntersectsGameObject(ray, gameObject)
 end
 
 
+
 ----------------------------------------------------------------------------------
 -- RaycastHit
 -- keys : distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject, component
+
 
 RaycastHit = {}
 RaycastHit.__index = RaycastHit
