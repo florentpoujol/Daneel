@@ -458,3 +458,34 @@ function Scene.Load(sceneNameOrAsset)
     CraftStudio.LoadScene(scene)
     Daneel.Debug.StackTrace.EndFunction("Scene.Load")
 end
+
+--- Alias of CraftStudio.AppendScene().
+-- Appends the specified scene to the game by instantiating all of its game objects. Contrary to CraftStudio.LoadScene, this doesn't unload the current scene nor waits for the next tick: it happens right away.
+-- You can optionally specify a parent game object which will be used as a root for adding all game objects. 
+-- @param sceneNameOrAsset (string or Scene) The scene name or asset
+-- @param gameObject [optional] (string or GameObject) The parent gameObject name or instance
+function Scene.Append(sceneNameOrAsset, gameObject)
+    Daneel.Debug.StackTrace.BeginFunction("Scene.Append", sceneNameOrAsset, gameObject)
+    local errorHead = "Scene.Append(sceneNameOrAsset[, gameObject]) : "
+    Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
+    Daneel.Debug.CheckOptionalArgType(gameObject, "gameObject", {"string", "GameObject"}, errorHead)
+
+    local scene = sceneNameOrAsset
+    if type(sceneNameOrAsset) == "string" then
+        scene = Asset.Get(sceneNameOrAsset, "Scene")
+        if scene == nil then
+            Daneel.Debug.PrintError(errorHead.."Argument 'sceneNameOrAsset' : scene with name '"..sceneNameOrAsset.."' was not found.")
+        end
+    end
+
+    if type(gameObject) == "string" then
+        local name = gameObject
+        gameObject = GameObject.Get(name)
+        if gameObject == nil then
+            Daneel.Debug.PrintError(errorHead.."Argument 'gameObject' : gameObject with name '"..name.."' was not found.")
+        end
+    end
+
+    CraftStudio.AppendScene(scene, gameObject)
+    Daneel.Debug.StackTrace.EndFunction("Scene.Append")
+end

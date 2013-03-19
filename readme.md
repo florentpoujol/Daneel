@@ -365,7 +365,7 @@ Get an asset with `Asset.Get()` or its helpers `Asset.GetScript()`, `Asset.GetMo
 
 ### Scene
 
-Load a scene with `Scene.Load()`.
+Load a scene with `Scene.Load()`, append a scene with `Scene.Append()`.
 
 ### Tables as object
 
@@ -486,6 +486,7 @@ Arguments between square brackets are optional.
 ## Scene
 
 * Scene.Load(sceneNameOrAsset)
+* Scene.Append(sceneNameOrAsset, gameObject)
 
 ### string
 
