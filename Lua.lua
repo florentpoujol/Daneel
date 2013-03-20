@@ -1,11 +1,9 @@
 
-
 ----------------------------------------------------------------------------------
 -- math
 
-
 --- Tell wether the provided number is an integer.
--- @param number The number to check.
+-- @param number (number) The number to check.
 -- @param strict [optionnal default=false] (boolean) If true, the function returns an error when the 'number' argument is not a number.
 function math.isinteger(number, strict)
     Daneel.Debug.StackTrace.BeginFunction("math.isinteger", number, strict)
@@ -29,23 +27,7 @@ end
 ----------------------------------------------------------------------------------
 -- string
 
-
-
-local stringMetatable = getmetatable("") -- the 'string' class is origininally stringMetatable.__index
-
---- Allow to build a string by repeating several times a strring segment
--- @param s (string) The string
--- @param num (number) The multiplier
--- @return (string) The new string
-function stringMetatable.__mul(s, multiplier)
-    local fullString = ""
-    for i=1, multiplier do
-        fullString = fullString .. s
-    end
-    return fullString
-end
-
---- Turn a string into a table, one character per index
+--- Turn a string into a table, one character per index.
 -- @param s (string) The string
 -- @return (table) The table
 function string.totable(s)
@@ -60,12 +42,12 @@ function string.totable(s)
     return t
 end
 
---- Alias of table.containsvalue().
--- Tell wether the specified table contains the specified string. 
--- @param s (string) The string
--- @param t (table) The table conataining the values to check against argument 'string'.
--- @param ignoreCase [optional default=false] (boolean) Ignore the case
--- @return (boolean) True if 's' is found in 't', false otherwise
+--- Tell wether the provided table contains the provided string. 
+-- Alias of table.containsvalue().
+-- @param s (string) The string.
+-- @param t (table) The table containing the values to check against the string
+-- @param ignoreCase [optional default=false] (boolean) Ignore the case.
+-- @return (boolean) True if the string is found in the table, false otherwise.
 function string.isoneof(s, t, ignoreCase)
     Daneel.Debug.StackTrace.BeginFunction("string.isoneof", s, t, ignoreCase)
     local errorHead = "string.isoneof(string, table[, ignoreCase]) : "
@@ -77,9 +59,9 @@ function string.isoneof(s, t, ignoreCase)
     return isOneOf
 end
 
---- Make the first letter uppercase
--- @param s (string) The string
--- @return (string) The string
+--- Turn the first letter uppercase.
+-- @param s (string) The string.
+-- @return (string) The string.
 function string.ucfirst(s)
     Daneel.Debug.StackTrace.BeginFunction("string.ucfirst", s)
     local errorHead = "string.ucfirst(string) : "
@@ -100,7 +82,7 @@ end
 
 table.__index = table
 
---- Constructor for dynamic tables that allow to use the functions in the table library on the table copies.
+--- Constructor for dynamic tables that allow to use the functions in the table library on the table copies (like what you can do with the strings).
 -- @param t [optional] (table) A table.
 -- @return (table) The new table.
 function table.new(t)
@@ -132,7 +114,7 @@ end
 
 --- Tells wether the provided key is found within the provided table.
 -- @param t (table) The table to search in.
--- @param key (mixed) The key to search for.
+-- @param p_key (mixed) The key to search for.
 -- @return (boolean) True if the key is found in the table, false otherwise.
 function table.containskey(t, p_key)
     Daneel.Debug.StackTrace.BeginFunction("table.containskey", t, p_key)
@@ -157,7 +139,7 @@ end
 
 --- Tells wether the provided value is found within the provided table.
 -- @param t (table) The table to search in.
--- @param value (any) The value to search for.
+-- @param p_value (any) The value to search for.
 -- @param ignoreCase [optionnal default=false] (boolean) Ignore the case of the value. If true, the value must be of type 'string'.
 -- @return (boolean) True if the value is found in the table, false otherwise.
 function table.containsvalue(t, p_value, ignoreCase)
@@ -196,9 +178,9 @@ function table.containsvalue(t, p_value, ignoreCase)
     return containsValue
 end
 
---- Returns the length of a table, which is the numbers of keys of the specified type (or of any type), for which the value is non-nil.
+--- Returns the length of a table, which is the numbers of keys of the provided type (or of any type), for which the value is not nil.
 -- @param t (table) The table.
--- @param keyType [optional] (string) Any Lua or CraftStudio type.
+-- @param keyType [optional] (string) Any Lua or CraftStudio type ('string', 'GameObject', ...).
 -- @return (number) The table length.
 function table.length(t, keyType)
     Daneel.Debug.StackTrace.BeginFunction("table.length", t, keyType)
@@ -220,7 +202,7 @@ function table.length(t, keyType)
 end
 
 --- Print all key/value pairs within the provided table.
--- @param t (table) The table.
+-- @param t (table) The table to print.
 function table.print(t)
     Daneel.Debug.StackTrace.BeginFunction("table.print", t)
     local errorHead = "table.print(table) : "
@@ -254,8 +236,7 @@ function table.print(t)
 end
 
 --- Print the metatable of the provided table.
--- Dependent of table.length().
--- @param t (table) The table.
+-- @param t (table) The table who has a metatable to print.
 function table.printmetatable(t)
     Daneel.Debug.StackTrace.BeginFunction("table.printmetatable", t)
     errorHead = "table.printmetatable(table) : "
@@ -296,7 +277,7 @@ function table.printmetatable(t)
 end
 
 --- Merge two or more tables into one. Integer keys are not overrided.
--- @param ... (table) At least two tables to merge together. Non-table arguments are ignored.
+-- @param ... (table) At least two tables to merge together. Arguments that are not of type 'table' are ignored.
 -- @return (table) The new table.
 function table.merge(...)
     if arg == nil then
@@ -330,7 +311,7 @@ end
 --- Compare table1 and table2. Returns true if they have the exact same keys which have the exact same values.
 -- @param table1 (table) The first table to compare.
 -- @param table2 (table) The second table to compare to the first table.
--- @return (boolean) True if the two table have the same content.
+-- @return (boolean) True if the two tables have the exact same content.
 function table.compare(table1, table2)
     Daneel.Debug.StackTrace.BeginFunction("table.compare", table1, table2)
     local errorHead = "table.compare(table1, table2) : "
@@ -355,11 +336,11 @@ function table.compare(table1, table2)
     return areEqual
 end
 
---- Create an associative table with the provided keys and values table.
+--- Create an associative table with the provided keys and values tables.
 -- @param keys (table) The keys of the future table.
 -- @param values (table) The values of the future table.
--- @param strict [optional default=false] (boolean) If true, the function returns false if the keys and values table have different length.
--- @return (table or boolean) The combined table or false if the table have different length.
+-- @param strict [optional default=false] (boolean) If true, the function returns false if the keys and values tables have different length.
+-- @return (table or boolean) The combined table or false if the tables have different length.
 function table.combine(keys, values, strict)
     Daneel.Debug.StackTrace.BeginFunction("table.combine", keys, values, strict)
     local errorHead = "table.combine(keys, values[, strict]) : "
@@ -386,7 +367,8 @@ function table.combine(keys, values, strict)
     return newTable
 end
 
---- Remove the specified value from the provided table.
+--- Remove the provided value from the provided table.
+-- If the index of the value is an integer, the value is nicely removed with table.remove().
 -- @param t (table) The table.
 -- @param value (mixed) The value to remove.
 -- @param singleRemove [optional default=false] (boolean) Tell wether to remove all occurences of the value or just the first one.

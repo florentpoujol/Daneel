@@ -2,6 +2,9 @@
 
 - permettre l'appel de Behavior functions lors de l'appel aux Events
 
+- check what happens when the transform is destroyed by component.destroy()
+
+
 
 
 voir pour Lua minifier
