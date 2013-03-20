@@ -1,4 +1,4 @@
-
+-- v1.0
 
 function GameObject.__tostring(gameObject)
     -- returns something like "GameObject: 'MyName': 123456789"
