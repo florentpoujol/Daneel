@@ -1,6 +1,6 @@
 [craftstudio]: http://craftstud.io
 [CSscriptingreference]: http://craftstudio.wikia.com/wiki/Scripting_Reference/Index
-[Daneelscriptingreference]: http://a.com
+[Daneelscriptingreference]: http://florent-poujol.fr/content/craftstudio/daneel/doc
 
 
 # Daneel Framework
@@ -87,19 +87,16 @@ Some features are only available if a few configuration is done first.
 Currently, all that has to be done is to edit the top of the `DaneelCore` script (just the `Daneel.config` table) and make the list of the scripts and/or button names of your game.
     
     Daneel.config = {
-
         -- List of the Scripts paths as values and optionally the script alias as the keys
         scripts = {
             -- "fully-qualified Script path"
             -- alias = "fully-qualified Script path"
         },
 
-        
         -- List of the button names you defined in the "Administration > Game Controls" tab of your project
         buttons = {
 
         },
-
 
         -- Set to true to enable the framework's advanced debugging features.
         -- Set to false when you ship the game.
@@ -112,7 +109,7 @@ Currently, all that has to be done is to edit the top of the `DaneelCore` script
 * Every getter fonctions are called GetSomething() instead of FindSomething().
 * Every object and function names are pascal-cased, except for functions added to Lua's standard libraries which are all lowercase.
 * Every time an argument has to be an asset (like with `modelRenderer:SetModel()`), you may pass the fully-qualified asset name instead.
-* Every time an argument has to be a gameObject instance (like with `gameObject:SetParent()`), you may pass the gameObject name instead.
+* Every time an argument has to be a gameObject instance (like with `gameObject:SetParent(parentNameOrInstance[, keepLocalTransform])`), you may pass the gameObject name instead.
 * Every time an argument has to be an asset or component **type**, you may pass the asset or component **object** instead (ie : `Asset.Get("Model name", ModelRenderer)` instead of `Asset.Get("Model name", "ModelRenderer")`). And when you do pass the type as a string, it is case insensitive.
 * Every optional boolean arguments default to false.
 
@@ -438,11 +435,11 @@ Arguments between square brackets are optional.
 
 ### GameObject
 
-* GameObject.New(name[, parentNameOrObject]) / GameObject.New(name[, params])
-* GameObject.Instanciate(name, sceneNameOrObject[, parentNameOrObject]) / GameObject.Instanciate(name, sceneNameOrObject[, params])
+* GameObject.New(name[, params])
+* GameObject.Instanciate(name, sceneNameOrObject[, params])
 * GameObject.Get(name)
 
-* gameObject:SetParent(parentNameOrObject[, keepLocalTransform])
+* gameObject:SetParent(parentNameOrInstance[, keepLocalTransform])
 * gameObject:GetChild(childName[, recursive])
 * gameObject:GetChildren([recursive, includeSelf])
 * gameObject:BroadcastMessage(functionName[, data])
@@ -485,16 +482,16 @@ Arguments between square brackets are optional.
 ### Ray
 
 * ray:Cast([gameObjects])
-* ray:IntersectsGameObject(gameObject)
+* ray:IntersectsGameObject(gameObjectNameOrInstance)
 
 ### RaycastHit
 
 * RaycastHit.New([distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject])
 
-## Scene
+### Scene
 
 * Scene.Load(sceneNameOrAsset)
-* Scene.Append(sceneNameOrAsset, gameObject)
+* Scene.Append(sceneNameOrAsset, gameObjectNameOrInstance)
 
 ### string
 
@@ -504,7 +501,7 @@ Arguments between square brackets are optional.
 
 ### table
 
-* table.new([...])
+* table.new([table])
 * table.copy(table)
 * table.constainskey(table, key)
 * table.constainsvalue(table, value[, ignoreCase])
