@@ -463,7 +463,7 @@ function Daneel.Events.Listen(eventName, p_function, functionName, broadcast)
 
         local gameObject = p_function
         if functionType == "string" then
-            gameObject = GameObject.Find(p_function)
+            gameObject = GameObject.Get(p_function)
             if gameObject == nil then
                 Daneel.Debug.PrintError(errorHead.."Argument 'p_function' : gameObject with name '"..p_function.."' was not found in the scene.")
             end
@@ -507,7 +507,7 @@ function Daneel.Events.StopListen(eventName, functionOrGameObject)
     else
         local gameObject = functionOrGameObject
         if functionType == "string" then
-            gameObject = GameObject.Find(functionOrGameObject)
+            gameObject = GameObject.Get(functionOrGameObject)
             if gameObject == nil then
                 Daneel.Debug.PrintError(errorHead.."Argument 'functionOrGameObject' : gameObject with name '".._function.."' was not found in the scene.")
             end
