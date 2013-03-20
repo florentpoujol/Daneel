@@ -200,24 +200,24 @@ local OriginalSetParent = GameObject.SetParent
 --- Set the gameOject's parent. 
 -- Optionaly carry over the gameObject's local transform instead of the global one.
 -- @param gameObject (GameObject) The gameObject.
--- @param parentNameOrObject (string or GameObject) The parent name or gameObject.
+-- @param parentNameOrInstance (string or GameObject) The parent name or gameObject.
 -- @param keepLocalTransform [optional default=false] (boolean) Carry over the game object's local transform instead of the global one.
-function GameObject.SetParent(gameObject, parentNameOrObject, keepLocalTransform)
-    Daneel.Debug.StackTrace.EndFunction("GameObject.SetParent", gameObject, parentNameOrObject, keepLocalTransform)
-    local errorHead = "GameObject.SetParent(gameObject, parentNameOrObject[, keepLocalTransform]) : "
+function GameObject.SetParent(gameObject, parentNameOrInstance, keepLocalTransform)
+    Daneel.Debug.StackTrace.EndFunction("GameObject.SetParent", gameObject, parentNameOrInstance, keepLocalTransform)
+    local errorHead = "GameObject.SetParent(gameObject, parentNameOrInstance[, keepLocalTransform]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckArgType(parentNameOrObject, "parentNameOrObject", {"string", "GameObject"}, errorHead)
+    Daneel.Debug.CheckArgType(parentNameOrInstance, "parentNameOrInstance", {"string", "GameObject"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(keepLocalTransform, "keepLocalTransform", "boolean", errorHead)
     
     if keepLocalTransform == nil then
         keepLocalTransform = false
     end
 
-    local parent = parentNameOrObject
+    local parent = parentNameOrInstance
     if type(parent) == "string" then
-        parent = GameObject.Get(parentNameOrObject)
+        parent = GameObject.Get(parentNameOrInstance)
         if parent == nil then
-            Daneel.Debug.PrintError(errorHead.."Argument 'parent' : Parent gameObject with name '"..parentNameOrObject.."' was not found.")
+            Daneel.Debug.PrintError(errorHead.."Argument 'parent' : Parent gameObject with name '"..parentNameOrInstance.."' was not found.")
         end
     end
       
