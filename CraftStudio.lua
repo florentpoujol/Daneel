@@ -470,12 +470,12 @@ end
 -- Appends the specified scene to the game by instantiating all of its game objects. Contrary to CraftStudio.LoadScene, this doesn't unload the current scene nor waits for the next tick: it happens right away.
 -- You can optionally specify a parent game object which will be used as a root for adding all game objects. 
 -- @param sceneNameOrAsset (string or Scene) The scene name or asset
--- @param gameObject [optional] (string or GameObject) The parent gameObject name or instance
-function Scene.Append(sceneNameOrAsset, gameObject)
-    Daneel.Debug.StackTrace.BeginFunction("Scene.Append", sceneNameOrAsset, gameObject)
-    local errorHead = "Scene.Append(sceneNameOrAsset[, gameObject]) : "
+-- @param gameObjectNameOrInstance [optional] (string or GameObject) The gameObject name or instance
+function Scene.Append(sceneNameOrAsset, gameObjectNameOrInstance)
+    Daneel.Debug.StackTrace.BeginFunction("Scene.Append", sceneNameOrAsset, gameObjectNameOrInstance)
+    local errorHead = "Scene.Append(sceneNameOrAsset[, gameObjectNameOrInstance]) : "
     Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
-    Daneel.Debug.CheckOptionalArgType(gameObject, "gameObject", {"string", "GameObject"}, errorHead)
+    Daneel.Debug.CheckOptionalArgType(gameObjectNameOrInstance, "gameObjectNameOrInstance", {"string", "GameObject"}, errorHead)
 
     local scene = sceneNameOrAsset
     if type(sceneNameOrAsset) == "string" then
@@ -485,11 +485,11 @@ function Scene.Append(sceneNameOrAsset, gameObject)
         end
     end
 
-    if type(gameObject) == "string" then
-        local name = gameObject
+    local gameObject = gameObjectNameOrInstance
+    if type(gameObjectNameOrInstance) == "string" then
         gameObject = GameObject.Get(name)
         if gameObject == nil then
-            Daneel.Debug.PrintError(errorHead.."Argument 'gameObject' : gameObject with name '"..name.."' was not found.")
+            Daneel.Debug.PrintError(errorHead.."Argument 'gameObject' : gameObject with name '"..gameObjectNameOrInstance.."' was not found.")
         end
     end
 
