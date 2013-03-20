@@ -1,0 +1,939 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <title>Daneel framework - CraftSudio.lua scripting reference</title>
+    <link rel="stylesheet" href="luadoc.css" type="text/css" />
+	<!--meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/-->
+</head>
+
+<body>
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+<div id="main">
+
+<div id="navigation">
+	<h1>Daneel</h1>
+	
+	<br>
+	Documentation :
+	<ul>
+		<li><a href="readme.html">Readme</a></li>
+	</ul>
+	<br>
+	Scripting reference : 
+	<ul>
+		<li><a href="Daneel.html">Daneel.lua</a></li>
+		<li><a href="CraftStudio.html">CraftStudio.lua</a></li>
+		<li><a href="GameObject.html">GameObject.lua</a></li>
+		<li><a href="Lua.html">Lua.lua</a></li>
+	</ul>
+</div> <!-- id="navigation" -->
+
+<div id="content">
+
+<h1>File <code>GameObject.lua</code></h1>
+
+
+
+
+
+
+
+<h2>Functions</h2>
+<table class="function_list">
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.AddCamera">GameObject.AddCamera</a>&nbsp;(gameObject, params)</td>
+	<td class="summary">Add a Camera to the gameObject and optionally initialize it.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.AddComponent">GameObject.AddComponent</a>&nbsp;(gameObject, componentType, params, scriptedBehaviorParams)</td>
+	<td class="summary">Add a component to the gameObject and optionally initialize it.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.AddMapRenderer">GameObject.AddMapRenderer</a>&nbsp;(gameObject, params)</td>
+	<td class="summary">Add a MapRenderer to the gameObject and optionally initialize it.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.AddModelRenderer">GameObject.AddModelRenderer</a>&nbsp;(gameObject, params)</td>
+	<td class="summary">Add a ModelRenderer to the gameObject and optionally initialize it.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.AddScriptedBehavior">GameObject.AddScriptedBehavior</a>&nbsp;(gameObject, scriptNameOrAsset, params)</td>
+	<td class="summary">Add a ScriptedBehavior to the gameObject and optionally initialize it.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.BroadcastMessage">GameObject.BroadcastMessage</a>&nbsp;(gameObject, functionName, data)</td>
+	<td class="summary">Tries to call a method with the provided name on all the scriptedBehaviors attached to the gameObject or any of its descendants.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.Destroy">GameObject.Destroy</a>&nbsp;(gameObject)</td>
+	<td class="summary">Destroy the gameObject at the end of this frame.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.Get">GameObject.Get</a>&nbsp;(name)</td>
+	<td class="summary">Alias of CraftStudio.FindGameObject(name).</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.GetChild">GameObject.GetChild</a>&nbsp;(gameObject, name, recursive)</td>
+	<td class="summary">Alias of GameObject:FindChild().</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.GetChildren">GameObject.GetChildren</a>&nbsp;(gameObject, recursive, includeSelf)</td>
+	<td class="summary">Get all descendants of the gameObject.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.GetComponent">GameObject.GetComponent</a>&nbsp;(gameObject, componentType, scriptNameOrAsset)</td>
+	<td class="summary">Get the first component of the provided type attached to the gameObject.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.GetScriptedBehavior">GameObject.GetScriptedBehavior</a>&nbsp;(gameObject, scriptNameOrAsset, calledFrom__index)</td>
+	<td class="summary">Get the provided ScriptedBehavior instance attached to the gameObject.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.Instantiate">GameObject.Instantiate</a>&nbsp;(gameObjectName, sceneNameOrAsset, params)</td>
+	<td class="summary">Add a scene to the existing scene as a new gameObject with optional initialisation parameters.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.New">GameObject.New</a>&nbsp;(name, params)</td>
+	<td class="summary">Create a new gameObject with optional initialisation parameters.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.Set">GameObject.Set</a>&nbsp;(gameObject, params)</td>
+	<td class="summary">Apply the content of the params argument to the provided gameObject.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.SetCamera">GameObject.SetCamera</a>&nbsp;(gameObject, params)</td>
+	<td class="summary">Set the Camera component on the gameObject with the provided parameters.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.SetComponent">GameObject.SetComponent</a>&nbsp;(gameObject, componentType, params, scriptedBehaviorParams)</td>
+	<td class="summary">Set the component of the provided type on the gameObject with the provided parameters.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.SetMapRenderer">GameObject.SetMapRenderer</a>&nbsp;(gameObject, params)</td>
+	<td class="summary">Set the MapRenderer component on the gameObject with the provided parameters.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.SetModelRenderer">GameObject.SetModelRenderer</a>&nbsp;(gameObject, params)</td>
+	<td class="summary">Set the ModelRenderer component on the gameObject with the provided parameters.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.SetParent">GameObject.SetParent</a>&nbsp;(gameObject, parentNameOrObject, keepLocalTransform)</td>
+	<td class="summary">Set the gameOject's parent.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.SetScriptedBehavior">GameObject.SetScriptedBehavior</a>&nbsp;(gameObject, scriptNameOrAsset, params)</td>
+	<td class="summary">Set the ScriptedBehavior component on the gameObject with the provided parameters.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.SetTransform">GameObject.SetTransform</a>&nbsp;(gameObject, params)</td>
+	<td class="summary">Set the Transform component on the gameObject with the provided parameters.</td>
+	</tr>
+
+</table>
+
+
+
+
+
+
+<br/>
+<br/>
+
+
+
+
+<h2><a name="functions"></a>Functions</h2>
+<dl class="function">
+
+
+
+<dt><a name="GameObject.AddCamera"></a><strong>GameObject.AddCamera</strong>&nbsp;(gameObject, params)</dt>
+<dd>
+Add a Camera to the gameObject and optionally initialize it.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+	<li>
+	  <code><em>params</em></code>: [optional] (table) A table of parameters to initialize the new component with.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(Camera) The component.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.AddComponent"></a><strong>GameObject.AddComponent</strong>&nbsp;(gameObject, componentType, params, scriptedBehaviorParams)</dt>
+<dd>
+Add a component to the gameObject and optionally initialize it.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+	<li>
+	  <code><em>componentType</em></code>: (string, ScriptedBehavior, ModelRenderer, MapRenderer or Camera) The component type (as a string) or object.
+	</li>
+	
+	<li>
+	  <code><em>params</em></code>: [optional] (string, Script or table) A table of parameters to initialize the new component with or, if componentType is 'ScriptedBehavior', the mandatory script name or asset.
+	</li>
+	
+	<li>
+	  <code><em>scriptedBehaviorParams</em></code>: [optional] (table) A table of parameters to initialize the new ScriptedBehavior with.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(ScriptedBehavior, ModelRenderer, MapRenderer or Camera) The component.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.AddMapRenderer"></a><strong>GameObject.AddMapRenderer</strong>&nbsp;(gameObject, params)</dt>
+<dd>
+Add a MapRenderer to the gameObject and optionally initialize it.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+	<li>
+	  <code><em>params</em></code>: [optional] (table) A table of parameters to initialize the new component with.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(MapRenderer) The component.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.AddModelRenderer"></a><strong>GameObject.AddModelRenderer</strong>&nbsp;(gameObject, params)</dt>
+<dd>
+Add a ModelRenderer to the gameObject and optionally initialize it.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+	<li>
+	  <code><em>params</em></code>: [optional] (table) A table of parameters to initialize the new component with.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(ModelRenderer) The component.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.AddScriptedBehavior"></a><strong>GameObject.AddScriptedBehavior</strong>&nbsp;(gameObject, scriptNameOrAsset, params)</dt>
+<dd>
+Add a ScriptedBehavior to the gameObject and optionally initialize it.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+	<li>
+	  <code><em>scriptNameOrAsset</em></code>: (string or Script) The script name or asset.
+	</li>
+	
+	<li>
+	  <code><em>params</em></code>: [optional] (table) A table of parameters to initialize the new component with.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(ScriptedBehavior) The component.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.BroadcastMessage"></a><strong>GameObject.BroadcastMessage</strong>&nbsp;(gameObject, functionName, data)</dt>
+<dd>
+Tries to call a method with the provided name on all the scriptedBehaviors attached to the gameObject or any of its descendants. The data argument can be nil or a table you want the method to receive as its first (and only) argument. If none of the scripteBehaviors attached to the gameObject or its children have a method matching the provided name, nothing happens.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+	<li>
+	  <code><em>functionName</em></code>: (string) The method name.
+	</li>
+	
+	<li>
+	  <code><em>data</em></code>: [optional] (table) The data to pass along the method call.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.Destroy"></a><strong>GameObject.Destroy</strong>&nbsp;(gameObject)</dt>
+<dd>
+Destroy the gameObject at the end of this frame.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.Get"></a><strong>GameObject.Get</strong>&nbsp;(name)</dt>
+<dd>
+Alias of CraftStudio.FindGameObject(name). Get the first gameObject with the provided name.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>name</em></code>: (string) The gameObject name.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(GameObject) The gameObject or nil if none is found.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.GetChild"></a><strong>GameObject.GetChild</strong>&nbsp;(gameObject, name, recursive)</dt>
+<dd>
+Alias of GameObject:FindChild(). Find the first gameObject's child with the provided name.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+	<li>
+	  <code><em>name</em></code>: (string) The child name.
+	</li>
+	
+	<li>
+	  <code><em>recursive</em></code>: [optional default=false] (boolean) Search for the child in all descendants instead of just the first generation.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(GameObject) The child or nil if none is found.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.GetChildren"></a><strong>GameObject.GetChildren</strong>&nbsp;(gameObject, recursive, includeSelf)</dt>
+<dd>
+Get all descendants of the gameObject.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+	<li>
+	  <code><em>recursive</em></code>: [optional default=false] (boolean) Look for all descendants instead of just the first generation.
+	</li>
+	
+	<li>
+	  <code><em>includeSelf</em></code>: [optional default=false] (boolean) Include the gameObject in the children.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(table) The children.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.GetComponent"></a><strong>GameObject.GetComponent</strong>&nbsp;(gameObject, componentType, scriptNameOrAsset)</dt>
+<dd>
+Get the first component of the provided type attached to the gameObject.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+	<li>
+	  <code><em>componentType</em></code>: (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform)
+	</li>
+	
+	<li>
+	  <code><em>scriptNameOrAsset</em></code>: [optional] (string or Script) If componentType is "ScriptedBehavior", the mandatory script name or asset.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(ScriptedBehavior, ModelRenderer, MapRenderer, Camera) The component instance, or nil if none is found.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.GetScriptedBehavior"></a><strong>GameObject.GetScriptedBehavior</strong>&nbsp;(gameObject, scriptNameOrAsset, calledFrom__index)</dt>
+<dd>
+Get the provided ScriptedBehavior instance attached to the gameObject.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+	<li>
+	  <code><em>scriptNameOrAsset</em></code>: (string or Script) The script name or asset.
+	</li>
+	
+	<li>
+	  <code><em>calledFrom__index</em></code>: 
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(ScriptedBehavior) The ScriptedBehavior instance.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.Instantiate"></a><strong>GameObject.Instantiate</strong>&nbsp;(gameObjectName, sceneNameOrAsset, params)</dt>
+<dd>
+Add a scene to the existing scene as a new gameObject with optional initialisation parameters.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObjectName</em></code>: (string) The gameObject name.
+	</li>
+	
+	<li>
+	  <code><em>sceneNameOrAsset</em></code>: (string or Scene) The scene name or scene asset.
+	</li>
+	
+	<li>
+	  <code><em>params</em></code>: [optional] (string, GameObject or table) The parent gameObject name, or parent GameObject or a table with parameters to initialize the new gameObject with.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(GameObject) The new gameObject.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.New"></a><strong>GameObject.New</strong>&nbsp;(name, params)</dt>
+<dd>
+Create a new gameObject with optional initialisation parameters.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>name</em></code>: (string) The GameObject name.
+	</li>
+	
+	<li>
+	  <code><em>params</em></code>: [optional] (string, GameObject or table) The parent gameObject name, or parent GameObject or a table with parameters to initialize the new gameObject with.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(GameObject) The new gameObject.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.Set"></a><strong>GameObject.Set</strong>&nbsp;(gameObject, params)</dt>
+<dd>
+Apply the content of the params argument to the provided gameObject.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+	<li>
+	  <code><em>params</em></code>: (table) A table of parameters to set the gameObject with.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.SetCamera"></a><strong>GameObject.SetCamera</strong>&nbsp;(gameObject, params)</dt>
+<dd>
+Set the Camera component on the gameObject with the provided parameters.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+	<li>
+	  <code><em>params</em></code>: (table) A table of parameters to set the component with.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.SetComponent"></a><strong>GameObject.SetComponent</strong>&nbsp;(gameObject, componentType, params, scriptedBehaviorParams)</dt>
+<dd>
+Set the component of the provided type on the gameObject with the provided parameters.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+	<li>
+	  <code><em>componentType</em></code>: (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform)
+	</li>
+	
+	<li>
+	  <code><em>params</em></code>: (string, Script or table) A table of parameters to set the component with or, if componentType is 'ScriptedBehavior', the script name or asset.
+	</li>
+	
+	<li>
+	  <code><em>scriptedBehaviorParams</em></code>: [optional] (table) If componentType is 'ScriptedBehavior', the mandatory table of parameters to set the ScriptedBehavior with.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.SetMapRenderer"></a><strong>GameObject.SetMapRenderer</strong>&nbsp;(gameObject, params)</dt>
+<dd>
+Set the MapRenderer component on the gameObject with the provided parameters.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+	<li>
+	  <code><em>params</em></code>: (table) A table of parameters to set the component with.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.SetModelRenderer"></a><strong>GameObject.SetModelRenderer</strong>&nbsp;(gameObject, params)</dt>
+<dd>
+Set the ModelRenderer component on the gameObject with the provided parameters.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+	<li>
+	  <code><em>params</em></code>: (table) A table of parameters to set the component with.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.SetParent"></a><strong>GameObject.SetParent</strong>&nbsp;(gameObject, parentNameOrObject, keepLocalTransform)</dt>
+<dd>
+Set the gameOject's parent. Optionaly carry over the gameObject's local transform instead of the global one.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+	<li>
+	  <code><em>parentNameOrObject</em></code>: (string or GameObject) The parent name or gameObject.
+	</li>
+	
+	<li>
+	  <code><em>keepLocalTransform</em></code>: [optional default=false] (boolean) Carry over the game object's local transform instead of the global one.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(GameObject) The gameObject.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.SetScriptedBehavior"></a><strong>GameObject.SetScriptedBehavior</strong>&nbsp;(gameObject, scriptNameOrAsset, params)</dt>
+<dd>
+Set the ScriptedBehavior component on the gameObject with the provided parameters.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+	<li>
+	  <code><em>scriptNameOrAsset</em></code>: (string or Script) The script name or asset.
+	</li>
+	
+	<li>
+	  <code><em>params</em></code>: (table) A table of parameters to set the component with.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.SetTransform"></a><strong>GameObject.SetTransform</strong>&nbsp;(gameObject, params)</dt>
+<dd>
+Set the Transform component on the gameObject with the provided parameters.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+	<li>
+	  <code><em>params</em></code>: (table) A table of parameters to set the component with.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+</dl>
+
+
+
+
+
+
+
+</div> <!-- id="content" -->
+
+</div> <!-- id="main" -->
+
+<div id="about">
+	<p><a href="http://validator.w3.org/check?uri=referer"><img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0!" height="31" width="88" /></a></p>
+</div> <!-- id="about" -->
+
+</div> <!-- id="container" -->	
+</body>
+</html>

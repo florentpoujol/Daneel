@@ -1,0 +1,735 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <title>Daneel framework - CraftSudio.lua scripting reference</title>
+    <link rel="stylesheet" href="luadoc.css" type="text/css" />
+	<!--meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/-->
+</head>
+
+<body>
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+<div id="main">
+
+<div id="navigation">
+	<h1>Daneel</h1>
+	
+	<br>
+	Documentation :
+	<ul>
+		<li><a href="readme.html">Readme</a></li>
+	</ul>
+	<br>
+	Scripting reference : 
+	<ul>
+		<li><a href="Daneel.html">Daneel.lua</a></li>
+		<li><a href="CraftStudio.html">CraftStudio.lua</a></li>
+		<li><a href="GameObject.html">GameObject.lua</a></li>
+		<li><a href="Lua.html">Lua.lua</a></li>
+	</ul>
+</div> <!-- id="navigation" -->
+
+<div id="content">
+
+<h1>File <code>Lua.lua</code></h1>
+
+
+
+
+
+
+
+<h2>Functions</h2>
+<table class="function_list">
+
+	<tr>
+	<td class="name" nowrap><a href="#math.isinteger">math.isinteger</a>&nbsp;(number, strict)</td>
+	<td class="summary">Tell wether the provided number is an integer.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#string.isoneof">string.isoneof</a>&nbsp;(s, t, ignoreCase)</td>
+	<td class="summary">Tell wether the provided table contains the provided string.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#string.totable">string.totable</a>&nbsp;(s)</td>
+	<td class="summary">Turn a string into a table, one character per index.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#string.ucfirst">string.ucfirst</a>&nbsp;(s)</td>
+	<td class="summary">Turn the first letter uppercase.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#table.combine">table.combine</a>&nbsp;(keys, values, strict)</td>
+	<td class="summary">Create an associative table with the provided keys and values tables.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#table.compare">table.compare</a>&nbsp;(table1, table2)</td>
+	<td class="summary">Compare table1 and table2.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#table.containskey">table.containskey</a>&nbsp;(t, p_key)</td>
+	<td class="summary">Tells wether the provided key is found within the provided table.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#table.containsvalue">table.containsvalue</a>&nbsp;(t, p_value, ignoreCase)</td>
+	<td class="summary">Tells wether the provided value is found within the provided table.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#table.copy">table.copy</a>&nbsp;(t)</td>
+	<td class="summary">Return a copy of the provided table.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#table.getkey">table.getkey</a>&nbsp;(t, value)</td>
+	<td class="summary">Get the key associated with the first occurence of the provided value.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#table.getkeys">table.getkeys</a>&nbsp;(t)</td>
+	<td class="summary">Return all the keys of the provided table.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#table.getvalues">table.getvalues</a>&nbsp;(t)</td>
+	<td class="summary">Return all the values of the provided table.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#table.length">table.length</a>&nbsp;(t, keyType)</td>
+	<td class="summary">Returns the length of a table, which is the numbers of keys of the provided type (or of any type), for which the value is not nil.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#table.merge">table.merge</a>&nbsp;(...)</td>
+	<td class="summary">Merge two or more tables into one.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#table.new">table.new</a>&nbsp;(t)</td>
+	<td class="summary">Constructor for dynamic tables that allow to use the functions in the table library on the table copies (like what you can do with the strings).</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#table.print">table.print</a>&nbsp;(t)</td>
+	<td class="summary">Print all key/value pairs within the provided table.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#table.printmetatable">table.printmetatable</a>&nbsp;(t)</td>
+	<td class="summary">Print the metatable of the provided table.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#table.removevalue">table.removevalue</a>&nbsp;(t, value, singleRemove)</td>
+	<td class="summary">Remove the provided value from the provided table.</td>
+	</tr>
+
+</table>
+
+
+
+
+
+
+<br/>
+<br/>
+
+
+
+
+<h2><a name="functions"></a>Functions</h2>
+<dl class="function">
+
+
+
+<dt><a name="math.isinteger"></a><strong>math.isinteger</strong>&nbsp;(number, strict)</dt>
+<dd>
+Tell wether the provided number is an integer.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>number</em></code>: (number) The number to check.
+	</li>
+	
+	<li>
+	  <code><em>strict</em></code>: [optionnal default=false] (boolean) If true, the function returns an error when the 'number' argument is not a number.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="string.isoneof"></a><strong>string.isoneof</strong>&nbsp;(s, t, ignoreCase)</dt>
+<dd>
+Tell wether the provided table contains the provided string. Alias of table.containsvalue().
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>s</em></code>: (string) The string.
+	</li>
+	
+	<li>
+	  <code><em>t</em></code>: (table) The table containing the values to check against the string
+	</li>
+	
+	<li>
+	  <code><em>ignoreCase</em></code>: [optional default=false] (boolean) Ignore the case.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(boolean) True if the string is found in the table, false otherwise.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="string.totable"></a><strong>string.totable</strong>&nbsp;(s)</dt>
+<dd>
+Turn a string into a table, one character per index.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>s</em></code>: (string) The string
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(table) The table</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="string.ucfirst"></a><strong>string.ucfirst</strong>&nbsp;(s)</dt>
+<dd>
+Turn the first letter uppercase.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>s</em></code>: (string) The string.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(string) The string.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="table.combine"></a><strong>table.combine</strong>&nbsp;(keys, values, strict)</dt>
+<dd>
+Create an associative table with the provided keys and values tables.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>keys</em></code>: (table) The keys of the future table.
+	</li>
+	
+	<li>
+	  <code><em>values</em></code>: (table) The values of the future table.
+	</li>
+	
+	<li>
+	  <code><em>strict</em></code>: [optional default=false] (boolean) If true, the function returns false if the keys and values tables have different length.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(table or boolean) The combined table or false if the tables have different length.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="table.compare"></a><strong>table.compare</strong>&nbsp;(table1, table2)</dt>
+<dd>
+Compare table1 and table2. Returns true if they have the exact same keys which have the exact same values.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>table1</em></code>: (table) The first table to compare.
+	</li>
+	
+	<li>
+	  <code><em>table2</em></code>: (table) The second table to compare to the first table.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(boolean) True if the two tables have the exact same content.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="table.containskey"></a><strong>table.containskey</strong>&nbsp;(t, p_key)</dt>
+<dd>
+Tells wether the provided key is found within the provided table.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>t</em></code>: (table) The table to search in.
+	</li>
+	
+	<li>
+	  <code><em>p_key</em></code>: (mixed) The key to search for.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(boolean) True if the key is found in the table, false otherwise.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="table.containsvalue"></a><strong>table.containsvalue</strong>&nbsp;(t, p_value, ignoreCase)</dt>
+<dd>
+Tells wether the provided value is found within the provided table.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>t</em></code>: (table) The table to search in.
+	</li>
+	
+	<li>
+	  <code><em>p_value</em></code>: (any) The value to search for.
+	</li>
+	
+	<li>
+	  <code><em>ignoreCase</em></code>: [optionnal default=false] (boolean) Ignore the case of the value. If true, the value must be of type 'string'.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(boolean) True if the value is found in the table, false otherwise.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="table.copy"></a><strong>table.copy</strong>&nbsp;(t)</dt>
+<dd>
+Return a copy of the provided table.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>t</em></code>: (table) The table to copy.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="table.getkey"></a><strong>table.getkey</strong>&nbsp;(t, value)</dt>
+<dd>
+Get the key associated with the first occurence of the provided value.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>t</em></code>: (table) The table.
+	</li>
+	
+	<li>
+	  <code><em>value</em></code>: (mixed) The value.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="table.getkeys"></a><strong>table.getkeys</strong>&nbsp;(t)</dt>
+<dd>
+Return all the keys of the provided table.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>t</em></code>: (table) The table.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(table) The keys.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="table.getvalues"></a><strong>table.getvalues</strong>&nbsp;(t)</dt>
+<dd>
+Return all the values of the provided table.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>t</em></code>: (table) The table.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(table) The values.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="table.length"></a><strong>table.length</strong>&nbsp;(t, keyType)</dt>
+<dd>
+Returns the length of a table, which is the numbers of keys of the provided type (or of any type), for which the value is not nil.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>t</em></code>: (table) The table.
+	</li>
+	
+	<li>
+	  <code><em>keyType</em></code>: [optional] (string) Any Lua or CraftStudio type ('string', 'GameObject', ...).
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(number) The table length.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="table.merge"></a><strong>table.merge</strong>&nbsp;(...)</dt>
+<dd>
+Merge two or more tables into one. Integer keys are not overrided.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>...</em></code>: (table) At least two tables to merge together. Arguments that are not of type 'table' are ignored.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(table) The new table.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="table.new"></a><strong>table.new</strong>&nbsp;(t)</dt>
+<dd>
+Constructor for dynamic tables that allow to use the functions in the table library on the table copies (like what you can do with the strings).
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>t</em></code>: [optional] (table) A table.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(table) The new table.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="table.print"></a><strong>table.print</strong>&nbsp;(t)</dt>
+<dd>
+Print all key/value pairs within the provided table.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>t</em></code>: (table) The table to print.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="table.printmetatable"></a><strong>table.printmetatable</strong>&nbsp;(t)</dt>
+<dd>
+Print the metatable of the provided table.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>t</em></code>: (table) The table who has a metatable to print.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="table.removevalue"></a><strong>table.removevalue</strong>&nbsp;(t, value, singleRemove)</dt>
+<dd>
+Remove the provided value from the provided table. If the index of the value is an integer, the value is nicely removed with table.remove().
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>t</em></code>: (table) The table.
+	</li>
+	
+	<li>
+	  <code><em>value</em></code>: (mixed) The value to remove.
+	</li>
+	
+	<li>
+	  <code><em>singleRemove</em></code>: [optional default=false] (boolean) Tell wether to remove all occurences of the value or just the first one.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+<ul>(table) The table.</ul>
+
+
+
+</dd>
+
+
+</dl>
+
+
+
+
+
+
+
+</div> <!-- id="content" -->
+
+</div> <!-- id="main" -->
+
+<div id="about">
+	<p><a href="http://validator.w3.org/check?uri=referer"><img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0!" height="31" width="88" /></a></p>
+</div> <!-- id="about" -->
+
+</div> <!-- id="container" -->	
+</body>
+</html>
