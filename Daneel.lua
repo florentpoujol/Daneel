@@ -569,7 +569,7 @@ end
 
 ----------------------------------------------------------------------------------
 -- Runtime
-local luadoc = "stop" -- stops the LuaDoc to register the functions below
+local stopLuadoc = "" -- stops the LuaDoc to register the functions below
 
 
 function Daneel.Awake()
