@@ -4,7 +4,7 @@
 
 - check what happens when the transform is destroyed by component.destroy()
 
-
+- allow to extends GetType pour retourner des types customs
 
 
 voir pour Lua minifier

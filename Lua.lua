@@ -2,7 +2,7 @@
 ----------------------------------------------------------------------------------
 -- math
 
---- Tell wether the provided number is an integer.
+--- Tell whether the provided number is an integer.
 -- @param number (number) The number to check.
 -- @param strict [optionnal default=false] (boolean) If true, the function returns an error when the 'number' argument is not a number.
 function math.isinteger(number, strict)
@@ -42,7 +42,7 @@ function string.totable(s)
     return t
 end
 
---- Tell wether the provided table contains the provided string. 
+--- Tell whether the provided table contains the provided string. 
 -- Alias of table.containsvalue().
 -- @param s (string) The string.
 -- @param t (table) The table containing the values to check against the string
@@ -74,11 +74,8 @@ function string.ucfirst(s)
 end
 
 
-
 ----------------------------------------------------------------------------------
 -- table
-
-
 
 table.__index = table
 
@@ -112,7 +109,7 @@ function table.copy(t)
     return t2
 end
 
---- Tells wether the provided key is found within the provided table.
+--- Tell whether the provided key is found within the provided table.
 -- @param t (table) The table to search in.
 -- @param p_key (mixed) The key to search for.
 -- @return (boolean) True if the key is found in the table, false otherwise.
@@ -137,7 +134,7 @@ function table.containskey(t, p_key)
     return containsKey
 end
 
---- Tells wether the provided value is found within the provided table.
+--- Tell whether the provided value is found within the provided table.
 -- @param t (table) The table to search in.
 -- @param p_value (any) The value to search for.
 -- @param ignoreCase [optionnal default=false] (boolean) Ignore the case of the value. If true, the value must be of type 'string'.
@@ -371,7 +368,7 @@ end
 -- If the index of the value is an integer, the value is nicely removed with table.remove().
 -- @param t (table) The table.
 -- @param value (mixed) The value to remove.
--- @param singleRemove [optional default=false] (boolean) Tell wether to remove all occurences of the value or just the first one.
+-- @param singleRemove [optional default=false] (boolean) Tell whether to remove all occurences of the value or just the first one.
 -- @return (table) The table.
 function table.removevalue(t, value, singleRemove)
     Daneel.Debug.StackTrace.BeginFunction("table.removevalue", t, value, singleRemove)
