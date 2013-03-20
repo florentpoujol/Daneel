@@ -7,11 +7,11 @@ Asset = {}
 Asset.__index = Asset
 
 
---- Alias of CraftStudio.FindAsset(assetName[, assetType])
+--- Alias of CraftStudio.FindAsset(assetName[, assetType]).
 -- Get the asset of the specified name and type.
 -- @param assetName (string) The fully-qualified asset name.
 -- @param assetType [optional] (string, Script, Model, ModelAnimation, Map, TileSet, Scene or Sound) The asset type as a case-insensitive string or the asset object.
--- @return (Script, Model, ModelAnimation, Map, TileSet, Scene or Sound) The asset, or nil if none is found
+-- @return (Script, Model, ModelAnimation, Map, TileSet, Scene or Sound) The asset, or nil if none is found.
 function Asset.Get(assetName, assetType)
     Daneel.Debug.StackTrace.BeginFunction("Asset.Get", assetName, assetType)
     local errorHead = "Asset.Get(assetName[, assetType]) : "
@@ -28,39 +28,39 @@ end
 
 -- Get helpers are generated in Asset.Init() below
 
---- Get the Script asset of the specified name
+--- Get the Script asset with the specified name.
 -- @param assetName (string) The fully-qualified asset name.
--- @return (Script) The asset, or nil if none is found
+-- @return (Script) The asset, or nil if none is found.
 function Asset.GetScript(assetName) end
 
---- Get the Model asset of the specified name
+--- Get the Model asset with the specified name.
 -- @param assetName (string) The fully-qualified asset name.
--- @return (Model) The asset, or nil if none is found
+-- @return (Model) The asset, or nil if none is found.
 function Asset.GetModel(assetName) end
 
---- Get the ModelAnimation asset of the specified name
+--- Get the ModelAnimation asset with the specified name.
 -- @param assetName (string) The fully-qualified asset name.
--- @return (ModelAnimation) The asset, or nil if none is found
+-- @return (ModelAnimation) The asset, or nil if none is found.
 function Asset.GetModelAnimation(assetName) end
 
---- Get the Map asset of the specified name
+--- Get the Map asset with the specified name
 -- @param assetName (string) The fully-qualified asset name.
--- @return (Map) The asset, or nil if none is found
+-- @return (Map) The asset, or nil if none is found.
 function Asset.GetMap(assetName) end
 
---- Get the TileSet asset of the specified name
+--- Get the TileSet asset with the specified name
 -- @param assetName (string) The fully-qualified asset name.
--- @return (TileSet) The asset, or nil if none is found
+-- @return (TileSet) The asset, or nil if none is found.
 function Asset.GetTileSet(assetName) end
 
---- Get the Scene asset of the specified name
+--- Get the Scene asset with the specified name.
 -- @param assetName (string) The fully-qualified asset name.
--- @return (Scene) The asset, or nil if none is found
+-- @return (Scene) The asset, or nil if none is found.
 function Asset.GetScene(assetName) end
 
---- Get the Sound asset of the specified name
+--- Get the Sound asset with the specified name.
 -- @param assetName (string) The fully-qualified asset name.
--- @return (Sound) The asset, or nil if none is found
+-- @return (Sound) The asset, or nil if none is found.
 function Asset.GetSound(assetName) end
 
 
@@ -188,7 +188,7 @@ function Component.Init()
     end
 end
 
---- Apply the content of the params argument to the component in argument.
+--- Apply the content of the params argument to the provided component.
 -- @param component (Scriptedbehavior, ModelRenderer, MapRenderer, Camera or Transform) The component.
 -- @param params (table) A table of parameters to set the component with.
 function Component.Set(component, params)
@@ -204,7 +204,8 @@ function Component.Set(component, params)
     Daneel.Debug.StackTrace.EndFunction("Component.Set", component)
 end
 
---- Destory the provided component, removing it from the gameObject.
+--- Destroy the provided component, removing it from the gameObject.
+-- TNote that the component is removed only at the end of the current frame.
 -- @param component (ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform) The component.
 function Component.Destroy(component)
     Daneel.Debug.StackTrace.BeginFunction("Component.Destroy", component)
@@ -277,7 +278,7 @@ local OriginalSetMap = MapRenderer.SetMap
 --- Attach the provided map to the provided mapRenderer.
 -- @param mapRenderer (MapRenderer) The mapRenderer.
 -- @param mapNameOrAsset (string or Map) The map name or asset.
--- @param keepTileSet [optional default=false] (boolean) Keep the currect TileSet
+-- @param keepTileSet [optional default=false] (boolean) Keep the current TileSet
 function MapRenderer.SetMap(mapRenderer, mapNameOrAsset, keepTileSet)
     Daneel.Debug.StackTrace.BeginFunction("MapRenderer.SetMap", mapRenderer, mapNameOrAsset)
     local errorHead = "MapRenderer.SetMap(mapRenderer, mapNameOrAsset) : "
@@ -326,10 +327,10 @@ end
 -- Ray
 
 
---- Check the collision of the ray against all castable gameObject or against the provided set of gameObject.
+--- Check the collision of the ray against the provided set of gameObject or if it is nil, against all castable gameObjects.
 -- @param ray (Ray) The ray.
--- @param gameObjects (table) [optional default=Daneel.config.castableGameObjects] The set of gameObjects to cast the ray against (or if empty, the castable gameObjects)!;
--- @return (table) The table of RaycastHits (will be empty if the ray didn't intersects anything).
+-- @param gameObjects (table) [optional] The set of gameObjects to cast the ray against (or if nil, the castable gameObjects)
+-- @return (table) A table of RaycastHits (will be empty if the ray didn't intersects anything).
 function Ray.Cast(ray, gameObjects)
     Daneel.Debug.StackTrace.BeginFunction("Ray.Cast", ray, gameObjects)
     local errorHead = "Ray.Cast(ray) : "
@@ -344,10 +345,9 @@ function Ray.Cast(ray, gameObjects)
     local hits = table.new()
 
     for i, gameObject in ipairs(gameObjects) do
-        local distance, normal, hitBlockLocation, adjacentBlockLocation = ray:IntersectsGameObject(gameObject)
-
-        if distance ~= nil then
-            hits:insert(RaycastHit.New(distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject))
+        local raycastHit = ray:IntersectsGameObject(gameObject)
+        if raycastHit ~= nil then
+            hits:insert(raycastHit)
         end
     end
 
@@ -359,7 +359,7 @@ end
 --- Check if the ray intersect the specified gameObject.
 -- @param ray (Ray) The ray.
 -- @param gameObject (string, GameObject) The gameObject instance or name.
--- @return
+-- @return (RaycastHit) A raycastHit if there was a collision, or nil
 function Ray.IntersectsGameObject(ray, gameObject)
     Daneel.Debug.StackTrace.BeginFunction("Ray.IntersectsGameObject", ray, gameObject)
     local errorHead = "Ray.IntersectsGameObject(ray, gameObject) : "
@@ -374,25 +374,31 @@ function Ray.IntersectsGameObject(ray, gameObject)
         end
     end
 
+    local distance = nil
+    local normal = nil
+    local hitBlockLocation = nil
+    local adjacentBlockLocation = nil
+    
     local component = gameObject:GetComponent("ModelRenderer")
     if component ~= nil then
-        local distance, normal = ray:IntersectsModelRenderer(component)
-        if distance ~= nil then
-            Daneel.Debug.StackTrace.EndFunction("Ray.IntersectsGameObject", distance, normal)
-            return distance, normal
+        distance, normal = ray:IntersectsModelRenderer(component)
+    end
+
+    if distance ~= nil then
+        component = gameObject:GetComponent("MapRenderer")
+        if component ~= nil then
+            distance, normal, hitBlockLocation, adjacentBlockLocation = ray:IntersectsMapRenderer(component)
         end
     end
 
-    component = gameObject:GetComponent("MapRenderer")
-    if component ~= nil then
-        local distance, normal, hitBlockLocation, adjacentBlockLocation = ray:IntersectsMapRenderer(component)
-        if distance ~= nil then
-            Daneel.Debug.StackTrace.EndFunction("Ray.IntersectsGameObject", distance, normal, hitBlockLocation, adjacentBlockLocation)
-            return distance, normal, hitBlockLocation, adjacentBlockLocation
-        end
+    if distance == nil then
+        Daneel.Debug.StackTrace.EndFunction("Ray.IntersectsGameObject", nil)
+        return nil
     end
 
-    Daneel.Debug.StackTrace.EndFunction("Ray.IntersectsGameObject")
+    local raycastHit = RaycastHit.New(distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject)
+    Daneel.Debug.StackTrace.EndFunction("Ray.IntersectsGameObject", raycastHit)
+    return raycastHit
 end
 
 
