@@ -10,3 +10,4 @@ Triggers
     - groupement de triggers et triggerable gameObjects
     - function OnTriggerEnter etc sont aussi appelée sur le trigger et recoivent le gameObject
 
+- custom error message
