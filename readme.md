@@ -71,7 +71,7 @@ Also :
 
 ## <a id="install"></a>Installation 
 
-[Download then import DaneelFramework.cspack.][dowloadlink]
+[Download then import in CraftStudio][dowloadlink] the pack of script.
 
 Step by step process :
 * Download the file on your computer
