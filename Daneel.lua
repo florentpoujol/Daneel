@@ -376,10 +376,8 @@ function Daneel.Debug.ToRawString(data)
 end
 
 
-
 ----------------------------------------------------------------------------------
 -- StackTrace
-
 
 Daneel.Debug.StackTrace = { 
     messages = {},
@@ -440,10 +438,8 @@ function Daneel.Debug.StackTrace.Print()
 end
 
 
-
 ----------------------------------------------------------------------------------
 -- Events
-
 
 Daneel.Events = { events = {} }
 
@@ -576,9 +572,9 @@ function Daneel.Events.Fire(eventName, ...)
 end
 
 
--- --------------------------------------------------------------------------------
-
--- Awakening :
+----------------------------------------------------------------------------------
+-- Awakening
+-- This is done in the global scope so that everything is available right away from the ScriptedBehavior's Awake() functions
 
 for componentType, componentObject in ipairs(Daneel.config.componentObjects) do
 
@@ -633,6 +629,7 @@ for componentType, componentObject in ipairs(Daneel.config.componentObjects) do
             
             return nil
         end
+        print(componentType.." index")
 
         -- Dynamic Setters
         componentObject["__newindex"] = function(component, key, value)
@@ -644,6 +641,7 @@ for componentType, componentObject in ipairs(Daneel.config.componentObjects) do
             
             return rawset(component, key, value)
         end
+        print(componentType.." New index")
     end
 
     componentObject["__tostring"] = function(component)
@@ -651,6 +649,7 @@ for componentType, componentObject in ipairs(Daneel.config.componentObjects) do
         -- component.inner is "?: [some ID]"
         return componentType..tostring(component.inner):sub(2, 20) -- leave 2 as the starting index, only the transform ahave an extra space
     end
+    print(componentType.." to string")
 end -- end for
 
 
@@ -693,6 +692,11 @@ for i, path in pairs(Daneel.config.scripts) do
             end
             
             return rawset(scriptedBehavior, key, value)
+        end
+
+        --
+        function script.__tostring(scriptedBehavior)
+            return "ScriptedBehavior"..tostring(scriptedBehavior.inner):sub(2, 20)
         end
     else
         print("WARNING : item with key '"..i.."' and value '"..path.."' in Daneel.config.scripts is not a valid script path.")

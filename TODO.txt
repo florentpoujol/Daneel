@@ -6,30 +6,7 @@
 
 - allow to extends GetType pour retourner des types customs
 
-
-voir pour Lua minifier
-
-
-
-vérifier que la suppression de go dans la liste des trigerable or mousehoverable gameobject n provoque pas de problèmes
-
-Events
-    Fire
-    - vérifier que la suppression d'entrées dans events ne provoque pas de problèmes
-    - vérif lors de l'appel de function ou GO détruites
-
-
-
-Package manager
-- faciliter l'intégration de frameworks ou de scripts en plusieurs partie
-- définit des standards (appel, initialisation, config, indépendant de l'ordre de lecture des fichiers (acune dépendance globale))
-- permet de désactiver tout ou partie des fichiers facilement (code d'un fichier placé dans fonction appelée at runtime)
-
-
-daneel
-userconfig
-Daneel
-    utilities
-    events
-    defaut config
+Triggers
+    - groupement de triggers et triggerable gameObjects
+    - function OnTriggerEnter etc sont aussi appelée sur le trigger et recoivent le gameObject
 

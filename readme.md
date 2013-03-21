@@ -70,7 +70,7 @@ Also :
 
 ## <a id="install"></a>Installation 
 
-You just have to download then import DaneelFramework.cspack. 
+Download then import DaneelFramework.cspack. 
 
 Step by step process :
 * Download the file on your computer
@@ -79,13 +79,13 @@ Step by step process :
 * Navigate to the "Script" tab, select all the scripts then click "Import".
 
 The scripts in the `Daneel/Behaviors` folder must stay in that folder.  
-If you want to benefits from the hotkey events, add in your scene the "Daneel/Behaviors/DaneelInit" ScriptedBehavior.
+If you want to use the hotkey events, add the "Daneel/Behaviors/DaneelInit" ScriptedBehavior in your scene (all other features works without it).
 
 
 ## <a id="config"></a>Configuration
 
 Some features are only available if a few configuration is done first.
-Currently, all that has to be done is to edit the top of the `DaneelCore` script (just the `Daneel.config` table) and make the list of the scripts and/or button names of your game.
+Currently, all that has to be done is to edit the top of the `DaneelCore` script (just the `Daneel.config` table) and make the list of the scripts (for anything that uses the ScriptedBehaviors) and/or button names (for the hotkey events) of your game.
     
     Daneel.config = {
         -- List of the Scripts paths as values and optionally the script alias as the keys
@@ -255,6 +255,7 @@ For instance, passing false instead of the gameObject's name with `gameObject:Ge
 
 When an error is triggered by `Danel.Debug.PrintError(message)`, Daneel print a "stack trace" in the Runtime Report.
 The stack trace nicely shows the history of function calls whithin the framework that lead to the error and display values recieved as argument as well as returned values.  
+It reads from top to bottom, the last function called -where the error occured- at the bottom.  
 For instance, when trying to set the model of a ModelRenderer (to a Model that does not exists) via gameObject:Set() :
 
     ~~~~~ Daneel.Debug.StackTrace ~~~~~
@@ -307,7 +308,7 @@ Each of these functions receive the trigger gameObject as argument.
 ## <a id="mouse"></a>Mouse messages
 
 GameObjects who have the `MousehoverableGameObject` ScriptedBehavior are known as **mousehoverable gameObjects**. They react when they are hovered by the mouse.  
-The main camera of your scene must have the `CameraMouseOver` ScriptedBehavior.
+Add the `CameraMouseOver` ScriptedBehavior to your camera.
 
 * When a mousehoverable gameObject is hovered for the first frame (it is hovered this frame, but it wasn't the last frame), the message `OnMouseEnter` is sent on the gameObject.
 * As long as the mouse stays over the gameObject, the message `OnMouseOver` is sent on the gameObject.
@@ -441,6 +442,7 @@ Arguments between square brackets are optional.
 * gameObject:SetParent(parentNameOrInstance[, keepLocalTransform])
 * gameObject:GetChild(childName[, recursive])
 * gameObject:GetChildren([recursive, includeSelf])
+* gameObject:SendMessage(functionName[, data])
 * gameObject:BroadcastMessage(functionName[, data])
 
 * gameObject:AddComponent(componentType[, params]) / gameObject:AddComponent("ScriptedBehavior", scriptNameorAsset[, params])
