@@ -41,9 +41,9 @@
       <section>
         <h1>Daneel</h1>
 
-<p>Daneel is a framework for <a href="http://craftstud.io">CraftStudio</a> that aims to sweeten and shorten the code you write, to extend and render more flexible to use the API, as well as to bring news fonctionnalities.</p>
+<p>Daneel is a framework for <a href="http://craftstud.io">CraftStudio</a> that aims to sweeten and shorten the code you write, to extend and render more flexible to use the API, as well as to bring news functionalities.</p>
 
-<p>Daneel never deprecate anything from the current CraftStudio's API which remains usable in its entirety <a href="http://craftstudio.wikia.com/wiki/Scripting_Reference/Index">as decribed in the scripting reference</a> on the offical wiki.<br>
+<p>Daneel never deprecate anything from the current CraftStudio's API which remains usable in its entirety <a href="http://craftstudio.wikia.com/wiki/Scripting_Reference/Index">as described in the scripting reference</a> on the official wiki.<br>
 Daneel mostly add new objects, new functions on existing objects and sometimes allow to pass different argument types and new arguments on existing functions.</p>
 
 <ul>
@@ -97,16 +97,16 @@ self.gameObject:GetComponent("MapRenderer"):SetMap(CraftStudio.FindAsset("folder
 })
 </code></pre>
 
-<p>Also :</p>
+<p>Also : </p>
 
 <ul>
 <li>Use the gameObject or asset name instead of the actual object with some functions</li>
 <li>Simpler raycasting with <code>ray:InstersectsGameObject()</code> or <code>ray:Cast()</code>
 </li>
-<li>Triggers (proximity check and interaction with the gameObject in range)</li>
-<li>Easily interact with gameObjects hovered by the mouse</li>
+<li>Triggers (they perform a proximity check against some gameObjects and interact with them when they are in range)</li>
+<li>Interact with gameObjects hovered by the mouse</li>
 <li>Events</li>
-<li>Hotkeys (fire events when pressing buttons)</li>
+<li>Hotkeys (fire events at the push of any button)</li>
 </ul><h2>
 <a></a>Installation</h2>
 
@@ -128,7 +128,7 @@ If you want to use the hotkey events, add the "Daneel/Behaviors/DaneelInit" Scri
 <a></a>Configuration</h2>
 
 <p>Some features are only available if a few configuration is done first.
-Currently, all that has to be done is to edit the top of the <code>DaneelCore</code> script (just the <code>Daneel.config</code> table) and make the list of the scripts (for anything that uses the ScriptedBehaviors) and/or button names (for the hotkey events) of your game.</p>
+Currently, all that has to be done is to edit the top of the <code>Daneel</code> script (just the <code>Daneel.config</code> table) and make the list of the scripts (for anything that uses the ScriptedBehaviors) and/or button names (for the hotkey events) of your game.</p>
 
 <pre><code>Daneel.config = {
     -- List of the Scripts paths as values and optionally the script alias as the keys
@@ -152,8 +152,8 @@ Currently, all that has to be done is to edit the top of the <code>DaneelCore</c
 <a></a>Conventions</h2>
 
 <ul>
-<li>Every getter fonctions are called GetSomething() instead of FindSomething().</li>
-<li>Every object and function names are pascal-cased, except for functions added to Lua's standard libraries which are all lowercase.</li>
+<li>Every getter functions are called GetSomething() instead of FindSomething().</li>
+<li>Every object and function names are pascal-cased, except for functions added to Lua's standard libraries which are all lower-case.</li>
 <li>Every time an argument has to be an asset (like with <code>modelRenderer:SetModel()</code>), you may pass the fully-qualified asset name instead.</li>
 <li>Every time an argument has to be a gameObject instance (like with <code>gameObject:SetParent(parentNameOrInstance[, keepLocalTransform])</code>), you may pass the gameObject name instead.</li>
 <li>Every time an argument has to be an asset or component <strong>type</strong>, you may pass the asset or component <strong>object</strong> instead (ie : <code>Asset.Get("Model name", ModelRenderer)</code> instead of <code>Asset.Get("Model name", "ModelRenderer")</code>). And when you do pass the type as a string, it is case insensitive.</li>
@@ -161,7 +161,7 @@ Currently, all that has to be done is to edit the top of the <code>DaneelCore</c
 </ul><h2>
 <a></a>Dynamic getters and setters</h2>
 
-<p>Getters and setters functions may be used on gameOjects and components as if they were variables. Their names must begin by "Get" or "Set" and have the forth letter uppercase (underscore is allowed). Ie : GetSomething() and Get_something() will works, but Getsomething() or getSomething() won't work.</p>
+<p>Getters and setters functions may be used on gameOjects and components as if they were variables. Their names must begin by "Get" or "Set" and have the forth letter upper-case (underscore is allowed). Ie : GetSomething() and Get_something() will works, but Getsomething() or getSomething() won't work.</p>
 
 <pre><code>self.gameObject.transform.localPosition
 -- is the same as
@@ -304,8 +304,8 @@ For instance, passing false instead of the gameObject's name with <code>gameObje
 <h3>Stack Trace</h3>
 
 <p>When an error is triggered by <code>Danel.Debug.PrintError(message)</code>, Daneel print a "stack trace" in the Runtime Report.
-The stack trace nicely shows the history of function calls whithin the framework that lead to the error and display values recieved as argument as well as returned values.<br>
-It reads from top to bottom, the last function called -where the error occured- at the bottom.<br>
+The stack trace nicely shows the history of function calls within the framework that lead to the error and display values received as argument as well as returned values.<br>
+It reads from top to bottom, the last function called -where the error occurred- at the bottom.<br>
 For instance, when trying to set the model of a ModelRenderer (to a Model that does not exists) via gameObject:Set() :</p>
 
 <pre><code>~~~~~ Daneel.Debug.StackTrace ~~~~~
@@ -352,7 +352,7 @@ function Behavior:OnTriggerStay(trigger)
         print("The 'Action' button was just released while the gameObject of name '"..self.gameObject.name.."' is inside the trigger of name '"..trigger.name.."'.")
     end
 end
--- a typical use for this is any mechanism that the player can use if he is close enought and press a key
+-- a typical use for this is any mechanism that the player can use if he is close enough and press a key
 </code></pre>
 
 <h2>
@@ -398,7 +398,7 @@ end
 <h2>
 <a></a>Hotkeys events</h2>
 
-<p>Whenever you press one of the button whose name is set in <code>Daneel.config.buttons</code>, the events nammed <code>On[Button name]ButtonDown</code>, <code>On[Button name]ButtonJustPressed</code> and <code>On[Button name]ButtonJustReleased</code> are fired.</p>
+<p>Whenever you press one of the button whose name is set in <code>Daneel.config.buttons</code>, the events named <code>On[Button name]ButtonDown</code>, <code>On[Button name]ButtonJustPressed</code> and <code>On[Button name]ButtonJustReleased</code> are fired.</p>
 
 <p>The table <code>Daneel.config.buttons</code> may be filled with the button names that you defined in the <code>Administration &gt; Game Controls</code> tab.</p>
 
