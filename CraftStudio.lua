@@ -3,10 +3,8 @@
 ----------------------------------------------------------------------------------
 -- Assets
 
-
 Asset = {}
 Asset.__index = Asset
-
 
 --- Alias of CraftStudio.FindAsset(assetName[, assetType]).
 -- Get the asset of the specified name and type.
@@ -65,129 +63,11 @@ function Asset.GetScene(assetName) end
 function Asset.GetSound(assetName) end
 
 
-
--- Called from Daneel.Awake()
-function Asset.Init()
-    for assetType, object in pairs(Daneel.config.assetObjects) do
-        -- Get helpers
-        -- GetModelRenderer() ...
-        Asset["Get"..assetType] = function(assetName)
-            Daneel.Debug.StackTrace.BeginFunction("Asset.Get"..assetType, assetName)
-            local errorHead = "Asset.Get"..assetType.."(assetName) : "
-            Daneel.Debug.CheckArgType(assetName, "assetName", "string", errorHead)
-            local asset = Asset.Get(assetName, assetType)
-            Daneel.Debug.StackTrace.EndFunction("Asset.Get"..assetType, asset)
-            return asset
-        end
-
-        -- tostring
-        object["__tostring"] = function(asset)
-            -- print something like : "Model: 123456789 - table: 0512A528"
-            -- asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
-            -- CraftStudioCommon.ProjectData. is 30 characters long
-            return tostring(asset.inner):sub(31, 60)
-        end
-        
-    end
-end
-
-
-
 ----------------------------------------------------------------------------------
 -- Components
 
-
 Component = {}
 Component.__index = Component
-
-
-function Component.Init()
-    local components = Daneel.config.componentObjects
-    for componentType, object in pairs(components) do
-        if componentType ~= "ScriptedBehavior" then
-            -- Dynamic Getters
-            object["__index"] = function(component, key) 
-                local funcName = "Get"..key:ucfirst()
-                
-                if object[funcName] ~= nil then
-                    return object[funcName](component)
-                elseif object[key] ~= nil then
-                    return object[key] -- have to return the function here, not the function return value !
-                end
-
-                if Component[funcName] ~= nil then
-                    return Component[funcName](component)
-                elseif Component[key] ~= nil then
-                    return Component[key] -- have to return the function here, not the function return value !
-                end
-                
-                return nil
-            end
-
-            -- Dynamic Setters
-            object["__newindex"] = function(component, key, value)
-                local funcName = "Set"..key:ucfirst()
-                
-                if object[funcName] ~= nil then
-                    return object[funcName](component, value)
-                end
-                
-                return rawset(component, key, value)
-            end
-        end
-
-        object["__tostring"] = function(component)
-            -- returns something like "ModelRenderer: 123456789"
-            -- component.inner is "?: [some ID]"
-            return Daneel.Debug.GetType(component)..tostring(component.inner):sub(2, 20) -- leave 2 as the starting index, only the transform ahave an extra space
-        end
-    end
-
-    -- Dynamic getters and setter on Scripts
-    for i, path in pairs(Daneel.config.scripts) do
-        local script = Asset.Get(path, "Script")
-
-        if script ~= nil then
-            -- Dynamic getters
-            function script.__index(scriptedBehavior, key)
-                local funcName = "Get"..key:ucfirst()
-                              
-                if script[funcName] ~= nil then
-                    return script[funcName](scriptedBehavior)
-                elseif script[key] ~= nil then
-                    return script[key]
-                end
-
-                if Script[funcName] ~= nil then
-                    return Script[funcName](scriptedBehavior)
-                elseif Script[key] ~= nil then
-                    return Script[key]
-                end
-
-                if Component[funcName] ~= nil then
-                    return Component[funcName](scriptedBehavior)
-                elseif Component[key] ~= nil then
-                    return Component[key]
-                end
-                
-                return nil
-            end
-
-            -- Dynamic setters
-            function script.__newindex(scriptedBehavior, key, value)
-                local funcName = "Set"..key:ucfirst()
-                              
-                if script[funcName] ~= nil then
-                    return script[funcName](scriptedBehavior, value)
-                end
-                
-                return rawset(scriptedBehavior, key, value)
-            end
-        else
-            print("WARNING : item with key '"..i.."' and value '"..path.."' in Daneel.config.scripts is not a valid script path.")
-        end
-    end
-end
 
 --- Apply the content of the params argument to the provided component.
 -- @param component (Scriptedbehavior, ModelRenderer, MapRenderer, Camera or Transform) The component.
@@ -217,10 +97,8 @@ function Component.Destroy(component)
 end
 
 
-
 ----------------------------------------------------------------------------------
 -- ModelRenderer
-
 
 local OriginalSetModel = ModelRenderer.SetModel
 
@@ -269,10 +147,8 @@ function ModelRenderer.SetAnimation(modelRenderer, animationNameOrAsset)
 end
 
 
-
 ----------------------------------------------------------------------------------
 -- MapRenderer
-
 
 local OriginalSetMap = MapRenderer.SetMap
 
@@ -323,10 +199,8 @@ function MapRenderer.SetTileSet(mapRenderer, tileSetNameOrAsset)
 end
 
 
-
 ----------------------------------------------------------------------------------
 -- Ray
-
 
 --- Check the collision of the ray against the provided set of gameObject or if it is nil, against all castable gameObjects.
 -- @param ray (Ray) The ray.
@@ -403,11 +277,9 @@ function Ray.IntersectsGameObject(ray, gameObject)
 end
 
 
-
 ----------------------------------------------------------------------------------
 -- RaycastHit
 -- keys : distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject, component
-
 
 RaycastHit = {}
 RaycastHit.__index = RaycastHit
@@ -439,10 +311,8 @@ function RaycastHit.New(distance, normal, hitBlockLocation, adjacentBlockLocatio
 end
 
 
-
 ----------------------------------------------------------------------------------
 -- Scene
-
 
 --- Alias of CraftStudio.LoadScene().
 -- Schedules loading the specified scene after the current tick (1/60th of a second) has completed.

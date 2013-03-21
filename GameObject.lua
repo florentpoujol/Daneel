@@ -270,7 +270,7 @@ function GameObject.GetChildren(gameObject, recursive, includeSelf)
     if recursive == true then
         -- get the rest of the children
         for i, child in ipairs(selfChildren) do
-            allChildren = allChildren:(merge, child:GetChildren(true, true))
+            allChildren = allChildren:merge(child:GetChildren(true, true))
         end
     else
         allChildren = allChildren:merge(selfChildren)
@@ -553,42 +553,5 @@ function GameObject.Destroy(gameObject)
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     CraftSudio.Destroy(gameObject)
     Daneel.Debug.StackTrace.EndFunction("GameObject.Destroy")
-end
-
-
-
-----------------------------------------------------------------------------------
-local stopLuaDoc = ""
-
-function GameObject.Init()
-    for i, componentType in ipairs(Daneel.config.componentTypes) do
-        
-        -- AddComponent helpers
-        -- ie : gameObject:AddModelRenderer()
-        if componentType ~= "Transform" and componentType ~= "ScriptedBehavior" then 
-            GameObject["Add"..componentType] = function(gameObject, params)
-                Daneel.Debug.StackTrace.BeginFunction("GameObject.Add"..componentType, gameObject, params)
-                local errorHead = "GameObject.Add"..componentType.."(gameObject[, params]) : "
-                Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-
-                local component = gameObject:AddComponent(componentType, params)
-                Daneel.Debug.StackTrace.EndFunction("GameObject.Add"..componentType, component)
-                return component
-            end
-        end
-
-        -- SetComponent helpers
-        -- ie : gameObject:SetModelRenderer()
-        if componentType ~= "ScriptedBehavior" then 
-            GameObject["Set"..componentType] = function(gameObject, params)  
-                Daneel.Debug.StackTrace.BeginFunction("GameObject.Set"..componentType, gameObject, params)
-                local errorHead = "GameObject.Set"..componentType.."(gameObject, params) : "
-                Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-
-                local component = gameObject:SetComponent(componentType, params)
-                Daneel.Debug.StackTrace.EndFunction("GameObject.Set"..componentType)
-            end
-        end
-    end -- end for
 end
 

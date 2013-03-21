@@ -1,9 +1,9 @@
 [craftstudio]: http://craftstud.io
 [CSscriptingreference]: http://craftstudio.wikia.com/wiki/Scripting_Reference/Index
-[Daneelscriptingreference]: http://florent-poujol.fr/content/craftstudio/daneel/doc
+[Daneelscriptingreference]: http://florent-poujol.fr/content/craftstudio/daneel/doc/
 
 
-# Daneel Framework
+# Daneel
 
 Daneel is a framework for [CraftStudio][] that aims to sweeten and shorten the code you write, to extend and render more flexible to use the API, as well as to bring news fonctionnalities.
 
@@ -78,7 +78,8 @@ Step by step process :
 * Click the import button (top right), navigate to the location you downloaded the pack in then click "Open".  
 * Navigate to the "Script" tab, select all the scripts then click "Import".
 
-Note the the pack also contains a "Readme" document.
+The scripts in the `Daneel/Behaviors` folder must stay in that folder.  
+If you want to benefits from the hotkey events, add in your scene the "Daneel/Behaviors/DaneelInit" ScriptedBehavior.
 
 
 ## <a id="config"></a>Configuration
@@ -384,8 +385,6 @@ Tables returned by `table.new()` or any new table functions introduced by Daneel
 
 The `table` object has also been extended with many functions that ease the manipulation of table.
 
-
----
 
 ## <a id="functions_list"></a>Functions list
 
