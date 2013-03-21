@@ -1,4 +1,5 @@
--- v1.0
+-- v1.0.0
+-- 21/03/2013
 
 Daneel = {}
 
@@ -381,7 +382,7 @@ end
 
 Daneel.Debug.StackTrace = { 
     messages = {},
-    depth = 1,
+    depth = 0,
 }
 
 --- Register a function input in the stack trace.
