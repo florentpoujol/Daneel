@@ -6,9 +6,9 @@
 
 # Daneel
 
-Daneel is a framework for [CraftStudio][] that aims to sweeten and shorten the code you write, to extend and render more flexible to use the API, as well as to bring news fonctionnalities.
+Daneel is a framework for [CraftStudio][] that aims to sweeten and shorten the code you write, to extend and render more flexible to use the API, as well as to bring news functionalities.
 
-Daneel never deprecate anything from the current CraftStudio's API which remains usable in its entirety [as decribed in the scripting reference][CSscriptingreference] on the offical wiki.  
+Daneel never deprecate anything from the current CraftStudio's API which remains usable in its entirety [as described in the scripting reference][CSscriptingreference] on the official wiki.  
 Daneel mostly add new objects, new functions on existing objects and sometimes allow to pass different argument types and new arguments on existing functions.
 
 - [Overview](#overview)
@@ -59,14 +59,14 @@ Set variable or call setters in mass on gameObjects and components.
     })
 
 
-Also :
+Also : 
 
 - Use the gameObject or asset name instead of the actual object with some functions
 - Simpler raycasting with `ray:InstersectsGameObject()` or `ray:Cast()`
-- Triggers (proximity check and interaction with the gameObject in range)
-- Easily interact with gameObjects hovered by the mouse
+- Triggers (they perform a proximity check against some gameObjects and interact with them when they are in range)
+- Interact with gameObjects hovered by the mouse
 - Events
-- Hotkeys (fire events when pressing buttons)
+- Hotkeys (fire events at the push of any button)
 
 
 ## <a id="install"></a>Installation 
@@ -86,7 +86,7 @@ If you want to use the hotkey events, add the "Daneel/Behaviors/DaneelInit" Scri
 ## <a id="config"></a>Configuration
 
 Some features are only available if a few configuration is done first.
-Currently, all that has to be done is to edit the top of the `DaneelCore` script (just the `Daneel.config` table) and make the list of the scripts (for anything that uses the ScriptedBehaviors) and/or button names (for the hotkey events) of your game.
+Currently, all that has to be done is to edit the top of the `Daneel` script (just the `Daneel.config` table) and make the list of the scripts (for anything that uses the ScriptedBehaviors) and/or button names (for the hotkey events) of your game.
     
     Daneel.config = {
         -- List of the Scripts paths as values and optionally the script alias as the keys
@@ -108,8 +108,8 @@ Currently, all that has to be done is to edit the top of the `DaneelCore` script
 
 ## <a id="conventions"></a>Conventions
 
-* Every getter fonctions are called GetSomething() instead of FindSomething().
-* Every object and function names are pascal-cased, except for functions added to Lua's standard libraries which are all lowercase.
+* Every getter functions are called GetSomething() instead of FindSomething().
+* Every object and function names are pascal-cased, except for functions added to Lua's standard libraries which are all lower-case.
 * Every time an argument has to be an asset (like with `modelRenderer:SetModel()`), you may pass the fully-qualified asset name instead.
 * Every time an argument has to be a gameObject instance (like with `gameObject:SetParent(parentNameOrInstance[, keepLocalTransform])`), you may pass the gameObject name instead.
 * Every time an argument has to be an asset or component **type**, you may pass the asset or component **object** instead (ie : `Asset.Get("Model name", ModelRenderer)` instead of `Asset.Get("Model name", "ModelRenderer")`). And when you do pass the type as a string, it is case insensitive.
@@ -118,7 +118,7 @@ Currently, all that has to be done is to edit the top of the `DaneelCore` script
 
 ## <a id="dynamic_get_set"></a>Dynamic getters and setters
 
-Getters and setters functions may be used on gameOjects and components as if they were variables. Their names must begin by "Get" or "Set" and have the forth letter uppercase (underscore is allowed). Ie : GetSomething() and Get_something() will works, but Getsomething() or getSomething() won't work.
+Getters and setters functions may be used on gameOjects and components as if they were variables. Their names must begin by "Get" or "Set" and have the forth letter upper-case (underscore is allowed). Ie : GetSomething() and Get_something() will works, but Getsomething() or getSomething() won't work.
 
     
     self.gameObject.transform.localPosition
@@ -255,8 +255,8 @@ For instance, passing false instead of the gameObject's name with `gameObject:Ge
 ### Stack Trace
 
 When an error is triggered by `Danel.Debug.PrintError(message)`, Daneel print a "stack trace" in the Runtime Report.
-The stack trace nicely shows the history of function calls whithin the framework that lead to the error and display values recieved as argument as well as returned values.  
-It reads from top to bottom, the last function called -where the error occured- at the bottom.  
+The stack trace nicely shows the history of function calls within the framework that lead to the error and display values received as argument as well as returned values.  
+It reads from top to bottom, the last function called -where the error occurred- at the bottom.  
 For instance, when trying to set the model of a ModelRenderer (to a Model that does not exists) via gameObject:Set() :
 
     ~~~~~ Daneel.Debug.StackTrace ~~~~~
@@ -301,7 +301,7 @@ Each of these functions receive the trigger gameObject as argument.
             print("The 'Action' button was just released while the gameObject of name '"..self.gameObject.name.."' is inside the trigger of name '"..trigger.name.."'.")
         end
     end
-    -- a typical use for this is any mechanism that the player can use if he is close enought and press a key
+    -- a typical use for this is any mechanism that the player can use if he is close enough and press a key
 
 
 ## <a id="mouse"></a>Mouse messages
@@ -344,7 +344,7 @@ You can also make gameObjects to listen to events. By default, the message "On[E
 
 ## <a id="hotkeys"></a>Hotkeys events
 
-Whenever you press one of the button whose name is set in `Daneel.config.buttons`, the events nammed `On[Button name]ButtonDown`, `On[Button name]ButtonJustPressed` and `On[Button name]ButtonJustReleased` are fired.
+Whenever you press one of the button whose name is set in `Daneel.config.buttons`, the events named `On[Button name]ButtonDown`, `On[Button name]ButtonJustPressed` and `On[Button name]ButtonJustReleased` are fired.
 
 The table `Daneel.config.buttons` may be filled with the button names that you defined in the `Administration > Game Controls` tab.
 
