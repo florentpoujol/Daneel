@@ -27,7 +27,7 @@
 		<li><a href="http://florentpoujol.github.com/Daneel/">Readme</a></li>
 	</ul>
 	<br>
-	Scripting reference : 
+	Function reference : 
 	<ul>
 		<li><a href="Daneel.html">Daneel.lua</a></li>
 		<li><a href="CraftStudio.html">CraftStudio.lua</a></li>
@@ -130,7 +130,7 @@
 	</tr>
 
 	<tr>
-	<td class="name" nowrap><a href="#Scene.Append">Scene.Append</a>&nbsp;(sceneNameOrAsset, gameObject)</td>
+	<td class="name" nowrap><a href="#Scene.Append">Scene.Append</a>&nbsp;(sceneNameOrAsset, gameObjectNameOrInstance)</td>
 	<td class="summary">Alias of CraftStudio.AppendScene().</td>
 	</tr>
 
@@ -639,7 +639,7 @@ Check if the ray intersect the specified gameObject.
 
 
 
-<dt><a name="Scene.Append"></a><strong>Scene.Append</strong>&nbsp;(sceneNameOrAsset, gameObject)</dt>
+<dt><a name="Scene.Append"></a><strong>Scene.Append</strong>&nbsp;(sceneNameOrAsset, gameObjectNameOrInstance)</dt>
 <dd>
 Alias of CraftStudio.AppendScene(). Appends the specified scene to the game by instantiating all of its game objects. Contrary to CraftStudio.LoadScene, this doesn't unload the current scene nor waits for the next tick: it happens right away. You can optionally specify a parent game object which will be used as a root for adding all game objects.
 
@@ -652,7 +652,7 @@ Alias of CraftStudio.AppendScene(). Appends the specified scene to the game by i
 	</li>
 	
 	<li>
-	  <code><em>gameObject</em></code>: [optional] (string or GameObject) The parent gameObject name or instance
+	  <code><em>gameObjectNameOrInstance</em></code>: [optional] (string or GameObject) The gameObject name or instance
 	</li>
 	
 </ul>
@@ -712,3 +712,4 @@ Alias of CraftStudio.LoadScene(). Schedules loading the specified scene after th
 </div> <!-- id="container" -->	
 </body>
 </html>
+

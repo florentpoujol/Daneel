@@ -27,7 +27,7 @@
 		<li><a href="http://florentpoujol.github.com/Daneel/">Readme</a></li>
 	</ul>
 	<br>
-	Scripting reference : 
+	Function reference : 
 	<ul>
 		<li><a href="Daneel.html">Daneel.lua</a></li>
 		<li><a href="CraftStudio.html">CraftStudio.lua</a></li>
@@ -39,6 +39,7 @@
 <div id="content">
 
 <h1>File <code>GameObject.lua</code></h1>
+
 
 
 
@@ -111,12 +112,17 @@
 
 	<tr>
 	<td class="name" nowrap><a href="#GameObject.Instantiate">GameObject.Instantiate</a>&nbsp;(gameObjectName, sceneNameOrAsset, params)</td>
-	<td class="summary">Add a scene to the existing scene as a new gameObject with optional initialisation parameters.</td>
+	<td class="summary">Create a new gameObject with the content of the provided scene and optionally initialize it.</td>
 	</tr>
 
 	<tr>
 	<td class="name" nowrap><a href="#GameObject.New">GameObject.New</a>&nbsp;(name, params)</td>
-	<td class="summary">Create a new gameObject with optional initialisation parameters.</td>
+	<td class="summary">Create a new gameObject and optionally initialize it.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#GameObject.SendMessage">GameObject.SendMessage</a>&nbsp;(gameObject, functionName, data)</td>
+	<td class="summary">Tries to call a method with the provided name on all the scriptedBehaviors attached to the gameObject.</td>
 	</tr>
 
 	<tr>
@@ -145,7 +151,7 @@
 	</tr>
 
 	<tr>
-	<td class="name" nowrap><a href="#GameObject.SetParent">GameObject.SetParent</a>&nbsp;(gameObject, parentNameOrObject, keepLocalTransform)</td>
+	<td class="name" nowrap><a href="#GameObject.SetParent">GameObject.SetParent</a>&nbsp;(gameObject, parentNameOrInstance, keepLocalTransform)</td>
 	<td class="summary">Set the gameOject's parent.</td>
 	</tr>
 
@@ -593,7 +599,7 @@ Get the provided ScriptedBehavior instance attached to the gameObject.
 
 <dt><a name="GameObject.Instantiate"></a><strong>GameObject.Instantiate</strong>&nbsp;(gameObjectName, sceneNameOrAsset, params)</dt>
 <dd>
-Add a scene to the existing scene as a new gameObject with optional initialisation parameters.
+Create a new gameObject with the content of the provided scene and optionally initialize it.
 
 
 <h3>Parameters:</h3>
@@ -608,7 +614,7 @@ Add a scene to the existing scene as a new gameObject with optional initialisati
 	</li>
 	
 	<li>
-	  <code><em>params</em></code>: [optional] (string, GameObject or table) The parent gameObject name, or parent GameObject or a table with parameters to initialize the new gameObject with.
+	  <code><em>params</em></code>: [optional] (table) A table with parameters to initialize the new gameObject with.
 	</li>
 	
 </ul>
@@ -630,7 +636,7 @@ Add a scene to the existing scene as a new gameObject with optional initialisati
 
 <dt><a name="GameObject.New"></a><strong>GameObject.New</strong>&nbsp;(name, params)</dt>
 <dd>
-Create a new gameObject with optional initialisation parameters.
+Create a new gameObject and optionally initialize it.
 
 
 <h3>Parameters:</h3>
@@ -641,7 +647,7 @@ Create a new gameObject with optional initialisation parameters.
 	</li>
 	
 	<li>
-	  <code><em>params</em></code>: [optional] (string, GameObject or table) The parent gameObject name, or parent GameObject or a table with parameters to initialize the new gameObject with.
+	  <code><em>params</em></code>: [optional] (table) A table with parameters to initialize the new gameObject with.
 	</li>
 	
 </ul>
@@ -653,6 +659,40 @@ Create a new gameObject with optional initialisation parameters.
 
 <h3>Return value:</h3>
 <ul>(GameObject) The new gameObject.</ul>
+
+
+
+</dd>
+
+
+
+
+<dt><a name="GameObject.SendMessage"></a><strong>GameObject.SendMessage</strong>&nbsp;(gameObject, functionName, data)</dt>
+<dd>
+Tries to call a method with the provided name on all the scriptedBehaviors attached to the gameObject. The data argument can be nil or a table you want the method to receive as its first (and only) argument. If none of the scripteBehaviors attached to the gameObject or its children have a method matching the provided name, nothing happens.
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>gameObject</em></code>: (GameObject) The gameObject.
+	</li>
+	
+	<li>
+	  <code><em>functionName</em></code>: (string) The method name.
+	</li>
+	
+	<li>
+	  <code><em>data</em></code>: [optional] (table) The data to pass along the method call.
+	</li>
+	
+</ul>
+
+
+
+
+
 
 
 
@@ -819,7 +859,7 @@ Set the ModelRenderer component on the gameObject with the provided parameters.
 
 
 
-<dt><a name="GameObject.SetParent"></a><strong>GameObject.SetParent</strong>&nbsp;(gameObject, parentNameOrObject, keepLocalTransform)</dt>
+<dt><a name="GameObject.SetParent"></a><strong>GameObject.SetParent</strong>&nbsp;(gameObject, parentNameOrInstance, keepLocalTransform)</dt>
 <dd>
 Set the gameOject's parent. Optionaly carry over the gameObject's local transform instead of the global one.
 
@@ -832,7 +872,7 @@ Set the gameOject's parent. Optionaly carry over the gameObject's local transfor
 	</li>
 	
 	<li>
-	  <code><em>parentNameOrObject</em></code>: (string or GameObject) The parent name or gameObject.
+	  <code><em>parentNameOrInstance</em></code>: (string or GameObject) The parent name or gameObject.
 	</li>
 	
 	<li>
@@ -845,9 +885,6 @@ Set the gameOject's parent. Optionaly carry over the gameObject's local transfor
 
 
 
-
-<h3>Return value:</h3>
-<ul>(GameObject) The gameObject.</ul>
 
 
 
