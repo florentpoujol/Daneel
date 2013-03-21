@@ -18,7 +18,7 @@
 
       <header>
         <h1>Daneel</h1>
-        <p>a framework for CraftStudio</p>
+        <p>A framework for CraftStudio</p>
       </header>
 
       <div id="banner">
@@ -39,7 +39,7 @@
         <ul></ul>
       </nav>
       <section>
-        <h1>Daneel Framework</h1>
+        <h1>Daneel</h1>
 
 <p>Daneel is a framework for <a href="http://craftstud.io">CraftStudio</a> that aims to sweeten and shorten the code you write, to extend and render more flexible to use the API, as well as to bring news fonctionnalities.</p>
 
@@ -110,7 +110,7 @@ self.gameObject:GetComponent("MapRenderer"):SetMap(CraftStudio.FindAsset("folder
 </ul><h2>
 <a></a>Installation</h2>
 
-<p>You just have to download then import DaneelFramework.cspack. </p>
+<p>Download then import DaneelFramework.cspack. </p>
 
 <p>Step by step process :</p>
 
@@ -121,28 +121,26 @@ self.gameObject:GetComponent("MapRenderer"):SetMap(CraftStudio.FindAsset("folder
 <li>Click the import button (top right), navigate to the location you downloaded the pack in then click "Open".<br>
 </li>
 <li>Navigate to the "Script" tab, select all the scripts then click "Import".</li>
-</ul><p>Note the the pack also contains a "Readme" document.</p>
+</ul><p>The scripts in the <code>Daneel/Behaviors</code> folder must stay in that folder.<br>
+If you want to use the hotkey events, add the "Daneel/Behaviors/DaneelInit" ScriptedBehavior in your scene (all other features works without it).</p>
 
 <h2>
 <a></a>Configuration</h2>
 
 <p>Some features are only available if a few configuration is done first.
-Currently, all that has to be done is to edit the top of the <code>DaneelCore</code> script (just the <code>Daneel.config</code> table) and make the list of the scripts and/or button names of your game.</p>
+Currently, all that has to be done is to edit the top of the <code>DaneelCore</code> script (just the <code>Daneel.config</code> table) and make the list of the scripts (for anything that uses the ScriptedBehaviors) and/or button names (for the hotkey events) of your game.</p>
 
 <pre><code>Daneel.config = {
-
     -- List of the Scripts paths as values and optionally the script alias as the keys
     scripts = {
         -- "fully-qualified Script path"
         -- alias = "fully-qualified Script path"
     },
 
-
     -- List of the button names you defined in the "Administration &gt; Game Controls" tab of your project
     buttons = {
 
     },
-
 
     -- Set to true to enable the framework's advanced debugging features.
     -- Set to false when you ship the game.
@@ -157,7 +155,7 @@ Currently, all that has to be done is to edit the top of the <code>DaneelCore</c
 <li>Every getter fonctions are called GetSomething() instead of FindSomething().</li>
 <li>Every object and function names are pascal-cased, except for functions added to Lua's standard libraries which are all lowercase.</li>
 <li>Every time an argument has to be an asset (like with <code>modelRenderer:SetModel()</code>), you may pass the fully-qualified asset name instead.</li>
-<li>Every time an argument has to be a gameObject instance (like with <code>gameObject:SetParent()</code>), you may pass the gameObject name instead.</li>
+<li>Every time an argument has to be a gameObject instance (like with <code>gameObject:SetParent(parentNameOrInstance[, keepLocalTransform])</code>), you may pass the gameObject name instead.</li>
 <li>Every time an argument has to be an asset or component <strong>type</strong>, you may pass the asset or component <strong>object</strong> instead (ie : <code>Asset.Get("Model name", ModelRenderer)</code> instead of <code>Asset.Get("Model name", "ModelRenderer")</code>). And when you do pass the type as a string, it is case insensitive.</li>
 <li>Every optional boolean arguments default to false.</li>
 </ul><h2>
@@ -307,6 +305,7 @@ For instance, passing false instead of the gameObject's name with <code>gameObje
 
 <p>When an error is triggered by <code>Danel.Debug.PrintError(message)</code>, Daneel print a "stack trace" in the Runtime Report.
 The stack trace nicely shows the history of function calls whithin the framework that lead to the error and display values recieved as argument as well as returned values.<br>
+It reads from top to bottom, the last function called -where the error occured- at the bottom.<br>
 For instance, when trying to set the model of a ModelRenderer (to a Model that does not exists) via gameObject:Set() :</p>
 
 <pre><code>~~~~~ Daneel.Debug.StackTrace ~~~~~
@@ -362,7 +361,7 @@ end
 <a></a>Mouse messages</h2>
 
 <p>GameObjects who have the <code>MousehoverableGameObject</code> ScriptedBehavior are known as <strong>mousehoverable gameObjects</strong>. They react when they are hovered by the mouse.<br>
-The main camera of your scene must have the <code>CameraMouseOver</code> ScriptedBehavior.</p>
+Add the <code>CameraMouseOver</code> ScriptedBehavior to your camera.</p>
 
 <ul>
 <li>When a mousehoverable gameObject is hovered for the first frame (it is hovered this frame, but it wasn't the last frame), the message <code>OnMouseEnter</code> is sent on the gameObject.</li>
@@ -444,10 +443,10 @@ myTable:insert(value)
 
 <p>The <code>table</code> object has also been extended with many functions that ease the manipulation of table.</p>
 
-<hr><h2>
+<h2>
 <a></a>Functions list</h2>
 
-<p><a href="http://florent-poujol.fr/content/craftstudio/daneel/doc">See the full scripting reference</a> for full explanation on arguments and returned values. 
+<p><a href="http://florent-poujol.fr/content/craftstudio/daneel/doc/">See the full scripting reference</a> for full explanation on arguments and returned values. 
 Arguments between square brackets are optional.</p>
 
 <h3>Asset</h3>
@@ -496,12 +495,13 @@ Arguments between square brackets are optional.</p>
 </ul><h3>GameObject</h3>
 
 <ul>
-<li>GameObject.New(name[, parentNameOrObject]) / GameObject.New(name[, params])</li>
-<li>GameObject.Instanciate(name, sceneNameOrObject[, parentNameOrObject]) / GameObject.Instanciate(name, sceneNameOrObject[, params])</li>
+<li>GameObject.New(name[, params])</li>
+<li>GameObject.Instanciate(name, sceneNameOrObject[, params])</li>
 <li><p>GameObject.Get(name)</p></li>
-<li><p>gameObject:SetParent(parentNameOrObject[, keepLocalTransform])</p></li>
+<li><p>gameObject:SetParent(parentNameOrInstance[, keepLocalTransform])</p></li>
 <li><p>gameObject:GetChild(childName[, recursive])</p></li>
 <li><p>gameObject:GetChildren([recursive, includeSelf])</p></li>
+<li><p>gameObject:SendMessage(functionName[, data])</p></li>
 <li><p>gameObject:BroadcastMessage(functionName[, data])</p></li>
 <li>
 <p>gameObject:AddComponent(componentType[, params]) / gameObject:AddComponent("ScriptedBehavior", scriptNameorAsset[, params])</p>
@@ -553,16 +553,16 @@ Arguments between square brackets are optional.</p>
 
 <ul>
 <li>ray:Cast([gameObjects])</li>
-<li>ray:IntersectsGameObject(gameObject)</li>
+<li>ray:IntersectsGameObject(gameObjectNameOrInstance)</li>
 </ul><h3>RaycastHit</h3>
 
 <ul>
 <li>RaycastHit.New([distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject])</li>
-</ul><h2>Scene</h2>
+</ul><h3>Scene</h3>
 
 <ul>
 <li>Scene.Load(sceneNameOrAsset)</li>
-<li>Scene.Append(sceneNameOrAsset, gameObject)</li>
+<li>Scene.Append(sceneNameOrAsset, gameObjectNameOrInstance)</li>
 </ul><h3>string</h3>
 
 <ul>
@@ -572,7 +572,7 @@ Arguments between square brackets are optional.</p>
 </ul><h3>table</h3>
 
 <ul>
-<li>table.new([...])</li>
+<li>table.new([table])</li>
 <li>table.copy(table)</li>
 <li>table.constainskey(table, key)</li>
 <li>table.constainsvalue(table, value[, ignoreCase])</li>
