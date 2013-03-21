@@ -1,7 +1,7 @@
 [craftstudio]: http://craftstud.io
 [CSscriptingreference]: http://craftstudio.wikia.com/wiki/Scripting_Reference/Index
-[Daneelscriptingreference]: http://florent-poujol.fr/content/craftstudio/daneel/doc/
-[downloadlink]: http://florent-poujol.fr/content/craftstudio/daneel/craftsudio_daneel_v1.0.0.cspack
+[Daneelfunctionreference]: http://florent-poujol.fr/content/craftstudio/daneel/doc/
+[downloadlink]: http://florent-poujol.fr/content/craftstudio/daneel/craftstudio_daneel_v1.0.0.cspack
 
 
 # Daneel
@@ -389,7 +389,7 @@ The `table` object has also been extended with many functions that ease the mani
 
 ## <a id="functions_list"></a>Functions list
 
-[See the full scripting reference][daneelscriptingreference] for full explanation on arguments and returned values. 
+[See the full function reference][daneelfunctionreference] for full explanation on arguments and returned values. 
 Arguments between square brackets are optional.
 
 ### Asset
