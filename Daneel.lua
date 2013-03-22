@@ -253,6 +253,18 @@ function Daneel.Debug.PrintError(message)
     error(message)
 end
 
+local OrginalError = error
+
+--- Print the stackTrace then the provided error in the console
+-- @param message (string) The error message.
+-- @param doNotPrintStacktrace [optional default=false] (boolean) Set to true to prevent the stacktrace to be printed before the error message.
+function error(message, doNotPrintStacktrace)
+    if Daneel.config.debug == true and doNotPrintStacktrace ~= true then
+        Daneel.Debug.StackTrace.Print()
+    end
+    OriginalError(message)
+end
+
 --- Check the value of 'componentType', correct its case or convert it to string and throw error if it is not one of the valid component types or objects.
 -- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform) The component type as a string or the asset object.
 -- @return (string) The correct component type.

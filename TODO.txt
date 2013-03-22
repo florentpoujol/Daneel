@@ -9,6 +9,3 @@ Triggers
     - function OnTriggerEnter etc sont aussi appelée sur le trigger et recoivent le gameObject
 
 - message d'erreur custom
-
-- déplacer user config dans fichier à part
-	- voir à garder l'init
