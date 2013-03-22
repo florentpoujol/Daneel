@@ -417,6 +417,7 @@ Arguments between square brackets are optional.
 
 * Daneel.Debug.GetType(object, getLuaTypeOnly)
 * Daneel.Debug.PrintError(message)
+* error(message[, doNotPrintStacktrace])
 * Daneel.Debug.ToRawString(object)
 
 * Daneel.Debug.StackTrace.BeginFunction(functionName[, ...])
