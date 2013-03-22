@@ -1,13 +1,14 @@
 
 
-- permettre l'appel de Behavior functions lors de l'appel aux Events
+- voir ce qu'il se passe lorsqu'un transform est détruit avec component:Destroy()
 
-- check what happens when the transform is destroyed by component.destroy()
-
-- allow to extends GetType pour retourner des types customs
+- autoriser les utilisateur à définir leur types customs (à retourner par GetType) 
 
 Triggers
     - groupement de triggers et triggerable gameObjects
     - function OnTriggerEnter etc sont aussi appelée sur le trigger et recoivent le gameObject
 
-- custom error message
+- message d'erreur custom
+
+- déplacer user config dans fichier à part
+	- voir à garder l'init

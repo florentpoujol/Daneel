@@ -1,38 +1,10 @@
--- v1.0.0
+-- v1.1.0
 -- 21/03/2013
 
-Daneel = {}
+if Daneel == nil then
+    Daneel = {}
+end
 
-
-----------------------------------------------------------------------------------
--- User Config
-
-Daneel.config = {
-
-    -- List of the Scripts paths as values and optionally the script alias as the keys
-    scripts = {
-        -- "fully-qualified Script path"
-        -- alias = "fully-qualified Script path"
-    },
-
-    
-    -- List of the button names you defined in the "Administration > Game Controls" tab of your project
-    buttons = {
-
-    },
-
-
-    -- Set to true to enable the framework's advanced debugging capabilities.
-    -- Set to false when you ship the game.
-    debug = false,
-}
-
-
-----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
--------------------------- DO NOT EDIT BELOW THIS POINT --------------------------
-----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------------
 -- Defaul Config
@@ -97,36 +69,6 @@ Daneel.defaultConfig = {
 }
 
 Daneel.defaultConfig.__index = Daneel.defaultConfig
-setmetatable(Daneel.config, Daneel.defaultConfig)
-
-Daneel.defaultConfig.assetTypes = {}
-for key, value in pairs(Daneel.defaultConfig.assetObjects) do
-    table.insert(Daneel.defaultConfig.assetTypes, key)
-end
-
-Daneel.defaultConfig.componentTypes = {}
-for key, value in pairs(Daneel.defaultConfig.componentObjects) do
-    table.insert(Daneel.defaultConfig.componentTypes, key)
-end
-
--- all objects (for use in GetType())
-Daneel.defaultConfig.allObjects = {}
-local allObjects = {Daneel.defaultConfig.assetObjects, Daneel.defaultConfig.componentObjects, Daneel.defaultConfig.craftStudioObjects, Daneel.defaultConfig.daneelObjects}
-
-for i, t in ipairs(allObjects) do
-    for key, value in pairs(t) do
-        Daneel.defaultConfig.allObjects[key] = value
-    end
-end
-
--- scripts
-for alias, path in pairs(Daneel.config.daneelScripts) do
-    if type(alias) == "number" and alias == math.floor(alias) then -- is integer
-        table.insert(Daneel.config.scripts, path)
-    else
-        Daneel.config.scripts[alias] = path
-    end
-end
 
 
 ----------------------------------------------------------------------------------
@@ -574,155 +516,192 @@ end
 
 
 ----------------------------------------------------------------------------------
--- Awakening
--- This is done in the global scope so that everything is available right away from the ScriptedBehavior's Awake() functions
+-- Initialization
+local luaDocStop = ""
 
-for componentType, componentObject in ipairs(Daneel.config.componentObjects) do
+function Daneel.InitConfig()
+    setmetatable(Daneel.config, Daneel.defaultConfig)
 
-    -- GameObject
+    Daneel.defaultConfig.assetTypes = {}
+    for key, value in pairs(Daneel.defaultConfig.assetObjects) do
+        table.insert(Daneel.defaultConfig.assetTypes, key)
+    end
 
-    -- AddComponent helpers
-    -- ie : gameObject:AddModelRenderer()
-    if componentType ~= "Transform" and componentType ~= "ScriptedBehavior" then 
-        GameObject["Add"..componentType] = function(gameObject, params)
-            Daneel.Debug.StackTrace.BeginFunction("GameObject.Add"..componentType, gameObject, params)
-            local errorHead = "GameObject.Add"..componentType.."(gameObject[, params]) : "
-            Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+    Daneel.defaultConfig.componentTypes = {}
+    for key, value in pairs(Daneel.defaultConfig.componentObjects) do
+        table.insert(Daneel.defaultConfig.componentTypes, key)
+    end
 
-            local component = gameObject:AddComponent(componentType, params)
-            Daneel.Debug.StackTrace.EndFunction("GameObject.Add"..componentType, component)
-            return component
+    -- all objects (for use in GetType())
+    Daneel.defaultConfig.allObjects = {}
+    local allObjects = {Daneel.defaultConfig.assetObjects, Daneel.defaultConfig.componentObjects, Daneel.defaultConfig.craftStudioObjects, Daneel.defaultConfig.daneelObjects}
+
+    for i, t in ipairs(allObjects) do
+        for key, value in pairs(t) do
+            Daneel.defaultConfig.allObjects[key] = value
         end
     end
 
-    -- SetComponent helpers
-    -- ie : gameObject:SetModelRenderer()
-    if componentType ~= "ScriptedBehavior" then 
-        GameObject["Set"..componentType] = function(gameObject, params)  
-            Daneel.Debug.StackTrace.BeginFunction("GameObject.Set"..componentType, gameObject, params)
-            local errorHead = "GameObject.Set"..componentType.."(gameObject, params) : "
-            Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-
-            local component = gameObject:SetComponent(componentType, params)
-            Daneel.Debug.StackTrace.EndFunction("GameObject.Set"..componentType)
+    -- scripts
+    for alias, path in pairs(Daneel.config.daneelScripts) do
+        if type(alias) == "number" and alias == math.floor(alias) then -- is integer
+            table.insert(Daneel.config.scripts, path)
+        else
+            Daneel.config.scripts[alias] = path
         end
     end
 
+    for componentType, componentObject in ipairs(Daneel.config.componentObjects) do
 
-    -- Components
+        -- GameObject
 
-    if componentType ~= "ScriptedBehavior" then
-        -- Dynamic Getters
-        componentObject["__index"] = function(component, key) 
-            local funcName = "Get"..key:ucfirst()
-            
-            if componentObject[funcName] ~= nil then
-                return componentObject[funcName](component)
-            elseif componentObject[key] ~= nil then
-                return componentObject[key] -- have to return the function here, not the function return value !
+        -- AddComponent helpers
+        -- ie : gameObject:AddModelRenderer()
+        if componentType ~= "Transform" and componentType ~= "ScriptedBehavior" then 
+            GameObject["Add"..componentType] = function(gameObject, params)
+                Daneel.Debug.StackTrace.BeginFunction("GameObject.Add"..componentType, gameObject, params)
+                local errorHead = "GameObject.Add"..componentType.."(gameObject[, params]) : "
+                Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+
+                local component = gameObject:AddComponent(componentType, params)
+                Daneel.Debug.StackTrace.EndFunction("GameObject.Add"..componentType, component)
+                return component
             end
-
-            if Component[funcName] ~= nil then
-                return Component[funcName](component)
-            elseif Component[key] ~= nil then
-                return Component[key] -- have to return the function here, not the function return value !
-            end
-            
-            return nil
         end
-        print(componentType.." index")
 
-        -- Dynamic Setters
-        componentObject["__newindex"] = function(component, key, value)
-            local funcName = "Set"..key:ucfirst()
-            
-            if componentObject[funcName] ~= nil then
-                return componentObject[funcName](component, value)
+        -- SetComponent helpers
+        -- ie : gameObject:SetModelRenderer()
+        if componentType ~= "ScriptedBehavior" then 
+            GameObject["Set"..componentType] = function(gameObject, params)  
+                Daneel.Debug.StackTrace.BeginFunction("GameObject.Set"..componentType, gameObject, params)
+                local errorHead = "GameObject.Set"..componentType.."(gameObject, params) : "
+                Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+
+                local component = gameObject:SetComponent(componentType, params)
+                Daneel.Debug.StackTrace.EndFunction("GameObject.Set"..componentType)
             end
-            
-            return rawset(component, key, value)
         end
-        print(componentType.." New index")
+
+        -- Components
+
+        if componentType ~= "ScriptedBehavior" then
+            -- Dynamic Getters
+            componentObject["__index"] = function(component, key) 
+                local funcName = "Get"..key:ucfirst()
+                
+                if componentObject[funcName] ~= nil then
+                    return componentObject[funcName](component)
+                elseif componentObject[key] ~= nil then
+                    return componentObject[key] -- have to return the function here, not the function return value !
+                end
+
+                if Component[funcName] ~= nil then
+                    return Component[funcName](component)
+                elseif Component[key] ~= nil then
+                    return Component[key] -- have to return the function here, not the function return value !
+                end
+                
+                return nil
+            end
+            print(componentType.." index")
+
+            -- Dynamic Setters
+            componentObject["__newindex"] = function(component, key, value)
+                local funcName = "Set"..key:ucfirst()
+                
+                if componentObject[funcName] ~= nil then
+                    return componentObject[funcName](component, value)
+                end
+                
+                return rawset(component, key, value)
+            end
+            print(componentType.." New index")
+        end
+
+        componentObject["__tostring"] = function(component)
+            -- returns something like "ModelRenderer: 123456789"
+            -- component.inner is "?: [some ID]"
+            return componentType..tostring(component.inner):sub(2, 20) -- leave 2 as the starting index, only the transform ahave an extra space
+        end
+        print(componentType.." to string")
+    end -- end for componentObjects
+
+    -- Dynamic getters and setter on Scripts
+    for i, path in pairs(Daneel.config.scripts) do
+        local script = CraftStudio.FindAsset(path, "Script") -- not sure if Asset.Get() already exists
+
+        if script ~= nil then
+            -- Dynamic getters
+            function script.__index(scriptedBehavior, key)
+                local funcName = "Get"..key:ucfirst()
+                              
+                if script[funcName] ~= nil then
+                    return script[funcName](scriptedBehavior)
+                elseif script[key] ~= nil then
+                    return script[key]
+                end
+
+                if Script[funcName] ~= nil then
+                    return Script[funcName](scriptedBehavior)
+                elseif Script[key] ~= nil then
+                    return Script[key]
+                end
+
+                if Component[funcName] ~= nil then
+                    return Component[funcName](scriptedBehavior)
+                elseif Component[key] ~= nil then
+                    return Component[key]
+                end
+                
+                return nil
+            end
+
+            -- Dynamic setters
+            function script.__newindex(scriptedBehavior, key, value)
+                local funcName = "Set"..key:ucfirst()
+                              
+                if script[funcName] ~= nil then
+                    return script[funcName](scriptedBehavior, value)
+                end
+                
+                return rawset(scriptedBehavior, key, value)
+            end
+
+            --
+            function script.__tostring(scriptedBehavior)
+                return "ScriptedBehavior"..tostring(scriptedBehavior.inner):sub(2, 20)
+            end
+        else
+            print("WARNING : item with key '"..i.."' and value '"..path.."' in Daneel.config.scripts is not a valid script path.")
+        end
     end
 
-    componentObject["__tostring"] = function(component)
-        -- returns something like "ModelRenderer: 123456789"
-        -- component.inner is "?: [some ID]"
-        return componentType..tostring(component.inner):sub(2, 20) -- leave 2 as the starting index, only the transform ahave an extra space
+    -- assets
+    for assetType, object in pairs(Daneel.config.assetObjects) do
+        -- Get helpers : GetModelRenderer() ...
+        Asset["Get"..assetType] = function(assetName)
+            Daneel.Debug.StackTrace.BeginFunction("Asset.Get"..assetType, assetName)
+            local errorHead = "Asset.Get"..assetType.."(assetName) : "
+            Daneel.Debug.CheckArgType(assetName, "assetName", "string", errorHead)
+            local asset = Asset.Get(assetName, assetType)
+            Daneel.Debug.StackTrace.EndFunction("Asset.Get"..assetType, asset)
+            return asset
+        end
+
+        object["__tostring"] = function(asset)
+            -- print something like : "Model: 123456789 - table: 0512A528"
+            -- asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
+            -- CraftStudioCommon.ProjectData. is 30 characters long
+            return tostring(asset.inner):sub(31, 60)
+        end
     end
-    print(componentType.." to string")
-end -- end for
+end -- end Daneel.InitConfig()
 
 
--- Dynamic getters and setter on Scripts
-for i, path in pairs(Daneel.config.scripts) do
-    local script = CraftStudio.FindAsset(path, "Script") -- not sure if Asset.Get() already exists
-
-    if script ~= nil then
-        -- Dynamic getters
-        function script.__index(scriptedBehavior, key)
-            local funcName = "Get"..key:ucfirst()
-                          
-            if script[funcName] ~= nil then
-                return script[funcName](scriptedBehavior)
-            elseif script[key] ~= nil then
-                return script[key]
-            end
-
-            if Script[funcName] ~= nil then
-                return Script[funcName](scriptedBehavior)
-            elseif Script[key] ~= nil then
-                return Script[key]
-            end
-
-            if Component[funcName] ~= nil then
-                return Component[funcName](scriptedBehavior)
-            elseif Component[key] ~= nil then
-                return Component[key]
-            end
-            
-            return nil
-        end
-
-        -- Dynamic setters
-        function script.__newindex(scriptedBehavior, key, value)
-            local funcName = "Set"..key:ucfirst()
-                          
-            if script[funcName] ~= nil then
-                return script[funcName](scriptedBehavior, value)
-            end
-            
-            return rawset(scriptedBehavior, key, value)
-        end
-
-        --
-        function script.__tostring(scriptedBehavior)
-            return "ScriptedBehavior"..tostring(scriptedBehavior.inner):sub(2, 20)
-        end
-    else
-        print("WARNING : item with key '"..i.."' and value '"..path.."' in Daneel.config.scripts is not a valid script path.")
-    end
+if Daneel.config ~= nil then
+    Daneel.InitConfig()
 end
-
--- assets
-for assetType, object in pairs(Daneel.config.assetObjects) do
-    -- Get helpers : GetModelRenderer() ...
-    Asset["Get"..assetType] = function(assetName)
-        Daneel.Debug.StackTrace.BeginFunction("Asset.Get"..assetType, assetName)
-        local errorHead = "Asset.Get"..assetType.."(assetName) : "
-        Daneel.Debug.CheckArgType(assetName, "assetName", "string", errorHead)
-        local asset = Asset.Get(assetName, assetType)
-        Daneel.Debug.StackTrace.EndFunction("Asset.Get"..assetType, asset)
-        return asset
-    end
-
-    object["__tostring"] = function(asset)
-        -- print something like : "Model: 123456789 - table: 0512A528"
-        -- asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
-        -- CraftStudioCommon.ProjectData. is 30 characters long
-        return tostring(asset.inner):sub(31, 60)
-    end
-end
+-- otherwise, the Config.lua file has not been read yat and the function Daneel.InitConfig() will be run from this file instead
 
 
 ----------------------------------------------------------------------------------
