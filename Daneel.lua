@@ -546,8 +546,8 @@ function Daneel.InitConfig()
 
     -- all objects (for use in GetType())
     Daneel.defaultConfig.allObjects = {}
-    local allObjects = {Daneel.defaultConfig.assetObjects, Daneel.defaultConfig.componentObjects, Daneel.defaultConfig.craftStudioObjects, Daneel.defaultConfig.daneelObjects}
-
+    local allObjects = {Daneel.defaultConfig.assetObjects, Daneel.defaultConfig.componentObjects, Daneel.defaultConfig.craftStudioObjects, Daneel.defaultConfig.daneelObjects, Daneel.config.userObjects}
+    
     for i, t in ipairs(allObjects) do
         for key, value in pairs(t) do
             Daneel.defaultConfig.allObjects[key] = value
