@@ -531,7 +531,8 @@ end
 -- Initialization
 local luaDocStop = ""
 
-function Daneel.InitConfig()
+-- called from DaneelBehavior Awake()
+function Daneel.Awake()
     setmetatable(Daneel.config, Daneel.defaultConfig)
 
     Daneel.defaultConfig.assetTypes = {}
@@ -563,9 +564,11 @@ function Daneel.InitConfig()
         end
     end
 
-    for componentType, componentObject in pairs(Daneel.config.componentObjects) do
 
-        -- GameObject
+    -- Components
+
+    for componentType, componentObject in pairs(Daneel.config.componentObjects) do
+        -- GameObject helpers
 
         -- AddComponent helpers
         -- ie : gameObject:AddModelRenderer()
@@ -594,8 +597,7 @@ function Daneel.InitConfig()
             end
         end
 
-        -- Components
-
+        -- Components getters-setter-tostring
         if componentType ~= "ScriptedBehavior" then
             -- Dynamic Getters
             componentObject["__index"] = function(component, key) 
@@ -615,7 +617,6 @@ function Daneel.InitConfig()
                 
                 return nil
             end
-            print(componentType.." index")
 
             -- Dynamic Setters
             componentObject["__newindex"] = function(component, key, value)
@@ -627,7 +628,6 @@ function Daneel.InitConfig()
                 
                 return rawset(component, key, value)
             end
-            print(componentType.." New index")
         end
 
         componentObject["__tostring"] = function(component)
@@ -635,7 +635,6 @@ function Daneel.InitConfig()
             -- component.inner is "?: [some ID]"
             return componentType..tostring(component.inner):sub(2, 20) -- leave 2 as the starting index, only the transform ahave an extra space
         end
-        print(componentType.." to string")
     end -- end for componentObjects
 
     -- Dynamic getters and setter on Scripts
@@ -688,7 +687,8 @@ function Daneel.InitConfig()
         end
     end
 
-    -- assets
+
+    -- Assets
     for assetType, object in pairs(Daneel.config.assetObjects) do
         -- Get helpers : GetModelRenderer() ...
         Asset["Get"..assetType] = function(assetName)
@@ -707,13 +707,7 @@ function Daneel.InitConfig()
             return tostring(asset.inner):sub(31, 60)
         end
     end
-end -- end Daneel.InitConfig()
-
-
-if Daneel.config ~= nil then
-    Daneel.InitConfig()
-end
--- otherwise, the Config.lua file has not been read yat and the function Daneel.InitConfig() will be run from this file instead
+end -- end Daneel.Init()
 
 
 ----------------------------------------------------------------------------------

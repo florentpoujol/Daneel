@@ -27,6 +27,3 @@ Daneel.config = {
 }
 
 
-if Daneel.InitConfig ~= nil then -- Daneel.lua has already been read
-    Daneel.InitConfig()
-end

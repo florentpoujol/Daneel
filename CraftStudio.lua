@@ -163,7 +163,10 @@ function MapRenderer.SetMap(mapRenderer, mapNameOrAsset, keepTileSet)
     Daneel.Debug.CheckArgType(mapRenderer, "mapRenderer", "MapRenderer", errorHead)
     Daneel.Debug.CheckArgType(mapNameOrAsset, "mapNameOrAsset", {"string", "Map"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(keepTileSet, "keepTileSet", "boolean", errorHead)
- 
+    if keepTileSet == nil then
+        keepTileSet = false
+    end
+
     local map = mapNameOrAsset
     if type(mapNameOrAsset) == "string" then
         map = Asset.Get(mapNameOrAsset, "Map")
