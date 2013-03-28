@@ -563,7 +563,7 @@ function Daneel.InitConfig()
         end
     end
 
-    for componentType, componentObject in ipairs(Daneel.config.componentObjects) do
+    for componentType, componentObject in pairs(Daneel.config.componentObjects) do
 
         -- GameObject
 
