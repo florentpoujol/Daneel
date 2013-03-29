@@ -27,7 +27,7 @@ Daneel mostly add new objects, new functions on existing objects and sometimes a
 - [Miscellaneous](#miscellaneous)
 - [Functions list](#functions-list)
 
-## <a id="overview"></a>Overview
+## Overview
 
 Call getters and setters as if they were variable :
     
@@ -69,7 +69,7 @@ Also :
 - Hotkeys (fire events at the push of any button)
 
 
-## <a id="install"></a>Installation 
+## Installation 
 
 [Download then import in CraftStudio][downloadlink] the pack of script.
 
@@ -79,11 +79,10 @@ Step by step process :
 * Click the import button (top right), navigate to the location you downloaded the pack in then click "Open".  
 * Navigate to the "Script" tab, select all the scripts then click "Import".
 
-The scripts in the `Daneel/Behaviors` folder must stay in that folder.  
-If you want to use the hotkey events, add the "Daneel/Behaviors/DaneelInit" ScriptedBehavior in your scene (all other features works without it).
+The scripts in the `Daneel/Behaviors` folder must stay in this folder.  
 
 
-## <a id="config"></a>Configuration
+## Configuration
 
 Some features are only available if a few configuration is done first.
 Currently, all that has to be done is to edit the top of the `Daneel` script (just the `Daneel.config` table) and make the list of the scripts (for anything that uses the ScriptedBehaviors) and/or button names (for the hotkey events) of your game.
@@ -106,7 +105,19 @@ Currently, all that has to be done is to edit the top of the `Daneel` script (ju
     }
 
 
-## <a id="conventions"></a>Conventions
+## Initialisation
+
+Daneel needs to be loaded before some of its features work, so you need to add the "Daneel/Behaviors/DaneelBehavior" as a ScriptedBehavior in your scene.  
+Daneel is garanteed to be loaded by the time functions `Behavior:Start()` begin to be called.  
+It may also be the case from `Behavior:Awake()` functions, but it is not garanteed (it depends on the GameObject initialization order).
+
+The global variable `DaneelLoaded` is equal to `nil` until Daneel is loaded, where its value is set to `true`.
+
+Any scripts whose path is set in `Daneel.config.scripts` may implements a `Behavior:OnDaneelLoaded()` function.  
+This function will be called right after Daneel has loaded, before `Behavior:Start()` and **even on scripts that are not ScriptedBehavior**.
+
+
+## Conventions
 
 * Every getter functions are called GetSomething() instead of FindSomething().
 * Every object and function names are pascal-cased, except for functions added to Lua's standard libraries which are all lower-case.
@@ -116,7 +127,7 @@ Currently, all that has to be done is to edit the top of the `Daneel` script (ju
 * Every optional boolean arguments default to false.
 
 
-## <a id="dynamic_get_set"></a>Dynamic getters and setters
+## Dynamic getters and setters
 
 Getters and setters functions may be used on gameOjects and components as if they were variables. Their names must begin by "Get" or "Set" and have the forth letter upper-case (underscore is allowed). Ie : GetSomething() and Get_something() will works, but Getsomething() or getSomething() won't work.
 
@@ -140,7 +151,7 @@ Dynamic getters and setters will also work on your ScriptedBehaviors provided yo
     }
 
 
-## <a id="dynamic_components"></a>Dynamic access to components 
+## Dynamic access to components 
 
 As Daneel introduce the new `gameObject:GetModelRenderer()`, `gameObject:GetMapRenderer()` and `gameObject:GetCamera()` functions, you may now access any component via its variable, like the transform :
 
@@ -171,7 +182,7 @@ ScriptedBehaviors who are nested in folders and/or name are not pascal-cased, ma
     self.gameObject.otherScript
 
 
-## <a id="mass_setting"></a>Mass-setting on gameObjects and components
+## Mass-setting on gameObjects and components
 
 Functions `gameObject:Set()` and `component:Set()` accept a "params" argument of type table which allow to set variables or call setters in mass.  
 
@@ -238,7 +249,7 @@ If you want to add one or more scriptedBehaviors and maybe initialize them or se
 This table may contains the script name or asset of new ScriptedBehaviors as value (if you don't want to initialize them) or the script name or asset as key and the parameters table as value (for new or existing ScriptedBehaviors). Existing ScriptedBehaviors may also be set via their name or alias.
 
 
-## <a id="debug"></a>Debugging
+## Debugging
 
 For an easy debugging during development, Daneel feature extensive error reporting and a stack trace. Since these features are pretty heavy on function calls, you can turn these on and off (and you should disable debug when you ship your game).  
 It's turned off by default, so just set the value of the variable `Daneel.config.debug` to `true` to enable it.
@@ -270,7 +281,7 @@ For instance, when trying to set the model of a ModelRenderer (to a Model that d
 The function `Daneel.Debug.GetType(object)` is an extension of Lua's built-in `type()` and may returns any of the built-in Lua types or the name of any of the objects introduced by CraftStudio or Daneel : GameObject, ModelRenderer, MapRenderer, Camera, Transform, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Ray, RaycastHit, Vector3, Plane, Quaternion
 
 
-## <a id="raycasting"></a>Raycasting
+## Raycasting
 
 GameObjects who have the `CastableGameObject` ScriptedBehavior are known as **castable gameObjects**.  
 The `RaycastHit` object stores the information regarding the collision between a ray and a gameObject. It may contains the keys *distance*, *normal*, *hitBlockLocation*, *adjacentBlockLocation*, *gameObject* and *componentType*.
@@ -279,7 +290,7 @@ The function `ray:IntersectsGameObject(gameObject)` returns a RaycastHit if the 
 The function `ray:Cast([gameObjects])` cast the ray against all castable gameObjects (or against the provided set of gameObjects) and returns a table of RaycastHit (which will be empty if no gameObjects have been hit).
 
 
-## <a id="triggers"></a>Trigger messages
+## Trigger messages
 
 GameObjects who have the `TriggerableGameObject` ScriptedBehavior are known as **triggerable gameObjects**. They react when they are near triggers.  
 Triggers are gameObjects that perform a spherical proximity check each frames against all triggerable gameObjects.  
@@ -304,7 +315,7 @@ Each of these functions receive the trigger gameObject as argument.
     -- a typical use for this is any mechanism that the player can use if he is close enough and press a key
 
 
-## <a id="mouse"></a>Mouse messages
+## Mouse messages
 
 GameObjects who have the `MousehoverableGameObject` ScriptedBehavior are known as **mousehoverable gameObjects**. They react when they are hovered by the mouse.  
 Add the `CameraMouseOver` ScriptedBehavior to your camera.
@@ -314,7 +325,7 @@ Add the `CameraMouseOver` ScriptedBehavior to your camera.
 * The frame the mouse stop hovering over a mousehoverable gameObject (it is not hovered this frame but was hovered the last frame), the message `OnMouseExit` is send on the gameObject.
 
 
-## <a id="events"></a>Events
+## Events
 
 Daneel provide a event system that allows to run functions or messages on gameObjects whenever some events happens during runtime.
 
@@ -342,7 +353,7 @@ You can also make gameObjects to listen to events. By default, the message "On[E
     end
 
 
-## <a id="hotkeys"></a>Hotkeys events
+## Hotkeys events
 
 Whenever you press one of the button whose name is set in `Daneel.config.buttons`, the events named `On[Button name]ButtonDown`, `On[Button name]ButtonJustPressed` and `On[Button name]ButtonJustReleased` are fired.
 
@@ -357,7 +368,7 @@ The table `Daneel.config.buttons` may be filled with the button names that you d
     }
 
 
-## <a id="miscellaneous"></a>Miscellaneous
+## Miscellaneous
 
 ### GameObject
 
@@ -387,7 +398,7 @@ Tables returned by `table.new()` or any new table functions introduced by Daneel
 The `table` object has also been extended with many functions that ease the manipulation of table.
 
 
-## <a id="functions_list"></a>Functions list
+## Functions list
 
 [See the full function reference][daneelfunctionreference] for full explanation on arguments and returned values. 
 Arguments between square brackets are optional.

@@ -6,6 +6,7 @@ if Daneel == nil then
 end
 
 
+
 ----------------------------------------------------------------------------------
 -- Defaul Config
 
@@ -707,7 +708,16 @@ function Daneel.Awake()
             return tostring(asset.inner):sub(31, 60)
         end
     end
-end -- end Daneel.Init()
+
+
+    -- Awakening is over
+    DANEEL_LOADED = true
+
+    -- call OnDaneelAwake()
+    for i, path in pairs(Daneel.config.scripts) do
+        Asset.GetScript(path):OnDaneelLoaded()
+    end
+end -- end Daneel.Awake()
 
 
 ----------------------------------------------------------------------------------
