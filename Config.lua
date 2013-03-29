@@ -8,14 +8,18 @@ end
 
 Daneel.config = {
 
-    -- List of the Scripts paths as values and optionally the script alias as the keys
+    -- List of the Scripts paths as values and optionally the script alias as the keys.
+    -- Ie :
+    -- "fully-qualified Script path"
+    -- or
+    -- alias = "fully-qualified Script path"
     scripts = {
-        -- "fully-qualified Script path"
-        -- alias = "fully-qualified Script path"
+
     },
 
     
-    -- List of the button names you defined in the "Administration > Game Controls" tab of your project
+    -- Button names as you defined them in the "Administration > Game Controls" tab of your project
+    -- Button whose name is defined here can be used as HotKeys
     buttons = {
 
     },

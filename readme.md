@@ -11,9 +11,10 @@ Daneel is a framework for [CraftStudio][] that aims to sweeten and shorten the c
 Daneel never deprecate anything from the current CraftStudio's API which remains usable in its entirety [as described in the scripting reference][CSscriptingreference] on the official wiki.  
 Daneel mostly add new objects, new functions on existing objects and sometimes allow to pass different argument types and new arguments on existing functions.
 
-- [Overview](#overview)
-- [Installation](#installation)
+- [Overview]()
+- [Installation]()
 - [Configuration](#configuration)
+- [Loading Daneel]
 - [Conventions](#conventions)
 - [Dynamic getters and setters](#dynamic-getters-and-setters)
 - [Dynamic access to components](#dynamic-access-to-components)
@@ -83,28 +84,35 @@ You must then import the package in your project.
 
 ## Configuration
 
-Some features are only available if a few configuration is done first.
-Currently, all that may have to do is to edit the top of the `Daneel` script (just the `Daneel.config` table) and make the list of the scripts (for anything that uses the ScriptedBehaviors) and/or button names (for the hotkey events) of your game.
+Some features only work if a few configuration is done first.
+You will find the configuration table in the `Daneel/Config` script.
     
     Daneel.config = {
-        -- List of the Scripts paths as values and optionally the script alias as the keys
+
+        -- List of the Scripts paths as values and optionally the script alias as the keys.
+        -- Ie :
+        -- "fully-qualified Script path"
+        -- or
+        -- alias = "fully-qualified Script path"
         scripts = {
-            -- "fully-qualified Script path"
-            -- alias = "fully-qualified Script path"
+
         },
 
-        -- List of the button names you defined in the "Administration > Game Controls" tab of your project
+        
+        -- Button names as you defined them in the "Administration > Game Controls" tab of your project
+        -- Button whose name is defined here can be used as HotKeys
         buttons = {
 
         },
 
-        -- Set to true to enable the framework's advanced debugging features.
+
+        -- Set to true to enable the framework's advanced debugging capabilities.
         -- Set to false when you ship the game.
         debug = false,
     }
 
 
-## Initialisation
+## Loading Daneel
 
 Daneel needs to be loaded before some of its features work, so you need to add the "Daneel/Behaviors/DaneelBehavior" as a ScriptedBehavior in your scene.  
 Daneel is garanteed to be loaded by the time functions `Behavior:Start()` begin to be called.  
