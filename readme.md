@@ -71,21 +71,20 @@ Also :
 
 ## Installation 
 
-[Download then import in CraftStudio][downloadlink] the pack of script.
+You can go to the public project `DaneelFramework` and export the scripts in the "Daneel" folder or [download the package][downloadlink].
 
-Step by step process :
-* Download the file on your computer
-* Go to your project's administration, "Import/Export" section.  
-* Click the import button (top right), navigate to the location you downloaded the pack in then click "Open".  
-* Navigate to the "Script" tab, select all the scripts then click "Import".
+You must then import the package in your project.
 
-The scripts in the `Daneel/Behaviors` folder must stay in this folder.  
+- Download the file on your computer
+- Go to your project's administration, "Import/Export" section.  
+- Click the import button (top right), navigate to the location you downloaded the pack in then click "Open".  
+- Navigate to the "Script" tab, select all the scripts then click "Import".
 
 
 ## Configuration
 
 Some features are only available if a few configuration is done first.
-Currently, all that has to be done is to edit the top of the `Daneel` script (just the `Daneel.config` table) and make the list of the scripts (for anything that uses the ScriptedBehaviors) and/or button names (for the hotkey events) of your game.
+Currently, all that may have to do is to edit the top of the `Daneel` script (just the `Daneel.config` table) and make the list of the scripts (for anything that uses the ScriptedBehaviors) and/or button names (for the hotkey events) of your game.
     
     Daneel.config = {
         -- List of the Scripts paths as values and optionally the script alias as the keys
@@ -111,7 +110,7 @@ Daneel needs to be loaded before some of its features work, so you need to add t
 Daneel is garanteed to be loaded by the time functions `Behavior:Start()` begin to be called.  
 It may also be the case from `Behavior:Awake()` functions, but it is not garanteed (it depends on the GameObject initialization order).
 
-The global variable `DaneelLoaded` is equal to `nil` until Daneel is loaded, where its value is set to `true`.
+The global variable `DANEEL_LOADED` is equal to `nil` until Daneel is loaded, where its value is set to `true`.
 
 Any scripts whose path is set in `Daneel.config.scripts` may implements a `Behavior:OnDaneelLoaded()` function.  
 This function will be called right after Daneel has loaded, before `Behavior:Start()` and **even on scripts that are not ScriptedBehavior**.
