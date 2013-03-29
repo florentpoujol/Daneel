@@ -71,6 +71,8 @@ Also :
 - Events
 - Hotkeys (fire events at the push of any button)
 
+You can add the public project `DaneelFramework` in CraftStudio and run the game to test some of these features for yourself.
+
 
 ## Installation 
 
@@ -132,7 +134,7 @@ This function will be called right after Daneel has loaded, before `Behavior:Sta
 * Every object and function names are pascal-cased, except for functions added to Lua's standard libraries which are all lower-case.
 * Every time an argument has to be an asset (like with `modelRenderer:SetModel()`), you may pass the fully-qualified asset name instead.
 * Every time an argument has to be a gameObject instance (like with `gameObject:SetParent(parentNameOrInstance[, keepLocalTransform])`), you may pass the gameObject name instead.
-* Every time an argument has to be an asset or component **type**, you may pass the asset or component **object** instead (ie : `Asset.Get("Model name", ModelRenderer)` instead of `Asset.Get("Model name", "ModelRenderer")`). And when you do pass the type as a string, it is case insensitive.
+* Every time an argument has to be an asset or component type, it is case insensitive.
 * Every optional boolean arguments default to false.
 
 
@@ -353,13 +355,15 @@ Any arguments may be passed to the function when the event is fired.
         Daneel.Events.Fire("EventName", "Brace for this event !")
     end
 
-You can also make gameObjects to listen to events. By default, the message "On[Event name]" will be sent (and optionally broadcasted) on that gameObject.  
+You can also make gameObjects to listen to events. By default, the message "[Event name]" will be sent (and optionally broadcasted) on that gameObject (the function `Behavior:[Event name]``()` wil be called if it exists).  
     
     function Behavior:Awake()
-        Daneel.Events.Listen("EventName", self.gameObject) -- the message "OnEventName" will be sent on this gameObject only
+        Daneel.Events.Listen("EventName", self.gameObject) -- the message "EventName" will be sent on this gameObject only
         Daneel.Events.Listen("EventName", self.gameObject, "AnotherMessage") -- the message "AnotherMessage" (instead of "OnEventName") will be sent on this gameObject only
         Daneel.Events.Listen("EventName", self.gameObject, "AnotherMessage", true) -- the message "AnotherMessage" will be sent on this gameObject and all of its children
     end
+
+If you want a function or a gameObject to listen to every events, just pass `"any"` as the event name.
 
 
 ## Hotkeys events
@@ -546,4 +550,5 @@ Arguments between square brackets are optional.
 - The error() function now prints the StackTrace, unless told otherwise
 - Separated the user config from the "Daneel" script
 - Dynamic getters and setters works on assets too
+- Default function names when registering a gameObject to an event are not prefixed by "On" anymore
 - Fixed several bugs
