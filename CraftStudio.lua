@@ -143,7 +143,7 @@ function ModelRenderer.SetAnimation(modelRenderer, animationNameOrAsset)
         end
     end
 
-    OriginalSetModelAnimation(modelRenderer, animation)
+    OriginalSetAnimation(modelRenderer, animation)
     Daneel.Debug.StackTrace.EndFunction("ModelRenderer.SetModelAnimation")
 end
 
