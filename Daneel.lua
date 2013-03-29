@@ -267,17 +267,12 @@ function error(message, doNotPrintStacktrace)
 end
 
 --- Check the value of 'componentType', correct its case or convert it to string and throw error if it is not one of the valid component types or objects.
--- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform) The component type as a string or the asset object.
+-- @param componentType (string) The component type as a string.
 -- @return (string) The correct component type.
 function Daneel.Debug.CheckComponentType(componentType)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckComponentType", componentType)
     local errorHead = "Daneel.Debug.CheckComponentType(componentType) : "
-    Daneel.Debug.CheckArgType(componentType, "componentType", {"string", unpack(Daneel.config.componentTypes)}, errorHead)
-
-    -- if componentType is an object
-    if type(componentType) ~= "string" then
-        componentType = table.getkey(Daneel.config.componentObjects, componentType)
-    end
+    Daneel.Debug.CheckArgType(componentType, "componentType", "string", errorHead)
 
     local componentTypes = Daneel.config.componentTypes
     componentType = Daneel.Utilities.CaseProof(componentType, componentTypes)
@@ -290,17 +285,12 @@ function Daneel.Debug.CheckComponentType(componentType)
 end
 
 --- Check the value of 'assetType', correct its case or convert it to string and throw error if it is not one of the valid asset types or objects.
--- @param assetType (string, Script, Model, ModelAnimation, Map, TileSet, Scene or Sound) The asset type as a string or the asset object.
+-- @param assetType (string) The asset type as a string.
 -- @return (string) The correct asset type.
 function Daneel.Debug.CheckAssetType(assetType)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckAssetType", assetType)
     local errorHead = "Daneel.Debug.CheckAssetType(assetType) : "
-    Daneel.Debug.CheckArgType(assetType, "assetType", {"string", unpack(Daneel.config.assetTypes)}, errorHead)
-
-    -- if assetType is an object
-    if type(assetType) ~= "string" then
-        assetType = table.getkey(Daneel.config.assetObjects, assetType)
-    end
+    Daneel.Debug.CheckArgType(assetType, "assetType", "string", errorHead)
 
     local assetTypes = Daneel.config.assetTypes
     assetType = Daneel.Utilities.CaseProof(assetType, assetTypes)
@@ -383,6 +373,7 @@ function Daneel.Debug.StackTrace.Print()
     if Daneel.config.debug == false then return end
     local messages = Daneel.Debug.StackTrace.messages
     Daneel.Debug.StackTrace.messages = {}
+    Daneel.Debug.StackTrace.depth = 0
     
     print("~~~~~ Daneel.Debug.StackTrace ~~~~~")
 
@@ -398,13 +389,13 @@ end
 ----------------------------------------------------------------------------------
 -- Events
 
-Daneel.Events = { events = {} }
+Daneel.Events = { events = { any = {} } }
 
 --- Make the provided function listen to the provided event.
 -- The function will be called whenever the provided event will be fired.
 -- @param eventName (string) The event name.
 -- @param p_function (function, string or GameObject) The function (not the function name) or the gameObject name or instance.
--- @param functionName [optional default="On[eventName]"] (string) If 'p_function' is a gameObject name or instance, the name of the function to send the message to.
+-- @param functionName [optional default="[eventName]"] (string) If 'p_function' is a gameObject name or instance, the name of the function to send the message to.
 -- @param broadcast [optional default=false] (boolean) If 'p_function' is a gameObject name or instance, tell whether to broadcast the message to all the gameObject's childrens (if true).
 function Daneel.Events.Listen(eventName, p_function, functionName, broadcast)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Events.Listen", eventName, p_function)
@@ -417,7 +408,9 @@ function Daneel.Events.Listen(eventName, p_function, functionName, broadcast)
 
     local functionType = type(p_function)
     if functionType == "function" then
-        table.insert(Daneel.Events.events[eventName], p_function)
+        if not table.containsvalue(Daneel.Events.events[eventName], p_function) then
+            table.insert(Daneel.Events.events[eventName], p_function)
+        end
     else
         Daneel.Debug.CheckArgType(p_function, "p_function", {"string", "GameObject"}, errorHead)
         Daneel.Debug.CheckOptionalArgType(functionName, "functionName", "string", errorHead)
@@ -432,7 +425,7 @@ function Daneel.Events.Listen(eventName, p_function, functionName, broadcast)
         end
 
         if functionName == nil then
-            functionName = "On"..eventName
+            functionName = eventName
         end
 
         if broadcast == nil then
@@ -448,7 +441,7 @@ function Daneel.Events.Listen(eventName, p_function, functionName, broadcast)
 
     Daneel.Debug.StackTrace.EndFunction("Daneel.Events.Listen")
 end
--- TODO check if a global function, registered several times for the same event is called several times
+
 
 --- Make the provided function or gameObject to stop listen to the provided event.
 -- @param eventName (string) The event name.
@@ -498,14 +491,10 @@ function Daneel.Events.Fire(eventName, ...)
         Daneel.Debug.StackTrace.BeginFunction("Daneel.Events.Fire", eventName, unpack(arg))
     end
     
-    Daneel.Debug.CheckArgType(eventName, "eventName", "string", "Daneel.Events.Fire(eventName[, parameters]) : ")
+    Daneel.Debug.CheckArgType(eventName, "eventName", "string", "Daneel.Events.Fire(eventName[, ...]) : ")
     
-    if Daneel.Events.events[eventName] == nil then 
-        Daneel.Debug.StackTrace.EndFunction("Daneel.Events.Fire")
-        return
-    end
-    
-    for i, func in ipairs(Daneel.Events.events[eventName]) do
+    local functions = table.new(Daneel.Events.events[eventName]):merge(Daneel.Events.events["any"])
+    for i, func in ipairs(functions) do
         local functionType = type(func)
         if functionType == "function" then
             func(unpack(arg))
@@ -737,11 +726,11 @@ function Daneel.Awake()
     -- Awakening is over
     DANEEL_LOADED = true
 
-    -- call OnDaneelAwake()
+    -- call DaneelAwake()
     for i, path in pairs(Daneel.config.scripts) do
         local script = Asset.GetScript(path)
-        if type(script.OnDaneelLoaded) == "function" then
-            script:OnDaneelLoaded()
+        if type(script.DaneelAwake) == "function" then
+            script:DaneelAwake()
         end
     end
 end -- end Daneel.Awake()
