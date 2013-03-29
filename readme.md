@@ -11,10 +11,10 @@ Daneel is a framework for [CraftStudio][] that aims to sweeten and shorten the c
 Daneel never deprecate anything from the current CraftStudio's API which remains usable in its entirety [as described in the scripting reference][CSscriptingreference] on the official wiki.  
 Daneel mostly add new objects, new functions on existing objects and sometimes allow to pass different argument types and new arguments on existing functions.
 
-- [Overview]()
-- [Installation]()
+- [Overview](#overview)
+- [Installation](#installation)
 - [Configuration](#configuration)
-- [Loading Daneel]
+- [Loading Daneel](#loading-daneel)
 - [Conventions](#conventions)
 - [Dynamic getters and setters](#dynamic-getters-and-setters)
 - [Dynamic access to components](#dynamic-access-to-components)
@@ -27,6 +27,8 @@ Daneel mostly add new objects, new functions on existing objects and sometimes a
 - [Hotkeys](#hotkeys)
 - [Miscellaneous](#miscellaneous)
 - [Functions list](#functions-list)
+- [Changelog](#changelog)
+
 
 ## Overview
 
@@ -114,7 +116,7 @@ You will find the configuration table in the `Daneel/Config` script.
 
 ## Loading Daneel
 
-Daneel needs to be loaded before some of its features work, so you need to add the "Daneel/Behaviors/DaneelBehavior" as a ScriptedBehavior in your scene.  
+Daneel needs to be loaded before some of its features work, so you need to add the "Daneel/Behaviors/DaneelBehavior" script as a ScriptedBehavior in your scene.  
 Daneel is garanteed to be loaded by the time functions `Behavior:Start()` begin to be called.  
 It may also be the case from `Behavior:Awake()` functions, but it is not garanteed (it depends on the GameObject initialization order).
 
@@ -136,7 +138,7 @@ This function will be called right after Daneel has loaded, before `Behavior:Sta
 
 ## Dynamic getters and setters
 
-Getters and setters functions may be used on gameOjects and components as if they were variables. Their names must begin by "Get" or "Set" and have the forth letter upper-case (underscore is allowed). Ie : GetSomething() and Get_something() will works, but Getsomething() or getSomething() won't work.
+Getters and setters functions may be used on gameOjects, components and assets as if they were variables. Their names must begin by "Get" or "Set" and have the forth letter upper-case (underscore is allowed). Ie : GetSomething() and Get_something() will works, but Getsomething() or getSomething() won't work.
 
     
     self.gameObject.transform.localPosition
@@ -536,3 +538,12 @@ Arguments between square brackets are optional.
 * table.getvalues(table)
 * table.getkey(table, value)
 
+
+## Changelog
+
+### v1.1.0
+
+- The error() function now prints the StackTrace, unless told otherwise
+- Separated the user config from the "Daneel" script
+- Dynamic getters and setters works on assets too
+- Fixed several bugs
