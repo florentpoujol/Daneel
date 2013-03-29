@@ -644,7 +644,7 @@ function Daneel.Awake()
 
         if script ~= nil then
             -- Dynamic getters
-            function script.__index(scriptedBehavior, key)
+            script['__index'] = function(scriptedBehavior, key)
                 local funcName = "Get"..key:ucfirst()
                               
                 if script[funcName] ~= nil then
@@ -669,7 +669,7 @@ function Daneel.Awake()
             end
 
             -- Dynamic setters
-            function script.__newindex(scriptedBehavior, key, value)
+            script['__newindex'] = function(scriptedBehavior, key, value)
                 local funcName = "Set"..key:ucfirst()
                               
                 if script[funcName] ~= nil then
@@ -679,8 +679,8 @@ function Daneel.Awake()
                 return rawset(scriptedBehavior, key, value)
             end
 
-            --
-            function script.__tostring(scriptedBehavior)
+            
+            script['__tostring'] = function(scriptedBehavior)
                 return "ScriptedBehavior"..tostring(scriptedBehavior.inner):sub(2, 20)
             end
         else
@@ -690,7 +690,7 @@ function Daneel.Awake()
 
 
     -- Assets
-    for assetType, object in pairs(Daneel.config.assetObjects) do
+    for assetType, assetObject in pairs(Daneel.config.assetObjects) do
         -- Get helpers : GetModelRenderer() ...
         Asset["Get"..assetType] = function(assetName)
             Daneel.Debug.StackTrace.BeginFunction("Asset.Get"..assetType, assetName)
@@ -701,8 +701,31 @@ function Daneel.Awake()
             return asset
         end
 
-        object["__tostring"] = function(asset)
-            -- print something like : "Model: 123456789 - table: 0512A528"
+        assetObject['__index'] = function(asset, key)
+            local funcName = "Get"..key:ucfirst()
+                          
+            if assetObject[funcName] ~= nil then
+                return assetObject[funcName](asset)
+            elseif assetObject[key] ~= nil then
+                return assetObject[key]
+            end
+
+            return nil
+        end
+
+        -- Dynamic setters
+        assetObject['__newindex'] = function(asset, key, value)
+            local funcName = "Set"..key:ucfirst()
+                          
+            if assetObject[funcName] ~= nil then
+                return assetObject[funcName](asset, value)
+            end
+            
+            return rawset(asset, key, value)
+        end
+
+        assetObject["__tostring"] = function(asset)
+            -- print something like : "Model: 123456789"
             -- asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
             -- CraftStudioCommon.ProjectData. is 30 characters long
             return tostring(asset.inner):sub(31, 60)
