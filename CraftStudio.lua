@@ -271,12 +271,12 @@ function Ray.IntersectsGameObject(ray, gameObject)
     end
 
     if distance == nil then
-        Daneel.Debug.StackTrace.EndFunction("Ray.IntersectsGameObject", nil)
+        Daneel.Debug.StackTrace.EndFunction()
         return nil
     end
 
     local raycastHit = RaycastHit.New(distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject)
-    Daneel.Debug.StackTrace.EndFunction("Ray.IntersectsGameObject", raycastHit)
+    Daneel.Debug.StackTrace.EndFunction()
     return raycastHit
 end
 

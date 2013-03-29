@@ -249,12 +249,12 @@ end
 --- Alias for error() but print Daneel's stack trace first.
 -- @param message (string) The error message.
 function Daneel.Debug.PrintError(message)
-    if Daneel.config.debug == false then return end
-    Daneel.Debug.StackTrace.Print()
-    error(message)
+    if Daneel.config.debug == true then
+        error(message)
+    end
 end
 
-local OrginalError = error
+local OriginalError = error
 
 --- Print the stackTrace then the provided error in the console
 -- @param message (string) The error message.
@@ -382,6 +382,7 @@ end
 function Daneel.Debug.StackTrace.Print()
     if Daneel.config.debug == false then return end
     local messages = Daneel.Debug.StackTrace.messages
+    Daneel.Debug.StackTrace.messages = {}
     
     print("~~~~~ Daneel.Debug.StackTrace ~~~~~")
 
@@ -738,7 +739,10 @@ function Daneel.Awake()
 
     -- call OnDaneelAwake()
     for i, path in pairs(Daneel.config.scripts) do
-        Asset.GetScript(path):OnDaneelLoaded()
+        local script = Asset.GetScript(path)
+        if type(script.OnDaneelLoaded) == "function" then
+            script:OnDaneelLoaded()
+        end
     end
 end -- end Daneel.Awake()
 
