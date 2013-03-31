@@ -126,7 +126,7 @@ function table.containskey(t, p_key)
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
     
     if p_key == nil then
-        Daneel.Debug.PrintError(errorHead.."Argument 'p_key' is 'nil'.")
+        error(errorHead.."Argument 'p_key' is 'nil'.")
     end
     
     local containsKey = false
@@ -152,7 +152,7 @@ function table.containsvalue(t, p_value, ignoreCase)
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
     
     if p_value == nil then
-        Daneel.Debug.PrintError(errorHead.."Argument 'value' is nil.")
+        error(errorHead.."Argument 'value' is nil.")
     end
 
     Daneel.Debug.CheckOptionalArgType(ignoreCase, "ignoreCase", "boolean", errorHead)
@@ -286,7 +286,7 @@ end
 function table.merge(...)
     if arg == nil then
         Daneel.Debug.StackTrace.BeginFunction("table.merge")
-        Daneel.Debug.PrintError("table.merge(...) : No argument provided. Need at least two.")
+        error("table.merge(...) : No argument provided. Need at least two.")
     end
 
     Daneel.Debug.StackTrace.BeginFunction("table.merge", unpack(arg))
@@ -384,7 +384,7 @@ function table.removevalue(t, value, singleRemove)
     Daneel.Debug.CheckOptionalArgType(singleRemove, "singleRemove", "boolean", errorHead)
     
     if value == nil then
-        Daneel.Debug.PrintError(errorHead.."Argument 'value' is nil.")
+        error(errorHead.."Argument 'value' is nil.")
     end
 
     for key, _value in pairs(t) do
@@ -448,7 +448,7 @@ function table.getkey(t, value)
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
 
     if value == nil then
-        Daneel.Debug.PrintError(errorHead.."Argument 'value' is nil.")
+        error(errorHead.."Argument 'value' is nil.")
     end
 
     local key = nil

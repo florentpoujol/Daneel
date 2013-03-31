@@ -126,12 +126,12 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
     
     local argType = type(argumentName)
     if argType ~= "string" then
-        Daneel.Debug.PrintError(errorHead.."Argument 'argumentName' is of type '"..argType.."' with value '"..tostring(argumentName).."' instead of 'string'.")
+        error(errorHead.."Argument 'argumentName' is of type '"..argType.."' with value '"..tostring(argumentName).."' instead of 'string'.")
     end
 
     argType = type(expectedArgumentTypes)
     if argType ~= "string" and argType ~= "table" then
-        Daneel.Debug.PrintError(errorHead.."Argument 'expectedArgumentTypes' is of type '"..argType.."' with value '"..tostring(expectedArgumentTypes).."' instead of 'string' or 'table'.")
+        error(errorHead.."Argument 'expectedArgumentTypes' is of type '"..argType.."' with value '"..tostring(expectedArgumentTypes).."' instead of 'string' or 'table'.")
     end
 
     if argType == "string" then
@@ -140,14 +140,14 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
 
     argType = type(p_errorHead)
     if arType ~= nil and argType ~= "string" then
-        Daneel.Debug.PrintError(errorHead.."Argument 'p_errorHead' is of type '"..argType.."' with value '"..tostring(errorHead).."' instead of 'string'.")
+        error(errorHead.."Argument 'p_errorHead' is of type '"..argType.."' with value '"..tostring(errorHead).."' instead of 'string'.")
     end
 
     if p_errorHead == nil then p_errorHead = "" end
 
     argType = type(p_errorEnd)
     if arType ~= nil and argType ~= "string" then
-        Daneel.Debug.PrintError(errorHead.."Argument 'p_errorEnd' is of type '"..argType.."' with value '"..tostring(errorEnd).."' instead of 'string'.")
+        error(errorHead.."Argument 'p_errorEnd' is of type '"..argType.."' with value '"..tostring(errorEnd).."' instead of 'string'.")
     end
 
     if p_errorEnd == nil then p_errorEnd = "" end
@@ -161,7 +161,7 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
         end
     end
     
-    Daneel.Debug.PrintError(p_errorHead.."Argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..p_errorEnd)
+    error(p_errorHead.."Argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..p_errorEnd)
 end
 
 --- If the provided argument is not nil, check the provided argument's type against the provided type(s) and display error if they don't match.
@@ -179,12 +179,12 @@ function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgum
     
     local argType = type(argumentName)
     if argType ~= "string" then
-        Daneel.Debug.PrintError(errorHead.."Argument 'argumentName' is of type '"..argType.."' with value '"..tostring(argumentName).."' instead of 'string'.")
+        error(errorHead.."Argument 'argumentName' is of type '"..argType.."' with value '"..tostring(argumentName).."' instead of 'string'.")
     end
 
     argType = type(expectedArgumentTypes)
     if argType ~= "string" and argType ~= "table" then
-        Daneel.Debug.PrintError(errorHead.."Argument 'expectedArgumentTypes' is of type '"..argType.."' with value '"..tostring(expectedArgumentTypes).."' instead of 'string' or 'table'.")
+        error(errorHead.."Argument 'expectedArgumentTypes' is of type '"..argType.."' with value '"..tostring(expectedArgumentTypes).."' instead of 'string' or 'table'.")
     end
 
     if argType == "string" then
@@ -193,14 +193,14 @@ function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgum
 
     argType = type(p_errorHead)
     if arType ~= nil and argType ~= "string" then
-        Daneel.Debug.PrintError(errorHead.."Argument 'p_errorHead' is of type '"..argType.."' with value '"..tostring(errorHead).."' instead of 'string'.")
+        error(errorHead.."Argument 'p_errorHead' is of type '"..argType.."' with value '"..tostring(errorHead).."' instead of 'string'.")
     end
 
     if p_errorHead == nil then errorHead = "" end
 
     argType = type(p_errorEnd)
     if arType ~= nil and argType ~= "string" then
-        Daneel.Debug.PrintError(errorHead.."Argument 'p_errorEnd' is of type '"..argType.."' with value '"..tostring(errorEnd).."' instead of 'string'.")
+        error(errorHead.."Argument 'p_errorEnd' is of type '"..argType.."' with value '"..tostring(errorEnd).."' instead of 'string'.")
     end
 
     if p_errorEnd == nil then p_errorEnd = "" end
@@ -214,7 +214,7 @@ function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgum
         end
     end
     
-    Daneel.Debug.PrintError(p_errorHead.."Optional argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..p_errorEnd)
+    error(p_errorHead.."Optional argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..p_errorEnd)
 end
 
 --- Return the Lua or CraftStudio type of the provided argument.
@@ -257,20 +257,9 @@ function Daneel.Debug.GetType(object, returnLuaTypeOnly)
     return argType
 end
 
---- Alias for error() but print Daneel's stack trace first.
--- @param message (string) The error message.
-function Daneel.Debug.PrintError(message)
-    -- PrintError() has become essentially useless since v1.1.0
-    -- Because error() now prints the stacktrace
-    -- the only difference now is that the error will not be triggered with PrintError() if debug is false.
-    if Daneel.config.debug == true then
-        error(message)
-    end
-end
-
 local OriginalError = error
 
---- Print the stackTrace then the provided error in the console
+--- Print the stackTrace unless told otherwise then the provided error in the console
 -- @param message (string) The error message.
 -- @param doNotPrintStacktrace [optional default=false] (boolean) Set to true to prevent the stacktrace to be printed before the error message.
 function error(message, doNotPrintStacktrace)
@@ -291,7 +280,7 @@ function Daneel.Debug.CheckComponentType(componentType)
     local componentTypes = Daneel.config.componentTypes
     componentType = Daneel.Utilities.CaseProof(componentType, componentTypes)
     if not componentType:isoneof(componentTypes) then
-        Daneel.Debug.PrintError(errorHead.."Argument 'componentType' with value '"..componentType.."' is not one of the valid component types : "..table.concat(componentTypes, ", "))
+        error(errorHead.."Argument 'componentType' with value '"..componentType.."' is not one of the valid component types : "..table.concat(componentTypes, ", "))
     end
 
     Daneel.Debug.StackTrace.EndFunction("Daneel.Debug.CheckComponentType", componentType)
@@ -309,7 +298,7 @@ function Daneel.Debug.CheckAssetType(assetType)
     local assetTypes = Daneel.config.assetTypes
     assetType = Daneel.Utilities.CaseProof(assetType, assetTypes)
     if not assetType:isoneof(assetTypes) then
-        Daneel.Debug.PrintError(errorHead.."Argument 'assetType' with value '"..assetType.."' is not one of the valid asset types : "..table.concat(assetTypes, ", "))
+        error(errorHead.."Argument 'assetType' with value '"..assetType.."' is not one of the valid asset types : "..table.concat(assetTypes, ", "))
     end
 
     Daneel.Debug.StackTrace.EndFunction("Daneel.Debug.CheckAssetType", assetType)
@@ -434,7 +423,7 @@ function Daneel.Events.Listen(eventName, p_function, functionName, broadcast)
         if functionType == "string" then
             gameObject = GameObject.Get(p_function)
             if gameObject == nil then
-                Daneel.Debug.PrintError(errorHead.."Argument 'p_function' : gameObject with name '"..p_function.."' was not found in the scene.")
+                error(errorHead.."Argument 'p_function' : gameObject with name '"..p_function.."' was not found in the scene.")
             end
         end
 
@@ -478,7 +467,7 @@ function Daneel.Events.StopListen(eventName, functionOrGameObject)
         if functionType == "string" then
             gameObject = GameObject.Get(functionOrGameObject)
             if gameObject == nil then
-                Daneel.Debug.PrintError(errorHead.."Argument 'functionOrGameObject' : gameObject with name '".._function.."' was not found in the scene.")
+                error(errorHead.."Argument 'functionOrGameObject' : gameObject with name '".._function.."' was not found in the scene.")
             end
         end
         

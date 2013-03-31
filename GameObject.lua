@@ -98,7 +98,7 @@ function GameObject.Instantiate(gameObjectName, sceneNameOrAsset, params)
     if type(sceneNameOrAsset) == "string" then
         scene = Asset.Get(sceneNameOrAsset, "Scene")
         if scene == nil then
-            Daneel.Debug.PrintError(errorHead.."Argument 'scene' : Scene asset with name '"..sceneNameOrAsset.."' was not found.")
+            error(errorHead.."Argument 'scene' : Scene asset with name '"..sceneNameOrAsset.."' was not found.")
         end
     end
     
@@ -127,7 +127,7 @@ function GameObject.Set(gameObject, params)
         for i, script in pairs(params.scriptedBehaviors) do
             argType = Daneel.Debug.GetType(script)
             if argType ~= "string" and argType ~= "Script" and argType ~= "table" then
-                Daneel.Debug.PrintError(errorHead.."Item n°"..i.." in argument 'params.scriptedBehaviors' is of type '"..argType.."' with value '"..tostring(script).."' instead of 'string', 'Script' or 'table'.")
+                error(errorHead.."Item n°"..i.." in argument 'params.scriptedBehaviors' is of type '"..argType.."' with value '"..tostring(script).."' instead of 'string', 'Script' or 'table'.")
             end
 
             local scriptParams = nil
@@ -211,7 +211,7 @@ function GameObject.SetParent(gameObject, parentNameOrInstance, keepLocalTransfo
     if type(parent) == "string" then
         parent = GameObject.Get(parentNameOrInstance)
         if parent == nil then
-            Daneel.Debug.PrintError(errorHead.."Argument 'parent' : Parent gameObject with name '"..parentNameOrInstance.."' was not found.")
+            error(errorHead.."Argument 'parent' : Parent gameObject with name '"..parentNameOrInstance.."' was not found.")
         end
     end
       
@@ -327,7 +327,7 @@ function GameObject.AddComponent(gameObject, componentType, params, scriptedBeha
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     componentType = Daneel.Debug.CheckComponentType(componentType)
     if componentType == "Transform" then
-        Daneel.Debug.PrintError(errorHead.."Can't add a transform because gameObjects may only have one transform.")
+        error(errorHead.."Can't add a transform because gameObjects may only have one transform.")
     end
 
     local component = nil
@@ -339,7 +339,7 @@ function GameObject.AddComponent(gameObject, componentType, params, scriptedBeha
         if type(script) == "string" then
             script = Asset.Get(script, "Script")
             if script == nil then
-                Daneel.Debug.PrintError(errorHead.."Argument 'params' : Script asset with name '"..params.."' was not found.")
+                error(errorHead.."Argument 'params' : Script asset with name '"..params.."' was not found.")
             end
         end
 
@@ -421,7 +421,7 @@ function GameObject.SetComponent(gameObject, componentType, params, scriptedBeha
         if type(script) == "string" then
             script = Asset.Get(script, "Script")
             if script == nil then
-                Daneel.Debug.PrintError(errorHead.."Argument 'params' : Script asset with name '"..params.."' was not found.")
+                error(errorHead.."Argument 'params' : Script asset with name '"..params.."' was not found.")
             end
         end
 
@@ -436,7 +436,7 @@ function GameObject.SetComponent(gameObject, componentType, params, scriptedBeha
     end
 
     if component == nil then
-        Daneel.Debug.PrintError(errorHead.."Component of type '"..componentType.."' was not found.")
+        error(errorHead.."Component of type '"..componentType.."' was not found.")
     else
         component:Set(params)
     end
@@ -529,7 +529,7 @@ function GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset, calledFro
             if calledFrom__index == true then
                 return nil
             else
-                Daneel.Debug.PrintError(errorHead.."Argument 'scriptNameOrAsset' : Script asset with name '"..scriptNameOrAsset.."' was not found.")
+                error(errorHead.."Argument 'scriptNameOrAsset' : Script asset with name '"..scriptNameOrAsset.."' was not found.")
             end 
         end
     end

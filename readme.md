@@ -415,7 +415,6 @@ Arguments between square brackets are optional.
 * Daneel.Debug.CheckAssetType(assetType)
 
 * Daneel.Debug.GetType(object, getLuaTypeOnly)
-* Daneel.Debug.PrintError(message)
 * error(message[, doNotPrintStacktrace])
 * Daneel.Debug.ToRawString(object)
 
@@ -522,7 +521,7 @@ Arguments between square brackets are optional.
 
 ### v1.1.0
 
-- The error() function now prints the StackTrace, unless told otherwise
+- Daneel.Debug.PrintError() is deprecated, the error() function now prints the StackTrace, unless told otherwise
 - Separated the user config from the "Daneel" script
 - Dynamic getters and setters works on assets too
 - Default function names when registering a gameObject to an event are not prefixed by "On" anymore

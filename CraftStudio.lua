@@ -112,7 +112,7 @@ function ModelRenderer.SetModel(modelRenderer, modelNameOrAsset)
     if type(modelNameOrAsset) == "string" then
         model = Asset.Get(modelNameOrAsset, "Model")
         if model == nil then
-            Daneel.Debug.PrintError(errorHead.."Argument 'modelNameOrAsset' : model with name '"..modelNameOrAsset.."' was not found.")
+            error(errorHead.."Argument 'modelNameOrAsset' : model with name '"..modelNameOrAsset.."' was not found.")
         end
     end
 
@@ -135,7 +135,7 @@ function ModelRenderer.SetAnimation(modelRenderer, animationNameOrAsset)
     if type(animationNameOrAsset) == "string" then
         animation = Asset.Get(animationNameOrAsset, "ModelAnimation")
         if animation == nil then
-            Daneel.Debug.PrintError(errorHead.."Argument 'animationNameOrAsset' : animation with name '"..animationNameOrAsset.."' was not found.")
+            error(errorHead.."Argument 'animationNameOrAsset' : animation with name '"..animationNameOrAsset.."' was not found.")
         end
     end
 
@@ -167,7 +167,7 @@ function MapRenderer.SetMap(mapRenderer, mapNameOrAsset, keepTileSet)
     if type(mapNameOrAsset) == "string" then
         map = Asset.Get(mapNameOrAsset, "Map")
         if map == nil then
-            Daneel.Debug.PrintError(errorHead.."Argument 'mapNameOrAsset' : map with name '"..mapNameOrAsset.."' was not found.")
+            error(errorHead.."Argument 'mapNameOrAsset' : map with name '"..mapNameOrAsset.."' was not found.")
         end
     end
 
@@ -190,7 +190,7 @@ function MapRenderer.SetTileSet(mapRenderer, tileSetNameOrAsset)
     if type(tileSetNameOrAsset) == "string" then
         tileSet = Asset.Get(tileSetNameOrAsset, "TileSet")
         if tileSet == nil then
-            Daneel.Debug.PrintError(errorHead.."Argument 'tileSetNameOrAsset' : tileSet with name '"..tileSetNameOrAsset.."' was not found.")
+            error(errorHead.."Argument 'tileSetNameOrAsset' : tileSet with name '"..tileSetNameOrAsset.."' was not found.")
         end
     end
 
@@ -244,7 +244,7 @@ function Ray.IntersectsGameObject(ray, gameObject)
         local name = gameObject
         gameObject = GameObject.Get(name)
         if gameObject == nil then
-            Daneel.Debug.PrintError(errorHead.."Argument 'gameObject' : gameObject with name '"..name.."' was not found.")
+            error(errorHead.."Argument 'gameObject' : gameObject with name '"..name.."' was not found.")
         end
     end
 
@@ -327,7 +327,7 @@ function Scene.Load(sceneNameOrAsset)
     if type(sceneNameOrAsset) == "string" then
         scene = Asset.Get(sceneNameOrAsset, "Scene")
         if scene == nil then
-            Daneel.Debug.PrintError(errorHead.."Argument 'sceneNameOrAsset' : scene with name '"..sceneNameOrAsset.."' was not found.")
+            error(errorHead.."Argument 'sceneNameOrAsset' : scene with name '"..sceneNameOrAsset.."' was not found.")
         end
     end
 
@@ -350,7 +350,7 @@ function Scene.Append(sceneNameOrAsset, gameObjectNameOrInstance)
     if type(sceneNameOrAsset) == "string" then
         scene = Asset.Get(sceneNameOrAsset, "Scene")
         if scene == nil then
-            Daneel.Debug.PrintError(errorHead.."Argument 'sceneNameOrAsset' : scene with name '"..sceneNameOrAsset.."' was not found.")
+            error(errorHead.."Argument 'sceneNameOrAsset' : scene with name '"..sceneNameOrAsset.."' was not found.")
         end
     end
 
@@ -358,7 +358,7 @@ function Scene.Append(sceneNameOrAsset, gameObjectNameOrInstance)
     if type(gameObjectNameOrInstance) == "string" then
         gameObject = GameObject.Get(name)
         if gameObject == nil then
-            Daneel.Debug.PrintError(errorHead.."Argument 'gameObject' : gameObject with name '"..gameObjectNameOrInstance.."' was not found.")
+            error(errorHead.."Argument 'gameObject' : gameObject with name '"..gameObjectNameOrInstance.."' was not found.")
         end
     end
 
