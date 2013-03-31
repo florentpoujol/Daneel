@@ -6,14 +6,14 @@
 
 --- Tell whether the provided number is an integer.
 -- @param number (number) The number to check.
--- @param strict [optionnal default=false] (boolean) If true, the function returns an error when the 'number' argument is not a number.
-function math.isinteger(number, strict)
-    Daneel.Debug.StackTrace.BeginFunction("math.isinteger", number, strict)
+-- @param errorIfValueIsNotNumber [optionnal default=false] (boolean) If true, the function returns an error when the 'number' argument is not a number.
+function math.isinteger(number, errorIfValueIsNotNumber)
+    Daneel.Debug.StackTrace.BeginFunction("math.isinteger", number, errorIfValueIsNotNumber)
     
     local argType = type(number)
     if argType ~= "number" then
-        if strict ~= nil and strict == true then
-            error("math.isinterger(number[, strict]) : Argument 'number' is of type '"..argType.."' instead of 'number'.")
+        if errorIfValueIsNotNumber ~= nil and errorIfValueIsNotNumber == true then
+            error("math.isinterger(number[, errorIfValueIsNotNumber]) : Argument 'number' is of type '"..argType.."' instead of 'number'.")
         else
             Daneel.Debug.StackTrace.EndFunction("math.isinteger", false)
             return false
@@ -338,19 +338,19 @@ end
 --- Create an associative table with the provided keys and values tables.
 -- @param keys (table) The keys of the future table.
 -- @param values (table) The values of the future table.
--- @param strict [optional default=false] (boolean) If true, the function returns false if the keys and values tables have different length.
+-- @param returnFalseIfNotSameLength [optional default=false] (boolean) If true, the function returns false if the keys and values tables have different length.
 -- @return (table or boolean) The combined table or false if the tables have different length.
-function table.combine(keys, values, strict)
-    Daneel.Debug.StackTrace.BeginFunction("table.combine", keys, values, strict)
-    local errorHead = "table.combine(keys, values[, strict]) : "
+function table.combine(keys, values, returnFalseIfNotSameLength)
+    Daneel.Debug.StackTrace.BeginFunction("table.combine", keys, values, returnFalseIfNotSameLength)
+    local errorHead = "table.combine(keys, values[, returnFalseIfNotSameLength]) : "
     Daneel.Debug.CheckArgType(keys, "keys", "table", errorHead)
     Daneel.Debug.CheckArgType(values, "values", "table", errorHead)
-    Daneel.Debug.CheckOptionalArgType(strict, "strict", "boolean", errorHead)
+    Daneel.Debug.CheckOptionalArgType(returnFalseIfNotSameLength, "returnFalseIfNotSameLength", "boolean", errorHead)
 
     if table.length(keys) ~= table.length(values) then
         print(errorHead.."WARNING : Arguments 'keys' and 'values' have different length.")
 
-        if strict == true then
+        if returnFalseIfNotSameLength == true then
             Daneel.Debug.StackTrace.EndFunction("table.combine", false)
             return false
         end
