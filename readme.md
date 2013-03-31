@@ -76,7 +76,7 @@ You can add the public project `DaneelFramework` in CraftStudio and run the game
 
 ## Installation 
 
-You can go to the public project `DaneelFramework` and export the scripts in the "Daneel" folder or [download the package][downloadlink].
+First [download the package of scripts from this link][downloadlink].
 
 You must then import the package in your project.
 
@@ -91,30 +91,6 @@ You must then import the package in your project.
 Some features only work if a few configuration is done first.
 You will find the configuration table in the `Daneel/Config` script.
     
-    Daneel.config = {
-
-        -- List of the Scripts paths as values and optionally the script alias as the keys.
-        -- Ie :
-        -- "fully-qualified Script path"
-        -- or
-        -- alias = "fully-qualified Script path"
-        scripts = {
-
-        },
-
-        
-        -- Button names as you defined them in the "Administration > Game Controls" tab of your project
-        -- Button whose name is defined here can be used as HotKeys
-        buttons = {
-
-        },
-
-
-        -- Set to true to enable the framework's advanced debugging capabilities.
-        -- Set to false when you ship the game.
-        debug = false,
-    }
-
 
 ## Loading Daneel
 
@@ -124,7 +100,7 @@ It may also be the case from `Behavior:Awake()` functions, but it is not garante
 
 The global variable `DANEEL_LOADED` is equal to `nil` until Daneel is loaded, where its value is set to `true`.
 
-Any scripts whose path is set in `Daneel.config.scripts` may implements a `Behavior:OnDaneelLoaded()` function.  
+Any scripts whose path is set in `Daneel.config.scripts` may implements a `Behavior:DaneelAwake()` function.  
 This function will be called right after Daneel has loaded, before `Behavior:Start()` and **even on scripts that are not ScriptedBehavior**.
 
 
@@ -140,7 +116,7 @@ This function will be called right after Daneel has loaded, before `Behavior:Sta
 
 ## Dynamic getters and setters
 
-Getters and setters functions may be used on gameOjects, components and assets as if they were variables. Their names must begin by "Get" or "Set" and have the forth letter upper-case (underscore is allowed). Ie : GetSomething() and Get_something() will works, but Getsomething() or getSomething() won't work.
+Getters and setters functions may be used on gameOjects, components and assets as if they were variables. Their names must begin by "Get" or "Set" and have the forth letter upper-case (underscore is allowed). Ie : GetSomething() and Get_something() will work, but Getsomething() or getSomething() won't work.
 
     
     self.gameObject.transform.localPosition
@@ -181,15 +157,16 @@ It just works right away for those who are not nested in a folder and name is pa
 
 ScriptedBehaviors who are nested in folders and/or name are not pascal-cased, may be accessed via their aliases as you define them in `Daneel.config.scripts`.
 
-    -- alias = "fully-qualified Script path"
     Daneel.config = {
         scripts = {
             "MyScript",
+            
+            -- alias = "fully-qualified Script path"
             otherScript = "folder/my other script",
         }
     }
 
-    -- in your script, access the scripteBehavior with its alias :
+    -- in your script, access the scripteBehavior via its alias :
     self.gameObject.otherScript
 
 
@@ -225,7 +202,7 @@ With `gameObject:Set()`, you can easily create new components then optionally in
         
         scriptedBehaviors = {
             "script name 2",
-            "script name 3", -- will create those ScriptedBehaviors if they don't yet exists
+            "script name 3", -- will create those ScriptedBehaviors if they don't yet exist
             
             ["script name 4"] = {
                 variableOrSetter = value
@@ -265,8 +242,6 @@ This table may contains the script name or asset of new ScriptedBehaviors as val
 For an easy debugging during development, Daneel feature extensive error reporting and a stack trace. Since these features are pretty heavy on function calls, you can turn these on and off (and you should disable debug when you ship your game).  
 It's turned off by default, so just set the value of the variable `Daneel.config.debug` to `true` to enable it.
 
-This affect the functions `Daneel.Debug.CheckArgType()`, `Daneel.Debug.CheckOptionalArgType()`, `Daneel.Debug.PrintError()` plus the functions in `Daneel.Debug.StackTrace`.
-
 ### Error reporting
 
 In every functions introduced or modified by Daneel, every arguments are checked for type and value and a comprehensive error message is thrown if needed.  
@@ -276,8 +251,8 @@ For instance, passing false instead of the gameObject's name with `gameObject:Ge
 
 ### Stack Trace
 
-When an error is triggered by `Danel.Debug.PrintError(message)`, Daneel print a "stack trace" in the Runtime Report.
-The stack trace nicely shows the history of function calls within the framework that lead to the error and display values received as argument as well as returned values.  
+When an error is triggered Daneel print a "stack trace" in the Runtime Report.
+The stack trace nicely shows the history of function calls within the framework that lead to the error and display values received as argument.  
 It reads from top to bottom, the last function called -where the error occurred- at the bottom.  
 For instance, when trying to set the model of a ModelRenderer (to a Model that does not exists) via gameObject:Set() :
 
@@ -289,15 +264,15 @@ For instance, when trying to set the model of a ModelRenderer (to a Model that d
 
 ### Data types
 
-The function `Daneel.Debug.GetType(object)` is an extension of Lua's built-in `type()` and may returns any of the built-in Lua types or the name of any of the objects introduced by CraftStudio or Daneel : GameObject, ModelRenderer, MapRenderer, Camera, Transform, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Ray, RaycastHit, Vector3, Plane, Quaternion
+The function `Daneel.Debug.GetType(object)` may returns any of the built-in Lua types or the name of any of the objects introduced by CraftStudio or Daneel : GameObject, ModelRenderer, MapRenderer, Camera, Transform, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Ray, RaycastHit, Vector3, Plane or Quaternion.
 
 
 ## Raycasting
 
 GameObjects who have the `CastableGameObject` ScriptedBehavior are known as **castable gameObjects**.  
-The `RaycastHit` object stores the information regarding the collision between a ray and a gameObject. It may contains the keys *distance*, *normal*, *hitBlockLocation*, *adjacentBlockLocation*, *gameObject* and *componentType*.
+The `RaycastHit` object stores the information regarding the collision between a ray and a gameObject. It may contains the keys distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject and componentType.
 
-The function `ray:IntersectsGameObject(gameObject)` returns a RaycastHit if the ray intersected the gameObject, or nil.  
+The function `ray:IntersectsGameObject(gameObject)` returns a RaycastHit if the ray intersects the gameObject, or nil.  
 The function `ray:Cast([gameObjects])` cast the ray against all castable gameObjects (or against the provided set of gameObjects) and returns a table of RaycastHit (which will be empty if no gameObjects have been hit).
 
 
@@ -308,8 +283,8 @@ Triggers are gameObjects that perform a spherical proximity check each frames ag
 Triggers must have the `Trigger` ScriptedBehavior and you must set its `radius` public property (don't forget to tick the box).
 
 * When a triggerable gameObject enters a trigger for the first frame (it is in range this frame, but it wasn't the last frame), the message `OnTriggerEnter` is sent on the gameObject.  
-* As long as a gameObject stays under a trigger's radius, the message `OnTriggerStay` is sent on the gameObject (each frame, by each trigger the gameObject is in range of).
-* The frame a gameObject leaves the trigger's radius (it is not in range this frame but was in range the last frame), the message `OnTriggerExit` is send on the gameObject.
+* As long as a gameObject stays in range of one or several trigger(s), the message `OnTriggerStay` is sent on the gameObject (each frame, by each trigger the gameObject is in range of).
+* The frame a gameObject leaves a trigger's radius (it is not in range this frame but was in range the last frame), the message `OnTriggerExit` is send on the gameObject.
 
 Each of these functions receive the trigger gameObject as argument.
 
@@ -355,7 +330,7 @@ Any arguments may be passed to the function when the event is fired.
         Daneel.Events.Fire("EventName", "Brace for this event !")
     end
 
-You can also make gameObjects to listen to events. By default, the message "[Event name]" will be sent (and optionally broadcasted) on that gameObject (the function `Behavior:[Event name]``()` wil be called if it exists).  
+You can also make gameObjects to listen to events. By default, the message of the same name as the event will be sent (and optionally broadcasted) on that gameObject (the function `Behavior:EventName()` wil be called if it exists).  
     
     function Behavior:Awake()
         Daneel.Events.Listen("EventName", self.gameObject) -- the message "EventName" will be sent on this gameObject only
@@ -368,13 +343,12 @@ If you want a function or a gameObject to listen to every events, just pass `"an
 
 ## Hotkeys events
 
-Whenever you press one of the button whose name is set in `Daneel.config.buttons`, the events named `On[Button name]ButtonDown`, `On[Button name]ButtonJustPressed` and `On[Button name]ButtonJustReleased` are fired.
+Whenever you press one of the button whose name is set in `Daneel.config.buttons`, the events named `On[Button name]ButtonJustPressed`, `On[Button name]ButtonDown` and `On[Button name]ButtonJustReleased` are fired.
 
 The table `Daneel.config.buttons` may be filled with the button names that you defined in the `Administration > Game Controls` tab.
 
     Daneel.config = {
         buttons = {
-            -- the list of the button names as they appear in CraftStudio in the "Game Controls" tab :
             "Action",
             "fire",
         }
@@ -385,7 +359,7 @@ The table `Daneel.config.buttons` may be filled with the button names that you d
 
 ### GameObject
 
-* Create a gameObject with `GameObject.New()` or `GameObject.Instanciate()`.
+* Create a gameObject with `GameObject.New()` or `GameObject.Instantiate()`.
 * Get a gameObject with `GameObject.Get()` and get a child with `gameObject:GetChild()`.
 * Add a component on a gameObject with `gameObject:AddComponent()` or its helpers `gameObject:AddModelRenderer()` and the likes, as well as `gameObject:AddScriptedBehavior()`.
 - Send a message to a gameObject and all of its descendants with `GameObject.BroadcastMessage()`
@@ -408,7 +382,7 @@ Tables returned by `table.new()` or any new table functions introduced by Daneel
     -- now, you can also do this (like with strings)
     myTable:insert(value)
 
-The `table` object has also been extended with many functions that ease the manipulation of table.
+The `table` object has also been extended with many functions that ease the manipulation of tables.
 
 
 ## Functions list
@@ -461,7 +435,7 @@ Arguments between square brackets are optional.
 ### GameObject
 
 * GameObject.New(name[, params])
-* GameObject.Instanciate(name, sceneNameOrObject[, params])
+* GameObject.Instantiate(name, sceneNameOrObject[, params])
 * GameObject.Get(name)
 
 * gameObject:SetParent(parentNameOrInstance[, keepLocalTransform])
@@ -493,7 +467,7 @@ Arguments between square brackets are optional.
 
 ### math
 
-* math.isinteger(value[, strict])
+* math.isinteger(value[, errorIfValueIsNotNumber])
 
 ### MapRenderer
 
@@ -536,7 +510,7 @@ Arguments between square brackets are optional.
 * table.printmetatable(table)
 * table.merge(...)
 * table.compare(table1, table2)
-* table.combine(keys, values[, strict])
+* table.combine(keys, values[, returnFalseIfNotSameLength])
 * table.removevalue(table, value[, singleRemove])
 * table.getkeys(table)
 * table.getvalues(table)
