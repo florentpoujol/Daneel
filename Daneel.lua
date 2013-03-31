@@ -603,7 +603,7 @@ function Daneel.Awake()
 
     -- Dynamic getters and setter on Scripts
     for i, path in pairs(Daneel.config.scripts) do
-        local script = Asset.GetScript(path) -- not sure if Asset.Get() already exists
+        local script = Asset.Get(path, "Script") -- Asset.Get() helpers does not yet exists
 
         if script ~= nil then
             -- Dynamic getters
@@ -663,6 +663,12 @@ function Daneel.Awake()
                     return componentObject[funcName](component)
                 elseif componentObject[key] ~= nil then
                     return componentObject[key] -- have to return the function here, not the function return value !
+                end
+
+                if Component[funcName] ~= nil then
+                    return Component[funcName](scriptedBehavior)
+                elseif Component[key] ~= nil then
+                    return Component[key]
                 end
                 
                 return nil
