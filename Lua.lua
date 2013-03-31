@@ -1,5 +1,3 @@
--- v1.0.0
--- 23/03/2013
 
 ----------------------------------------------------------------------------------
 -- math
@@ -103,12 +101,19 @@ end
 function table.copy(t)
     Daneel.Debug.StackTrace.BeginFunction("table.copy", t)
     Daneel.Debug.CheckArgType(t, "table", "table", "table.copy(table) : ", nil, true)
-    local t2 = table.new()
+    
+    local newTable = table.new()
     for key, value in pairs(t) do
-        t2[key] = value
+        newTable[key] = value
     end
-    Daneel.Debug.StackTrace.EndFunction("table.copy", t2)
-    return t2
+
+    local mt = getmetatable(t)
+    if mt ~= nil then
+        setmetatable(newTable, mt)
+    end
+
+    new.Debug.StackTrace.EndFunction("table.copy", newTable)
+    return newTable
 end
 
 --- Tell whether the provided key is found within the provided table.
