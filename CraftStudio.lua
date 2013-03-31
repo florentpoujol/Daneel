@@ -24,8 +24,6 @@ function Asset.Get(assetName, assetType)
     return asset
 end
 
--- Get helpers are generated in Asset.Init() below
-
 --- Get the Script asset with the specified name.
 -- @param assetName (string) The fully-qualified asset name.
 -- @return (Script) The asset, or nil if none is found.
