@@ -1,5 +1,3 @@
--- v1.0.0
--- 21/03/2013
 
 ----------------------------------------------------------------------------------
 -- Assets
@@ -233,7 +231,6 @@ function Ray.Cast(ray, gameObjects)
     Daneel.Debug.StackTrace.EndFunction("Ray.Cast", hits)
     return hits
 end
-
 
 --- Check if the ray intersect the specified gameObject.
 -- @param ray (Ray) The ray.

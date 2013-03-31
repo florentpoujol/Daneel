@@ -1,10 +1,7 @@
--- v1.1.0
--- 21/03/2013
 
 if Daneel == nil then 
     Daneel = {}
 end
-
 
 Daneel.config = {
 
@@ -29,5 +26,3 @@ Daneel.config = {
     -- Set to false when you ship the game.
     debug = false,
 }
-
-
