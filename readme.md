@@ -1,7 +1,7 @@
 [craftstudio]: http://craftstud.io
 [CSscriptingreference]: http://craftstudio.wikia.com/wiki/Scripting_Reference/Index
 [Daneelfunctionreference]: http://florent-poujol.fr/content/craftstudio/daneel/doc/
-[downloadlink]: http://florent-poujol.fr/content/craftstudio/daneel/craftstudio_daneel_v1.0.0.cspack
+[downloadlink]: http://florent-poujol.fr/content/craftstudio/daneel/craftstudio_daneel_v1.1.0.cspack
 
 
 # Daneel
@@ -71,7 +71,8 @@ Also :
 - Events
 - Hotkeys (fire events at the push of any button)
 
-You can add the public project `DaneelFramework` in CraftStudio and run the game to test some of these features for yourself.
+You can add the public project `Daneel` in CraftStudio and run the game to test some of these features for yourself.
+Note that the project is only visible in the `Community Projects` when my computer and my local server are up. Also, my IP changes frequently, so if you can't connect but find it in the `Community Projects`, you need to remove the project from your list then add it again.
 
 
 ## Installation 
