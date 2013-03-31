@@ -68,6 +68,16 @@ Daneel.defaultConfig = {
 
 Daneel.defaultConfig.__index = Daneel.defaultConfig
 
+Daneel.defaultConfig.assetTypes = {}
+for type, object in pairs(Daneel.defaultConfig.assetObjects) do
+    table.insert(Daneel.defaultConfig.assetTypes, type)
+end
+
+Daneel.defaultConfig.componentTypes = {}
+for type, object in pairs(Daneel.defaultConfig.componentObjects) do
+    table.insert(Daneel.defaultConfig.componentTypes, type)
+end
+
 
 ----------------------------------------------------------------------------------
 -- Utilities
@@ -526,115 +536,74 @@ end
 -- Initialization
 local luaDocStop = ""
 
--- called from DaneelBehavior Awake()
+
+-- Components
+for componentType, componentObject in pairs(Daneel.defaultConfig.componentObjects) do
+    -- GameObject.AddComponent helpers
+    -- ie : gameObject:AddModelRenderer()
+    if componentType ~= "Transform" and componentType ~= "ScriptedBehavior" then 
+        GameObject["Add"..componentType] = function(gameObject, params)
+            Daneel.Debug.StackTrace.BeginFunction("GameObject.Add"..componentType, gameObject, params)
+            local errorHead = "GameObject.Add"..componentType.."(gameObject[, params]) : "
+            Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+
+            local component = gameObject:AddComponent(componentType, params)
+            Daneel.Debug.StackTrace.EndFunction("GameObject.Add"..componentType, component)
+            return component
+        end
+    end
+
+    -- GameObject.SetComponent helpers
+    -- ie : gameObject:SetModelRenderer()
+    if componentType ~= "ScriptedBehavior" then 
+        GameObject["Set"..componentType] = function(gameObject, params)  
+            Daneel.Debug.StackTrace.BeginFunction("GameObject.Set"..componentType, gameObject, params)
+            local errorHead = "GameObject.Set"..componentType.."(gameObject, params) : "
+            Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+
+            local component = gameObject:SetComponent(componentType, params)
+            Daneel.Debug.StackTrace.EndFunction("GameObject.Set"..componentType)
+        end
+    end
+
+    componentObject["__tostring"] = function(component)
+        -- returns something like "ModelRenderer: 123456789"
+        -- component.inner is "?: [some ID]"
+        return componentType..tostring(component.inner):sub(2, 20) -- leave 2 as the starting index, only the transform has an extra space
+    end
+end -- end for componentObjects
+
+-- Assets
+for assetType, assetObject in pairs(Daneel.defaultConfig.assetObjects) do
+    assetObject["__tostring"] = function(asset)
+        -- print something like : "Model: 123456789"
+        -- asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
+        -- CraftStudioCommon.ProjectData. is 30 characters long
+        return tostring(asset.inner):sub(31, 60)
+    end
+end
+
+
+-- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
     setmetatable(Daneel.config, Daneel.defaultConfig)
 
-    Daneel.defaultConfig.assetTypes = {}
-    for key, value in pairs(Daneel.defaultConfig.assetObjects) do
-        table.insert(Daneel.defaultConfig.assetTypes, key)
-    end
-
-    Daneel.defaultConfig.componentTypes = {}
-    for key, value in pairs(Daneel.defaultConfig.componentObjects) do
-        table.insert(Daneel.defaultConfig.componentTypes, key)
-    end
-
     -- all objects (for use in GetType())
-    Daneel.defaultConfig.allObjects = {}
-    local allObjects = {Daneel.defaultConfig.assetObjects, Daneel.defaultConfig.componentObjects, Daneel.defaultConfig.craftStudioObjects, Daneel.defaultConfig.daneelObjects, Daneel.config.userObjects}
-    
-    for i, t in ipairs(allObjects) do
-        for key, value in pairs(t) do
-            Daneel.defaultConfig.allObjects[key] = value
-        end
-    end
+    Daneel.defaultConfig.allObjects = table.merge(
+        Daneel.defaultConfig.assetObjects,
+        Daneel.defaultConfig.componentObjects,
+        Daneel.defaultConfig.craftStudioObjects,
+        Daneel.defaultConfig.daneelObjects,
+        Daneel.config.userObjects
+    )
 
     -- scripts
-    for alias, path in pairs(Daneel.config.daneelScripts) do
-        if type(alias) == "number" and alias == math.floor(alias) then -- is integer
-            table.insert(Daneel.config.scripts, path)
-        else
-            Daneel.config.scripts[alias] = path
-        end
-    end
+    Daneel.config.scripts = table.merge(Daneel.config.scripts, Daneel.defaultConfig.daneelScripts)
 
-
-    -- Components
-
-    for componentType, componentObject in pairs(Daneel.config.componentObjects) do
-        -- GameObject helpers
-
-        -- AddComponent helpers
-        -- ie : gameObject:AddModelRenderer()
-        if componentType ~= "Transform" and componentType ~= "ScriptedBehavior" then 
-            GameObject["Add"..componentType] = function(gameObject, params)
-                Daneel.Debug.StackTrace.BeginFunction("GameObject.Add"..componentType, gameObject, params)
-                local errorHead = "GameObject.Add"..componentType.."(gameObject[, params]) : "
-                Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-
-                local component = gameObject:AddComponent(componentType, params)
-                Daneel.Debug.StackTrace.EndFunction("GameObject.Add"..componentType, component)
-                return component
-            end
-        end
-
-        -- SetComponent helpers
-        -- ie : gameObject:SetModelRenderer()
-        if componentType ~= "ScriptedBehavior" then 
-            GameObject["Set"..componentType] = function(gameObject, params)  
-                Daneel.Debug.StackTrace.BeginFunction("GameObject.Set"..componentType, gameObject, params)
-                local errorHead = "GameObject.Set"..componentType.."(gameObject, params) : "
-                Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-
-                local component = gameObject:SetComponent(componentType, params)
-                Daneel.Debug.StackTrace.EndFunction("GameObject.Set"..componentType)
-            end
-        end
-
-        -- Components getters-setter-tostring
-        if componentType ~= "ScriptedBehavior" then
-            -- Dynamic Getters
-            componentObject["__index"] = function(component, key) 
-                local funcName = "Get"..key:ucfirst()
-                
-                if componentObject[funcName] ~= nil then
-                    return componentObject[funcName](component)
-                elseif componentObject[key] ~= nil then
-                    return componentObject[key] -- have to return the function here, not the function return value !
-                end
-
-                if Component[funcName] ~= nil then
-                    return Component[funcName](component)
-                elseif Component[key] ~= nil then
-                    return Component[key] -- have to return the function here, not the function return value !
-                end
-                
-                return nil
-            end
-
-            -- Dynamic Setters
-            componentObject["__newindex"] = function(component, key, value)
-                local funcName = "Set"..key:ucfirst()
-                
-                if componentObject[funcName] ~= nil then
-                    return componentObject[funcName](component, value)
-                end
-                
-                return rawset(component, key, value)
-            end
-        end
-
-        componentObject["__tostring"] = function(component)
-            -- returns something like "ModelRenderer: 123456789"
-            -- component.inner is "?: [some ID]"
-            return componentType..tostring(component.inner):sub(2, 20) -- leave 2 as the starting index, only the transform ahave an extra space
-        end
-    end -- end for componentObjects
 
     -- Dynamic getters and setter on Scripts
     for i, path in pairs(Daneel.config.scripts) do
-        local script = CraftStudio.FindAsset(path, "Script") -- not sure if Asset.Get() already exists
+        local script = Asset.GetScript(path) -- not sure if Asset.Get() already exists
 
         if script ~= nil then
             -- Dynamic getters
@@ -682,9 +651,38 @@ function Daneel.Awake()
         end
     end
 
+    -- Components
+    for componentType, componentObject in pairs(Daneel.defaultConfig.componentObjects) do
+        -- Components getters-setter-tostring
+        if componentType ~= "ScriptedBehavior" then
+            -- Dynamic Getters
+            componentObject["__index"] = function(component, key) 
+                local funcName = "Get"..key:ucfirst()
+                
+                if componentObject[funcName] ~= nil then
+                    return componentObject[funcName](component)
+                elseif componentObject[key] ~= nil then
+                    return componentObject[key] -- have to return the function here, not the function return value !
+                end
+                
+                return nil
+            end
+
+            -- Dynamic Setters
+            componentObject["__newindex"] = function(component, key, value)
+                local funcName = "Set"..key:ucfirst()
+                
+                if componentObject[funcName] ~= nil then
+                    return componentObject[funcName](component, value)
+                end
+                
+                return rawset(component, key, value)
+            end
+        end
+    end
 
     -- Assets
-    for assetType, assetObject in pairs(Daneel.config.assetObjects) do
+    for assetType, assetObject in pairs(Daneel.defaultConfig.assetObjects) do
         -- Get helpers : GetModelRenderer() ...
         Asset["Get"..assetType] = function(assetName)
             Daneel.Debug.StackTrace.BeginFunction("Asset.Get"..assetType, assetName)
@@ -695,6 +693,7 @@ function Daneel.Awake()
             return asset
         end
 
+        -- Dynamic getters
         assetObject['__index'] = function(asset, key)
             local funcName = "Get"..key:ucfirst()
                           
@@ -717,15 +716,7 @@ function Daneel.Awake()
             
             return rawset(asset, key, value)
         end
-
-        assetObject["__tostring"] = function(asset)
-            -- print something like : "Model: 123456789"
-            -- asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
-            -- CraftStudioCommon.ProjectData. is 30 characters long
-            return tostring(asset.inner):sub(31, 60)
-        end
     end
-
 
     -- Awakening is over
     DANEEL_LOADED = true
