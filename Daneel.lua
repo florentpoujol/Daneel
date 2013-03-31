@@ -1,10 +1,7 @@
--- v1.1.0
--- 21/03/2013
 
 if Daneel == nil then
     Daneel = {}
 end
-
 
 
 ----------------------------------------------------------------------------------
@@ -79,12 +76,16 @@ Daneel.Utilities = {}
 
 --- Make sure that the case of the provided name is correct by checking it against the values in the provided set.
 -- @param name (string) The name to check the case of.
--- @param set (table) A table of values to check the name against.
+-- @param set (string or table) A single value or a table of values to check the name against.
 function Daneel.Utilities.CaseProof(name, set)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.CaseProof", name, set)
     local errorHead = "Daneel.Utilities.CaseProof(name, set) : " 
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
-    Daneel.Debug.CheckArgType(set, "set", "table", errorHead)
+    Daneel.Debug.CheckArgType(set, "set", {"string", "table"}, errorHead)
+
+    if type(set) == "string" then
+        set = {set}
+    end
 
     for i, item in ipairs(set) do
         if name:lower() == item:lower() then
@@ -249,6 +250,9 @@ end
 --- Alias for error() but print Daneel's stack trace first.
 -- @param message (string) The error message.
 function Daneel.Debug.PrintError(message)
+    -- PrintError() has become essentially useless since v1.1.0
+    -- Because error() now prints the stacktrace
+    -- the only difference now is that the error will not be triggered with PrintError() if debug is false.
     if Daneel.config.debug == true then
         error(message)
     end
