@@ -71,7 +71,7 @@ Also :
 - Events
 - Hotkeys (fire events at the push of any button)
 
-You can add the public project `Daneel` in CraftStudio and run the game to test some of these features for yourself.
+You can add the public project `Daneel` in CraftStudio and run the game to test some of these features for yourself and read some script examples.  
 Note that the project is only visible in the `Community Projects` when my computer and my local server are up. Also, my IP changes frequently, so if you can't connect but find it in the `Community Projects`, you need to remove the project from your list then add it again.
 
 
@@ -252,7 +252,7 @@ For instance, passing false instead of the gameObject's name with `gameObject:Ge
 
 ### Stack Trace
 
-When an error is triggered Daneel print a "stack trace" in the Runtime Report.
+When an error is triggered, Daneel print a "stack trace" in the Runtime Report.
 The stack trace nicely shows the history of function calls within the framework that lead to the error and display values received as argument.  
 It reads from top to bottom, the last function called -where the error occurred- at the bottom.  
 For instance, when trying to set the model of a ModelRenderer (to a Model that does not exists) via gameObject:Set() :
@@ -266,6 +266,8 @@ For instance, when trying to set the model of a ModelRenderer (to a Model that d
 ### Data types
 
 The function `Daneel.Debug.GetType(object)` may returns any of the built-in Lua types or the name of any of the objects introduced by CraftStudio or Daneel : GameObject, ModelRenderer, MapRenderer, Camera, Transform, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Ray, RaycastHit, Vector3, Plane or Quaternion.
+
+It can also return your own types as you define them in `Daneel.config.objects`. GetType() will return the type for tables that have the object table as a metatable.
 
 
 ## Raycasting
@@ -414,7 +416,7 @@ Arguments between square brackets are optional.
 * Daneel.Debug.CheckComponentType(componentType)
 * Daneel.Debug.CheckAssetType(assetType)
 
-* Daneel.Debug.GetType(object, getLuaTypeOnly)
+* Daneel.Debug.GetType(object[, getLuaTypeOnly])
 * error(message[, doNotPrintStacktrace])
 * Daneel.Debug.ToRawString(object)
 
@@ -521,8 +523,9 @@ Arguments between square brackets are optional.
 
 ### v1.1.0
 
-- Daneel.Debug.PrintError() is deprecated, the error() function now prints the StackTrace, unless told otherwise
 - Separated the user config from the "Daneel" script
 - Dynamic getters and setters works on assets too
+- Daneel.Debug.getType() may now also return user-defined types
+- The error() function now prints the StackTrace, unless told otherwise (Daneel.Debug.PrintError() is removed)
 - Default function names when registering a gameObject to an event are not prefixed by "On" anymore
-- Fixed several bugs
+- Fixed various bugs
