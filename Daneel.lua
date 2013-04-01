@@ -37,11 +37,7 @@ Daneel.defaultConfig = {
         Ray = Ray,
     },
     
-    daneelObjects = {
-        RaycastHit = RayCastHit,
-        Component = Component,
-        Asset = Asset,
-    },
+    daneelObjects = {}, -- filled in Daneel.Awake() below
 
     -- Rays
     -- list of the gameObjects to cast the ray against by default by ray:Cast()
@@ -224,6 +220,7 @@ end
 -- @return (string) The type.
 function Daneel.Debug.GetType(object, returnLuaTypeOnly)
     local errorHead = "Daneel.Debug.GetType(object[, returnLuaTypeOnly]) : "
+    -- DO NOT use CheckArgType here since it uses itself GetType() => overflow
     local argType = type(returnLuaTypeOnly)
     if arType ~= nil and argType ~= "boolean" then
         error(errorHead.."Argument 'returnLuaTypeOnly' is of type '"..argType.."' with value '"..tostring(returnLuaTypeOnly).."' instead of 'boolean'.")
@@ -246,7 +243,7 @@ function Daneel.Debug.GetType(object, returnLuaTypeOnly)
             end
 
             -- other types
-            for type, object in pairs(Daneel.config.allObjects) do
+            for type, object in pairs(Daneel.config.objects) do
                 if mt == object then
                     return type
                 end
@@ -577,13 +574,17 @@ end
 function Daneel.Awake()
     setmetatable(Daneel.config, Daneel.defaultConfig)
 
+    Daneel.defaultConfig.daneelObjects = {
+        RaycastHit = RayCastHit,
+    }
+
     -- all objects (for use in GetType())
-    Daneel.defaultConfig.allObjects = table.merge(
+    Daneel.config.objects = table.merge(
         Daneel.defaultConfig.assetObjects,
         Daneel.defaultConfig.componentObjects,
         Daneel.defaultConfig.craftStudioObjects,
         Daneel.defaultConfig.daneelObjects,
-        Daneel.config.userObjects
+        Daneel.config.objects
     )
 
     -- scripts
