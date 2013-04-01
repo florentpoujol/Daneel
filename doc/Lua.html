@@ -41,22 +41,17 @@
 <h1>File <code>Lua.lua</code></h1>
 
 
-
-
-
-
-
 <h2>Functions</h2>
 <table class="function_list">
 
 	<tr>
-	<td class="name" nowrap><a href="#math.isinteger">math.isinteger</a>&nbsp;(number, strict)</td>
-	<td class="summary">Tell wether the provided number is an integer.</td>
+	<td class="name" nowrap><a href="#math.isinteger">math.isinteger</a>&nbsp;(number, errorIfValueIsNotNumber)</td>
+	<td class="summary">Tell whether the provided number is an integer.</td>
 	</tr>
 
 	<tr>
 	<td class="name" nowrap><a href="#string.isoneof">string.isoneof</a>&nbsp;(s, t, ignoreCase)</td>
-	<td class="summary">Tell wether the provided table contains the provided string.</td>
+	<td class="summary">Tell whether the provided table contains the provided string.</td>
 	</tr>
 
 	<tr>
@@ -70,7 +65,7 @@
 	</tr>
 
 	<tr>
-	<td class="name" nowrap><a href="#table.combine">table.combine</a>&nbsp;(keys, values, strict)</td>
+	<td class="name" nowrap><a href="#table.combine">table.combine</a>&nbsp;(keys, values, returnFalseIfNotSameLength)</td>
 	<td class="summary">Create an associative table with the provided keys and values tables.</td>
 	</tr>
 
@@ -81,12 +76,12 @@
 
 	<tr>
 	<td class="name" nowrap><a href="#table.containskey">table.containskey</a>&nbsp;(t, p_key)</td>
-	<td class="summary">Tells wether the provided key is found within the provided table.</td>
+	<td class="summary">Tell whether the provided key is found within the provided table.</td>
 	</tr>
 
 	<tr>
 	<td class="name" nowrap><a href="#table.containsvalue">table.containsvalue</a>&nbsp;(t, p_value, ignoreCase)</td>
-	<td class="summary">Tells wether the provided value is found within the provided table.</td>
+	<td class="summary">Tell whether the provided value is found within the provided table.</td>
 	</tr>
 
 	<tr>
@@ -157,9 +152,9 @@
 
 
 
-<dt><a name="math.isinteger"></a><strong>math.isinteger</strong>&nbsp;(number, strict)</dt>
+<dt><a name="math.isinteger"></a><strong>math.isinteger</strong>&nbsp;(number, errorIfValueIsNotNumber)</dt>
 <dd>
-Tell wether the provided number is an integer.
+Tell whether the provided number is an integer.
 
 
 <h3>Parameters:</h3>
@@ -170,7 +165,7 @@ Tell wether the provided number is an integer.
 	</li>
 	
 	<li>
-	  <code><em>strict</em></code>: [optionnal default=false] (boolean) If true, the function returns an error when the 'number' argument is not a number.
+	  <code><em>errorIfValueIsNotNumber</em></code>: [optionnal default=false] (boolean) If true, the function returns an error when the 'number' argument is not a number.
 	</li>
 	
 </ul>
@@ -189,7 +184,7 @@ Tell wether the provided number is an integer.
 
 <dt><a name="string.isoneof"></a><strong>string.isoneof</strong>&nbsp;(s, t, ignoreCase)</dt>
 <dd>
-Tell wether the provided table contains the provided string. Alias of table.containsvalue().
+Tell whether the provided table contains the provided string. Alias of table.containsvalue().
 
 
 <h3>Parameters:</h3>
@@ -282,7 +277,7 @@ Turn the first letter uppercase.
 
 
 
-<dt><a name="table.combine"></a><strong>table.combine</strong>&nbsp;(keys, values, strict)</dt>
+<dt><a name="table.combine"></a><strong>table.combine</strong>&nbsp;(keys, values, returnFalseIfNotSameLength)</dt>
 <dd>
 Create an associative table with the provided keys and values tables.
 
@@ -299,7 +294,7 @@ Create an associative table with the provided keys and values tables.
 	</li>
 	
 	<li>
-	  <code><em>strict</em></code>: [optional default=false] (boolean) If true, the function returns false if the keys and values tables have different length.
+	  <code><em>returnFalseIfNotSameLength</em></code>: [optional default=false] (boolean) If true, the function returns false if the keys and values tables have different length.
 	</li>
 	
 </ul>
@@ -354,7 +349,7 @@ Compare table1 and table2. Returns true if they have the exact same keys which h
 
 <dt><a name="table.containskey"></a><strong>table.containskey</strong>&nbsp;(t, p_key)</dt>
 <dd>
-Tells wether the provided key is found within the provided table.
+Tell whether the provided key is found within the provided table.
 
 
 <h3>Parameters:</h3>
@@ -387,7 +382,7 @@ Tells wether the provided key is found within the provided table.
 
 <dt><a name="table.containsvalue"></a><strong>table.containsvalue</strong>&nbsp;(t, p_value, ignoreCase)</dt>
 <dd>
-Tells wether the provided value is found within the provided table.
+Tell whether the provided value is found within the provided table.
 
 
 <h3>Parameters:</h3>
@@ -696,7 +691,7 @@ Remove the provided value from the provided table. If the index of the value is 
 	</li>
 	
 	<li>
-	  <code><em>singleRemove</em></code>: [optional default=false] (boolean) Tell wether to remove all occurences of the value or just the first one.
+	  <code><em>singleRemove</em></code>: [optional default=false] (boolean) Tell whether to remove all occurences of the value or just the first one.
 	</li>
 	
 </ul>

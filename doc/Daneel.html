@@ -71,11 +71,6 @@
 	</tr>
 
 	<tr>
-	<td class="name" nowrap><a href="#Daneel.Debug.PrintError">Daneel.Debug.PrintError</a>&nbsp;(message)</td>
-	<td class="summary">Alias for error() but print Daneel's stack trace first.</td>
-	</tr>
-
-	<tr>
 	<td class="name" nowrap><a href="#Daneel.Debug.StackTrace.BeginFunction">Daneel.Debug.StackTrace.BeginFunction</a>&nbsp;(functionName, ...)</td>
 	<td class="summary">Register a function input in the stack trace.</td>
 	</tr>
@@ -113,6 +108,11 @@
 	<tr>
 	<td class="name" nowrap><a href="#Daneel.Utilities.CaseProof">Daneel.Utilities.CaseProof</a>&nbsp;(name, set)</td>
 	<td class="summary">Make sure that the case of the provided name is correct by checking it against the values in the provided set.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#error">error</a>&nbsp;(message, doNotPrintStacktrace)</td>
+	<td class="summary">Print the stackTrace unless told otherwise then the provided error in the console </td>
 	</tr>
 
 </table>
@@ -184,7 +184,7 @@ Check the value of 'assetType', correct its case or convert it to string and thr
 <ul>
 	
 	<li>
-	  <code><em>assetType</em></code>: (string, Script, Model, ModelAnimation, Map, TileSet, Scene or Sound) The asset type as a string or the asset object.
+	  <code><em>assetType</em></code>: (string) The asset type as a string.
 	</li>
 	
 </ul>
@@ -213,7 +213,7 @@ Check the value of 'componentType', correct its case or convert it to string and
 <ul>
 	
 	<li>
-	  <code><em>componentType</em></code>: (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform) The component type as a string or the asset object.
+	  <code><em>componentType</em></code>: (string) The component type as a string.
 	</li>
 	
 </ul>
@@ -300,32 +300,6 @@ Return the Lua or CraftStudio type of the provided argument. "CraftStudio types"
 
 <h3>Return value:</h3>
 <ul>(string) The type.</ul>
-
-
-
-</dd>
-
-
-
-
-<dt><a name="Daneel.Debug.PrintError"></a><strong>Daneel.Debug.PrintError</strong>&nbsp;(message)</dt>
-<dd>
-Alias for error() but print Daneel's stack trace first.
-
-
-<h3>Parameters:</h3>
-<ul>
-	
-	<li>
-	  <code><em>message</em></code>: (string) The error message.
-	</li>
-	
-</ul>
-
-
-
-
-
 
 
 
@@ -474,7 +448,7 @@ Make the provided function listen to the provided event. The function will be ca
 	</li>
 	
 	<li>
-	  <code><em>functionName</em></code>: [optional default="On[eventName]"] (string) If 'p_function' is a gameObject name or instance, the name of the function to send the message to.
+	  <code><em>functionName</em></code>: [optional default="[eventName]"] (string) If 'p_function' is a gameObject name or instance, the name of the function to send the message to.
 	</li>
 	
 	<li>
@@ -538,7 +512,37 @@ Make sure that the case of the provided name is correct by checking it against t
 	</li>
 	
 	<li>
-	  <code><em>set</em></code>: (table) A table of values to check the name against.
+	  <code><em>set</em></code>: (string or table) A single value or a table of values to check the name against.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="error"></a><strong>error</strong>&nbsp;(message, doNotPrintStacktrace)</dt>
+<dd>
+Print the stackTrace unless told otherwise then the provided error in the console
+
+
+<h3>Parameters:</h3>
+<ul>
+	
+	<li>
+	  <code><em>message</em></code>: (string) The error message.
+	</li>
+	
+	<li>
+	  <code><em>doNotPrintStacktrace</em></code>: [optional default=false] (boolean) Set to true to prevent the stacktrace to be printed before the error message.
 	</li>
 	
 </ul>
