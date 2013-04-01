@@ -262,7 +262,7 @@ function table.printmetatable(t)
     
     local tableString = tostring(mt)
     local rawTableString = Daneel.Debug.ToRawString(mt)
-    if tableString ~= RawTableString then
+    if tableString ~= rawTableString then
         tableString = tableString.." / "..rawTableString
     end
     print("~~~~~ table.printmetatable("..tableString..") ~~~~~ Start ~~~~~")
