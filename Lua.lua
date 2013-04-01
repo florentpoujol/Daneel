@@ -221,7 +221,7 @@ function table.print(t)
     
     local tableString = tostring(t)
     local rawTableString = Daneel.Debug.ToRawString(t)
-    if tableString ~= RawTableString then
+    if tableString ~= rawTableString then
         tableString = tableString.." / "..rawTableString
     end
     print("~~~~~ table.print("..tableString..") ~~~~~ Start ~~~~~")
