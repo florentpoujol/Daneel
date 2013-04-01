@@ -22,6 +22,15 @@ Daneel.config = {
     },
 
 
+    -- Your custom objects and their type returned by Daneel.Debug.GetType()
+    -- GetType() will return the type on tables that have the object as metatable
+    -- Ie :
+    -- type (string) = Object (table)
+    objects = {
+
+    },
+
+
     -- Set to true to enable the framework's advanced debugging capabilities.
     -- Set to false when you ship the game.
     debug = false,
