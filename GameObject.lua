@@ -7,14 +7,19 @@ end
 
 -- Dynamic getters
 function GameObject.__index(gameObject, key)
-    if type(GameObject[key]) ~= "nil" then
+    if GameObject[key] ~= nil then
         return GameObject[key]
     end
 
     -- cache the component intances
     if key:isoneof({"modelRenderer", "mapRenderer", "camera"}) then
-        rawset(gameObject, key, gameObject:GetComponent(key))
-        return gameObject[key]
+        local component = gameObject:GetComponent(key)
+        if component ~= nil then
+            rawset(gameObject, key, component)
+            return component
+        else
+            return nil
+        end
     end
 
     local ucKey = key:ucfirst()
