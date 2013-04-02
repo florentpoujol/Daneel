@@ -198,9 +198,7 @@ With `gameObject:Set()`, you can easily create new components then optionally in
         }, -- will create a modelRenderer if it does not yet exists, then set its model
 
         camera = {}, -- will create a camera component then do nothing, or just do nothing
-
-        scriptedBehavior = "Script name", -- will create a ScriptedBehavior with the "Script name" script if it does not yet exists
-        
+      
         scriptedBehaviors = {
             "script name 2",
             "script name 3", -- will create those ScriptedBehaviors if they don't yet exist
@@ -233,8 +231,7 @@ You can also mass-set existing components on gameObjects via `gameObject:SetComp
 
 **ScriptedBehaviors**
 
-If you want to add just one scriptedBehavior, you can set the variable `scriptedBehavior` with the script name or asset as value.  
-If you want to add one or more scriptedBehaviors and maybe initialize them or set existing ScriptedBehaviors, set the variable `scriptedBehaviors` (with an "s" at the end) with a table as value.  
+To add one or more scriptedBehaviors and maybe initialize them or set existing ScriptedBehaviors, set the variable `scriptedBehaviors` with a table as value.  
 This table may contains the script name or asset of new ScriptedBehaviors as value (if you don't want to initialize them) or the script name or asset as key and the parameters table as value (for new or existing ScriptedBehaviors). Existing ScriptedBehaviors may also be set via their name or alias.
 
 
