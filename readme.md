@@ -406,6 +406,10 @@ Arguments between square brackets are optional.
 * Component.Set(component, params)
 * component:Destroy()
 
+### Daneel.config
+
+- Daneel.config.AddScripts(scripts)
+
 ### Daneel.Debug
 
 * Daneel.Debug.CheckArgType(argument, argumentName, expectArgumentType[, errorHead, errorEnd])
@@ -517,6 +521,10 @@ Arguments between square brackets are optional.
 
 
 ## Changelog
+
+### v1.2.0
+
+- Added Daneel.config.AddScript()
 
 ### v1.1.0
 
