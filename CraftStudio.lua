@@ -171,7 +171,11 @@ function MapRenderer.SetMap(mapRenderer, mapNameOrAsset, keepTileSet)
         end
     end
 
-    OriginalSetMap(mapRenderer, map, keepTileSet)
+    if keepTileSet == true then
+        OriginalSetMap(mapRenderer, map, true)
+    else
+        OriginalSetMap(mapRenderer, map)
+    end
     Daneel.Debug.StackTrace.EndFunction("MapRenderer.SetMap")
 end
 
