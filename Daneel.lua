@@ -550,6 +550,73 @@ end
 
 
 ----------------------------------------------------------------------------------
+-- Lang
+
+Daneel.Lang = { lines = {} }
+
+--- Get the localized line identified by the provided key.
+-- @param key (string) The language key.
+-- @param replacements [optional] (table or string) The placeholders and their replacements or just one replacement for the placeholder ":1"
+-- @return (string) The line.
+function Daneel.Lang.GetLine(key, replacements)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Lang.GetLine", key, replacements)
+    local errorHead = "Daneel.Lang.GetLine(key[, replacements]) :"
+    Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
+    
+    local language = Daneel.config.currentLanguage
+    local keys = key:explode(".")
+    -- if language not found in beginning of key
+    if not key[1]:isoneof(Daneel.config.languages)
+        --key = language.."."..key
+        table.insert(keys, 1, language)
+    end
+
+    --local keys = key:explode(".")
+    -- voir i besoin de verifier si keys est une table
+    local errorKey = ""
+    local lines = Daneel.Lang.lines
+
+    for i, key in ipairs(keys) do
+        errorKey = errorKey..key
+        if lines[key] == nil then
+            error(errorHead.."Localization key '"..errorKey.."' was not found.")
+        end
+        lines = lines[key]
+        errorKey = errorKey.."."
+    end
+
+    local line = lines
+
+    -- lines should be the searched string by now
+    if type(line) ~= "strig" then
+        error(errorHead.."Localization key '"..key.."' does not lead to a string but to : '"..tostring(line).."'.")
+    end
+
+    -- process replacements
+    if replacements ~= nil then
+        Daneel.Debug.CheckOptionalArgType(replacements, "replacements", {"string", "table"}, errorHead)
+        if type(replacements) == "string" then
+            replacements = { replacements }
+        end
+
+        for placeholder, replacement in pairs(replacements) do
+            line = line:gsub(":"..placeholder, replacement)
+        end
+    end
+
+    return line
+end
+
+--- Alias for Daneel.Lang.GetLine()
+-- @param key (string) The language key.
+-- @param replacements [optional] (table or string) The placeholders and their replacements or just one replacement for the placeholder ":1"
+-- @return (string) The line.
+function line(key, replacements)
+    return Daneel.Lang.GetLine(key, replacements)
+end
+
+
+----------------------------------------------------------------------------------
 -- Initialization
 local luaDocStop = ""
 
@@ -705,6 +772,9 @@ function Daneel.Awake()
             return rawset(asset, key, value)
         end
     end
+
+    -- Lang
+    Daneel.Lang.lines = table.copy(DaneelLocalizationLines)
 
     -- Awakening is over
     DANEEL_LOADED = true

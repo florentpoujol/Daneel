@@ -31,6 +31,10 @@ Daneel.config = {
     },
 
 
+    -- Game's current and default language
+    currentLanguage = "English",
+
+
     -- Set to true to enable the framework's advanced debugging capabilities.
     -- Set to false when you ship the game.
     debug = false,
