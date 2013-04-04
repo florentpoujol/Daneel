@@ -525,6 +525,7 @@ Arguments between square brackets are optional.
 ### v1.2.0
 
 - Added Daneel.config.AddScript()
+- Fixed SetMap that would throw an exception when keepTileSet was false or nil
 
 ### v1.1.0
 
