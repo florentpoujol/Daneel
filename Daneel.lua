@@ -134,10 +134,10 @@ function Daneel.Utilities.CaseProof(name, set)
     return name
 end
 
---- Replace placeholders in the provided string with the provided replacements
--- @param string (string) The string
--- @param replacements (table) The placeholders and their replacements
--- @return (string) The string
+--- Replace placeholders in the provided string with their corresponding provided replacements.
+-- @param string (string) The string.
+-- @param replacements (table) The placeholders and their replacements ( { placeholder = "replacement", ... } ).
+-- @return (string) The string.
 function Daneel.Utilities.ReplaceInString(string, replacements)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.ReplaceInString", string, replacements)
     local errorHead = "Daneel.Utilities.ReplaceInString(string, replacements) : "
@@ -572,21 +572,19 @@ Daneel.Lang = { lines = {} }
 
 --- Get the localized line identified by the provided key.
 -- @param key (string) The language key.
--- @param replacements [optional] (table) The placeholders and their replacements
+-- @param replacements [optional] (table) The placeholders and their replacements.
 -- @return (string) The line.
 function Daneel.Lang.GetLine(key, replacements)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Lang.GetLine", key, replacements)
     local errorHead = "Daneel.Lang.GetLine(key[, replacements]) :"
     Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
-    
-    local language = Daneel.config.currentLanguage
+
     local keys = key:split(".")
-    -- if language not found in beginning of key
+
     if not keys[1]:isoneof(Daneel.config.languages) then
-        table.insert(keys, 1, language)
+        table.insert(keys, 1, Daneel.config.currentLanguage)
     end
 
-    -- voir i besoin de verifier si keys est une table
     local errorKey = ""
     local lines = Daneel.Lang.lines
 
@@ -599,10 +597,9 @@ function Daneel.Lang.GetLine(key, replacements)
         errorKey = errorKey.."."
     end
 
+    -- line should be the searched string by now
     local line = lines
-
-    -- lines should be the searched string by now
-    if type(line) ~= "strig" then
+    if type(line) ~= "string" then
         error(errorHead.."Localization key '"..key.."' does not lead to a string but to : '"..tostring(line).."'.")
     end
 
@@ -614,9 +611,10 @@ function Daneel.Lang.GetLine(key, replacements)
     return line
 end
 
---- Alias for Daneel.Lang.GetLine()
+--- Get the localized line identified by the provided key.
+-- Alias for Daneel.Lang.GetLine().
 -- @param key (string) The language key.
--- @param replacements [optional] (table) The placeholders and their replacements
+-- @param replacements [optional] (table) The placeholders and their replacements.
 -- @return (string) The line.
 function line(key, replacements)
     return Daneel.Lang.GetLine(key, replacements)
@@ -780,10 +778,10 @@ function Daneel.Awake()
         end
     end
 
-    -- Lang
+    -- Languages
     for i, language in ipairs(Daneel.config.languages) do
         if _G[language] ~= nil then
-            Daneel.Lang.lines[language] = _G[language]
+            Daneel.Lang.lines[language] = _G[language]()
         end
     end
 
