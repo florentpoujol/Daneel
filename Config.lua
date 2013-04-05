@@ -31,8 +31,13 @@ Daneel.config = {
     },
 
 
+    -- The languages supported by the game
+    languages = {
+        "english",
+    },
+    
     -- Game's current and default language
-    currentLanguage = "English",
+    currentLanguage = "english",
 
 
     -- Set to true to enable the framework's advanced debugging capabilities.
