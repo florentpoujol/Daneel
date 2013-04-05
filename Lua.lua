@@ -97,6 +97,9 @@ function string.split(s, delimiter)
                 chunk = chunk..char
             end
         end
+        if #chunk > 0 then
+            table.insert(chunks, chunk)
+        end
     end
     Daneel.Debug.StackTrace.EndFunction()
     return chunks
