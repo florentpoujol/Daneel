@@ -134,6 +134,22 @@ function Daneel.Utilities.CaseProof(name, set)
     return name
 end
 
+--- Replace placeholders in the provided string with the provided replacements
+-- @param string (string) The string
+-- @param replacements (table) The placeholders and their replacements
+-- @return (string) The string
+function Daneel.Utilities.ReplaceInString(string, replacements)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.ReplaceInString", string, replacements)
+    local errorHead = "Daneel.Utilities.ReplaceInString(string, replacements) : "
+    Daneel.Debug.CheckArgType(string, "string", "string", errorHead)
+    Daneel.Debug.CheckArgType(replacements, "replacements", "table", errorHead)
+    for placeholder, replacement in pairs(replacements) do
+        string = string:gsub(":"..placeholder, replacement)
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+    return string
+end
+
 
 ----------------------------------------------------------------------------------
 -- Debug
@@ -556,7 +572,7 @@ Daneel.Lang = { lines = {} }
 
 --- Get the localized line identified by the provided key.
 -- @param key (string) The language key.
--- @param replacements [optional] (table or string) The placeholders and their replacements or just one replacement for the placeholder ":1"
+-- @param replacements [optional] (table) The placeholders and their replacements
 -- @return (string) The line.
 function Daneel.Lang.GetLine(key, replacements)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Lang.GetLine", key, replacements)
@@ -594,14 +610,7 @@ function Daneel.Lang.GetLine(key, replacements)
 
     -- process replacements
     if replacements ~= nil then
-        Daneel.Debug.CheckOptionalArgType(replacements, "replacements", {"string", "table"}, errorHead)
-        if type(replacements) == "string" then
-            replacements = { replacements }
-        end
-
-        for placeholder, replacement in pairs(replacements) do
-            line = line:gsub(":"..placeholder, replacement)
-        end
+        line = Daneel.Utilities.ReplaceInString(line, replacements)
     end
 
     return line
@@ -609,7 +618,7 @@ end
 
 --- Alias for Daneel.Lang.GetLine()
 -- @param key (string) The language key.
--- @param replacements [optional] (table or string) The placeholders and their replacements or just one replacement for the placeholder ":1"
+-- @param replacements [optional] (table) The placeholders and their replacements
 -- @return (string) The line.
 function line(key, replacements)
     return Daneel.Lang.GetLine(key, replacements)
