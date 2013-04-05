@@ -74,37 +74,6 @@ for type, object in pairs(Daneel.defaultConfig.componentObjects) do
     table.insert(Daneel.defaultConfig.componentTypes, type)
 end
 
---- Add a script to Daneel.config.scripts and Init it
--- This is usefull when Daneel is aleady loaded.
--- @param script (string or table) The script path or a table with several script paths or alias/scriptPth
-function Daneel.defaultConfig.AddScripts(scripts)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.config.AddScripts", scripts)
-    local errorHead = "Daneel.config.AddScripts(scripts) : "
-    Daneel.Debug.CheckArgType(scripts, "scripts", {"string", "table"}, errorHead)
-    
-    if type(scripts) == "string" then
-        scripts = {scripts}
-    end
-
-    for alias, path in pairs(scripts) do
-        local script = Asset.Get(path, "Script") -- Asset.Get() helpers does not yet exists
-        
-        if script ~= nil then
-            Script.Init(script)
-
-            if type(alias) == "number" then
-                table.insert(Daneel.config.scripts, path)
-            else
-                Daneel.config.scripts[alias] = path
-            end
-        else
-            print("WARNING : Daneel.config.AddScripts() : script path '"..path.."' with alias or index '"..alias.."' is not a valid script path.")
-        end
-    end
-
-    Daneel.Debug.StackTrace.EndFunction()
-end
-
 
 ----------------------------------------------------------------------------------
 -- Utilities

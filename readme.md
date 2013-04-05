@@ -599,7 +599,7 @@ Arguments between square brackets are optional.
 
 ### v1.2.0
 
-- Added Daneel.config.AddScript()
+- Added localization capablities ( Daneel.Lang.GetLine(key[, replacement]) )
 - Added Daneel.Utilities.ReplaceInString(string, replacement)
 - Fixed SetMap that would throw an exception when keepTileSet was false or nil
 
