@@ -591,7 +591,9 @@ function Daneel.Lang.GetLine(key, replacements)
     for i, key in ipairs(keys) do
         errorKey = errorKey..key
         if lines[key] == nil then
-            error(errorHead.."Localization key '"..errorKey.."' was not found.")
+            print(errorHead.."Localization key '"..errorKey.."' was not found.")
+            Daneel.Debug.StackTrace.EndFunction()
+            return nil
         end
         lines = lines[key]
         errorKey = errorKey.."."
@@ -608,6 +610,7 @@ function Daneel.Lang.GetLine(key, replacements)
         line = Daneel.Utilities.ReplaceInString(line, replacements)
     end
 
+    Daneel.Debug.StackTrace.EndFunction()
     return line
 end
 
