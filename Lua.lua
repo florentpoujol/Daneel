@@ -74,10 +74,10 @@ function string.ucfirst(s)
 end
 
 --- Split the provided string in several chunks, using the provided delimiter.
--- If the delimiter is not found, returns a table containing only the whole string.
--- @param s (string) The string
--- @param delimiter (string) The delimiter (only one character long)
--- @return (table) The chunks
+-- If the string does not contain the delimiter, it returns a table containing only the whole string.
+-- @param s (string) The string.
+-- @param delimiter (string) The delimiter (must be a single character long).
+-- @return (table) The chunks.
 function string.split(s, delimiter)
     Daneel.Debug.StackTrace.BeginFunction("string.split", s, delimiter)
     local errorHead = "string.split(string, delimiter) : "
