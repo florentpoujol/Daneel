@@ -599,8 +599,9 @@ Arguments between square brackets are optional.
 
 ### v1.2.0
 
-- Added localization capablities ( Daneel.Lang.GetLine(key[, replacement]) )
-- Added Daneel.Utilities.ReplaceInString(string, replacement)
+- Added localization capablities (`Daneel.Lang.GetLine(key[, replacement])`)
+- Added `Daneel.Utilities.ReplaceInString(string, replacement)`
+- Added `string.slpit(string, delimiter)`
 - Fixed SetMap that would throw an exception when keepTileSet was false or nil
 
 
