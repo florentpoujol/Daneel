@@ -781,7 +781,11 @@ function Daneel.Awake()
     end
 
     -- Lang
-    Daneel.Lang.lines = table.copy(DaneelLocalizationLines)
+    for i, language in ipairs(Daneel.config.languages) do
+        if _G[language] ~= nil then
+            Daneel.Lang.lines[language] = _G[language]
+        end
+    end
 
     -- Awakening is over
     DANEEL_LOADED = true
