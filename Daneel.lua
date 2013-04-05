@@ -38,6 +38,11 @@ Daneel.defaultConfig = {
     },
     
     daneelObjects = {}, -- filled in Daneel.Awake() below
+    guiObjects = {}, -- idem
+
+    guiElementsWithMapRenderer = {
+        "Text",
+    },
 
     -- Rays
     -- list of the gameObjects to cast the ray against by default by ray:Cast()
@@ -594,99 +599,6 @@ end
 
 
 ----------------------------------------------------------------------------------
--- GUI
-
-Daneel.GUI = { elements = {} }
-
---- Get a GUIText of the specified name
--- @param name (string) The name 
--- @return (GUIText) The GUIText or nil if none is found
-function Daneel.GUI.Get(type, name)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Get", name)
-    Daneel.Debug.CheckArgType(type, "type", "string", "Daneel.GUI.Get(name) : ")
-    Daneel.Debug.CheckArgType(name, "name", "string", "Daneel.GUI.Get(name) : ")
-    Daneel.Debug.StackTrace.EndFunction()
-    return Daneel.GUI.elements[type][name]
-end
-
--- Destroy the Daneel.GUI.Text
--- @param guiText (Daneel.GUI.Text) The Daneel.GUI.Text
-function Daneel.GUI.Destroy(element)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Destroy", element)
-    local errorHead = "Daneel.GUI.Destroy(element) : "
-    --Daneel.Debug.CheckArgType(element, "element", {"GUIText", "WorldText"}, errorHead)
-    element.gameObject:Destroy()
-    Daneel.Debug.StackTrace.EndFunction()
-end
-
-Daneel.GUI.Common = {} -- common function for GUI Elements
-
--- Set the element's scale which is actually the gameObject's local scale.
--- @param element () The element.
--- @param scale (number or Vector3) The local scale.
-function Daneel.GUI.Common.SetScale(element, scale)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetScale", element)
-    local errorHead = "Daneel.GUI.Common.SetScale(element[, scale]) : "
-    -- Daneel.Debug.CheckArgType(element, "element", element.type, errorHead)
-    Daneel.Debug.CheckArgType(scale, "scale", {"number", "Vector3"}, errorHead)
-    if type(scale) == "number" then
-        scale = Vector3:New(scale)
-    end
-    element.gameObject.transform.localScale = scale
-    Daneel.Debug.StackTrace.EndFunction()
-end
-
--- Get the Text's scale.
--- @param element () The element.
--- @param returnAsNumber [optional default=false] (boolean) Return the scale as a number instead of a Vector3.
--- @return (Vector3 or number) The scale.
-function Daneel.GUI.Common.GetScale(element, returnAsNumber)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetScale", element)
-    local errorHead = "Daneel.GUI.Common.GetScale(element[, returnAsNumber]) : "
-    -- Daneel.Debug.CheckArgType(element, "element", element.type, errorHead)
-    Daneel.Debug.CheckOptionalArgType(returnAsNumber, "returnAsNumber", "boolean", errorHead)
-    local scale = element.gameObject.transform.localScale
-    if returnAsNumber == true then
-        scale = scale.x
-    end
-    Daneel.Debug.StackTrace.EndFunction()
-    return scale
-end
-
-
--- Set the Text's opacity which is actually the mapRenderer's opacity.
--- @param element (GUIText or WorldText) The element.
--- @param opacity (number) The opacity (between 0.0 and 1.0).
-function Daneel.GUI.Common.SetOpacity(element, opacity)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetOpacity", element)
-    local errorHead = "Daneel.GUI.Common.SetOpacity(element[, opacity]) : "
-    -- Daneel.Debug.CheckArgType(element, "element", element.type, errorHead)
-    Daneel.Debug.CheckArgType(opacity, "opacity", "number", errorHead)
-    local component = "modelRenderer"
-    if element.type:isoneof(Giskard.config.mapElements) then
-        component = "mapRenderer"
-    end
-    element.gameObject[component].opacity = math.clamp(opacity, 0.0, 1.0)
-    Daneel.Debug.StackTrace.EndFunction()
-end
-
--- Get the GUIText's opacity which is actually the mapRenderer's opacity.
--- @param element (GUIText or WorldText) The element
--- @return (number) The opacity (between 0.0 and 1.0)
-function Daneel.GUI.Common.GetOpacity(element)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetOpacity", element)
-    local errorHead = "Daneel.GUI.Common.GetOpacity(element) : "
-    -- Daneel.Debug.CheckArgType(element, "element", element.type, errorHead)
-    Daneel.Debug.StackTrace.EndFunction()
-    local component = "modelRenderer"
-    if element.type:isoneof(Giskard.config.mapElements) then
-        component = "mapRenderer"
-    end
-    return element.gameObject[component].opacity
-end
-
-
-----------------------------------------------------------------------------------
 -- Initialization
 local luaDocStop = ""
 
@@ -744,7 +656,18 @@ function Daneel.Awake()
 
     Daneel.defaultConfig.daneelObjects = {
         RaycastHit = RayCastHit,
+        Vector2 = Vector2,
+        Rect = Rect,
     }
+
+    Daneel.defaultConfig.guiObjects = {
+        Daneel.GUI.Text = Daneel.GUI.Text,
+    }
+
+    Daneel.defaultConfig.guiTypes = {}
+    for type, object in pairs(Daneel.defaultConfig.guiObjects) do
+        table.insert(Daneel.defaultConfig.guiTypes, type)
+    end
 
     -- all objects (for use in GetType())
     Daneel.config.objects = table.merge(
@@ -752,6 +675,7 @@ function Daneel.Awake()
         Daneel.defaultConfig.componentObjects,
         Daneel.defaultConfig.craftStudioObjects,
         Daneel.defaultConfig.daneelObjects,
+        Daneel.defaultConfig.guiElements,
         Daneel.config.objects
     )
 
