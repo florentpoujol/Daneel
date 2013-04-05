@@ -73,6 +73,35 @@ function string.ucfirst(s)
     return s
 end
 
+--- Split the provided string in several chunks, using the provided delimiter.
+-- If the delimiter is not found, returns a table containing only the whole string.
+-- @param s (string) The string
+-- @param delimiter (string) The delimiter (only one character long)
+-- @return (table) The chunks
+function string.split(s, delimiter)
+    Daneel.Debug.StackTrace.BeginFunction("string.split", s, delimiter)
+    local errorHead = "string.split(string, delimiter) : "
+    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
+    Daneel.Debug.CheckArgType(delimiter, "delimiter", "string", errorHead)
+    local chunks = {}
+    if s:find(delimiter) == nil then
+        chunks = {s}
+    else
+        local chunk = ""
+        s = s:totable()
+        for i, char in ipairs(s) do
+            if char == delimiter then
+                table.insert(chunks, chunk)
+                chunk = ""
+            else
+                chunk = chunk..char
+            end
+        end
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+    return chunks
+end
+
 
 ----------------------------------------------------------------------------------
 -- table

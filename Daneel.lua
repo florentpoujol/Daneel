@@ -580,14 +580,12 @@ function Daneel.Lang.GetLine(key, replacements)
     Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
     
     local language = Daneel.config.currentLanguage
-    local keys = key:explode(".")
+    local keys = key:split(".")
     -- if language not found in beginning of key
-    if not key[1]:isoneof(Daneel.config.languages)
-        --key = language.."."..key
+    if not keys[1]:isoneof(Daneel.config.languages) then
         table.insert(keys, 1, language)
     end
 
-    --local keys = key:explode(".")
     -- voir i besoin de verifier si keys est une table
     local errorKey = ""
     local lines = Daneel.Lang.lines
