@@ -360,75 +360,69 @@ The table `Daneel.config.buttons` may be filled with the button names that you d
 
 Daneel allows you to easly localize any strings in your game.
 
-Just change the current language's name (`Daneel.config.currentLanguage`) if you don't want it to be "english".
+Set the languages your game speaks in in `Daneel.config.languages` and change the current language's name (`Daneel.config.currentLanguage`) if you don't want it to be "english".
 
-Each of the localized strings (the lines) are identified by a key, unique accross all languages. Ideally, the keys must not contains dot and the first-level keys must not be any of the languages name.  
-The key/line pairs are stored inside the `DaneelLocalizationLines` global variable following this format :
+Each of the localized strings (the lines) are identified by a key, unique accross all languages. Ideally, the keys should not contains dot and the first-level keys should not be any of the languages name.  
+The key/line pairs for each languages are stored in a table which is the value of a global variable with the same name as the language :
 
-    DaneelLocalizationLines = {
-        english = {
-            key = "value",
+    english = {
+        key = "value",
 
-            otherKey = {
-                yetAnotherKey = "other value",
-            }
-        },
-
-        french = {
-            otherKey = {
-                yetAnotherKey = "une autre valeur",
-            }
-            ...
-        },
-
-        ...
+        greetings = { -- As ou can see, you may nest the key/line pairs.
+            welcome = "Welcome !", 
+        }
     }
 
-The `DaneelLocalizationLines` variable contains string/table pairs which keys are the language name and table contains the key/line pairs. You may nest the key/line pairs.
+    french = {
+        greetings = { 
+            welcome = "Bienvenu !",
+        }
+    }
+
 
 ### Retriving a line
 
-Use the function `Daneel.Lang.GetLine(key[, replacements])` or its helper, the global function `line()`.
+Use the function `Daneel.Lang.GetLine(key[, replacements])` or its helper, the global function `line(key[, replacements])`.
 By default it returns the line in the current language (`Daneel.config.currentLanguage`).
     
     Daneel.Lang.GetLine("key") -- returns "value" 
 
 Chain the keys with dots when the key/line pairs are nested :
 
-    Daneel.Lang.GetLine("otherKey.yetAnotherKey") -- returns "other value" 
+    Daneel.Lang.GetLine("greetings.welcome") -- returns "Welcome !" 
 
-Prefix the key with the language name (and add a dot after it) to get a line in any language you want :
+Prefix the key with the language name (and add a dot after it) to get a line in any language :
 
-    Daneel.Lang.GetLine("french.otherKey.yetAnotherKey") -- returns "une autre valeur" 
+    Daneel.Lang.GetLine("french.greetings.welcome") -- returns "Bienvenu !" event if the currentLanguage is not french
 
-Once Daneel is loaded, the content of DaneelLocalizationLines is put in `Daneel.Lang.Lines`, so you also may to get lines this way :
+Once Daneel is loaded, the languages tables are put in `Daneel.Lang.lines`, so you also may to get lines this way :
 
-    Daneel.Lang.lines.french.otherKey.yetAnotheryet -- "une autre valeur" 
+    Daneel.Lang.lines.french.greetings.welcome -- "Bienvenu !"
+
+If a key is not found, it returns `nil` and print the key in the Runtime Report.
 
 ### Placeholder and replacements
 
-Your localized strings may contains placeholders that are meant to be replaced with other value before being displayed.  
-A paceholder is a word (only letters and number are allowed) prefixed with a semicolon.
-You may pass a placeholder/replacement table as the second parameter of GetLine().
+Your localized strings may contains placeholders that are meant to be replaced with other values before being displayed.  
+A paceholder is a word prefixed with a semicolon.  
+You may pass a placeholder/replacement table as the second parameter of `GetLine()`.
 
-    DaneelLocalizationLines = {
-        english = {
-            welcome = "Welcome :playername, have a nice play !"
-        }
+    english = {
+        welcome = "Welcome :playername, have a nice play !"
     }
 
     Daneel.Lang.GetLine("welcome") -- Welcome :playername, have a nice play !
     Daneel.Lang.GetLine("welcome", { playername = "John" }) -- Welcome John, have a nice play !
 
-When the placeholder is an integer, you may omit it during the call to GetLine() :  
+When the placeholder is an integer, you may omit it during the call to `GetLine()` :  
 
-    DaneelLocalizationLines = {
-        english = {
-            welcome = "Welcome :1, have a nice play !",
-        },
+    english = {
+        welcome = "Welcome :1, have a nice play !"
     }
 
     Daneel.Lang.GetLine("welcome", { "John" }) -- Welcome John, have a nice play !
+
+Note that any strings, not just the localized strings, may benefits from the placeholder/replacement with `Daneel.Utilities.ReplaceInString(string, replacements)`.
 
 
 ## Miscellaneous
@@ -509,11 +503,12 @@ Arguments between square brackets are optional.
 
 ### Daneel.Lang
 
-- Daneel.Lang.GetLine(key[, replacements])
+- Daneel.Lang.GetLine(key[, replacements]) / line(key[, replacements])
 
 ### Daneel.Utilities
 
 * Daneel.Utilities.CaseProof(name, set)
+* Daneel.Utilities.ReplaceInString(string, replacement)
 
 ### GameObject
 
@@ -605,7 +600,9 @@ Arguments between square brackets are optional.
 ### v1.2.0
 
 - Added Daneel.config.AddScript()
+- Added Daneel.Utilities.ReplaceInString(string, replacement)
 - Fixed SetMap that would throw an exception when keepTileSet was false or nil
+
 
 ### v1.1.0
 
