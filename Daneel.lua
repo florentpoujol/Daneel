@@ -664,12 +664,11 @@ function Daneel.Awake()
 
     Daneel.defaultConfig.daneelObjects = {
         RaycastHit = RayCastHit,
-        Vector2 = Vector2,
-        Rect = Rect,
+        
     }
 
     Daneel.defaultConfig.guiObjects = {
-        Daneel.GUI.Text = Daneel.GUI.Text,
+        ["Daneel.GUI.Text"] = Daneel.GUI.Text,
     }
 
     Daneel.defaultConfig.guiTypes = {}
@@ -778,7 +777,7 @@ function Daneel.Awake()
     -- Languages
     for i, language in ipairs(Daneel.config.languages) do
         if _G[language] ~= nil then
-            Daneel.Lang.lines[language] = _G[language]()
+            Daneel.Lang.lines[language] = _G[language]
         end
     end
 
