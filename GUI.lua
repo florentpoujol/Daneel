@@ -7,7 +7,11 @@ end
 ----------------------------------------------------------------------------------
 -- GUI
 
-Daneel.GUI = { elements = {} }
+Daneel.GUI = { 
+    elements = {
+        Text = {},    
+    }   
+}
 
 --- Get the GUI element of the provoded name.
 -- @param name (string) The name.
@@ -80,11 +84,12 @@ function Daneel.GUI.Common.SetOpacity(element, opacity)
     Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
     Daneel.Debug.CheckArgType(opacity, "opacity", "number", errorHead)
 
-    local component = "modelRenderer"
-    if element.type:isoneof(Giskard.config.guiElementsWithMapRenderer) then
-        component = "mapRenderer"
+    if element.gameObject.modelRenderer ~= nil then
+        element.gameObject.modelRenderer.opacity = math.clamp(opacity, 0.0, 1.0)
     end
-    element.gameObject[component].opacity = math.clamp(opacity, 0.0, 1.0)
+    if element.gameObject.mapRenderer ~= nil then
+        element.gameObject.mapRenderer.opacity = math.clamp(opacity, 0.0, 1.0)
+    end
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -96,12 +101,15 @@ function Daneel.GUI.Common.GetOpacity(element)
     local errorHead = "Daneel.GUI.Common.GetOpacity(element) : "
     Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
 
-    local component = "modelRenderer"
-    if element.type:isoneof(Giskard.config.guiElementsWithMapRenderer) then
-        component = "mapRenderer"
+    local opacity = nil
+    if element.gameObject.modelRenderer ~= nil then
+        opacity = element.gameObject.modelRenderer.opacity
+    end
+    if element.gameObject.mapRenderer ~= nil then
+        opacity = element.gameObject.mapRenderer.opacity
     end
     Daneel.Debug.StackTrace.EndFunction()
-    return element.gameObject[component].opacity
+    return opacity
 end
 
 
@@ -163,3 +171,41 @@ end
 Daneel.GUI.Text = {}
 setmetatable(Daneel.GUI.Text, Daneel.GUI.Common)
 
+-- Create a new GUI.Text.
+-- @param name (string) The element name
+-- @param params [optional] (table) A table with initialisation parameters.
+-- @return (Daneel.GUI.Text) The new element.
+function Daneel.GUI.Text.New(name, params)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Text.New", name, params)
+    local errorHead = "Daneel.GUI.Text.New(name[, params]) : "
+    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
+    Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
+
+    local element = {
+        type = "Text",
+        name = name,
+        gameObject = GameObject.New(name, {
+            parent = Daneel.config.hudCamera,
+            mapRenderer = {
+                map = Map.LoadFromPackage(Daneel.config.textMapPath)
+            },
+        }),
+    }
+
+    setmetatable(element, Daneel.GUI.Text)
+    element:SetLabel(name)
+    
+    if params ~= nil then
+        for key, value in pairs(params) do
+            local funcName = "Set"..key:ucfirst()
+            if element[funcName] ~= nil then
+                element[funcName](element, value)
+            end
+        end
+    end
+
+    Daneel.GUI.elements["Text"][name] = element
+    
+    Daneel.Debug.StackTrace.EndFunction()
+    return element
+end
