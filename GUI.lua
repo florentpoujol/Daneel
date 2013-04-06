@@ -161,6 +161,77 @@ function Daneel.GUI.Common.GetLabel(element)
 end
 
 
+--- Set the position of the provided element on the screen.
+-- 0, 0 is the top left of the screen.
+-- @param element (Daneel.GUI.Text) The element.
+-- @param x (table or number) The x component of the position, the distance in pixel from the left side of the screen. If of type table, must have x and y keys.
+-- @param y [optional] (number) The y component of the position, the distance in pixel from the top side of the screen.
+function Daneel.GUI.Common.SetPosition(element, x, y)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetPosition", element, x, y)
+    local errorHead = "Daneel.GUI.Common.SetPosition(element, x[, y]) : "
+    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(x, "x", {"number", "table"}, errorHead)
+    Daneel.Debug.CheckOptionalArgType(y, "y", "number", errorHead)
+
+    if element._position == nil then
+        element._position = {x=0, y=0}
+    end
+
+    if type(x) == "table" and type(y) == "nil" then
+        element._position.x = x.x
+        element._position.y = x.y
+    elseif type(x) == "number" and type(y) == "number" then
+        element._position.x = x
+        element._position.y = y
+    end
+    
+        
+    local screenSize = CraftStudio.Screen.GetSize() -- screenSize is in pixels
+    local orthographicScale = Daneel.config.hudCameraOrthographicScale -- orthographicScale is in 3D world units 
+    
+    -- get the smaller side of the screen (usually screenSize.y, the height)
+    local smallSideSize = screenSize.y
+    if screenSize.x < screenSize.y then
+        smallSideSize = screenSize.x
+    end
+
+    -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
+    -- pixelUnit (in pixels/units) is the correspondance between screen pixels and 3D world units
+    local pixelUnit = orthographicScale / smallSideSize
+    
+    local xFunc = function(pixels)
+        local position = pixels * pixelUnit 
+        -- position is now in units (3D world units)
+        -- but the GUI elements are parented to the HUDCamera, which IS the middle of the screen (without taking split screen into account)
+        -- and the origin of the GUI elements position is the top left corner of the screen
+        
+        -- so the position must be altered to reflect the new point of origin
+        -- since the current origin is the middle of the screen and the new origin is the top left corner
+        -- the delta is of a half of a screen
+
+        -- for the small side, which size is orthographic scale, half of it is 'orthographicScale / 2'
+        -- but the size in units of a side is actually the orthographic scale multiplied by
+        -- the ratio of its size in pixel on the smallest side size
+        -- On a 1000x500 pixels screens with an orthographic scale of 10 :
+        -- 10u <=> 500px    so 1000px <=> 10 * (1000/500) = 20u
+        local sideSize = orthographicScale * screenSize.x / smallSideSize
+        position = position - sideSize / 2 
+        return position
+    end
+    
+    local yFunc = function(pixels)
+        return -(pixels * pixelUnit + orthographicScale * screenSize.y / smallSideSize / 2) 
+        -- the signs are different here since the progression along the y axis in pixel (to the positiv toward the bottom)
+        -- is opposite of it's progression in the 3D worl (to the positiv value toward the top of the scene)
+    end
+
+    local position3D = Vector3:New(xFunc(element._position.x), yFunc(element._position.y), -5)
+    
+    element.gameObject.transform.localPosition = position3D
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+
 ----------------------------------------------------------------------------------
 -- Text
 
