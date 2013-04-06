@@ -7,11 +7,7 @@ end
 ----------------------------------------------------------------------------------
 -- GUI
 
-Daneel.GUI = { 
-    elements = {
-        Text = {},    
-    }   
-}
+Daneel.GUI = { elements = {} }
 
 --- Get the GUI element of the provoded name.
 -- @param name (string) The name.
@@ -212,7 +208,7 @@ function Daneel.GUI.Text.New(name, params)
         end
     end
 
-    Daneel.GUI.elements["Text"][name] = element
+    Daneel.GUI.elements[name] = element
     
     Daneel.Debug.StackTrace.EndFunction()
     return element
