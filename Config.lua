@@ -40,6 +40,18 @@ Daneel.config = {
     currentLanguage = "english",
 
 
+    ----------------------------------------------------------------------------------
+    -- GUI
+
+    -- Name of the gameObject who has the orthographic camera used to render the HUD
+    -- Default is "HUDCamera"
+    hudCameraName = "HUDCamera",
+
+    -- Fully-qualified path of the map used to render text components
+    -- Default is "Daneel/TextMap"
+    textMapPath = "Daneel/TextMap",
+
+
     -- Set to true to enable the framework's advanced debugging capabilities.
     -- Set to false when you ship the game.
     debug = false,

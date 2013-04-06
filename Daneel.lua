@@ -40,9 +40,17 @@ Daneel.defaultConfig = {
     daneelObjects = {}, -- filled in Daneel.Awake() below
     guiObjects = {}, -- idem
 
+
+    ----------------------------------------------------------------------------------
+    -- GUI
+
     guiElementsWithMapRenderer = {
         "Text",
     },
+
+    hudCameraName = "HUDCamera",
+    textMapPath = "Daneel/TextMap",
+
 
     -- Rays
     -- list of the gameObjects to cast the ray against by default by ray:Cast()
