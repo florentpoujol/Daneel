@@ -164,28 +164,21 @@ end
 --- Set the position of the provided element on the screen.
 -- 0, 0 is the top left of the screen.
 -- @param element (Daneel.GUI.Text) The element.
--- @param x (table or number) The x component of the position, the distance in pixel from the left side of the screen. If of type table, must have x and y keys.
+-- @param x (Vector2 or number) The x component of the position, the distance in pixel from the left side of the screen or the position as a Vector2.
 -- @param y [optional] (number) The y component of the position, the distance in pixel from the top side of the screen.
 function Daneel.GUI.Common.SetPosition(element, x, y)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetPosition", element, x, y)
     local errorHead = "Daneel.GUI.Common.SetPosition(element, x[, y]) : "
     Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
-    Daneel.Debug.CheckArgType(x, "x", {"number", "table"}, errorHead)
+    Daneel.Debug.CheckArgType(x, "x", {"number", "Vector2"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(y, "y", "number", errorHead)
 
-    if element._position == nil then
-        element._position = {x=0, y=0}
-    end
-
-    if type(x) == "table" and type(y) == "nil" then
-        element._position.x = x.x
-        element._position.y = x.y
+    if type(x) ~= "number" and type(y) == "nil" then
+        element._position = x
     elseif type(x) == "number" and type(y) == "number" then
-        element._position.x = x
-        element._position.y = y
+        element._position = Vector2.New(x, y)
     end
-    
-        
+            
     local screenSize = CraftStudio.Screen.GetSize() -- screenSize is in pixels
     local orthographicScale = Daneel.config.hudCameraOrthographicScale -- orthographicScale is in 3D world units 
     
@@ -220,7 +213,7 @@ function Daneel.GUI.Common.SetPosition(element, x, y)
     end
     
     local yFunc = function(pixels)
-        return -(pixels * pixelUnit + orthographicScale * screenSize.y / smallSideSize / 2) 
+        return -(pixels * pixelUnit - orthographicScale * screenSize.y / smallSideSize / 2) 
         -- the signs are different here since the progression along the y axis in pixel (to the positiv toward the bottom)
         -- is opposite of it's progression in the 3D worl (to the positiv value toward the top of the scene)
     end
@@ -233,7 +226,7 @@ end
 
 --- Get the position of the provided element on the screen.
 -- @param element (Daneel.GUI.Text) The element.
--- @return (table) The table with the x and y component of the position.
+-- @return (Vector2) The position.
 function Daneel.GUI.Common.GetPosition(element)
      Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetPosition", element)
     local errorHead = "Daneel.GUI.Common.GetPosition(element) : "
