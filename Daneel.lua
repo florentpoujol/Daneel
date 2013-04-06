@@ -48,7 +48,13 @@ Daneel.defaultConfig = {
         "Text",
     },
 
+    -- Name of the gameObject who has the orthographic camera used to render the HUD
     hudCameraName = "HUDCamera",
+
+    -- The orthographic scale of the HUDCamera
+    hudCameraOrthographicScale = 10,
+
+    -- Fully-qualified path of the map used to render text components
     textMapPath = "Daneel/TextMap",
 
 
@@ -780,6 +786,10 @@ function Daneel.Awake()
             Daneel.Lang.lines[language] = _G[language]
         end
     end
+
+    -- GUI
+    Daneel.config.hudCamera = GameObject.Get(Daneel.config.hudCameraName)
+    Daneel.config.textMap = Asset.GetMap(Daneel.config.textMapPath)
 
     -- Awakening is over
     DANEEL_LOADED = true

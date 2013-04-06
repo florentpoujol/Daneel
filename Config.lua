@@ -47,6 +47,9 @@ Daneel.config = {
     -- Default is "HUDCamera"
     hudCameraName = "HUDCamera",
 
+    -- The orthographic scale of the HUDCamera
+    hudCameraOrthographicScale = 10,
+
     -- Fully-qualified path of the map used to render text components
     -- Default is "Daneel/TextMap"
     textMapPath = "Daneel/TextMap",
