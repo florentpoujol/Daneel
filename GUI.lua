@@ -231,6 +231,15 @@ function Daneel.GUI.Common.SetPosition(element, x, y)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
+--- Get the position of the provided element on the screen.
+-- @param element (Daneel.GUI.Text) The element.
+-- @return (table) The table with the x and y component of the position.
+function Daneel.GUI.Common.GetPosition(element)
+     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetPosition", element)
+    local errorHead = "Daneel.GUI.Common.GetPosition(element) : "
+    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiElementsTypes, errorHead)
+    return element._position
+end
 
 ----------------------------------------------------------------------------------
 -- Text
@@ -283,4 +292,25 @@ function Daneel.GUI.Text.New(name, params)
     
     Daneel.Debug.StackTrace.EndFunction()
     return element
+end
+
+
+----------------------------------------------------------------------------------
+-- Vector 2
+
+Vector2 = {}
+Vector2.__index = Vector2
+
+function Vector2.New(x, y)
+    local errorHead = "Vector2.New(x, y) : "
+    Daneel.Debug.CheckArgType(x, "x", "number", errorHead)
+    Daneel.Debug.CheckOptionalArgType(y, "y", "number", errorHead)
+    if y == nil then
+        y = x
+    end
+    return setmetatable({x = x, y = y}, Vector2)
+end
+
+function Vector2.__tostring(vector2)
+    return "Vector2: { x="..vector2.x..", y="..vector2.y.." }"
 end

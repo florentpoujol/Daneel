@@ -670,8 +670,8 @@ function Daneel.Awake()
 
     Daneel.defaultConfig.daneelObjects = {
         RaycastHit = RayCastHit,
-        
-    }
+        Vector2 = Vector2,
+    }, 
 
     Daneel.defaultConfig.guiObjects = {
         ["Daneel.GUI.Text"] = Daneel.GUI.Text,
