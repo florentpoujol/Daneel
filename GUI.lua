@@ -169,7 +169,13 @@ end
 -- Text
 
 Daneel.GUI.Text = {}
+Daneel.GUI.Text.__index = Daneel.GUI.Text
 setmetatable(Daneel.GUI.Text, Daneel.GUI.Common)
+
+function Daneel.GUI.Text.__tostring(element)
+    return "Daneel.GUI."..element.type..": '"..element.name.."'"
+end
+
 
 -- Create a new GUI.Text.
 -- @param name (string) The element name
@@ -200,6 +206,8 @@ function Daneel.GUI.Text.New(name, params)
             local funcName = "Set"..key:ucfirst()
             if element[funcName] ~= nil then
                 element[funcName](element, value)
+            else
+                element[key] = value
             end
         end
     end
