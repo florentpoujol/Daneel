@@ -96,14 +96,14 @@ You will find the configuration table in the `Daneel/Config` script.
 
 ## Loading Daneel
 
-Daneel needs to be loaded before some of its features work, so you need to add the "Daneel/Behaviors/DaneelBehavior" script as a ScriptedBehavior in your scene.  
+Daneel needs to be loaded before it works, so you need to add the "Daneel/Behaviors/DaneelBehavior" script as a ScriptedBehavior in your scene. Failing to do that will cause a lot of errors in the Runtime Report.  
 Daneel is garanteed to be loaded by the time functions `Behavior:Start()` begin to be called.  
 It may also be the case from `Behavior:Awake()` functions, but it is not garanteed (it depends on the GameObject initialization order).
 
-The global variable `DANEEL_LOADED` is equal to `nil` until Daneel is loaded, where its value is set to `true`.
+The global variable `DANEEL_LOADED` is equal to `false` until Daneel is fully loaded, where its value is set to `true`.
 
 Any scripts whose path is set in `Daneel.config.scripts` may implements a `Behavior:DaneelAwake()` function.  
-This function will be called right after Daneel has loaded, before `Behavior:Start()` and **even on scripts that are not ScriptedBehavior**.
+This function will be called just after Daneel has loaded, before `Behavior:Start()` gets called and **even on scripts that are not ScriptedBehavior**.
 
 
 ## Conventions
