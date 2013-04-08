@@ -11,7 +11,11 @@ Daneel.config = {
     -- or
     -- alias = "fully-qualified Script path"
     scripts = {
-
+        "Daneel/Behaviors/DaneelBehavior",
+        "Daneel/Behaviors/Trigger",
+        "Daneel/Behaviors/TriggerableGameObject",
+        "Daneel/Behaviors/CastableGameObject",
+        "Daneel/Behaviors/MousehoverableGameObject",
     },
 
     
@@ -22,14 +26,8 @@ Daneel.config = {
     },
 
 
-    -- Your custom objects and their type returned by Daneel.Debug.GetType()
-    -- GetType() will return the type on tables that have the object as metatable
-    -- Ie :
-    -- type (string) = Object (table)
-    objects = {
-
-    },
-
+    ----------------------------------------------------------------------------------
+    -- Language
 
     -- The languages supported by the game
     languages = {
@@ -39,6 +37,17 @@ Daneel.config = {
     -- Game's current and default language
     currentLanguage = "english",
 
+
+    ----------------------------------------------------------------------------------
+    -- Debug
+
+    -- Your custom objects and their type returned by Daneel.Debug.GetType()
+    -- GetType() will return the type on tables that have the object as metatable
+    -- Ie :
+    -- Type (string) = Object (table)
+    objects = {
+
+    },
 
     -- Set to true to enable the framework's advanced debugging capabilities.
     -- Set to false when you ship the game.
