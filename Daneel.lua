@@ -689,7 +689,6 @@ end
 
 -- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
-    
     setmetatable(Daneel.config, Daneel.defaultConfig)
 
     Daneel.defaultConfig.daneelObjects = {
@@ -801,8 +800,9 @@ function Daneel.Awake()
         end
     end
 
-    -- Awakening is over
+    -- Loading is over
     DANEEL_LOADED = true
+    print("Daneel is loaded")
 
     -- call DaneelAwake()
     for i, path in pairs(Daneel.config.scripts) do
