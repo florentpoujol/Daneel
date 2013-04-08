@@ -360,7 +360,7 @@ The table `Daneel.config.buttons` may be filled with the button names that you d
 
 Daneel allows you to easly localize any strings in your game.
 
-Set the languages your game speaks in in `Daneel.config.languages` and change the current language's name (`Daneel.config.currentLanguage`) if you don't want it to be "english".
+Set the languages your game speaks in in `Daneel.config.languages` and update the default and current language's name (`Daneel.config.languages.default` and `Daneel.config.languages.current`).
 
 Each of the localized strings (the lines) are identified by a key, unique accross all languages. Ideally, the keys should not contains dot and the first-level keys should not be any of the languages name.  
 The key/line pairs for each languages are stored in a table which is the value of a global variable with the same name as the language :
@@ -399,7 +399,7 @@ Once Daneel is loaded, the languages tables are put in `Daneel.Lang.lines`, so y
 
     Daneel.Lang.lines.french.greetings.welcome -- "Bienvenu !"
 
-If a key is not found, it returns `nil` and print the key in the Runtime Report.
+If a key is not found by GetLine(), it first search for it in the default language. If it is still not found, it returns the value of `Daneel.config.languages.keyNotFound` (which is "langkeynotfound" by default) and print a warning (with the the key) in the Runtime Report.
 
 ### Placeholder and replacements
 

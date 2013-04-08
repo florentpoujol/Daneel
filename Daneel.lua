@@ -689,7 +689,7 @@ end
 
 -- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
-
+    
     setmetatable(Daneel.config, Daneel.defaultConfig)
 
     Daneel.defaultConfig.daneelObjects = {
