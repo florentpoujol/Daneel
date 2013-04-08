@@ -8,6 +8,56 @@ end
 -- Defaul Config
 
 Daneel.defaultConfig = {
+    -- Rays
+    -- list of the gameObjects to cast the ray against by default by ray:Cast()
+    -- filled in the CastableGameObjects behavior
+    castableGameObjects = {},
+    
+    -- Triggers
+    -- list of gameObjects check for rpoximity by the triggers
+    -- filled in the TriggerableGameObject behavior
+    triggerableGameObjects = {},
+
+    -- List of gameObject that react to the mouse input
+    mousehoverableGameObjects = {},
+
+
+    -- List of the Scripts paths as values and optionally the script alias as the keys.
+    -- Ie :
+    -- "fully-qualified Script path"
+    -- or
+    -- alias = "fully-qualified Script path"
+    daneelScripts = {
+        "Daneel/Behaviors/DaneelBehavior",
+        "Daneel/Behaviors/Trigger",
+        "Daneel/Behaviors/TriggerableGameObject",
+        "Daneel/Behaviors/CastableGameObject",
+        "Daneel/Behaviors/MousehoverableGameObject",
+    }
+
+
+    -- Button names as you defined them in the "Administration > Game Controls" tab of your project
+    -- Button whose name is defined here can be used as HotKeys
+    buttons = {},
+
+
+    ----------------------------------------------------------------------------------
+    -- Language
+
+    -- The languages supported by the game
+    languages = {
+        "english",
+    },
+
+    -- Game's default language
+    defaultLanguage = "english",
+    
+    -- Game's current language
+    currentLanguage = "english",
+
+
+    ----------------------------------------------------------------------------------
+    -- Debug
 
     -- Objects (keys = name, value = object)
     assetObjects = {
@@ -38,29 +88,9 @@ Daneel.defaultConfig = {
     },
     
     daneelObjects = {}, -- filled in Daneel.Awake() below
+    objects = {}, -- user-defined objects
 
-    -- Rays
-    -- list of the gameObjects to cast the ray against by default by ray:Cast()
-    -- filled in the CastableGameObjects behavior
-    castableGameObjects = {},
-    
-    -- Triggers
-    -- list of gameObjects check for rpoximity by the triggers
-    -- filled in the TriggerableGameObject behavior
-    triggerableGameObjects = {},
-
-    -- List of gameObject that react to the mouse input
-    mousehoverableGameObjects = {},
-
-
-    -- Scripts
-    daneelScripts = {
-        "Daneel/Behaviors/DaneelBehavior",
-        "Daneel/Behaviors/Trigger",
-        "Daneel/Behaviors/TriggerableGameObject",
-        "Daneel/Behaviors/CastableGameObject",
-        "Daneel/Behaviors/MousehoverableGameObject",
-    }
+    debug = false,
 }
 
 Daneel.defaultConfig.__index = Daneel.defaultConfig
