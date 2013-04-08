@@ -375,7 +375,7 @@ end
 -- Script
 local luaDocStop = ""
 
--- called from Daneel.Awake() or Daneel.RegisterScripts()
+-- called from Daneel.Awake()
 -- @param script (Script) The script asset
 function Script.Init(script)
     Daneel.Debug.StackTrace.BeginFunction("Script.Init", script)

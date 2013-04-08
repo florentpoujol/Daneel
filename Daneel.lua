@@ -55,6 +55,7 @@ Daneel.defaultConfig = {
 
     -- Scripts
     daneelScripts = {
+        "Daneel/Behaviors/DaneelBehavior",
         "Daneel/Behaviors/Trigger",
         "Daneel/Behaviors/TriggerableGameObject",
         "Daneel/Behaviors/CastableGameObject",
@@ -663,7 +664,7 @@ function Daneel.Awake()
     )
 
     -- scripts
-    Daneel.config.scripts = table.merge(Daneel.config.scripts, Daneel.defaultConfig.daneelScripts)
+    Daneel.config.scripts = table.merge(Daneel.defaultConfig.daneelScripts, Daneel.config.scripts)
 
 
     -- Dynamic getters and setter on Scripts
@@ -673,6 +674,7 @@ function Daneel.Awake()
         if script ~= nil then
             Script.Init(script)
         else
+            table.remove(Daneel.config.scripts, i)
             print("WARNING : item with key '"..i.."' and value '"..path.."' in Daneel.config.scripts is not a valid script path.")
         end
     end
@@ -753,7 +755,7 @@ function Daneel.Awake()
     -- Languages
     for i, language in ipairs(Daneel.config.languages) do
         if _G[language] ~= nil then
-            Daneel.Lang.lines[language] = _G[language]()
+            Daneel.Lang.lines[language] = _G[language]
         end
     end
 
@@ -763,7 +765,7 @@ function Daneel.Awake()
     -- call DaneelAwake()
     for i, path in pairs(Daneel.config.scripts) do
         local script = Asset.GetScript(path)
-        if type(script.DaneelAwake) == "function" then
+        if script ~= nil and type(script.DaneelAwake) == "function" then
             script:DaneelAwake()
         end
     end
