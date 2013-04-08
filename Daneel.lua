@@ -3,6 +3,8 @@ if Daneel == nil then
     Daneel = {}
 end
 
+DANEEL_LOADED = false
+
 
 ----------------------------------------------------------------------------------
 -- Defaul Config
