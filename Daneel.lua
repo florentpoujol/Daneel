@@ -27,13 +27,13 @@ Daneel.defaultConfig = {
     -- "fully-qualified Script path"
     -- or
     -- alias = "fully-qualified Script path"
-    daneelScripts = {
+    scripts = {
         "Daneel/Behaviors/DaneelBehavior",
         "Daneel/Behaviors/Trigger",
         "Daneel/Behaviors/TriggerableGameObject",
         "Daneel/Behaviors/CastableGameObject",
         "Daneel/Behaviors/MousehoverableGameObject",
-    }
+    },
 
 
     -- Button names as you defined them in the "Administration > Game Controls" tab of your project
@@ -44,16 +44,19 @@ Daneel.defaultConfig = {
     ----------------------------------------------------------------------------------
     -- Language
 
-    -- The languages supported by the game
     languages = {
+        -- The languages supported by the game
         "english",
-    },
 
-    -- Game's default language
-    defaultLanguage = "english",
-    
-    -- Game's current language
-    currentLanguage = "english",
+        -- Game's default language
+        default = "english",
+
+        -- Game's current language
+        current = "english",
+
+        -- value returned when a language key is not found
+        keyNotFound = "langkeynotfound",
+    },
 
 
     ----------------------------------------------------------------------------------
@@ -576,24 +579,32 @@ Daneel.Lang = { lines = {} }
 -- @return (string) The line.
 function Daneel.Lang.GetLine(key, replacements)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Lang.GetLine", key, replacements)
-    local errorHead = "Daneel.Lang.GetLine(key[, replacements]) :"
+    local errorHead = "Daneel.Lang.GetLine(key[, replacements]) : "
     Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
 
     local keys = key:split(".")
 
     if not keys[1]:isoneof(Daneel.config.languages) then
-        table.insert(keys, 1, Daneel.config.currentLanguage)
+        table.insert(keys, 1, Daneel.config.languages.current)
     end
-
+    local language = keys[1]
     local errorKey = ""
     local lines = Daneel.Lang.lines
 
     for i, key in ipairs(keys) do
         errorKey = errorKey..key
         if lines[key] == nil then
-            print(errorHead.."Localization key '"..errorKey.."' was not found.")
-            Daneel.Debug.StackTrace.EndFunction()
-            return nil
+            -- key was not found, search for it in the default language
+            if language ~= Daneel.config.languages.default then
+                print(errorHead.."Localization key '"..errorKey.."' was not found in the current language '"..Daneel.config.languages.current.."'.")
+                key = Daneel.config.languages.default.."."..key
+                Daneel.Debug.StackTrace.EndFunction()
+                return Daneel.Lang.GetLine(key, replacements)
+            else -- already default language
+                print(errorHead.."Localization key '"..errorKey.."' was not found in the default language '"..Daneel.config.languages.default.."'.")
+                Daneel.Debug.StackTrace.EndFunction()
+                return Daneel.config.languages.keyNotFound
+            end
         end
         lines = lines[key]
         errorKey = errorKey.."."
@@ -678,6 +689,7 @@ end
 
 -- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
+
     setmetatable(Daneel.config, Daneel.defaultConfig)
 
     Daneel.defaultConfig.daneelObjects = {
@@ -694,7 +706,7 @@ function Daneel.Awake()
     )
 
     -- scripts
-    Daneel.config.scripts = table.merge(Daneel.defaultConfig.daneelScripts, Daneel.config.scripts)
+    Daneel.config.scripts = table.merge(Daneel.defaultConfig.scripts, Daneel.config.scripts)
 
 
     -- Dynamic getters and setter on Scripts

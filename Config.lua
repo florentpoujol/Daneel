@@ -11,11 +11,7 @@ Daneel.config = {
     -- or
     -- alias = "fully-qualified Script path"
     scripts = {
-        "Daneel/Behaviors/DaneelBehavior",
-        "Daneel/Behaviors/Trigger",
-        "Daneel/Behaviors/TriggerableGameObject",
-        "Daneel/Behaviors/CastableGameObject",
-        "Daneel/Behaviors/MousehoverableGameObject",
+
     },
 
     
@@ -29,13 +25,22 @@ Daneel.config = {
     ----------------------------------------------------------------------------------
     -- Language
 
-    -- The languages supported by the game
     languages = {
+        -- List of the languages supported by the game
         "english",
+
+
+        -- Game's default language
+        -- If a line key is not found in the current language, it will try to find the key in the default language 
+        -- before returning the value of keyNotFound
+        default = "english",
+
+        -- Current language
+        current = "english",
+
+        -- Value returned when a language key is not found
+        keyNotFound = "langkeynotfound",
     },
-    
-    -- Game's current and default language
-    currentLanguage = "english",
 
 
     ----------------------------------------------------------------------------------
