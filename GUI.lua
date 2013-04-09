@@ -35,6 +35,7 @@ end
 
 Daneel.GUI.Common = {} -- common functions for GUI Elements
 Daneel.GUI.Common.__index = Daneel.GUI.Common
+    
 
 --- Set the element's scale which is actually the gameObject's local scale.
 -- @param element (Daneel.GUI.Text) The element.
@@ -231,6 +232,13 @@ function Daneel.GUI.Common.GetPosition(element)
      Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetPosition", element)
     local errorHead = "Daneel.GUI.Common.GetPosition(element) : "
     Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiElementsTypes, errorHead)
+    local position = element._position
+    if position == nil then
+        -- the element's position has not been set
+        -- so it is actually at the center of the screen
+        local screenSize = CraftStudio.Screen.GetSize()
+        element._position = Vector2.New(screenSize.x/2, screenSize.y/2)
+    end
     return element._position
 end
 
@@ -238,8 +246,35 @@ end
 -- Text
 
 Daneel.GUI.Text = {}
-Daneel.GUI.Text.__index = Daneel.GUI.Text
 setmetatable(Daneel.GUI.Text, Daneel.GUI.Common)
+
+function Daneel.GUI.Text.__index(element, key)
+    local funcName = "Get"..key:ucfirst()
+
+    if Daneel.GUI.Text[funcName] ~= nil then
+        return Daneel.GUI.Text[funcName](element)
+    elseif Daneel.GUI.Text[key] ~= nil then
+        return Daneel.GUI.Text[key]
+    end
+
+    if Daneel.GUI.Common[funcName] ~= nil then
+        return Daneel.GUI.Common[funcName](element)
+    elseif Daneel.GUI.Common[key] ~= nil then
+        return Daneel.GUI.Common[key]
+    end
+
+    return nil
+end
+
+function Daneel.GUI.Text.__newindex(element, key, value)
+    local funcName = "Set"..key:ucfirst()
+
+    if Daneel.GUI.Text[funcName] ~= nil then
+        return Daneel.GUI.Text[funcName](element, value)
+    end
+
+    return rawset(element, key, value)
+end
 
 function Daneel.GUI.Text.__tostring(element)
     return "Daneel.GUI."..element.type..": '"..element.name.."'"
@@ -268,16 +303,13 @@ function Daneel.GUI.Text.New(name, params)
     }
 
     setmetatable(element, Daneel.GUI.Text)
-    element:SetLabel(name)
+    element.position = Vector2.New(100)
+    element.label = name
+    element.scale = Daneel.config.hudElementDefaultScale
     
     if params ~= nil then
         for key, value in pairs(params) do
-            local funcName = "Set"..key:ucfirst()
-            if element[funcName] ~= nil then
-                element[funcName](element, value)
-            else
-                element[key] = value
-            end
+            element[key] = value
         end
     end
 
