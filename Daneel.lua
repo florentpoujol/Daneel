@@ -674,6 +674,7 @@ function Daneel.Awake()
 
     Daneel.defaultConfig.guiObjects = {
         ["Daneel.GUI.Text"] = Daneel.GUI.Text,
+        ["Daneel.GUI.Checkbox"] = Daneel.GUI.Checkbox,
     }
 
     Daneel.defaultConfig.guiTypes = {}

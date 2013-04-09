@@ -116,7 +116,7 @@ end
 function Daneel.GUI.Common.SetLabel(element, label, replacements)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetLabel", element, label, replacements)
     local errorHead = "Daneel.GUI.Common.SetLabel(element, label[, replacements]) : "
-     Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
     
     label = tostring(label)
     if replacements ~= nil then
@@ -129,6 +129,11 @@ function Daneel.GUI.Common.SetLabel(element, label, replacements)
     local caracterPosition = 0
     local linePosition = 0
     local skipCharacter = 0
+
+    if element.type == "Checkbox" then
+        label = " "..label
+        caracterPosition = 1
+    end
     
     for i = 1, label:len() do
         if skipCharacter > 0 then
@@ -229,7 +234,7 @@ end
 -- @param element (Daneel.GUI.Text) The element.
 -- @return (Vector2) The position.
 function Daneel.GUI.Common.GetPosition(element)
-     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetPosition", element)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetPosition", element)
     local errorHead = "Daneel.GUI.Common.GetPosition(element) : "
     Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiElementsTypes, errorHead)
     local position = element._position
@@ -282,7 +287,7 @@ end
 
 
 -- Create a new GUI.Text.
--- @param name (string) The element name
+-- @param name (string) The element name.
 -- @param params [optional] (table) A table with initialisation parameters.
 -- @return (Daneel.GUI.Text) The new element.
 function Daneel.GUI.Text.New(name, params)
@@ -314,9 +319,137 @@ function Daneel.GUI.Text.New(name, params)
     end
 
     Daneel.GUI.elements[name] = element
-    
     Daneel.Debug.StackTrace.EndFunction()
     return element
+end
+
+
+----------------------------------------------------------------------------------
+-- Checkbox
+
+Daneel.GUI.Checkbox = {}
+setmetatable(Daneel.GUI.Checkbox, Daneel.GUI.Common)
+
+function Daneel.GUI.Checkbox.__index(element, key)
+    local funcName = "Get"..key:ucfirst()
+
+    if Daneel.GUI.Checkbox[funcName] ~= nil then
+        return Daneel.GUI.Checkbox[funcName](element)
+    elseif Daneel.GUI.Checkbox[key] ~= nil then
+        return Daneel.GUI.Checkbox[key]
+    end
+
+    if Daneel.GUI.Common[funcName] ~= nil then
+        return Daneel.GUI.Common[funcName](element)
+    elseif Daneel.GUI.Common[key] ~= nil then
+        return Daneel.GUI.Common[key]
+    end
+
+    return nil
+end
+
+function Daneel.GUI.Checkbox.__newindex(element, key, value)
+    local funcName = "Set"..key:ucfirst()
+
+    if Daneel.GUI.Checkbox[funcName] ~= nil then
+        return Daneel.GUI.Checkbox[funcName](element, value)
+    end
+
+    return rawset(element, key, value)
+end
+
+function Daneel.GUI.Checkbox.__tostring(element)
+    return "Daneel.GUI.Checkbox: '"..element.name.."'"
+end
+
+
+-- Create a new GUI.Checkbox.
+-- @param name (string) The element name.
+-- @param params [optional] (table) A table with initialisation parameters.
+-- @return (Daneel.GUI.Checkbox) The new element.
+function Daneel.GUI.Checkbox.New(name, params)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Checkbox.New", name, params)
+    local errorHead = "Daneel.GUI.Checkbox.New(name[, params]) : "
+    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
+    Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
+
+    local element = {
+        type = "Checkbox",
+        name = name,
+        gameObject = GameObject.New(name, {
+            parent = Daneel.config.hudCamera,
+            mapRenderer = {
+                map = Map.LoadFromPackage(Daneel.config.textMapPath)
+            },
+            scriptedBehaviors = {
+                "Daneel/Behaviors/MousehoverableGameObject",
+                "Daneel/Behaviors/Checkbox",
+            }
+        }),
+    }
+
+    setmetatable(element, Daneel.GUI.Checkbox)
+
+    -- default properties
+    element.position = Vector2.New(100)
+    element.label = name
+    element.scale = Daneel.config.hudElementDefaultScale
+    element.checked = false
+    element.gameObject:GetScriptedBehavior("Daneel/Behaviors/Checkbox").element = element
+
+    -- user-defined properties
+    if params ~= nil then
+        for key, value in pairs(params) do
+            element[key] = value
+        end
+    end
+
+    Daneel.GUI.elements[name] = element
+    Daneel.Debug.StackTrace.EndFunction()
+    return element
+end
+
+--- Switch the checked state of the checkbox.
+-- @param element (Daneel.GUI.Checkbox) The element.
+function Daneel.GUI.Checkbox.SwitchState(element)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Checkbox.SwitchState", element)
+    local errorHead = "Daneel.GUI.Checkbox.SwitchState(element) : "
+    Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.Checkbox", errorHead)
+    if element._checked == true then
+        element.checked = false
+    else
+        element.checked = true
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+-- Set the checked state of the checkbox.
+-- Update the _checked variable and the mapRenderer then call the callBack function.
+-- @param element (Daneel.GUI.Checkbox) The element.
+-- @param state (boolean) The state.
+function Daneel.GUI.Checkbox.SetChecked(element, state)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Checkbox.SetChecked", element, state)
+    local errorHead = "Daneel.GUI.Checkbox.SetChecked(element, state) : "
+    Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.Checkbox", errorHead)
+    Daneel.Debug.CheckArgType(state, "state", "boolean", errorHead)
+    if element._checked ~= state then
+        element._checked = state
+        local byte = 251 -- that's the valid mark
+        if state == false then byte = string.byte("X") end
+        element.gameObject.mapRenderer.map:SetBlockAt(0, 0, 0, byte, Map.BlockOrientation.North)
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+-- Get the checked state of the checkbox.
+-- @param element (Daneel.GUI.Checkbox) The element.
+-- @return (boolean) The state.
+function Daneel.GUI.Checkbox.GetChecked(element)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Checkbox.GetChecked", element)
+    local errorHead = "Daneel.GUI.Checkbox.GetChecked(element) : "
+    Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.Checkbox", errorHead)
+    Daneel.Debug.StackTrace.EndFunction()
+    return element._checked    
 end
 
 
