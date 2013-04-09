@@ -26,6 +26,7 @@ Daneel mostly add new objects, new functions on existing objects and sometimes a
 - [Events](#events)
 - [Hotkeys](#hotkeys)
 - [Localization](#localization)
+- [GUI](#gui)
 - [Miscellaneous](#miscellaneous)
 - [Functions list](#functions-list)
 - [Changelog](#changelog)
@@ -118,7 +119,7 @@ This function will be called right after Daneel has loaded, before `Behavior:Sta
 
 ## Dynamic getters and setters
 
-Getters and setters functions may be used on gameOjects, components and assets as if they were variables. Their names must begin by "Get" or "Set" and have the forth letter upper-case (underscore is allowed). Ie : GetSomething() and Get_something() will work, but Getsomething() or getSomething() won't work.
+Getters and setters functions may be used on *gameOjects, components, assets and GUI elements* as if they were variables. Their names must begin by "Get" or "Set" and have the forth letter upper-case (underscore is allowed). Ie : GetSomething() and Get_something() will work, but Getsomething() or getSomething() won't work.
 
     
     self.gameObject.transform.localPosition
@@ -424,6 +425,37 @@ When the placeholder is an integer, you may omit it during the call to `GetLine(
 
 Note that any strings, not just the localized strings, may benefits from the placeholder/replacement with `Daneel.Utilities.ReplaceInString(string, replacements)`.
 
+## GUI
+
+Daneel allows to easilly create GUI elements in order to build HUD and prompt the player with information or interact with him.  
+
+### Setup
+
+GUI elements are actually gameObjects parented to the HUD camera which is a gameObject with an orthographic camera, somewhere in your scene away from where the game actually happens. Name it "HUDCamera" or update the value of `Daneel.config.hudCameraName`. If you set an orthographic scale other than 10, update the value of `Daneel.config.hudCameraOrthographicScale`.  
+GUI elements may only be created from a script, you can not add them in your scene
+
+
+- GUIText (Daneel.GUI.Text) : text
+- GUICheckbox (Daneel.GUI.Checkbox) : checkbox
+
+
+### Common elements properties
+
+The GUI objects are convenient wrapper around the gameObjects that the elements are made of. They allows to easily manipulate them.
+Get and set the element's properties via their appropriate gettter and setter (or their dynamic variable).
+
+
+- Opacity
+- Scale : a scale of 1 is very big, so the elements are created with a default scale of 0.2. You may change this value with `Daneel.config.hudElementDefaultScale`.
+- Label : this is the text that identifies the element on screen. You may create a carriage return by inserting ":br:" in the string.
+- Position : guiObjects are positionned in pixels from the top-left corner of the screen
+
+
+### GUIText
+
+Just some text.
+GUIText is an alias of Daneel.GUI.Text.
+
 
 ## Miscellaneous
 
@@ -500,6 +532,22 @@ Arguments between square brackets are optional.
 * Daneel.Events.Listen(eventName, function) / Daneel.Events.Listen(eventName, gameObject[, functionName, broadcast])
 * Daneel.Events.StopListen(eventName, functionOrGameObject)
 * Daneel.Events.Fire(eventName[, ...])
+
+## Daneel.GUI
+
+For all GUI Elements :
+
+- element:SetPosition(scale)
+- element:GetPosition()
+- element:SetScale(scale)
+- element:GetScale()
+- element:SetOpacity(opacity)
+- element:GetOpacity()
+
+For Text and Checkbox :
+
+- element:SetLabel(scale)
+- element:GetLabel()
 
 ### Daneel.Lang
 
