@@ -6,12 +6,14 @@ end
 Daneel.config = {
 
     -- List of the Scripts paths as values and optionally the script alias as the keys.
-    -- Ie :
-    -- "fully-qualified Script path"
-    -- or
-    -- alias = "fully-qualified Script path"
+    -- Setting your scripts here allows you to :
+    -- * call getters and setters as if they where variable
+    -- * call the ScriptedBehavior on the gameObject via its alias or name
+    -- * implement a Behavior:DaneelAwake() function (called before Start())
     scripts = {
-
+        -- "fully-qualified Script path"
+        -- or
+        -- alias = "fully-qualified Script path"
     },
 
     
@@ -28,6 +30,9 @@ Daneel.config = {
     languages = {
         -- List of the languages supported by the game
         "english",
+        --"french",
+        --"german",
+        --...
 
 
         -- Game's default language
@@ -48,9 +53,8 @@ Daneel.config = {
 
     -- Your custom objects and their type returned by Daneel.Debug.GetType()
     -- GetType() will return the type on tables that have the object as metatable
-    -- Ie :
-    -- Type (string) = Object (table)
     objects = {
+        -- Type (string) = Object (table)      
 
     },
 
