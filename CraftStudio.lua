@@ -262,7 +262,7 @@ function Ray.IntersectsGameObject(ray, gameObject)
         distance, normal = ray:IntersectsModelRenderer(component)
     end
 
-    if distance ~= nil then
+    if distance == nil then
         component = gameObject:GetComponent("MapRenderer")
         if component ~= nil then
             distance, normal, hitBlockLocation, adjacentBlockLocation = ray:IntersectsMapRenderer(component)
