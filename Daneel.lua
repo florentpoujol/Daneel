@@ -44,10 +44,6 @@ Daneel.defaultConfig = {
     ----------------------------------------------------------------------------------
     -- GUI
 
-    guiElementsWithMapRenderer = {
-        "Text",
-    },
-
     -- Name of the gameObject who has the orthographic camera used to render the HUD
     hudCameraName = "HUDCamera",
 
@@ -56,6 +52,9 @@ Daneel.defaultConfig = {
 
     -- Fully-qualified path of the map used to render text components
     textMapPath = "Daneel/TextMap",
+
+    -- GUI element's default scale
+    hudElementDefaultScale = 0.2,
 
 
     -- Rays

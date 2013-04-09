@@ -44,16 +44,17 @@ Daneel.config = {
     -- GUI
 
     -- Name of the gameObject who has the orthographic camera used to render the HUD
-    -- Default is "HUDCamera"
     hudCameraName = "HUDCamera",
 
     -- The orthographic scale of the HUDCamera
     hudCameraOrthographicScale = 10,
 
     -- Fully-qualified path of the map used to render text components
-    -- Default is "Daneel/TextMap"
     textMapPath = "Daneel/TextMap",
 
+    -- GUI element's default scale
+    hudElementDefaultScale = 0.2,
+    
 
     -- Set to true to enable the framework's advanced debugging capabilities.
     -- Set to false when you ship the game.
