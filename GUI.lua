@@ -146,7 +146,7 @@ function Daneel.GUI.Common.SetLabel(element, label, replacements)
     local linePosition = 0
     local skipCharacter = 0
 
-    if element.type == "Checkbox" then
+    if Daneel.Debug.GetType(element) == "Daneel.GUI.Checkbox" then
         label = " "..label
         caracterPosition = 1
     end
@@ -313,7 +313,7 @@ function Daneel.GUI.Text.__newindex(element, key, value)
 end
 
 function Daneel.GUI.Text.__tostring(element)
-    return "Daneel.GUI."..element.type..": '"..element.name.."'"
+    return "Daneel.GUI.Text: '"..element.name.."'"
 end
 
 
@@ -328,7 +328,6 @@ function Daneel.GUI.Text.New(name, params)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
     local element = {
-        type = "Text",
         gameObject = GameObject.New(name, {
             parent = Daneel.config.hudCamera,
             mapRenderer = {
@@ -406,8 +405,6 @@ function Daneel.GUI.Checkbox.New(name, params)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
     local element = {
-        type = "Checkbox",
-        name = name,
         gameObject = GameObject.New(name, {
             parent = Daneel.config.hudCamera,
             mapRenderer = {
