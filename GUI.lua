@@ -19,16 +19,6 @@ function Daneel.GUI.Get(name)
     return Daneel.GUI.elements[name]
 end
 
---- Destroy the provided element.
--- @param element (Daneel.GUI.Text) The element.
-function Daneel.GUI.Destroy(element)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Destroy", element)
-    local errorHead = "Daneel.GUI.Destroy(element) : "
-    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
-    element.gameObject:Destroy()
-    Daneel.Debug.StackTrace.EndFunction()
-end
-
 
 ----------------------------------------------------------------------------------
 -- Common
@@ -64,7 +54,7 @@ end
 
 
 --- Set the element's scale which is actually the gameObject's local scale.
--- @param element (Daneel.GUI.Text) The element.
+-- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox) The element.
 -- @param scale (number or Vector3) The local scale.
 function Daneel.GUI.Common.SetScale(element, scale)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetScale", element)
@@ -80,7 +70,7 @@ function Daneel.GUI.Common.SetScale(element, scale)
 end
 
 --- Get the element's scale.
--- @param element (Daneel.GUI.Text) The element.
+-- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox) The element.
 -- @param returnAsNumber [optional default=false] (boolean) Return the scale as a number (scale.x) instead of a Vector3.
 -- @return (Vector3 or number) The scale.
 function Daneel.GUI.Common.GetScale(element, returnAsNumber)
@@ -99,7 +89,7 @@ end
 
 
 --- Set the element's opacity which is actually the mapRenderer's opacity.
--- @param element (Daneel.GUI.Text) The element.
+-- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox) The element.
 -- @param opacity (number) The opacity (between 0.0 and 1.0).
 function Daneel.GUI.Common.SetOpacity(element, opacity)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetOpacity", element)
@@ -117,7 +107,7 @@ function Daneel.GUI.Common.SetOpacity(element, opacity)
 end
 
 --- Get the elements's opacity which is actually the component's opacity.
--- @param element (Daneel.GUI.Text) The element.
+-- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox) The element.
 -- @return (number) The opacity (between 0.0 and 1.0).
 function Daneel.GUI.Common.GetOpacity(element)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetOpacity", element)
@@ -137,7 +127,7 @@ end
 
 
 --- Set the label of the provided element.
--- @param element (Daneel.GUI.Text) The element.
+-- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox) The element.
 -- @param label (mixed) Something to display.
 function Daneel.GUI.Common.SetLabel(element, label, replacements)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetLabel", element, label, replacements)
@@ -183,19 +173,20 @@ function Daneel.GUI.Common.SetLabel(element, label, replacements)
 end
 
 --- Get the label of the provided element.
--- @param element (Daneel.GUI.Text) The element.
+-- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox) The element.
 -- @return (string) The label.
 function Daneel.GUI.Common.GetLabel(element)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetLabel", element)
     local errorHead = "Daneel.GUI.Common.GetLabel(element) : "
     Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiElementsTypes, errorHead)
+    Daneel.Debug.StackTrace.EndFunction()
     return element._label
 end
 
 
 --- Set the position of the provided element on the screen.
 -- 0, 0 is the top left of the screen.
--- @param element (Daneel.GUI.Text) The element.
+-- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox) The element.
 -- @param x (Vector2 or number) The x component of the position, the distance in pixel from the left side of the screen or the position as a Vector2.
 -- @param y [optional] (number) The y component of the position, the distance in pixel from the top side of the screen.
 function Daneel.GUI.Common.SetPosition(element, x, y)
@@ -257,7 +248,7 @@ function Daneel.GUI.Common.SetPosition(element, x, y)
 end
 
 --- Get the position of the provided element on the screen.
--- @param element (Daneel.GUI.Text) The element.
+-- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox) The element.
 -- @return (Vector2) The position.
 function Daneel.GUI.Common.GetPosition(element)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetPosition", element)
@@ -270,7 +261,19 @@ function Daneel.GUI.Common.GetPosition(element)
         local screenSize = CraftStudio.Screen.GetSize()
         element._position = Vector2.New(screenSize.x/2, screenSize.y/2)
     end
+    Daneel.Debug.StackTrace.EndFunction()
     return element._position
+end
+
+
+--- Destroy the provided element.
+-- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox) The element.
+function Daneel.GUI.Common.Destroy(element)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Destroy", element)
+    local errorHead = "Daneel.GUI.Destroy(element) : "
+    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    element.gameObject:Destroy()
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 ----------------------------------------------------------------------------------
@@ -278,6 +281,8 @@ end
 
 Daneel.GUI.Text = {}
 setmetatable(Daneel.GUI.Text, Daneel.GUI.Common)
+GUIText = Daneel.GUI.Text
+
 
 function Daneel.GUI.Text.__index(element, key)
     local funcName = "Get"..key:ucfirst()
@@ -354,6 +359,8 @@ end
 
 Daneel.GUI.Checkbox = {}
 setmetatable(Daneel.GUI.Checkbox, Daneel.GUI.Common)
+GUICheckbox = Daneel.GUI.Checkbox
+
 
 function Daneel.GUI.Checkbox.__index(element, key)
     local funcName = "Get"..key:ucfirst()
