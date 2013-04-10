@@ -688,7 +688,7 @@ function Daneel.Awake()
         Daneel.defaultConfig.componentObjects,
         Daneel.defaultConfig.craftStudioObjects,
         Daneel.defaultConfig.daneelObjects,
-        Daneel.defaultConfig.guiElements,
+        Daneel.defaultConfig.guiObjects,
         Daneel.config.objects
     )
 
