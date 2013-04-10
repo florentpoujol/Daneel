@@ -35,7 +35,9 @@ function Daneel.GUI.Common.SetName(element, name)
     local errorHead = "Daneel.GUI.Common.SetName(element, name) : "
     Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
-    Daneel.GUI.elements[element._name] = nil
+    if element._name ~= nil then
+        Daneel.GUI.elements[element._name] = nil
+    end
     element._name = name
     Daneel.GUI.elements[name] = element
     Daneel.Debug.StackTrace.EndFunction()
