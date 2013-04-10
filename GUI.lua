@@ -414,7 +414,7 @@ function Daneel.GUI.Checkbox.New(name, params)
             },
             scriptedBehaviors = {
                 "Daneel/Behaviors/MousehoverableGameObject",
-                "Daneel/Behaviors/Checkbox",
+                "Daneel/Behaviors/GUICheckbox",
             }
         }),
     }
@@ -427,7 +427,7 @@ function Daneel.GUI.Checkbox.New(name, params)
     element.label = name
     element.scale = Daneel.config.hudElementDefaultScale
     element.checked = false
-    element.gameObject:GetScriptedBehavior("Daneel/Behaviors/Checkbox").element = element
+    element.gameObject:GetScriptedBehavior("Daneel/Behaviors/GUICheckbox").element = element
 
     -- user-defined properties
     if params ~= nil then
@@ -482,6 +482,95 @@ function Daneel.GUI.Checkbox.GetChecked(element)
     Daneel.Debug.StackTrace.EndFunction()
     return element._checked    
 end
+
+
+----------------------------------------------------------------------------------
+-- Input
+
+Daneel.GUI.Input = {}
+setmetatable(Daneel.GUI.Input, Daneel.GUI.Common)
+GUIInput = Daneel.GUI.Input
+
+
+function Daneel.GUI.Input.__index(element, key)
+    local funcName = "Get"..key:ucfirst()
+
+    if Daneel.GUI.Input[funcName] ~= nil then
+        return Daneel.GUI.Input[funcName](element)
+    elseif Daneel.GUI.Input[key] ~= nil then
+        return Daneel.GUI.Input[key]
+    end
+
+    if Daneel.GUI.Common[funcName] ~= nil then
+        return Daneel.GUI.Common[funcName](element)
+    elseif Daneel.GUI.Common[key] ~= nil then
+        return Daneel.GUI.Common[key]
+    end
+
+    return nil
+end
+
+function Daneel.GUI.Input.__newindex(element, key, value)
+    local funcName = "Set"..key:ucfirst()
+
+    if Daneel.GUI.Input[funcName] ~= nil then
+        return Daneel.GUI.Input[funcName](element, value)
+    end
+
+    return rawset(element, key, value)
+end
+
+function Daneel.GUI.Input.__tostring(element)
+    return "Daneel.GUI.Input: '"..element.name.."'"
+end
+
+
+-- Create a new GUI.Input.
+-- @param name (string) The element name.
+-- @param params [optional] (table) A table with initialisation parameters.
+-- @return (Daneel.GUI.Input) The new element.
+function Daneel.GUI.Input.New(name, params)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Input.New", name, params)
+    local errorHead = "Daneel.GUI.Input.New(name[, params]) : "
+    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
+    Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
+
+    local element = {
+        gameObject = GameObject.New(name, {
+            parent = Daneel.config.hudCamera,
+            mapRenderer = {
+                map = Map.LoadFromPackage(Daneel.config.textMapPath)
+            },
+            scriptedBehaviors = {
+                "Daneel/Behaviors/MousehoverableGameObject",
+                "Daneel/Behaviors/GUIInput",
+            }
+        }),
+    }
+
+    setmetatable(element, Daneel.GUI.Input)
+
+    -- default properties
+    element.name = name
+    element.position = Vector2.New(100)
+    element.label = name
+    element.scale = Daneel.config.hudElementDefaultScale
+    element.focused = false
+    element.gameObject:GetScriptedBehavior("Daneel/Behaviors/GUIInput").element = element
+
+    -- user-defined properties
+    if params ~= nil then
+        for key, value in pairs(params) do
+            element[key] = value
+        end
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return element
+end
+
+
+
 
 
 ----------------------------------------------------------------------------------

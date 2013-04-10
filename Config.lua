@@ -21,6 +21,26 @@ Daneel.config = {
 
     },
 
+    inputKeys = {
+        --[[
+        buttonname, => print the buttonName (par default left and right shift + buttonName = BUTTONNAME )
+
+        buttonName = {
+            otherButtonName = "value"
+        }
+
+
+        ]]
+
+        ['"'] = {
+            LeftShift = "3",
+            RightAlt = "#",
+        },
+
+        "a", 
+        "b",
+    }
+
 
     -- Your custom objects and their type returned by Daneel.Debug.GetType()
     -- GetType() will return the type on tables that have the object as metatable
