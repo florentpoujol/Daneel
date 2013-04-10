@@ -427,34 +427,52 @@ Note that any strings, not just the localized strings, may benefits from the pla
 
 ## GUI
 
-Daneel allows to easilly create GUI elements in order to build HUD and prompt the player with information or interact with him.  
+Daneel allows to easilly create GUI elments in order to build HUD and prompt the player with information or interact with him.  
 
 ### Setup
 
-GUI elements are actually gameObjects parented to the HUD camera which is a gameObject with an orthographic camera, somewhere in your scene away from where the game actually happens. Name it "HUDCamera" or update the value of `Daneel.config.hudCameraName`. If you set an orthographic scale other than 10, update the value of `Daneel.config.hudCameraOrthographicScale`.  
-GUI elements may only be created from a script, you can not add them in your scene
+GUI elments are actually gameObjects parented to the HUD camera.  
+The HUD camera is a gameObject with an orthographic camera component, somewhere in your scene away from where the game actually happens. Name it "HUDCamera" or update the value of `Daneel.config.hudCameraName`. If you set an orthographic scale other than 10, update the value of `Daneel.config.hudCameraOrthographicScale`.
 
+Available GUI objects are :
+- Daneel.GUI
+- GUIText (Daneel.GUI.Text)
+- GUICheckbox (Daneel.GUI.Checkbox)
+- GUIInput (Daneel.GUI.Input)
 
-- GUIText (Daneel.GUI.Text) : text
-- GUICheckbox (Daneel.GUI.Checkbox) : checkbox
+### Common element properties
 
+The GUI elments are convenient wrapper around the gameObjects they are made of that allows to easily manipulate them.  
+Get and set the object's properties via their appropriate gettter and setter (or their dynamic variable) at any time during creation or afterward.
 
-### Common elements properties
-
-The GUI objects are convenient wrapper around the gameObjects that the elements are made of. They allows to easily manipulate them.
-Get and set the element's properties via their appropriate gettter and setter (or their dynamic variable).
-
-
+- Name : be sure that the name is unique during creation, if you want to retrieve an element later by its name with `GUI.Get(name)`.
+- Scale : a scale of 1 is very big, so the elments are created with a default scale of 0.2. You may change this value with `Daneel.config.hudElementDefaultScale`.
 - Opacity
-- Scale : a scale of 1 is very big, so the elements are created with a default scale of 0.2. You may change this value with `Daneel.config.hudElementDefaultScale`.
-- Label : this is the text that identifies the element on screen. You may create a carriage return by inserting ":br:" in the string.
-- Position : guiObjects are positionned in pixels from the top-left corner of the screen
+- Label : this is the text that identifies the element on screen. You may go to the mext line by inserting ":br:" in the string.
 
+*Position*  
+Yet they are actually gameObjects in a 3D world, GUI elements are positionned on the 2D plane that is the screen.
+Similarly to Vector3, Vector2 has been introduced and must be supplied to `element:SetPosition()`. The origin is the top-left corner of the screen, so the x component is the distance *in pixels* from the left side of the screen. The y component is the distance in pixels from the top of the screen.  
+For a screen that is 800x600 pixels wide, {400,300} is the center of the screen while {800,600} is its bottom-right corner.
+
+All GUI element may be created from script with the New(name)
 
 ### GUIText
 
 Just some text.
-GUIText is an alias of Daneel.GUI.Text.
+
+### GUICheckbox
+
+A labelled checkox that has a "checked" state which can be toggled when the user clicks on the checkbox or its label.  
+I addition to the usual parameters, you may define a function as the value of the "onClick" property. This function will be called whenever the user click on the chekbox and receive the element as first and only argument.
+
+    local element = GUICheckbox.New("Box1", {
+        position = Vector2.New(400, 200),
+        
+        onClick = function(element)
+            print()
+        end
+    })
 
 
 ## Miscellaneous
@@ -533,21 +551,33 @@ Arguments between square brackets are optional.
 * Daneel.Events.StopListen(eventName, functionOrGameObject)
 * Daneel.Events.Fire(eventName[, ...])
 
-## Daneel.GUI
+### Daneel.GUI
+
+- Daneel.GUI.Get(name)
 
 For all GUI Elements :
 
-- element:SetPosition(scale)
+- element:SetName(position)
+- element:GetName()
+- element:SetPosition(position)
 - element:GetPosition()
 - element:SetScale(scale)
-- element:GetScale()
+- element:GetScale([returnAsNumber])
 - element:SetOpacity(opacity)
 - element:GetOpacity()
-
-For Text and Checkbox :
-
-- element:SetLabel(scale)
+- element:SetLabel(label)
 - element:GetLabel()
+- element:Destroy()
+
+### Daneel.GUI.Checkbox / GUICheckbox
+
+- Daneel.GUI.Checkbox.New(name[, params])
+- checkbox:SwitchSate()
+
+### Daneel.GUI.Text / GUIText
+
+- Daneel.GUI.Text.New(name[, params])
+
 
 ### Daneel.Lang
 
@@ -642,11 +672,17 @@ For Text and Checkbox :
 * table.getvalues(table)
 * table.getkey(table, value)
 
+### Vector2
+
+- Vector2.New(x[, y])
+
 
 ## Changelog
 
 ### v1.2.0
 
+- Added GUI elements
+- Added Vector2 object
 - Added localization capablities (`Daneel.Lang.GetLine(key[, replacement])`)
 - Added `Daneel.Utilities.ReplaceInString(string, replacement)`
 - Added `string.slpit(string, delimiter)`
