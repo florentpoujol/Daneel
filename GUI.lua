@@ -37,6 +37,32 @@ Daneel.GUI.Common = {} -- common functions for GUI Elements
 Daneel.GUI.Common.__index = Daneel.GUI.Common
     
 
+--- Set the element's name.
+-- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox) The element.
+-- @param name (string) The local name.
+function Daneel.GUI.Common.SetName(element, name)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetName", element)
+    local errorHead = "Daneel.GUI.Common.SetName(element, name) : "
+    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
+    Daneel.GUI.elements[element._name] = nil
+    element._name = name
+    Daneel.GUI.elements[name] = element
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+--- Get the element's name.
+-- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox) The element.
+-- @return (string) The name.
+function Daneel.GUI.Common.GetName(element)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetName", element, returnAsNumber)
+    local errorHead = "Daneel.GUI.Common.GetName(element) : "
+    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.StackTrace.EndFunction()
+    return element._name
+end
+
+
 --- Set the element's scale which is actually the gameObject's local scale.
 -- @param element (Daneel.GUI.Text) The element.
 -- @param scale (number or Vector3) The local scale.
@@ -298,7 +324,6 @@ function Daneel.GUI.Text.New(name, params)
 
     local element = {
         type = "Text",
-        name = name,
         gameObject = GameObject.New(name, {
             parent = Daneel.config.hudCamera,
             mapRenderer = {
@@ -308,6 +333,7 @@ function Daneel.GUI.Text.New(name, params)
     }
 
     setmetatable(element, Daneel.GUI.Text)
+    element.name = name
     element.position = Vector2.New(100)
     element.label = name
     element.scale = Daneel.config.hudElementDefaultScale
@@ -318,7 +344,6 @@ function Daneel.GUI.Text.New(name, params)
         end
     end
 
-    Daneel.GUI.elements[name] = element
     Daneel.Debug.StackTrace.EndFunction()
     return element
 end
@@ -391,6 +416,7 @@ function Daneel.GUI.Checkbox.New(name, params)
     setmetatable(element, Daneel.GUI.Checkbox)
 
     -- default properties
+    element.name = name
     element.position = Vector2.New(100)
     element.label = name
     element.scale = Daneel.config.hudElementDefaultScale
@@ -404,7 +430,6 @@ function Daneel.GUI.Checkbox.New(name, params)
         end
     end
 
-    Daneel.GUI.elements[name] = element
     Daneel.Debug.StackTrace.EndFunction()
     return element
 end
