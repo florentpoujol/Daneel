@@ -75,7 +75,12 @@ Daneel.config = {
     -- GUI element's default scale
     hudElementDefaultScale = 0.2,
 
+    -- hud
+    colorsTileSetPaths = {
 
+    },
+
+    textDefaultColorName = "Red",
     
 
     -- Set to true to enable the framework's advanced debugging capabilities.
