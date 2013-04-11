@@ -7,7 +7,7 @@ end
 ----------------------------------------------------------------------------------
 -- GUI
 
-Daneel.GUI = { elements = {} }
+Daneel.GUI = { elements = {}, colors = {} }
 
 --- Get the GUI element of the provoded name.
 -- @param name (string) The name.
@@ -141,6 +141,9 @@ function Daneel.GUI.Common.SetLabel(element, label)
 
     local map = Map.LoadFromPackage(Daneel.config.emptyTextMapPath)
     element.gameObject.mapRenderer.map = map -- empty the current map
+    if element._color ~= nil then
+        element.gameObject.mapRenderer.tileSet = element._color
+    elseif 
     local caracterPosition = 0
     local linePosition = 0
     local skipCharacter = 0
@@ -271,6 +274,31 @@ function Daneel.GUI.Common.GetPosition(element)
 end
 
 
+--- Set the element's color which is actually the tile set used to render the label.
+-- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox, Daneel.GUI.Input) The element.
+-- @param color (TileSet) An entry in Danel.GUI.colors.
+function Daneel.GUI.Common.SetColor(element, color)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetColor", element)
+    local errorHead = "Daneel.GUI.Common.SetColor(element, color) : "
+    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckOptionalArgType(color, "color", "TileSet", errorHead)
+
+    if color ~= nil then
+        element.gameObject.mapRenderer.tileSet = color
+        element._color = color
+    elseif element._color ~= nil then
+        element.gameObject.mapRenderer.tileSet = element._color
+        element._color = element._color
+    elseif Daneel.config.textDefaultColorName ~= nil then
+        local color = Daneel.GUI.colors[Daneel.config.textDefaultColorName]
+        element.gameObject.mapRenderer.tileSet = color
+        element._color = color
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+
 --- Destroy the provided element.
 -- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox) The element.
 function Daneel.GUI.Common.Destroy(element)
@@ -318,7 +346,7 @@ function Daneel.GUI.Text.__newindex(element, key, value)
 end
 
 function Daneel.GUI.Text.__tostring(element)
-    return "Daneel.GUI.Text: '"..element.name.."'"
+    return "Daneel.GUI.Text: '"..element._name.."'"
 end
 
 
@@ -333,6 +361,7 @@ function Daneel.GUI.Text.New(name, params)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
     local element = {
+        _name = name,
         gameObject = GameObject.New(name, {
             parent = Daneel.config.hudCamera,
             mapRenderer = {},
@@ -344,6 +373,7 @@ function Daneel.GUI.Text.New(name, params)
     element.position = Vector2.New(100)
     element.label = name
     element.scale = Daneel.config.hudElementDefaultScale
+    element:SetColor()
     
     if params ~= nil then
         for key, value in pairs(params) do
@@ -393,7 +423,7 @@ function Daneel.GUI.Checkbox.__newindex(element, key, value)
 end
 
 function Daneel.GUI.Checkbox.__tostring(element)
-    return "Daneel.GUI.Checkbox: '"..element.name.."'"
+    return "Daneel.GUI.Checkbox: '"..element._name.."'"
 end
 
 
@@ -520,7 +550,7 @@ function Daneel.GUI.Input.__newindex(element, key, value)
 end
 
 function Daneel.GUI.Input.__tostring(element)
-    return "Daneel.GUI.Input: '"..element.name.."'"
+    return "Daneel.GUI.Input: '"..element._name.."'"
 end
 
 
@@ -654,6 +684,7 @@ function Daneel.GUI.Input.SetCursorPosition(element, position, relative)
     Daneel.Debug.CheckOptionalArgType(relative, "relative", "boolean", errorHead)
 
     local byte = string.byte("_")
+    byte = 254 -- pipe verticale sur la gauche
     element.cursorMapRndr.map = Map.LoadFromPackage(Daneel.config.emptyTextMapPath)
     local map = element.cursorMapRndr.map
 
