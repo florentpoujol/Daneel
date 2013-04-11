@@ -534,7 +534,7 @@ function Daneel.GUI.Input.New(name, params)
     local element = {
         gameObject = GameObject.New(name, {
             parent = Daneel.config.hudCamera,
-            mapRenderer = {},
+            mapRenderer = {}, -- map is set in SetLabel()
             scriptedBehaviors = {
                 "Daneel/Behaviors/MousehoverableGameObject",
                 "Daneel/Behaviors/GUIInput",
@@ -549,10 +549,10 @@ function Daneel.GUI.Input.New(name, params)
     element.position = Vector2.New(100)
     element.label = name
     element.scale = Daneel.config.hudElementDefaultScale
-    element.focused = false
+    element._focused = false
     element.gameObject:GetScriptedBehavior("Daneel/Behaviors/GUIInput").element = element
-    element.cursorMapRndr = element.gameObject:AddMapRenderer()
-    element.cursorPosition = 0
+    element.cursorMapRndr = element.gameObject:AddMapRenderer({opacity = 0.7})
+    element._cursorPosition = 0
 
     -- user-defined properties
     if params ~= nil then
@@ -590,10 +590,17 @@ function Daneel.GUI.Input.UpdateLabel(element, value)
         table.remove(label, cursorPosition)
     end
 
-    element.label = table.concat(label)
+    local newLabel = ""
+    for i, caracter in ipairs(label) do
+        if element.maxLength ~= nil and i >= element.maxLength then
+            break
+        end
+        newLabel = newLabel..caracter
+    end
+    element.label = newLabel
 
-    if type(self.element.onChange) == "function" then
-        self.element:onChange()
+    if type(element.onChange) == "function" then
+        element:onChange()
     end
     Daneel.Debug.StackTrace.EndFunction()
 end
@@ -613,6 +620,8 @@ function Daneel.GUI.Input.SetFocused(element, state)
 
         if state == true then
             element:SetCursorPosition()
+        else
+            element.cursorMapRndr.map = Map.LoadFromPackage(Daneel.config.emptyTextMapPath) -- hide the cursor on unfocus
         end
     end
     Daneel.Debug.StackTrace.EndFunction()
@@ -649,9 +658,15 @@ function Daneel.GUI.Input.SetCursorPosition(element, position, relative)
         position = #element._label
     elseif relative == true and element._cursorPosition ~= nil then
         position = element._cursorPosition + position
+        position = math.clamp(position, 0, #element._label)
     end
-    element.cursorMapRndr.map:SetBlockAt(position, 0, 1, byte, Map.BlockOrientation.North)
 
+    if element.maxLength ~= nil then
+        position = math.clamp(position, 0, element.maxLength)
+    end
+    
+    element.cursorMapRndr.map:SetBlockAt(position, 0, 1, byte, Map.BlockOrientation.North)
+    element._cursorPosition = position
     Daneel.Debug.StackTrace.EndFunction()    
 end
 
