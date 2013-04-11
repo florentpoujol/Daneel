@@ -2,7 +2,7 @@
 -- Behavior for Daneel.GUI.Checkbox
 
 function Behavior:Start()
-	Daneel.Events.Listen("OnLeftMouseButtonReleased", self.gameObject)
+	Daneel.Events.Listen("OnLeftMouseButtonJustReleased", self.gameObject)
 end
 
 function Behavior:OnLeftMouseButtonReleased()
