@@ -56,6 +56,14 @@ Daneel.defaultConfig = {
     -- GUI element's default scale
     hudElementDefaultScale = 0.2,
 
+    colorTileSetPaths = {
+        "Daneel/ASCII_White",
+        "Daneel/ASCII_Orange",
+        "Daneel/ASCII_Purple",
+        "Daneel/ASCII_Red",
+        "Daneel/ASCII_Yellow",
+    },
+
 
     -- Rays
     -- list of the gameObjects to cast the ray against by default by ray:Cast()
@@ -802,8 +810,22 @@ function Daneel.Awake()
 
     -- GUI
     Daneel.config.hudCamera = GameObject.Get(Daneel.config.hudCameraName)
-    Daneel.config.textMap = Asset.GetMap(Daneel.config.textMapPath)
-    Daneel.config.emptyTextMap = Asset.GetMap(Daneel.config.emptyTextMapPath)
+
+    local allTileSetPaths = table.merge(Daneel.config.colorTileSetPaths, Daneel.defaultConfig.colorTileSetPaths)
+    
+    if Daneel.config.textDefaultColorName ~= nil and not allTileSetPaths:containskey(Daneel.config.textDefaultColorName) then
+        print("WARNING : 'Daneel.config.textDefaultColorName' with value '"..Daneel.config.textDefaultColorName.."' is not one of the valid color name : "..table.concat(allTileSetPaths:getkeys(), "', '").."'")
+    end
+
+    for name, path in pairs(allTileSetPaths) do
+        local tileSet = Asset.GetTileSet(path)
+        if tileSet == nil then
+            print("WARNING : item with key '"..name.."' and value '"..path.."' in 'Daneel.config.colorTileSetPaths' is not a valid Tile Set path.")
+        else
+            Daneel.GUI.colors[name] = tileSet
+        end
+    end
+
 
     -- Awakening is over
     DANEEL_LOADED = true
