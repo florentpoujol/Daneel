@@ -625,54 +625,6 @@ end
 -- Initialization
 local luaDocStop = ""
 
-
--- Components
-for componentType, componentObject in pairs(Daneel.defaultConfig.componentObjects) do
-    -- GameObject.AddComponent helpers
-    -- ie : gameObject:AddModelRenderer()
-    if componentType ~= "Transform" and componentType ~= "ScriptedBehavior" then 
-        GameObject["Add"..componentType] = function(gameObject, params)
-            Daneel.Debug.StackTrace.BeginFunction("GameObject.Add"..componentType, gameObject, params)
-            local errorHead = "GameObject.Add"..componentType.."(gameObject[, params]) : "
-            Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-
-            local component = gameObject:AddComponent(componentType, params)
-            Daneel.Debug.StackTrace.EndFunction("GameObject.Add"..componentType, component)
-            return component
-        end
-    end
-
-    -- GameObject.SetComponent helpers
-    -- ie : gameObject:SetModelRenderer()
-    if componentType ~= "ScriptedBehavior" then 
-        GameObject["Set"..componentType] = function(gameObject, params)  
-            Daneel.Debug.StackTrace.BeginFunction("GameObject.Set"..componentType, gameObject, params)
-            local errorHead = "GameObject.Set"..componentType.."(gameObject, params) : "
-            Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-
-            local component = gameObject:SetComponent(componentType, params)
-            Daneel.Debug.StackTrace.EndFunction("GameObject.Set"..componentType)
-        end
-    end
-
-    componentObject["__tostring"] = function(component)
-        -- returns something like "ModelRenderer: 123456789"
-        -- component.inner is "?: [some ID]"
-        return componentType..tostring(component.inner):sub(2, 20) -- leave 2 as the starting index, only the transform has an extra space
-    end
-end -- end for componentObjects
-
--- Assets
-for assetType, assetObject in pairs(Daneel.defaultConfig.assetObjects) do
-    assetObject["__tostring"] = function(asset)
-        -- print something like : "Model: 123456789"
-        -- asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
-        -- CraftStudioCommon.ProjectData. is 30 characters long
-        return tostring(asset.inner):sub(31, 60)
-    end
-end
-
-
 -- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
     setmetatable(Daneel.config, Daneel.defaultConfig)
@@ -723,6 +675,41 @@ function Daneel.Awake()
 
     -- Components
     for componentType, componentObject in pairs(Daneel.defaultConfig.componentObjects) do
+
+        -- GameObject.AddComponent helpers
+        -- ie : gameObject:AddModelRenderer()
+        if componentType ~= "Transform" and componentType ~= "ScriptedBehavior" then 
+            GameObject["Add"..componentType] = function(gameObject, params)
+                Daneel.Debug.StackTrace.BeginFunction("GameObject.Add"..componentType, gameObject, params)
+                local errorHead = "GameObject.Add"..componentType.."(gameObject[, params]) : "
+                Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+
+                local component = gameObject:AddComponent(componentType, params)
+                Daneel.Debug.StackTrace.EndFunction("GameObject.Add"..componentType, component)
+                return component
+            end
+        end
+
+        -- GameObject.SetComponent helpers
+        -- ie : gameObject:SetModelRenderer()
+        if componentType ~= "ScriptedBehavior" then 
+            GameObject["Set"..componentType] = function(gameObject, params)  
+                Daneel.Debug.StackTrace.BeginFunction("GameObject.Set"..componentType, gameObject, params)
+                local errorHead = "GameObject.Set"..componentType.."(gameObject, params) : "
+                Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+
+                local component = gameObject:SetComponent(componentType, params)
+                Daneel.Debug.StackTrace.EndFunction("GameObject.Set"..componentType)
+            end
+        end
+
+        componentObject["__tostring"] = function(component)
+            -- returns something like "ModelRenderer: 123456789"
+            -- component.inner is "?: [some ID]"
+            return componentType..tostring(component.inner):sub(2, 20) -- leave 2 as the starting index, only the transform has an extra space
+        end
+
+
         -- Components getters-setter-tostring
         if componentType ~= "ScriptedBehavior" then
             -- Dynamic Getters
@@ -791,6 +778,13 @@ function Daneel.Awake()
             end
             
             return rawset(asset, key, value)
+        end
+
+        assetObject["__tostring"] = function(asset)
+            -- print something like : "Model: 123456789"
+            -- asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
+            -- CraftStudioCommon.ProjectData. is 30 characters long
+            return tostring(asset.inner):sub(31, 60)
         end
     end
 
