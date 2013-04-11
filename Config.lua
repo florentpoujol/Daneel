@@ -18,7 +18,6 @@ Daneel.config = {
     -- Button names as you defined them in the "Administration > Game Controls" tab of your project
     -- Button whose name is defined here can be used as HotKeys
     buttons = {
-
     },
 
     inputKeys = {
@@ -34,12 +33,12 @@ Daneel.config = {
 
         ['"'] = {
             LeftShift = "3",
-            RightAlt = "#",
+            --RightAlt = "#",
         },
 
         "a", 
         "b",
-    }
+    },
 
 
     -- Your custom objects and their type returned by Daneel.Debug.GetType()
@@ -71,9 +70,12 @@ Daneel.config = {
 
     -- Fully-qualified path of the map used to render text components
     textMapPath = "Daneel/TextMap",
+    emptyTextMapPath = "Daneel/EmptyTextMap",
 
     -- GUI element's default scale
     hudElementDefaultScale = 0.2,
+
+
     
 
     -- Set to true to enable the framework's advanced debugging capabilities.

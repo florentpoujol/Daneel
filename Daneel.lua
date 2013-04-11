@@ -77,7 +77,17 @@ Daneel.defaultConfig = {
         "Daneel/Behaviors/TriggerableGameObject",
         "Daneel/Behaviors/CastableGameObject",
         "Daneel/Behaviors/MousehoverableGameObject",
-    }
+    },
+
+
+    buttons = {
+        LeftMouse,
+        LeftShift,
+        Delete,
+        LeftArrow,
+        RightArrow,
+        
+    },
 }
 
 Daneel.defaultConfig.__index = Daneel.defaultConfig
@@ -670,7 +680,7 @@ function Daneel.Awake()
     Daneel.defaultConfig.daneelObjects = {
         RaycastHit = RayCastHit,
         Vector2 = Vector2,
-    }, 
+    }
 
     Daneel.defaultConfig.guiObjects = {
         ["Daneel.GUI.Text"] = Daneel.GUI.Text,
@@ -692,9 +702,13 @@ function Daneel.Awake()
         Daneel.config.objects
     )
 
+    -- buttons
+    Daneel.config.buttons = table.merge(Daneel.defaultConfig.buttons, Daneel.config.buttons)
+    Daneel.config.inputKeys = table.merge(Daneel.defaultConfig.inputKeys, Daneel.config.inputKeys)
+    Daneel.config.allButtons = table.merge(Daneel.config.buttons, Daneel.config.inputKeys)
+
     -- scripts
     Daneel.config.scripts = table.merge(Daneel.config.scripts, Daneel.defaultConfig.daneelScripts)
-
 
     -- Dynamic getters and setter on Scripts
     for i, path in pairs(Daneel.config.scripts) do
@@ -790,6 +804,7 @@ function Daneel.Awake()
     -- GUI
     Daneel.config.hudCamera = GameObject.Get(Daneel.config.hudCameraName)
     Daneel.config.textMap = Asset.GetMap(Daneel.config.textMapPath)
+    Daneel.config.emptyTextMap = Asset.GetMap(Daneel.config.emptyTextMapPath)
 
     -- Awakening is over
     DANEEL_LOADED = true
@@ -811,7 +826,11 @@ local luaDocStop = ""
 function Daneel.Update()
     -- HotKeys
     -- fire an event whenever a registered button is pressed
-    for i, buttonName in ipairs(Daneel.config.buttons) do
+    for i, buttonName in ipairs(Daneel.config.allButtons) do
+        if type(i) == "sting" then
+            buttonName = i
+        end
+
         if CraftStudio.Input.WasButtonJustPressed(buttonName) then
             Daneel.Events.Fire("On"..buttonName:ucfirst().."ButtonJustPressed")
         end

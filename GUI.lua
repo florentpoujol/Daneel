@@ -131,19 +131,16 @@ end
 --- Set the label of the provided element.
 -- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox) The element.
 -- @param label (mixed) Something to display.
-function Daneel.GUI.Common.SetLabel(element, label, replacements)
+function Daneel.GUI.Common.SetLabel(element, label)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetLabel", element, label, replacements)
     local errorHead = "Daneel.GUI.Common.SetLabel(element, label[, replacements]) : "
     Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
     
     label = tostring(label)
-    if replacements ~= nil then
-        Daneel.Debug.CheckArgType(replacements, "replacements", "table", errorHead)
-        label = Daneel.Utilities.ReplaceInString(label, replacements)
-    end
     element._label = label
 
-    local map = element.gameObject.mapRenderer.map
+    local map = Map.LoadFromPackage(Daneel.config.emptyTextMapPath)
+    element.gameObject.mapRenderer.map = map -- empty the current map
     local caracterPosition = 0
     local linePosition = 0
     local skipCharacter = 0
@@ -161,6 +158,9 @@ function Daneel.GUI.Common.SetLabel(element, label, replacements)
                 linePosition = linePosition - 1
                 caracterPosition = 0
                 skipCharacter = 4
+            elseif caracterPosition == element.wordWrap then
+                linePosition = linePosition - 1
+                caracterPosition = 0
             else
                 local byte = label:byte(i)
                 if byte > 255 then byte = string.byte("?", 1) end -- should be 64
@@ -332,9 +332,7 @@ function Daneel.GUI.Text.New(name, params)
     local element = {
         gameObject = GameObject.New(name, {
             parent = Daneel.config.hudCamera,
-            mapRenderer = {
-                map = Map.LoadFromPackage(Daneel.config.textMapPath)
-            },
+            mapRenderer = {},
         }),
     }
 
@@ -409,9 +407,7 @@ function Daneel.GUI.Checkbox.New(name, params)
     local element = {
         gameObject = GameObject.New(name, {
             parent = Daneel.config.hudCamera,
-            mapRenderer = {
-                map = Map.LoadFromPackage(Daneel.config.textMapPath)
-            },
+            mapRenderer = {},
             scriptedBehaviors = {
                 "Daneel/Behaviors/MousehoverableGameObject",
                 "Daneel/Behaviors/GUICheckbox",
@@ -455,7 +451,7 @@ function Daneel.GUI.Checkbox.SwitchState(element)
 end
 
 -- Set the checked state of the checkbox.
--- Update the _checked variable and the mapRenderer then call the callBack function.
+-- Update the _checked variable and the mapRenderer
 -- @param element (Daneel.GUI.Checkbox) The element.
 -- @param state (boolean) The state.
 function Daneel.GUI.Checkbox.SetChecked(element, state)
@@ -538,9 +534,7 @@ function Daneel.GUI.Input.New(name, params)
     local element = {
         gameObject = GameObject.New(name, {
             parent = Daneel.config.hudCamera,
-            mapRenderer = {
-                map = Map.LoadFromPackage(Daneel.config.textMapPath)
-            },
+            mapRenderer = {},
             scriptedBehaviors = {
                 "Daneel/Behaviors/MousehoverableGameObject",
                 "Daneel/Behaviors/GUIInput",
@@ -557,6 +551,8 @@ function Daneel.GUI.Input.New(name, params)
     element.scale = Daneel.config.hudElementDefaultScale
     element.focused = false
     element.gameObject:GetScriptedBehavior("Daneel/Behaviors/GUIInput").element = element
+    element.cursorMapRndr = element.gameObject:AddMapRenderer()
+    element.cursorPosition = 0
 
     -- user-defined properties
     if params ~= nil then
@@ -570,7 +566,104 @@ function Daneel.GUI.Input.New(name, params)
 end
 
 
+-- Update the label by inserting the provided value to the cursor position.
+-- @param element (Daneel.GUI.Input) The element.
+-- @param value (string) The value. If value = Delete > remove the caracter.
+function Daneel.GUI.Input.UpdateLabel(element, value)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Input.UpdateLabel", element, state)
+    local errorHead = "Daneel.GUI.Input.UpdateLabel(element, state) : "
+    Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.Input", errorHead)
+    Daneel.Debug.CheckArgType(value, "value", "string", errorHead)
 
+    local cursorPosition = element._cursorPosition+1
+    local label = element._label:totable()
+    
+    if value ~= "Delete" then
+        local value = value:totable()
+        for i, caracter in ipairs(value) do
+            table.insert(label, cursorPosition, caracter)
+            cursorPosition = cursorPosition + 1
+        end
+
+        element.cursorPosition = cursorPosition-1
+    else
+        table.remove(label, cursorPosition)
+    end
+
+    element.label = table.concat(label)
+
+    if type(self.element.onChange) == "function" then
+        self.element:onChange()
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+
+-- Set the focused state of the checkbox.
+-- Update the _focused variable and the cursor position. 
+-- @param element (Daneel.GUI.Input) The element.
+-- @param state (boolean) The state.
+function Daneel.GUI.Input.SetFocused(element, state)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Input.SetFocused", element, state)
+    local errorHead = "Daneel.GUI.Input.SetFocused(element, state) : "
+    Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.Input", errorHead)
+    Daneel.Debug.CheckArgType(state, "state", "boolean", errorHead)
+    if element._focused ~= state then
+        element._focused = state
+
+        if state == true then
+            element:SetCursorPosition()
+        end
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+-- Get the focused state of the checkbox.
+-- @param element (Daneel.GUI.Input) The element.
+-- @return (boolean) The state.
+function Daneel.GUI.Input.GetFocused(element)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Input.GetFocused", element)
+    local errorHead = "Daneel.GUI.Input.GetFocused(element) : "
+    Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.Input", errorHead)
+    Daneel.Debug.StackTrace.EndFunction()
+    return element._focused    
+end
+
+
+-- Set the cursor position.
+-- @param element (Daneel.GUI.Input) The element.
+-- @param position [optional] (number) The cursor position (or relative position). If not set, will position the cursor to the end.
+-- @param relative [optional default=false] (boolean) Tell wether the provided position is relative to the current cursor's position.
+function Daneel.GUI.Input.SetCursorPosition(element, position, relative)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Input.SetCursorPosition", element, position, relative)
+    local errorHead = "Daneel.GUI.Input.SetCursorPosition(element[, position, relative]) : "
+    Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.Input", errorHead)
+    Daneel.Debug.CheckOptionalArgType(position, "position", "number", errorHead)
+    Daneel.Debug.CheckOptionalArgType(relative, "relative", "boolean", errorHead)
+
+    local byte = string.byte("_")
+    element.cursorMapRndr.map = Map.LoadFromPackage(Daneel.config.emptyTextMapPath)
+    local map = element.cursorMapRndr.map
+
+    if position == nil then
+        position = #element._label
+    elseif relative == true and element._cursorPosition ~= nil then
+        position = element._cursorPosition + position
+    end
+    element.cursorMapRndr.map:SetBlockAt(position, 0, 1, byte, Map.BlockOrientation.North)
+
+    Daneel.Debug.StackTrace.EndFunction()    
+end
+
+-- Get the cursor position.
+-- @param element (Daneel.GUI.Input) The element.
+function Daneel.GUI.Input.GetCursorPosition(element)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Input.GetCursorPosition", element, position, relative)
+    local errorHead = "Daneel.GUI.Input.GetCursorPosition(element[, position, relative]) : "
+    Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.Input", errorHead)
+    Daneel.Debug.StackTrace.EndFunction()    
+    return element._cursorPosition
+end
 
 
 ----------------------------------------------------------------------------------

@@ -12,15 +12,41 @@ function Behavior:Start()
 			Daneel.Events.Listen("On"..key:ucfirst().."ButtonJustPressed", self.gameObject)
 		end
 	end
+
+	Daneel.Events.Listen("OnLeftArrowButtonJustPressed", self.gameObject)
+	Daneel.Events.Listen("OnRightArrowButtonJustPressed", self.gameObject)
 end
 
+
+-- focus on the input and place the cursor to the letter
 function Behavior:OnLeftMouseButtonJustPressed()
 	-- onMouseOver comes from Daneel/Behavior/CameraMouseOver
 	-- because Inputs are also mousehoverable gameObjects
-	self.element.focus = self.gameObject.onMouseOver
+	self.element.focused = self.gameObject.onMouseOver
 end
- 
 
+-- mouse the cursor left or right when focused and the user clicks on th left or right arrow
+function Behavior:OnLeftArrowButtonJustPressed()
+	if self.element.focused then
+		self.element:SetCursorPosition(-1, true)
+	end
+end
+
+function Behavior:OnRightArrowButtonJustPressed()
+	if self.element.focused then
+		self.element:SetCursorPosition(1, true)
+	end
+end
+
+function Behavior:OnDeleteButtonJustPressed()
+	if self.element.focused then
+		self.element:UpdateLabel("Delete")
+		self.element:SetCursorPosition(-1, true)
+	end
+end
+
+
+-- create function to catch the event for each inputKeys
 for key, value in ipairs(Daneel.config.inputKeys) do
 	-- the button name may be the key or the value
 	local button = key
@@ -36,27 +62,22 @@ for key, value in ipairs(Daneel.config.inputKeys) do
 
 	Behavior["On"..Button.."ButtonJustPressed"] = function(self)
 		if self.element.focused then
-			-- upper case, lower case
-			if CraftStudio.Input.IsButtonDown("LeftShift") or CraftStudio.Input.IsButtonDown("RightShift") then
-				self.element.label = self.element.label..Button
-			else
-				self.element.label = self.element.label..button
-			end
-
-			-- comb
+			
 			for button, value in pairs(comb) do
 				if CraftStudio.Input.IsButtonDown(button) then
-					self.element.label = self.element.label..value
+					self.element:UpdateLabel(value)
+					return
 				end
 			end
 
-			if type(self.element.onChange) == "function" then
-	            self.element:onChange()
-	        end 
+			-- upper case, lower case
+			if CraftStudio.Input.IsButtonDown("LeftShift") then
+				self.element:UpdateLabel(Button)
+			else
+				self.element:UpdateLabel(button)
+			end
 		end
 	end
 end
-
--- what about escape, space
 
 
