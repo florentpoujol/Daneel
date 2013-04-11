@@ -145,9 +145,12 @@ function Daneel.GUI.Common.SetLabel(element, label)
     local linePosition = 0
     local skipCharacter = 0
 
-    if Daneel.Debug.GetType(element) == "Daneel.GUI.Checkbox" then
+    local elementType = Daneel.Debug.GetType(element)
+    if elementType == "Daneel.GUI.Checkbox" then
         label = " "..label
         caracterPosition = 1
+    elseif elementType == "Daneel.GUI.Input" then
+        label = "["..label.."]"
     end
     
     for i = 1, label:len() do
@@ -552,7 +555,7 @@ function Daneel.GUI.Input.New(name, params)
     element._focused = false
     element.gameObject:GetScriptedBehavior("Daneel/Behaviors/GUIInput").element = element
     element.cursorMapRndr = element.gameObject:AddMapRenderer({opacity = 0.7})
-    element._cursorPosition = 0
+    element._cursorPosition = 1
 
     -- user-defined properties
     if params ~= nil then
@@ -575,7 +578,7 @@ function Daneel.GUI.Input.UpdateLabel(element, value)
     Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.Input", errorHead)
     Daneel.Debug.CheckArgType(value, "value", "string", errorHead)
 
-    local cursorPosition = element._cursorPosition+1
+    local cursorPosition = element._cursorPosition
     local label = element._label:totable()
     
     if value ~= "Delete" then
@@ -585,7 +588,7 @@ function Daneel.GUI.Input.UpdateLabel(element, value)
             cursorPosition = cursorPosition + 1
         end
 
-        element.cursorPosition = cursorPosition-1
+        element.cursorPosition = cursorPosition
     else
         table.remove(label, cursorPosition)
     end
@@ -655,17 +658,19 @@ function Daneel.GUI.Input.SetCursorPosition(element, position, relative)
     local map = element.cursorMapRndr.map
 
     if position == nil then
-        position = #element._label
+        position = #element._label+1
     elseif relative == true and element._cursorPosition ~= nil then
         position = element._cursorPosition + position
-        position = math.clamp(position, 0, #element._label)
+        position = math.clamp(position, 1, #element._label+1)
     end
 
-    if element.maxLength ~= nil then
-        position = math.clamp(position, 0, element.maxLength)
+   if element.maxLength ~= nil then
+        position = math.clamp(position, 1, element.maxLength)
     end
     
-    element.cursorMapRndr.map:SetBlockAt(position, 0, 1, byte, Map.BlockOrientation.North)
+    local offset = 1 -- offset by caracters before the label
+    -- position-1 because map block IDs begins at 0
+    element.cursorMapRndr.map:SetBlockAt(position+offset-1, 0, 1, byte, Map.BlockOrientation.North)
     element._cursorPosition = position
     Daneel.Debug.StackTrace.EndFunction()    
 end
