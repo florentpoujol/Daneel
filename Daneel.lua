@@ -81,12 +81,16 @@ Daneel.defaultConfig = {
 
 
     buttons = {
-        LeftMouse,
-        LeftShift,
-        Delete,
-        LeftArrow,
-        RightArrow,
+        "LeftMouse",
+        "LeftShift",
+        "Delete",
+        "LeftArrow",
+        "RightArrow",
         
+    },
+
+    inputKeys = {
+
     },
 }
 
@@ -820,8 +824,8 @@ local luaDocStop = ""
 function Daneel.Update()
     -- HotKeys
     -- fire an event whenever a registered button is pressed
-    for i, buttonName in ipairs(Daneel.config.allButtons) do
-        if type(i) == "sting" then
+    for i, buttonName in pairs(Daneel.config.allButtons) do
+        if type(i) == "string" then
             buttonName = i
         end
 
