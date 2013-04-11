@@ -49,6 +49,10 @@ for key, value in ipairs(Daneel.config.inputKeys) do
 					self.element.label = self.element.label..value
 				end
 			end
+
+			if type(self.element.onChange) == "function" then
+	            self.element:onChange()
+	        end 
 		end
 	end
 end
