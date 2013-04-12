@@ -143,14 +143,14 @@ function Daneel.GUI.Common.SetLabel(element, label)
     element.gameObject.mapRenderer.map = map -- empty the current map
     element:SetColor()
 
-    local caracterPosition = 0
+    local characterPosition = 0
     local linePosition = 0
     local skipCharacter = 0
 
     local elementType = Daneel.Debug.GetType(element)
     if elementType == "Daneel.GUI.Checkbox" then
         label = " "..label
-        caracterPosition = 1
+        characterPosition = 1
     elseif elementType == "Daneel.GUI.Input" then
         label = "["..label.."]"
     end
@@ -161,19 +161,19 @@ function Daneel.GUI.Common.SetLabel(element, label)
         else
             if label:sub(i, i+3) == ":br:" then
                 linePosition = linePosition - 1
-                caracterPosition = 0
+                characterPosition = 0
                 skipCharacter = 4
             else
-                if caracterPosition == element.wordWrap then
+                if characterPosition == element.wordWrap then
                     linePosition = linePosition - 1
-                    caracterPosition = 0
+                    characterPosition = 0
                 end
 
                 local byte = label:byte(i)
                 if byte > 255 then byte = string.byte("?", 1) end -- should be 64
-                map:SetBlockAt(caracterPosition, linePosition, 0, byte, Map.BlockOrientation.North)
+                map:SetBlockAt(characterPosition, linePosition, 0, byte, Map.BlockOrientation.North)
 
-                caracterPosition = caracterPosition + 1
+                characterPosition = characterPosition + 1
             end
         end
     end
@@ -619,7 +619,7 @@ end
 
 -- Update the label by inserting the provided value to the cursor position.
 -- @param element (Daneel.GUI.Input) The element.
--- @param value (string) The value. If value = Delete > remove the caracter.
+-- @param value (string) The value. If value = Delete > remove the character.
 function Daneel.GUI.Input.UpdateLabel(element, value)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Input.UpdateLabel", element, state)
     local errorHead = "Daneel.GUI.Input.UpdateLabel(element, state) : "
@@ -631,8 +631,8 @@ function Daneel.GUI.Input.UpdateLabel(element, value)
     
     if value ~= "Delete" then
         local value = value:totable()
-        for i, caracter in ipairs(value) do
-            table.insert(label, cursorPosition, caracter)
+        for i, character in ipairs(value) do
+            table.insert(label, cursorPosition, character)
             cursorPosition = cursorPosition + 1
         end
 
@@ -647,11 +647,11 @@ function Daneel.GUI.Input.UpdateLabel(element, value)
     end
 
     local newLabel = ""
-    for i, caracter in ipairs(label) do
+    for i, character in ipairs(label) do
         if element.maxLength ~= nil and i >= element.maxLength then
             break
         end
-        newLabel = newLabel..caracter
+        newLabel = newLabel..character
     end
     element.label = newLabel
 
@@ -722,7 +722,7 @@ function Daneel.GUI.Input.SetCursorPosition(element, position, relative)
         position = math.clamp(position, 1, element.maxLength)
     end
     
-    local offset = 1 -- offset by caracters before the label
+    local offset = 1 -- offset by characters before the label
     -- position-1 because map block IDs begins at 0
     element.cursorMapRndr.map:SetBlockAt(position+offset-1, 0, 1, byte, Map.BlockOrientation.North)
     element._cursorPosition = position
