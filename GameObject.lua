@@ -202,7 +202,7 @@ local OriginalSetParent = GameObject.SetParent
 -- @param parentNameOrInstance (string or GameObject) The parent name or gameObject.
 -- @param keepLocalTransform [optional default=false] (boolean) Carry over the game object's local transform instead of the global one.
 function GameObject.SetParent(gameObject, parentNameOrInstance, keepLocalTransform)
-    Daneel.Debug.StackTrace.EndFunction("GameObject.SetParent", gameObject, parentNameOrInstance, keepLocalTransform)
+    Daneel.Debug.StackTrace.BeginFunction("GameObject.SetParent", gameObject, parentNameOrInstance, keepLocalTransform)
     local errorHead = "GameObject.SetParent(gameObject, parentNameOrInstance[, keepLocalTransform]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     Daneel.Debug.CheckArgType(parentNameOrInstance, "parentNameOrInstance", {"string", "GameObject"}, errorHead)
