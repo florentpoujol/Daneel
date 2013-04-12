@@ -12,5 +12,5 @@ input >
 
 layer
 text et texture as button
-
+permetrre d'ajouter des scriptedBehaviors aux éléments
 créer les éléments dans la scène et non seulement par script

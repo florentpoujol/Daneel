@@ -379,7 +379,14 @@ function Daneel.GUI.Text.New(name, params)
     
     if params ~= nil then
         for key, value in pairs(params) do
-            element[key] = value
+            if key == "scriptedBehaviors" then
+                element.gameObject:Set({scriptedBehaviors = value})
+            elseif key == "isButton" and value == true then
+                element.gameObject:AddScriptedBehavior("Daneel/Behaviors/MousehoverableGameObject")
+                element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUIText")
+            else
+                element[key] = value
+            end
         end
     end
 
@@ -463,7 +470,11 @@ function Daneel.GUI.Checkbox.New(name, params)
     -- user-defined properties
     if params ~= nil then
         for key, value in pairs(params) do
-            element[key] = value
+            if key == "scriptedBehaviors" then
+                element.gameObject:Set({scriptedBehaviors = value})
+            else
+                element[key] = value
+            end
         end
     end
 
@@ -592,7 +603,11 @@ function Daneel.GUI.Input.New(name, params)
     -- user-defined properties
     if params ~= nil then
         for key, value in pairs(params) do
-            element[key] = value
+            if key == "scriptedBehaviors" then
+                element.gameObject:Set({scriptedBehaviors = value})
+            else
+                element[key] = value
+            end
         end
     end
 
