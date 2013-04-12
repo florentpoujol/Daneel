@@ -13,3 +13,7 @@ layer
 text et texture as button
 
 créer les éléments dans la scène et non seulement par script
+
+
+readme >
+	besoin d'enregistrer un script dans conig.scripts pour utiliser component:Set() sur un script

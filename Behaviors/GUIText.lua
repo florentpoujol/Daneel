@@ -5,11 +5,14 @@ function Behavior:Start()
 	Daneel.Events.Listen("OnLeftMouseButtonJustReleased", self.gameObject)
 end
 
-function Behavior:OnLeftMouseButtonReleased()
-	-- onMouseOver comes from CameraMouseOver
-	if self.gameObject.onMouseOver == true and type(self.element.onClick) == "function"then
-        self.element:onClick()
-	end
+function Behavior:OnLeftMouseButtonJustReleased()
+	if self.gameObject.onMouseOver == true then
+		self.gameObject:SendMessage("OnClick")
+
+		if type(self.element.onClick) == "function"then
+			self.element:onClick()
+		end
+    end
 end
 
 -- call the mouse hoverable callbacks
@@ -22,10 +25,6 @@ end
 function Behavior:OnMouseOver()
 	if type(self.element.onMouseOver) == "function" then
 		self.element:onMouseOver()
-	end
-
-	if CraftStudio.Input.WasButtonJustReleased("LeftMouse") and type(self.element.onClick) == "function" then
-		self.element:onClick()
 	end
 end
 

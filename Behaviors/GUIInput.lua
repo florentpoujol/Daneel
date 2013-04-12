@@ -53,7 +53,7 @@ end
 
 
 function Behavior:Start()
-	Daneel.Events.Listen("OnLeftMouseButtonJustPressed", self.gameObject)
+	Daneel.Events.Listen("OnLeftMouseButtonJustReleased", self.gameObject)
 	Daneel.Events.Listen("OnLeftArrowButtonJustPressed", self.gameObject)
 	Daneel.Events.Listen("OnRightArrowButtonJustPressed", self.gameObject)
 	Daneel.Events.Listen("OnDeleteButtonJustPressed", self.gameObject)
@@ -71,10 +71,18 @@ end
 
 
 -- focus on the input and place the cursor to the letter
-function Behavior:OnLeftMouseButtonJustPressed()
+function Behavior:OnLeftMouseButtonJustReleased()
 	-- onMouseOver comes from Daneel/Behavior/CameraMouseOver
 	-- because Inputs are also mousehoverable gameObjects
 	self.element.focused = self.gameObject.onMouseOver
+
+	if self.gameObject.onMouseOver == true then
+		self.gameObject:SendMessage("OnClick")
+
+		if type(self.element.onClick) == "function"then
+			self.element:onClick()
+		end
+    end
 end
 
 -- mouse the cursor left or right when focused and the user clicks on th left or right arrow

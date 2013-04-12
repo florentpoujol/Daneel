@@ -382,7 +382,7 @@ function Daneel.GUI.Text.New(name, params)
                 element.gameObject:Set({scriptedBehaviors = value})
             elseif key == "isButton" and value == true then
                 element.gameObject:AddScriptedBehavior("Daneel/Behaviors/MousehoverableGameObject")
-                element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUIText")
+                element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUIText", {element = element})
             else
                 element[key] = value
             end
@@ -643,7 +643,6 @@ function Daneel.GUI.Input.UpdateLabel(element, value)
             element.cursorPosition = cursorPosition
         end
         table.remove(label, cursorPosition)
-
     end
 
     local newLabel = ""
