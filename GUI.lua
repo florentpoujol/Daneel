@@ -141,9 +141,8 @@ function Daneel.GUI.Common.SetLabel(element, label)
 
     local map = Map.LoadFromPackage(Daneel.config.emptyTextMapPath)
     element.gameObject.mapRenderer.map = map -- empty the current map
-    if element._color ~= nil then
-        element.gameObject.mapRenderer.tileSet = element._color
-    elseif 
+    element:SetColor()
+
     local caracterPosition = 0
     local linePosition = 0
     local skipCharacter = 0
@@ -447,6 +446,7 @@ function Daneel.GUI.Checkbox.New(name, params)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
     local element = {
+        _name = name,
         gameObject = GameObject.New(name, {
             parent = Daneel.config.hudCamera,
             mapRenderer = {},
@@ -578,6 +578,7 @@ function Daneel.GUI.Input.New(name, params)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
     local element = {
+        _name = name,
         gameObject = GameObject.New(name, {
             parent = Daneel.config.hudCamera,
             mapRenderer = {}, -- map is set in SetLabel()

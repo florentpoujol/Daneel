@@ -2,38 +2,49 @@
 -- Behavior for Daneel.GUI.Checkbox
 
 local B = Behavior -- Behavior is not accessible from a function
-local function CreateButtonEventFunctions()
+local function CreateInputKeysEventFunctions()
 	-- create function to catch the event for each inputKeys
 	for key, value in pairs(Daneel.config.inputKeys) do
 		-- the button name may be the key or the value
-		local button = value
-		local comb = {}
+		local buttonName = value
+		local combinaisons = nil
+		local buttonValue = nil
 		if type(key) == "string" then
-			button = key
-			comb = value
+			buttonName = key
+			if type(value) == "table" then
+				combinaisons = value
+			else
+				buttonValue = value
+			end
 		end
-		local Button = button:ucfirst()
+		local ButtonName = buttonName:ucfirst()
 
-		B["On"..Button.."ButtonJustPressed"] = function(self)
+		B["On"..ButtonName.."ButtonJustPressed"] = function(self)
 			if self.element.focused then
-				if type(comb) == "table" then
-					for button, value in pairs(comb) do
-						if CraftStudio.Input.IsButtonDown(button) then
+				if combinaisons ~= nil then -- key=button name , value = combinaisons
+
+					for button, value in pairs(combinaisons) do
+						if type(button) ~= "number" and CraftStudio.Input.IsButtonDown(button) then
 							self.element:UpdateLabel(value)
 							return
 						end
 					end
-				else
-					-- comb is of type string
-					self.element:UpdateLabel(comb)
-					return
-				end
 
-				-- upper case, lower case
-				if CraftStudio.Input.IsButtonDown("LeftShift") then
-					self.element:UpdateLabel(Button)
-				else
-					self.element:UpdateLabel(button)
+					if combinaisons[1] ~= nil then
+						if CraftStudio.Input.IsButtonDown(buttonName) then
+							self.element:UpdateLabel(combinaisons[1])
+							return
+						end
+					end
+
+				elseif buttonValue ~= nil then -- key=button name , value = replacement value
+					self.element:UpdateLabel(buttonValue)
+				else -- value = button Name
+					if CraftStudio.Input.IsButtonDown("LeftShift") then
+						self.element:UpdateLabel(ButtonName)
+					else
+						self.element:UpdateLabel(buttonName)
+					end
 				end
 			end
 		end
@@ -55,7 +66,7 @@ function Behavior:Start()
         Daneel.Events.Listen("On"..value:ucfirst().."ButtonJustPressed", self.gameObject)
 	end
 
-	CreateButtonEventFunctions()
+	CreateInputKeysEventFunctions()
 end
 
 

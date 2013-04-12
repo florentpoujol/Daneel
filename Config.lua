@@ -31,9 +31,16 @@ Daneel.config = {
 
         ]]
 
-        ['"'] = {
+        D3 = {
+            '"',
             LeftShift = "3",
-            --RightAlt = "#",
+            RightAlt = "#",
+        },
+
+        D4 = {
+            "'",
+            LeftShift = "4",
+            RightAlt = "{",
         },
 
         "a", 
