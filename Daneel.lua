@@ -383,7 +383,6 @@ end
 
 Daneel.Debug.StackTrace = { 
     messages = {},
-    depth = 0,
 }
 
 --- Register a function input in the stack trace.
@@ -393,8 +392,6 @@ function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
     if Daneel.config.debug == false then return end
     local errorHead = "Daneel.Debug.StackTrace.BeginFunction(functionName[, ...]) : "
     Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
-
-    Daneel.Debug.StackTrace.depth = Daneel.Debug.StackTrace.depth + 1
 
     local msg = functionName.."("
 
@@ -420,8 +417,7 @@ function Daneel.Debug.StackTrace.EndFunction()
     if Daneel.config.debug == false then return end
     -- since 16/05/2013 no arguments is needed anymore, since the StackTrace only keeps open functions calls and never keep returned values
     -- I didn't rewrote all the calls to EndFunction() 
-    Daneel.Debug.StackTrace.messages[Daneel.Debug.StackTrace.depth] = nil
-    Daneel.Debug.StackTrace.depth = Daneel.Debug.StackTrace.depth - 1
+    table.remove(Daneel.Debug.StackTrace.messages)
 end
 
 --- Print the StackTrace.
@@ -429,8 +425,7 @@ function Daneel.Debug.StackTrace.Print()
     if Daneel.config.debug == false then return end
     local messages = Daneel.Debug.StackTrace.messages
     Daneel.Debug.StackTrace.messages = {}
-    Daneel.Debug.StackTrace.depth = 0
-    
+     
     print("~~~~~ Daneel.Debug.StackTrace ~~~~~")
 
     for i, msg in ipairs(messages) do
