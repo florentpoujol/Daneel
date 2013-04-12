@@ -19,3 +19,23 @@ function Behavior:OnLeftMouseButtonReleased()
         end
 	end
 end
+
+
+-- call the mouse hoverable callbacks
+function Behavior:OnMouseEnter()
+	if type(self.element.onMouseEnter) == "function" then
+		self.element.onMouseEnter(self.element)
+	end
+end
+
+function Behavior:OnMouseOver()
+	if type(self.element.onMouseOver) == "function" then
+		self.element.onMouseOver(self.element)
+	end
+end
+
+function Behavior:OnMouseExit()
+	if type(self.element.onMouseExit) == "function" then
+		self.element.onMouseExit(self.element)
+	end
+end

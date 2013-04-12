@@ -1,29 +1,32 @@
 
 -- Behavior for Daneel.GUI.Checkbox
 
-local B = Behavior
-local function CreateFunctions()
+local B = Behavior -- Behavior is not accessible from a function
+local function CreateButtonEventFunctions()
 	-- create function to catch the event for each inputKeys
 	for key, value in pairs(Daneel.config.inputKeys) do
 		-- the button name may be the key or the value
 		local button = value
 		local comb = {}
-
 		if type(key) == "string" then
 			button = key
 			comb = value
 		end
-
 		local Button = button:ucfirst()
 
 		B["On"..Button.."ButtonJustPressed"] = function(self)
 			if self.element.focused then
-				table.print(comb)
-				for button, value in pairs(comb) do
-					if CraftStudio.Input.IsButtonDown(button) then
-						self.element:UpdateLabel(value)
-						return
+				if type(comb) == "table" then
+					for button, value in pairs(comb) do
+						if CraftStudio.Input.IsButtonDown(button) then
+							self.element:UpdateLabel(value)
+							return
+						end
 					end
+				else
+					-- comb is of type string
+					self.element:UpdateLabel(comb)
+					return
 				end
 
 				-- upper case, lower case
@@ -52,7 +55,7 @@ function Behavior:Start()
         Daneel.Events.Listen("On"..value:ucfirst().."ButtonJustPressed", self.gameObject)
 	end
 
-	CreateFunctions()
+	CreateButtonEventFunctions()
 end
 
 
@@ -83,4 +86,21 @@ function Behavior:OnDeleteButtonJustPressed()
 end
 
 
+-- call the mouse hoverable callbacks
+function Behavior:OnMouseEnter()
+	if type(self.element.onMouseEnter) == "function" then
+		self.element.onMouseEnter(self.element)
+	end
+end
 
+function Behavior:OnMouseOver()
+	if type(self.element.onMouseOver) == "function" then
+		self.element.onMouseOver(self.element)
+	end
+end
+
+function Behavior:OnMouseExit()
+	if type(self.element.onMouseExit) == "function" then
+		self.element.onMouseExit(self.element)
+	end
+end
