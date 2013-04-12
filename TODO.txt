@@ -17,3 +17,7 @@ créer les éléments dans la scène et non seulement par script
 
 readme >
 	besoin d'enregistrer un script dans conig.scripts pour utiliser component:Set() sur un script
+
+
+BUG :
+	localPosition dans les params de GameObject.New() ne fonctione pas
