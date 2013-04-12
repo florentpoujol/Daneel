@@ -164,10 +164,12 @@ function Daneel.GUI.Common.SetLabel(element, label)
                 linePosition = linePosition - 1
                 caracterPosition = 0
                 skipCharacter = 4
-            elseif caracterPosition == element.wordWrap then
-                linePosition = linePosition - 1
-                caracterPosition = 0
             else
+                if caracterPosition == element.wordWrap then
+                    linePosition = linePosition - 1
+                    caracterPosition = 0
+                end
+
                 local byte = label:byte(i)
                 if byte > 255 then byte = string.byte("?", 1) end -- should be 64
                 map:SetBlockAt(caracterPosition, linePosition, 0, byte, Map.BlockOrientation.North)
