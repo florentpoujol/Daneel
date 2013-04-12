@@ -2,9 +2,15 @@
 Texture
 Slider
 progress bar
-progress bar mais avec plusieurs éléments
+"progress bar" mais avec plusieurs éléments
 
 
 input >
 	suppr qui peu aller vers l'arrière lorsque le curseur est au bout
 	param size qui limite la taille du champs mais pas du texte > flèches font se déplacer le texte
+
+
+layer
+text et texture as button
+
+créer les éléments dans la scène et non seulement par script
