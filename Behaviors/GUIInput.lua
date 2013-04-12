@@ -77,7 +77,7 @@ function Behavior:OnLeftMouseButtonJustReleased()
 	self.element.focused = self.gameObject.onMouseOver
 
 	if self.gameObject.onMouseOver == true then
-		self.gameObject:SendMessage("OnClick", {element = element})
+		self.gameObject:SendMessage("OnClick", {element = self.element})
 
 		if type(self.element.onClick) == "function"then
 			self.element:onClick()

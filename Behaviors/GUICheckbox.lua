@@ -9,7 +9,7 @@ function Behavior:OnLeftMouseButtonJustReleased()
 	-- onMouseOver comes from Daneel/Behavior/CameraMouseOver
 	-- because Checkboxes are also mousehoverable gameObjects
 	if self.gameObject.onMouseOver == true then
-		self.gameObject:SendMessage("OnClick", {element = element})
+		self.gameObject:SendMessage("OnClick", {element = self.element})
 		-- checkbox is overed by the mouse
 		-- and the left mouse button has been pressed
 		-- > change the state of the element
