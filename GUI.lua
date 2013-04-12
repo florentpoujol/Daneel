@@ -178,6 +178,11 @@ function Daneel.GUI.Common.SetLabel(element, label)
         end
     end
 
+    element.gameObject:SendMessage("OnLabelChange", {element = element})
+    if type(element.onLabelChange) == "function" then
+        element:onLabelChange()
+    end
+
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -510,6 +515,11 @@ function Daneel.GUI.Checkbox.SetChecked(element, state)
         local byte = 251 -- that's the valid mark
         if state == false then byte = string.byte("X") end
         element.gameObject.mapRenderer.map:SetBlockAt(0, 0, 0, byte, Map.BlockOrientation.North)
+        
+        element.gameObject:SendMessage("OnStateChange", {element = element})
+        if type(element.onStateChange) == "function" then
+            element:onStateChange()
+        end
     end
     Daneel.Debug.StackTrace.EndFunction()
 end
@@ -677,6 +687,11 @@ function Daneel.GUI.Input.SetFocused(element, state)
             element:SetCursorPosition()
         else
             element.cursorMapRndr.map = Map.LoadFromPackage(Daneel.config.emptyTextMapPath) -- hide the cursor on unfocus
+        end
+
+        element.gameObject:SendMessage("OnFocusChange", {element = element})
+        if type(element.onFocusChange) == "function" then
+            element:onFocusChange()
         end
     end
     Daneel.Debug.StackTrace.EndFunction()
