@@ -638,7 +638,12 @@ function Daneel.GUI.Input.UpdateLabel(element, value)
 
         element.cursorPosition = cursorPosition
     else
+        if cursorPosition == #label+1 then -- the cursor is at the end of string
+            cursorPosition = cursorPosition-1
+            element.cursorPosition = cursorPosition
+        end
         table.remove(label, cursorPosition)
+
     end
 
     local newLabel = ""
