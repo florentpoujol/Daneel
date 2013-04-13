@@ -151,6 +151,9 @@ function Daneel.GUI.Common.SetLabel(element, label)
     if elementType == "Daneel.GUI.Checkbox" then
         label = " "..label
         characterPosition = 1
+        if element._checked ~= nil then
+            element:SetChecked(element._checked, true) -- reset the first map block with the checked mark (without firing the event)
+        end
     elseif elementType == "Daneel.GUI.Input" then
         label = "["..label.."]"
     end
@@ -447,6 +450,11 @@ function Daneel.GUI.Text.New(name, params)
     element:SetColor()
     
     if params ~= nil then
+        if params.wordWrap ~= nil then
+            element.wordWrap = params.wordWrap
+            params.wordWrap = nil
+        end
+
         for key, value in pairs(params) do
             if key == "scriptedBehaviors" then
                 element.gameObject:Set({scriptedBehaviors = value})
@@ -584,17 +592,20 @@ end
 -- Update the _checked variable and the mapRenderer
 -- @param element (Daneel.GUI.Checkbox) The element.
 -- @param state (boolean) The state.
-function Daneel.GUI.Checkbox.SetChecked(element, state)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Checkbox.SetChecked", element, state)
-    local errorHead = "Daneel.GUI.Checkbox.SetChecked(element, state) : "
+-- @param doNotSendEvent [optional default=false] Tell wether firing the event.
+function Daneel.GUI.Checkbox.SetChecked(element, state, doNotSendEvent)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Checkbox.SetChecked", element, state, doNotSendEvent)
+    local errorHead = "Daneel.GUI.Checkbox.SetChecked(element, state[, doNotSendEvent]) : "
     Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.Checkbox", errorHead)
     Daneel.Debug.CheckArgType(state, "state", "boolean", errorHead)
-    if element._checked ~= state then
-        element._checked = state
-        local byte = 251 -- that's the valid mark
-        if state == false then byte = string.byte("X") end
-        element.gameObject.mapRenderer.map:SetBlockAt(0, 0, 0, byte, Map.BlockOrientation.North)
-        
+    Daneel.Debug.CheckOptionalArgType(state, "state", "boolean", errorHead)
+    
+    element._checked = state
+    local byte = 251 -- that's the valid mark
+    if state == false then byte = string.byte("X") end
+    element.gameObject.mapRenderer.map:SetBlockAt(0, 0, 0, byte, Map.BlockOrientation.North)
+    
+    if doNotSendEvent == true then -- when called from SetLabel
         element.gameObject:SendMessage("OnStateChange", {element = element})
         if type(element.onStateChange) == "function" then
             element:onStateChange()
