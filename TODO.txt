@@ -1,5 +1,5 @@
 
-Texture
+Texture > text background
 Slider
 progress bar
 "progress bar" mais avec plusieurs éléments
@@ -10,9 +10,8 @@ input >
 
 
 layer
-text et texture as button
 
-créer les éléments dans la scène et non seulement par script
+créer les éléments dans la scène et non seulement par script > voir seulement pour 3Dtext
 
 
 readme >
@@ -21,3 +20,7 @@ readme >
 
 BUG :
 	localPosition dans les params de GameObject.New() ne fonctione pas
+
+
+voir les fonction de tri sur les tables (pour Ray.Cast(), trier les RayCastHit par distance)
+voir bundle de doc pou laravel
