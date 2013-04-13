@@ -1,21 +1,19 @@
 
-Texture > text background
+
 Slider
 progress bar
 "progress bar" mais avec plusieurs éléments
-
-
-input >
-	param size qui limite la taille du champs mais pas du texte > flèches font se déplacer le texte
-
 
 layer
 
 créer les éléments dans la scène et non seulement par script > voir seulement pour 3Dtext
 
+input >
+	param size qui limite la taille du champs mais pas du texte (flèches font se déplacer le texte)
+
 
 readme >
-	besoin d'enregistrer un script dans conig.scripts pour utiliser component:Set() sur un script
+	besoin d'enregistrer un script dans config.scripts pour utiliser component:Set() sur un script
 
 
 BUG :
@@ -24,3 +22,28 @@ BUG :
 
 voir les fonction de tri sur les tables (pour Ray.Cast(), trier les RayCastHit par distance)
 voir bundle de doc pou laravel
+
+
+
+
+progress bar
+> 
+model renderer, 
+jouer sur le scale en y, 
+entre minval maxval, minwidth et maxwidth (en pixels)
+modifier rotation
+déterminer si le centre, fixe, est au milieu ou sur un des cotés
+
+set the progress by absolute value  or percentage
+SetProgress() allow incréments (comme set cursor position)
+
+params :
+
+minValue
+maxValue
+minWidth
+maxWidth
+
+progress > update the looks
+
+

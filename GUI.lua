@@ -228,6 +228,7 @@ function Daneel.GUI.Common.SetPosition(element, x, y)
     -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
     -- pixelUnit (in pixels/units) is the correspondance between screen pixels and 3D world units
     local pixelUnit = orthographicScale / smallSideSize
+    Daneel.GUI.pixelUnit = pixelUnit
     
     local xFunc = function(pixels)
         local position = pixels * pixelUnit 
@@ -836,6 +837,172 @@ function Daneel.GUI.Input.GetCursorPosition(element)
     Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.Input", errorHead)
     Daneel.Debug.StackTrace.EndFunction()    
     return element._cursorPosition
+end
+
+
+----------------------------------------------------------------------------------
+-- ProgressBar
+
+Daneel.GUI.ProgressBar = {}
+setmetatable(Daneel.GUI.ProgressBar, Daneel.GUI.Common)
+GUIProgressBar = Daneel.GUI.ProgressBar
+
+
+function Daneel.GUI.ProgressBar.__index(element, key)
+    local funcName = "Get"..key:ucfirst()
+
+    if Daneel.GUI.ProgressBar[funcName] ~= nil then
+        return Daneel.GUI.ProgressBar[funcName](element)
+    elseif Daneel.GUI.ProgressBar[key] ~= nil then
+        return Daneel.GUI.ProgressBar[key]
+    end
+
+    if Daneel.GUI.Common[funcName] ~= nil then
+        return Daneel.GUI.Common[funcName](element)
+    elseif Daneel.GUI.Common[key] ~= nil then
+        return Daneel.GUI.Common[key]
+    end
+
+    return nil
+end
+
+function Daneel.GUI.ProgressBar.__newindex(element, key, value)
+    local funcName = "Set"..key:ucfirst()
+
+    if Daneel.GUI.ProgressBar[funcName] ~= nil then
+        return Daneel.GUI.ProgressBar[funcName](element, value)
+    end
+
+    return rawset(element, key, value)
+end
+
+function Daneel.GUI.ProgressBar.__tostring(element)
+    return "Daneel.GUI.ProgressBar: '"..element._name.."'"
+end
+
+
+-- Create a new GUI.ProgressBar.
+-- @param name (string) The element name.
+-- @param params [optional] (table) A table with initialisation parameters.
+-- @return (Daneel.GUI.ProgressBar) The new element.
+function Daneel.GUI.ProgressBar.New(name, params)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.New", name, params)
+    local errorHead = "Daneel.GUI.ProgressBar.New(name[, params]) : "
+    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
+    Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
+
+    local element = {
+        _name = name,
+        gameObject = GameObject.New(name, {
+            parent = Daneel.config.hudCamera,
+            mapRenderer = {},
+        }),
+    }
+    element.bar = GameObject.New(element._name.."Bar", { 
+        parent = element.gameObject,
+        --localPosition = Vector3:New(0),
+        modelRenderer = {},
+    })
+    element.bar.transform.localPosition = Vector3:New(0)
+
+    setmetatable(element, Daneel.GUI.ProgressBar)
+    element.name = name
+    element.position = Vector2.New(100)
+    element.label = ""
+    element.scale = Daneel.config.hudElementDefaultScale
+    element.minValue = 0
+    element.maxValue = 100
+    element.minLength = 0
+    element.maxLength = 100
+    element.progress = 100
+    local progress = 100 -- default progress
+    
+    if params ~= nil then
+        for key, value in pairs(params) do
+            print(key, value)
+            if key == "scriptedBehaviors" then
+                element.gameObject:Set({scriptedBehaviors = value})
+            elseif key == "progress" then
+                progress = value
+            else
+                element[key] = value
+            end
+        end
+    end
+    
+    element.progress = progress
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return element
+end
+
+
+function Daneel.GUI.ProgressBar.SetProgress(element, progress)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.SetProgress", element, progress)
+    local errorHead = "Daneel.GUI.ProgressBar.SetProgress(element[, progress]) : "
+    Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.ProgressBar", errorHead)
+    Daneel.Debug.CheckArgType(progress, "progress", {"string", "number"}, errorHead)
+
+    local minVal = element.minValue
+    local maxVal = element.maxValue
+
+    if type(progress) == "string" then
+        local percentage = tonumber(progress:sub(1, #progress-1))
+        progress = (maxVal - minVal) * percentage / 100 + minval
+    end
+
+    local oldProgress = progress
+    progress = math.clamp(progress, minVal, maxVal)
+    if progress ~= oldProgress then
+        print("WARNING : progress with value '"..oldProgress.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
+    end
+    print("progress", progress)
+    element._progress = progress
+    print("pixelunit", Daneel.GUI.pixelUnit, Daneel.config.hudCameraOrthographicScale, Daneel.config.hudCameraOrthographicScale/500)
+    local minLength = element.minLength * Daneel.GUI.pixelUnit
+    local maxLength = element.maxLength * Daneel.GUI.pixelUnit --length in units of the bar
+    print("minLength", element.minLength, minLength)
+    print("maxLength", element.maxLength, maxLength)
+    
+
+    local percentageVal = (progress - minVal) / (maxVal - minVal) 
+    print("percentageVal", percentageVal)
+    
+    local currentLength = (maxLength - minLength) * percentageVal + minLength
+    print("currentLength", currentLength)
+    local currentScale = element.bar.transform.localScale
+    element.bar.transform.localScale = Vector3:New(currentLength, currentScale.y, currentScale.z)
+
+end
+
+--- Get the current progress of the progress bar.
+-- @param element (Daneel.GUI.ProgressBar) The element.
+-- @param getAsPercentage [optional default=false] (boolean) Get the progress as a percentage instead of an absolute value.
+-- @return (number) The progress.
+function Daneel.GUI.ProgressBar.GetProgress(element, getAsPercentage)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.GetProgress", element, getAsPercentage)
+    local errorHead = "Daneel.GUI.ProgressBar.GetProgress(element[, getAsPercentage]) : "
+    Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.ProgressBar", errorHead)
+    Daneel.Debug.CheckOptionalArgType(getAsPercentage, "getAsPercentage", "boolean", errorHead)
+    local progress = element._progress
+    if getAsPercentage == true then
+        progress = progress / element.maxValue * 100
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+    return progress
+end
+
+
+--- Set the model of the progress bar.
+-- @param element (Daneel.GUI.ProgressBar) The element.
+-- @param model (string or Model) The model path or asset.
+function Daneel.GUI.ProgressBar.SetModel(element, model)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.SetModel", element, model)
+    local errorHead = "Daneel.GUI.ProgressBar.SetModel(element, model) : "
+    Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.ProgressBar", errorHead)
+    Daneel.Debug.CheckArgType(model, "model", {"string", "Model"}, errorHead)
+    element.bar.modelRenderer.model = model
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
