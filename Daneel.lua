@@ -441,7 +441,7 @@ end
 ----------------------------------------------------------------------------------
 -- Events
 
-Daneel.Events = { events = { any = {} } }
+Daneel.Event = { events = { any = {} } }
 
 --- Make the provided function listen to the provided event.
 -- The function will be called whenever the provided event will be fired.
@@ -449,19 +449,19 @@ Daneel.Events = { events = { any = {} } }
 -- @param p_function (function, string or GameObject) The function (not the function name) or the gameObject name or instance.
 -- @param functionName [optional default="[eventName]"] (string) If 'p_function' is a gameObject name or instance, the name of the function to send the message to.
 -- @param broadcast [optional default=false] (boolean) If 'p_function' is a gameObject name or instance, tell whether to broadcast the message to all the gameObject's childrens (if true).
-function Daneel.Events.Listen(eventName, p_function, functionName, broadcast)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Events.Listen", eventName, p_function)
-    local errorHead = "Daneel.Events.Listen(eventName, function) : "
+function Daneel.Event.Listen(eventName, p_function, functionName, broadcast)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Listen", eventName, p_function)
+    local errorHead = "Daneel.Event.Listen(eventName, function) : "
     Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
 
-    if Daneel.Events.events[eventName] == nil then
-        Daneel.Events.events[eventName] = {}
+    if Daneel.Event.events[eventName] == nil then
+        Daneel.Event.events[eventName] = {}
     end
 
     local functionType = type(p_function)
     if functionType == "function" then
-        if not table.containsvalue(Daneel.Events.events[eventName], p_function) then
-            table.insert(Daneel.Events.events[eventName], p_function)
+        if not table.containsvalue(Daneel.Event.events[eventName], p_function) then
+            table.insert(Daneel.Event.events[eventName], p_function)
         end
     else
         Daneel.Debug.CheckArgType(p_function, "p_function", {"string", "GameObject"}, errorHead)
@@ -484,30 +484,30 @@ function Daneel.Events.Listen(eventName, p_function, functionName, broadcast)
             broadcast = false
         end
 
-        table.insert(Daneel.Events.events[eventName], {
+        table.insert(Daneel.Event.events[eventName], {
             gameObject = gameObject,
             functionName = functionName,
             broadcast = broadcast
         })
     end
 
-    Daneel.Debug.StackTrace.EndFunction("Daneel.Events.Listen")
+    Daneel.Debug.StackTrace.EndFunction("Daneel.Event.Listen")
 end
 
 
 --- Make the provided function or gameObject to stop listen to the provided event.
 -- @param eventName (string) The event name.
 -- @param functionOrGameObject (function, string or GameObject) The function, or the gameObject name or instance.
-function Daneel.Events.StopListen(eventName, functionOrGameObject)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Events.StopListen", eventName, functionOrGameObject)
-    local errorHead = "Daneel.Events.StopListen(eventName, functionOrGameObject) : "
+function Daneel.Event.StopListen(eventName, functionOrGameObject)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.StopListen", eventName, functionOrGameObject)
+    local errorHead = "Daneel.Event.StopListen(eventName, functionOrGameObject) : "
     Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
     
     local functionType = type(functionOrGameObject)
     if functionType == "function" then
-        for i, storedFunc in ipairs(Daneel.Events.events[eventName]) do
+        for i, storedFunc in ipairs(Daneel.Event.events[eventName]) do
             if functionOrGameObject == storedFunc then
-                table.remove(Daneel.Events.events[eventName], i)
+                table.remove(Daneel.Event.events[eventName], i)
                 break
             end
         end
@@ -520,32 +520,32 @@ function Daneel.Events.StopListen(eventName, functionOrGameObject)
             end
         end
         
-        for i, storedFunc in ipairs(Daneel.Events.events[eventName]) do
+        for i, storedFunc in ipairs(Daneel.Event.events[eventName]) do
             if type(storedFunc) == "table" and gameObject == storedFunc.gameObject then
-                table.remove(Daneel.Events.events[eventName], i)
+                table.remove(Daneel.Event.events[eventName], i)
                 break
             end
         end
     end
 
-    Daneel.Debug.StackTrace.EndFunction("Daneel.Events.StopListen")
+    Daneel.Debug.StackTrace.EndFunction("Daneel.Event.StopListen")
 end
 
 --- Fire the provided event transmitting along all subsequent parameters to 'eventName' if some exists. 
 -- All functions that listen to this event will be called and receive all parameters.
 -- @param eventName (string) The event name.
 -- @param ... [optional] A list of parameters to pass along.
-function Daneel.Events.Fire(eventName, ...)
+function Daneel.Event.Fire(eventName, ...)
     if arg == nil then
-        Daneel.Debug.StackTrace.BeginFunction("Daneel.Events.Fire", eventName, nil)
+        Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Fire", eventName, nil)
         arg = {}
     else
-        Daneel.Debug.StackTrace.BeginFunction("Daneel.Events.Fire", eventName, unpack(arg))
+        Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Fire", eventName, unpack(arg))
     end
     
-    Daneel.Debug.CheckArgType(eventName, "eventName", "string", "Daneel.Events.Fire(eventName[, ...]) : ")
+    Daneel.Debug.CheckArgType(eventName, "eventName", "string", "Daneel.Event.Fire(eventName[, ...]) : ")
     
-    local functions = table.new(Daneel.Events.events[eventName]):merge(Daneel.Events.events["any"])
+    local functions = table.new(Daneel.Event.events[eventName]):merge(Daneel.Event.events["any"])
     for i, func in ipairs(functions) do
         local functionType = type(func)
         if functionType == "function" then
@@ -558,15 +558,15 @@ function Daneel.Events.Fire(eventName, ...)
                     func.gameObject:SendMessage(func.functionName, arg)
                 end
             else
-                table.remove(Daneel.Events.events[eventName], i)
+                table.remove(Daneel.Event.events[eventName], i)
             end
         else
             -- func is nil (a priori), function has been destroyed (probably was a public function on a destroyed ScriptedBehavior)
-            table.remove(Daneel.Events.events[eventName], i)
+            table.remove(Daneel.Event.events[eventName], i)
         end
     end
 
-    Daneel.Debug.StackTrace.EndFunction("Daneel.Events.Fire")
+    Daneel.Debug.StackTrace.EndFunction("Daneel.Event.Fire")
 end
 
 
@@ -825,15 +825,15 @@ function Daneel.Update()
     -- fire an event whenever a registered button is pressed
     for i, buttonName in ipairs(Daneel.config.buttons) do
         if CraftStudio.Input.WasButtonJustPressed(buttonName) then
-            Daneel.Events.Fire("On"..buttonName:ucfirst().."ButtonJustPressed")
+            Daneel.Event.Fire("On"..buttonName:ucfirst().."ButtonJustPressed")
         end
 
         if CraftStudio.Input.IsButtonDown(buttonName) then
-            Daneel.Events.Fire("On"..buttonName:ucfirst().."ButtonDown")
+            Daneel.Event.Fire("On"..buttonName:ucfirst().."ButtonDown")
         end
 
         if CraftStudio.Input.WasButtonJustReleased(buttonName) then
-            Daneel.Events.Fire("On"..buttonName:ucfirst().."ButtonJustReleased")
+            Daneel.Event.Fire("On"..buttonName:ucfirst().."ButtonJustReleased")
         end
     end
 end

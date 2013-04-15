@@ -26,6 +26,7 @@ Daneel mostly add new objects, new functions on existing objects and sometimes a
 - [Events](#events)
 - [Hotkeys](#hotkeys)
 - [Localization](#localization)
+- [GUI](#gui)
 - [Miscellaneous](#miscellaneous)
 - [Functions list](#functions-list)
 - [Changelog](#changelog)
@@ -96,14 +97,14 @@ You will find the configuration table in the `Daneel/Config` script.
 
 ## Loading Daneel
 
-Daneel needs to be loaded before it works, so you need to add the "Daneel/Behaviors/DaneelBehavior" script as a ScriptedBehavior in your scene. Failing to do that will cause a lot of errors in the Runtime Report.  
+Daneel needs to be loaded before some of its features work, so you need to add the "Daneel/Behaviors/DaneelBehavior" script as a ScriptedBehavior in your scene.  
 Daneel is garanteed to be loaded by the time functions `Behavior:Start()` begin to be called.  
 It may also be the case from `Behavior:Awake()` functions, but it is not garanteed (it depends on the GameObject initialization order).
 
-The global variable `DANEEL_LOADED` is equal to `false` until Daneel is fully loaded, where its value is set to `true`.
+The global variable `DANEEL_LOADED` is equal to `nil` until Daneel is loaded, where its value is set to `true`.
 
 Any scripts whose path is set in `Daneel.config.scripts` may implements a `Behavior:DaneelAwake()` function.  
-This function will be called just after Daneel has loaded, before `Behavior:Start()` gets called and **even on scripts that are not ScriptedBehavior**.
+This function will be called right after Daneel has loaded, before `Behavior:Start()` and **even on scripts that are not ScriptedBehavior**.
 
 
 ## Conventions
@@ -118,7 +119,7 @@ This function will be called just after Daneel has loaded, before `Behavior:Star
 
 ## Dynamic getters and setters
 
-Getters and setters functions may be used on gameOjects, components and assets as if they were variables. Their names must begin by "Get" or "Set" and have the forth letter upper-case (underscore is allowed). Ie : GetSomething() and Get_something() will work, but Getsomething() or getSomething() won't work.
+Getters and setters functions may be used on *gameOjects, components, assets and GUI elements* as if they were variables. Their names must begin by "Get" or "Set" and have the forth letter upper-case (underscore is allowed). Ie : GetSomething() and Get_something() will work, but Getsomething() or getSomething() won't work.
 
     
     self.gameObject.transform.localPosition
@@ -324,19 +325,19 @@ Any arguments may be passed to the function when the event is fired.
     end
 
     function Behavior:Awake()
-        Daneel.Events.Listen("EventName", ALocalFunction) -- same for global functions
+        Daneel.Event.Listen("EventName", ALocalFunction) -- same for global functions
 
         -- to fire an event, just call the Fire() function
         -- and optionally pass the argument(s) after the event name
-        Daneel.Events.Fire("EventName", "Brace for this event !")
+        Daneel.Event.Fire("EventName", "Brace for this event !")
     end
 
 You can also make gameObjects to listen to events. By default, the message of the same name as the event will be sent (and optionally broadcasted) on that gameObject (the function `Behavior:EventName()` wil be called if it exists).  
     
     function Behavior:Awake()
-        Daneel.Events.Listen("EventName", self.gameObject) -- the message "EventName" will be sent on this gameObject only
-        Daneel.Events.Listen("EventName", self.gameObject, "AnotherMessage") -- the message "AnotherMessage" (instead of "OnEventName") will be sent on this gameObject only
-        Daneel.Events.Listen("EventName", self.gameObject, "AnotherMessage", true) -- the message "AnotherMessage" will be sent on this gameObject and all of its children
+        Daneel.Event.Listen("EventName", self.gameObject) -- the message "EventName" will be sent on this gameObject only
+        Daneel.Event.Listen("EventName", self.gameObject, "AnotherMessage") -- the message "AnotherMessage" (instead of "OnEventName") will be sent on this gameObject only
+        Daneel.Event.Listen("EventName", self.gameObject, "AnotherMessage", true) -- the message "AnotherMessage" will be sent on this gameObject and all of its children
     end
 
 If you want a function or a gameObject to listen to every events, just pass `"any"` as the event name.
@@ -360,7 +361,7 @@ The table `Daneel.config.buttons` may be filled with the button names that you d
 
 Daneel allows you to easly localize any strings in your game.
 
-Set the languages your game speaks in in `Daneel.config.languages` and update the default and current language's name (`Daneel.config.languages.default` and `Daneel.config.languages.current`).
+Set the languages your game speaks in in `Daneel.config.languages` and change the current language's name (`Daneel.config.currentLanguage`) if you don't want it to be "english".
 
 Each of the localized strings (the lines) are identified by a key, unique accross all languages. Ideally, the keys should not contains dot and the first-level keys should not be any of the languages name.  
 The key/line pairs for each languages are stored in a table which is the value of a global variable with the same name as the language :
@@ -399,7 +400,7 @@ Once Daneel is loaded, the languages tables are put in `Daneel.Lang.lines`, so y
 
     Daneel.Lang.lines.french.greetings.welcome -- "Bienvenu !"
 
-If a key is not found by GetLine(), it first search for it in the default language. If it is still not found, it returns the value of `Daneel.config.languages.keyNotFound` (which is "langkeynotfound" by default) and print a warning (with the the key) in the Runtime Report.
+If a key is not found, it returns `nil` and print the key in the Runtime Report.
 
 ### Placeholder and replacements
 
@@ -423,6 +424,55 @@ When the placeholder is an integer, you may omit it during the call to `GetLine(
     Daneel.Lang.GetLine("welcome", { "John" }) -- Welcome John, have a nice play !
 
 Note that any strings, not just the localized strings, may benefits from the placeholder/replacement with `Daneel.Utilities.ReplaceInString(string, replacements)`.
+
+## GUI
+
+Daneel allows to easilly create GUI elments in order to build HUD and prompt the player with information or interact with him.  
+
+### Setup
+
+GUI elments are actually gameObjects parented to the HUD camera.  
+The HUD camera is a gameObject with an orthographic camera component, somewhere in your scene away from where the game actually happens. Name it "HUDCamera" or update the value of `Daneel.config.hudCameraName`. If you set an orthographic scale other than 10, update the value of `Daneel.config.hudCameraOrthographicScale`.
+
+Available GUI objects are :
+- Daneel.GUI
+- GUIText (Daneel.GUI.Text)
+- GUICheckbox (Daneel.GUI.Checkbox)
+- GUIInput (Daneel.GUI.Input)
+
+### Common element properties
+
+The GUI elments are convenient wrapper around the gameObjects they are made of that allows to easily manipulate them.  
+Get and set the object's properties via their appropriate gettter and setter (or their dynamic variable) at any time during creation or afterward.
+
+- Name : be sure that the name is unique during creation, if you want to retrieve an element later by its name with `GUI.Get(name)`.
+- Scale : a scale of 1 is very big, so the elments are created with a default scale of 0.2. You may change this value with `Daneel.config.hudElementDefaultScale`.
+- Opacity
+- Label : this is the text that identifies the element on screen. You may go to the mext line by inserting ":br:" in the string.
+
+*Position*  
+Yet they are actually gameObjects in a 3D world, GUI elements are positionned on the 2D plane that is the screen.
+Similarly to Vector3, Vector2 has been introduced and must be supplied to `element:SetPosition()`. The origin is the top-left corner of the screen, so the x component is the distance *in pixels* from the left side of the screen. The y component is the distance in pixels from the top of the screen.  
+For a screen that is 800x600 pixels wide, {400,300} is the center of the screen while {800,600} is its bottom-right corner.
+
+All GUI element may be created from script with the New(name)
+
+### GUIText
+
+Just some text.
+
+### GUICheckbox
+
+A labelled checkox that has a "checked" state which can be toggled when the user clicks on the checkbox or its label.  
+I addition to the usual parameters, you may define a function as the value of the "onClick" property. This function will be called whenever the user click on the chekbox and receive the element as first and only argument.
+
+    local element = GUICheckbox.New("Box1", {
+        position = Vector2.New(400, 200),
+        
+        onClick = function(element)
+            print()
+        end
+    })
 
 
 ## Miscellaneous
@@ -495,11 +545,39 @@ Arguments between square brackets are optional.
 * Daneel.Debug.StackTrace.EndFunction()
 * Daneel.Debug.StackTrace.Print()
 
-### Daneel.Events
+### Daneel.Event
 
-* Daneel.Events.Listen(eventName, function) / Daneel.Events.Listen(eventName, gameObject[, functionName, broadcast])
-* Daneel.Events.StopListen(eventName, functionOrGameObject)
-* Daneel.Events.Fire(eventName[, ...])
+* Daneel.Event.Listen(eventName, function) / Daneel.Event.Listen(eventName, gameObject[, functionName, broadcast])
+* Daneel.Event.StopListen(eventName, functionOrGameObject)
+* Daneel.Event.Fire(eventName[, ...])
+
+### Daneel.GUI
+
+- Daneel.GUI.Get(name)
+
+For all GUI Elements :
+
+- element:SetName(position)
+- element:GetName()
+- element:SetPosition(position)
+- element:GetPosition()
+- element:SetScale(scale)
+- element:GetScale([returnAsNumber])
+- element:SetOpacity(opacity)
+- element:GetOpacity()
+- element:SetLabel(label)
+- element:GetLabel()
+- element:Destroy()
+
+### Daneel.GUI.Checkbox / GUICheckbox
+
+- Daneel.GUI.Checkbox.New(name[, params])
+- checkbox:SwitchSate()
+
+### Daneel.GUI.Text / GUIText
+
+- Daneel.GUI.Text.New(name[, params])
+
 
 ### Daneel.Lang
 
@@ -594,13 +672,20 @@ Arguments between square brackets are optional.
 * table.getvalues(table)
 * table.getkey(table, value)
 
+### Vector2
+
+- Vector2.New(x[, y])
+
 
 ## Changelog
 
 ### v1.2.0
 
-- Added localization capablities ( Daneel.Lang.GetLine(key[, replacement]) )
-- Added Daneel.Utilities.ReplaceInString(string, replacement)
+- Added GUI elements
+- Added Vector2 object
+- Added localization capablities (`Daneel.Lang.GetLine(key[, replacement])`)
+- Added `Daneel.Utilities.ReplaceInString(string, replacement)`
+- Added `string.slpit(string, delimiter)`
 - Fixed SetMap that would throw an exception when keepTileSet was false or nil
 
 

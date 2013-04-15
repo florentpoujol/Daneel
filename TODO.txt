@@ -1,0 +1,13 @@
+config :
+    notion d'environnement (develop, common, prod, ... )
+    avec environement courant
+    Daneel.config.environement.key ...
+
+    object Daneel.Config.Get(key)  ou (environement.key)   global helper : config()
+
+    Daneel.Config = {
+        default = {}
+        common = {}
+
+        environement = ""
+    }
