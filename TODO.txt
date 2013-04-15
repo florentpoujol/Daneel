@@ -6,8 +6,12 @@ config :
     object Daneel.Config.Get(key)  ou (environement.key)   global helper : config()
 
     Daneel.Config = {
-        default = {}
-        common = {}
+        config = {
+            default = {},
+            common = {},
+            env1 = {},
+            env2 = {},
+        }
 
         environement = ""
     }

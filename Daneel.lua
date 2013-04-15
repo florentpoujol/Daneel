@@ -7,111 +7,6 @@ DANEEL_LOADED = false
 
 
 ----------------------------------------------------------------------------------
--- Defaul Config
-
-Daneel.defaultConfig = {
-    -- Rays
-    -- list of the gameObjects to cast the ray against by default by ray:Cast()
-    -- filled in the CastableGameObjects behavior
-    castableGameObjects = {},
-    
-    -- Triggers
-    -- list of gameObjects check for rpoximity by the triggers
-    -- filled in the TriggerableGameObject behavior
-    triggerableGameObjects = {},
-
-    -- List of gameObject that react to the mouse input
-    mousehoverableGameObjects = {},
-
-
-    -- List of the Scripts paths as values and optionally the script alias as the keys.
-    -- Ie :
-    -- "fully-qualified Script path"
-    -- or
-    -- alias = "fully-qualified Script path"
-    scripts = {
-        "Daneel/Behaviors/DaneelBehavior",
-        "Daneel/Behaviors/Trigger",
-        "Daneel/Behaviors/TriggerableGameObject",
-        "Daneel/Behaviors/CastableGameObject",
-        "Daneel/Behaviors/MousehoverableGameObject",
-    },
-
-
-    -- Button names as you defined them in the "Administration > Game Controls" tab of your project
-    -- Button whose name is defined here can be used as HotKeys
-    buttons = {},
-
-
-    ----------------------------------------------------------------------------------
-    -- Language
-
-    languages = {
-        -- The languages supported by the game
-        "english",
-
-        -- Game's default language
-        default = "english",
-
-        -- Game's current language
-        current = "english",
-
-        -- value returned when a language key is not found
-        keyNotFound = "langkeynotfound",
-    },
-
-
-    ----------------------------------------------------------------------------------
-    -- Debug
-
-    -- Objects (keys = name, value = object)
-    assetObjects = {
-        Script = Script,
-        Model = Model,
-        ModelAnimation = ModelAnimation,
-        Map = Map,
-        TileSet = TileSet,
-        Sound = Sound,
-        Scene = Scene,
-        --Document = Document
-    },
-
-    componentObjects = {
-        ScriptedBehavior = ScriptedBehavior,
-        ModelRenderer = ModelRenderer,
-        MapRenderer = MapRenderer,
-        Camera = Camera,
-        Transform = Transform,
-    },
-    
-    craftStudioObjects = {
-        GameObject = GameObject,
-        Vector3 = Vector3,
-        Quaternion = Quaternion,
-        Plane = Plane,
-        Ray = Ray,
-    },
-    
-    daneelObjects = {}, -- filled in Daneel.Awake() below
-    objects = {}, -- user-defined objects
-
-    debug = false,
-}
-
-Daneel.defaultConfig.__index = Daneel.defaultConfig
-
-Daneel.defaultConfig.assetTypes = {}
-for type, object in pairs(Daneel.defaultConfig.assetObjects) do
-    table.insert(Daneel.defaultConfig.assetTypes, type)
-end
-
-Daneel.defaultConfig.componentTypes = {}
-for type, object in pairs(Daneel.defaultConfig.componentObjects) do
-    table.insert(Daneel.defaultConfig.componentTypes, type)
-end
-
-
-----------------------------------------------------------------------------------
 -- Utilities
 
 Daneel.Utilities = {}
@@ -638,76 +533,235 @@ end
 
 
 ----------------------------------------------------------------------------------
--- Initialization
-local luaDocStop = ""
+-- Config
 
+Daneel.Config = { environments = {} }
 
--- Components
-for componentType, componentObject in pairs(Daneel.defaultConfig.componentObjects) do
-    -- GameObject.AddComponent helpers
-    -- ie : gameObject:AddModelRenderer()
-    if componentType ~= "Transform" and componentType ~= "ScriptedBehavior" then 
-        GameObject["Add"..componentType] = function(gameObject, params)
-            Daneel.Debug.StackTrace.BeginFunction("GameObject.Add"..componentType, gameObject, params)
-            local errorHead = "GameObject.Add"..componentType.."(gameObject[, params]) : "
-            Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+--- Get the value associated with the provided key in the configuration.
+-- @param key (string) The configuration key. May be prefixed by an environement name.
+-- @param default (mixed) The default value to return instead of nil if the the key is not found.
+-- @return (mixed) The configuration value. 
+function Daneel.Config.Get(key, default)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Config.Get", key, replacements)
+    local errorHead = "Daneel.Lang.Get(key[, default]) : "
+    Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
 
-            local component = gameObject:AddComponent(componentType, params)
-            Daneel.Debug.StackTrace.EndFunction("GameObject.Add"..componentType, component)
-            return component
+    local keys = key:split(".")
+
+    local environments = table.getkeys(Daneel.config.environments)
+    local environment = Daneel.Config.environments.default.config.environment
+    if keys[1]:isoneof(environments) then
+        environment = table.remove(keys, 1)
+    end  
+
+    local config = Daneel.Config.environments[environment]
+    if config == nil then
+        error(errorHead.."Environment '"..environment.."' is not a valid configuration environment.")
+    end
+    
+    for i, _key in ipairs(keys) do
+        
+        if config[_key] == nil then
+            -- key was not found, search for it in the common environment
+            if environment ~= "common" and environment ~= "default" then
+                Daneel.Debug.StackTrace.EndFunction()
+                return Daneel.Config.Get("common."..key, default)
+            -- not found in common env, search in default
+            elseif environment == "common" then
+                Daneel.Debug.StackTrace.EndFunction()
+                return Daneel.Config.Get("default."..key, default)
+            -- already default env, return default value
+            else
+                Daneel.Debug.StackTrace.EndFunction()
+                return default
+            end
         end
+        config = config[_key]
+    end
+    -- config should be the searched config value by now
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return config
+end
+
+--- Alias of Daneel.Config.Get(key[, default])
+-- @param key (string) The configuration key.
+-- @param default (mixed) The default value to return instead of nil if the the key is not found.
+-- @return (mixed) The configuration value. 
+function config(key, default)
+    return Daneel.Config.Get(key, default)
+end
+
+
+--- Get the value associated with the provided key in the configuration.
+-- @param key (string) The configuration key. May be prefixed by an environement name.
+-- @param default (mixed) The default value to return instead of nil if the the key is not found.
+-- @return (mixed) The configuration value. 
+function Daneel.Config.Set(key, value)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Config.Get", key, replacements)
+    local errorHead = "Daneel.Lang.Get(key[, default]) : "
+    Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
+
+    local keys = key:split(".")
+
+    local environments = table.getkeys(Daneel.config.environments)
+    local environment = Daneel.Config.environments.default.config.environment
+    if keys[1]:isoneof(environments) then
+        environment = table.remove(keys, 1)
+    end  
+    
+    local config = Daneel.Config.environments[environment]
+    if config == nil then
+        error(errorHead.."Environment '"..environment.."' is not a valid configuration environment.")
     end
 
-    -- GameObject.SetComponent helpers
-    -- ie : gameObject:SetModelRenderer()
-    if componentType ~= "ScriptedBehavior" then 
-        GameObject["Set"..componentType] = function(gameObject, params)  
-            Daneel.Debug.StackTrace.BeginFunction("GameObject.Set"..componentType, gameObject, params)
-            local errorHead = "GameObject.Set"..componentType.."(gameObject, params) : "
-            Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-
-            local component = gameObject:SetComponent(componentType, params)
-            Daneel.Debug.StackTrace.EndFunction("GameObject.Set"..componentType)
+    for i, _key in ipairs(keys) do
+        if config[_key] == nil then
+            config[_key] = {}
         end
+        config = config[_key]
     end
+    config = value
+    Daneel.Debug.StackTrace.EndFunction()
+end
 
-    componentObject["__tostring"] = function(component)
-        -- returns something like "ModelRenderer: 123456789"
-        -- component.inner is "?: [some ID]"
-        return componentType..tostring(component.inner):sub(2, 20) -- leave 2 as the starting index, only the transform has an extra space
-    end
-end -- end for componentObjects
 
--- Assets
-for assetType, assetObject in pairs(Daneel.defaultConfig.assetObjects) do
-    assetObject["__tostring"] = function(asset)
-        -- print something like : "Model: 123456789"
-        -- asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
-        -- CraftStudioCommon.ProjectData. is 30 characters long
-        return tostring(asset.inner):sub(31, 60)
-    end
+-- Default and internal configuration
+daneelDefaultConfig = {
+    -- Config
+    config = {
+        environments = {
+            "default",
+            "common",
+        },
+
+        environment = "common",
+    },
+
+
+    -- Rays
+    -- list of the gameObjects to cast the ray against by default by ray:Cast()
+    -- filled in the CastableGameObjects behavior
+    castableGameObjects = {},
+    
+    -- Triggers
+    -- list of gameObjects check for rpoximity by the triggers
+    -- filled in the TriggerableGameObject behavior
+    triggerableGameObjects = {},
+
+    -- List of gameObject that react to the mouse input
+    mousehoverableGameObjects = {},
+
+
+    -- List of the Scripts paths as values and optionally the script alias as the keys.
+    -- Ie :
+    -- "fully-qualified Script path"
+    -- or
+    -- alias = "fully-qualified Script path"
+    scripts = {
+        "Daneel/Behaviors/DaneelBehavior",
+        "Daneel/Behaviors/Trigger",
+        "Daneel/Behaviors/TriggerableGameObject",
+        "Daneel/Behaviors/CastableGameObject",
+        "Daneel/Behaviors/MousehoverableGameObject",
+    },
+
+
+    -- Button names as you defined them in the "Administration > Game Controls" tab of your project
+    -- Button whose name is defined here can be used as HotKeys
+    buttons = {},
+
+
+    ----------------------------------------------------------------------------------
+    -- Language
+
+    languages = {
+        -- The languages supported by the game
+        "english",
+
+        -- Game's default language
+        default = "english",
+
+        -- Game's current language
+        current = "english",
+
+        -- value returned when a language key is not found
+        keyNotFound = "langkeynotfound",
+    },
+
+
+    ----------------------------------------------------------------------------------
+    -- Debug
+
+    -- Objects (keys = name, value = object)
+    assetObjects = {
+        Script = Script,
+        Model = Model,
+        ModelAnimation = ModelAnimation,
+        Map = Map,
+        TileSet = TileSet,
+        Sound = Sound,
+        Scene = Scene,
+        --Document = Document
+    },
+
+    componentObjects = {
+        ScriptedBehavior = ScriptedBehavior,
+        ModelRenderer = ModelRenderer,
+        MapRenderer = MapRenderer,
+        Camera = Camera,
+        Transform = Transform,
+    },
+    
+    craftStudioObjects = {
+        GameObject = GameObject,
+        Vector3 = Vector3,
+        Quaternion = Quaternion,
+        Plane = Plane,
+        Ray = Ray,
+    },
+    
+    daneelObjects = {}, -- filled in Daneel.Awake() below
+    objects = {}, -- user-defined objects
+
+    debug = false,
+}
+
+daneelDefaultConfig.__index = daneelDefaultConfig
+
+daneelDefaultConfig.assetTypes = {}
+for type, object in pairs(daneelDefaultConfig.assetObjects) do
+    table.insert(daneelDefaultConfig.assetTypes, type)
+end
+
+daneelDefaultConfig.componentTypes = {}
+for type, object in pairs(daneelDefaultConfig.componentObjects) do
+    table.insert(daneelDefaultConfig.componentTypes, type)
 end
 
 
 -- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
-    setmetatable(Daneel.config, Daneel.defaultConfig)
+    Daneel.Config.environments.default = daneelDefaultConfig
+    Daneel.Config.environments.common = commonConfig
 
-    Daneel.defaultConfig.daneelObjects = {
+    
+
+    daneelDefaultConfig.daneelObjects = {
         RaycastHit = RayCastHit,
     }
 
     -- all objects (for use in GetType())
     Daneel.config.objects = table.merge(
-        Daneel.defaultConfig.assetObjects,
-        Daneel.defaultConfig.componentObjects,
-        Daneel.defaultConfig.craftStudioObjects,
-        Daneel.defaultConfig.daneelObjects,
+        daneelDefaultConfig.assetObjects,
+        daneelDefaultConfig.componentObjects,
+        daneelDefaultConfig.craftStudioObjects,
+        daneelDefaultConfig.daneelObjects,
         Daneel.config.objects
     )
 
     -- scripts
-    Daneel.config.scripts = table.merge(Daneel.defaultConfig.scripts, Daneel.config.scripts)
+    Daneel.config.scripts = table.merge(daneelDefaultConfig.scripts, Daneel.config.scripts)
 
 
     -- Dynamic getters and setter on Scripts
@@ -723,7 +777,40 @@ function Daneel.Awake()
     end
 
     -- Components
-    for componentType, componentObject in pairs(Daneel.defaultConfig.componentObjects) do
+    for componentType, componentObject in pairs(daneelDefaultConfig.componentObjects) do
+        -- GameObject.AddComponent helpers
+        -- ie : gameObject:AddModelRenderer()
+        if componentType ~= "Transform" and componentType ~= "ScriptedBehavior" then 
+            GameObject["Add"..componentType] = function(gameObject, params)
+                Daneel.Debug.StackTrace.BeginFunction("GameObject.Add"..componentType, gameObject, params)
+                local errorHead = "GameObject.Add"..componentType.."(gameObject[, params]) : "
+                Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+
+                local component = gameObject:AddComponent(componentType, params)
+                Daneel.Debug.StackTrace.EndFunction("GameObject.Add"..componentType, component)
+                return component
+            end
+        end
+
+        -- GameObject.SetComponent helpers
+        -- ie : gameObject:SetModelRenderer()
+        if componentType ~= "ScriptedBehavior" then 
+            GameObject["Set"..componentType] = function(gameObject, params)  
+                Daneel.Debug.StackTrace.BeginFunction("GameObject.Set"..componentType, gameObject, params)
+                local errorHead = "GameObject.Set"..componentType.."(gameObject, params) : "
+                Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+
+                local component = gameObject:SetComponent(componentType, params)
+                Daneel.Debug.StackTrace.EndFunction("GameObject.Set"..componentType)
+            end
+        end
+
+        componentObject["__tostring"] = function(component)
+            -- returns something like "ModelRenderer: 123456789"
+            -- component.inner is "?: [some ID]"
+            return componentType..tostring(component.inner):sub(2, 20) -- leave 2 as the starting index, only the transform has an extra space
+        end
+
         -- Components getters-setter-tostring
         if componentType ~= "ScriptedBehavior" then
             -- Dynamic Getters
@@ -759,7 +846,7 @@ function Daneel.Awake()
     end
 
     -- Assets
-    for assetType, assetObject in pairs(Daneel.defaultConfig.assetObjects) do
+    for assetType, assetObject in pairs(daneelDefaultConfig.assetObjects) do
         -- Get helpers : GetModelRenderer() ...
         Asset["Get"..assetType] = function(assetName)
             Daneel.Debug.StackTrace.BeginFunction("Asset.Get"..assetType, assetName)
@@ -792,6 +879,13 @@ function Daneel.Awake()
             end
             
             return rawset(asset, key, value)
+        end
+
+        assetObject["__tostring"] = function(asset)
+            -- print something like : "Model: 123456789"
+            -- asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
+            -- CraftStudioCommon.ProjectData. is 30 characters long
+            return tostring(asset.inner):sub(31, 60)
         end
     end
 

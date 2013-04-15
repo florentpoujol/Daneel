@@ -1,10 +1,18 @@
 
-if Daneel == nil then 
-    Daneel = {}
-end
+common = {
+    
+    -- Config environement
+    config = {
+        environments = {
+            "dev",
+            "ship",
+        },
 
-Daneel.config = {
+        environment = "none",
+    },
 
+
+    ----------------------------------------------------------------------------------
     -- List of the Scripts paths as values and optionally the script alias as the keys.
     -- Setting your scripts here allows you to :
     -- * call getters and setters as if they where variable
@@ -17,6 +25,7 @@ Daneel.config = {
     },
 
     
+    ----------------------------------------------------------------------------------
     -- Button names as you defined them in the "Administration > Game Controls" tab of your project
     -- Button whose name is defined here can be used as HotKeys
     buttons = {
@@ -27,14 +36,15 @@ Daneel.config = {
     ----------------------------------------------------------------------------------
     -- Language
 
+    -- List of the languages supported by the game
     languages = {
-        -- List of the languages supported by the game
         "english",
         --"french",
         --"german",
         --...
+    },
 
-
+    language = {
         -- Game's default language
         -- If a line key is not found in the current language, it will try to find the key in the default language 
         -- before returning the value of keyNotFound
@@ -62,3 +72,14 @@ Daneel.config = {
     -- Set to false when you ship the game.
     debug = false,
 }
+
+
+dev = {
+    debug = true
+}
+
+ship = {
+    debug = false
+}
+
+config.environment = "dev"
