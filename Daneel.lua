@@ -756,9 +756,15 @@ setmetatable(config, configmt)
 -- @param default (mixed) The default value to return instead of nil if the the key is not found.
 -- @return (mixed) The configuration value. 
 function Daneel.Config.Set(key, value)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Config.Get", key, replacements)
-    local errorHead = "Daneel.Lang.Get(key[, default]) : "
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Config.Set", key, value)
+    local errorHead = "Daneel.Config.Set(key, value) : "
     Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
+    if value == nil then
+        if DEBUG then
+            print(errorHead.." Argument 'value' is nil.")
+        end
+        return
+    end
 
     local keys = key:split(".")
 
@@ -777,13 +783,27 @@ function Daneel.Config.Set(key, value)
         error(errorHead.."Environment '"..environment.."' is not a valid configuration environment.")
     end
 
+    local errorKey = ""
+
     for i, key in ipairs(keys) do
-        if configTable[key] == nil then
-            configTable[key] = {}
+        if type(configTable) ~= "table" then
+            error(errorHead.."Configuration key '"..errorKey.."' is already set and is of type '"..type(configTable).."' instead of 'table'.")
+        else
+            if i == #keys then
+                configTable[key] = value
+            else
+                if configTable[key] == nil then
+                    configTable[key] = {}
+                end
+
+
+                configTable = configTable[key]
+            end
         end
-        configTable = configTable[key]
+
+        errorkey = errorkey.."."..key
     end
-    configTable = value
+    
     Daneel.Debug.StackTrace.EndFunction()
 end
 

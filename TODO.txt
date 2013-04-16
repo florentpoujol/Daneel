@@ -7,3 +7,9 @@ for the doc :
 
 -- to create an environment, just create a table with the environment name as key in the 'config' table
 -- ie: a dev environement
+
+
+faire doc sur la config et les environements
+corriger doc sur les languages
+
+ajouter fonction config à la function list
