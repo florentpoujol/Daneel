@@ -3,7 +3,7 @@
 function Behavior:Update()
     local ray = self.gameObject.camera:CreateRay(CraftStudio.Input.GetMousePosition())
 
-    for i, gameObject in ipairs(Daneel.config.mousehoverableGameObjects) do
+    for i, gameObject in ipairs(config.default.mousehoverableGameObjects) do
         if gameObject ~= nil then
             if ray:IntersectsGameObject(gameObject) ~= nil then
                 -- the mouse pointer is over the gameObject
@@ -24,7 +24,7 @@ function Behavior:Update()
                 end
             end
         else
-            table.remove(Daneel.config.mousehoverableGameObjects, i)
+            table.remove(config.default.mousehoverableGameObjects, i)
         end
     end
 end

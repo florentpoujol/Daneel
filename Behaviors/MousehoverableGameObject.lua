@@ -1,4 +1,4 @@
 
 function Behavior:Start()
-    table.insert(Daneel.config.mousehoverableGameObjects, self.gameObject)
+    table.insert(config.default.mousehoverableGameObjects, self.gameObject)
 end

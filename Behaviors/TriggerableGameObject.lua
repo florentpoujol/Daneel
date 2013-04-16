@@ -1,4 +1,4 @@
 
 function Behavior:Start()
-    table.insert(Daneel.config.triggerableGameObjects, self.gameObject)
+    table.insert(config.default.triggerableGameObjects, self.gameObject)
 end

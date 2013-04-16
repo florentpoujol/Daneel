@@ -72,7 +72,7 @@ Component.__index = Component
 function Component.Set(component, params)
     Daneel.Debug.StackTrace.BeginFunction("Component.Set", component, params)
     local errorHead = "Component.Set(component, params) : "
-    Daneel.Debug.CheckArgType(component, "component", Daneel.config.componentTypes, errorHead)
+    Daneel.Debug.CheckArgType(component, "component", config.default.componentTypes, errorHead)
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
 
     for key, value in pairs(params) do
@@ -88,7 +88,7 @@ end
 function Component.Destroy(component)
     Daneel.Debug.StackTrace.BeginFunction("Component.Destroy", component)
     local errorHead = "Component.Destroy(component) : "
-    Daneel.Debug.CheckArgType(component, "component", Daneel.config.componentTypes, errorHead)
+    Daneel.Debug.CheckArgType(component, "component", config.default.componentTypes, errorHead)
     CraftStudio.Destroy(component)
     Daneel.Debug.StackTrace.EndFunction("Component.Destroy")
 end
@@ -216,7 +216,7 @@ function Ray.Cast(ray, gameObjects)
     Daneel.Debug.CheckArgType(ray, "ray", "Ray", errorHead)
 
     if gameObjects == nil then
-        gameObjects = Daneel.config.castableGameObjects
+        gameObjects = config.default.castableGameObjects
     else
         Daneel.Debug.CheckArgType(gameObjects, "gameObjects", "table", errorHead)
     end

@@ -7,6 +7,9 @@ end
 -- Configuration common for all environments
 config.common = {
     
+    environment = "common",
+
+
     ----------------------------------------------------------------------------------
     
     -- List of the Scripts paths as values and optionally the script alias as the keys.
@@ -31,17 +34,6 @@ config.common = {
 
 
     ----------------------------------------------------------------------------------
-    -- Language
-
-    -- List of the languages supported by the game
-    -- you may set the language keys/lines in a 'language[language]' table
-    -- ie: the "english" language will have its 'language.english' table
-    languages = {
-        "english",
-        --"french",
-        --"german",
-        --...
-    },
 
     language = {
         -- Current language
@@ -58,9 +50,10 @@ config.common = {
         searchInDefault = true,
     },
 
+    -- Once Danee is loaded, you may get the list of the laguage names with the 'languages' key.
+
 
     ----------------------------------------------------------------------------------
-    -- Debug
 
     -- Set to true to enable the framework's advanced debugging capabilities.
     -- Set to false when you ship the game.

@@ -4,6 +4,7 @@ if Daneel == nil then
 end
 
 DANEEL_LOADED = false
+DEBUG = false
 
 
 ----------------------------------------------------------------------------------
@@ -14,26 +15,11 @@ if config == nil then
 end
 
 config.default = {
-    -- Config
-    environments = {},
 
     environment = "common",
     
 
-
-    -- Rays
-    -- list of the gameObjects to cast the ray against by default by ray:Cast()
-    -- filled in the CastableGameObjects behavior
-    castableGameObjects = {},
-    
-    -- Triggers
-    -- list of gameObjects check for rpoximity by the triggers
-    -- filled in the TriggerableGameObject behavior
-    triggerableGameObjects = {},
-
-    -- List of gameObject that react to the mouse input
-    mousehoverableGameObjects = {},
-
+    ----------------------------------------------------------------------------------
 
     -- List of the Scripts paths as values and optionally the script alias as the keys.
     -- Ie :
@@ -48,6 +34,10 @@ config.default = {
         "Daneel/Behaviors/MousehoverableGameObject",
     },
 
+    allScripts = {},
+
+
+    ----------------------------------------------------------------------------------
 
     -- Button names as you defined them in the "Administration > Game Controls" tab of your project
     -- Button whose name is defined here can be used as HotKeys
@@ -57,19 +47,24 @@ config.default = {
     ----------------------------------------------------------------------------------
     -- Language
 
-    languages = {
-        -- The languages supported by the game
-        "english",
-
-        -- Game's default language
-        default = "english",
-
-        -- Game's current language
+    language = {
+        -- Current language
         current = "english",
 
-        -- value returned when a language key is not found
+        -- Default language
+        default = "english",
+
+        -- Value returned when a language key is not found
         keyNotFound = "langkeynotfound",
+
+        -- Tell wether Daneel.Lang.GetLine() search a line key in the default language 
+        -- when it is not found in the current language before returning the value of keyNotFound
+        searchInDefault = true,
     },
+
+    -- List of the languages supported by the game.
+    -- Automatically filled with the languages names, based on the keys defined on the 'language' global variable
+    languages = {},
 
 
     ----------------------------------------------------------------------------------
@@ -89,7 +84,7 @@ config.default = {
         --Document = Document
     },
 
-    assetTypes = {},
+    assetTypes = {}, -- filled below the end of the table
 
     componentObjects = {
         ScriptedBehavior = ScriptedBehavior,
@@ -114,6 +109,22 @@ config.default = {
     objects = {}, -- user-defined objects
 
     allObjects = {},
+
+
+    ----------------------------------------------------------------------------------
+
+    -- Rays
+    -- list of the gameObjects to cast the ray against by default by ray:Cast()
+    -- filled in the CastableGameObjects behavior
+    castableGameObjects = {},
+    
+    -- Triggers
+    -- list of gameObjects check for rpoximity by the triggers
+    -- filled in the TriggerableGameObject behavior
+    triggerableGameObjects = {},
+
+    -- List of gameObject that react to the mouse input
+    mousehoverableGameObjects = {},
 }
 
 config.default.__index = config.default
@@ -185,7 +196,7 @@ Daneel.Debug = {}
 -- @param p_errorHead [optional] (string) The beginning of the error message.
 -- @param p_errorEnd [optional] (string) The end of the error message.
 function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes, p_errorHead, p_errorEnd)
-    if Daneel.config.debug == false then return end
+    if DEBUG == false then return end
 
     local errorHead = "Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes[, errorHead, errorEnd]) : "
     
@@ -236,7 +247,7 @@ end
 -- @param p_errorHead [optional] (string) The beginning of the error message.
 -- @param p_errorEnd [optional] (string) The end of the error message.
 function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, p_errorHead, p_errorEnd)
-    if argument == nil or Daneel.config.debug == false then
+    if argument == nil or DEBUG == false then
         return
     end
 
@@ -312,7 +323,7 @@ function Daneel.Debug.GetType(object, returnLuaTypeOnly)
             end
 
             -- other types
-            for type, object in pairs(Daneel.config.allObjects) do
+            for type, object in pairs(config.default.allObjects) do
                 if mt == object then
                     return type
                 end
@@ -329,7 +340,7 @@ local OriginalError = error
 -- @param message (string) The error message.
 -- @param doNotPrintStacktrace [optional default=false] (boolean) Set to true to prevent the stacktrace to be printed before the error message.
 function error(message, doNotPrintStacktrace)
-    if Daneel.config.debug == true and doNotPrintStacktrace ~= true then
+    if DEBUG == true and doNotPrintStacktrace ~= true then
         Daneel.Debug.StackTrace.Print()
     end
     OriginalError(message)
@@ -343,7 +354,7 @@ function Daneel.Debug.CheckComponentType(componentType)
     local errorHead = "Daneel.Debug.CheckComponentType(componentType) : "
     Daneel.Debug.CheckArgType(componentType, "componentType", "string", errorHead)
 
-    local componentTypes = Daneel.config.componentTypes
+    local componentTypes = config.default.componentTypes
     componentType = Daneel.Utilities.CaseProof(componentType, componentTypes)
     if not componentType:isoneof(componentTypes) then
         error(errorHead.."Argument 'componentType' with value '"..componentType.."' is not one of the valid component types : "..table.concat(componentTypes, ", "))
@@ -361,7 +372,7 @@ function Daneel.Debug.CheckAssetType(assetType)
     local errorHead = "Daneel.Debug.CheckAssetType(assetType) : "
     Daneel.Debug.CheckArgType(assetType, "assetType", "string", errorHead)
 
-    local assetTypes = Daneel.config.assetTypes
+    local assetTypes = config.default.assetTypes
     assetType = Daneel.Utilities.CaseProof(assetType, assetTypes)
     if not assetType:isoneof(assetTypes) then
         error(errorHead.."Argument 'assetType' with value '"..assetType.."' is not one of the valid asset types : "..table.concat(assetTypes, ", "))
@@ -403,7 +414,7 @@ Daneel.Debug.StackTrace = {
 -- @param functionName (string) The function name.
 -- @param ... [optional] (mixed) Arguments received by the function.
 function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
-    if Daneel.config.debug == false then return end
+    if DEBUG == false then return end
     local errorHead = "Daneel.Debug.StackTrace.BeginFunction(functionName[, ...]) : "
     Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
 
@@ -430,7 +441,7 @@ end
 
 --- Closes a successful function call, removing it from the stacktrace.
 function Daneel.Debug.StackTrace.EndFunction()
-    if Daneel.config.debug == false then return end
+    if DEBUG == false then return end
     -- since 16/05/2013 no arguments is needed anymore, since the StackTrace only keeps open functions calls and never keep returned values
     -- I didn't rewrote all the calls to EndFunction() 
     Daneel.Debug.StackTrace.messages[Daneel.Debug.StackTrace.depth] = nil
@@ -439,7 +450,7 @@ end
 
 --- Print the StackTrace.
 function Daneel.Debug.StackTrace.Print()
-    if Daneel.config.debug == false then return end
+    if DEBUG == false then return end
     local messages = Daneel.Debug.StackTrace.messages
     Daneel.Debug.StackTrace.messages = {}
     Daneel.Debug.StackTrace.depth = 0
@@ -600,33 +611,39 @@ function Daneel.Lang.GetLine(key, replacements)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Lang.GetLine", key, replacements)
     local errorHead = "Daneel.Lang.GetLine(key[, replacements]) : "
     Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
+    local currentLanguage = Daneel.Config.Get("language.current")
+    local defaultLanguage = Daneel.Config.Get("language.default")
 
     local keys = key:split(".")
-
-    if not keys[1]:isoneof(Daneel.config.languages) then
-        table.insert(keys, 1, Daneel.config.languages.current)
+    local language = currentLanguage
+    if keys[1]:isoneof(Daneel.Config.Get("languages")) then
+        language = table.remove(keys)
     end
-    local language = keys[1]
-    local errorKey = ""
-    local lines = Daneel.Lang.lines
+    
+    local noLangKey = table.concat(keys, ".") -- the key, but without the language
 
-    for i, key in ipairs(keys) do
-        errorKey = errorKey..key
-        if lines[key] == nil then
-            -- key was not found, search for it in the default language
-            if language ~= Daneel.config.languages.default then
-                print(errorHead.."Localization key '"..errorKey.."' was not found in the current language '"..Daneel.config.languages.current.."'.")
-                key = Daneel.config.languages.default.."."..key
-                Daneel.Debug.StackTrace.EndFunction()
-                return Daneel.Lang.GetLine(key, replacements)
-            else -- already default language
-                print(errorHead.."Localization key '"..errorKey.."' was not found in the default language '"..Daneel.config.languages.default.."'.")
-                Daneel.Debug.StackTrace.EndFunction()
-                return Daneel.config.languages.keyNotFound
+    local lines = Daneel.Lang.lines[language]
+    if lines == nil then
+        error(errorHead.."Language '"..language.."' does not exists")
+    end
+
+    for i, _key in ipairs(keys) do
+        if lines[_key] == nil then
+            -- key was not found
+            if DEBUG == true then
+                print(errorHead.."Localization key '"..key.."' was not found in '"..language.."' language .")
             end
+
+            -- search for it in the default language
+            if language ~= defaultLanguage and Daneel.Config.Get("language.searchInDefault") == true then  
+                lines = Daneel.Lang.GetLine(defaultLanguage.."."..noLangKey, replacements)
+            else -- already default language or don't want to search in
+                lines =  Daneel.Config.Get("language.keyNotFound")
+            end
+
+            break
         end
-        lines = lines[key]
-        errorKey = errorKey.."."
+        lines = lines[_key]
     end
 
     -- line should be the searched string by now
@@ -677,26 +694,29 @@ function Daneel.Config.Get(key, default)
     end 
 
     if environment == nil then -- not specified in the key nor in config.common
-        environment = "common"
+        environment = config.default.environment -- "common"
     end
 
     local noEnvKey = table.concat(keys, ".") -- the key, but without the environment
 
-    local _config = config[environment]
-    if _config == nil then
+    local configTable = config[environment]
+    if configTable == nil then
         error(errorHead.."Environment '"..environment.."' is not a valid configuration environment.")
     end
     
-    for i, _key in ipairs(keys) do
-        if _config[_key] == nil then
+    for i, key in ipairs(keys) do
+        if configTable[key] == nil then
+            
             -- key was not found, search for it in the common environment
             if environment ~= "common" and environment ~= "default" then
                 Daneel.Debug.StackTrace.EndFunction()
                 return Daneel.Config.Get("common."..noEnvKey, default)
-            -- not found in common env, search in default
+            
+            -- not found in common env, search in default if allowed
             elseif environment == "common" then
                 Daneel.Debug.StackTrace.EndFunction()
                 return Daneel.Config.Get("default."..noEnvKey, default)
+            
             -- already default env, return default value
             else
                 Daneel.Debug.StackTrace.EndFunction()
@@ -704,21 +724,31 @@ function Daneel.Config.Get(key, default)
             end
         end
 
-        _config = _config[_key]
+        configTable = configTable[key]
     end
-    -- config should be the searched config value by now
+    -- configTable should be the searched config value by now
 
     Daneel.Debug.StackTrace.EndFunction()
-    return _config
+    return configTable
 end
+
+local tempConfig = config
 
 --- Alias of Daneel.Config.Get(key[, default])
 -- @param key (string) The configuration key.
 -- @param default (mixed) The default value to return instead of nil if the the key is not found.
 -- @return (mixed) The configuration value. 
-function config(key, default)
-    return Daneel.Config.Get(key, default)
-end
+function config(key, default) end
+
+config = tempConfig
+
+-- since config is a table, need to use a metatable to use it as a function
+local configmt = {
+    __call = function(object, key, default)
+        return Daneel.Config.Get(key, default)
+    end
+}
+setmetatable(config, configmt)
 
 
 --- Get the value associated with the provided key in the configuration.
@@ -739,56 +769,35 @@ function Daneel.Config.Set(key, value)
     end 
 
     if environment == nil then -- not specified in the key nor in config.common
-        environment = "common"
+        environment = config.default.environment -- "common"
     end
 
-    local noEnvKey = table.concat(keys, ".") -- the key, but without the environment
-
-    local _config = config[environment]
-    if _config == nil then
+    local configTable = config[environment]
+    if configTable == nil then
         error(errorHead.."Environment '"..environment.."' is not a valid configuration environment.")
     end
 
-    for i, _key in ipairs(keys) do
-        if _config[_key] == nil then
-            _config[_key] = {}
+    for i, key in ipairs(keys) do
+        if configTable[key] == nil then
+            configTable[key] = {}
         end
-        _config = _config[_key]
+        configTable = configTable[key]
     end
-    _config = value
+    configTable = value
     Daneel.Debug.StackTrace.EndFunction()
 end
-
-
-
 
 
 -- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
     Daneel.Config.environments = config
-    --Daneel.Config.environments.default = defaultConfig
-    --Daneel.Config.environments.common = commonConfig
-
-    -- for i, env in ipairs(commonConfig.environments) do
-    --     Daneel.Config.environments[env] = _G[env]
-    -- end
 
     -- list of all the environments (user-defined envs + default and common)
     config.default.environments = table.getkeys(config)
-
+    
     config.default.daneelObjects = {
         RaycastHit = RayCastHit,
     }
-
-    local environment = config.common.environment
-    if environment == nil then
-        environment = "common"
-    end
-
-    local userObjects = config[environment].objects
-    if userObjects == nil then
-        userObjects = {}
-    end
 
     -- all objects (for use in GetType())
     config.default.allObjects = table.merge(
@@ -796,28 +805,30 @@ function Daneel.Awake()
         config.default.componentObjects,
         config.default.craftStudioObjects,
         config.default.daneelObjects,
-        userObjects
+        Daneel.Config.Get('objects')
     )
 
-    -- from this point, Daneel.Config.Get() may be used
+    -- debug
+    DEBUG = Daneel.Config.Get("debug")
 
-
-    -- scripts
-    local allScripts = table.merge(
+    -- all scripts
+    config.default.allScripts = table.merge(
         config.default.scripts,
         Daneel.Config.Get("scripts")
     )
 
-
+    
     -- Dynamic getters and setter on Scripts
-    for i, path in pairs(Daneel.config.scripts) do
+    for i, path in pairs(config.default.allScripts) do
         local script = Asset.Get(path, "Script") -- Asset.Get() helpers does not yet exists
 
         if script ~= nil then
             Script.Init(script)
         else
-            table.remove(Daneel.config.scripts, i)
-            print("WARNING : item with key '"..i.."' and value '"..path.."' in Daneel.config.scripts is not a valid script path.")
+            table.remove(config.default.allScripts, i)
+            if DEBUG == true then
+                print("WARNING : item with key '"..i.."' and value '"..path.."' in 'config.default.allScripts' is not a valid script path.")
+            end
         end
     end
 
@@ -880,11 +891,9 @@ function Daneel.Awake()
             -- Dynamic Setters
             componentObject["__newindex"] = function(component, key, value)
                 local funcName = "Set"..key:ucfirst()
-                
                 if componentObject[funcName] ~= nil then
                     return componentObject[funcName](component, value)
                 end
-                
                 return rawset(component, key, value)
             end
         end
@@ -904,25 +913,21 @@ function Daneel.Awake()
 
         -- Dynamic getters
         assetObject['__index'] = function(asset, key)
-            local funcName = "Get"..key:ucfirst()
-                          
+            local funcName = "Get"..key:ucfirst()            
             if assetObject[funcName] ~= nil then
                 return assetObject[funcName](asset)
             elseif assetObject[key] ~= nil then
                 return assetObject[key]
             end
-
             return nil
         end
 
         -- Dynamic setters
         assetObject['__newindex'] = function(asset, key, value)
-            local funcName = "Set"..key:ucfirst()
-                          
+            local funcName = "Set"..key:ucfirst()              
             if assetObject[funcName] ~= nil then
                 return assetObject[funcName](asset, value)
             end
-            
             return rawset(asset, key, value)
         end
 
@@ -935,18 +940,20 @@ function Daneel.Awake()
     end
 
     -- Languages
-    for i, language in ipairs(Daneel.config.languages) do
-        if _G[language] ~= nil then
-            Daneel.Lang.lines[language] = _G[language]
-        end
+    if language ~= nil then
+        Daneel.Lang.lines = language
+        config.common.languages = table.getkeys(language)
     end
 
     -- Loading is over
     DANEEL_LOADED = true
-    print("Daneel is loaded")
+
+    if DEBUG == true then
+        print("Daneel is loaded.")
+    end
 
     -- call DaneelAwake()
-    for i, path in pairs(Daneel.config.scripts) do
+    for i, path in pairs(config.default.allScripts) do
         local script = Asset.GetScript(path)
         if script ~= nil and type(script.DaneelAwake) == "function" then
             script:DaneelAwake()
@@ -962,7 +969,7 @@ local luaDocStop = ""
 function Daneel.Update()
     -- HotKeys
     -- fire an event whenever a registered button is pressed
-    for i, buttonName in ipairs(Daneel.config.buttons) do
+    for i, buttonName in ipairs(Daneel.Config.Get("buttons")) do
         if CraftStudio.Input.WasButtonJustPressed(buttonName) then
             Daneel.Event.Fire("On"..buttonName:ucfirst().."ButtonJustPressed")
         end
