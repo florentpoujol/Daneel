@@ -1,17 +1,9 @@
-config :
-    notion d'environnement (develop, common, prod, ... )
-    avec environement courant
-    Daneel.config.environement.key ...
 
-    object Daneel.Config.Get(key)  ou (environement.key)   global helper : config()
 
-    Daneel.Config = {
-        config = {
-            default = {},
-            common = {},
-            env1 = {},
-            env2 = {},
-        }
+for the doc :
 
-        environement = ""
-    }
+-- You may delete from the 'config.common' table any keys that you are not changing the default value
+-- Any of the keys/values may be overrided in an environment table
+
+-- to create an environment, just create a table with the environment name as key in the 'config' table
+-- ie: a dev environement
