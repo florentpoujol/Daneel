@@ -1,15 +1,19 @@
 
-common = {
+if config == nil then 
+    config = {} 
+end
+
+-- Configuration common for all environments
+config.common = {
     
     -- Config environement
-    config = {
-        environments = {
-            "dev",
-            "ship",
-        },
-
-        environment = "none",
+    environments = {
+        "dev",
+        "ship",
     },
+
+    environment = "common",
+    
 
 
     ----------------------------------------------------------------------------------
@@ -58,8 +62,7 @@ common = {
     },
 
 
-    ----------------------------------------------------------------------------------
-    -- Debug
+    
 
     -- Your custom objects and their type returned by Daneel.Debug.GetType()
     -- GetType() will return the type on tables that have the object as metatable
@@ -74,12 +77,12 @@ common = {
 }
 
 
-dev = {
+config.dev = {
     debug = true
 }
 
-ship = {
-    debug = false
+config.ship = {
+    
 }
 
 config.environment = "dev"

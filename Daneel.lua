@@ -7,6 +7,128 @@ DANEEL_LOADED = false
 
 
 ----------------------------------------------------------------------------------
+-- Default configuration
+
+if config == nil then 
+    config = {} 
+end
+
+config.default = {
+    -- Config
+    environments = {},
+
+    environment = "common",
+    
+
+
+    -- Rays
+    -- list of the gameObjects to cast the ray against by default by ray:Cast()
+    -- filled in the CastableGameObjects behavior
+    castableGameObjects = {},
+    
+    -- Triggers
+    -- list of gameObjects check for rpoximity by the triggers
+    -- filled in the TriggerableGameObject behavior
+    triggerableGameObjects = {},
+
+    -- List of gameObject that react to the mouse input
+    mousehoverableGameObjects = {},
+
+
+    -- List of the Scripts paths as values and optionally the script alias as the keys.
+    -- Ie :
+    -- "fully-qualified Script path"
+    -- or
+    -- alias = "fully-qualified Script path"
+    scripts = {
+        "Daneel/Behaviors/DaneelBehavior",
+        "Daneel/Behaviors/Trigger",
+        "Daneel/Behaviors/TriggerableGameObject",
+        "Daneel/Behaviors/CastableGameObject",
+        "Daneel/Behaviors/MousehoverableGameObject",
+    },
+
+
+    -- Button names as you defined them in the "Administration > Game Controls" tab of your project
+    -- Button whose name is defined here can be used as HotKeys
+    buttons = {},
+
+
+    ----------------------------------------------------------------------------------
+    -- Language
+
+    languages = {
+        -- The languages supported by the game
+        "english",
+
+        -- Game's default language
+        default = "english",
+
+        -- Game's current language
+        current = "english",
+
+        -- value returned when a language key is not found
+        keyNotFound = "langkeynotfound",
+    },
+
+
+    ----------------------------------------------------------------------------------
+    -- Debug
+
+    debug = false,
+
+    -- Objects (keys = name, value = object)
+    assetObjects = {
+        Script = Script,
+        Model = Model,
+        ModelAnimation = ModelAnimation,
+        Map = Map,
+        TileSet = TileSet,
+        Sound = Sound,
+        Scene = Scene,
+        --Document = Document
+    },
+
+    assetTypes = {},
+
+    componentObjects = {
+        ScriptedBehavior = ScriptedBehavior,
+        ModelRenderer = ModelRenderer,
+        MapRenderer = MapRenderer,
+        Camera = Camera,
+        Transform = Transform,
+    },
+
+    componentTypes = {},
+    
+    craftStudioObjects = {
+        GameObject = GameObject,
+        Vector3 = Vector3,
+        Quaternion = Quaternion,
+        Plane = Plane,
+        Ray = Ray,
+    },
+    
+    daneelObjects = {}, -- filled in Daneel.Awake() below
+    
+    objects = {}, -- user-defined objects
+
+    allObjects = {},
+}
+
+config.default.__index = config.default
+
+-- built assetTypes and ccomponentTypes
+for type, object in pairs(config.default.assetObjects) do
+    table.insert(config.default.assetTypes, type)
+end
+
+for type, object in pairs(config.default.componentObjects) do
+    table.insert(config.default.componentTypes, type)
+end
+
+
+----------------------------------------------------------------------------------
 -- Utilities
 
 Daneel.Utilities = {}
@@ -190,7 +312,7 @@ function Daneel.Debug.GetType(object, returnLuaTypeOnly)
             end
 
             -- other types
-            for type, object in pairs(Daneel.config.objects) do
+            for type, object in pairs(Daneel.config.allObjects) do
                 if mt == object then
                     return type
                 end
@@ -548,40 +670,46 @@ function Daneel.Config.Get(key, default)
 
     local keys = key:split(".")
 
-    local environments = table.getkeys(Daneel.config.environments)
-    local environment = Daneel.Config.environments.default.config.environment
-    if keys[1]:isoneof(environments) then
+    local environments = config.default.environments
+    local environment = config.common.environment
+    if keys[1]:isoneof(environments) then -- get the environment from the key
         environment = table.remove(keys, 1)
-    end  
+    end 
 
-    local config = Daneel.Config.environments[environment]
-    if config == nil then
+    if environment == nil then -- not specified in the key nor in config.common
+        environment = "common"
+    end
+
+    local noEnvKey = table.concat(keys, ".") -- the key, but without the environment
+
+    local _config = config[environment]
+    if _config == nil then
         error(errorHead.."Environment '"..environment.."' is not a valid configuration environment.")
     end
     
     for i, _key in ipairs(keys) do
-        
-        if config[_key] == nil then
+        if _config[_key] == nil then
             -- key was not found, search for it in the common environment
             if environment ~= "common" and environment ~= "default" then
                 Daneel.Debug.StackTrace.EndFunction()
-                return Daneel.Config.Get("common."..key, default)
+                return Daneel.Config.Get("common."..noEnvKey, default)
             -- not found in common env, search in default
             elseif environment == "common" then
                 Daneel.Debug.StackTrace.EndFunction()
-                return Daneel.Config.Get("default."..key, default)
+                return Daneel.Config.Get("default."..noEnvKey, default)
             -- already default env, return default value
             else
                 Daneel.Debug.StackTrace.EndFunction()
                 return default
             end
         end
-        config = config[_key]
+
+        _config = _config[_key]
     end
     -- config should be the searched config value by now
 
     Daneel.Debug.StackTrace.EndFunction()
-    return config
+    return _config
 end
 
 --- Alias of Daneel.Config.Get(key[, default])
@@ -604,164 +732,81 @@ function Daneel.Config.Set(key, value)
 
     local keys = key:split(".")
 
-    local environments = table.getkeys(Daneel.config.environments)
-    local environment = Daneel.Config.environments.default.config.environment
-    if keys[1]:isoneof(environments) then
+    local environments = config.default.environments
+    local environment = config.common.environment
+    if keys[1]:isoneof(environments) then -- get the environment from the key
         environment = table.remove(keys, 1)
-    end  
-    
-    local config = Daneel.Config.environments[environment]
-    if config == nil then
+    end 
+
+    if environment == nil then -- not specified in the key nor in config.common
+        environment = "common"
+    end
+
+    local noEnvKey = table.concat(keys, ".") -- the key, but without the environment
+
+    local _config = config[environment]
+    if _config == nil then
         error(errorHead.."Environment '"..environment.."' is not a valid configuration environment.")
     end
 
     for i, _key in ipairs(keys) do
-        if config[_key] == nil then
-            config[_key] = {}
+        if _config[_key] == nil then
+            _config[_key] = {}
         end
-        config = config[_key]
+        _config = _config[_key]
     end
-    config = value
+    _config = value
     Daneel.Debug.StackTrace.EndFunction()
 end
 
 
--- Default and internal configuration
-daneelDefaultConfig = {
-    -- Config
-    config = {
-        environments = {
-            "default",
-            "common",
-        },
 
-        environment = "common",
-    },
-
-
-    -- Rays
-    -- list of the gameObjects to cast the ray against by default by ray:Cast()
-    -- filled in the CastableGameObjects behavior
-    castableGameObjects = {},
-    
-    -- Triggers
-    -- list of gameObjects check for rpoximity by the triggers
-    -- filled in the TriggerableGameObject behavior
-    triggerableGameObjects = {},
-
-    -- List of gameObject that react to the mouse input
-    mousehoverableGameObjects = {},
-
-
-    -- List of the Scripts paths as values and optionally the script alias as the keys.
-    -- Ie :
-    -- "fully-qualified Script path"
-    -- or
-    -- alias = "fully-qualified Script path"
-    scripts = {
-        "Daneel/Behaviors/DaneelBehavior",
-        "Daneel/Behaviors/Trigger",
-        "Daneel/Behaviors/TriggerableGameObject",
-        "Daneel/Behaviors/CastableGameObject",
-        "Daneel/Behaviors/MousehoverableGameObject",
-    },
-
-
-    -- Button names as you defined them in the "Administration > Game Controls" tab of your project
-    -- Button whose name is defined here can be used as HotKeys
-    buttons = {},
-
-
-    ----------------------------------------------------------------------------------
-    -- Language
-
-    languages = {
-        -- The languages supported by the game
-        "english",
-
-        -- Game's default language
-        default = "english",
-
-        -- Game's current language
-        current = "english",
-
-        -- value returned when a language key is not found
-        keyNotFound = "langkeynotfound",
-    },
-
-
-    ----------------------------------------------------------------------------------
-    -- Debug
-
-    -- Objects (keys = name, value = object)
-    assetObjects = {
-        Script = Script,
-        Model = Model,
-        ModelAnimation = ModelAnimation,
-        Map = Map,
-        TileSet = TileSet,
-        Sound = Sound,
-        Scene = Scene,
-        --Document = Document
-    },
-
-    componentObjects = {
-        ScriptedBehavior = ScriptedBehavior,
-        ModelRenderer = ModelRenderer,
-        MapRenderer = MapRenderer,
-        Camera = Camera,
-        Transform = Transform,
-    },
-    
-    craftStudioObjects = {
-        GameObject = GameObject,
-        Vector3 = Vector3,
-        Quaternion = Quaternion,
-        Plane = Plane,
-        Ray = Ray,
-    },
-    
-    daneelObjects = {}, -- filled in Daneel.Awake() below
-    objects = {}, -- user-defined objects
-
-    debug = false,
-}
-
-daneelDefaultConfig.__index = daneelDefaultConfig
-
-daneelDefaultConfig.assetTypes = {}
-for type, object in pairs(daneelDefaultConfig.assetObjects) do
-    table.insert(daneelDefaultConfig.assetTypes, type)
-end
-
-daneelDefaultConfig.componentTypes = {}
-for type, object in pairs(daneelDefaultConfig.componentObjects) do
-    table.insert(daneelDefaultConfig.componentTypes, type)
-end
 
 
 -- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
-    Daneel.Config.environments.default = daneelDefaultConfig
-    Daneel.Config.environments.common = commonConfig
+    Daneel.Config.environments = config
+    --Daneel.Config.environments.default = defaultConfig
+    --Daneel.Config.environments.common = commonConfig
 
-    
+    -- for i, env in ipairs(commonConfig.environments) do
+    --     Daneel.Config.environments[env] = _G[env]
+    -- end
 
-    daneelDefaultConfig.daneelObjects = {
+    -- list of all the environments (user-defined envs + default and common)
+    config.default.environments = table.getkeys(config)
+
+    config.default.daneelObjects = {
         RaycastHit = RayCastHit,
     }
 
+    local environment = config.common.environment
+    if environment == nil then
+        environment = "common"
+    end
+
+    local userObjects = config[environment].objects
+    if userObjects == nil then
+        userObjects = {}
+    end
+
     -- all objects (for use in GetType())
-    Daneel.config.objects = table.merge(
-        daneelDefaultConfig.assetObjects,
-        daneelDefaultConfig.componentObjects,
-        daneelDefaultConfig.craftStudioObjects,
-        daneelDefaultConfig.daneelObjects,
-        Daneel.config.objects
+    config.default.allObjects = table.merge(
+        config.default.assetObjects,
+        config.default.componentObjects,
+        config.default.craftStudioObjects,
+        config.default.daneelObjects,
+        userObjects
     )
 
+    -- from this point, Daneel.Config.Get() may be used
+
+
     -- scripts
-    Daneel.config.scripts = table.merge(daneelDefaultConfig.scripts, Daneel.config.scripts)
+    local allScripts = table.merge(
+        config.default.scripts,
+        Daneel.Config.Get("scripts")
+    )
 
 
     -- Dynamic getters and setter on Scripts
@@ -777,7 +822,7 @@ function Daneel.Awake()
     end
 
     -- Components
-    for componentType, componentObject in pairs(daneelDefaultConfig.componentObjects) do
+    for componentType, componentObject in pairs(config.default.componentObjects) do
         -- GameObject.AddComponent helpers
         -- ie : gameObject:AddModelRenderer()
         if componentType ~= "Transform" and componentType ~= "ScriptedBehavior" then 
@@ -846,7 +891,7 @@ function Daneel.Awake()
     end
 
     -- Assets
-    for assetType, assetObject in pairs(daneelDefaultConfig.assetObjects) do
+    for assetType, assetObject in pairs(config.default.assetObjects) do
         -- Get helpers : GetModelRenderer() ...
         Asset["Get"..assetType] = function(assetName)
             Daneel.Debug.StackTrace.BeginFunction("Asset.Get"..assetType, assetName)
