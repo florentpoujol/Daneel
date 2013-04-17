@@ -309,70 +309,6 @@ function Daneel.GUI.Common.SetColor(element, color)
 end
 
 
---- Set the element's background which is a MapRenderer or ModelRenderer.
--- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox, Daneel.GUI.Input) The element.
--- @param background (string) The model or map path or asset.
-function Daneel.GUI.Common.SetBackground(element, background)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetBackground", element)
-    local errorHead = "Daneel.GUI.Common.SetBackground(element, background) : "
-    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
-    Daneel.Debug.CheckOptionalArgType(background, "background", {"string", "Model", "Map"}, errorHead)
-
-    local assetType = Daneel.Debug.GetType(background)
-    local asset = background
-    if assetType == "string" then
-        assetType = "Model"
-        asset = Asset.Get(background, assetType)
-
-        if asset == nil then
-            assetType = "Map"
-            asset = Asset.Get(background, assetType)
-            if asset == nil then
-                error(errorHead.."Argument 'background' : asset with path '"..background.."' is not a Model nor a Map.")
-            end
-        end
-    end
-    local assettype = assetType:lower()
-
-    if element._background == nil then
-        element._background = GameObject.New(element._name.."Background", {
-            parent = element.gameObject,
-            [assettype.."Renderer"] = {},
-            --transform = { localPosition = Vector3.New(0,0,-5) }, -- put the gameObject "behind" the element
-        })
-        -- local position above causes error (the same as if the transform was not passed to SetLocalPosition)
-        element._background.transform.localPosition = Vector3:New(0,0,-1)
-    end
-
-    -- delete the other, old component if it exists
-    if assetType == "Model" and element._background.mapRenderer ~= nil then
-        element._background.mapRenderer:Destroy()
-    elseif assetType == "Map" and element._background.modelRenderer ~= nil then
-        element._background.modelRenderer:Destroy()
-    end
-
-    -- create the new component if needed then set the new background asset
-    element._background:Set({
-        [assettype.."Renderer"] = {
-            [assettype] = asset
-        }
-    })
-
-    Daneel.Debug.StackTrace.EndFunction()
-end
-
---- Get the element's background component.
--- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox, Daneel.GUI.Input) The element.
--- @param (ModelRender or MapRenderer) The background's component.
-function Daneel.GUI.Common.GetBackground(element)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetBackground", element)
-    local errorHead = "Daneel.GUI.Common.GetBackground(element) : "
-    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
-    Daneel.Debug.StackTrace.EndFunction()
-    return element._background
-end
-
-
 --- Destroy the provided element.
 -- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox) The element.
 function Daneel.GUI.Common.Destroy(element)
@@ -461,13 +397,6 @@ function Daneel.GUI.Text.New(name, params)
             elseif key == "isButton" and value == true then
                 element.gameObject:AddScriptedBehavior("Daneel/Behaviors/MousehoverableGameObject")
                 element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUIText", {element = element})
-            elseif key == "backgroundIsButton" and value == true then
-                if element._background == nil and params.background ~= nil then
-                    element.background = params.background
-                    params.background = nil
-                end 
-                element._background:AddScriptedBehavior("Daneel/Behaviors/MousehoverableGameObject")
-                element._background:AddScriptedBehavior("Daneel/Behaviors/GUIText", {element = element})
             else
                 element[key] = value
             end
@@ -557,13 +486,6 @@ function Daneel.GUI.Checkbox.New(name, params)
         for key, value in pairs(params) do
             if key == "scriptedBehaviors" then
                 element.gameObject:Set({scriptedBehaviors = value})
-            elseif key == "backgroundIsButton" and value == true then
-                if element._background == nil and params.background ~= nil then
-                    element.background = params.background
-                    params.background = nil
-                end 
-                element._background:AddScriptedBehavior("Daneel/Behaviors/MousehoverableGameObject")
-                element._background:AddScriptedBehavior("Daneel/Behaviors/GUIText", {element = element})
             else
                 element[key] = value
             end
@@ -706,13 +628,6 @@ function Daneel.GUI.Input.New(name, params)
         for key, value in pairs(params) do
             if key == "scriptedBehaviors" then
                 element.gameObject:Set({scriptedBehaviors = value})
-            elseif key == "backgroundIsButton" and value == true then
-                if element._background == nil and params.background ~= nil then
-                    element.background = params.background
-                    params.background = nil
-                end 
-                element._background:AddScriptedBehavior("Daneel/Behaviors/MousehoverableGameObject")
-                element._background:AddScriptedBehavior("Daneel/Behaviors/GUIText", {element = element})
             else
                 element[key] = value
             end

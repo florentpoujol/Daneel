@@ -3,6 +3,8 @@
 Slider
 progress bar
 "progress bar" mais avec plusieurs éléments
+> lorsque élément pas utilisé, il a opacity, scale etc au choix dans la config, donc
+	out et in state  
 
 layer
 
@@ -21,29 +23,5 @@ BUG :
 
 
 voir les fonction de tri sur les tables (pour Ray.Cast(), trier les RayCastHit par distance)
-voir bundle de doc pou laravel
-
-
-
-
-progress bar
-> 
-model renderer, 
-jouer sur le scale en y, 
-entre minval maxval, minwidth et maxwidth (en pixels)
-modifier rotation
-déterminer si le centre, fixe, est au milieu ou sur un des cotés
-
-set the progress by absolute value  or percentage
-SetProgress() allow incréments (comme set cursor position)
-
-params :
-
-minValue
-maxValue
-minWidth
-maxWidth
-
-progress > update the looks
 
 
