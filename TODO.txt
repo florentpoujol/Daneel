@@ -1,5 +1,7 @@
 
 finir doc sur la config
 - creation d'environment
-- Config.Set()
 
+
+GUI >
+	erreur lorsque set label on a GUIImage with modelRenderer
