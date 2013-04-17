@@ -347,11 +347,9 @@ end
 
 function Daneel.GUI.Text.__newindex(element, key, value)
     local funcName = "Set"..key:ucfirst()
-
     if Daneel.GUI.Text[funcName] ~= nil then
         return Daneel.GUI.Text[funcName](element, value)
     end
-
     return rawset(element, key, value)
 end
 
@@ -406,6 +404,128 @@ function Daneel.GUI.Text.New(name, params)
     Daneel.Debug.StackTrace.EndFunction()
     return element
 end
+
+
+----------------------------------------------------------------------------------
+-- Image
+
+Daneel.GUI.Image = {}
+setmetatable(Daneel.GUI.Image, Daneel.GUI.Common)
+GUIImage = Daneel.GUI.Image
+
+
+function Daneel.GUI.Image.__index(element, key)
+    local funcName = "Get"..key:ucfirst()
+
+    if Daneel.GUI.Image[funcName] ~= nil then
+        return Daneel.GUI.Image[funcName](element)
+    elseif Daneel.GUI.Image[key] ~= nil then
+        return Daneel.GUI.Image[key]
+    end
+
+    if Daneel.GUI.Common[funcName] ~= nil then
+        return Daneel.GUI.Common[funcName](element)
+    elseif Daneel.GUI.Common[key] ~= nil then
+        return Daneel.GUI.Common[key]
+    end
+
+    return nil
+end
+
+function Daneel.GUI.Image.__newindex(element, key, value)
+    local funcName = "Set"..key:ucfirst()
+    if Daneel.GUI.Image[funcName] ~= nil then
+        return Daneel.GUI.Image[funcName](element, value)
+    end
+    return rawset(element, key, value)
+end
+
+function Daneel.GUI.Image.__tostring(element)
+    return "Daneel.GUI.Image: '"..element._name.."'"
+end
+
+
+-- Create a new GUI.Image.
+-- @param name (string) The element name.
+-- @param params [optional] (table) A table with initialisation parameters.
+-- @return (Daneel.GUI.Image) The new element.
+function Daneel.GUI.Image.New(name, params)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Image.New", name, params)
+    local errorHead = "Daneel.GUI.Image.New(name[, params]) : "
+    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
+    Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
+
+    local element = {
+        _name = name,
+        gameObject = GameObject.New(name, {
+            parent = Daneel.config.hudCamera,
+        }),
+    }
+
+    setmetatable(element, Daneel.GUI.Image)
+    element.name = name
+    element.position = Vector2.New(100)
+    element.scale = Daneel.config.hudElementDefaultScale
+    
+    if params ~= nil then
+        for key, value in pairs(params) do
+            if key == "scriptedBehaviors" then
+                element.gameObject:Set({scriptedBehaviors = value})
+            elseif key == "isButton" and value == true then
+                element.gameObject:AddScriptedBehavior("Daneel/Behaviors/MousehoverableGameObject")
+                element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUIText", {element = element})
+            else
+                element[key] = value
+            end
+        end
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return element
+end
+
+
+function Daneel.GUI.Image.SetImage(element, image)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetBackground", element)
+    local errorHead = "Daneel.GUI.Common.SetBackground(element, image) : "
+    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckOptionalArgType(image, "image", {"string", "Model", "Map"}, errorHead)
+
+    local assetType = Daneel.Debug.GetType(image)
+    local asset = image
+    if assetType == "string" then
+        assetType = "Model"
+        asset = Asset.Get(image, assetType)
+
+        if asset == nil then
+            assetType = "Map"
+            asset = Asset.Get(image, assetType)
+            if asset == nil then
+                error(errorHead.."Argument 'image' : asset with path '"..image.."' is not a Model nor a Map.")
+            end
+        end
+    end
+    local assettype = assetType:lower()
+
+    element._image = image
+
+    -- delete the other, old component if it exists
+    if assetType == "Model" and element.gameObject.mapRenderer ~= nil then
+        element.gameObject.mapRenderer:Destroy()
+    elseif assetType == "Map" and element.gameObject.modelRenderer ~= nil then
+        element.gameObject.modelRenderer:Destroy()
+    end
+
+    -- create the new component if needed then set the new image asset
+    element.gameObject:Set({
+        [assettype.."Renderer"] = {
+            [assettype] = asset
+        }
+    })
+
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
 
 
 ----------------------------------------------------------------------------------
@@ -576,11 +696,9 @@ end
 
 function Daneel.GUI.Input.__newindex(element, key, value)
     local funcName = "Set"..key:ucfirst()
-
     if Daneel.GUI.Input[funcName] ~= nil then
         return Daneel.GUI.Input[funcName](element, value)
     end
-
     return rawset(element, key, value)
 end
 
@@ -794,11 +912,9 @@ end
 
 function Daneel.GUI.ProgressBar.__newindex(element, key, value)
     local funcName = "Set"..key:ucfirst()
-
     if Daneel.GUI.ProgressBar[funcName] ~= nil then
         return Daneel.GUI.ProgressBar[funcName](element, value)
     end
-
     return rawset(element, key, value)
 end
 
