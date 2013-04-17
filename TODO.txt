@@ -6,16 +6,12 @@ progress bar
 > lorsque élément pas utilisé, il a opacity, scale etc au choix dans la config, donc
 	out et in state  
 
-layer
 
 créer les éléments dans la scène et non seulement par script > voir seulement pour 3Dtext
 
 input >
 	param size qui limite la taille du champs mais pas du texte (flèches font se déplacer le texte)
 
-
-readme >
-	besoin d'enregistrer un script dans config.scripts pour utiliser component:Set() sur un script
 
 
 BUG :

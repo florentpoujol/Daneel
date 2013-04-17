@@ -309,6 +309,30 @@ function Daneel.GUI.Common.SetColor(element, color)
 end
 
 
+--- Set the elements's layer which is actually its local position's z component.
+-- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox) The element.
+-- @param layer (number) The layer (a postiv number).
+function Daneel.GUI.Common.SetLayer(element, layer)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetLayer", element)
+    local errorHead = "Daneel.GUI.Common.SetLayer(element, layer) : "
+    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(layer, "layer", "number", errorHead)
+    local pos = element.gameObject.transform.localPosition
+    element.gameObject.transform.localPosition = Vector3:New(pos.x, pos.y, -layer)
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+--- Get the elements's layer which is actually its local position's z component.
+-- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox) The element.
+-- @return (number) The layer.
+function Daneel.GUI.Common.GetLayer(element)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetLayer", element)
+    local errorHead = "Daneel.GUI.Common.GetLyer(element) : "
+    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    return math.abs(element.gameObject.transform.localPosition.z)
+end
+
+
 --- Destroy the provided element.
 -- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox) The element.
 function Daneel.GUI.Common.Destroy(element)
@@ -382,6 +406,7 @@ function Daneel.GUI.Text.New(name, params)
     element.label = name
     element.scale = Daneel.config.hudElementDefaultScale
     element:SetColor()
+    element.layer = 1
     
     if params ~= nil then
         if params.wordWrap ~= nil then
@@ -466,6 +491,7 @@ function Daneel.GUI.Image.New(name, params)
     element.name = name
     element.position = Vector2.New(100)
     element.scale = Daneel.config.hudElementDefaultScale
+    element.layer = 1
     
     if params ~= nil then
         for key, value in pairs(params) do
@@ -600,6 +626,7 @@ function Daneel.GUI.Checkbox.New(name, params)
     element.scale = Daneel.config.hudElementDefaultScale
     element.checked = false
     element.gameObject:GetScriptedBehavior("Daneel/Behaviors/GUICheckbox").element = element
+    element.layer = 1
 
     -- user-defined properties
     if params ~= nil then
@@ -740,6 +767,7 @@ function Daneel.GUI.Input.New(name, params)
     element.gameObject:GetScriptedBehavior("Daneel/Behaviors/GUIInput").element = element
     element.cursorMapRndr = element.gameObject:AddMapRenderer({opacity = 0.7})
     element._cursorPosition = 1
+    element.layer = 1
 
     -- user-defined properties
     if params ~= nil then
@@ -952,6 +980,7 @@ function Daneel.GUI.ProgressBar.New(name, params)
     element.position = Vector2.New(100)
     element.label = ""
     element.scale = Daneel.config.hudElementDefaultScale
+    element.layer = 1
     element.minValue = 0
     element.maxValue = 100
     element.minLength = 0
