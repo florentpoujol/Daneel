@@ -34,18 +34,19 @@ config.default = {
         "Daneel/Behaviors/MousehoverableGameObject",
     },
 
-    allScripts = {},
+    -- List of the scripts in the default and the current environment.
+    -- Filled in Awake() below.
+    allScripts = {}, 
 
 
     ----------------------------------------------------------------------------------
 
-    -- Button names as you defined them in the "Administration > Game Controls" tab of your project
-    -- Button whose name is defined here can be used as HotKeys
+    -- Button names as you defined them in the "Administration > Game Controls" tab of your project.
+    -- Button whose name is defined here can be used as HotKeys.
     buttons = {},
 
 
     ----------------------------------------------------------------------------------
-    -- Language
 
     language = {
         -- Current language
@@ -68,7 +69,6 @@ config.default = {
 
 
     ----------------------------------------------------------------------------------
-    -- Debug
 
     debug = false,
 
@@ -127,9 +127,7 @@ config.default = {
     mousehoverableGameObjects = {},
 }
 
-config.default.__index = config.default
-
--- built assetTypes and ccomponentTypes
+-- built assetTypes and componentTypes
 for type, object in pairs(config.default.assetObjects) do
     table.insert(config.default.assetTypes, type)
 end
@@ -677,7 +675,7 @@ end
 Daneel.Config = { environments = {} }
 
 --- Get the value associated with the provided key in the configuration.
--- @param key (string) The configuration key. May be prefixed by an environement name.
+-- @param key (string) The configuration key. May be prefixed by an environment name.
 -- @param default (mixed) The default value to return instead of nil if the the key is not found.
 -- @return (mixed) The configuration value. 
 function Daneel.Config.Get(key, default)
@@ -751,20 +749,13 @@ local configmt = {
 setmetatable(config, configmt)
 
 
---- Get the value associated with the provided key in the configuration.
--- @param key (string) The configuration key. May be prefixed by an environement name.
--- @param default (mixed) The default value to return instead of nil if the the key is not found.
--- @return (mixed) The configuration value. 
+--- Set the value associated with the provided key in the configuration.
+-- @param key (string) The configuration key. May be prefixed by an environment name.
+-- @param value [optional] (mixed) The new value. If the argument is ommitted, the new value is conidered as nil.
 function Daneel.Config.Set(key, value)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Config.Set", key, value)
     local errorHead = "Daneel.Config.Set(key, value) : "
     Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
-    if value == nil then
-        if DEBUG then
-            print(errorHead.." Argument 'value' is nil.")
-        end
-        return
-    end
 
     local keys = key:split(".")
 
@@ -782,8 +773,8 @@ function Daneel.Config.Set(key, value)
     if configTable == nil then
         error(errorHead.."Environment '"..environment.."' is not a valid configuration environment.")
     end
-
-    local errorKey = ""
+    
+    local errorKey = environment
 
     for i, key in ipairs(keys) do
         if type(configTable) ~= "table" then
@@ -796,12 +787,11 @@ function Daneel.Config.Set(key, value)
                     configTable[key] = {}
                 end
 
-
                 configTable = configTable[key]
             end
         end
 
-        errorkey = errorkey.."."..key
+        errorKey = errorKey.."."..key
     end
     
     Daneel.Debug.StackTrace.EndFunction()

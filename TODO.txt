@@ -1,15 +1,5 @@
 
+finir doc sur la config
+- creation d'environment
+- Config.Set()
 
-for the doc :
-
--- You may delete from the 'config.common' table any keys that you are not changing the default value
--- Any of the keys/values may be overrided in an environment table
-
--- to create an environment, just create a table with the environment name as key in the 'config' table
--- ie: a dev environement
-
-
-faire doc sur la config et les environements
-corriger doc sur les languages
-
-ajouter fonction config à la function list
