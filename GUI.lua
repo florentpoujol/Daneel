@@ -296,9 +296,11 @@ function Daneel.GUI.Common.SetColor(element, color)
     if color ~= nil then
         element.gameObject.mapRenderer.tileSet = color
         element._color = color
+    -- put the color the text had (before the label was updated)
     elseif element._color ~= nil then
         element.gameObject.mapRenderer.tileSet = element._color
         element._color = element._color
+    -- if coor arg is not set, put the default color
     elseif Daneel.config.textDefaultColorName ~= nil then
         local color = Daneel.GUI.colors[Daneel.config.textDefaultColorName]
         element.gameObject.mapRenderer.tileSet = color

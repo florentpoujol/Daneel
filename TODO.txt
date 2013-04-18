@@ -21,3 +21,6 @@ BUG :
 voir les fonction de tri sur les tables (pour Ray.Cast(), trier les RayCastHit par distance)
 
 
+
+
+Changer la manière dont les color sont gérée (voir la doc)
