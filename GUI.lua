@@ -27,6 +27,44 @@ Daneel.GUI.Common = {} -- common functions for GUI Elements
 Daneel.GUI.Common.__index = Daneel.GUI.Common
     
 
+-- Basic contructor for GUI elements.
+-- @param name (string) The element name.
+-- @return (Daneel.GUI.Common) The basics of the element, to be completed by the other GUI.[element].New() function.
+function Daneel.GUI.Common.New(name, params)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.New", name, params)
+    local errorHead = "Daneel.GUI.Text.New(name[, params]) : "
+    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
+    Daneel.Debug.CheckOptionArgType(params, "params", "table", errorHead)
+
+    local element = {
+        _name = name,
+        gameObject = GameObject.New(name, {
+            parent = Daneel.config.hudCamera,
+        }),
+    }
+
+    setmetatable(element, Daneel.GUI.Common)
+    element.name = name
+    element.position = Vector2.New(100)
+    element.scale = Daneel.config.hudElementDefaultScale
+    element.layer = 1
+    
+    if params ~= nil then
+        if type(params.scriptedBehaviors) == "table" then
+            element.gameObject:Set({scriptedBehaviors = params.scriptedBehaviors})
+            params.scriptedBehaviors = nil
+        end
+
+        if params.isInteractive == true then
+            element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Interactive", {element = element})
+            params.isInteractive = nil
+        end
+    end
+
+    return element
+end
+
+
 --- Set the element's name.
 -- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox) The element.
 -- @param name (string) The local name.
@@ -286,7 +324,7 @@ end
 
 --- Set the element's color which is actually the tile set used to render the label.
 -- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox, Daneel.GUI.Input) The element.
--- @param color (TileSet) An entry in Danel.GUI.colors.
+-- @param color (TileSet) An entry in Daneel.GUI.colors.
 function Daneel.GUI.Common.SetColor(element, color)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetColor", element)
     local errorHead = "Daneel.GUI.Common.SetColor(element, color) : "
@@ -345,12 +383,12 @@ function Daneel.GUI.Common.Destroy(element)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
+
 ----------------------------------------------------------------------------------
 -- Text
 
 Daneel.GUI.Text = {}
 setmetatable(Daneel.GUI.Text, Daneel.GUI.Common)
-GUIText = Daneel.GUI.Text
 
 
 function Daneel.GUI.Text.__index(element, key)
@@ -384,7 +422,7 @@ function Daneel.GUI.Text.__tostring(element)
 end
 
 
--- Create a new GUI.Text.
+--- Create a new Daneel.GUI.Text.
 -- @param name (string) The element name.
 -- @param params [optional] (table) A table with initialisation parameters.
 -- @return (Daneel.GUI.Text) The new element.
@@ -394,37 +432,14 @@ function Daneel.GUI.Text.New(name, params)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
-    local element = {
-        _name = name,
-        gameObject = GameObject.New(name, {
-            parent = Daneel.config.hudCamera,
-            mapRenderer = {},
-        }),
-    }
-
+    local element = Daneel.GUI.Common(name, params)
     setmetatable(element, Daneel.GUI.Text)
-    element.name = name
-    element.position = Vector2.New(100)
     element.label = name
-    element.scale = Daneel.config.hudElementDefaultScale
     element:SetColor()
-    element.layer = 1
-    
-    if params ~= nil then
-        if params.wordWrap ~= nil then
-            element.wordWrap = params.wordWrap
-            params.wordWrap = nil
-        end
 
+    if params ~= nil then
         for key, value in pairs(params) do
-            if key == "scriptedBehaviors" then
-                element.gameObject:Set({scriptedBehaviors = value})
-            elseif key == "isButton" and value == true then
-                element.gameObject:AddScriptedBehavior("Daneel/Behaviors/MousehoverableGameObject")
-                element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUIText", {element = element})
-            else
-                element[key] = value
-            end
+            element[key] = value
         end
     end
 
@@ -438,7 +453,6 @@ end
 
 Daneel.GUI.Image = {}
 setmetatable(Daneel.GUI.Image, Daneel.GUI.Common)
-GUIImage = Daneel.GUI.Image
 
 
 function Daneel.GUI.Image.__index(element, key)
@@ -482,29 +496,12 @@ function Daneel.GUI.Image.New(name, params)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
-    local element = {
-        _name = name,
-        gameObject = GameObject.New(name, {
-            parent = Daneel.config.hudCamera,
-        }),
-    }
-
+    local element = Daneel.GUI.Common.New(name, params)
     setmetatable(element, Daneel.GUI.Image)
-    element.name = name
-    element.position = Vector2.New(100)
-    element.scale = Daneel.config.hudElementDefaultScale
-    element.layer = 1
     
     if params ~= nil then
         for key, value in pairs(params) do
-            if key == "scriptedBehaviors" then
-                element.gameObject:Set({scriptedBehaviors = value})
-            elseif key == "isButton" and value == true then
-                element.gameObject:AddScriptedBehavior("Daneel/Behaviors/MousehoverableGameObject")
-                element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUIText", {element = element})
-            else
-                element[key] = value
-            end
+            element[key] = value
         end
     end
 
@@ -513,6 +510,9 @@ function Daneel.GUI.Image.New(name, params)
 end
 
 
+--- Set the image renderer.
+-- @param element (Daneel.GUI.Image) The element.
+-- @param image (string, Model or Map) The image path or asset.
 function Daneel.GUI.Image.SetImage(element, image)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetBackground", element)
     local errorHead = "Daneel.GUI.Common.SetBackground(element, image) : "
@@ -561,7 +561,6 @@ end
 
 Daneel.GUI.Checkbox = {}
 setmetatable(Daneel.GUI.Checkbox, Daneel.GUI.Common)
-GUICheckbox = Daneel.GUI.Checkbox
 
 
 function Daneel.GUI.Checkbox.__index(element, key)
@@ -607,37 +606,16 @@ function Daneel.GUI.Checkbox.New(name, params)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
-    local element = {
-        _name = name,
-        gameObject = GameObject.New(name, {
-            parent = Daneel.config.hudCamera,
-            mapRenderer = {},
-            scriptedBehaviors = {
-                "Daneel/Behaviors/MousehoverableGameObject",
-                "Daneel/Behaviors/GUICheckbox",
-            }
-        }),
-    }
-
+    params.isInteractive = true
+    local element = Daneel.GUI.Common.New(name, params)
+    element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Checkbox", {element = element})
     setmetatable(element, Daneel.GUI.Checkbox)
-
-    -- default properties
-    element.name = name
-    element.position = Vector2.New(100)
     element.label = name
-    element.scale = Daneel.config.hudElementDefaultScale
     element.checked = false
-    element.gameObject:GetScriptedBehavior("Daneel/Behaviors/GUICheckbox").element = element
-    element.layer = 1
 
-    -- user-defined properties
     if params ~= nil then
         for key, value in pairs(params) do
-            if key == "scriptedBehaviors" then
-                element.gameObject:Set({scriptedBehaviors = value})
-            else
-                element[key] = value
-            end
+            element[key] = value
         end
     end
 
@@ -746,39 +724,18 @@ function Daneel.GUI.Input.New(name, params)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
-    local element = {
-        _name = name,
-        gameObject = GameObject.New(name, {
-            parent = Daneel.config.hudCamera,
-            mapRenderer = {}, -- map is set in SetLabel()
-            scriptedBehaviors = {
-                "Daneel/Behaviors/MousehoverableGameObject",
-                "Daneel/Behaviors/GUIInput",
-            }
-        }),
-    }
-
+    params.isInteractive = true
+    local element = Daneel.GUI.Common.New(name, params)
+    element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Input", {element = element})
     setmetatable(element, Daneel.GUI.Input)
-
-    -- default properties
-    element.name = name
-    element.position = Vector2.New(100)
     element.label = name
-    element.scale = Daneel.config.hudElementDefaultScale
-    element._focused = false
-    element.gameObject:GetScriptedBehavior("Daneel/Behaviors/GUIInput").element = element
-    element.cursorMapRndr = element.gameObject:AddMapRenderer({opacity = 0.7})
+    element.cursorMapRndr = element.gameObject:AddMapRenderer({opacity = 0.9})
     element._cursorPosition = 1
-    element.layer = 1
-
-    -- user-defined properties
+    element.focused = false
+    
     if params ~= nil then
         for key, value in pairs(params) do
-            if key == "scriptedBehaviors" then
-                element.gameObject:Set({scriptedBehaviors = value})
-            else
-                element[key] = value
-            end
+            element[key] = value
         end
     end
 
@@ -919,7 +876,6 @@ end
 
 Daneel.GUI.ProgressBar = {}
 setmetatable(Daneel.GUI.ProgressBar, Daneel.GUI.Common)
-GUIProgressBar = Daneel.GUI.ProgressBar
 
 
 function Daneel.GUI.ProgressBar.__index(element, key)
@@ -963,13 +919,7 @@ function Daneel.GUI.ProgressBar.New(name, params)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
-    local element = {
-        _name = name,
-        gameObject = GameObject.New(name, {
-            parent = Daneel.config.hudCamera,
-            mapRenderer = {},
-        }),
-    }
+    local element = Daneel.GUI.Common.New(nme, params)
     element.bar = GameObject.New(element._name.."Bar", { 
         parent = element.gameObject,
         --localPosition = Vector3:New(0),
@@ -978,32 +928,21 @@ function Daneel.GUI.ProgressBar.New(name, params)
     element.bar.transform.localPosition = Vector3:New(0)
 
     setmetatable(element, Daneel.GUI.ProgressBar)
-    element.name = name
-    element.position = Vector2.New(100)
-    element.label = ""
-    element.scale = Daneel.config.hudElementDefaultScale
-    element.layer = 1
     element.minValue = 0
     element.maxValue = 100
     element.minLength = 0
     element.maxLength = 100
     element.progress = 100
-    local progress = 100 -- default progress
     
     if params ~= nil then
         for key, value in pairs(params) do
-            print(key, value)
-            if key == "scriptedBehaviors" then
-                element.gameObject:Set({scriptedBehaviors = value})
-            elseif key == "progress" then
-                progress = value
-            else
-                element[key] = value
-            end
+            element[key] = value
+        end
+
+        if params.progress ~= nil then
+            element.progress = params.progress
         end
     end
-    
-    element.progress = progress
 
     Daneel.Debug.StackTrace.EndFunction()
     return element
@@ -1045,7 +984,6 @@ function Daneel.GUI.ProgressBar.SetProgress(element, progress)
     print("currentLength", currentLength)
     local currentScale = element.bar.transform.localScale
     element.bar.transform.localScale = Vector3:New(currentLength, currentScale.y, currentScale.z)
-
 end
 
 --- Get the current progress of the progress bar.

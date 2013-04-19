@@ -1,7 +1,8 @@
 
--- Behavior for Daneel.GUI.Text that are also buttons
+-- for interactions between the mouse and the element
 
 function Behavior:Start()
+    table.insert(Daneel.config.mousehoverableGameObjects, self.gameObject)
     Daneel.Events.Listen("OnLeftMouseButtonJustReleased", self.gameObject)
 end
 
