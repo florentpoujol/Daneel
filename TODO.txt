@@ -18,9 +18,8 @@ BUG :
 	localPosition dans les params de GameObject.New() ne fonctione pas
 
 
-voir les fonction de tri sur les tables (pour Ray.Cast(), trier les RayCastHit par distance)
-
-
-
-
 Changer la manière dont les color sont gérée (voir la doc)
+
+
+Progress bar, faire que le scale n'affecte pas la progressbar
+ou permettre de dfinir la hauteur en pixels

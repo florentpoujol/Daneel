@@ -53,7 +53,6 @@ end
 
 
 function Behavior:Start()
-	Daneel.Events.Listen("OnLeftMouseButtonJustReleased", self.gameObject)
 	Daneel.Events.Listen("OnLeftArrowButtonJustPressed", self.gameObject)
 	Daneel.Events.Listen("OnRightArrowButtonJustPressed", self.gameObject)
 	Daneel.Events.Listen("OnDeleteButtonJustPressed", self.gameObject)
@@ -71,18 +70,9 @@ end
 
 
 -- focus on the input and place the cursor to the letter
+-- the gameObject has already registered to the "OnLeftMouseButtonJustReleased" event in GUI/Interactive
 function Behavior:OnLeftMouseButtonJustReleased()
-	-- onMouseOver comes from Daneel/Behavior/CameraMouseOver
-	-- because Inputs are also mousehoverable gameObjects
 	self.element.focused = self.gameObject.onMouseOver
-
-	if self.gameObject.onMouseOver == true then
-		self.gameObject:SendMessage("OnClick", {element = self.element})
-
-		if type(self.element.onClick) == "function"then
-			self.element:onClick()
-		end
-    end
 end
 
 -- mouse the cursor left or right when focused and the user clicks on th left or right arrow
@@ -101,25 +91,5 @@ end
 function Behavior:OnDeleteButtonJustPressed()
 	if self.element.focused then
 		self.element:UpdateLabel("Delete")
-	end
-end
-
-
--- call the mouse hoverable callbacks
-function Behavior:OnMouseEnter()
-	if type(self.element.onMouseEnter) == "function" then
-		self.element:onMouseEnter()
-	end
-end
-
-function Behavior:OnMouseOver()
-	if type(self.element.onMouseOver) == "function" then
-		self.element:onMouseOver()
-	end
-end
-
-function Behavior:OnMouseExit()
-	if type(self.element.onMouseExit) == "function" then
-		self.element:onMouseExit()
 	end
 end

@@ -25,16 +25,37 @@ end
 
 Daneel.GUI.Common = {} -- common functions for GUI Elements
 Daneel.GUI.Common.__index = Daneel.GUI.Common
-    
+
+
+function Daneel.GUI.Common.__index(element, key)
+    local funcName = "Get"..key:ucfirst()
+
+    if Daneel.GUI.Common[funcName] ~= nil then
+        return Daneel.GUI.Common[funcName](element)
+    elseif Daneel.GUI.Common[key] ~= nil then
+        return Daneel.GUI.Common[key]
+    end
+
+    return nil
+end
+
+function Daneel.GUI.Common.__newindex(element, key, value)
+    local funcName = "Set"..key:ucfirst()
+    if Daneel.GUI.Common[funcName] ~= nil then
+        return Daneel.GUI.Common[funcName](element, value)
+    end
+    return rawset(element, key, value)
+end
+
 
 -- Basic contructor for GUI elements.
 -- @param name (string) The element name.
 -- @return (Daneel.GUI.Common) The basics of the element, to be completed by the other GUI.[element].New() function.
 function Daneel.GUI.Common.New(name, params)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.New", name, params)
-    local errorHead = "Daneel.GUI.Text.New(name[, params]) : "
+    local errorHead = "Daneel.GUI.Common.New(name[, params]) : "
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
-    Daneel.Debug.CheckOptionArgType(params, "params", "table", errorHead)
+    Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
     local element = {
         _name = name,
@@ -47,7 +68,7 @@ function Daneel.GUI.Common.New(name, params)
     element.name = name
     element.position = Vector2.New(100)
     element.scale = Daneel.config.hudElementDefaultScale
-    element.layer = 1
+    element.layer = 5
     
     if params ~= nil then
         if type(params.scriptedBehaviors) == "table" then
@@ -61,6 +82,7 @@ function Daneel.GUI.Common.New(name, params)
         end
     end
 
+    Daneel.Debug.StackTrace.EndFunction()
     return element
 end
 
@@ -178,6 +200,9 @@ function Daneel.GUI.Common.SetLabel(element, label)
     element._label = label
 
     local map = Map.LoadFromPackage(Daneel.config.emptyTextMapPath)
+    if element.gameObject.mapRenderer == nil then
+        element.gameObject:AddMapRenderer()
+    end
     element.gameObject.mapRenderer.map = map -- empty the current map
     element:SetColor()
 
@@ -233,7 +258,7 @@ end
 function Daneel.GUI.Common.GetLabel(element)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetLabel", element)
     local errorHead = "Daneel.GUI.Common.GetLabel(element) : "
-    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiElementsTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
     Daneel.Debug.StackTrace.EndFunction()
     return element._label
 end
@@ -432,7 +457,7 @@ function Daneel.GUI.Text.New(name, params)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
-    local element = Daneel.GUI.Common(name, params)
+    local element = Daneel.GUI.Common.New(name, params)
     setmetatable(element, Daneel.GUI.Text)
     element.label = name
     element:SetColor()
@@ -514,8 +539,8 @@ end
 -- @param element (Daneel.GUI.Image) The element.
 -- @param image (string, Model or Map) The image path or asset.
 function Daneel.GUI.Image.SetImage(element, image)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetBackground", element)
-    local errorHead = "Daneel.GUI.Common.SetBackground(element, image) : "
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.Image.SetImage", element, image)
+    local errorHead = "Daneel.GUI.Common.Image.SetImage(element, image) : "
     Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
     Daneel.Debug.CheckOptionalArgType(image, "image", {"string", "Model", "Map"}, errorHead)
 
@@ -654,7 +679,7 @@ function Daneel.GUI.Checkbox.SetChecked(element, state, doNotSendEvent)
     if state == false then byte = string.byte("X") end
     element.gameObject.mapRenderer.map:SetBlockAt(0, 0, 0, byte, Map.BlockOrientation.North)
     
-    if doNotSendEvent == true then -- when called from SetLabel
+    if doNotSendEvent ~= true then -- when called from SetLabel
         element.gameObject:SendMessage("OnStateChange", {element = element})
         if type(element.onStateChange) == "function" then
             element:onStateChange()
@@ -781,8 +806,8 @@ function Daneel.GUI.Input.UpdateLabel(element, value)
     end
     element.label = newLabel
 
-    if type(element.onChange) == "function" then
-        element:onChange()
+    if type(element.onLabelChange) == "function" then
+        element:onLabelChange()
     end
     Daneel.Debug.StackTrace.EndFunction()
 end
@@ -919,7 +944,7 @@ function Daneel.GUI.ProgressBar.New(name, params)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
-    local element = Daneel.GUI.Common.New(nme, params)
+    local element = Daneel.GUI.Common.New(name, params)
     element.bar = GameObject.New(element._name.."Bar", { 
         parent = element.gameObject,
         --localPosition = Vector3:New(0),
