@@ -1,7 +1,41 @@
 
+=================
+Develop
+
+
 finir doc sur la config
 - creation d'environment
 
 
-GUI >
+
+
+==================
+GUI 
+
+
 	erreur lorsque set label on a GUIImage with modelRenderer
+
+
+Slider
+progress bar
+"progress bar" mais avec plusieurs éléments
+> lorsque élément pas utilisé, il a opacity, scale etc au choix dans la config, donc
+	out et in state  
+
+
+créer les éléments dans la scène et non seulement par script > voir seulement pour 3Dtext
+
+input >
+	param size qui limite la taille du champs mais pas du texte (flèches font se déplacer le texte)
+
+
+
+BUG :
+	localPosition dans les params de GameObject.New() ne fonctione pas
+
+
+Changer la manière dont les color sont gérée (voir la doc)
+
+
+Progress bar, faire que le scale n'affecte pas la progressbar
+ou permettre de dfinir la hauteur en pixels
