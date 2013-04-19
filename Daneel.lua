@@ -85,6 +85,9 @@ Daneel.defaultConfig = {
         "Daneel/Behaviors/TriggerableGameObject",
         "Daneel/Behaviors/CastableGameObject",
         "Daneel/Behaviors/MousehoverableGameObject",
+        "Daneel/Behaviors/GUI/Interactive",
+        "Daneel/Behaviors/GUI/Checkbox",
+        "Daneel/Behaviors/GUI/Input",
     },
 
 
@@ -642,10 +645,11 @@ function Daneel.Awake()
     }
 
     Daneel.defaultConfig.guiObjects = {
+        ["Daneel.GUI.Common"] = Daneel.GUI.Common,
         ["Daneel.GUI.Text"] = Daneel.GUI.Text,
         ["Daneel.GUI.Image"] = Daneel.GUI.Image,
         ["Daneel.GUI.Checkbox"] = Daneel.GUI.Checkbox,
-        ["Daneel.GUI.Progressbar"] = Daneel.GUI.Progressbar,
+        ["Daneel.GUI.ProgressBar"] = Daneel.GUI.ProgressBar,
         ["Daneel.GUI.Input"] = Daneel.GUI.Input,
     }
 
