@@ -1,4 +1,20 @@
 
+=================
+Develop
+
+
+finir doc sur la config
+- creation d'environment
+
+
+
+
+==================
+GUI 
+
+
+	erreur lorsque set label on a GUIImage with modelRenderer
+
 
 Slider
 progress bar
