@@ -8,12 +8,8 @@ finir doc sur la config
 
 
 
-
 ==================
 GUI 
-
-
-	erreur lorsque set label on a GUIImage with modelRenderer
 
 
 Slider

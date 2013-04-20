@@ -812,6 +812,20 @@ function Daneel.Awake()
     -- GUI
     Daneel.config.hudCamera = GameObject.Get(Daneel.config.hudCameraName)
 
+    -- setting pixelToUnits  
+    local screenSize = CraftStudio.Screen.GetSize()
+    -- get the smaller side of the screen (usually screenSize.y, the height)
+    local smallSideSize = screenSize.y
+    if screenSize.x < screenSize.y then
+        smallSideSize = screenSize.x
+    end
+
+    -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
+    -- pixelsToUnits (in pixels/units) is the correspondance between screen pixels and 3D world units
+    Daneel.GUI.pixelsToUnits = Daneel.config.hudCameraOrthographicScale / smallSideSize
+
+
+    -- tile set
     local allTileSetPaths = table.merge(Daneel.config.colorTileSetPaths, Daneel.defaultConfig.colorTileSetPaths)
     
     if Daneel.config.textDefaultColorName ~= nil and not allTileSetPaths:containskey(Daneel.config.textDefaultColorName) then

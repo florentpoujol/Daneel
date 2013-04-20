@@ -290,14 +290,9 @@ function Daneel.GUI.Common.SetPosition(element, x, y)
     if screenSize.x < screenSize.y then
         smallSideSize = screenSize.x
     end
-
-    -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
-    -- pixelUnit (in pixels/units) is the correspondance between screen pixels and 3D world units
-    local pixelUnit = orthographicScale / smallSideSize
-    Daneel.GUI.pixelUnit = pixelUnit
     
     local xFunc = function(pixels)
-        local position = pixels * pixelUnit 
+        local position = pixels * Daneel.GUI.pixelsToUnits 
         -- position is now in units (3D world units)
         -- but the GUI elements are parented to the HUDCamera, which IS the middle of the screen (without taking split screen into account)
         -- and the origin of the GUI elements position is the top left corner of the screen
@@ -317,7 +312,7 @@ function Daneel.GUI.Common.SetPosition(element, x, y)
     end
     
     local yFunc = function(pixels)
-        return -(pixels * pixelUnit - orthographicScale * screenSize.y / smallSideSize / 2) 
+        return -(pixels * Daneel.GUI.pixelsToUnits - orthographicScale * screenSize.y / smallSideSize / 2) 
         -- the signs are different here since the progression along the y axis in pixel (to the positiv toward the bottom)
         -- is opposite of it's progression in the 3D worl (to the positiv value toward the top of the scene)
     end
@@ -993,20 +988,18 @@ function Daneel.GUI.ProgressBar.SetProgress(element, progress)
     if progress ~= oldProgress then
         print("WARNING : progress with value '"..oldProgress.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
     end
-    print("progress", progress)
+    
     element._progress = progress
-    print("pixelunit", Daneel.GUI.pixelUnit, Daneel.config.hudCameraOrthographicScale, Daneel.config.hudCameraOrthographicScale/500)
-    local minLength = element.minLength * Daneel.GUI.pixelUnit
-    local maxLength = element.maxLength * Daneel.GUI.pixelUnit --length in units of the bar
-    print("minLength", element.minLength, minLength)
-    print("maxLength", element.maxLength, maxLength)
+    
+    local minLength = element.minLength * Daneel.GUI.pixelsToUnits
+    local maxLength = element.maxLength * Daneel.GUI.pixelsToUnits --length in units of the bar
     
 
     local percentageVal = (progress - minVal) / (maxVal - minVal) 
-    print("percentageVal", percentageVal)
+    
     
     local currentLength = (maxLength - minLength) * percentageVal + minLength
-    print("currentLength", currentLength)
+    
     local currentScale = element.bar.transform.localScale
     element.bar.transform.localScale = Vector3:New(currentLength, currentScale.y, currentScale.z)
 end
