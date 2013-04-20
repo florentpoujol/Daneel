@@ -39,7 +39,7 @@ local function CreateInputKeysEventFunctions()
 
 				elseif buttonValue ~= nil then -- key=button name , value = replacement value
 					self.element:UpdateLabel(buttonValue)
-				else -- value = button Name
+				else -- value = button Name = value
 					if CraftStudio.Input.IsButtonDown("LeftShift") then
 						self.element:UpdateLabel(ButtonName)
 					else

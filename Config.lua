@@ -30,6 +30,26 @@ Daneel.config = {
 
 
         ]]
+        "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+
+        Space = " ", 
+
+        -- num pad
+        Divide = "/", Multiply = "*", Substract = "-", Add = "+",
+        NumPad0 = "0", NumPad1 = "1", NumPad2 = "2", NumPad3 = "3", NumPad4 = "4",
+        NumPad5 = "5", NumPad6 = "6", NumPad7 = "7", NumPad8 = "8", NumPad9 = "9",
+        -- /num pad
+
+        D1 = {
+            "&",
+            LeftShift = "1",
+        },
+
+        D2 = {
+            "é",
+            LeftShift = "2",
+            RightAlt = "~",
+        },
 
         D3 = {
             '"',
@@ -43,8 +63,48 @@ Daneel.config = {
             RightAlt = "{",
         },
 
-        "a", 
-        "b",
+        D5 = {
+            "(",
+            LeftShift = "5",
+            RightAlt = "[",
+        },
+
+        D6 = {
+            "-",
+            LeftShift = "6",
+            RightAlt = "|",
+        },
+
+        D7 = {
+            "è",
+            LeftShift = "7",
+            RightAlt = "`",
+        },
+
+        D7 = {
+            "è",
+            LeftShift = "7",
+            RightAlt = "`",
+        },
+
+        D8 = {
+            "_",
+            LeftShift = "8",
+            RightAlt = "\"",
+        },
+
+        D9 = {
+            "ç",
+            LeftShift = "9",
+            RightAlt = "^",
+        },
+
+        D0 = {
+            "à",
+            LeftShift = "0",
+            RightAlt = "@",
+        },
+
     },
 
 

@@ -706,7 +706,6 @@ end
 
 Daneel.GUI.Input = {}
 setmetatable(Daneel.GUI.Input, Daneel.GUI.Common)
-GUIInput = Daneel.GUI.Input
 
 
 function Daneel.GUI.Input.__index(element, key)
@@ -758,7 +757,7 @@ function Daneel.GUI.Input.New(name, params)
     element.cursorMapRndr = element.gameObject:AddMapRenderer({opacity = 0.9})
     element._cursorPosition = 1
     element.focused = false
-    element.scale = Daneel.config.hudElementDefaultScale
+    element.scale = Daneel.config.hudLabelDefaultScale
     
     if params ~= nil then
         for key, value in pairs(params) do
