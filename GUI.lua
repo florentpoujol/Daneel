@@ -977,28 +977,33 @@ function Daneel.GUI.ProgressBar.SetProgress(element, progress)
 
     local minVal = element.minValue
     local maxVal = element.maxValue
-
+    local percentageOfProgress = nil
+    
     if type(progress) == "string" then
-        local percentage = tonumber(progress:sub(1, #progress-1))
-        progress = (maxVal - minVal) * percentage / 100 + minval
-    end
+        percentageOfProgress = tonumber(progress:sub(1, #progress-1)) / 100
 
-    local oldProgress = progress
-    progress = math.clamp(progress, minVal, maxVal)
-    if progress ~= oldProgress then
-        print("WARNING : progress with value '"..oldProgress.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
+        local oldPercentage = percentageOfProgress
+        percentageOfProgress = math.clamp(percentageOfProgress, 0.0, 1.0)
+        if percentageOfProgress ~= oldPercentage then
+            print("WARNING : progress in percentage with value '"..progress.."' is below 0% or above 100%.")
+        end
+
+        progress = (maxVal - minVal) * percentageOfProgress + minval
+    else
+        local oldProgress = progress
+        progress = math.clamp(progress, minVal, maxVal)
+        if progress ~= oldProgress then
+            print("WARNING : progress with value '"..oldProgress.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
+        end
+
+        percentageOfProgress = (progress - minVal) / (maxVal - minVal) / 100
     end
     
     element._progress = progress
     
     local minLength = element.minLength * Daneel.GUI.pixelsToUnits
     local maxLength = element.maxLength * Daneel.GUI.pixelsToUnits --length in units of the bar
-    
-
-    local percentageVal = (progress - minVal) / (maxVal - minVal) 
-    
-    
-    local currentLength = (maxLength - minLength) * percentageVal + minLength
+    local currentLength = (maxLength - minLength) * percentageOfProgress + minLength 
     
     local currentScale = element.bar.transform.localScale
     element.bar.transform.localScale = Vector3:New(currentLength, currentScale.y, currentScale.z)
