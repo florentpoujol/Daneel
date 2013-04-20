@@ -67,18 +67,12 @@ function Daneel.GUI.Common.New(name, params)
     setmetatable(element, Daneel.GUI.Common)
     element.name = name
     element.position = Vector2.New(100)
-    element.scale = Daneel.config.hudElementDefaultScale
     element.layer = 5
     
     if params ~= nil then
         if type(params.scriptedBehaviors) == "table" then
             element.gameObject:Set({scriptedBehaviors = params.scriptedBehaviors})
             params.scriptedBehaviors = nil
-        end
-
-        if params.isInteractive == true then
-            element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Interactive", {element = element})
-            params.isInteractive = nil
         end
     end
 
@@ -456,8 +450,14 @@ function Daneel.GUI.Text.New(name, params)
     setmetatable(element, Daneel.GUI.Text)
     element.label = name
     element:SetColor()
+    element.scale = Daneel.config.hudElementDefaultScale
 
     if params ~= nil then
+        if params.isInteractive == true then
+            element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Interactive", {element = element})
+            params.isInteractive = nil
+        end
+
         for key, value in pairs(params) do
             element[key] = value
         end
@@ -520,6 +520,11 @@ function Daneel.GUI.Image.New(name, params)
     setmetatable(element, Daneel.GUI.Image)
     
     if params ~= nil then
+        if params.isInteractive == true then
+            element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Interactive", {element = element})
+            params.isInteractive = nil
+        end
+
         for key, value in pairs(params) do
             element[key] = value
         end
@@ -626,12 +631,13 @@ function Daneel.GUI.Checkbox.New(name, params)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
-    params.isInteractive = true
     local element = Daneel.GUI.Common.New(name, params)
-    element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Checkbox", {element = element})
     setmetatable(element, Daneel.GUI.Checkbox)
+    element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Interactive", {element = element})
+    element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Checkbox", {element = element})
     element.label = name
     element.checked = false
+    element.scale = Daneel.config.hudElementDefaultScale
 
     if params ~= nil then
         for key, value in pairs(params) do
@@ -744,14 +750,15 @@ function Daneel.GUI.Input.New(name, params)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
-    params.isInteractive = true
     local element = Daneel.GUI.Common.New(name, params)
-    element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Input", {element = element})
     setmetatable(element, Daneel.GUI.Input)
+    element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Interactive", {element = element})
+    element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Input", {element = element})
     element.label = name
     element.cursorMapRndr = element.gameObject:AddMapRenderer({opacity = 0.9})
     element._cursorPosition = 1
     element.focused = false
+    element.scale = Daneel.config.hudElementDefaultScale
     
     if params ~= nil then
         for key, value in pairs(params) do
@@ -929,7 +936,7 @@ function Daneel.GUI.ProgressBar.__tostring(element)
 end
 
 
--- Create a new GUI.ProgressBar.
+--- Create a new GUI.ProgressBar.
 -- @param name (string) The element name.
 -- @param params [optional] (table) A table with initialisation parameters.
 -- @return (Daneel.GUI.ProgressBar) The new element.
@@ -940,14 +947,8 @@ function Daneel.GUI.ProgressBar.New(name, params)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
     local element = Daneel.GUI.Common.New(name, params)
-    element.bar = GameObject.New(element._name.."Bar", { 
-        parent = element.gameObject,
-        --localPosition = Vector3:New(0),
-        modelRenderer = {},
-    })
-    element.bar.transform.localPosition = Vector3:New(0)
-
     setmetatable(element, Daneel.GUI.ProgressBar)
+    element.gameObject:AddModelRenderer()
     element.minValue = 0
     element.maxValue = 100
     element.minLength = 0
@@ -955,8 +956,15 @@ function Daneel.GUI.ProgressBar.New(name, params)
     element.progress = 100
     
     if params ~= nil then
+        if params.isInteractive == true then
+            element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Interactive", {element = element})
+            params.isInteractive = nil
+        end
+
         for key, value in pairs(params) do
-            element[key] = value
+            if key ~= "progress" then
+                element[key] = value
+            end
         end
 
         if params.progress ~= nil then
@@ -969,6 +977,9 @@ function Daneel.GUI.ProgressBar.New(name, params)
 end
 
 
+--- Set the progress of the progress bar, adjusting its length.
+-- @param element (Daneel.GUI.ProgressBar) The element.
+-- @param pogress (number or string) The progress as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
 function Daneel.GUI.ProgressBar.SetProgress(element, progress)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.SetProgress", element, progress)
     local errorHead = "Daneel.GUI.ProgressBar.SetProgress(element[, progress]) : "
@@ -988,7 +999,7 @@ function Daneel.GUI.ProgressBar.SetProgress(element, progress)
             print("WARNING : progress in percentage with value '"..progress.."' is below 0% or above 100%.")
         end
 
-        progress = (maxVal - minVal) * percentageOfProgress + minval
+        progress = (maxVal - minVal) * percentageOfProgress + minVal
     else
         local oldProgress = progress
         progress = math.clamp(progress, minVal, maxVal)
@@ -996,7 +1007,7 @@ function Daneel.GUI.ProgressBar.SetProgress(element, progress)
             print("WARNING : progress with value '"..oldProgress.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
         end
 
-        percentageOfProgress = (progress - minVal) / (maxVal - minVal) / 100
+        percentageOfProgress = (progress - minVal) / (maxVal - minVal)
     end
     
     element._progress = progress
@@ -1005,8 +1016,9 @@ function Daneel.GUI.ProgressBar.SetProgress(element, progress)
     local maxLength = element.maxLength * Daneel.GUI.pixelsToUnits --length in units of the bar
     local currentLength = (maxLength - minLength) * percentageOfProgress + minLength 
     
-    local currentScale = element.bar.transform.localScale
-    element.bar.transform.localScale = Vector3:New(currentLength, currentScale.y, currentScale.z)
+    local currentScale = element.gameObject.transform.localScale
+    element.gameObject.transform.localScale = Vector3:New(currentLength, currentScale.y, currentScale.z)
+    -- currentLength = scale only because the base size of the model is of one unit at a scale of one
 end
 
 --- Get the current progress of the progress bar.
@@ -1026,16 +1038,29 @@ function Daneel.GUI.ProgressBar.GetProgress(element, getAsPercentage)
     return progress
 end
 
+--- Set the height of the progress bar, in pixels.
+-- @param element (Daneel.GUI.ProgressBar) The element.
+-- @param height (number) The heigt in pixels.
+function Daneel.GUI.ProgressBar.SetHeight(element, height)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.SetProgress", element, height)
+    local errorHead = "Daneel.GUI.ProgressBar.SetProgress(element[, height]) : "
+    Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.ProgressBar", errorHead)
+    Daneel.Debug.CheckArgType(height, "height", "number", errorHead)
+    element._height = height
+    local unitHeight = height *  Daneel.GUI.pixelsToUnits 
+    local currentScale = element.gameObject.transform.localScale
+    element.gameObject.transform.localScale = Vector3:New(currentScale.x, unitHeight, currentScale.z)
+end
 
 --- Set the model of the progress bar.
 -- @param element (Daneel.GUI.ProgressBar) The element.
 -- @param model (string or Model) The model path or asset.
-function Daneel.GUI.ProgressBar.SetModel(element, model)
+function Daneel.GUI.ProgressBar.SetBar(element, model)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.SetModel", element, model)
     local errorHead = "Daneel.GUI.ProgressBar.SetModel(element, model) : "
     Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.ProgressBar", errorHead)
     Daneel.Debug.CheckArgType(model, "model", {"string", "Model"}, errorHead)
-    element.bar.modelRenderer.model = model
+    element.gameObject.modelRenderer.model = model
     Daneel.Debug.StackTrace.EndFunction()
 end
 

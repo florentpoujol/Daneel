@@ -21,8 +21,8 @@ progress bar
 
 créer les éléments dans la scène et non seulement par script > voir seulement pour 3Dtext
 
-input >
-	param size qui limite la taille du champs mais pas du texte (flèches font se déplacer le texte)
+input
+	- param size qui limite la taille du champs mais pas du texte (flèches font se déplacer le texte)
 
 
 
@@ -30,8 +30,6 @@ BUG :
 	localPosition dans les params de GameObject.New() ne fonctione pas
 
 
-Changer la manière dont les color sont gérée (voir la doc)
-
-
-Progress bar, faire que le scale n'affecte pas la progressbar
-ou permettre de dfinir la hauteur en pixels
+block 16 = 1 unit
+unit = pixels * ortho / smallside
+blocks = unit * 16
