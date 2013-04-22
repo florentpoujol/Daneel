@@ -59,7 +59,7 @@ function string.isoneof(s, t, ignoreCase)
     return isOneOf
 end
 
---- Turn the first letter uppercase.
+--- Turn the first letter of the string uppercase.
 -- @param s (string) The string.
 -- @return (string) The string.
 function string.ucfirst(s)
@@ -70,6 +70,20 @@ function string.ucfirst(s)
     t[1] = t[1]:upper()
     s = t:concat()
     Daneel.Debug.StackTrace.EndFunction("string.ucfirst", s)
+    return s
+end
+
+--- Turn the first letter of the string lowercase.
+-- @param s (string) The string.
+-- @return (string) The string.
+function string.lcfirst(s)
+    Daneel.Debug.StackTrace.BeginFunction("string.lcfirst", s)
+    local errorHead = "string.lcfirst(string) : "
+    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
+    t = s:totable()
+    t[1] = t[1]:lower()
+    s = t:concat()
+    Daneel.Debug.StackTrace.EndFunction("string.lcfirst", s)
     return s
 end
 
