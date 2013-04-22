@@ -11,6 +11,9 @@ finir doc sur la config
 ==================
 GUI 
 
+23/04
+    vérif sens de rotation progress bar avec property 'isVertical'
+
 
 Slider
 progress bar

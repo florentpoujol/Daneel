@@ -956,11 +956,14 @@ function Daneel.GUI.ProgressBar.New(name, params)
     element.minLength = 0
     element.maxLength = 100
     element.progress = 100
-    
+
     if params ~= nil then
         if params.isInteractive == true then
             element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Interactive", {element = element})
-            params.isInteractive = nil
+        end
+
+        if params.isVertical == true then
+            self.gameObject.transform.eulerAngles = self.gameObject.transform.eulerAngles + Vector3:New(0,0,-90)
         end
 
         for key, value in pairs(params) do
