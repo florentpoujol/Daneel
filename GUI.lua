@@ -188,7 +188,7 @@ end
 function Daneel.GUI.Common.SetLabel(element, label)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetLabel", element, label, replacements)
     local errorHead = "Daneel.GUI.Common.SetLabel(element, label[, replacements]) : "
-    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", {"Daneel.GUI.Text", "Daneel.GUI.Checkbox", "Daneel.GUI.Input"}, errorHead)
     
     label = tostring(label)
     element._label = label
@@ -238,9 +238,11 @@ function Daneel.GUI.Common.SetLabel(element, label)
         end
     end
 
-    element.gameObject:SendMessage("OnLabelChange", {element = element})
-    if type(element.onLabelChange) == "function" then
-        element:onLabelChange()
+    if elementType ~= "Daneel.GUI.Checkbox" then
+        element.gameObject:SendMessage("OnChange", {element = element})
+        if type(element.onChange) == "function" then
+            element:onChange()
+        end
     end
 
     Daneel.Debug.StackTrace.EndFunction()
@@ -252,7 +254,7 @@ end
 function Daneel.GUI.Common.GetLabel(element)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetLabel", element)
     local errorHead = "Daneel.GUI.Common.GetLabel(element) : "
-    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", {"Daneel.GUI.Text", "Daneel.GUI.Checkbox", "Daneel.GUI.Input"}, errorHead)
     Daneel.Debug.StackTrace.EndFunction()
     return element._label
 end
@@ -576,6 +578,12 @@ function Daneel.GUI.Image.SetImage(element, image)
         }
     })
 
+
+    element.gameObject:SendMessage("OnChange", {element = element})
+    if type(element.onChange) == "function" then
+        element:onChange()
+    end
+
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -667,23 +675,21 @@ end
 -- Update the _checked variable and the mapRenderer
 -- @param element (Daneel.GUI.Checkbox) The element.
 -- @param state (boolean) The state.
--- @param doNotSendEvent [optional default=false] Tell wether firing the event.
-function Daneel.GUI.Checkbox.SetChecked(element, state, doNotSendEvent)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Checkbox.SetChecked", element, state, doNotSendEvent)
-    local errorHead = "Daneel.GUI.Checkbox.SetChecked(element, state[, doNotSendEvent]) : "
+function Daneel.GUI.Checkbox.SetChecked(element, state)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Checkbox.SetChecked", element, state)
+    local errorHead = "Daneel.GUI.Checkbox.SetChecked(element, state) : "
     Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.Checkbox", errorHead)
     Daneel.Debug.CheckArgType(state, "state", "boolean", errorHead)
     Daneel.Debug.CheckOptionalArgType(state, "state", "boolean", errorHead)
-    
-    element._checked = state
-    local byte = 251 -- that's the valid mark
-    if state == false then byte = string.byte("X") end
-    element.gameObject.mapRenderer.map:SetBlockAt(0, 0, 0, byte, Map.BlockOrientation.North)
-    
-    if doNotSendEvent ~= true then -- when called from SetLabel
-        element.gameObject:SendMessage("OnStateChange", {element = element})
-        if type(element.onStateChange) == "function" then
-            element:onStateChange()
+    if element._checked == nil or element._checked ~= state then
+        element._checked = state
+        local byte = 251 -- that's the valid mark
+        if state == false then byte = string.byte("X") end
+        element.gameObject.mapRenderer.map:SetBlockAt(0, 0, 0, byte, Map.BlockOrientation.North)
+        
+        element.gameObject:SendMessage("OnChange", {element = element})
+        if type(element.onChange) == "function" then
+            element:onChange()
         end
     end
     Daneel.Debug.StackTrace.EndFunction()
@@ -807,9 +813,6 @@ function Daneel.GUI.Input.UpdateLabel(element, value)
     end
     element.label = newLabel
 
-    if type(element.onLabelChange) == "function" then
-        element:onLabelChange()
-    end
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -1018,6 +1021,11 @@ function Daneel.GUI.ProgressBar.SetProgress(element, progress)
     local currentScale = element.gameObject.transform.localScale
     element.gameObject.transform.localScale = Vector3:New(currentLength, currentScale.y, currentScale.z)
     -- currentLength = scale only because the base size of the model is of one unit at a scale of one
+
+    element.gameObject:SendMessage("OnChange", {element = element})
+    if type(element.onChange) == "function" then
+        element:onChange()
+    end
 end
 
 --- Get the current progress of the progress bar.
