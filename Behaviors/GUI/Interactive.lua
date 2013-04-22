@@ -1,22 +1,28 @@
 
--- for interactions between the mouse and the element
+--- for interactions between the mouse and the element
 
 function Behavior:Start()
-    table.insert(Daneel.config.mousehoverableGameObjects, self.gameObject)
-    Daneel.Events.Listen("OnLeftMouseButtonJustReleased", self.gameObject)
+    table.insert(config.default.mouseinteractiveGameObjects, self.gameObject)
 end
 
-function Behavior:OnLeftMouseButtonJustReleased()
-    if self.gameObject.onMouseOver == true then
-        self.gameObject:SendMessage("OnClick", {element = self.element})
-
-        if type(self.element.onClick) == "function"then
-            self.element:onClick()
-        end
+function Behavior:OnClick()
+    if type(self.element.onClick) == "function"then
+        self.element:onClick()
     end
 end
 
--- call the mouse hoverable callbacks
+function Behavior:OnDoubleClick()
+    if type(self.element.onDoubleClick) == "function"then
+        self.element:onDoubleClick()
+    end
+end
+
+function Behavior:OnRightClick()
+    if type(self.element.onRightClick) == "function"then
+        self.element:onRightClick()
+    end
+end
+
 function Behavior:OnMouseEnter()
     if type(self.element.onMouseEnter) == "function" then
         self.element:onMouseEnter()

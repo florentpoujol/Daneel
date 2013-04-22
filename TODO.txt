@@ -12,7 +12,11 @@ finir doc sur la config
 GUI 
 
 23/04
-    vérif sens de rotation progress bar avec property 'isVertical'
+    - merger develop dans gui pour avoir le nouveau system de config
+    - vérif sens de rotation progress bar avec property 'isVertical'
+    - update du label dans un Update()n'affiche rien -> probablement à cause du fait de recréé la map à chaque fois
+    - tester nouveau mouse interaction + doc
+
 
 
 Slider
