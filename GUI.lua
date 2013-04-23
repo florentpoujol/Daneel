@@ -57,25 +57,28 @@ function Daneel.GUI.Common.New(name, params)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
+    local parent = Daneel.Config.Get("gui.hudCamera")
+    local group = false
+    if params ~= nil and params.group ~= nil then
+        parent = params.group
+        group = true
+    end
+
     local element = {
         _name = name,
         gameObject = GameObject.New(name, {
-            parent = Daneel.Config.Get("gui.hudCamera"),
+            parent = parent,
         }),
     }
 
     setmetatable(element, Daneel.GUI.Common)
     element.name = name
-    element.position = Vector2.New(100)
-    element.layer = 5
-    
-    if params ~= nil then
-        if type(params.scriptedBehaviors) == "table" then
-            element.gameObject:Set({scriptedBehaviors = params.scriptedBehaviors})
-            params.scriptedBehaviors = nil
-        end
-    end
 
+    if group == false then
+        element.position = Vector2.New(100)
+        element.layer = 5
+    end
+    
     Daneel.Debug.StackTrace.EndFunction()
     return element
 end
@@ -280,8 +283,9 @@ function Daneel.GUI.Common.SetPosition(element, x, y)
             
     local screenSize = CraftStudio.Screen.GetSize() -- screenSize is in pixels
     local orthographicScale = Daneel.Config.Get("gui.hudCameraOrthographicScale") -- orthographicScale is in 3D world units 
-    
-    -- get the smaller side of the screen (usually screenSize.y, the height)
+    -- it's the size in unit of the smallest side of the screen
+
+    -- get the smallest side of the screen (usually screenSize.y, the height)
     local smallSideSize = screenSize.y
     if screenSize.x < screenSize.y then
         smallSideSize = screenSize.x
@@ -309,8 +313,8 @@ function Daneel.GUI.Common.SetPosition(element, x, y)
     
     local yFunc = function(pixels)
         return -(pixels * Daneel.GUI.pixelsToUnits - orthographicScale * screenSize.y / smallSideSize / 2) 
-        -- the signs are different here since the progression along the y axis in pixel (to the positiv toward the bottom)
-        -- is opposite of it's progression in the 3D worl (to the positiv value toward the top of the scene)
+        -- the sign is different here since the progression along the y axis in pixel (to the positive toward the bottom)
+        -- is opposite of it's progression in the 3D worl (to the positive toward the top of the scene)
     end
 
     local position3D = Vector3:New(xFunc(element._position.x), yFunc(element._position.y), -5)
@@ -399,6 +403,90 @@ function Daneel.GUI.Common.Destroy(element)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
+
+----------------------------------------------------------------------------------
+-- Group
+
+Daneel.GUI.Group = {}
+setmetatable(Daneel.GUI.Group, Daneel.GUI.Common)
+
+
+function Daneel.GUI.Group.__index(element, key)
+    local funcName = "Get"..key:ucfirst()
+
+    if Daneel.GUI.Group[funcName] ~= nil then
+        return Daneel.GUI.Group[funcName](element)
+    elseif Daneel.GUI.Group[key] ~= nil then
+        return Daneel.GUI.Group[key]
+    end
+
+    if Daneel.GUI.Common[funcName] ~= nil then
+        return Daneel.GUI.Common[funcName](element)
+    elseif Daneel.GUI.Common[key] ~= nil then
+        return Daneel.GUI.Common[key]
+    end
+
+    return nil
+end
+
+function Daneel.GUI.Group.__newindex(element, key, value)
+    local funcName = "Set"..key:ucfirst()
+    if Daneel.GUI.Group[funcName] ~= nil then
+        return Daneel.GUI.Group[funcName](element, value)
+    end
+    return rawset(element, key, value)
+end
+
+function Daneel.GUI.Group.__tostring(element)
+    return "Daneel.GUI.Group: '"..element._name.."'"
+end
+
+
+--- Create a new Daneel.GUI.Group.
+-- @param name (string) The element name.
+-- @param params [optional] (table) A table with initialisation parameters.
+-- @return (Daneel.GUI.Group) The new element.
+function Daneel.GUI.Group.New(name, params)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Group.New", name, params)
+    local errorHead = "Daneel.GUI.Group.New(name[, params]) : "
+    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
+    Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
+
+    local element = {
+        _name = name,
+        gameObject = GameObject.New(name, {
+            parent = Daneel.Config.Get("gui.hudCamera"),
+        }),
+    }
+
+    setmetatable(element, Daneel.GUI.Common)
+    element.name = name
+    element.position = Vector2.New(100)
+    element.layer = 5
+    
+    Daneel.Debug.StackTrace.EndFunction()
+    return element
+
+
+    local element = Daneel.GUI.Common.New(name, params)
+    setmetatable(element, Daneel.GUI.Group)
+    element.label = name
+    element:SetColor()
+    element.scale = Daneel.Config.Get("gui.hudLabelDefaultScale")
+
+    if params ~= nil then
+        if params.interactive == true then
+            element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/GUIMouseInteractive", {element = element})
+        end
+
+        for key, value in pairs(params) do
+            element[key] = value
+        end
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return element
+end
 
 ----------------------------------------------------------------------------------
 -- Text
