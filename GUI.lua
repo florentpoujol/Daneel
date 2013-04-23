@@ -456,7 +456,7 @@ function Daneel.GUI.Text.New(name, params)
 
     if params ~= nil then
         if params.isInteractive == true then
-            element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Interactive", {element = element})
+            element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/GUIMouseInteractive", {element = element})
             params.isInteractive = nil
         end
 
@@ -523,7 +523,7 @@ function Daneel.GUI.Image.New(name, params)
     
     if params ~= nil then
         if params.isInteractive == true then
-            element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Interactive", {element = element})
+            element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/GUIMouseInteractive", {element = element})
             params.isInteractive = nil
         end
 
@@ -641,7 +641,7 @@ function Daneel.GUI.Checkbox.New(name, params)
 
     local element = Daneel.GUI.Common.New(name, params)
     setmetatable(element, Daneel.GUI.Checkbox)
-    element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Interactive", {element = element})
+    element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/GUIMouseInteractive", {element = element})
     element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Checkbox", {element = element})
     element.label = name
     element.checked = false
@@ -757,7 +757,7 @@ function Daneel.GUI.Input.New(name, params)
 
     local element = Daneel.GUI.Common.New(name, params)
     setmetatable(element, Daneel.GUI.Input)
-    element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Interactive", {element = element})
+    element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/GUIMouseInteractive", {element = element})
     element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Input", {element = element})
     element.label = name
     element.cursorMapRndr = element.gameObject:AddMapRenderer({opacity = 0.9})
@@ -959,7 +959,7 @@ function Daneel.GUI.ProgressBar.New(name, params)
 
     if params ~= nil then
         if params.isInteractive == true then
-            element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Interactive", {element = element})
+            element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/GUIMouseInteractive", {element = element})
         end
 
         if params.isVertical == true then
