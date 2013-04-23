@@ -3,11 +3,111 @@ if Daneel == nil then
     Daneel = {}
 end
 
+DANEEL_LOADED = false
+DEBUG = false
+
 
 ----------------------------------------------------------------------------------
--- Defaul Config
+-- Default configuration
 
-Daneel.defaultConfig = {
+if config == nil then 
+    config = {} 
+end
+
+config.default = {
+
+    environment = "common",
+    
+
+    ----------------------------------------------------------------------------------
+
+    -- List of the Scripts paths as values and optionally the script alias as the keys.
+    -- Ie :
+    -- "fully-qualified Script path"
+    -- or
+    -- alias = "fully-qualified Script path"
+    scripts = {
+        "Daneel/Behaviors/DaneelBehavior",
+        "Daneel/Behaviors/Trigger",
+        "Daneel/Behaviors/TriggerableGameObject",
+        "Daneel/Behaviors/CastableGameObject",
+        "Daneel/Behaviors/MousehoverableGameObject",
+
+        "Daneel/Behaviors/GUI/Interactive",
+        "Daneel/Behaviors/GUI/Checkbox",
+        "Daneel/Behaviors/GUI/Input",
+    },
+
+    -- List of the scripts in the default and the current environment.
+    -- Filled in Awake() below.
+    allScripts = {}, 
+
+
+    ----------------------------------------------------------------------------------
+
+    input = {
+        -- Button names as you defined them in the "Administration > Game Controls" tab of your project.
+        -- Button whose name is defined here can be used as HotKeys.
+        buttons = {},
+
+        inputKeys = {},
+    }
+
+
+    ----------------------------------------------------------------------------------
+
+    language = {
+        -- Current language
+        current = "english",
+
+        -- Default language
+        default = "english",
+
+        -- Value returned when a language key is not found
+        keyNotFound = "langkeynotfound",
+
+        -- Tell wether Daneel.Lang.GetLine() search a line key in the default language 
+        -- when it is not found in the current language before returning the value of keyNotFound
+        searchInDefault = true,
+    },
+
+    -- List of the languages supported by the game.
+    -- Automatically filled with the languages names, based on the keys defined on the 'language' global variable
+    languages = {},
+
+
+    ----------------------------------------------------------------------------------
+    
+    gui = {
+        -- Name of the gameObject who has the orthographic camera used to render the HUD
+        hudCameraName = "HUDCamera",
+
+        -- The orthographic scale of the HUDCamera
+        hudCameraOrthographicScale = 10,
+
+        -- Fully-qualified path of the map used to render text components
+        textMapPath = "Daneel/TextMap",
+        emptyTextMapPath = "Daneel/EmptyTextMap",
+
+        -- GUI element's default scale
+        hudLabelDefaultScale = 0.2,
+
+        -- hud
+        colorTileSetPaths = {
+            "Daneel/ASCII_White",
+            "Daneel/ASCII_Orange",
+            "Daneel/ASCII_Purple",
+            "Daneel/ASCII_Red",
+            "Daneel/ASCII_Yellow",
+        },
+
+        textDefaultColorName = "Red",
+    },
+
+
+    ----------------------------------------------------------------------------------
+
+    debug = false,
 
     -- Objects (keys = name, value = object)
     assetObjects = {
@@ -21,6 +121,8 @@ Daneel.defaultConfig = {
         --Document = Document
     },
 
+    assetTypes = {}, -- filled below the end of the table
+
     componentObjects = {
         ScriptedBehavior = ScriptedBehavior,
         ModelRenderer = ModelRenderer,
@@ -28,6 +130,8 @@ Daneel.defaultConfig = {
         Camera = Camera,
         Transform = Transform,
     },
+
+    componentTypes = {},
     
     craftStudioObjects = {
         GameObject = GameObject,
@@ -39,31 +143,13 @@ Daneel.defaultConfig = {
     
     daneelObjects = {}, -- filled in Daneel.Awake() below
     guiObjects = {}, -- idem
+    objects = {}, -- user-defined objects
+    allObjects = {},
+
+    
 
 
     ----------------------------------------------------------------------------------
-    -- GUI
-
-    -- Name of the gameObject who has the orthographic camera used to render the HUD
-    hudCameraName = "HUDCamera",
-
-    -- The orthographic scale of the HUDCamera
-    hudCameraOrthographicScale = 10,
-
-    -- Fully-qualified path of the map used to render text components
-    textMapPath = "Daneel/TextMap",
-
-    -- GUI element's default scale
-    hudElementDefaultScale = 0.2,
-
-    colorTileSetPaths = {
-        "Daneel/ASCII_White",
-        "Daneel/ASCII_Orange",
-        "Daneel/ASCII_Purple",
-        "Daneel/ASCII_Red",
-        "Daneel/ASCII_Yellow",
-    },
-
 
     -- Rays
     -- list of the gameObjects to cast the ray against by default by ray:Cast()
@@ -76,45 +162,16 @@ Daneel.defaultConfig = {
     triggerableGameObjects = {},
 
     -- List of gameObject that react to the mouse input
-    mousehoverableGameObjects = {},
-
-
-    -- Scripts
-    daneelScripts = {
-        "Daneel/Behaviors/Trigger",
-        "Daneel/Behaviors/TriggerableGameObject",
-        "Daneel/Behaviors/CastableGameObject",
-        "Daneel/Behaviors/MousehoverableGameObject",
-        "Daneel/Behaviors/GUI/Interactive",
-        "Daneel/Behaviors/GUI/Checkbox",
-        "Daneel/Behaviors/GUI/Input",
-    },
-
-
-    buttons = {
-        "LeftMouse",
-        "LeftShift",
-        "Delete",
-        "LeftArrow",
-        "RightArrow",
-        
-    },
-
-    inputKeys = {
-
-    },
+    mouseInteractiveGameObjects = {},
 }
 
-Daneel.defaultConfig.__index = Daneel.defaultConfig
-
-Daneel.defaultConfig.assetTypes = {}
-for type, object in pairs(Daneel.defaultConfig.assetObjects) do
-    table.insert(Daneel.defaultConfig.assetTypes, type)
+-- built assetTypes and componentTypes
+for type, object in pairs(config.default.assetObjects) do
+    table.insert(config.default.assetTypes, type)
 end
 
-Daneel.defaultConfig.componentTypes = {}
-for type, object in pairs(Daneel.defaultConfig.componentObjects) do
-    table.insert(Daneel.defaultConfig.componentTypes, type)
+for type, object in pairs(config.default.componentObjects) do
+    table.insert(config.default.componentTypes, type)
 end
 
 
@@ -175,7 +232,7 @@ Daneel.Debug = {}
 -- @param p_errorHead [optional] (string) The beginning of the error message.
 -- @param p_errorEnd [optional] (string) The end of the error message.
 function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes, p_errorHead, p_errorEnd)
-    if Daneel.config.debug == false then return end
+    if DEBUG == false then return end
 
     local errorHead = "Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes[, errorHead, errorEnd]) : "
     
@@ -226,7 +283,7 @@ end
 -- @param p_errorHead [optional] (string) The beginning of the error message.
 -- @param p_errorEnd [optional] (string) The end of the error message.
 function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, p_errorHead, p_errorEnd)
-    if argument == nil or Daneel.config.debug == false then
+    if argument == nil or DEBUG == false then
         return
     end
 
@@ -302,7 +359,7 @@ function Daneel.Debug.GetType(object, returnLuaTypeOnly)
             end
 
             -- other types
-            for type, object in pairs(Daneel.config.objects) do
+            for type, object in pairs(config.default.allObjects) do
                 if mt == object then
                     return type
                 end
@@ -319,7 +376,7 @@ local OriginalError = error
 -- @param message (string) The error message.
 -- @param doNotPrintStacktrace [optional default=false] (boolean) Set to true to prevent the stacktrace to be printed before the error message.
 function error(message, doNotPrintStacktrace)
-    if Daneel.config.debug == true and doNotPrintStacktrace ~= true then
+    if DEBUG == true and doNotPrintStacktrace ~= true then
         Daneel.Debug.StackTrace.Print()
     end
     OriginalError(message)
@@ -333,7 +390,7 @@ function Daneel.Debug.CheckComponentType(componentType)
     local errorHead = "Daneel.Debug.CheckComponentType(componentType) : "
     Daneel.Debug.CheckArgType(componentType, "componentType", "string", errorHead)
 
-    local componentTypes = Daneel.config.componentTypes
+    local componentTypes = config.default.componentTypes
     componentType = Daneel.Utilities.CaseProof(componentType, componentTypes)
     if not componentType:isoneof(componentTypes) then
         error(errorHead.."Argument 'componentType' with value '"..componentType.."' is not one of the valid component types : "..table.concat(componentTypes, ", "))
@@ -351,7 +408,7 @@ function Daneel.Debug.CheckAssetType(assetType)
     local errorHead = "Daneel.Debug.CheckAssetType(assetType) : "
     Daneel.Debug.CheckArgType(assetType, "assetType", "string", errorHead)
 
-    local assetTypes = Daneel.config.assetTypes
+    local assetTypes = config.default.assetTypes
     assetType = Daneel.Utilities.CaseProof(assetType, assetTypes)
     if not assetType:isoneof(assetTypes) then
         error(errorHead.."Argument 'assetType' with value '"..assetType.."' is not one of the valid asset types : "..table.concat(assetTypes, ", "))
@@ -392,7 +449,7 @@ Daneel.Debug.StackTrace = {
 -- @param functionName (string) The function name.
 -- @param ... [optional] (mixed) Arguments received by the function.
 function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
-    if Daneel.config.debug == false then return end
+    if DEBUG == false then return end
     local errorHead = "Daneel.Debug.StackTrace.BeginFunction(functionName[, ...]) : "
     Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
 
@@ -417,7 +474,7 @@ end
 
 --- Closes a successful function call, removing it from the stacktrace.
 function Daneel.Debug.StackTrace.EndFunction()
-    if Daneel.config.debug == false then return end
+    if DEBUG == false then return end
     -- since 16/05/2013 no arguments is needed anymore, since the StackTrace only keeps open functions calls and never keep returned values
     -- I didn't rewrote all the calls to EndFunction() 
     table.remove(Daneel.Debug.StackTrace.messages)
@@ -425,7 +482,7 @@ end
 
 --- Print the StackTrace.
 function Daneel.Debug.StackTrace.Print()
-    if Daneel.config.debug == false then return end
+    if DEBUG == false then return end
     local messages = Daneel.Debug.StackTrace.messages
     Daneel.Debug.StackTrace.messages = {}
      
@@ -443,7 +500,7 @@ end
 ----------------------------------------------------------------------------------
 -- Events
 
-Daneel.Events = { events = { any = {} } }
+Daneel.Event = { events = { any = {} } }
 
 --- Make the provided function listen to the provided event.
 -- The function will be called whenever the provided event will be fired.
@@ -451,19 +508,19 @@ Daneel.Events = { events = { any = {} } }
 -- @param p_function (function, string or GameObject) The function (not the function name) or the gameObject name or instance.
 -- @param functionName [optional default="[eventName]"] (string) If 'p_function' is a gameObject name or instance, the name of the function to send the message to.
 -- @param broadcast [optional default=false] (boolean) If 'p_function' is a gameObject name or instance, tell whether to broadcast the message to all the gameObject's childrens (if true).
-function Daneel.Events.Listen(eventName, p_function, functionName, broadcast)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Events.Listen", eventName, p_function)
-    local errorHead = "Daneel.Events.Listen(eventName, function) : "
+function Daneel.Event.Listen(eventName, p_function, functionName, broadcast)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Listen", eventName, p_function)
+    local errorHead = "Daneel.Event.Listen(eventName, function) : "
     Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
 
-    if Daneel.Events.events[eventName] == nil then
-        Daneel.Events.events[eventName] = {}
+    if Daneel.Event.events[eventName] == nil then
+        Daneel.Event.events[eventName] = {}
     end
 
     local functionType = type(p_function)
     if functionType == "function" then
-        if not table.containsvalue(Daneel.Events.events[eventName], p_function) then
-            table.insert(Daneel.Events.events[eventName], p_function)
+        if not table.containsvalue(Daneel.Event.events[eventName], p_function) then
+            table.insert(Daneel.Event.events[eventName], p_function)
         end
     else
         Daneel.Debug.CheckArgType(p_function, "p_function", {"string", "GameObject"}, errorHead)
@@ -486,30 +543,30 @@ function Daneel.Events.Listen(eventName, p_function, functionName, broadcast)
             broadcast = false
         end
 
-        table.insert(Daneel.Events.events[eventName], {
+        table.insert(Daneel.Event.events[eventName], {
             gameObject = gameObject,
             functionName = functionName,
             broadcast = broadcast
         })
     end
 
-    Daneel.Debug.StackTrace.EndFunction("Daneel.Events.Listen")
+    Daneel.Debug.StackTrace.EndFunction("Daneel.Event.Listen")
 end
 
 
 --- Make the provided function or gameObject to stop listen to the provided event.
 -- @param eventName (string) The event name.
 -- @param functionOrGameObject (function, string or GameObject) The function, or the gameObject name or instance.
-function Daneel.Events.StopListen(eventName, functionOrGameObject)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Events.StopListen", eventName, functionOrGameObject)
-    local errorHead = "Daneel.Events.StopListen(eventName, functionOrGameObject) : "
+function Daneel.Event.StopListen(eventName, functionOrGameObject)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.StopListen", eventName, functionOrGameObject)
+    local errorHead = "Daneel.Event.StopListen(eventName, functionOrGameObject) : "
     Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
     
     local functionType = type(functionOrGameObject)
     if functionType == "function" then
-        for i, storedFunc in ipairs(Daneel.Events.events[eventName]) do
+        for i, storedFunc in ipairs(Daneel.Event.events[eventName]) do
             if functionOrGameObject == storedFunc then
-                table.remove(Daneel.Events.events[eventName], i)
+                table.remove(Daneel.Event.events[eventName], i)
                 break
             end
         end
@@ -522,32 +579,32 @@ function Daneel.Events.StopListen(eventName, functionOrGameObject)
             end
         end
         
-        for i, storedFunc in ipairs(Daneel.Events.events[eventName]) do
+        for i, storedFunc in ipairs(Daneel.Event.events[eventName]) do
             if type(storedFunc) == "table" and gameObject == storedFunc.gameObject then
-                table.remove(Daneel.Events.events[eventName], i)
+                table.remove(Daneel.Event.events[eventName], i)
                 break
             end
         end
     end
 
-    Daneel.Debug.StackTrace.EndFunction("Daneel.Events.StopListen")
+    Daneel.Debug.StackTrace.EndFunction("Daneel.Event.StopListen")
 end
 
 --- Fire the provided event transmitting along all subsequent parameters to 'eventName' if some exists. 
 -- All functions that listen to this event will be called and receive all parameters.
 -- @param eventName (string) The event name.
 -- @param ... [optional] A list of parameters to pass along.
-function Daneel.Events.Fire(eventName, ...)
+function Daneel.Event.Fire(eventName, ...)
     if arg == nil then
-        Daneel.Debug.StackTrace.BeginFunction("Daneel.Events.Fire", eventName, nil)
+        Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Fire", eventName, nil)
         arg = {}
     else
-        Daneel.Debug.StackTrace.BeginFunction("Daneel.Events.Fire", eventName, unpack(arg))
+        Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Fire", eventName, unpack(arg))
     end
     
-    Daneel.Debug.CheckArgType(eventName, "eventName", "string", "Daneel.Events.Fire(eventName[, ...]) : ")
+    Daneel.Debug.CheckArgType(eventName, "eventName", "string", "Daneel.Event.Fire(eventName[, ...]) : ")
     
-    local functions = table.new(Daneel.Events.events[eventName]):merge(Daneel.Events.events["any"])
+    local functions = table.new(Daneel.Event.events[eventName]):merge(Daneel.Event.events["any"])
     for i, func in ipairs(functions) do
         local functionType = type(func)
         if functionType == "function" then
@@ -560,15 +617,15 @@ function Daneel.Events.Fire(eventName, ...)
                     func.gameObject:SendMessage(func.functionName, arg)
                 end
             else
-                table.remove(Daneel.Events.events[eventName], i)
+                table.remove(Daneel.Event.events[eventName], i)
             end
         else
             -- func is nil (a priori), function has been destroyed (probably was a public function on a destroyed ScriptedBehavior)
-            table.remove(Daneel.Events.events[eventName], i)
+            table.remove(Daneel.Event.events[eventName], i)
         end
     end
 
-    Daneel.Debug.StackTrace.EndFunction("Daneel.Events.Fire")
+    Daneel.Debug.StackTrace.EndFunction("Daneel.Event.Fire")
 end
 
 
@@ -583,27 +640,41 @@ Daneel.Lang = { lines = {} }
 -- @return (string) The line.
 function Daneel.Lang.GetLine(key, replacements)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Lang.GetLine", key, replacements)
-    local errorHead = "Daneel.Lang.GetLine(key[, replacements]) :"
+    local errorHead = "Daneel.Lang.GetLine(key[, replacements]) : "
     Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
+    local currentLanguage = Daneel.Config.Get("language.current")
+    local defaultLanguage = Daneel.Config.Get("language.default")
 
     local keys = key:split(".")
+    local language = currentLanguage
+    if keys[1]:isoneof(Daneel.Config.Get("languages")) then
+        language = table.remove(keys)
+    end
+    
+    local noLangKey = table.concat(keys, ".") -- the key, but without the language
 
-    if not keys[1]:isoneof(Daneel.config.languages) then
-        table.insert(keys, 1, Daneel.config.currentLanguage)
+    local lines = Daneel.Lang.lines[language]
+    if lines == nil then
+        error(errorHead.."Language '"..language.."' does not exists")
     end
 
-    local errorKey = ""
-    local lines = Daneel.Lang.lines
+    for i, _key in ipairs(keys) do
+        if lines[_key] == nil then
+            -- key was not found
+            if DEBUG == true then
+                print(errorHead.."Localization key '"..key.."' was not found in '"..language.."' language .")
+            end
 
-    for i, key in ipairs(keys) do
-        errorKey = errorKey..key
-        if lines[key] == nil then
-            print(errorHead.."Localization key '"..errorKey.."' was not found.")
-            Daneel.Debug.StackTrace.EndFunction()
-            return nil
+            -- search for it in the default language
+            if language ~= defaultLanguage and Daneel.Config.Get("language.searchInDefault") == true then  
+                lines = Daneel.Lang.GetLine(defaultLanguage.."."..noLangKey, replacements)
+            else -- already default language or don't want to search in
+                lines =  Daneel.Config.Get("language.keyNotFound")
+            end
+
+            break
         end
-        lines = lines[key]
-        errorKey = errorKey.."."
+        lines = lines[_key]
     end
 
     -- line should be the searched string by now
@@ -632,19 +703,147 @@ end
 
 
 ----------------------------------------------------------------------------------
--- Initialization
-local luaDocStop = ""
+-- Config
+
+Daneel.Config = { environments = {} }
+
+--- Get the value associated with the provided key in the configuration.
+-- @param key (string) The configuration key. May be prefixed by an environment name.
+-- @param default (mixed) The default value to return instead of nil if the the key is not found.
+-- @return (mixed) The configuration value. 
+function Daneel.Config.Get(key, default)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Config.Get", key, replacements)
+    local errorHead = "Daneel.Lang.Get(key[, default]) : "
+    Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
+
+    local keys = key:split(".")
+
+    local environments = config.default.environments
+    local environment = config.common.environment
+    if keys[1]:isoneof(environments) then -- get the environment from the key
+        environment = table.remove(keys, 1)
+    end 
+
+    if environment == nil then -- not specified in the key nor in config.common
+        environment = config.default.environment -- "common"
+    end
+
+    local noEnvKey = table.concat(keys, ".") -- the key, but without the environment
+
+    local configTable = config[environment]
+    if configTable == nil then
+        error(errorHead.."Environment '"..environment.."' is not a valid configuration environment.")
+    end
+    
+    for i, key in ipairs(keys) do
+        if configTable[key] == nil then
+            
+            -- key was not found, search for it in the common environment
+            if environment ~= "common" and environment ~= "default" then
+                Daneel.Debug.StackTrace.EndFunction()
+                return Daneel.Config.Get("common."..noEnvKey, default)
+            
+            -- not found in common env, search in default if allowed
+            elseif environment == "common" then
+                Daneel.Debug.StackTrace.EndFunction()
+                return Daneel.Config.Get("default."..noEnvKey, default)
+            
+            -- already default env, return default value
+            else
+                Daneel.Debug.StackTrace.EndFunction()
+                return default
+            end
+        end
+
+        configTable = configTable[key]
+    end
+    -- configTable should be the searched config value by now
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return configTable
+end
+
+local tempConfig = config
+
+--- Alias of Daneel.Config.Get(key[, default])
+-- @param key (string) The configuration key.
+-- @param default (mixed) The default value to return instead of nil if the the key is not found.
+-- @return (mixed) The configuration value. 
+function config(key, default) end
+
+config = tempConfig
+
+-- since config is a table, need to use a metatable to use it as a function
+local configmt = {
+    __call = function(object, key, default)
+        return Daneel.Config.Get(key, default)
+    end
+}
+setmetatable(config, configmt)
+
+
+--- Set the value associated with the provided key in the configuration.
+-- @param key (string) The configuration key. May be prefixed by an environment name.
+-- @param value [optional] (mixed) The new value. If the argument is ommitted, the new value is conidered as nil.
+function Daneel.Config.Set(key, value)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Config.Set", key, value)
+    local errorHead = "Daneel.Config.Set(key, value) : "
+    Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
+
+    local keys = key:split(".")
+
+    local environments = config.default.environments
+    local environment = config.common.environment
+    if keys[1]:isoneof(environments) then -- get the environment from the key
+        environment = table.remove(keys, 1)
+    end 
+
+    if environment == nil then -- not specified in the key nor in config.common
+        environment = config.default.environment -- "common"
+    end
+
+    local configTable = config[environment]
+    if configTable == nil then
+        error(errorHead.."Environment '"..environment.."' is not a valid configuration environment.")
+    end
+    
+    local errorKey = environment
+
+    for i, key in ipairs(keys) do
+        if type(configTable) ~= "table" then
+            error(errorHead.."Configuration key '"..errorKey.."' is already set and is of type '"..type(configTable).."' instead of 'table'.")
+        else
+            if i == #keys then
+                configTable[key] = value
+            else
+                if configTable[key] == nil then
+                    configTable[key] = {}
+                end
+
+                configTable = configTable[key]
+            end
+        end
+
+        errorKey = errorKey.."."..key
+    end
+    
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
 
 -- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
-    setmetatable(Daneel.config, Daneel.defaultConfig)
+    Daneel.Config.environments = config
 
-    Daneel.defaultConfig.daneelObjects = {
+    -- list of all the environments (user-defined envs + default and common)
+    config.default.environments = table.getkeys(config)
+    
+    config.default.daneelObjects = {
         RaycastHit = RayCastHit,
         Vector2 = Vector2,
     }
 
-    Daneel.defaultConfig.guiObjects = {
+    config.default.guiObjects = {
         ["Daneel.GUI.Common"] = Daneel.GUI.Common,
         ["Daneel.GUI.Text"] = Daneel.GUI.Text,
         ["Daneel.GUI.Image"] = Daneel.GUI.Image,
@@ -659,37 +858,46 @@ function Daneel.Awake()
     end
 
     -- all objects (for use in GetType())
-    Daneel.config.objects = table.merge(
-        Daneel.defaultConfig.assetObjects,
-        Daneel.defaultConfig.componentObjects,
-        Daneel.defaultConfig.craftStudioObjects,
-        Daneel.defaultConfig.daneelObjects,
-        Daneel.defaultConfig.guiObjects,
-        Daneel.config.objects
+    config.default.allObjects = table.merge(
+        config.default.assetObjects,
+        config.default.componentObjects,
+        config.default.craftStudioObjects,
+        config.default.daneelObjects,
+        config.default.guiObjects,
+        Daneel.Config.Get('objects')
     )
 
-    -- buttons
-    Daneel.config.buttons = table.merge(Daneel.defaultConfig.buttons, Daneel.config.buttons)
-    Daneel.config.inputKeys = table.merge(Daneel.defaultConfig.inputKeys, Daneel.config.inputKeys)
-    Daneel.config.allButtons = table.merge(Daneel.config.buttons, Daneel.config.inputKeys)
+    -- debug
+    DEBUG = Daneel.Config.Get("debug")
 
-    -- scripts
-    Daneel.config.scripts = table.merge(Daneel.config.scripts, Daneel.defaultConfig.daneelScripts)
+    -- buttons
+    config.default.allButtons = Daneel.Config.Get("input.buttons")
+    --Daneel.config.inputKeys = table.merge(Daneel.defaultConfig.inputKeys, Daneel.config.inputKeys)
+    --Daneel.config.allButtons = table.merge(Daneel.config.buttons, Daneel.config.inputKeys)
+
+    -- all scripts
+    config.default.allScripts = table.merge(
+        config.default.scripts,
+        Daneel.Config.Get("scripts")
+    )
+
 
     -- Dynamic getters and setter on Scripts
-    for i, path in pairs(Daneel.config.scripts) do
+    for i, path in pairs(config.default.allScripts) do
         local script = Asset.Get(path, "Script") -- Asset.Get() helpers does not yet exists
 
         if script ~= nil then
             Script.Init(script)
         else
-            print("WARNING : item with key '"..i.."' and value '"..path.."' in Daneel.config.scripts is not a valid script path.")
+            table.remove(config.default.allScripts, i)
+            if DEBUG == true then
+                print("WARNING : item with key '"..i.."' and value '"..path.."' in 'config.default.allScripts' is not a valid script path.")
+            end
         end
     end
 
     -- Components
-    for componentType, componentObject in pairs(Daneel.defaultConfig.componentObjects) do
-
+    for componentType, componentObject in pairs(config.default.componentObjects) do
         -- GameObject.AddComponent helpers
         -- ie : gameObject:AddModelRenderer()
         if componentType ~= "Transform" and componentType ~= "ScriptedBehavior" then 
@@ -717,16 +925,8 @@ function Daneel.Awake()
             end
         end
 
-        componentObject["__tostring"] = function(component)
-            -- returns something like "ModelRenderer: 123456789"
-            -- component.inner is "?: [some ID]"
-            return componentType..tostring(component.inner):sub(2, 20) -- leave 2 as the starting index, only the transform has an extra space
-        end
-
-
         -- Components getters-setter-tostring
         if componentType ~= "ScriptedBehavior" then
-            -- Dynamic Getters
             componentObject["__index"] = function(component, key) 
                 local funcName = "Get"..key:ucfirst()
                 
@@ -745,21 +945,24 @@ function Daneel.Awake()
                 return nil
             end
 
-            -- Dynamic Setters
             componentObject["__newindex"] = function(component, key, value)
                 local funcName = "Set"..key:ucfirst()
-                
                 if componentObject[funcName] ~= nil then
                     return componentObject[funcName](component, value)
                 end
-                
                 return rawset(component, key, value)
+            end
+
+            componentObject["__tostring"] = function(component)
+                -- returns something like "ModelRenderer: 123456789"
+                -- component.inner is "?: [some ID]"
+                return componentType..tostring(component.inner):sub(2, 20) -- leave 2 as the starting index, only the transform has an extra space
             end
         end
     end
 
     -- Assets
-    for assetType, assetObject in pairs(Daneel.defaultConfig.assetObjects) do
+    for assetType, assetObject in pairs(config.default.assetObjects) do
         -- Get helpers : GetModelRenderer() ...
         Asset["Get"..assetType] = function(assetName)
             Daneel.Debug.StackTrace.BeginFunction("Asset.Get"..assetType, assetName)
@@ -772,25 +975,21 @@ function Daneel.Awake()
 
         -- Dynamic getters
         assetObject['__index'] = function(asset, key)
-            local funcName = "Get"..key:ucfirst()
-                          
+            local funcName = "Get"..key:ucfirst()            
             if assetObject[funcName] ~= nil then
                 return assetObject[funcName](asset)
             elseif assetObject[key] ~= nil then
                 return assetObject[key]
             end
-
             return nil
         end
 
         -- Dynamic setters
         assetObject['__newindex'] = function(asset, key, value)
-            local funcName = "Set"..key:ucfirst()
-                          
+            local funcName = "Set"..key:ucfirst()              
             if assetObject[funcName] ~= nil then
                 return assetObject[funcName](asset, value)
             end
-            
             return rawset(asset, key, value)
         end
 
@@ -803,14 +1002,13 @@ function Daneel.Awake()
     end
 
     -- Languages
-    for i, language in ipairs(Daneel.config.languages) do
-        if _G[language] ~= nil then
-            Daneel.Lang.lines[language] = _G[language]
-        end
+    if language ~= nil then
+        Daneel.Lang.lines = language
+        config.common.languages = table.getkeys(language)
     end
 
     -- GUI
-    Daneel.config.hudCamera = GameObject.Get(Daneel.config.hudCameraName)
+    config.default.hudCamera = GameObject.Get(Daneel.Config.Get("gui.hudCameraName"))
 
     -- setting pixelToUnits  
     local screenSize = CraftStudio.Screen.GetSize()
@@ -822,20 +1020,20 @@ function Daneel.Awake()
 
     -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
     -- pixelsToUnits (in pixels/units) is the correspondance between screen pixels and 3D world units
-    Daneel.GUI.pixelsToUnits = Daneel.config.hudCameraOrthographicScale / smallSideSize
+    Daneel.GUI.pixelsToUnits = Daneel.Config.Get("gui.hudCameraOrthographicScale") / smallSideSize
 
 
     -- tile set
-    local allTileSetPaths = table.merge(Daneel.config.colorTileSetPaths, Daneel.defaultConfig.colorTileSetPaths)
+    local allTileSetPaths = table.merge(Daneel.Config.Get("gui.colorTileSetPaths"), Daneel.defaultConfig.colorTileSetPaths)
     
-    if Daneel.config.textDefaultColorName ~= nil and not allTileSetPaths:containskey(Daneel.config.textDefaultColorName) then
-        print("WARNING : 'Daneel.config.textDefaultColorName' with value '"..Daneel.config.textDefaultColorName.."' is not one of the valid color name : "..table.concat(allTileSetPaths:getkeys(), "', '").."'")
+    if Daneel.Config.Get("gui.textDefaultColorName") ~= nil and not allTileSetPaths:containskey(Daneel.Config.Get("gui.textDefaultColorName")) then
+        print("WARNING : 'gui.textDefaultColorName' with value '"..Daneel.Config.Get("gui.textDefaultColorName").."' is not one of the valid color name : "..table.concat(allTileSetPaths:getkeys(), "', '").."'")
     end
 
     for name, path in pairs(allTileSetPaths) do
         local tileSet = Asset.GetTileSet(path)
         if tileSet == nil then
-            print("WARNING : item with key '"..name.."' and value '"..path.."' in 'Daneel.config.colorTileSetPaths' is not a valid Tile Set path.")
+            print("WARNING : item with key '"..name.."' and value '"..path.."' in 'gui.colorTileSetPaths' is not a valid Tile Set path.")
         else
             Daneel.GUI.colors[name] = tileSet
         end
@@ -845,10 +1043,14 @@ function Daneel.Awake()
     -- Awakening is over
     DANEEL_LOADED = true
 
+    if DEBUG == true then
+        print("Daneel is loaded.")
+    end
+
     -- call DaneelAwake()
-    for i, path in pairs(Daneel.config.scripts) do
+    for i, path in pairs(config.default.allScripts) do
         local script = Asset.GetScript(path)
-        if type(script.DaneelAwake) == "function" then
+        if script ~= nil and type(script.DaneelAwake) == "function" then
             script:DaneelAwake()
         end
     end
@@ -862,21 +1064,17 @@ local luaDocStop = ""
 function Daneel.Update()
     -- HotKeys
     -- fire an event whenever a registered button is pressed
-    for i, buttonName in pairs(Daneel.config.allButtons) do
-        if type(i) == "string" then
-            buttonName = i
-        end
-
+    for i, buttonName in ipairs(Daneel.Config.Get("input.buttons")) do
         if CraftStudio.Input.WasButtonJustPressed(buttonName) then
-            Daneel.Events.Fire("On"..buttonName:ucfirst().."ButtonJustPressed")
+            Daneel.Event.Fire("On"..buttonName:ucfirst().."ButtonJustPressed")
         end
 
         if CraftStudio.Input.IsButtonDown(buttonName) then
-            Daneel.Events.Fire("On"..buttonName:ucfirst().."ButtonDown")
+            Daneel.Event.Fire("On"..buttonName:ucfirst().."ButtonDown")
         end
 
         if CraftStudio.Input.WasButtonJustReleased(buttonName) then
-            Daneel.Events.Fire("On"..buttonName:ucfirst().."ButtonJustReleased")
+            Daneel.Event.Fire("On"..buttonName:ucfirst().."ButtonJustReleased")
         end
     end
 end

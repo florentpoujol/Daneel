@@ -9,7 +9,7 @@ end
 
 
 function Behavior:Update()
-    local tObject = Daneel.config.triggerableGameObjects
+    local tObject = config.default.triggerableGameObjects
 
     for i, gameObject in ipairs(tObject) do
         if gameObject ~= nil then
@@ -36,7 +36,7 @@ function Behavior:Update()
                 end
             end
         else
-            table.remove(Daneel.config.triggerableGameObjects, i)
+            table.remove(config.default.triggerableGameObjects, i)
         end
     end
     

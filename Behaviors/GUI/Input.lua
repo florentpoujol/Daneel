@@ -4,7 +4,7 @@
 local B = Behavior -- Behavior is not accessible from a function
 local function CreateInputKeysEventFunctions()
 	-- create function to catch the event for each inputKeys
-	for key, value in pairs(Daneel.config.inputKeys) do
+	for key, value in pairs(Daneel.Config.Get("input.inputKeys", {})) do
 		-- the button name may be the key or the value
 		local buttonName = value
 		local combinaisons = nil
@@ -57,7 +57,7 @@ function Behavior:Start()
 	Daneel.Events.Listen("OnRightArrowButtonJustPressed", self.gameObject)
 	Daneel.Events.Listen("OnDeleteButtonJustPressed", self.gameObject)
 
-	for key, value in pairs(Daneel.config.inputKeys) do
+	for key, value in pairs(Daneel.Config.Get("input.inputKeys", {})) do
 		-- the button name may be the key or the value
         if type(key) == "string" then
             value = key

@@ -60,7 +60,7 @@ function Daneel.GUI.Common.New(name, params)
     local element = {
         _name = name,
         gameObject = GameObject.New(name, {
-            parent = Daneel.config.hudCamera,
+            parent = Daneel.Config.Get("gui.hudCamera"),
         }),
     }
 
@@ -87,7 +87,7 @@ end
 function Daneel.GUI.Common.SetName(element, name)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetName", element)
     local errorHead = "Daneel.GUI.Common.SetName(element, name) : "
-    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     if element._name ~= nil then
         Daneel.GUI.elements[element._name] = nil
@@ -103,7 +103,7 @@ end
 function Daneel.GUI.Common.GetName(element)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetName", element, returnAsNumber)
     local errorHead = "Daneel.GUI.Common.GetName(element) : "
-    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
     Daneel.Debug.StackTrace.EndFunction()
     return element._name
 end
@@ -115,7 +115,7 @@ end
 function Daneel.GUI.Common.SetScale(element, scale)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetScale", element)
     local errorHead = "Daneel.GUI.Common.SetScale(element, scale) : "
-    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
     Daneel.Debug.CheckArgType(scale, "scale", {"number", "Vector3"}, errorHead)
 
     if type(scale) == "number" then
@@ -132,7 +132,7 @@ end
 function Daneel.GUI.Common.GetScale(element, returnAsNumber)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetScale", element, returnAsNumber)
     local errorHead = "Daneel.GUI.Common.GetScale(element[, returnAsNumber]) : "
-    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
     Daneel.Debug.CheckOptionalArgType(returnAsNumber, "returnAsNumber", "boolean", errorHead)
 
     local scale = element.gameObject.transform.localScale
@@ -150,7 +150,7 @@ end
 function Daneel.GUI.Common.SetOpacity(element, opacity)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetOpacity", element)
     local errorHead = "Daneel.GUI.Common.SetOpacity(element, opacity) : "
-    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
     Daneel.Debug.CheckArgType(opacity, "opacity", "number", errorHead)
 
     if element.gameObject.modelRenderer ~= nil then
@@ -168,7 +168,7 @@ end
 function Daneel.GUI.Common.GetOpacity(element)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetOpacity", element)
     local errorHead = "Daneel.GUI.Common.GetOpacity(element) : "
-    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
 
     local opacity = nil
     if element.gameObject.modelRenderer ~= nil then
@@ -193,7 +193,7 @@ function Daneel.GUI.Common.SetLabel(element, label)
     label = tostring(label)
     element._label = label
 
-    local map = Map.LoadFromPackage(Daneel.config.emptyTextMapPath)
+    local map = Map.LoadFromPackage(Daneel.Config.Get("gui.emptyTextMapPath"))
     if element.gameObject.mapRenderer == nil then
         element.gameObject:AddMapRenderer()
     end
@@ -268,7 +268,7 @@ end
 function Daneel.GUI.Common.SetPosition(element, x, y)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetPosition", element, x, y)
     local errorHead = "Daneel.GUI.Common.SetPosition(element, x[, y]) : "
-    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
     Daneel.Debug.CheckArgType(x, "x", {"number", "Vector2"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(y, "y", "number", errorHead)
 
@@ -279,7 +279,7 @@ function Daneel.GUI.Common.SetPosition(element, x, y)
     end
             
     local screenSize = CraftStudio.Screen.GetSize() -- screenSize is in pixels
-    local orthographicScale = Daneel.config.hudCameraOrthographicScale -- orthographicScale is in 3D world units 
+    local orthographicScale = Daneel.Config.Get("gui.hudCameraOrthographicScale") -- orthographicScale is in 3D world units 
     
     -- get the smaller side of the screen (usually screenSize.y, the height)
     local smallSideSize = screenSize.y
@@ -325,7 +325,7 @@ end
 function Daneel.GUI.Common.GetPosition(element)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetPosition", element)
     local errorHead = "Daneel.GUI.Common.GetPosition(element) : "
-    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiElementsTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
     local position = element._position
     if position == nil then
         -- the element's position has not been set
@@ -344,7 +344,7 @@ end
 function Daneel.GUI.Common.SetColor(element, color)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetColor", element)
     local errorHead = "Daneel.GUI.Common.SetColor(element, color) : "
-    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
     Daneel.Debug.CheckOptionalArgType(color, "color", "TileSet", errorHead)
 
     if color ~= nil then
@@ -355,8 +355,8 @@ function Daneel.GUI.Common.SetColor(element, color)
         element.gameObject.mapRenderer.tileSet = element._color
         element._color = element._color
     -- if coor arg is not set, put the default color
-    elseif Daneel.config.textDefaultColorName ~= nil then
-        local color = Daneel.GUI.colors[Daneel.config.textDefaultColorName]
+    elseif Daneel.Config.Get("gui.textDefaultColorName") ~= nil then
+        local color = Daneel.GUI.colors[Daneel.Config.Get("gui.textDefaultColorName")]
         element.gameObject.mapRenderer.tileSet = color
         element._color = color
     end
@@ -371,7 +371,7 @@ end
 function Daneel.GUI.Common.SetLayer(element, layer)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetLayer", element)
     local errorHead = "Daneel.GUI.Common.SetLayer(element, layer) : "
-    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
     Daneel.Debug.CheckArgType(layer, "layer", "number", errorHead)
     local pos = element.gameObject.transform.localPosition
     element.gameObject.transform.localPosition = Vector3:New(pos.x, pos.y, -layer)
@@ -384,7 +384,7 @@ end
 function Daneel.GUI.Common.GetLayer(element)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetLayer", element)
     local errorHead = "Daneel.GUI.Common.GetLyer(element) : "
-    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
     return math.abs(element.gameObject.transform.localPosition.z)
 end
 
@@ -394,7 +394,7 @@ end
 function Daneel.GUI.Common.Destroy(element)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Destroy", element)
     local errorHead = "Daneel.GUI.Destroy(element) : "
-    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
     element.gameObject:Destroy()
     Daneel.Debug.StackTrace.EndFunction()
 end
@@ -452,7 +452,7 @@ function Daneel.GUI.Text.New(name, params)
     setmetatable(element, Daneel.GUI.Text)
     element.label = name
     element:SetColor()
-    element.scale = Daneel.config.hudElementDefaultScale
+    element.scale = Daneel.Config.Get("gui.hudLabelDefaultScale")
 
     if params ~= nil then
         if params.isInteractive == true then
@@ -543,7 +543,7 @@ end
 function Daneel.GUI.Image.SetImage(element, image)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.Image.SetImage", element, image)
     local errorHead = "Daneel.GUI.Common.Image.SetImage(element, image) : "
-    Daneel.Debug.CheckArgType(element, "element", Daneel.config.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
     Daneel.Debug.CheckOptionalArgType(image, "image", {"string", "Model", "Map"}, errorHead)
 
     local assetType = Daneel.Debug.GetType(image)
@@ -645,7 +645,7 @@ function Daneel.GUI.Checkbox.New(name, params)
     element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/Checkbox", {element = element})
     element.label = name
     element.checked = false
-    element.scale = Daneel.config.hudElementDefaultScale
+    element.scale = Daneel.Config.Get("gui.hudLabelDefaultScale")
 
     if params ~= nil then
         for key, value in pairs(params) do
@@ -763,7 +763,7 @@ function Daneel.GUI.Input.New(name, params)
     element.cursorMapRndr = element.gameObject:AddMapRenderer({opacity = 0.9})
     element._cursorPosition = 1
     element.focused = false
-    element.scale = Daneel.config.hudLabelDefaultScale
+    element.scale = Daneel.Config.Get("gui.hudLabelDefaultScale")
     
     if params ~= nil then
         for key, value in pairs(params) do
@@ -832,7 +832,7 @@ function Daneel.GUI.Input.SetFocused(element, state)
         if state == true then
             element:SetCursorPosition()
         else
-            element.cursorMapRndr.map = Map.LoadFromPackage(Daneel.config.emptyTextMapPath) -- hide the cursor on unfocus
+            element.cursorMapRndr.map = Map.LoadFromPackage(Daneel.Config.Get("gui.emptyTextMapPath")) -- hide the cursor on unfocus
         end
 
         element.gameObject:SendMessage("OnFocusChange", {element = element})
@@ -868,7 +868,7 @@ function Daneel.GUI.Input.SetCursorPosition(element, position, relative)
 
     local byte = string.byte("_")
     byte = 254 -- pipe verticale sur la gauche
-    element.cursorMapRndr.map = Map.LoadFromPackage(Daneel.config.emptyTextMapPath)
+    element.cursorMapRndr.map = Map.LoadFromPackage(Daneel.Config.Get("gui.emptyTextMapPath"))
     local map = element.cursorMapRndr.map
 
     if position == nil then

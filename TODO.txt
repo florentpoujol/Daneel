@@ -33,22 +33,8 @@ input
 
 
 
+
 BUG :
 	localPosition dans les params de GameObject.New() ne fonctione pas
 
 
-block 16 = 1 unit
-unit = pixels * ortho / smallside
-blocks = unit * 16
-
-
-pixels = units * ortho / smalside  ortho = sm/u*p
-orthoscale = smallside / units * 0.02
-
-
-pixelsTUnits = ortho / smallSide
-
-units  / pixels = pixelsToUnits = ortho / smallside
-units / pixels * smallside = ortho
-
-lorsqu'un object de taille 1 unit à scale of 1, fait la taille de l'écran, sa scale  ortho scale

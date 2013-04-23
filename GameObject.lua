@@ -36,7 +36,7 @@ function GameObject.__index(gameObject, key)
     end
 
     -- maybe the key is a script alias
-    local aliases = Daneel.config.scripts
+    local aliases = config.default.allScripts
     if aliases ~= nil and type(aliases) == "table" then
         local path = aliases[key]
         if path ~= nil then
