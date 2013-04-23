@@ -13,11 +13,12 @@ GUI
 
 24/04
     - faire la doc pour les Groups
+    - faire la doc pour le tile set de la check box
     
     - update du label dans un Update() n'affiche rien -> probablement à cause du fait de recréé la map à chaque fois
     
     - voir pour 3D text
-    - voir pour map et tileset à part pour checkbox, pour pouvoir facilement styler la check mark > indiquer dans la config le tileset ainsi que les id des blocs à utiliser
+    
 
 
 Slider
@@ -27,16 +28,8 @@ progress bar
 	out et in state  
 
 
-créer les éléments dans la scène et non seulement par script > voir seulement pour 3Dtext
 
 input
 	- param size qui limite la taille du champs mais pas du texte (flèches font se déplacer le texte)
 
-
-
-
-BUG :
-	localPosition dans les params de GameObject.New() ne fonctione pas
-
-    hud origin pas plac correctement > local position a la bonne valeur mais le gameObject n'est pas à la bonne place
 

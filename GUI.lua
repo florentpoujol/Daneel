@@ -73,9 +73,11 @@ function Daneel.GUI.Common.New(name, params)
         _name = name,
         gameObject = GameObject.New(name, {
             parent = parent,
+            transform = {
+                localPosition = Vector3:New(0,0,0)
+            }
         }),
     }
-    element.gameObject.transform.localPosition = Vector3:New(0,0,0)
 
     setmetatable(element, Daneel.GUI.Common)
     element.name = name
