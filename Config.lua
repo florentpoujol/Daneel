@@ -171,6 +171,13 @@ config.common = {
         },
 
         textDefaultColorName = "Red",
+
+        -- CheckBox
+        checkBox = {
+            tileSetPath = nil,
+            checkedBlock = nil,
+            notCheckedBlock = nil,
+        },
     },
 
 

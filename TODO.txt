@@ -11,19 +11,13 @@ finir doc sur la config
 ==================
 GUI 
 
-23/04
-    - merger develop dans gui pour avoir le nouveau system de config > OK à vérifier que ça fonctionne
-    - vérif sens de rotation progress bar avec property 'isVertical'
+24/04
+    - faire la doc pour les Groups
+    
     - update du label dans un Update() n'affiche rien -> probablement à cause du fait de recréé la map à chaque fois
-    - tester nouveau mouse interaction + doc (doc OK)
-
+    
     - voir pour 3D text
-    - voir pour origin custom des éléments
-        - voir pour "Group d'éléments"
-
-        dans dannel, créé un GO "HUDOrigin" dans le coin de lécran
-        modifier setposition (créer localPosition) pour faire la position de manière relative au group plutôt qu'aau HUDOrigin
-
+    - voir pour map et tileset à part pour checkbox, pour pouvoir facilement styler la check mark > indiquer dans la config le tileset ainsi que les id des blocs à utiliser
 
 
 Slider
@@ -44,4 +38,5 @@ input
 BUG :
 	localPosition dans les params de GameObject.New() ne fonctione pas
 
+    hud origin pas plac correctement > local position a la bonne valeur mais le gameObject n'est pas à la bonne place
 

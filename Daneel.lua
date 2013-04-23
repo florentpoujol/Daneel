@@ -31,10 +31,11 @@ config.default = {
         "Daneel/Behaviors/Trigger",
         "Daneel/Behaviors/TriggerableGameObject",
         "Daneel/Behaviors/CastableGameObject",
-        "Daneel/Behaviors/MousehoverableGameObject",
+        "Daneel/Behaviors/MouseInteractiveGameObject",
+        "Daneel/Behaviors/MouseInteractiveCamera",
 
-        "Daneel/Behaviors/GUI/Interactive",
-        "Daneel/Behaviors/GUI/Checkbox",
+        "Daneel/Behaviors/GUI/GUIMouseInteractive",
+        "Daneel/Behaviors/GUI/CheckBox",
         "Daneel/Behaviors/GUI/Input",
     },
 
@@ -98,13 +99,17 @@ config.default = {
         -- hud
         colorTileSetPaths = {
             "Daneel/ASCII_White",
-            "Daneel/ASCII_Orange",
-            "Daneel/ASCII_Purple",
-            "Daneel/ASCII_Red",
-            "Daneel/ASCII_Yellow",
+            
         },
 
         textDefaultColorName = "Red",
+
+        -- CheckBox
+        checkBox = {
+            tileSetPath = nil,
+            checkedBlock = 251,
+            notCheckedBlock = "O",
+        },
     },
 
 
@@ -848,9 +853,10 @@ function Daneel.Awake()
 
     config.default.guiObjects = {
         ["Daneel.GUI.Common"] = Daneel.GUI.Common,
+        ["Daneel.GUI.Group"] = Daneel.GUI.Group,
         ["Daneel.GUI.Text"] = Daneel.GUI.Text,
         ["Daneel.GUI.Image"] = Daneel.GUI.Image,
-        ["Daneel.GUI.Checkbox"] = Daneel.GUI.Checkbox,
+        ["Daneel.GUI.CheckBox"] = Daneel.GUI.CheckBox,
         ["Daneel.GUI.ProgressBar"] = Daneel.GUI.ProgressBar,
         ["Daneel.GUI.Input"] = Daneel.GUI.Input,
     }
@@ -898,6 +904,68 @@ function Daneel.Awake()
             end
         end
     end
+
+
+    -- Languages
+    if language ~= nil then
+        Daneel.Lang.lines = language
+        config.common.languages = table.getkeys(language)
+    end
+
+
+    -- GUI
+    config.default.gui.hudCamera = GameObject.Get(Daneel.Config.Get("gui.hudCameraName"))
+
+    -- setting pixelToUnits  
+    local screenSize = CraftStudio.Screen.GetSize()
+    -- get the smaller side of the screen (usually screenSize.y, the height)
+    local smallSideSize = screenSize.y
+    if screenSize.x < screenSize.y then
+        smallSideSize = screenSize.x
+    end
+
+    -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
+    -- pixelsToUnits (in pixels/units) is the correspondance between screen pixels and 3D world units
+    Daneel.GUI.pixelsToUnits = Daneel.Config.Get("gui.hudCameraOrthographicScale") / smallSideSize
+
+    config.default.gui.hudOrigin = GameObject.New("HUDOrigin", {parent = config.default.gui.hudCamera})
+    config.default.gui.hudOrigin.transform.localPosition = Vector3:New(
+        -screenSize.x * Daneel.GUI.pixelsToUnits / 2, 
+        screenSize.y * Daneel.GUI.pixelsToUnits / 2,
+        0
+    )
+    -- the HUDOrigin is now at the top-left corner of the screen
+
+
+    -- Color Tile Set
+    local allTileSetPaths = table.merge(Daneel.Config.Get("gui.colorTileSetPaths"), config.default.colorTileSetPaths)
+    
+    if Daneel.Config.Get("gui.textDefaultColorName") ~= nil and not allTileSetPaths:containskey(Daneel.Config.Get("gui.textDefaultColorName")) then
+        print("WARNING : 'gui.textDefaultColorName' with value '"..Daneel.Config.Get("gui.textDefaultColorName").."' is not one of the valid color name : "..table.concat(allTileSetPaths:getkeys(), "', '").."'")
+    end
+
+    for name, path in pairs(allTileSetPaths) do
+        local tileSet = Asset.Get(path, "TileSet")
+        if tileSet == nil then
+            print("WARNING : item with key '"..name.."' and value '"..path.."' in 'gui.colorTileSetPaths' is not a valid Tile Set path.")
+        else
+            Daneel.GUI.colors[name] = tileSet
+        end
+    end
+
+    -- CheckBox
+    local tileSetPath = Daneel.Config.Get("gui.checkBox.tileSetPath")
+    if tileSetPath ~= nil then
+        local asset = Asset.Get(tileSetPath, "TileSet")
+        if asset == nil then
+            print("WARNING : 'gui.checkBox.checkMarkTileSetPath' with value '"..checkMarkTileSetPath.."' is not a valid Tile Set path.")
+        else
+            config.default.gui.checkBox.tileSet = asset
+        end
+    end
+
+
+    ----------------------------------------------------------------------------------
 
     -- Components
     for componentType, componentObject in pairs(config.default.componentObjects) do
@@ -1001,55 +1069,6 @@ function Daneel.Awake()
             -- asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
             -- CraftStudioCommon.ProjectData. is 30 characters long
             return tostring(asset.inner):sub(31, 60)
-        end
-    end
-
-
-    -- Languages
-    if language ~= nil then
-        Daneel.Lang.lines = language
-        config.common.languages = table.getkeys(language)
-    end
-
-
-    -- GUI
-    config.default.hudCamera = GameObject.Get(Daneel.Config.Get("gui.hudCameraName"))
-
-    -- setting pixelToUnits  
-    local screenSize = CraftStudio.Screen.GetSize()
-    -- get the smaller side of the screen (usually screenSize.y, the height)
-    local smallSideSize = screenSize.y
-    if screenSize.x < screenSize.y then
-        smallSideSize = screenSize.x
-    end
-
-    -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
-    -- pixelsToUnits (in pixels/units) is the correspondance between screen pixels and 3D world units
-    Daneel.GUI.pixelsToUnits = Daneel.Config.Get("gui.hudCameraOrthographicScale") / smallSideSize
-
-    config.default.hudOrigin = GameObject.New("HUDOrigin", {parent = config.default.hudCamera})
-    --local curPos = config.default.hudOrigin.transform.localPosition -- should be {0,0,0}
-    config.default.hudOrigin.transform.localPosition = Vector3:New(
-        -screenSize.x * Daneel.GUI.pixelsToUnits / 2, 
-        screenSize.y * Daneel.GUI.pixelsToUnits / 2,
-        0
-    )
-    -- the HUDOrigin is now at the top-left corner of the screen
-
-
-    -- tile set
-    local allTileSetPaths = table.merge(Daneel.Config.Get("gui.colorTileSetPaths"), config.default.colorTileSetPaths)
-    
-    if Daneel.Config.Get("gui.textDefaultColorName") ~= nil and not allTileSetPaths:containskey(Daneel.Config.Get("gui.textDefaultColorName")) then
-        print("WARNING : 'gui.textDefaultColorName' with value '"..Daneel.Config.Get("gui.textDefaultColorName").."' is not one of the valid color name : "..table.concat(allTileSetPaths:getkeys(), "', '").."'")
-    end
-
-    for name, path in pairs(allTileSetPaths) do
-        local tileSet = Asset.GetTileSet(path)
-        if tileSet == nil then
-            print("WARNING : item with key '"..name.."' and value '"..path.."' in 'gui.colorTileSetPaths' is not a valid Tile Set path.")
-        else
-            Daneel.GUI.colors[name] = tileSet
         end
     end
 
