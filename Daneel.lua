@@ -51,6 +51,9 @@ config.default = {
         buttons = {},
 
         inputKeys = {},
+
+        -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
+        doubleClickDelay = 20,
     }
 
 
