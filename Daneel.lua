@@ -1025,6 +1025,15 @@ function Daneel.Awake()
     -- pixelsToUnits (in pixels/units) is the correspondance between screen pixels and 3D world units
     Daneel.GUI.pixelsToUnits = Daneel.Config.Get("gui.hudCameraOrthographicScale") / smallSideSize
 
+    config.default.hudOrigin = GameObject.New("HUDOrigin", {parent = config.default.hudCamera})
+    local curPos = config.default.hudOrigin.transform.localPosition
+    config.default.hudOrigin.transform.localPosition = Vector3:New(
+        curPos.x - screenSize.x * Daneel.GUI.pixelsToUnits / 2, 
+        curPos.y + screenSize.y * Daneel.GUI.pixelsToUnits / 2,
+        curPos.y
+    )
+    -- the HUDOrigin is now at the top-left corner of the screen
+
 
     -- tile set
     local allTileSetPaths = table.merge(Daneel.Config.Get("gui.colorTileSetPaths"), Daneel.defaultConfig.colorTileSetPaths)

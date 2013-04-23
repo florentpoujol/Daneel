@@ -21,6 +21,9 @@ GUI
     - voir pour origin custom des éléments
         - voir pour "Group d'éléments"
 
+        dans dannel, créé un GO "HUDOrigin" dans le coin de lécran
+        modifier setposition (créer localPosition) pour faire la position de manière relative au group plutôt qu'aau HUDOrigin
+
 
 
 Slider
