@@ -54,7 +54,7 @@ config.default = {
 
         -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
         doubleClickDelay = 20,
-    }
+    },
 
 
     ----------------------------------------------------------------------------------
@@ -855,9 +855,9 @@ function Daneel.Awake()
         ["Daneel.GUI.Input"] = Daneel.GUI.Input,
     }
 
-    Daneel.defaultConfig.guiTypes = {}
-    for type, object in pairs(Daneel.defaultConfig.guiObjects) do
-        table.insert(Daneel.defaultConfig.guiTypes, type)
+    config.default.guiTypes = {}
+    for type, object in pairs(config.default.guiObjects) do
+        table.insert(config.default.guiTypes, type)
     end
 
     -- all objects (for use in GetType())
@@ -875,7 +875,7 @@ function Daneel.Awake()
 
     -- buttons
     config.default.allButtons = Daneel.Config.Get("input.buttons")
-    --Daneel.config.inputKeys = table.merge(Daneel.defaultConfig.inputKeys, Daneel.config.inputKeys)
+    --Daneel.config.inputKeys = table.merge(config.default.inputKeys, Daneel.config.inputKeys)
     --Daneel.config.allButtons = table.merge(Daneel.config.buttons, Daneel.config.inputKeys)
 
     -- all scripts
@@ -1004,11 +1004,13 @@ function Daneel.Awake()
         end
     end
 
+
     -- Languages
     if language ~= nil then
         Daneel.Lang.lines = language
         config.common.languages = table.getkeys(language)
     end
+
 
     -- GUI
     config.default.hudCamera = GameObject.Get(Daneel.Config.Get("gui.hudCameraName"))
@@ -1026,17 +1028,17 @@ function Daneel.Awake()
     Daneel.GUI.pixelsToUnits = Daneel.Config.Get("gui.hudCameraOrthographicScale") / smallSideSize
 
     config.default.hudOrigin = GameObject.New("HUDOrigin", {parent = config.default.hudCamera})
-    local curPos = config.default.hudOrigin.transform.localPosition
+    --local curPos = config.default.hudOrigin.transform.localPosition -- should be {0,0,0}
     config.default.hudOrigin.transform.localPosition = Vector3:New(
-        curPos.x - screenSize.x * Daneel.GUI.pixelsToUnits / 2, 
-        curPos.y + screenSize.y * Daneel.GUI.pixelsToUnits / 2,
-        curPos.y
+        -screenSize.x * Daneel.GUI.pixelsToUnits / 2, 
+        screenSize.y * Daneel.GUI.pixelsToUnits / 2,
+        0
     )
     -- the HUDOrigin is now at the top-left corner of the screen
 
 
     -- tile set
-    local allTileSetPaths = table.merge(Daneel.Config.Get("gui.colorTileSetPaths"), Daneel.defaultConfig.colorTileSetPaths)
+    local allTileSetPaths = table.merge(Daneel.Config.Get("gui.colorTileSetPaths"), config.default.colorTileSetPaths)
     
     if Daneel.Config.Get("gui.textDefaultColorName") ~= nil and not allTileSetPaths:containskey(Daneel.Config.Get("gui.textDefaultColorName")) then
         print("WARNING : 'gui.textDefaultColorName' with value '"..Daneel.Config.Get("gui.textDefaultColorName").."' is not one of the valid color name : "..table.concat(allTileSetPaths:getkeys(), "', '").."'")
