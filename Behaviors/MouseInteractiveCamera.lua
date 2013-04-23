@@ -13,6 +13,7 @@ end
 
 
 function Behavior:OnLeftMouseButtonJustPressed()
+    local ray = self.gameObject.camera:CreateRay(CraftStudio.Input.GetMousePosition())
     for i, gameObject in ipairs(interactiveGameObjects) do
         if gameObject ~= nil and gameObject.onMouseOver == true and ray:IntersectsGameObject(gameObject) ~= nil then
             gameObject:SendMessage("OnClick")
@@ -20,6 +21,8 @@ function Behavior:OnLeftMouseButtonJustPressed()
             if gameObject.framesSinceLastLeftClick ~= nil and 
                 gameObject.framesSinceLastLeftClick <= Daneel.Config.Get("input.doubleClickDelay") then
                 gameObject:SendMessage("OnDoubleClick")
+            else
+                gameObject.framesSinceLastLeftClick = 0
             end
         end
     end
@@ -27,6 +30,7 @@ end
 
 
 function Behavior:OnRightMouseButtonJustPressed()
+    local ray = self.gameObject.camera:CreateRay(CraftStudio.Input.GetMousePosition())
     for i, gameObject in ipairs(interactiveGameObjects) do
         if gameObject ~= nil and gameObject.onMouseOver == true and ray:IntersectsGameObject(gameObject) ~= nil then
             gameObject:SendMessage("OnRightClick")
@@ -40,8 +44,8 @@ function Behavior:Update()
 
     for i, gameObject in ipairs(interactiveGameObjects) do
         if gameObject ~= nil then
-            if self.gameObject.framesSinceLastLeftClick ~= nil then
-                self.gameObject.framesSinceLastLeftClick = self.gameObject.framesSinceLastLeftClick + 1
+            if gameObject.framesSinceLastLeftClick ~= nil then
+                gameObject.framesSinceLastLeftClick = gameObject.framesSinceLastLeftClick + 1
             end
 
             if ray:IntersectsGameObject(gameObject) ~= nil then
