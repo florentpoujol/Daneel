@@ -455,9 +455,8 @@ function Daneel.GUI.Text.New(name, params)
     element.scale = Daneel.Config.Get("gui.hudLabelDefaultScale")
 
     if params ~= nil then
-        if params.isInteractive == true then
+        if params.interactive == true then
             element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/GUIMouseInteractive", {element = element})
-            params.isInteractive = nil
         end
 
         for key, value in pairs(params) do
@@ -522,9 +521,8 @@ function Daneel.GUI.Image.New(name, params)
     setmetatable(element, Daneel.GUI.Image)
     
     if params ~= nil then
-        if params.isInteractive == true then
+        if params.interactive == true then
             element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/GUIMouseInteractive", {element = element})
-            params.isInteractive = nil
         end
 
         for key, value in pairs(params) do
@@ -958,11 +956,11 @@ function Daneel.GUI.ProgressBar.New(name, params)
     element.progress = 100
 
     if params ~= nil then
-        if params.isInteractive == true then
+        if params.interactive == true then
             element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/GUIMouseInteractive", {element = element})
         end
 
-        if params.isVertical == true then
+        if params.vertical == true then
             self.gameObject.transform.eulerAngles = self.gameObject.transform.eulerAngles + Vector3:New(0,0,-90)
         end
 
