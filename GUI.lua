@@ -47,6 +47,10 @@ function Daneel.GUI.Common.__newindex(element, key, value)
     return rawset(element, key, value)
 end
 
+function Daneel.GUI.Common.__tostring(element)
+    return "Daneel.GUI.Common: '"..element._name.."'"
+end
+
 
 -- Basic contructor for GUI elements.
 -- @param name (string) The element name.
@@ -59,6 +63,9 @@ function Daneel.GUI.Common.New(name, params)
 
     local parent = config.default.hudOrigin
     if params ~= nil and params.group ~= nil then
+        if Daneel.Debug.GetType(params.group) == "Daneel.GUI.Group" then
+            params.group = params.group.gameObject
+        end
         parent = params.group
     end
 
@@ -66,8 +73,10 @@ function Daneel.GUI.Common.New(name, params)
         _name = name,
         gameObject = GameObject.New(name, {
             parent = parent,
+            --localPosition = Vector3:New(0,0,0)
         }),
     }
+    element.gameObject.transform.localPosition = Vector3:New(0,0,0)
 
     setmetatable(element, Daneel.GUI.Common)
     element.name = name
@@ -404,11 +413,17 @@ function Daneel.GUI.Group.New(name, params)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
-    
-
+    local element = Daneel.GUI.Common.New(name, params)
+    setmetatable(element, Daneel.GUI.Group)
+    if params ~= nil then
+        for key, value in pairs(params) do
+            element[key] = value
+        end
+    end
     Daneel.Debug.StackTrace.EndFunction()
     return element
 end
+
 
 ----------------------------------------------------------------------------------
 -- Text
@@ -971,7 +986,7 @@ function Daneel.GUI.ProgressBar.New(name, params)
         end
 
         if params.vertical == true then
-            self.gameObject.transform.eulerAngles = self.gameObject.transform.eulerAngles + Vector3:New(0,0,-90)
+            element.gameObject.transform.eulerAngles = element.gameObject.transform.eulerAngles + Vector3:New(0,0,-90)
         end
 
         for key, value in pairs(params) do
