@@ -57,11 +57,9 @@ function Daneel.GUI.Common.New(name, params)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
-    local parent = Daneel.Config.Get("gui.hudCamera")
-    local group = false
+    local parent = config.default.hudOrigin
     if params ~= nil and params.group ~= nil then
         parent = params.group
-        group = true
     end
 
     local element = {
@@ -73,11 +71,7 @@ function Daneel.GUI.Common.New(name, params)
 
     setmetatable(element, Daneel.GUI.Common)
     element.name = name
-
-    if group == false then
-        element.position = Vector2.New(100)
-        element.layer = 5
-    end
+    element.layer = 5
     
     Daneel.Debug.StackTrace.EndFunction()
     return element
@@ -263,62 +257,23 @@ function Daneel.GUI.Common.GetLabel(element)
 end
 
 
---- Set the position of the provided element on the screen.
--- 0, 0 is the top left of the screen.
+--- Sets the relative position of the provided element on the screen.
+-- The postion is relative to the element's parent which is the HUDOrigin gameObject, 
+-- at the top-left corner fo the screen, or a GUI.Group.
 -- @param element (Daneel.GUI.Text, Daneel.GUI.Checkbox) The element.
--- @param x (Vector2 or number) The x component of the position, the distance in pixel from the left side of the screen or the position as a Vector2.
--- @param y [optional] (number) The y component of the position, the distance in pixel from the top side of the screen.
-function Daneel.GUI.Common.SetPosition(element, x, y)
+-- @param position (Vector2) The position as a Vector2.
+function Daneel.GUI.Common.SetPosition(element, position)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetPosition", element, x, y)
     local errorHead = "Daneel.GUI.Common.SetPosition(element, x[, y]) : "
     Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
-    Daneel.Debug.CheckArgType(x, "x", {"number", "Vector2"}, errorHead)
-    Daneel.Debug.CheckOptionalArgType(y, "y", "number", errorHead)
-
-    if type(x) ~= "number" and type(y) == "nil" then
-        element._position = x
-    elseif type(x) == "number" and type(y) == "number" then
-        element._position = Vector2.New(x, y)
-    end
-            
-    local screenSize = CraftStudio.Screen.GetSize() -- screenSize is in pixels
-    local orthographicScale = Daneel.Config.Get("gui.hudCameraOrthographicScale") -- orthographicScale is in 3D world units 
-    -- it's the size in unit of the smallest side of the screen
-
-    -- get the smallest side of the screen (usually screenSize.y, the height)
-    local smallSideSize = screenSize.y
-    if screenSize.x < screenSize.y then
-        smallSideSize = screenSize.x
-    end
+    Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
     
-    local xFunc = function(pixels)
-        local position = pixels * Daneel.GUI.pixelsToUnits 
-        -- position is now in units (3D world units)
-        -- but the GUI elements are parented to the HUDCamera, which IS the middle of the screen (without taking split screen into account)
-        -- and the origin of the GUI elements position is the top left corner of the screen
-        
-        -- so the position must be altered to reflect the new point of origin
-        -- since the current origin is the middle of the screen and the new origin is the top left corner
-        -- the delta is of a half of a screen
-
-        -- for the small side, which size is orthographic scale, half of it is 'orthographicScale / 2'
-        -- but the size in units of a side is actually the orthographic scale multiplied by
-        -- the ratio of its size in pixel on the smallest side size
-        -- On a 1000x500 pixels screens with an orthographic scale of 10 :
-        -- 10u <=> 500px    so 1000px <=> 10 * (1000/500) = 20u
-        local sideSize = orthographicScale * screenSize.x / smallSideSize
-        position = position - sideSize / 2 
-        return position
-    end
-    
-    local yFunc = function(pixels)
-        return -(pixels * Daneel.GUI.pixelsToUnits - orthographicScale * screenSize.y / smallSideSize / 2) 
-        -- the sign is different here since the progression along the y axis in pixel (to the positive toward the bottom)
-        -- is opposite of it's progression in the 3D worl (to the positive toward the top of the scene)
-    end
-
-    local position3D = Vector3:New(xFunc(element._position.x), yFunc(element._position.y), -5)
-    
+    element._position = position
+    local position3D = Vector3:New(
+        position.x * Daneel.GUI.pixelsToUnits,
+        -position.y * Daneel.GUI.pixelsToUnits,
+        element.gameObject.transform.localPosition.z
+    )
     element.gameObject.transform.localPosition = position3D
     Daneel.Debug.StackTrace.EndFunction()
 end
@@ -330,12 +285,9 @@ function Daneel.GUI.Common.GetPosition(element)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetPosition", element)
     local errorHead = "Daneel.GUI.Common.GetPosition(element) : "
     Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
-    local position = element._position
-    if position == nil then
-        -- the element's position has not been set
-        -- so it is actually at the center of the screen
-        local screenSize = CraftStudio.Screen.GetSize()
-        element._position = Vector2.New(screenSize.x/2, screenSize.y/2)
+    if element._position == nil then
+        -- the element is at a local pos of {0,0,0} from its parent
+        element._position = Vector2.New(0, 0)
     end
     Daneel.Debug.StackTrace.EndFunction()
     return element._position
@@ -452,37 +404,7 @@ function Daneel.GUI.Group.New(name, params)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
-    local element = {
-        _name = name,
-        gameObject = GameObject.New(name, {
-            parent = Daneel.Config.Get("gui.hudCamera"),
-        }),
-    }
-
-    setmetatable(element, Daneel.GUI.Common)
-    element.name = name
-    element.position = Vector2.New(100)
-    element.layer = 5
     
-    Daneel.Debug.StackTrace.EndFunction()
-    return element
-
-
-    local element = Daneel.GUI.Common.New(name, params)
-    setmetatable(element, Daneel.GUI.Group)
-    element.label = name
-    element:SetColor()
-    element.scale = Daneel.Config.Get("gui.hudLabelDefaultScale")
-
-    if params ~= nil then
-        if params.interactive == true then
-            element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/GUIMouseInteractive", {element = element})
-        end
-
-        for key, value in pairs(params) do
-            element[key] = value
-        end
-    end
 
     Daneel.Debug.StackTrace.EndFunction()
     return element
