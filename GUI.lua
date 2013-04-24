@@ -189,15 +189,38 @@ function Daneel.GUI.Common.GetOpacity(element)
 end
 
 
+local lastLabelUpdateClocks = {}
+
 --- Set the label of the provided element.
 -- @param element (Daneel.GUI.Text, Daneel.GUI.CheckBox) The element.
 -- @param label (mixed) Something to display.
-function Daneel.GUI.Common.SetLabel(element, label)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetLabel", element, label, replacements)
-    local errorHead = "Daneel.GUI.Common.SetLabel(element, label[, replacements]) : "
+-- @param refreshRate [optional] (number) The time in seconds between two updates of the label. (Minimum when set is 0.02)
+function Daneel.GUI.Common.SetLabel(element, label, refreshRate)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetLabel", element, label, refreshRate)
+    local errorHead = "Daneel.GUI.Common.SetLabel(element, label[, refreshRate]) : "
     Daneel.Debug.CheckArgType(element, "element", {"Daneel.GUI.Text", "Daneel.GUI.CheckBox", "Daneel.GUI.Input"}, errorHead)
     
     label = tostring(label)
+    if label == element._label then
+        Daneel.Debug.StackTrace.EndFunction()
+        return 
+    end
+
+    if refreshRate ~= nil then
+        Daneel.Debug.CheckArgType(refreshRate, "refreshRate", "number", errorHead)
+        if refreshRate < 0.02 then refreshRate = 0.02 end
+        local name = element.name
+        if lastLabelUpdateClocks[name] == nil then
+            lastLabelUpdateClocks[name] = 0
+        end
+        local clock = os.clock() -- time in seconds since the beginning of the program
+        if clock < lastLabelUpdateClocks[name] + refreshRate then
+            Daneel.Debug.StackTrace.EndFunction()
+            return
+        end
+        lastLabelUpdateClocks[name] = clock
+    end
+    
     element._label = label
 
     local map = Map.LoadFromPackage(Daneel.Config.Get("gui.emptyTextMapPath"))
@@ -257,6 +280,7 @@ function Daneel.GUI.Common.SetLabel(element, label)
 
     Daneel.Debug.StackTrace.EndFunction()
 end
+
 
 --- Get the label of the provided element.
 -- @param element (Daneel.GUI.Text, Daneel.GUI.CheckBox) The element.

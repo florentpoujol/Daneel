@@ -14,9 +14,7 @@ GUI
 24/04
     - faire la doc pour les Groups
     - faire la doc pour le tile set de la check box
-    
-    - update du label dans un Update() n'affiche rien -> probablement à cause du fait de recréé la map à chaque fois
-    
+   
     - voir pour 3D text
     
 
