@@ -230,6 +230,47 @@ function Daneel.Utilities.ReplaceInString(string, replacements)
 end
 
 
+--- Allow to call getters and setters as if they were variable on the provided object.
+-- Optionaly allow to search in a ancestry of objects.
+-- @param Object (mixed) The object.
+-- @param ancestry (mixed) One or several (as a table) objects the Object "inherits" from.
+function Daneel.Utilities.AllowDynamicGettersAndSetters(Object, ancestry)
+    function Object.__index(instance, key)
+        local funcName = "Get"..key:ucfirst()
+
+        if Object[funcName] ~= nil then
+            return Object[funcName](instance)
+        elseif Object[key] ~= nil then
+            return Object[key]
+        end
+
+        if ancestry ~= nil then
+            if type(ancestry) ~= "table" then
+                ancestry = { ancestry }
+            end
+
+            for i, Object in ipairs(ancestry) do
+                if Object[funcName] ~= nil then
+                    return Object[funcName](instance)
+                elseif Object[key] ~= nil then
+                    return Object[key]
+                end
+            end
+        end
+
+        return nil
+    end
+
+    function Object.__newindex(instance, key, value)
+        local funcName = "Set"..key:ucfirst()
+        if Object[funcName] ~= nil then
+            return Object[funcName](instance, value)
+        end
+        return rawset(instance, key, value)
+    end
+end
+
+
 ----------------------------------------------------------------------------------
 -- Debug
 
@@ -854,13 +895,15 @@ function Daneel.Awake()
     }
 
     config.default.guiObjects = {
-        ["Daneel.GUI.Common"] = Daneel.GUI.Common,
-        ["Daneel.GUI.Group"] = Daneel.GUI.Group,
-        ["Daneel.GUI.Text"] = Daneel.GUI.Text,
-        ["Daneel.GUI.Image"] = Daneel.GUI.Image,
-        ["Daneel.GUI.CheckBox"] = Daneel.GUI.CheckBox,
-        ["Daneel.GUI.ProgressBar"] = Daneel.GUI.ProgressBar,
-        ["Daneel.GUI.Input"] = Daneel.GUI.Input,
+        ["Daneel.GUI.Common"]       = Daneel.GUI.Common,
+        ["Daneel.GUI.Group"]        = Daneel.GUI.Group,
+        ["Daneel.GUI.Text"]         = Daneel.GUI.Text,
+        ["Daneel.GUI.Image"]        = Daneel.GUI.Image,
+        ["Daneel.GUI.CheckBox"]     = Daneel.GUI.CheckBox,
+        ["Daneel.GUI.Input"]        = Daneel.GUI.Input,
+        ["Daneel.GUI.ProgressBar"]  = Daneel.GUI.ProgressBar,
+        ["Daneel.GUI.Slider"]       = Daneel.GUI.Slider,
+        ["Daneel.GUI.WorldText"]    = Daneel.GUI.WorldText,
     }
 
     config.default.guiTypes = {}
