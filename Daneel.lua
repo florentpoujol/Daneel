@@ -921,8 +921,44 @@ function Daneel.Awake()
         Daneel.Config.Get('objects')
     )
 
+    -- Dynamix getters and setters
+    local dynamicObjects = {
+        -- Object
+        -- or
+        -- Object = ancestry
+        ModelRenderer = Component,
+        MapRenderer = Component,
+        Camera = Component,
+        Transform = Component,
+        Physics = Component,
+    }
+
+    local temp = table.removevalue(table.getvalues(config.default.guiObjects), Daneel.GUI.Common)
+    local guiObjects = {}
+    for i, guiObject in ipairs(temp) do
+        guiObjects[guiObject] = Daneel.GUI.Common
+    end -- set GUI.Common as ancestry for all GUI Objects
+
+
+    dynamicObjects = table.merge(
+        dynamicObjects,
+        table.getvalues(config.default.assetObjects),
+        table.getvalues(config.default.daneelObjects),
+        guiObjects,
+    )
+
+    for Object, ancestry in pairs(dynamicObjects) do
+        if type(Object) == "number" then
+            Object = ancestry
+            ancestry = nil
+        end
+        Daneel.Utilities.AllowDynamicGettersAndSetters(Object, ancestry)
+    end
+
+
     -- debug
     DEBUG = Daneel.Config.Get("debug")
+
 
     -- buttons
     config.default.allButtons = Daneel.Config.Get("input.buttons")
