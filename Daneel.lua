@@ -924,19 +924,6 @@ function Daneel.Awake()
             end
         end
 
-        -- GameObject.SetComponent helpers
-        -- ie : gameObject:SetModelRenderer()
-        if componentType ~= "ScriptedBehavior" then 
-            GameObject["Set"..componentType] = function(gameObject, params)  
-                Daneel.Debug.StackTrace.BeginFunction("GameObject.Set"..componentType, gameObject, params)
-                local errorHead = "GameObject.Set"..componentType.."(gameObject, params) : "
-                Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-
-                local component = gameObject:SetComponent(componentType, params)
-                Daneel.Debug.StackTrace.EndFunction("GameObject.Set"..componentType)
-            end
-        end
-
         -- Components getters-setter-tostring
         if componentType ~= "ScriptedBehavior" then
             componentObject["__index"] = function(component, key) 
