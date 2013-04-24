@@ -107,8 +107,10 @@ config.default = {
         -- CheckBox
         checkBox = {
             tileSetPath = nil,
-            checkedBlock = 251,
-            notCheckedBlock = "O",
+
+            -- Set the block ID on the TileSet or the letter/sign as a string
+            checkedBlock = 251, -- valid mark
+            notCheckedBlock = "X",
         },
     },
 
