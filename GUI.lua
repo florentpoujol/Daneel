@@ -198,7 +198,7 @@ local lastLabelUpdateClocks = {}
 function Daneel.GUI.Common.SetLabel(element, label, refreshRate)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetLabel", element, label, refreshRate)
     local errorHead = "Daneel.GUI.Common.SetLabel(element, label[, refreshRate]) : "
-    Daneel.Debug.CheckArgType(element, "element", {"Daneel.GUI.Text", "Daneel.GUI.CheckBox", "Daneel.GUI.Input"}, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", {"Daneel.GUI.Text", "Daneel.GUI.CheckBox", "Daneel.GUI.Input", "Daneel.GUI.WorldText"}, errorHead)
     
     label = tostring(label)
     if label == element._label then
@@ -1130,6 +1130,72 @@ function Daneel.GUI.ProgressBar.SetBar(element, model)
     Daneel.Debug.CheckArgType(model, "model", {"string", "Model"}, errorHead)
     element.gameObject.modelRenderer.model = model
     Daneel.Debug.StackTrace.EndFunction()
+end
+
+
+----------------------------------------------------------------------------------
+-- WorldText
+
+Daneel.GUI.WorldText = {}
+setmetatable(Daneel.GUI.WorldText, Daneel.GUI.Common)
+
+
+function Daneel.GUI.WorldText.__index(element, key)
+    local funcName = "Get"..key:ucfirst()
+
+    if Daneel.GUI.WorldText[funcName] ~= nil then
+        return Daneel.GUI.WorldText[funcName](element)
+    elseif Daneel.GUI.WorldText[key] ~= nil then
+        return Daneel.GUI.WorldText[key]
+    end
+
+    if Daneel.GUI.Common[funcName] ~= nil then
+        return Daneel.GUI.Common[funcName](element)
+    elseif Daneel.GUI.Common[key] ~= nil then
+        return Daneel.GUI.Common[key]
+    end
+
+    return nil
+end
+
+function Daneel.GUI.WorldText.__newindex(element, key, value)
+    local funcName = "Set"..key:ucfirst()
+    if Daneel.GUI.WorldText[funcName] ~= nil then
+        return Daneel.GUI.WorldText[funcName](element, value)
+    end
+    return rawset(element, key, value)
+end
+
+function Daneel.GUI.WorldText.__tostring(element)
+    return "Daneel.GUI.WorldText: '"..element._name.."'"
+end
+
+
+--- Create a new Daneel.GUI.WorldText.
+-- @param name (ScriptedBehavior) The element's ScriptedBehavior.
+-- @return (Daneel.GUI.WorldText) The new element.
+function Daneel.GUI.WorldText.New(behavior)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.WorldText.New", behavior)
+    local errorHead = "Daneel.GUI.WorldText.New(behavior) : "
+    Daneel.Debug.CheckArgType(behavior, "behavior", "string", errorHead)
+
+    local element = {
+        _name = behavior.name,
+        gameObject = behavior.gameObject
+    }
+    setmetatable(element, Daneel.GUI.WorldText)
+    element.name = name
+    if behavior.label == "WorldText" then
+        behavior.label = behavior.label.." "..behavior.name
+    end
+    element.label = behavior.label
+
+    if behavior.interactive == true then
+        element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/GUIMouseInteractive", {element = element})
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return element
 end
 
 

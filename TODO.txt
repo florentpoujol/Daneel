@@ -12,8 +12,6 @@ finir doc sur la config
 GUI 
 
 24/04
-    - faire la doc pour le tile set de la check box
-   
     - voir pour 3D text
     
 
