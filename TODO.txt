@@ -22,7 +22,7 @@ GUI
 
 
 Slider
-progress bar
+
 "progress bar" mais avec plusieurs éléments
 > lorsque élément pas utilisé, il a opacity, scale etc au choix dans la config, donc
 	out et in state  

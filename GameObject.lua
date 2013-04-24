@@ -11,17 +11,6 @@ function GameObject.__index(gameObject, key)
         return GameObject[key]
     end
 
-    -- cache the component intances
-    if key:isoneof({"modelRenderer", "mapRenderer", "camera"}) then
-        local component = gameObject:GetComponent(key)
-        if component ~= nil then
-            rawset(gameObject, key, component)
-            return component
-        else
-            return nil
-        end
-    end
-
     local ucKey = key:ucfirst()
     local funcName = "Get"..ucKey
     if type(GameObject[funcName]) ~= "nil" then
@@ -55,13 +44,11 @@ end
 function GameObject.__newindex(gameObject, key, value)
     local funcName = "Set"..key:ucfirst()
     -- ie: variable "name" call "SetName"
-    
     if GameObject[funcName] ~= nil then
         if key ~= "transform" then -- needed because CraftStudio.CreateGameObject() set the transfom variable on new gameObjects
             return GameObject[funcName](gameObject, value)
         end
     end
-
     rawset(gameObject, key, value)
 end
 
@@ -461,26 +448,6 @@ function GameObject.SetScriptedBehavior(gameObject, scriptNameOrAsset, params)
     local component = gameObject:SetComponent("ScriptedBehavior", scriptNameOrAsset, params)
     Daneel.Debug.StackTrace.EndFunction("GameObject.SetScriptedBehavior")
 end
-
---- Set the ModelRenderer component on the gameObject with the provided parameters.
--- @param gameObject (GameObject) The gameObject.
--- @param params (table) A table of parameters to set the component with.
-function GameObject.SetModelRenderer(gameObject, params) end
-
---- Set the MapRenderer component on the gameObject with the provided parameters.
--- @param gameObject (GameObject) The gameObject.
--- @param params (table) A table of parameters to set the component with.
-function GameObject.SetMapRenderer(gameObject, params) end
-
---- Set the Camera component on the gameObject with the provided parameters.
--- @param gameObject (GameObject) The gameObject.
--- @param params (table) A table of parameters to set the component with.
-function GameObject.SetCamera(gameObject, params) end
-
---- Set the Transform component on the gameObject with the provided parameters.
--- @param gameObject (GameObject) The gameObject.
--- @param params (table) A table of parameters to set the component with.
-function GameObject.SetTransform(gameObject, params) end
 
 
 ----------------------------------------------------------------------------------
