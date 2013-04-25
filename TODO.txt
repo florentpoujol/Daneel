@@ -11,6 +11,16 @@ finir doc sur la config
 
 
 
+Config object
+
+just les nom (types) dans un array, 
+array object généré dans Awake
+
+26/04 
+virer default config (en fait dplacer default à la place de common)
+
+
+
 ==================
 GUI 
 

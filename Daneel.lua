@@ -120,6 +120,7 @@ config.default = {
     debug = false,
 
     -- Objects (keys = name, value = object)
+
     assetObjects = {
         Script = Script,
         Model = Model,
@@ -139,6 +140,7 @@ config.default = {
         MapRenderer = MapRenderer,
         Camera = Camera,
         Transform = Transform,
+        Physics= Physics,
     },
 
     componentTypes = {},
@@ -157,8 +159,6 @@ config.default = {
     allObjects = {},
 
     
-
-
     ----------------------------------------------------------------------------------
 
     -- Rays
@@ -789,7 +789,7 @@ function Daneel.Config.Get(key, default)
     for i, key in ipairs(keys) do
         if configTable[key] == nil then
             
-            -- key was not found, search for it in the common environment
+            -- key was not found in current env, search for it in the common environment
             if environment ~= "common" and environment ~= "default" then
                 Daneel.Debug.StackTrace.EndFunction()
                 return Daneel.Config.Get("common."..noEnvKey, default)
