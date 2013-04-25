@@ -151,8 +151,8 @@ config.default = {
         Ray = Ray,
     },
     
-    daneelObjects = {}, -- filled in Daneel.Awake() below
-    guiObjects = {}, -- idem
+    daneelObjects = {}, -- objects added as value in Daneel.Awake() below
+    guiObjects = {}, 
     objects = {}, -- user-defined objects
     allObjects = {},
 
@@ -233,8 +233,8 @@ end
 --- Allow to call getters and setters as if they were variable on the provided object.
 -- Optionaly allow to search in a ancestry of objects.
 -- @param Object (mixed) The object.
--- @param ancestry (mixed) One or several (as a table) objects the Object "inherits" from.
-function Daneel.Utilities.AllowDynamicGettersAndSetters(Object, ancestry)
+-- @param ancestors (mixed) One or several (as a table) objects the Object "inherits" from.
+function Daneel.Utilities.AllowDynamicGettersAndSetters(Object, ancestors)
     function Object.__index(instance, key)
         local funcName = "Get"..key:ucfirst()
 
@@ -244,16 +244,16 @@ function Daneel.Utilities.AllowDynamicGettersAndSetters(Object, ancestry)
             return Object[key]
         end
 
-        if ancestry ~= nil then
-            if type(ancestry) ~= "table" then
-                ancestry = { ancestry }
+        if ancestors ~= nil then
+            if type(ancestors) ~= "table" then
+                ancestors = { ancestors }
             end
 
-            for i, Object in ipairs(ancestry) do
-                if Object[funcName] ~= nil then
-                    return Object[funcName](instance)
-                elseif Object[key] ~= nil then
-                    return Object[key]
+            for i, Ancestor in ipairs(ancestors) do
+                if Ancestor[funcName] ~= nil then
+                    return Ancestor[funcName](instance)
+                elseif Ancestor[key] ~= nil then
+                    return Ancestor[key]
                 end
             end
         end
@@ -921,38 +921,46 @@ function Daneel.Awake()
         Daneel.Config.Get('objects')
     )
 
-    -- Dynamix getters and setters
-    local dynamicObjects = {
-        -- Object
-        -- or
-        -- Object = ancestry
-        ModelRenderer = Component,
-        MapRenderer = Component,
-        Camera = Component,
-        Transform = Component,
-        Physics = Component,
-    }
 
-    local temp = table.removevalue(table.getvalues(config.default.guiObjects), Daneel.GUI.Common)
-    local guiObjects = {}
-    for i, guiObject in ipairs(temp) do
-        guiObjects[guiObject] = Daneel.GUI.Common
-    end -- set GUI.Common as ancestry for all GUI Objects
+    -- Built the list of all objects for which to set the __index and __newindex property 
+    -- to allow the dynamic getters and setters
+    local dynamicObjects = table.merge(
+        -- set Component as the ancestry to all components
+        table.map2(config.default.componentObjects, 
+            function(t, key, value)
+                return value, Component
+            end
+        ),
 
+         -- set GUI.Common as ancestry for all GUI Objects
+        table.map2(config.default.guiObjects, 
+            function(t, key, value)
+                if key ~= "Daneel.GUI.Common" then
+                    return value, Daneel.GUI.Common
+                end
+            end
+        ),
 
-    dynamicObjects = table.merge(
-        dynamicObjects,
-        table.getvalues(config.default.assetObjects),
-        table.getvalues(config.default.daneelObjects),
-        guiObjects,
+        -- set GUI.Common as ancestry for all GUI Objects
+        -- (function()
+        --     local guiObjects = {}
+        --     local temp = table.removevalue(table.getvalues(config.default.guiObjects), Daneel.GUI.Common)
+        --     for i, guiObject in ipairs(temp) do
+        --         guiObjects[guiObject] = Daneel.GUI.Common
+        --     end
+        --     return guiObjects
+        -- end)(),
+
+        table.getvalues(config.default.assetObjects)
+        
     )
 
-    for Object, ancestry in pairs(dynamicObjects) do
+    for Object, ancestors in pairs(dynamicObjects) do
         if type(Object) == "number" then
-            Object = ancestry
-            ancestry = nil
+            Object = ancestors
+            ancestors = nil
         end
-        Daneel.Utilities.AllowDynamicGettersAndSetters(Object, ancestry)
+        Daneel.Utilities.AllowDynamicGettersAndSetters(Object, ancestors)
     end
 
 
@@ -1007,32 +1015,6 @@ function Daneel.Awake()
 
         -- Components getters-setter-tostring
         if componentType ~= "ScriptedBehavior" then
-            componentObject["__index"] = function(component, key) 
-                local funcName = "Get"..key:ucfirst()
-                
-                if componentObject[funcName] ~= nil then
-                    return componentObject[funcName](component)
-                elseif componentObject[key] ~= nil then
-                    return componentObject[key] -- have to return the function here, not the function return value !
-                end
-
-                if Component[funcName] ~= nil then
-                    return Component[funcName](scriptedBehavior)
-                elseif Component[key] ~= nil then
-                    return Component[key]
-                end
-                
-                return nil
-            end
-
-            componentObject["__newindex"] = function(component, key, value)
-                local funcName = "Set"..key:ucfirst()
-                if componentObject[funcName] ~= nil then
-                    return componentObject[funcName](component, value)
-                end
-                return rawset(component, key, value)
-            end
-
             componentObject["__tostring"] = function(component)
                 -- returns something like "ModelRenderer: 123456789"
                 -- component.inner is "?: [some ID]"
@@ -1051,26 +1033,6 @@ function Daneel.Awake()
             local asset = Asset.Get(assetName, assetType)
             Daneel.Debug.StackTrace.EndFunction("Asset.Get"..assetType, asset)
             return asset
-        end
-
-        -- Dynamic getters
-        assetObject['__index'] = function(asset, key)
-            local funcName = "Get"..key:ucfirst()            
-            if assetObject[funcName] ~= nil then
-                return assetObject[funcName](asset)
-            elseif assetObject[key] ~= nil then
-                return assetObject[key]
-            end
-            return nil
-        end
-
-        -- Dynamic setters
-        assetObject['__newindex'] = function(asset, key, value)
-            local funcName = "Set"..key:ucfirst()              
-            if assetObject[funcName] ~= nil then
-                return assetObject[funcName](asset, value)
-            end
-            return rawset(asset, key, value)
         end
 
         assetObject["__tostring"] = function(asset)

@@ -3,6 +3,9 @@
 Develop
 
 
+- Réfléchir système de "plugin"
+
+
 finir doc sur la config
 - creation d'environment
 
@@ -11,9 +14,9 @@ finir doc sur la config
 ==================
 GUI 
 
-24/04
-    - voir pour 3D text
+
     
+
 
 
 Slider
