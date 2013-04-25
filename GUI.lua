@@ -399,33 +399,6 @@ end
 Daneel.GUI.Group = {}
 setmetatable(Daneel.GUI.Group, Daneel.GUI.Common)
 
-
-function Daneel.GUI.Group.__index(element, key)
-    local funcName = "Get"..key:ucfirst()
-
-    if Daneel.GUI.Group[funcName] ~= nil then
-        return Daneel.GUI.Group[funcName](element)
-    elseif Daneel.GUI.Group[key] ~= nil then
-        return Daneel.GUI.Group[key]
-    end
-
-    if Daneel.GUI.Common[funcName] ~= nil then
-        return Daneel.GUI.Common[funcName](element)
-    elseif Daneel.GUI.Common[key] ~= nil then
-        return Daneel.GUI.Common[key]
-    end
-
-    return nil
-end
-
-function Daneel.GUI.Group.__newindex(element, key, value)
-    local funcName = "Set"..key:ucfirst()
-    if Daneel.GUI.Group[funcName] ~= nil then
-        return Daneel.GUI.Group[funcName](element, value)
-    end
-    return rawset(element, key, value)
-end
-
 function Daneel.GUI.Group.__tostring(element)
     return "Daneel.GUI.Group: '"..element._name.."'"
 end
@@ -458,33 +431,6 @@ end
 
 Daneel.GUI.Text = {}
 setmetatable(Daneel.GUI.Text, Daneel.GUI.Common)
-
-
-function Daneel.GUI.Text.__index(element, key)
-    local funcName = "Get"..key:ucfirst()
-
-    if Daneel.GUI.Text[funcName] ~= nil then
-        return Daneel.GUI.Text[funcName](element)
-    elseif Daneel.GUI.Text[key] ~= nil then
-        return Daneel.GUI.Text[key]
-    end
-
-    if Daneel.GUI.Common[funcName] ~= nil then
-        return Daneel.GUI.Common[funcName](element)
-    elseif Daneel.GUI.Common[key] ~= nil then
-        return Daneel.GUI.Common[key]
-    end
-
-    return nil
-end
-
-function Daneel.GUI.Text.__newindex(element, key, value)
-    local funcName = "Set"..key:ucfirst()
-    if Daneel.GUI.Text[funcName] ~= nil then
-        return Daneel.GUI.Text[funcName](element, value)
-    end
-    return rawset(element, key, value)
-end
 
 function Daneel.GUI.Text.__tostring(element)
     return "Daneel.GUI.Text: '"..element._name.."'"
@@ -527,33 +473,6 @@ end
 
 Daneel.GUI.Image = {}
 setmetatable(Daneel.GUI.Image, Daneel.GUI.Common)
-
-
-function Daneel.GUI.Image.__index(element, key)
-    local funcName = "Get"..key:ucfirst()
-
-    if Daneel.GUI.Image[funcName] ~= nil then
-        return Daneel.GUI.Image[funcName](element)
-    elseif Daneel.GUI.Image[key] ~= nil then
-        return Daneel.GUI.Image[key]
-    end
-
-    if Daneel.GUI.Common[funcName] ~= nil then
-        return Daneel.GUI.Common[funcName](element)
-    elseif Daneel.GUI.Common[key] ~= nil then
-        return Daneel.GUI.Common[key]
-    end
-
-    return nil
-end
-
-function Daneel.GUI.Image.__newindex(element, key, value)
-    local funcName = "Set"..key:ucfirst()
-    if Daneel.GUI.Image[funcName] ~= nil then
-        return Daneel.GUI.Image[funcName](element, value)
-    end
-    return rawset(element, key, value)
-end
 
 function Daneel.GUI.Image.__tostring(element)
     return "Daneel.GUI.Image: '"..element._name.."'"
@@ -645,35 +564,6 @@ end
 
 Daneel.GUI.CheckBox = {}
 setmetatable(Daneel.GUI.CheckBox, Daneel.GUI.Common)
-
-
-function Daneel.GUI.CheckBox.__index(element, key)
-    local funcName = "Get"..key:ucfirst()
-
-    if Daneel.GUI.CheckBox[funcName] ~= nil then
-        return Daneel.GUI.CheckBox[funcName](element)
-    elseif Daneel.GUI.CheckBox[key] ~= nil then
-        return Daneel.GUI.CheckBox[key]
-    end
-
-    if Daneel.GUI.Common[funcName] ~= nil then
-        return Daneel.GUI.Common[funcName](element)
-    elseif Daneel.GUI.Common[key] ~= nil then
-        return Daneel.GUI.Common[key]
-    end
-
-    return nil
-end
-
-function Daneel.GUI.CheckBox.__newindex(element, key, value)
-    local funcName = "Set"..key:ucfirst()
-
-    if Daneel.GUI.CheckBox[funcName] ~= nil then
-        return Daneel.GUI.CheckBox[funcName](element, value)
-    end
-
-    return rawset(element, key, value)
-end
 
 function Daneel.GUI.CheckBox.__tostring(element)
     return "Daneel.GUI.CheckBox: '"..element._name.."'"
@@ -770,33 +660,6 @@ end
 
 Daneel.GUI.Input = {}
 setmetatable(Daneel.GUI.Input, Daneel.GUI.Common)
-
-
-function Daneel.GUI.Input.__index(element, key)
-    local funcName = "Get"..key:ucfirst()
-
-    if Daneel.GUI.Input[funcName] ~= nil then
-        return Daneel.GUI.Input[funcName](element)
-    elseif Daneel.GUI.Input[key] ~= nil then
-        return Daneel.GUI.Input[key]
-    end
-
-    if Daneel.GUI.Common[funcName] ~= nil then
-        return Daneel.GUI.Common[funcName](element)
-    elseif Daneel.GUI.Common[key] ~= nil then
-        return Daneel.GUI.Common[key]
-    end
-
-    return nil
-end
-
-function Daneel.GUI.Input.__newindex(element, key, value)
-    local funcName = "Set"..key:ucfirst()
-    if Daneel.GUI.Input[funcName] ~= nil then
-        return Daneel.GUI.Input[funcName](element, value)
-    end
-    return rawset(element, key, value)
-end
 
 function Daneel.GUI.Input.__tostring(element)
     return "Daneel.GUI.Input: '"..element._name.."'"
@@ -964,33 +827,6 @@ end
 Daneel.GUI.ProgressBar = {}
 setmetatable(Daneel.GUI.ProgressBar, Daneel.GUI.Common)
 
-
-function Daneel.GUI.ProgressBar.__index(element, key)
-    local funcName = "Get"..key:ucfirst()
-
-    if Daneel.GUI.ProgressBar[funcName] ~= nil then
-        return Daneel.GUI.ProgressBar[funcName](element)
-    elseif Daneel.GUI.ProgressBar[key] ~= nil then
-        return Daneel.GUI.ProgressBar[key]
-    end
-
-    if Daneel.GUI.Common[funcName] ~= nil then
-        return Daneel.GUI.Common[funcName](element)
-    elseif Daneel.GUI.Common[key] ~= nil then
-        return Daneel.GUI.Common[key]
-    end
-
-    return nil
-end
-
-function Daneel.GUI.ProgressBar.__newindex(element, key, value)
-    local funcName = "Set"..key:ucfirst()
-    if Daneel.GUI.ProgressBar[funcName] ~= nil then
-        return Daneel.GUI.ProgressBar[funcName](element, value)
-    end
-    return rawset(element, key, value)
-end
-
 function Daneel.GUI.ProgressBar.__tostring(element)
     return "Daneel.GUI.ProgressBar: '"..element._name.."'"
 end
@@ -1139,39 +975,12 @@ end
 Daneel.GUI.WorldText = {}
 setmetatable(Daneel.GUI.WorldText, Daneel.GUI.Common)
 
-
-function Daneel.GUI.WorldText.__index(element, key)
-    local funcName = "Get"..key:ucfirst()
-
-    if Daneel.GUI.WorldText[funcName] ~= nil then
-        return Daneel.GUI.WorldText[funcName](element)
-    elseif Daneel.GUI.WorldText[key] ~= nil then
-        return Daneel.GUI.WorldText[key]
-    end
-
-    if Daneel.GUI.Common[funcName] ~= nil then
-        return Daneel.GUI.Common[funcName](element)
-    elseif Daneel.GUI.Common[key] ~= nil then
-        return Daneel.GUI.Common[key]
-    end
-
-    return nil
-end
-
-function Daneel.GUI.WorldText.__newindex(element, key, value)
-    local funcName = "Set"..key:ucfirst()
-    if Daneel.GUI.WorldText[funcName] ~= nil then
-        return Daneel.GUI.WorldText[funcName](element, value)
-    end
-    return rawset(element, key, value)
-end
-
 function Daneel.GUI.WorldText.__tostring(element)
     return "Daneel.GUI.WorldText: '"..element._name.."'"
 end
 
 
---- Create a new Daneel.GUI.WorldText.
+-- Create a new Daneel.GUI.WorldText.
 -- @param name (ScriptedBehavior) The element's ScriptedBehavior.
 -- @return (Daneel.GUI.WorldText) The new element.
 function Daneel.GUI.WorldText.New(behavior)
@@ -1185,8 +994,14 @@ function Daneel.GUI.WorldText.New(behavior)
     }
     setmetatable(element, Daneel.GUI.WorldText)
     element.name = name
+    
     if behavior.label == "WorldText" then
         behavior.label = behavior.label.." "..behavior.name
+    end
+    local oldLabel = behavior.label
+    behavior.label = behavior.label:gsub(":lang:", "")
+    if behavior.label ~= oldLabel then
+        behavior.label = Daneel.Lang.Line(behavior.label)
     end
     element.label = behavior.label
 
