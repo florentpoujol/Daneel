@@ -29,7 +29,12 @@ config.default = {
         "Daneel/Behaviors/Trigger",
         "Daneel/Behaviors/TriggerableGameObject",
         "Daneel/Behaviors/CastableGameObject",
-        "Daneel/Behaviors/MousehoverableGameObject",
+        "Daneel/Behaviors/MouseInteractiveGameObject",
+        "Daneel/Behaviors/MouseInteractiveCamera",
+
+        "Daneel/Behaviors/GUI/GUIMouseInteractive",
+        "Daneel/Behaviors/GUI/CheckBox",
+        "Daneel/Behaviors/GUI/Input",
     },
 
 
@@ -78,24 +83,26 @@ config.default = {
     gui = {
         -- Name of the gameObject who has the orthographic camera used to render the HUD
         hudCameraName = "HUDCamera",
+        -- the corresponding GameObject, set at runtime
+        hudCamera = nil,
 
         -- The orthographic scale of the HUDCamera
         hudCameraOrthographicScale = 10,
 
-        -- Fully-qualified path of the map used to render text components
+        -- Fully-qualified path of the map used to render text elements
         textMapPath = "Daneel/TextMap",
         emptyTextMapPath = "Daneel/EmptyTextMap",
 
-        -- GUI element's default scale
+        -- label's (text) default scale
         hudLabelDefaultScale = 0.3,
 
-        -- hud
+        -- TileSets used for the text elements
         colorsTileSetPaths = {
-            "Daneel/ASCII_White",
-            "Daneel/ASCII_Black",
-            "Daneel/ASCII_Red",
-            "Daneel/ASCII_Green",
-            "Daneel/ASCII_Blue",
+            "Daneel/Text_White",
+            "Daneel/Text_Black",
+            "Daneel/Text_Red",
+            "Daneel/Text_Green",
+            "Daneel/Text_Blue",
         },
 
         textDefaultColorName = "White",
@@ -103,8 +110,10 @@ config.default = {
         -- CheckBox
         checkBox = {
             tileSetPath = nil,
-            checkedBlock = nil,
-            notCheckedBlock = nil,
+
+            -- Set the block ID on the TileSet or the letter/sign as a string
+            checkedBlock = 251, -- valid mark
+            notCheckedBlock = "X",
         },
     },
 
