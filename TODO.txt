@@ -3,21 +3,7 @@
 Develop
 
 
-- Réfléchir système de "plugin"
 
-
-finir doc sur la config
-- creation d'environment
-
-
-
-Config object
-
-just les nom (types) dans un array, 
-array object généré dans Awake
-
-26/04 
-virer default config (en fait dplacer default à la place de common)
 
 
 
@@ -25,11 +11,13 @@ virer default config (en fait dplacer default à la place de common)
 GUI 
 
 
-    
+ajouter color property à worldtext
 
 
 
 Slider
+    - scale de la progress bar affecte le handle
+
 
 "progress bar" mais avec plusieurs éléments
 > lorsque élément pas utilisé, il a opacity, scale etc au choix dans la config, donc

@@ -904,11 +904,172 @@ end
 -- @param element (Daneel.GUI.ProgressBar) The element.
 -- @param model (string or Model) The model path or asset.
 function Daneel.GUI.ProgressBar.SetBar(element, model)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.SetModel", element, model)
-    local errorHead = "Daneel.GUI.ProgressBar.SetModel(element, model) : "
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.SetBar", element, model)
+    local errorHead = "Daneel.GUI.ProgressBar.SetBar(element, model) : "
     Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.ProgressBar", errorHead)
     Daneel.Debug.CheckArgType(model, "model", {"string", "Model"}, errorHead)
     element.gameObject.modelRenderer.model = model
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+
+----------------------------------------------------------------------------------
+-- Slider
+
+Daneel.GUI.Slider = {}
+setmetatable(Daneel.GUI.Slider, Daneel.GUI.Common)
+
+--- Create a new GUI.Slider.
+-- @param name (string) The element name.
+-- @param params [optional] (table) A table with initialisation parameters.
+-- @return (Daneel.GUI.Slider) The new element.
+function Daneel.GUI.Slider.New(name, params)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.New", name, params)
+    local errorHead = "Daneel.GUI.Slider.New(name[, params]) : "
+    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
+    Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
+
+    if params == nil then
+        params = {}
+    end
+    local ProgressBarParams = {
+        minLength = 0,
+        maxLength = params.length,
+        height = params.height,
+        progress = "100%",
+    }
+    
+    local element = Daneel.GUI.ProgressBar.New(name.."ProgressBar", ProgressBarParams)
+    setmetatable(element, Daneel.GUI.Slider)
+    element.name = name
+    
+    element.handleGO = GameObject.New(name.."Handle", {
+        parent = element.gameObject,
+        modelRenderer = {},
+        scriptedBehaviors = {
+            ["Daneel/Behaviors/GUI/GUIMouseInteractive"] = {element = element},
+        },
+        transform = {
+            localPosition = Vector3:New(0)
+        }
+    })
+    element.length = 100
+    element.progress = "50%"
+    element.handle = "Daneel/SliderHandle"
+
+    if params ~= nil then
+        for key, value in pairs(params) do
+            if key ~= "progress" then
+                element[key] = value
+            end
+        end
+
+        if params.progress ~= nil then
+            element.progress = params.progress
+        end
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return element
+end
+
+
+--- Set the progress of the progress bar, adjusting its position.
+-- @param element (Daneel.GUI.Slider) The element.
+-- @param pogress (number or string) The progress as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
+function Daneel.GUI.Slider.SetProgress(element, progress)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.SetProgress", element, progress)
+    local errorHead = "Daneel.GUI.Slider.SetProgress(element[, progress]) : "
+    Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.Slider", errorHead)
+    Daneel.Debug.CheckArgType(progress, "progress", {"string", "number"}, errorHead)
+
+    local minVal = element.minValue
+    local maxVal = element.maxValue
+    local percentageOfProgress = nil
+    
+    if type(progress) == "string" then
+        percentageOfProgress = tonumber(progress:sub(1, #progress-1)) / 100
+
+        local oldPercentage = percentageOfProgress
+        percentageOfProgress = math.clamp(percentageOfProgress, 0.0, 1.0)
+        if percentageOfProgress ~= oldPercentage then
+            print("WARNING : progress in percentage with value '"..progress.."' is below 0% or above 100%.")
+        end
+
+        progress = (maxVal - minVal) * percentageOfProgress + minVal
+    else
+        local oldProgress = progress
+        progress = math.clamp(progress, minVal, maxVal)
+        if progress ~= oldProgress then
+            print("WARNING : progress with value '"..oldProgress.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
+        end
+
+        percentageOfProgress = (progress - minVal) / (maxVal - minVal)
+    end
+    
+    element._progress = progress
+    
+    local currentDist = element.length * Daneel.GUI.pixelsToUnits * percentageOfProgress
+    element.handleGO.transform.localPosition = Vector3:New(currentDist, 0, 0)
+
+    element.gameObject:SendMessage("OnChange", {element = element})
+    if type(element.onChange) == "function" then
+        element:onChange()
+    end
+end
+
+--- Get the current progress of the progress bar.
+-- @param element (Daneel.GUI.Slider) The element.
+-- @param getAsPercentage [optional default=false] (boolean) Get the progress as a percentage instead of an absolute value.
+-- @return (number) The progress.
+function Daneel.GUI.Slider.GetProgress(element, getAsPercentage)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.GetProgress", element, getAsPercentage)
+    local errorHead = "Daneel.GUI.Slider.GetProgress(element[, getAsPercentage]) : "
+    Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.Slider", errorHead)
+    Daneel.Debug.CheckOptionalArgType(getAsPercentage, "getAsPercentage", "boolean", errorHead)
+    local progress = element._progress
+    if getAsPercentage == true then
+        progress = progress / element.maxValue * 100
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+    return progress
+end
+
+--- Set the height of the progress bar, in pixels.
+-- @param element (Daneel.GUI.Slider) The element.
+-- @param height (number) The heigt in pixels.
+function Daneel.GUI.Slider.SetHeight(element, height)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.SetProgress", element, height)
+    local errorHead = "Daneel.GUI.Slider.SetProgress(element[, height]) : "
+    Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.Slider", errorHead)
+    Daneel.Debug.CheckArgType(height, "height", "number", errorHead)
+    element._height = height
+    local unitHeight = height *  Daneel.GUI.pixelsToUnits 
+    local currentScale = element.gameObject.transform.localScale
+    element.gameObject.transform.localScale = Vector3:New(currentScale.x, unitHeight, currentScale.z)
+end
+
+--- Set the model of the progress bar.
+-- @param element (Daneel.GUI.Slider) The element.
+-- @param model (string or Model) The model path or asset.
+function Daneel.GUI.Slider.SetBar(element, model)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.SetBar", element, model)
+    local errorHead = "Daneel.GUI.Slider.SetBar(element, model) : "
+    Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.Slider", errorHead)
+    Daneel.Debug.CheckArgType(model, "model", {"string", "Model"}, errorHead)
+    element.gameObject.modelRenderer.model = model
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+--- Set the model of the progress bar.
+-- @param element (Daneel.GUI.Slider) The element.
+-- @param model (string or Model) The model path or asset.
+function Daneel.GUI.Slider.SetHandle(element, model)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.SetHandle", element, model)
+    local errorHead = "Daneel.GUI.Slider.SetHandle(element, model) : "
+    Daneel.Debug.CheckArgType(element, "element", "Daneel.GUI.Slider", errorHead)
+    Daneel.Debug.CheckArgType(model, "model", {"string", "Model"}, errorHead)
+    element.handleGO.modelRenderer.model = model
     Daneel.Debug.StackTrace.EndFunction()
 end
 
