@@ -586,21 +586,18 @@ Daneel.Config = { environments = {} }
 -- @return (mixed) The configuration value. 
 function Daneel.Config.Get(key, default)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Config.Get", key, replacements)
-    local errorHead = "Daneel.Lang.Get(key[, default]) : "
+    local errorHead = "Daneel.Config.Get(key[, default]) : "
     Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
 
     local keys = key:split(".")
-
     local environments = config.default.environments
-    local environment = config.common.environment
+    local environment = config.default.environment
     if keys[1]:isoneof(environments) then -- get the environment from the key
         environment = table.remove(keys, 1)
-    end 
-
-    if environment == nil then -- not specified in the key nor in config.common
-        environment = config.default.environment -- "common"
     end
-
+    if environment == nil then -- not specified in the key nor in config.default
+        environment = config.default.environment -- "default"
+    end
     local noEnvKey = table.concat(keys, ".") -- the key, but without the environment
 
     local configTable = config[environment]
@@ -611,13 +608,8 @@ function Daneel.Config.Get(key, default)
     for i, key in ipairs(keys) do
         if configTable[key] == nil then
             
-            -- key was not found in current env, search for it in the common environment
-            if environment ~= "common" and environment ~= "default" then
-                Daneel.Debug.StackTrace.EndFunction()
-                return Daneel.Config.Get("common."..noEnvKey, default)
-            
-            -- not found in common env, search in default if allowed
-            elseif environment == "common" then
+            -- key was not found in current environment, search for it in the default environment
+            if environment ~= "default" then
                 Daneel.Debug.StackTrace.EndFunction()
                 return Daneel.Config.Get("default."..noEnvKey, default)
             
@@ -634,6 +626,10 @@ function Daneel.Config.Get(key, default)
 
     Daneel.Debug.StackTrace.EndFunction()
     return configTable
+end
+
+if config == nil then
+    config = {}
 end
 
 local tempConfig = config
@@ -664,17 +660,14 @@ function Daneel.Config.Set(key, value)
     Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
 
     local keys = key:split(".")
-
     local environments = config.default.environments
     local environment = config.common.environment
     if keys[1]:isoneof(environments) then -- get the environment from the key
         environment = table.remove(keys, 1)
     end 
-
     if environment == nil then -- not specified in the key nor in config.common
         environment = config.default.environment -- "common"
     end
-
     local configTable = config[environment]
     if configTable == nil then
         error(errorHead.."Environment '"..environment.."' is not a valid configuration environment.")
