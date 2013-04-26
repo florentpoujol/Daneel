@@ -7,7 +7,7 @@ end
 ----------------------------------------------------------------------------------
 -- GUI
 
-Daneel.GUI = { elements = {}, colors = {} }
+Daneel.GUI = { elements = {} }
 
 --- Get the GUI element of the provoded name.
 -- @param name (string) The name.
@@ -24,33 +24,6 @@ end
 -- Common
 
 Daneel.GUI.Common = {} -- common functions for GUI Elements
-Daneel.GUI.Common.__index = Daneel.GUI.Common
-
-
-function Daneel.GUI.Common.__index(element, key)
-    local funcName = "Get"..key:ucfirst()
-
-    if Daneel.GUI.Common[funcName] ~= nil then
-        return Daneel.GUI.Common[funcName](element)
-    elseif Daneel.GUI.Common[key] ~= nil then
-        return Daneel.GUI.Common[key]
-    end
-
-    return nil
-end
-
-function Daneel.GUI.Common.__newindex(element, key, value)
-    local funcName = "Set"..key:ucfirst()
-    if Daneel.GUI.Common[funcName] ~= nil then
-        return Daneel.GUI.Common[funcName](element, value)
-    end
-    return rawset(element, key, value)
-end
-
-function Daneel.GUI.Common.__tostring(element)
-    return "Daneel.GUI.Common: '"..element._name.."'"
-end
-
 
 -- Basic contructor for GUI elements.
 -- @param name (string) The element name.
@@ -332,28 +305,30 @@ end
 
 
 --- Set the element's color which is actually the tile set used to render the label.
--- @param element (Daneel.GUI.Text, Daneel.GUI.CheckBox, Daneel.GUI.Input) The element.
--- @param color (TileSet) An entry in Daneel.GUI.colors.
+-- @param element (Daneel.GUI.Text, Daneel.GUI.CheckBox, Daneel.GUI.Input, Daneel.GUI.WorldText) The element.
+-- @param color (string) The color name.
 function Daneel.GUI.Common.SetColor(element, color)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetColor", element)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetColor", element, color)
     local errorHead = "Daneel.GUI.Common.SetColor(element, color) : "
-    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
-    Daneel.Debug.CheckOptionalArgType(color, "color", "TileSet", errorHead)
+    Daneel.Debug.CheckArgType(element, "element", {"Daneel.GUI.Text", "Daneel.GUI.CheckBox", "Daneel.GUI.Input", "Daneel.GUI.WorldText"}, errorHead)
+    Daneel.Debug.CheckOptionalArgType(color, "color", "string", errorHead)
 
-    if color ~= nil then
-        element.gameObject.mapRenderer.tileSet = color
-        element._color = color
-    -- put the color the text had (before the label was updated)
-    elseif element._color ~= nil then
-        element.gameObject.mapRenderer.tileSet = element._color
-        element._color = element._color
-    -- if coor arg is not set, put the default color
-    elseif Daneel.Config.Get("gui.textDefaultColorName") ~= nil then
-        local color = Daneel.GUI.colors[Daneel.Config.Get("gui.textDefaultColorName")]
-        element.gameObject.mapRenderer.tileSet = color
-        element._color = color
+    local defaultColor = Daneel.Config.Get("gui.textDefaultColorName")
+    if color == nil and element._color ~= nil then
+        color = element._color
+    -- if color arg is not set, and color has not already been set once, put the default color
+    elseif color == nil and element._color == nil then
+        color = defaultColor
     end
 
+    if not table.containskey(config.default.gui.textColorTileSets, color) then
+        if DEBUG == true then
+            print("WARNING : "..errorHead.." color '"..color.."' is not one of the correct colors. Defaulting to '"..defaultColor.."'.")
+        end
+        color = defaultColor
+    end
+    element.gameObject.mapRenderer.tileSet = config.default.gui.textColorTileSets[color]
+    element._color = color
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -399,11 +374,6 @@ end
 Daneel.GUI.Group = {}
 setmetatable(Daneel.GUI.Group, Daneel.GUI.Common)
 
-function Daneel.GUI.Group.__tostring(element)
-    return "Daneel.GUI.Group: '"..element._name.."'"
-end
-
-
 --- Create a new Daneel.GUI.Group.
 -- @param name (string) The element name.
 -- @param params [optional] (table) A table with initialisation parameters.
@@ -432,11 +402,6 @@ end
 Daneel.GUI.Text = {}
 setmetatable(Daneel.GUI.Text, Daneel.GUI.Common)
 
-function Daneel.GUI.Text.__tostring(element)
-    return "Daneel.GUI.Text: '"..element._name.."'"
-end
-
-
 --- Create a new Daneel.GUI.Text.
 -- @param name (string) The element name.
 -- @param params [optional] (table) A table with initialisation parameters.
@@ -450,8 +415,7 @@ function Daneel.GUI.Text.New(name, params)
     local element = Daneel.GUI.Common.New(name, params)
     setmetatable(element, Daneel.GUI.Text)
     element.label = name
-    element:SetColor()
-    element.scale = Daneel.Config.Get("gui.hudLabelDefaultScale")
+    element.scale = Daneel.Config.Get("gui.textDefaultScale")
 
     if params ~= nil then
         if params.interactive == true then
@@ -473,11 +437,6 @@ end
 
 Daneel.GUI.Image = {}
 setmetatable(Daneel.GUI.Image, Daneel.GUI.Common)
-
-function Daneel.GUI.Image.__tostring(element)
-    return "Daneel.GUI.Image: '"..element._name.."'"
-end
-
 
 -- Create a new GUI.Image.
 -- @param name (string) The element name.
@@ -565,11 +524,6 @@ end
 Daneel.GUI.CheckBox = {}
 setmetatable(Daneel.GUI.CheckBox, Daneel.GUI.Common)
 
-function Daneel.GUI.CheckBox.__tostring(element)
-    return "Daneel.GUI.CheckBox: '"..element._name.."'"
-end
-
-
 -- Create a new GUI.CheckBox.
 -- @param name (string) The element name.
 -- @param params [optional] (table) A table with initialisation parameters.
@@ -586,7 +540,7 @@ function Daneel.GUI.CheckBox.New(name, params)
     element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/CheckBox", {element = element})
     element.label = name
     element.checked = false
-    element.scale = Daneel.Config.Get("gui.hudLabelDefaultScale")
+    element.scale = Daneel.Config.Get("gui.textDefaultScale")
 
     if params ~= nil then
         for key, value in pairs(params) do
@@ -661,11 +615,6 @@ end
 Daneel.GUI.Input = {}
 setmetatable(Daneel.GUI.Input, Daneel.GUI.Common)
 
-function Daneel.GUI.Input.__tostring(element)
-    return "Daneel.GUI.Input: '"..element._name.."'"
-end
-
-
 -- Create a new GUI.Input.
 -- @param name (string) The element name.
 -- @param params [optional] (table) A table with initialisation parameters.
@@ -684,7 +633,7 @@ function Daneel.GUI.Input.New(name, params)
     element.cursorMapRndr = element.gameObject:AddMapRenderer({opacity = 0.9})
     element._cursorPosition = 1
     element.focused = false
-    element.scale = Daneel.Config.Get("gui.hudLabelDefaultScale")
+    element.scale = Daneel.Config.Get("gui.textDefaultScale")
     
     if params ~= nil then
         for key, value in pairs(params) do
@@ -826,11 +775,6 @@ end
 
 Daneel.GUI.ProgressBar = {}
 setmetatable(Daneel.GUI.ProgressBar, Daneel.GUI.Common)
-
-function Daneel.GUI.ProgressBar.__tostring(element)
-    return "Daneel.GUI.ProgressBar: '"..element._name.."'"
-end
-
 
 --- Create a new GUI.ProgressBar.
 -- @param name (string) The element name.
@@ -975,25 +919,20 @@ end
 Daneel.GUI.WorldText = {}
 setmetatable(Daneel.GUI.WorldText, Daneel.GUI.Common)
 
-function Daneel.GUI.WorldText.__tostring(element)
-    return "Daneel.GUI.WorldText: '"..element._name.."'"
-end
-
-
 -- Create a new Daneel.GUI.WorldText.
 -- @param name (ScriptedBehavior) The element's ScriptedBehavior.
 -- @return (Daneel.GUI.WorldText) The new element.
 function Daneel.GUI.WorldText.New(behavior)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.WorldText.New", behavior)
     local errorHead = "Daneel.GUI.WorldText.New(behavior) : "
-    Daneel.Debug.CheckArgType(behavior, "behavior", "string", errorHead)
+    Daneel.Debug.CheckArgType(behavior, "behavior", "ScriptedBehavior", errorHead)
 
     local element = {
         _name = behavior.name,
         gameObject = behavior.gameObject
     }
     setmetatable(element, Daneel.GUI.WorldText)
-    element.name = name
+    element.name = behavior.name
     
     if behavior.label == "WorldText" then
         behavior.label = behavior.label.." "..behavior.name
