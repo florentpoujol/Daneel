@@ -35,6 +35,7 @@ config.default = {
         "Daneel/Behaviors/GUI/GUIMouseInteractive",
         "Daneel/Behaviors/GUI/CheckBox",
         "Daneel/Behaviors/GUI/Input",
+        "Daneel/Behaviors/GUI/WorldText",
     },
 
 
@@ -57,7 +58,7 @@ config.default = {
         inputKeys = {
 
         }
-    }
+    },
 
 
     ----------------------------------------------------------------------------------
@@ -86,6 +87,9 @@ config.default = {
         -- the corresponding GameObject, set at runtime
         hudCamera = nil,
 
+        -- The gameObject that serve as origin for all GUI elements that aare not in a Group, created at runtime
+        hudOrigin = nil,
+
         -- The orthographic scale of the HUDCamera
         hudCameraOrthographicScale = 10,
 
@@ -94,16 +98,19 @@ config.default = {
         emptyTextMapPath = "Daneel/EmptyTextMap",
 
         -- label's (text) default scale
-        hudLabelDefaultScale = 0.3,
+        textDefaultScale = 0.3,
 
         -- TileSets used for the text elements
-        colorsTileSetPaths = {
-            "Daneel/Text_White",
-            "Daneel/Text_Black",
-            "Daneel/Text_Red",
-            "Daneel/Text_Green",
-            "Daneel/Text_Blue",
+        textColorTileSetPaths = {
+            White = "Daneel/ASCII_White",
+            Black = "Daneel/ASCII_Black",
+            Red = "Daneel/ASCII_Red",
+            Green = "Daneel/ASCII_Green",
+            Blue = "Daneel/ASCII_Blue",
         },
+        textColorTileSets = {
+            -- Name (string) = TileSet (TileSet)
+        }, -- filled at runtime
 
         textDefaultColorName = "White",
 
