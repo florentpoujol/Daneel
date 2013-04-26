@@ -4,31 +4,40 @@ if config == nil then
 end
 
 
--- Configuration common for all environments
-config.common = {
+config.default = {
     
-    environment = "common",
+    -- Current environment.
+    -- Change the value if you define your own environment(s)
+    environment = "default",
 
 
     ----------------------------------------------------------------------------------
-    
+
     -- List of the Scripts paths as values and optionally the script alias as the keys.
-    -- Setting your scripts here allows you to :
-    -- - call getters and setters as if they where variable
-    -- - call the ScriptedBehavior on the gameObject via its alias or name
-    -- - implement a Behavior:DaneelAwake() function (called before Behvior:Start() and even on scripts that are not ScriptedBehaviors)
-    scripts = {
-        -- "fully-qualified Script path"
-        -- or
-        -- alias = "fully-qualified Script path"
+    -- Ie :
+    -- "fully-qualified Script path"
+    -- or
+    -- alias = "fully-qualified Script path"
+    --
+    -- Setting a script path here allow you to  :
+    -- * Use the dynamic getters and setters
+    -- * Use component:Set() (for scripts that are ScriptedBehaviors)
+    -- * Call Behavior:DaneelAwake() when Daneel has just loaded, even on scripts that are not ScriptedBehaviors
+    -- * If you defined aliases, dynamically access the ScriptedBehavior on the gameObject via its alias
+    scriptPaths = {
+        "Daneel/Behaviors/DaneelBehavior",
+        "Daneel/Behaviors/Trigger",
+        "Daneel/Behaviors/TriggerableGameObject",
+        "Daneel/Behaviors/CastableGameObject",
+        "Daneel/Behaviors/MousehoverableGameObject",
     },
 
-    
+
     ----------------------------------------------------------------------------------
-    
+
     input = {
-        -- Button names as you defined them in the "Administration > Game Controls" tab of your project
-        -- Button whose name is defined here can be used as HotKeys
+        -- Button names as you defined them in the "Administration > Game Controls" tab of your project.
+        -- Button whose name is defined here can be used as HotKeys.
         buttons = {
             "LeftMouse",
             "LeftShift",
@@ -37,6 +46,180 @@ config.common = {
             "RightArrow",
         },
 
+        -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
+        doubleClickDelay = 20,
+
+        inputKeys = {
+
+        }
+    }
+
+
+    ----------------------------------------------------------------------------------
+
+    language = {
+        -- Current language
+        current = "english",
+
+        -- Default language
+        default = "english",
+
+        -- Value returned when a language key is not found
+        keyNotFound = "langkeynotfound",
+
+        -- Tell wether Daneel.Lang.GetLine() search a line key in the default language 
+        -- when it is not found in the current language before returning the value of keyNotFound
+        searchInDefault = true,
+    },
+
+
+    ----------------------------------------------------------------------------------
+
+    gui = {
+        -- Name of the gameObject who has the orthographic camera used to render the HUD
+        hudCameraName = "HUDCamera",
+
+        -- The orthographic scale of the HUDCamera
+        hudCameraOrthographicScale = 10,
+
+        -- Fully-qualified path of the map used to render text components
+        textMapPath = "Daneel/TextMap",
+        emptyTextMapPath = "Daneel/EmptyTextMap",
+
+        -- GUI element's default scale
+        hudLabelDefaultScale = 0.3,
+
+        -- hud
+        colorsTileSetPaths = {
+            "Daneel/ASCII_White",
+            "Daneel/ASCII_Black",
+            "Daneel/ASCII_Red",
+            "Daneel/ASCII_Green",
+            "Daneel/ASCII_Blue",
+        },
+
+        textDefaultColorName = "White",
+
+        -- CheckBox
+        checkBox = {
+            tileSetPath = nil,
+            checkedBlock = nil,
+            notCheckedBlock = nil,
+        },
+    },
+
+
+    ----------------------------------------------------------------------------------
+
+    -- List of your custom object types (their name as a string), to be returned by Daneel.Debug.GetType().
+    -- Daneel.Debug.GetType() will return one the types if an object corresponding to one of the types is the metatable of the supllied object.
+    -- Ie :
+    -- "RaycasHit"
+    -- "Daneel.GUI.Text"
+    userTypes = {
+
+    },
+
+    -- once Daneel has loaded, the userObjects table below will be filled with the types defined in userTypes as the keys and the actual objects as values
+    userObjects = {},
+
+
+    ----------------------------------------------------------------------------------
+
+    -- Enable/disble Daneel's debugging features.
+    debug = false,
+
+
+
+
+    ----------------------------------------------------------------------------------
+    -- DO NOT EDIT BELOW
+    ----------------------------------------------------------------------------------
+
+
+    -- list of the environment names, filled at runtime.
+    environments = {},
+
+    -- List of the languages supported by the game.
+    -- Automatically filled at runtime with the languages names, based on the keys defined on the 'language' global variable
+    languages = {},
+
+
+    ----------------------------------------------------------------------------------
+
+    -- Objects (keys = name, value = object)
+    assetObjects = {
+        Script = Script,
+        Model = Model,
+        ModelAnimation = ModelAnimation,
+        Map = Map,
+        TileSet = TileSet,
+        Sound = Sound,
+        Scene = Scene,
+        --Document = Document
+    },
+    assetTypes = {}, -- filled at runtime
+
+    componentObjects = {
+        ScriptedBehavior = ScriptedBehavior,
+        ModelRenderer = ModelRenderer,
+        MapRenderer = MapRenderer,
+        Camera = Camera,
+        Transform = Transform,
+        Physics = Physics,
+    },
+    componentTypes = {},
+    
+    craftStudioObjects = {
+        GameObject = GameObject,
+        Vector3 = Vector3,
+        Quaternion = Quaternion,
+        Plane = Plane,
+        Ray = Ray,
+    },
+    
+    daneelTypes = {
+        "RaycastHit",
+        "Vector2",
+    },
+    daneelObjects = {},
+
+    guiTypes = {
+        "Daneel.GUI.Common",
+        "Daneel.GUI.Group",
+        "Daneel.GUI.Text",
+        "Daneel.GUI.Image",
+        "Daneel.GUI.CheckBox",
+        "Daneel.GUI.Input",
+        "Daneel.GUI.ProgressBar",
+        "Daneel.GUI.Slider",
+        "Daneel.GUI.WorldText",
+    },
+    guiObjects = {}, -- filled at runtime
+      
+    -- list of all types and objects, filled at runtime
+    allObjects = {},
+
+
+    ----------------------------------------------------------------------------------
+
+    -- Rays
+    -- list of the gameObjects to cast the ray against by default by ray:Cast()
+    -- filled in the CastableGameObjects behavior
+    castableGameObjects = {},
+    
+    -- Triggers
+    -- list of the gameObjects to check for proximity by the triggers
+    -- filled in the TriggerableGameObject behavior
+    triggerableGameObjects = {},
+
+    -- List of the gameObjects that react to the mouse inputs
+    mouseInteractiveGameObjects = {},
+}
+
+
+    
+--[[
         inputKeys = {
             --[[
             buttonname, => print the buttonName (par default left and right shift + buttonName = BUTTONNAME )
@@ -124,82 +307,9 @@ config.common = {
 
         },
 
-        -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
-        doubleClickDelay = 20,
+        
     },
 
 
-    ----------------------------------------------------------------------------------
-
-    language = {
-        -- Current language
-        current = "english",
-
-        -- Default language
-        default = "english",
-
-        -- Value returned when a language key is not found
-        keyNotFound = "langkeynotfound",
-
-        -- Tell wether Daneel.Lang.GetLine() search a line key in the default language 
-        -- when it is not found in the current language before returning the value of keyNotFound
-        searchInDefault = true,
-    },
-
-    -- Once Danee is loaded, you may get the list of the laguage names with the 'languages' key.
-
-
-    ----------------------------------------------------------------------------------
     
-    gui = {
-        -- Name of the gameObject who has the orthographic camera used to render the HUD
-        hudCameraName = "HUDCamera",
-
-        -- The orthographic scale of the HUDCamera
-        hudCameraOrthographicScale = 10,
-
-        -- Fully-qualified path of the map used to render text components
-        textMapPath = "Daneel/TextMap",
-        emptyTextMapPath = "Daneel/EmptyTextMap",
-
-        -- GUI element's default scale
-        hudLabelDefaultScale = 0.3,
-
-        -- hud
-        colorsTileSetPaths = {
-
-        },
-
-        textDefaultColorName = "Red",
-
-        -- CheckBox
-        checkBox = {
-            tileSetPath = nil,
-            checkedBlock = nil,
-            notCheckedBlock = nil,
-        },
-    },
-
-
-    ----------------------------------------------------------------------------------
-    
-    -- Set to true to enable the framework's advanced debugging capabilities.
-    -- Set to false when you ship the game.
-    debug = false,
-
-    -- Your custom objects and their type returned by Daneel.Debug.GetType()
-    -- GetType() will return the type on tables that have the object as metatable
-    objects = {
-        -- Type (string) = Object (table)
-    },
-}
-
-
-config.dev = {
-    debug = true
-}
-
-config.ship = {
-    debug = false
-}
 
