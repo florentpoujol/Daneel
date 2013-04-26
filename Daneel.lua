@@ -66,10 +66,6 @@ function Daneel.Utilities.AllowDynamicGettersAndSetters(Object, ancestors)
         end
 
         if ancestors ~= nil then
-            if type(ancestors) ~= "table" then
-                ancestors = { ancestors }
-            end
-
             for i, Ancestor in ipairs(ancestors) do
                 if Ancestor[funcName] ~= nil then
                     return Ancestor[funcName](instance)
@@ -307,6 +303,23 @@ function Daneel.Debug.ToRawString(data)
     end
     
     return text
+end
+
+--- Return the name of the provided object or global variable.
+-- @param object (mixed) Any global variable or object defined in userObject in the config.
+-- @return (string) The name, or nil. 
+function Daneel.Debug.GetName(object)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.GetName", object)
+    local errorHead = "Daneel.Debug.GetName(object) : "
+    if object == nil then
+        error(errorHead.." Argument 'object' is nil.")
+    end
+    local result = table.getkey(config.default.allObjects, object)
+    if result == nil then
+        result = table.getkey(_G, object)
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+    return result
 end
 
 
@@ -706,18 +719,18 @@ local function GetObjectFromType(t, i, type, configKeyName)
     if type:find(".") == nil then
         return type, _G[type]
     else
-        local subTypes = key:split("."), 
+        local subTypes = type:split(".")
         local object = _G[table.remove(subTypes, 1)]
         if object == nil then
             if DEBUG == true then
-                print("WARNING : type '"..key.."' in the config does not exists.")
+                print("WARNING : type '"..type.."' in the config does not exists.")
             end
             return nil
         end
         for i, _key in ipairs(subTypes) do
             if object[_key] == nil then
                 if DEBUG == true then
-                    print("WARNING : type '"..key.."' in the config does not exists.")
+                    print("WARNING : type '"..type.."' in the config does not exists.")
                 end
                 return nil
             else
@@ -750,6 +763,7 @@ function Daneel.Awake()
         config.default.componentObjects,
         config.default.craftStudioObjects,
         config.default.daneelObjects,
+        config.default.guiObjects,
         config.default.userObjects
     )
 
@@ -792,7 +806,7 @@ function Daneel.Awake()
         end
 
         -- Components getters-setter-tostring
-        Daneel.Utilities.AllowDynamicGettersAndSetters(componentObject, Component)
+        Daneel.Utilities.AllowDynamicGettersAndSetters(componentObject, { Component })
 
         if componentType ~= "ScriptedBehavior" then
             componentObject["__tostring"] = function(component)
@@ -835,6 +849,14 @@ function Daneel.Awake()
 
 
     -- GUI
+    for guiType, guiObject in pairs(config.default.guiObjects) do
+        Daneel.Utilities.AllowDynamicGettersAndSetters(guiObject, { Daneel.GUI.Common })
+        
+        function guiObject.__tostring(element)
+            return guiType..": '"..element._name.."'"
+        end
+    end
+
     config.default.gui.hudCamera = GameObject.Get(Daneel.Config.Get("gui.hudCameraName"))
 
     -- setting pixelToUnits  
@@ -857,19 +879,25 @@ function Daneel.Awake()
     )
     -- the HUDOrigin is now at the top-left corner of the screen
 
-    -- Color Tile Set
-    local allTileSetPaths = Daneel.Config.Get("gui.colorTileSetPaths")
-    
-    if Daneel.Config.Get("gui.textDefaultColorName") ~= nil and not allTileSetPaths:containskey(Daneel.Config.Get("gui.textDefaultColorName")) then
-        print("WARNING : 'gui.textDefaultColorName' with value '"..Daneel.Config.Get("gui.textDefaultColorName").."' is not one of the valid color name : "..table.concat(allTileSetPaths:getkeys(), "', '").."'")
+    -- Color TileSets
+    local textColorTileSetPaths = Daneel.Config.Get("gui.textColorTileSetPaths")
+    local textDefaultColorName = Daneel.Config.Get("gui.textDefaultColorName")
+    if textDefaultColorName ~= nil and not table.containskey(textColorTileSetPaths, textDefaultColorName) then
+        if DEBUG == true then
+            print("WARNING : 'gui.textDefaultColorName' with value '"..textDefaultColorName.."' is not one of the valid color name : "..table.concat(textColorTileSetPaths:getkeys(), "', '").."'")
+        end
+        for color, tileSet in pairs(textColorTileSetPaths) do
+            Daneel.Config.Set("gui.textDefaultColorName", color)
+            break
+        end
     end
 
-    for name, path in pairs(allTileSetPaths) do
+    for name, path in pairs(textColorTileSetPaths) do
         local tileSet = Asset.Get(path, "TileSet")
         if tileSet == nil then
-            print("WARNING : item with key '"..name.."' and value '"..path.."' in 'gui.colorTileSetPaths' is not a valid TileSet path.")
+            print("WARNING : item with key '"..name.."' and value '"..path.."' in 'gui.textColorTileSetPaths' is not a valid TileSet path.")
         else
-            Daneel.GUI.colors[name] = tileSet
+            config.default.gui.textColorTileSets[name] = tileSet
         end
     end
 
@@ -879,7 +907,7 @@ function Daneel.Awake()
         local asset = Asset.Get(tileSetPath, "TileSet")
         if asset ~= nil then
             config.default.gui.checkBox.tileSet = asset
-        elseif DEBUG == true
+        elseif DEBUG == true then
             print("WARNING : 'gui.checkBox.tileSetPath' with value '"..tileSetPath.."' is not a valid TileSet path.")
         end
     end
