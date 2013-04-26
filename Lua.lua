@@ -513,7 +513,7 @@ end
 -- The function receives the table, the key and the value as argument.
 -- @param t (table) The table.
 -- @param _function (function) The function.
-function table.applyfunctiontorow(t, _function)
+function table.applyforeach(t, _function)
     for key, value in pairs(t) do
         _function(t, key, value)
     end
@@ -524,7 +524,7 @@ end
 -- @param t (table) The table.
 -- @param _function (function) The function.
 -- @return (table) The new table.
-function table.map2(t, _function)
+function table.foreach(t, _function)
     local newTable = table.new()
     for key, value in pairs(t) do
         local newKey, newValue = _function(t, key, value)
