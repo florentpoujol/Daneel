@@ -697,6 +697,40 @@ function Daneel.Config.Set(key, value)
 end
 
 
+-- Get an object from its type (its name as a string).
+-- The object may be nested in other objects and its name have the object names separated by dots.
+-- ie: "Object1.Object2.Object3".
+-- Used in Daneel.Awake(), passed to table.foreach().
+-- @param t (table) The table.
+-- @param i (number) The key of the current row.
+-- @param type (string) The type, the object name as a string.
+-- @param (string) and (mixed) The type and the object.
+local function GetObjectFromType(t, i, type, configKeyName)
+    if type:find(".") == nil then
+        return type, _G[type]
+    else
+        local subTypes = key:split("."), 
+        local object = _G[table.remove(subTypes, 1)]
+        if object == nil then
+            if DEBUG == true then
+                print("WARNING : type '"..key.."' in the config does not exists.")
+            end
+            return nil
+        end
+        for i, _key in ipairs(subTypes) do
+            if object[_key] == nil then
+                if DEBUG == true then
+                    print("WARNING : type '"..key.."' in the config does not exists.")
+                end
+                return nil
+            else
+                object = object[_key]
+            end
+        end
+        return type, object
+    end
+end
+
 -- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
     Daneel.Config.environments = config
