@@ -51,7 +51,6 @@ function Daneel.Utilities.ReplaceInString(string, replacements)
     return string
 end
 
-
 --- Allow to call getters and setters as if they were variable on the provided object.
 -- Optionaly allow to search in a ancestry of objects.
 -- @param Object (mixed) The object.
@@ -314,9 +313,7 @@ end
 ----------------------------------------------------------------------------------
 -- StackTrace
 
-Daneel.Debug.StackTrace = { 
-    messages = {},
-}
+Daneel.Debug.StackTrace = { messages = {} }
 
 --- Register a function input in the stack trace.
 -- @param functionName (string) The function name.
@@ -733,118 +730,50 @@ end
 
 -- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
-    Daneel.Config.environments = config
+    DEBUG = Daneel.Config.Get("debug")
 
-    -- list of all the environments (user-defined envs + default and common)
+    -- list of all the environments
     config.default.environments = table.getkeys(config)
+
+    -- built assetTypes and componentTypes
+    config.default.assetTypes = table.getkeys(config.default.assetObjects)
+    config.default.componentTypes = table.getkeys(config.default.componentObjects)
+
+    -- built daneelObjects, guiObjects and userObjects
+    config.default.daneelObjects = table.foreach(config.default.daneelTypes, GetObjectFromType)
+    config.default.guiObjects = table.foreach(config.default.guiTypes, GetObjectFromType)
+    config.default.userObjects = table.foreach(Daneel.Config.Get('userTypes'), GetObjectFromType)
     
-    config.default.daneelObjects = {
-        RaycastHit = RayCastHit,
-        Vector2 = Vector2,
-    }
-
-    config.default.guiObjects = {
-        ["Daneel.GUI.Common"]       = Daneel.GUI.Common,
-        ["Daneel.GUI.Group"]        = Daneel.GUI.Group,
-        ["Daneel.GUI.Text"]         = Daneel.GUI.Text,
-        ["Daneel.GUI.Image"]        = Daneel.GUI.Image,
-        ["Daneel.GUI.CheckBox"]     = Daneel.GUI.CheckBox,
-        ["Daneel.GUI.Input"]        = Daneel.GUI.Input,
-        ["Daneel.GUI.ProgressBar"]  = Daneel.GUI.ProgressBar,
-        ["Daneel.GUI.Slider"]       = Daneel.GUI.Slider,
-        ["Daneel.GUI.WorldText"]    = Daneel.GUI.WorldText,
-    }
-
-    config.default.guiTypes = {}
-    for type, object in pairs(config.default.guiObjects) do
-        table.insert(config.default.guiTypes, type)
-    end
-
     -- all objects (for use in GetType())
     config.default.allObjects = table.merge(
         config.default.assetObjects,
         config.default.componentObjects,
         config.default.craftStudioObjects,
         config.default.daneelObjects,
-        config.default.guiObjects,
-        Daneel.Config.Get('objects')
+        config.default.userObjects
     )
 
 
-    -- Built the list of all objects for which to set the __index and __newindex property 
-    -- to allow the dynamic getters and setters
-    local dynamicObjects = table.merge(
-        -- set Component as the ancestry to all components
-        table.map2(config.default.componentObjects, 
-            function(t, key, value)
-                return value, Component
-            end
-        ),
-
-         -- set GUI.Common as ancestry for all GUI Objects
-        table.map2(config.default.guiObjects, 
-            function(t, key, value)
-                if key ~= "Daneel.GUI.Common" then
-                    return value, Daneel.GUI.Common
-                end
-            end
-        ),
-
-        -- set GUI.Common as ancestry for all GUI Objects
-        -- (function()
-        --     local guiObjects = {}
-        --     local temp = table.removevalue(table.getvalues(config.default.guiObjects), Daneel.GUI.Common)
-        --     for i, guiObject in ipairs(temp) do
-        --         guiObjects[guiObject] = Daneel.GUI.Common
-        --     end
-        --     return guiObjects
-        -- end)(),
-
-        table.getvalues(config.default.assetObjects)
-        
-    )
-
-    for Object, ancestors in pairs(dynamicObjects) do
-        if type(Object) == "number" then
-            Object = ancestors
-            ancestors = nil
-        end
-        Daneel.Utilities.AllowDynamicGettersAndSetters(Object, ancestors)
-    end
-
-
-    -- debug
-    DEBUG = Daneel.Config.Get("debug")
-
-
-    -- buttons
-    config.default.allButtons = Daneel.Config.Get("input.buttons")
-    --Daneel.config.inputKeys = table.merge(config.default.inputKeys, Daneel.config.inputKeys)
-    --Daneel.config.allButtons = table.merge(Daneel.config.buttons, Daneel.config.inputKeys)
-
-    -- all scripts
-    config.default.allScripts = table.merge(
-        config.default.scripts,
-        Daneel.Config.Get("scripts")
-    )
-
+    -- scriptPaths
+    local scriptPaths = Daneel.Config.Get("scriptPaths")
 
     -- Dynamic getters and setter on Scripts
-    for i, path in pairs(config.default.allScripts) do
+    for i, path in pairs(scriptPaths) do
         local script = Asset.Get(path, "Script") -- Asset.Get() helpers does not yet exists
-
         if script ~= nil then
-            Script.Init(script)
+            Daneel.Utilities.AllowDynamicGettersAndSetters(script, {Script, Component})
+
+            script['__tostring'] = function(scriptedBehavior)
+                return "ScriptedBehavior"..tostring(scriptedBehavior.inner):sub(2, 20)
+            end
         else
-            table.remove(config.default.allScripts, i)
+            table.remove(scriptPaths, i)
             if DEBUG == true then
-                print("WARNING : item with key '"..i.."' and value '"..path.."' in 'config.default.allScripts' is not a valid script path.")
+                print("WARNING : item with key '"..i.."' and value '"..path.."' in 'scriptPaths' in the config is not a valid script path.")
             end
         end
     end
 
-
-    ----------------------------------------------------------------------------------
 
     -- Components
     for componentType, componentObject in pairs(config.default.componentObjects) do
@@ -863,6 +792,8 @@ function Daneel.Awake()
         end
 
         -- Components getters-setter-tostring
+        Daneel.Utilities.AllowDynamicGettersAndSetters(componentObject, Component)
+
         if componentType ~= "ScriptedBehavior" then
             componentObject["__tostring"] = function(component)
                 -- returns something like "ModelRenderer: 123456789"
@@ -871,6 +802,7 @@ function Daneel.Awake()
             end
         end
     end
+
 
     -- Assets
     for assetType, assetObject in pairs(config.default.assetObjects) do
@@ -884,6 +816,8 @@ function Daneel.Awake()
             return asset
         end
 
+        Daneel.Utilities.AllowDynamicGettersAndSetters(assetObject)
+
         assetObject["__tostring"] = function(asset)
             -- print something like : "Model: 123456789"
             -- asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
@@ -893,12 +827,10 @@ function Daneel.Awake()
     end
 
 
-    ----------------------------------------------------------------------------------
-
     -- Languages
     if language ~= nil then
         Daneel.Lang.lines = language
-        config.common.languages = table.getkeys(language)
+        config.default.languages = table.getkeys(language)
     end
 
 
@@ -914,7 +846,7 @@ function Daneel.Awake()
     end
 
     -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
-    -- pixelsToUnits (in pixels/units) is the correspondance between screen pixels and 3D world units
+    -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and 3D world units
     Daneel.GUI.pixelsToUnits = Daneel.Config.Get("gui.hudCameraOrthographicScale") / smallSideSize
 
     config.default.gui.hudOrigin = GameObject.New("HUDOrigin", {parent = config.default.gui.hudCamera})
@@ -925,9 +857,8 @@ function Daneel.Awake()
     )
     -- the HUDOrigin is now at the top-left corner of the screen
 
-
     -- Color Tile Set
-    local allTileSetPaths = table.merge(Daneel.Config.Get("gui.colorTileSetPaths"), config.default.colorTileSetPaths)
+    local allTileSetPaths = Daneel.Config.Get("gui.colorTileSetPaths")
     
     if Daneel.Config.Get("gui.textDefaultColorName") ~= nil and not allTileSetPaths:containskey(Daneel.Config.Get("gui.textDefaultColorName")) then
         print("WARNING : 'gui.textDefaultColorName' with value '"..Daneel.Config.Get("gui.textDefaultColorName").."' is not one of the valid color name : "..table.concat(allTileSetPaths:getkeys(), "', '").."'")
@@ -936,7 +867,7 @@ function Daneel.Awake()
     for name, path in pairs(allTileSetPaths) do
         local tileSet = Asset.Get(path, "TileSet")
         if tileSet == nil then
-            print("WARNING : item with key '"..name.."' and value '"..path.."' in 'gui.colorTileSetPaths' is not a valid Tile Set path.")
+            print("WARNING : item with key '"..name.."' and value '"..path.."' in 'gui.colorTileSetPaths' is not a valid TileSet path.")
         else
             Daneel.GUI.colors[name] = tileSet
         end
@@ -946,10 +877,10 @@ function Daneel.Awake()
     local tileSetPath = Daneel.Config.Get("gui.checkBox.tileSetPath")
     if tileSetPath ~= nil then
         local asset = Asset.Get(tileSetPath, "TileSet")
-        if asset == nil then
-            print("WARNING : 'gui.checkBox.checkMarkTileSetPath' with value '"..checkMarkTileSetPath.."' is not a valid Tile Set path.")
-        else
+        if asset ~= nil then
             config.default.gui.checkBox.tileSet = asset
+        elseif DEBUG == true
+            print("WARNING : 'gui.checkBox.tileSetPath' with value '"..tileSetPath.."' is not a valid TileSet path.")
         end
     end
     
@@ -958,11 +889,11 @@ function Daneel.Awake()
     DANEEL_LOADED = true
 
     if DEBUG == true then
-        print("Daneel is loaded.")
+        print("~~~~~ Daneel is loaded ~~~~~")
     end
 
     -- call DaneelAwake()
-    for i, path in pairs(config.default.allScripts) do
+    for i, path in pairs(scriptPaths) do
         local script = Asset.GetScript(path)
         if script ~= nil and type(script.DaneelAwake) == "function" then
             script:DaneelAwake()
