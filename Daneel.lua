@@ -117,7 +117,7 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
     if argType == "string" then
         expectedArgumentTypes = {expectedArgumentTypes}
     elseif #expectedArgumentTypes <= 0 then
-        error(errorHead.."Argument 'expectedArgumentTypes' is of type 'table' with value '"..tostring(expectedArgumentTypes).."' but is empty.")
+        error(errorHead.."Argument 'expectedArgumentTypes' is an empty table.")
     end
 
     argType = type(p_errorHead)
@@ -172,7 +172,7 @@ function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgum
     if argType == "string" then
         expectedArgumentTypes = {expectedArgumentTypes}
     elseif #expectedArgumentTypes <= 0 then
-        error(errorHead.."Argument 'expectedArgumentTypes' is of type 'table' with value '"..tostring(expectedArgumentTypes).."' but is empty.")
+        error(errorHead.."Argument 'expectedArgumentTypes' is an empty table.")
     end
 
     argType = type(p_errorHead)
@@ -215,8 +215,6 @@ function Daneel.Debug.GetType(object, returnLuaTypeOnly)
     end
 
     if returnLuaTypeOnly == nil then returnLuaTypeOnly = false end
-
-    --
     argType = type(object)
 
     if returnLuaTypeOnly == false and argType == "table" then
@@ -787,6 +785,7 @@ function Daneel.Awake()
             end
         else
             scriptPaths[i] = nil
+
             if DEBUG == true then
                 print("WARNING : item with key '"..i.."' and value '"..path.."' in 'scriptPaths' in the config is not a valid script path.")
             end

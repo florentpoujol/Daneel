@@ -112,7 +112,7 @@ function GameObject.Set(gameObject, params)
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
     local argType = nil
     local component = nil
-    
+
     -- scriptedBehaviors
     if params.scriptedBehaviors ~= nil then
         Daneel.Debug.CheckArgType(params.scriptedBehaviors, "params.scriptedBehaviors", "table", errorHead)
