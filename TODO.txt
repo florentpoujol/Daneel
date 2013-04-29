@@ -3,20 +3,6 @@
 Develop
 
 
-- Object Daneel.Time
-  avec propriétés 
-  - time :RO temps en seconde depuis début jeu
-  -timeSinceLevelLoad
-  - deltaTime :RO duration of last frame
-
-  - fixedTime :RO The time the latest FixedUpdate has started
-  Fixed time is updated in regular intervals (equal to fixedDeltaTime) until time property is reached.
-  - fixedDeltaTime : (can be set) The interval in seconds of all fixedUpdates 0.02sec = 50x/s
-
-  - frameCount : nb of frames since begining of game
-  - timeScale : 
-
-  fonction FixedUpdate appelée tous les "fixedDeltaTime" 
 
 
 - permettre de programmer un event pour un frame ou temps ultérieur  Event.FireAtFrame() Event.FireAtTime()
@@ -30,8 +16,12 @@ Develop
 - garder notion de config par défaut dans fichier Daneel
   + permettre au dev d'écraser certaines clés + de définir ses clés
   Daneel.Config.default
+  Daneel.Config.current
   Daneel.Config.Get()
   user > 
+
+  config = {}
+
   function Config()
       return {
 
@@ -39,7 +29,7 @@ Develop
   end
 
   Config().key = value
-  Daneel.Config.Get("")
+  Daneel.Config.Set("")
 
 
 - function gameObject = GameObject.NewFromScene(sceneNameOrAsset, params) -> retourne le gameObject qui est dans la scène au lieu de créer un GO avec le contenu de la scène dedant

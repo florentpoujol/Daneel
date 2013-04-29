@@ -633,6 +633,19 @@ end
 
 
 ----------------------------------------------------------------------------------
+-- Time
+
+Daneel.Time = {
+    time = -1,
+    deltaTime = -1,
+    fixedTime = -1,
+    fixedDeltaTime = -1,
+    frameCount = 0,
+    timeScale = 1.0,
+}
+
+
+----------------------------------------------------------------------------------
 -- Config
 
 Daneel.Config = { environments = {} }
@@ -927,6 +940,19 @@ end -- end Daneel.Awake()
 local luaDocStop = ""
 
 function Daneel.Update()
+    -- Time
+    local currentTime = os.clock()
+    Daneel.Time.deltaTime = currentTime - Daneel.Time.time
+    Daneel.Time.time = currentTime
+    Daneel.Time.frameCount = Daneel.Time.frameCount + 1
+
+    -- call fixed update if it's the time
+    if Daneel.Time.time >= Daneel.Time.fixedTime + Daneel.Time.fixedDeltaTime then
+        Daneel.Time.fixedTime = Daneel.Time.time
+        Daneel.Event.Fire("FixedUpdate")
+    end
+
+
     -- HotKeys
     -- fire an event whenever a registered button is pressed
     for i, buttonName in ipairs(Daneel.Config.Get("input.buttons")) do
