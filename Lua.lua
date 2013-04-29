@@ -32,7 +32,7 @@ end
 -- @return (table) The table
 function string.totable(s)
     Daneel.Debug.StackTrace.BeginFunction("string.totable", s)
-    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
+    Daneel.Debug.CheckArgType(s, "string", "string", "string.totable(string)")
     local strLen = s:len()
     local t = table.new()
     for i = 1, strLen do
@@ -66,7 +66,7 @@ function string.ucfirst(s)
     Daneel.Debug.StackTrace.BeginFunction("string.ucfirst", s)
     local errorHead = "string.ucfirst(string) : "
     Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
-    t = s:totable()
+    local t = s:totable()
     t[1] = t[1]:upper()
     s = t:concat()
     Daneel.Debug.StackTrace.EndFunction("string.ucfirst", s)
@@ -416,7 +416,7 @@ function table.removevalue(t, value, singleRemove)
     Daneel.Debug.CheckOptionalArgType(singleRemove, "singleRemove", "boolean", errorHead)
     
     if value == nil then
-        error(errorHead.."Argument 'value' is nil.")
+        print(errorHead.."Argument 'value' is nil. Provided table is "..tostring(t))
     end
 
     for key, _value in pairs(t) do
