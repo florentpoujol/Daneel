@@ -116,18 +116,20 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
 
     if argType == "string" then
         expectedArgumentTypes = {expectedArgumentTypes}
+    elseif #expectedArgumentTypes <= 0 then
+        error(errorHead.."Argument 'expectedArgumentTypes' is of type 'table' with value '"..tostring(expectedArgumentTypes).."' but is empty.")
     end
 
     argType = type(p_errorHead)
-    if arType ~= nil and argType ~= "string" then
-        error(errorHead.."Argument 'p_errorHead' is of type '"..argType.."' with value '"..tostring(errorHead).."' instead of 'string'.")
+    if argType ~= "nil" and argType ~= "string" then
+        error(errorHead.."Argument 'p_errorHead' is of type '"..argType.."' with value '"..tostring(p_errorHead).."' instead of 'string'.")
     end
 
     if p_errorHead == nil then p_errorHead = "" end
 
     argType = type(p_errorEnd)
-    if arType ~= nil and argType ~= "string" then
-        error(errorHead.."Argument 'p_errorEnd' is of type '"..argType.."' with value '"..tostring(errorEnd).."' instead of 'string'.")
+    if argType ~= "nil" and argType ~= "string" then
+        error(errorHead.."Argument 'p_errorEnd' is of type '"..argType.."' with value '"..tostring(p_errorEnd).."' instead of 'string'.")
     end
 
     if p_errorEnd == nil then p_errorEnd = "" end
@@ -169,18 +171,20 @@ function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgum
 
     if argType == "string" then
         expectedArgumentTypes = {expectedArgumentTypes}
+    elseif #expectedArgumentTypes <= 0 then
+        error(errorHead.."Argument 'expectedArgumentTypes' is of type 'table' with value '"..tostring(expectedArgumentTypes).."' but is empty.")
     end
 
     argType = type(p_errorHead)
-    if arType ~= nil and argType ~= "string" then
-        error(errorHead.."Argument 'p_errorHead' is of type '"..argType.."' with value '"..tostring(errorHead).."' instead of 'string'.")
+    if argType ~= "nil" and argType ~= "string" then
+        error(errorHead.."Argument 'p_errorHead' is of type '"..argType.."' with value '"..tostring(p_errorHead).."' instead of 'string'.")
     end
 
     if p_errorHead == nil then errorHead = "" end
 
     argType = type(p_errorEnd)
-    if arType ~= nil and argType ~= "string" then
-        error(errorHead.."Argument 'p_errorEnd' is of type '"..argType.."' with value '"..tostring(errorEnd).."' instead of 'string'.")
+    if argType ~= "nil" and argType ~= "string" then
+        error(errorHead.."Argument 'p_errorEnd' is of type '"..argType.."' with value '"..tostring(p_errorEnd).."' instead of 'string'.")
     end
 
     if p_errorEnd == nil then p_errorEnd = "" end
@@ -206,7 +210,7 @@ function Daneel.Debug.GetType(object, returnLuaTypeOnly)
     local errorHead = "Daneel.Debug.GetType(object[, returnLuaTypeOnly]) : "
     -- DO NOT use CheckArgType here since it uses itself GetType() => overflow
     local argType = type(returnLuaTypeOnly)
-    if arType ~= nil and argType ~= "boolean" then
+    if argType ~= "nil" and argType ~= "boolean" then
         error(errorHead.."Argument 'returnLuaTypeOnly' is of type '"..argType.."' with value '"..tostring(returnLuaTypeOnly).."' instead of 'boolean'.")
     end
 
@@ -290,8 +294,7 @@ end
 -- @param data (mixed) The data to be converted to string.
 -- @return (string) The string.
 function Daneel.Debug.ToRawString(data)
-    local text = tostring(data)
-    
+    local text = nil
     local mt = getmetatable(data)
     if mt ~= nil then
         if mt.__tostring ~= nil then
@@ -301,7 +304,9 @@ function Daneel.Debug.ToRawString(data)
             mt.__tostring = mttostring
         end
     end
-    
+    if text == nil then 
+        text = tostring(data)
+    end
     return text
 end
 
@@ -595,7 +600,7 @@ Daneel.Config = { environments = {} }
 -- @param default (mixed) The default value to return instead of nil if the the key is not found.
 -- @return (mixed) The configuration value. 
 function Daneel.Config.Get(key, default)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Config.Get", key, replacements)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Config.Get", key, default)
     local errorHead = "Daneel.Config.Get(key[, default]) : "
     Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
 
@@ -781,7 +786,7 @@ function Daneel.Awake()
                 return "ScriptedBehavior"..tostring(scriptedBehavior.inner):sub(2, 20)
             end
         else
-            table.remove(scriptPaths, i)
+            scriptPaths[i] = nil
             if DEBUG == true then
                 print("WARNING : item with key '"..i.."' and value '"..path.."' in 'scriptPaths' in the config is not a valid script path.")
             end

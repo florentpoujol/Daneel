@@ -32,6 +32,7 @@ end
 -- @return (table) The table
 function string.totable(s)
     Daneel.Debug.StackTrace.BeginFunction("string.totable", s)
+    local errorHead = "string.totable(string) : "
     Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
     local strLen = s:len()
     local t = table.new()
@@ -66,7 +67,7 @@ function string.ucfirst(s)
     Daneel.Debug.StackTrace.BeginFunction("string.ucfirst", s)
     local errorHead = "string.ucfirst(string) : "
     Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
-    t = s:totable()
+    local t = s:totable()
     t[1] = t[1]:upper()
     s = t:concat()
     Daneel.Debug.StackTrace.EndFunction("string.ucfirst", s)
@@ -80,7 +81,7 @@ function string.lcfirst(s)
     Daneel.Debug.StackTrace.BeginFunction("string.lcfirst", s)
     local errorHead = "string.lcfirst(string) : "
     Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
-    t = s:totable()
+    local t = s:totable()
     t[1] = t[1]:lower()
     s = t:concat()
     Daneel.Debug.StackTrace.EndFunction("string.lcfirst", s)
@@ -429,10 +430,6 @@ function table.removevalue(t, value, singleRemove)
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
     Daneel.Debug.CheckOptionalArgType(singleRemove, "singleRemove", "boolean", errorHead)
     
-    if value == nil then
-        error(errorHead.."Argument 'value' is nil.")
-    end
-
     for key, _value in pairs(t) do
         if _value == value then
             if math.isinteger(key) then
@@ -446,7 +443,6 @@ function table.removevalue(t, value, singleRemove)
             end
         end
     end
-
     Daneel.Debug.StackTrace.EndFunction("table.removevalue", t)
     return t
 end

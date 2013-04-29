@@ -25,7 +25,7 @@ function GameObject.__index(gameObject, key)
     end
 
     -- maybe the key is a script alias
-    local aliases = Daneel.Config.Get("scripts")
+    local aliases = Daneel.Config.Get("scriptPaths")
     if aliases ~= nil and type(aliases) == "table" then
         local path = aliases[key]
         if path ~= nil then
@@ -111,7 +111,8 @@ function GameObject.Set(gameObject, params)
     local errorHead = "GameObject.Set(gameObject, params) : "
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
     local argType = nil
-
+    local component = nil
+    
     -- scriptedBehaviors
     if params.scriptedBehaviors ~= nil then
         Daneel.Debug.CheckArgType(params.scriptedBehaviors, "params.scriptedBehaviors", "table", errorHead)

@@ -81,7 +81,7 @@ end
 -- @param element (Daneel.GUI.Text, Daneel.GUI.CheckBox) The element.
 -- @return (string) The name.
 function Daneel.GUI.Common.GetName(element)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetName", element, returnAsNumber)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetName", element)
     local errorHead = "Daneel.GUI.Common.GetName(element) : "
     Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
     Daneel.Debug.StackTrace.EndFunction()
@@ -273,8 +273,8 @@ end
 -- @param element (Daneel.GUI.Text, Daneel.GUI.CheckBox) The element.
 -- @param position (Vector2) The position as a Vector2.
 function Daneel.GUI.Common.SetPosition(element, position)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetPosition", element, x, y)
-    local errorHead = "Daneel.GUI.Common.SetPosition(element, x[, y]) : "
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetPosition", element, position)
+    local errorHead = "Daneel.GUI.Common.SetPosition(element, position) : "
     Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
     Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
     
@@ -353,7 +353,7 @@ function Daneel.GUI.Common.GetLayer(element)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetLayer", element)
     local errorHead = "Daneel.GUI.Common.GetLyer(element) : "
     Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
-    return math.abs(element.gameObject.transform.localPosition.z)
+    return -element.gameObject.transform.localPosition.z)
 end
 
 

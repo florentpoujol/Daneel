@@ -3,8 +3,31 @@
 Develop
 
 
+- Object Daneel.Time
+  avec Time.time
+  Time.deltaTime (temps depuis la dernière frame)
+  voir object Time de Unity
+
+  fonction update appelée avec framerate au choix du dev
+
+- permettre de programmer un event pour un frame ou temps ultérieur  Event.FireAtFrame() Event.FireAtTime()
+
+- trigger avec layer et fonction (OnGameObjectEnter)
+
+- garder notion de config par défaut dans fichier Daneel
+  + environnement pour l'utilisateur qui écrase le défaut
+
+- function GameObject.InstantiatePrefab(sceneName, params) -> retourne le gameObject qui est dans la scène
+- voir aussi pour fonction de copie de GameObject déjà présent dans la scène
+
+- changer ajout/set de scriptedBehaviors avec gameObject/set > faire common n'importe quel autre component
+
+- généraliser le système d'alias pour les assets (permet par exemple d'appeler un modelRenderer sur un GO par l'alias du model qu'il utilise)
 
 
+
+- BUG :
+    wordWrap après label n'a pas d'effet
 
 
 ==================
@@ -13,6 +36,7 @@ GUI
 
 ajouter color property à worldtext
 
+ajouter prefix aux label
 
 
 Slider
