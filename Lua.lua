@@ -505,34 +505,3 @@ function table.getkey(t, value)
     return key
 end
 
-
---- Apply the provided function to each rows of the provided table.
--- The function receives the table, the key and the value as argument.
--- @param t (table) The table.
--- @param _function (function) The function.
-function table.applyforeach(t, _function)
-    for key, value in pairs(t) do
-        _function(t, key, value)
-    end
-end
-
---- Build a table based on the values or key/value pairs returned by the provided function called on each rws of the provided table.
--- The function receives the table, the key and the value as argument.
--- @param t (table) The table.
--- @param _function (function) The function.
--- @return (table) The new table.
-function table.foreach(t, _function)
-    local newTable = table.new()
-    for key, value in pairs(t) do
-        local newKey, newValue = _function(t, key, value)
-        if newKey ~= nil then
-            if newValue == nil then -- key is value
-                table.insert(newTable, newKey)
-            else
-                newTable[newKey] = newValue
-            end
-        end
-    end
-    return newTable
-end
-
