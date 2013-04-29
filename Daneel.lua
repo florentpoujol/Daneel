@@ -308,21 +308,65 @@ function Daneel.Debug.ToRawString(data)
     return text
 end
 
---- Return the name of the provided object or global variable.
--- @param object (mixed) Any global variable or object defined in userObject in the config.
+--- Return the name of the global variable (including nested tables) whose value is provided.
+-- When the variable is nested in one or several tables (like Daneel.GUI.Text), its name and value must have been set in the 'userObjects' variable in the config.
+-- @param object (table or function) Any global variable, any object from CraftStudio or Daneel or objects defined in 'userObjects' in the config.
 -- @return (string) The name, or nil. 
-function Daneel.Debug.GetName(object)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.GetName", object)
-    local errorHead = "Daneel.Debug.GetName(object) : "
-    if object == nil then
-        error(errorHead.." Argument 'object' is nil.")
+function Daneel.Debug.GetNameFromValue(value)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.GetObjectName", value)
+    local errorHead = "Daneel.Debug.GetObjectName(value) : "
+    if value == nil then
+        if DEBUG == true then
+            print("WARNING : "..errorHead.." Argument 'value' is nil. Returning nil.")
+        end
+        Daneel.Debug.StackTrace.EndFunction()
+        return nil
     end
-    local result = table.getkey(config.default.allObjects, object)
+    local result = table.getkey(Daneel.Config.Get("allObjects"), value)
     if result == nil then
-        result = table.getkey(_G, object)
+        result = table.getkey(_G, value)
     end
     Daneel.Debug.StackTrace.EndFunction()
     return result
+end
+
+--- Return the value of any global variable (including nested tables) from its name as a string.
+-- When the variable is nested in one or several tables (like Daneel.GUI.Text), put a dot between the names.
+-- @param name (string) The variable name.
+-- @param (mixed) The variable value, or nil.
+function Daneel.Debug.GetValueFromName(name)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.GetValueFromName")
+    local errorHead = "Daneel.Debug.GetValueFromName(name)"
+    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
+    if name:find(".") == nil then
+        Daneel.Debug.StackTrace.EndFunction()
+        return _G[name]
+    else
+        local subNames = name:split(".")
+        local varName = table.remove(subTypes, 1)
+        local value = _G[varName]
+        if value == nil then
+            if DEBUG == true then
+                print("WARNING : "..errorHead.." : variable '"..varName.."' (from provided name '"..name.."' ) does not exists. Returning nil.")
+            end
+            Daneel.Debug.StackTrace.EndFunction()
+            return nil
+        end
+        for i, _key in ipairs(subNames) do
+            varName = varName..".".._key
+            if value[_key] == nil then
+                if DEBUG == true then
+                    print("WARNING : "..errorHead.." : variable '"..varName.."' (from provided name '"..name.."' ) does not exists. Returning nil.")
+                end
+                Daneel.Debug.StackTrace.EndFunction()
+                return nil
+            else
+                value = value[_key]
+            end
+        end
+        Daneel.Debug.StackTrace.EndFunction()
+        return value
+    end
 end
 
 
@@ -641,28 +685,6 @@ function Daneel.Config.Get(key, default)
     return configTable
 end
 
-if config == nil then
-    config = {}
-end
-
-local tempConfig = config
-
---- Alias of Daneel.Config.Get(key[, default])
--- @param key (string) The configuration key.
--- @param default (mixed) The default value to return instead of nil if the the key is not found.
--- @return (mixed) The configuration value. 
-function config(key, default) end
-
-config = tempConfig
-
--- since config is a table, need to use a metatable to use it as a function
-local configmt = {
-    __call = function(object, key, default)
-        return Daneel.Config.Get(key, default)
-    end
-}
-setmetatable(config, configmt)
-
 
 --- Set the value associated with the provided key in the configuration.
 -- @param key (string) The configuration key. May be prefixed by an environment name.
@@ -709,40 +731,6 @@ function Daneel.Config.Set(key, value)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
-
--- Get an object from its type (its name as a string).
--- The object may be nested in other objects and its name have the object names separated by dots.
--- ie: "Object1.Object2.Object3".
--- Used in Daneel.Awake(), passed to table.foreach().
--- @param t (table) The table.
--- @param i (number) The key of the current row.
--- @param type (string) The type, the object name as a string.
--- @param (string) and (mixed) The type and the object.
-local function GetObjectFromType(t, i, type, configKeyName)
-    if type:find(".") == nil then
-        return type, _G[type]
-    else
-        local subTypes = type:split(".")
-        local object = _G[table.remove(subTypes, 1)]
-        if object == nil then
-            if DEBUG == true then
-                print("WARNING : type '"..type.."' in the config does not exists.")
-            end
-            return nil
-        end
-        for i, _key in ipairs(subTypes) do
-            if object[_key] == nil then
-                if DEBUG == true then
-                    print("WARNING : type '"..type.."' in the config does not exists.")
-                end
-                return nil
-            else
-                object = object[_key]
-            end
-        end
-        return type, object
-    end
-end
 
 -- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
