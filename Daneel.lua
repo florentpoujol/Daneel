@@ -428,9 +428,13 @@ end
 
 
 ----------------------------------------------------------------------------------
--- Events
+-- Event
 
-Daneel.Event = { events = { any = {} } }
+Daneel.Event = { 
+    events = { any = {} },
+    fireAtFrame = {},
+    fireAtTime = {},
+}
 
 --- Make the provided function listen to the provided event.
 -- The function will be called whenever the provided event will be fired.
@@ -483,7 +487,6 @@ function Daneel.Event.Listen(eventName, p_function, functionName, broadcast)
     Daneel.Debug.StackTrace.EndFunction("Daneel.Event.Listen")
 end
 
-
 --- Make the provided function or gameObject to stop listen to the provided event.
 -- @param eventName (string) The event name.
 -- @param functionOrGameObject (function, string or GameObject) The function, or the gameObject name or instance.
@@ -523,7 +526,7 @@ end
 --- Fire the provided event transmitting along all subsequent parameters to 'eventName' if some exists. 
 -- All functions that listen to this event will be called and receive all parameters.
 -- @param eventName (string) The event name.
--- @param ... [optional] A list of parameters to pass along.
+-- @param ... [optional] Argument(s) to pass along.
 function Daneel.Event.Fire(eventName, ...)
     if arg == nil then
         Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Fire", eventName, nil)
@@ -556,6 +559,48 @@ function Daneel.Event.Fire(eventName, ...)
     end
 
     Daneel.Debug.StackTrace.EndFunction("Daneel.Event.Fire")
+end
+
+--- Queue and event to be fired at a particular frame.
+-- If the provided frame is the current frame or an anterior frame, it will never be fired.
+-- @param frame (number) The frame at which to fire the event. 
+-- @param eventName (string) The event name.
+-- @param ... [optional] Argument(s) to pass along.
+function Daneel.Event.FireAtFrame(frame, eventName, ...)
+    Daneel.Debug.BeginFunction("Daneel.Event.FireAtFrame", frame, eventName, arg)
+    local errorHead = "Daneel.Event.FireAtFrame(frame, eventName[, ...]) : "
+    Daneel.Debug.CheckArgType(frame, "frame", "number", errorHead)
+    Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
+    
+    if Daneel.Event.fireAtFrame[frame] == nil then
+        Daneel.Event.fireAtFrame[frame] = {}
+    end
+    table.insert(Daneel.Event.fireAtFrame[frame], {
+        name = eventName,
+        args = arg
+    })
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+--- Queue and event to be fired at a particular time.
+-- If the provided time is the current time or an anterior time, it will never be fired.
+-- @param frame (number) The frame at which to fire the event.
+-- @param eventName (string) The event name.
+-- @param ... [optional] Argument(s) to pass along.
+function Daneel.Event.FireAtTime(time, eventName, ...)
+    Daneel.Debug.BeginFunction("Daneel.Event.FireAtTime", time, eventName, arg)
+    local errorHead = "Daneel.Event.FireAtTime(time, eventName[, ...]) : "
+    Daneel.Debug.CheckArgType(time, "time", "number", errorHead)
+    Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
+
+    if Daneel.Event.fireAtTime[time] == nil then
+        Daneel.Event.fireAtTime[time] = {}
+    end
+    table.insert(Daneel.Event.fireAtTime[time], {
+        name = eventName,
+        args = arg
+    })
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
@@ -639,7 +684,7 @@ Daneel.Time = {
     time = -1,
     deltaTime = -1,
     fixedTime = -1,
-    fixedDeltaTime = -1,
+    fixedDeltaTime = 0.02,
     frameCount = 0,
     timeScale = 1.0,
 }
@@ -950,6 +995,35 @@ function Daneel.Update()
     if Daneel.Time.time >= Daneel.Time.fixedTime + Daneel.Time.fixedDeltaTime then
         Daneel.Time.fixedTime = Daneel.Time.time
         Daneel.Event.Fire("FixedUpdate")
+    end
+
+
+    -- Delayed events
+    if Daneel.Event.fireAtFrame[Daneel.Time.frameCount] ~= nil then
+        for i, event in ipairs(Daneel.Event.fireAtFrame[Daneel.Time.frameCount]) do
+            if event.args == nil then
+                event.args = {}
+            end
+            Daneel.Event.Fire(event.name, unpack(event.args))
+        end
+        Daneel.Event.fireAtFrame[Daneel.Time.frameCount] = nil
+    end
+
+    -- timed events
+    local times = {}
+    for time, events in pairs(Daneel.Event.fireAtTime) do
+        if time <= Daneel.Time.time then
+            table.insert(times, time)
+        end
+    end
+    table.sort(times)
+    for i, time in ipairs(times) do
+        for i, event in ipairs(Daneel.Event.fireAtTime[time]) do
+            if event.args == nil then
+                event.args = {}
+            end
+            Daneel.Event.Fire(event.name, unpack(event.args))
+        end
     end
 
 
