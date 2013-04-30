@@ -4,10 +4,6 @@ Develop
 
 
 
-
-- permettre de programmer un event pour un frame ou temps ultérieur  Event.FireAtFrame() Event.FireAtTime()
-
-
 - trigger avec layer et fonction (OnTriggerEnter(gameObject))
     les triggers appartenant à un layer check against les gameObject du même layer
     un trigger et gameObject peu avoir plusieur layers (default layer : "default") peu appartenir à tous les layers, avec "all"
@@ -41,15 +37,18 @@ Develop
 
 
 
+modif doc :
+  - Utilities.AllowDynamicGettersAndSetters()
+  - Debug.GetNameFromValue, GetValueFromName, ToRawString
+  - delayed events
+
 
 
 ==================
 GUI 
 
 
-ajouter color property à worldtext
-wordWrap après label n'a pas d'effet
-ajouter prefix aux label
+
 
 
 Slider
@@ -66,3 +65,8 @@ input
 	- param size qui limite la taille du champs mais pas du texte (flèches font se déplacer le texte)
 
 
+BUG : 
+  ajouter color property à worldtext
+  wordWrap après label n'a pas d'effet
+  ajouter prefix aux label
+  :br: mange une letter
