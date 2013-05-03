@@ -284,11 +284,40 @@ function table.merge(...)
                 end
             end
         else
-            print("table.merge(...) : WARNING : Argument n°"..i.." is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'. The argument as been ignored.")
+            if DEBUG == true then
+                print("table.merge(...) : WARNING : Argument n°"..i.." is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'. The argument as been ignored.")
+            end
         end
     end
     
     Daneel.Debug.StackTrace.EndFunction("table.merge", fullTable)
+    return fullTable
+end
+
+--- Merge two or more tables into one. Integer keys are not overrided.
+-- @param ... (table) At least two tables to merge together. Arguments that are not of type 'table' are ignored.
+-- @return (table) The new table.
+function table.deepmerge(...)
+    if arg == nil then
+        Daneel.Debug.StackTrace.BeginFunction("table.deepmerge")
+        error("table.deepmerge(...) : No argument provided. Need at least two.")
+    end
+    Daneel.Debug.StackTrace.BeginFunction("table.deepmerge", unpack(arg))
+    local fullTable = table.new(table.removevalue(arg, 1))
+    for i, t in ipairs(arg) do
+        for key, value in pairs(t) do
+            if math.isinteger(key) then
+                table.insert(fullTable, value)
+            else
+                if fullTable[key] ~= nil and type(value) == "table" then
+                    fullTable[key] = table.deepmerge(fullTable[key], value)
+                else
+                    fullTable[key] = value
+                end
+            end
+        end
+    end
+    Daneel.Debug.StackTrace.EndFunction()
     return fullTable
 end
 
