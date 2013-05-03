@@ -162,31 +162,6 @@ function table.copy(t)
     return newTable
 end
 
---- Tell whether the provided key is found within the provided table.
--- @param t (table) The table to search in.
--- @param p_key (mixed) The key to search for.
--- @return (boolean) True if the key is found in the table, false otherwise.
-function table.containskey(t, p_key)
-    Daneel.Debug.StackTrace.BeginFunction("table.containskey", t, p_key)
-    local errorHead = "table.containskey(table, key) : "
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
-    
-    if p_key == nil then
-        error(errorHead.."Argument 'p_key' is 'nil'.")
-    end
-    
-    local containsKey = false
-
-    for key, value in pairs(t) do
-        if p_key == key then
-            containsKey = true
-            break
-        end
-    end
-    Daneel.Debug.StackTrace.EndFunction("table.containskey", containsKey)
-    return containsKey
-end
-
 --- Tell whether the provided value is found within the provided table.
 -- @param t (table) The table to search in.
 -- @param p_value (any) The value to search for.
@@ -283,47 +258,6 @@ function table.print(t)
     print("~~~~~ table.print("..tableString..") ~~~~~ End ~~~~~")
 
     Daneel.Debug.StackTrace.EndFunction("table.print")
-end
-
---- Print the metatable of the provided table.
--- @param t (table) The table who has a metatable to print.
-function table.printmetatable(t)
-    Daneel.Debug.StackTrace.BeginFunction("table.printmetatable", t)
-    errorHead = "table.printmetatable(table) : "
-
-    if t == nil then
-        print(errorHead.."Provided table is nil.")
-        Daneel.Debug.StackTrace.EndFunction("table.printmetatable")
-        return
-    end
-
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
-    
-    local mt = getmetatable(t)
-    if mt == nil then
-        print(errorHead.."Provided table '"..tostring(t).."' has no metatable attached.")
-        Daneel.Debug.StackTrace.EndFunction("table.printmetatable")
-        return
-    end
-    
-    local tableString = tostring(mt)
-    local rawTableString = Daneel.Debug.ToRawString(mt)
-    if tableString ~= rawTableString then
-        tableString = tableString.." / "..rawTableString
-    end
-    print("~~~~~ table.printmetatable("..tableString..") ~~~~~ Start ~~~~~")
-
-    if table.length(t) == 0 then
-        print("The metatable is empty.")
-    else
-        for key, value in pairs(t) do
-            print(key, value)
-        end
-    end
-
-    print("~~~~~ table.printmetatable("..tableString..") ~~~~~ End ~~~~~")
-
-    Daneel.Debug.StackTrace.EndFunction("table.printmetatable")
 end
 
 --- Merge two or more tables into one. Integer keys are not overrided.
