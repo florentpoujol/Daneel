@@ -1,7 +1,8 @@
 
 -- public properties :
--- radius
--- layers (default value = "default")
+-- range (default = 0)
+-- layers (default = "default")
+-- isStatic (default = false)
 
 -- triggerableGameObjects
 local tgos = nil
@@ -10,24 +11,19 @@ function Behavior:Start()
     -- the gameObject that touches this trigger
     self.gameObjectsInRange = table.new()
     self.layers = self.layers:split(",")
-    if table.containsvalue(self.layers, "all") then
-        self.layers = {"all"}
-    end
     tgos = Daneel.Config.Get("triggerableGameObjects")
 end
 
 
 function Behavior:Update()
+    if self.range == 0 or self.runCheckOnlyOnDemand == true then 
+        return
+    end
     for i, layer in ipairs(self.layers) do
         if tgos[layer] ~= nil then
             for i, gameObject in ipairs(tgos[layer]) do
-                if gameObject.inner ~= nil then
-                    if Vector3.Distance(gameObject.transform.position, self.gameObject.transform.position) < self.radius then
-                        -- the gameObject is "inside" a trigger
-                        -- the action will depend on which trigger it is
-                        -- and if this is the first time it enters this trigger
-                        -- or if it was already inside it the last frame
-
+                if gameObject ~= nil and gameObject.inner ~= nil then
+                    if Vector3.Distance(gameObject.transform.position, self.gameObject.transform.position) < self.range then
                         if self.gameObjectsInRange:containsvalue(gameObject) == false then
                             -- just entered the trigger
                             self.gameObjectsInRange:insert(gameObject)
@@ -38,7 +34,6 @@ function Behavior:Update()
                             gameObject:SendMessage("OnTriggerStay", self.gameObject)
                             self.gameObject:SendMessage("OnTriggerStay", gameObject)
                         end
-
                     else
                         -- was the gameObject still in this trigger the last frame ?
                         if self.gameObjectsInRange:containsvalue(gameObject) == true then
@@ -51,7 +46,36 @@ function Behavior:Update()
                     table.remove(tgos[layer], i)
                 end
             end
-        end 
+        end
     end
 end
 
+--- Get the gameObjets that are closer than the trigger's range.
+-- @param layers (string or table) [optional] The layer(s) n which to pick the triggerable gameObject. If nil, ue the trigger's layer.
+-- @return (table) The list of the gameObjects in range.
+function Behavior:GetGameObjectsInRange(layers)
+    local gameObjectsInRange = {}
+    if layers == nil then
+        if self.isStatic == false then
+            return self.gameObjectsInRange
+        end
+        layers = self.layers
+    end
+    if type(layers) == "string" then
+        layers = layers:split(",")
+    end
+    for i, layer in ipairs(layers) do
+        if tgos[layer] ~= nil then
+            for i, gameObject in ipairs(tgos[layer]) do
+                if gameObject ~= nil and gameObject.inner ~= nil then
+                    if Vector3.Distance(gameObject.transform.position, self.gameObject.transform.position) < self.range then
+                        table.insert(gameObjectsInRange, gameObject)
+                    end
+                else
+                    table.remove(tgos[layer], i)
+                end
+            end
+        end
+    end
+    return gameObjectsInRange
+end

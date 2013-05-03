@@ -3,9 +3,9 @@
 -- layers
 
 function Behavior:Start()
-	self.layers = self.layers:split(",")
 	local tgos = Daneel.Config.Get("triggerableGameObjects")
-	for i, layer in ipairs(self.) do
+	self.layers = self.layers:split(",")
+	for i, layer in ipairs(self.layers) do
 		if tgos[layer] == nil then
 			tgos[layer] = {}
 		end
