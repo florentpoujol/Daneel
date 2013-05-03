@@ -204,7 +204,7 @@ function DefaultConfig()
         -- Triggers
         -- list of the gameObjects to check for proximity by the triggers
         -- filled in the TriggerableGameObject behavior
-        triggerableGameObjects = {},
+        triggerableGameObjects = { default = {} },
 
         -- List of the gameObjects that react to the mouse inputs
         mouseInteractiveGameObjects = {},
@@ -1201,7 +1201,9 @@ function Daneel.Update()
     Daneel.Time.frameCount = Daneel.Time.frameCount + 1
 
     -- call fixed update if it's the time
-    if Daneel.Time.time >= Daneel.Time.fixedTime + Daneel.Time.fixedDeltaTime then
+    -- using math.ceil() and *100 prevent a fixed frame not to be called if it was planned like a millisecond later
+    -- 10.12345 => 1012
+    if math.ceil(Daneel.Time.time*100) >= math.ceil((Daneel.Time.fixedTime + Daneel.Time.fixedDeltaTime)*100) then
         Daneel.Time.fixedTime = Daneel.Time.time
         Daneel.Event.Fire("FixedUpdate")
     end

@@ -3,10 +3,13 @@
 Develop
 
 
+- fixed frame :
+  voir pour utiliser les coroutines plutôt qu'une update
+  sans coroutines, voir pour algo pour faire en sorte de coller le fixedDeltaTime effectif au plus proche de la valeur souhaitée.
 
 - trigger avec layer et fonction (OnTriggerEnter(gameObject))
     les triggers appartenant à un layer check against les gameObject du même layer
-    un trigger et gameObject peu avoir plusieur layers (default layer : "default") peu appartenir à tous les layers, avec "all"
+    un trigger et gameObject peu avoir plusieur layers (default layer : "default") 
 
 
 - garder notion de config par défaut dans fichier Daneel
@@ -26,6 +29,8 @@ Develop
 
   Config().key = value
   Daneel.Config.Set("")
+
+- avoir un cache pour la config pour éviter de parser la clé à chaque fois
 
 
 - function gameObject = GameObject.NewFromScene(sceneNameOrAsset, params) -> retourne le gameObject qui est dans la scène au lieu de créer un GO avec le contenu de la scène dedant
