@@ -7,10 +7,6 @@ Develop
   voir pour utiliser les coroutines plutôt qu'une update
   sans coroutines, voir pour algo pour faire en sorte de coller le fixedDeltaTime effectif au plus proche de la valeur souhaitée.
 
-- trigger avec layer et fonction (OnTriggerEnter(gameObject))
-    les triggers appartenant à un layer check against les gameObject du même layer
-    un trigger et gameObject peu avoir plusieur layers (default layer : "default") 
-
 
 - garder notion de config par défaut dans fichier Daneel
   + permettre au dev d'écraser certaines clés + de définir ses clés

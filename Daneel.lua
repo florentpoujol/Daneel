@@ -20,7 +20,7 @@ function DefaultConfig()
         -- * Use component:Set() (for scripts that are ScriptedBehaviors)
         -- * Call Behavior:DaneelAwake() when Daneel has just loaded, even on scripts that are not ScriptedBehaviors
         -- * If you defined aliases, dynamically access the ScriptedBehavior on the gameObject via its alias
-        scriptPaths = {
+        daneelScripts = {
             "Daneel/Behaviors/DaneelBehavior",
             "Daneel/Behaviors/Trigger",
             "Daneel/Behaviors/TriggerableGameObject",
@@ -32,6 +32,7 @@ function DefaultConfig()
             "Daneel/Behaviors/GUI/Input",
             "Daneel/Behaviors/GUI/WorldText",
         },
+        allScripts = {},
 
 
         ----------------------------------------------------------------------------------
@@ -123,7 +124,7 @@ function DefaultConfig()
         ----------------------------------------------------------------------------------
 
         -- once Daneel has loaded, the userObjects table below will be filled with the types defined in userTypes as the keys and the actual objects as values
-        userObjects = {},
+        userTypes = {},
 
 
         ----------------------------------------------------------------------------------
@@ -434,7 +435,7 @@ function Daneel.Debug.GetType(object, returnLuaTypeOnly)
             end
 
             -- other types
-            for type, object in pairs(config.default.allObjects) do
+            for type, object in pairs(config.allObjects) do
                 if mt == object then
                     return type
                 end
@@ -465,7 +466,7 @@ function Daneel.Debug.CheckComponentType(componentType)
     local errorHead = "Daneel.Debug.CheckComponentType(componentType) : "
     Daneel.Debug.CheckArgType(componentType, "componentType", "string", errorHead)
 
-    local componentTypes = config.default.componentTypes
+    local componentTypes = config.componentTypes
     componentType = Daneel.Utilities.CaseProof(componentType, componentTypes)
     if not componentType:isoneof(componentTypes) then
         error(errorHead.."Argument 'componentType' with value '"..componentType.."' is not one of the valid component types : "..table.concat(componentTypes, ", "))
@@ -483,7 +484,7 @@ function Daneel.Debug.CheckAssetType(assetType)
     local errorHead = "Daneel.Debug.CheckAssetType(assetType) : "
     Daneel.Debug.CheckArgType(assetType, "assetType", "string", errorHead)
 
-    local assetTypes = config.default.assetTypes
+    local assetTypes = config.assetTypes
     assetType = Daneel.Utilities.CaseProof(assetType, assetTypes)
     if not assetType:isoneof(assetTypes) then
         error(errorHead.."Argument 'assetType' with value '"..assetType.."' is not one of the valid asset types : "..table.concat(assetTypes, ", "))
@@ -527,7 +528,7 @@ function Daneel.Debug.GetNameFromValue(value)
         Daneel.Debug.StackTrace.EndFunction()
         return nil
     end
-    local result = table.getkey(Daneel.Config.Get("allObjects"), value)
+    local result = table.getkey(config.allObjects, value)
     if result == nil then
         result = table.getkey(_G, value)
     end
@@ -822,12 +823,12 @@ function Daneel.Lang.GetLine(key, replacements)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Lang.GetLine", key, replacements)
     local errorHead = "Daneel.Lang.GetLine(key[, replacements]) : "
     Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
-    local currentLanguage = Daneel.Config.Get("language.current")
-    local defaultLanguage = Daneel.Config.Get("language.default")
+    local currentLanguage = config.language.current
+    local defaultLanguage = config.language.default
 
     local keys = key:split(".")
     local language = currentLanguage
-    if keys[1]:isoneof(Daneel.Config.Get("languages")) then
+    if keys[1]:isoneof(config.languages) then
         language = table.remove(keys)
     end
     
@@ -846,10 +847,10 @@ function Daneel.Lang.GetLine(key, replacements)
             end
 
             -- search for it in the default language
-            if language ~= defaultLanguage and Daneel.Config.Get("language.searchInDefault") == true then  
+            if language ~= defaultLanguage and config.language.searchInDefault == true then  
                 lines = Daneel.Lang.GetLine(defaultLanguage.."."..noLangKey, replacements)
             else -- already default language or don't want to search in
-                lines =  Daneel.Config.Get("language.keyNotFound")
+                lines =  config.language.keyNotFound
             end
 
             break
@@ -899,7 +900,7 @@ Daneel.Time = {
 ----------------------------------------------------------------------------------
 -- Config
 
-Daneel.Config = { default = {}, current = {} } 
+Daneel.Config = {} 
 
 --- Get the value associated with the provided key in the configuration.
 -- @param key (string) The configuration key. May be prefixed by an environment name.
@@ -911,13 +912,13 @@ function Daneel.Config.Get(key, default)
     Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
 
     local keys = key:split(".")
-     local environments = config.default.environments
-    local environment = config.default.environment
+     local environments = config.environments
+    local environment = config.environment
     if keys[1]:isoneof(environments) then -- get the environment from the key
         environment = table.remove(keys, 1)
     end
-    if environment == nil then -- not specified in the key nor in config.default
-        environment = config.default.environment -- "default"
+    if environment == nil then -- not specified in the key nor in config
+        environment = config.environment -- "default"
     end
     local noEnvKey = table.concat(keys, ".") -- the key, but without the environment
 
@@ -959,13 +960,13 @@ function Daneel.Config.Set(key, value)
     Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
 
     local keys = key:split(".")
-    local environments = config.default.environments
+    local environments = config.environments
     local environment = config.common.environment
     if keys[1]:isoneof(environments) then -- get the environment from the key
         environment = table.remove(keys, 1)
     end 
     if environment == nil then -- not specified in the key nor in config.common
-        environment = config.default.environment -- "common"
+        environment = config.environment -- "common"
     end
     local configTable = config[environment]
     if configTable == nil then
@@ -1002,39 +1003,31 @@ local luaDocStop = ""
 
 -- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
-    Daneel.Config.default = DefaultConfig()
-    Daneel.Config.current = Config()
-
-    DEBUG = Daneel.Config.Get("debug")
-
-    -- list of all the environments
-    config.default.environments = table.getkeys(config)
+    config = table.deepmerge(DefaultConfig(), config)
+    DEBUG = config.debug
 
     -- built assetTypes and componentTypes
-    config.default.assetTypes = table.getkeys(config.default.assetObjects)
-    config.default.componentTypes = table.getkeys(config.default.componentObjects)
+    config.assetTypes = table.getkeys(config.assetObjects)
+    config.componentTypes = table.getkeys(config.componentObjects)
 
     -- built daneelObjects, guiObjects and userObjects
-    config.default.daneelObjects = table.foreach(config.default.daneelTypes, GetObjectFromType)
-    config.default.guiObjects = table.foreach(config.default.guiTypes, GetObjectFromType)
-    config.default.userObjects = table.foreach(Daneel.Config.Get('userTypes'), GetObjectFromType)
+    config.guiTypes = table.getkeys(config.guiObjects)
+    --config.userObjects = table.foreach(Daneel.Config.Get('userTypes'), GetObjectFromType)
     
     -- all objects (for use in GetType())
-    config.default.allObjects = table.merge(
-        config.default.assetObjects,
-        config.default.componentObjects,
-        config.default.craftStudioObjects,
-        config.default.daneelObjects,
-        config.default.guiObjects,
-        config.default.userObjects
+    config.allObjects = table.merge(
+        config.assetObjects,
+        config.componentObjects,
+        config.craftStudioObjects,
+        config.daneelObjects,
+        config.guiObjects,
+        --config.userObjects
     )
 
 
-    -- scriptPaths
-    local scriptPaths = Daneel.Config.Get("scriptPaths")
-
+    -- scripts
     -- Dynamic getters and setter on Scripts
-    for i, path in pairs(scriptPaths) do
+    for i, path in pairs(config.scriptsPaths) do
         local script = Asset.Get(path, "Script") -- Asset.Get() helpers does not yet exists
         if script ~= nil then
             Daneel.Utilities.AllowDynamicGettersAndSetters(script, {Script, Component})
@@ -1043,17 +1036,16 @@ function Daneel.Awake()
                 return "ScriptedBehavior"..tostring(scriptedBehavior.inner):sub(2, 20)
             end
         else
-            scriptPaths[i] = nil
-
+            config.scriptsPaths[i] = nil
             if DEBUG == true then
-                print("WARNING : item with key '"..i.."' and value '"..path.."' in 'scriptPaths' in the config is not a valid script path.")
+                print("WARNING : item with key '"..i.."' and value '"..path.."' in 'config.scriptsPaths' is not a valid script path.")
             end
         end
     end
 
 
     -- Components
-    for componentType, componentObject in pairs(config.default.componentObjects) do
+    for componentType, componentObject in pairs(config.componentObjects) do
         -- GameObject.AddComponent helpers
         -- ie : gameObject:AddModelRenderer()
         if componentType ~= "Transform" and componentType ~= "ScriptedBehavior" then 
@@ -1082,7 +1074,7 @@ function Daneel.Awake()
 
 
     -- Assets
-    for assetType, assetObject in pairs(config.default.assetObjects) do
+    for assetType, assetObject in pairs(config.assetObjects) do
         -- Get helpers : GetModelRenderer() ...
         Asset["Get"..assetType] = function(assetName)
             Daneel.Debug.StackTrace.BeginFunction("Asset.Get"..assetType, assetName)
@@ -1106,13 +1098,13 @@ function Daneel.Awake()
 
     -- Languages
     if language ~= nil then
-        Daneel.Lang.lines = language
-        config.default.languages = table.getkeys(language)
+        Daneel.Lang.lines = languages
+        config.languages = table.getkeys(language)
     end
 
 
     -- GUI
-    for guiType, guiObject in pairs(config.default.guiObjects) do
+    for guiType, guiObject in pairs(config.guiObjects) do
         Daneel.Utilities.AllowDynamicGettersAndSetters(guiObject, { Daneel.GUI.Common })
         
         function guiObject.__tostring(element)
@@ -1120,7 +1112,7 @@ function Daneel.Awake()
         end
     end
 
-    config.default.gui.hudCamera = GameObject.Get(Daneel.Config.Get("gui.hudCameraName"))
+    config.gui.hudCamera = GameObject.Get(config.gui.hudCameraName)
 
     -- setting pixelToUnits  
     local screenSize = CraftStudio.Screen.GetSize()
@@ -1132,10 +1124,10 @@ function Daneel.Awake()
 
     -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
     -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and 3D world units
-    Daneel.GUI.pixelsToUnits = Daneel.Config.Get("gui.hudCameraOrthographicScale") / smallSideSize
+    Daneel.GUI.pixelsToUnits = config.gui.hudCameraOrthographicScale / smallSideSize
 
-    config.default.gui.hudOrigin = GameObject.New("HUDOrigin", {parent = config.default.gui.hudCamera})
-    config.default.gui.hudOrigin.transform.localPosition = Vector3:New(
+    config.gui.hudOrigin = GameObject.New("HUDOrigin", {parent = config.gui.hudCamera})
+    config.gui.hudOrigin.transform.localPosition = Vector3:New(
         -screenSize.x * Daneel.GUI.pixelsToUnits / 2, 
         screenSize.y * Daneel.GUI.pixelsToUnits / 2,
         0
@@ -1143,8 +1135,8 @@ function Daneel.Awake()
     -- the HUDOrigin is now at the top-left corner of the screen
 
     -- Color TileSets
-    local textColorTileSetPaths = Daneel.Config.Get("gui.textColorTileSetPaths")
-    local textDefaultColorName = Daneel.Config.Get("gui.textDefaultColorName")
+    local textColorTileSetPaths = config.gui.textColorTileSetPaths
+    local textDefaultColorName = config.gui.textDefaultColorName
     if textDefaultColorName ~= nil and not table.containskey(textColorTileSetPaths, textDefaultColorName) then
         if DEBUG == true then
             print("WARNING : 'gui.textDefaultColorName' with value '"..textDefaultColorName.."' is not one of the valid color name : "..table.concat(textColorTileSetPaths:getkeys(), "', '").."'")
@@ -1160,16 +1152,16 @@ function Daneel.Awake()
         if tileSet == nil then
             print("WARNING : item with key '"..name.."' and value '"..path.."' in 'gui.textColorTileSetPaths' is not a valid TileSet path.")
         else
-            config.default.gui.textColorTileSets[name] = tileSet
+            config.gui.textColorTileSets[name] = tileSet
         end
     end
 
     -- CheckBox
-    local tileSetPath = Daneel.Config.Get("gui.checkBox.tileSetPath")
+    local tileSetPath = config.gui.checkBox.tileSetPath
     if tileSetPath ~= nil then
         local asset = Asset.Get(tileSetPath, "TileSet")
         if asset ~= nil then
-            config.default.gui.checkBox.tileSet = asset
+            config.gui.checkBox.tileSet = asset
         elseif DEBUG == true then
             print("WARNING : 'gui.checkBox.tileSetPath' with value '"..tileSetPath.."' is not a valid TileSet path.")
         end
@@ -1239,7 +1231,7 @@ function Daneel.Update()
 
     -- HotKeys
     -- fire an event whenever a registered button is pressed
-    for i, buttonName in ipairs(Daneel.Config.Get("input.buttons")) do
+    for i, buttonName in ipairs(config.input.buttons) do
         if CraftStudio.Input.WasButtonJustPressed(buttonName) then
             Daneel.Event.Fire("On"..buttonName:ucfirst().."ButtonJustPressed")
         end
