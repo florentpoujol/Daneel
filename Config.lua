@@ -112,7 +112,10 @@ config = {
 
     ----------------------------------------------------------------------------------
 
-    -- once Daneel has loaded, the userObjects table below will be filled with the types defined in userTypes as the keys and the actual objects as values
+    -- List of your custom object types (their name as a string), to be returned by Daneel.Debug.GetType().
+    -- Daneel.Debug.GetType() will return one the types if an object corresponding to one of the types is the metatable of the supllied object.
+    -- Ie :
+    -- "RaycasHit"
     userTypes = {},
 
 
