@@ -5,10 +5,9 @@ local interactiveGameObjects = {}
 
 function Behavior:Start()
     Daneel.Event.Listen("OnLeftMouseButtonJustPressed", self.gameObject)
-    --Daneel.Event.Listen("OnLeftMouseButtonJustReleased", self.gameObject)
     Daneel.Event.Listen("OnRightMouseButtonJustPressed", self.gameObject)
 
-    interactiveGameObjects = config.default.mouseInteractiveGameObjects
+    interactiveGameObjects = config.mouseInteractiveGameObjects
 end
 
 
@@ -67,7 +66,7 @@ function Behavior:Update()
                 end
             end
         else
-            table.remove(config.default.mousehoverableGameObjects, i)
+            table.remove(config.mousehoverableGameObjects, i)
         end
     end
 end

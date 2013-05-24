@@ -1,4 +1,4 @@
 
 function Behavior:Start()
-    table.insert(config.default.castableGameObjects, self.gameObject)
+    table.insert(config.castableGameObjects, self.gameObject)
 end

@@ -2,7 +2,7 @@
 --- for interactions between the mouse and the element
 
 function Behavior:Start()
-    table.insert(config.default.mouseInteractiveGameObjects, self.gameObject)
+    table.insert(config.mouseInteractiveGameObjects, self.gameObject)
 end
 
 function Behavior:OnClick()
