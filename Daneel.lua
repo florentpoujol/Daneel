@@ -20,7 +20,7 @@ function DefaultConfig()
         -- * Use component:Set() (for scripts that are ScriptedBehaviors)
         -- * Call Behavior:DaneelAwake() when Daneel has just loaded, even on scripts that are not ScriptedBehaviors
         -- * If you defined aliases, dynamically access the ScriptedBehavior on the gameObject via its alias
-        daneelScripts = {
+        scriptPaths = {
             "Daneel/Behaviors/DaneelBehavior",
             "Daneel/Behaviors/Trigger",
             "Daneel/Behaviors/TriggerableGameObject",
@@ -514,13 +514,13 @@ function Daneel.Debug.ToRawString(data)
     return text
 end
 
---- Return the name of the global variable (including nested tables) whose value is provided.
--- When the variable is nested in one or several tables (like Daneel.GUI.Text), its name and value must have been set in the 'userObjects' variable in the config.
--- @param object (table or function) Any global variable, any object from CraftStudio or Daneel or objects defined in 'userObjects' in the config.
--- @return (string) The name, or nil. 
+--- Returns the name as a string of the global variable (including nested tables) whose value is provided.
+-- When the variable is nested in one or several tables (like Daneel.GUI.Text), its name must have been set in the 'userTypes' variable in the config.
+-- @param object (table or function) Any global variable, any object from CraftStudio or Daneel or objects whse name is set in 'userTypes' in the config.
+-- @return (string) The name, or nil.
 function Daneel.Debug.GetNameFromValue(value)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.GetObjectName", value)
-    local errorHead = "Daneel.Debug.GetObjectName(value) : "
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.GetNameFromValue", value)
+    local errorHead = "Daneel.Debug.GetNameFromValue(value) : "
     if value == nil then
         if DEBUG == true then
             print("WARNING : "..errorHead.." Argument 'value' is nil. Returning nil.")
@@ -536,7 +536,7 @@ function Daneel.Debug.GetNameFromValue(value)
     return result
 end
 
---- Return the value of any global variable (including nested tables) from its name as a string.
+--- Returns the value of any global variable (including nested tables) from its name as a string.
 -- When the variable is nested in one or several tables (like Daneel.GUI.Text), put a dot between the names.
 -- @param name (string) The variable name.
 -- @param (mixed) The variable value, or nil.
@@ -588,9 +588,7 @@ function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
     if DEBUG == false then return end
     local errorHead = "Daneel.Debug.StackTrace.BeginFunction(functionName[, ...]) : "
     Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
-
     local msg = functionName.."("
-
     if #arg > 0 then
         for i, argument in ipairs(arg) do
             if type(argument) == "string" then
@@ -602,9 +600,7 @@ function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
 
         msg = msg:sub(1, #msg-2) -- removes the last coma+space
     end
-
     msg = msg..")"
-
     table.insert(Daneel.Debug.StackTrace.messages, msg)
 end
 
@@ -621,9 +617,7 @@ function Daneel.Debug.StackTrace.Print()
     if DEBUG == false then return end
     local messages = Daneel.Debug.StackTrace.messages
     Daneel.Debug.StackTrace.messages = {}
-     
     print("~~~~~ Daneel.Debug.StackTrace ~~~~~")
-
     for i, msg in ipairs(messages) do
         if i < 10 then
             i = "0"..i
@@ -652,11 +646,9 @@ function Daneel.Event.Listen(eventName, p_function, functionName, broadcast)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Listen", eventName, p_function)
     local errorHead = "Daneel.Event.Listen(eventName, function) : "
     Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
-
     if Daneel.Event.events[eventName] == nil then
         Daneel.Event.events[eventName] = {}
     end
-
     local functionType = type(p_function)
     if functionType == "function" then
         if not table.containsvalue(Daneel.Event.events[eventName], p_function) then
@@ -666,7 +658,6 @@ function Daneel.Event.Listen(eventName, p_function, functionName, broadcast)
         Daneel.Debug.CheckArgType(p_function, "p_function", {"string", "GameObject"}, errorHead)
         Daneel.Debug.CheckOptionalArgType(functionName, "functionName", "string", errorHead)
         Daneel.Debug.CheckOptionalArgType(broadcast, "broadcast", "boolean", errorHead)
-
         local gameObject = p_function
         if functionType == "string" then
             gameObject = GameObject.Get(p_function)
@@ -674,22 +665,18 @@ function Daneel.Event.Listen(eventName, p_function, functionName, broadcast)
                 error(errorHead.."Argument 'p_function' : gameObject with name '"..p_function.."' was not found in the scene.")
             end
         end
-
         if functionName == nil then
             functionName = eventName
         end
-
         if broadcast == nil then
             broadcast = false
         end
-
         table.insert(Daneel.Event.events[eventName], {
             gameObject = gameObject,
             functionName = functionName,
             broadcast = broadcast
         })
     end
-
     Daneel.Debug.StackTrace.EndFunction("Daneel.Event.Listen")
 end
 
@@ -700,7 +687,6 @@ function Daneel.Event.StopListen(eventName, functionOrGameObject)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.StopListen", eventName, functionOrGameObject)
     local errorHead = "Daneel.Event.StopListen(eventName, functionOrGameObject) : "
     Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
-    
     local functionType = type(functionOrGameObject)
     if functionType == "function" then
         for i, storedFunc in ipairs(Daneel.Event.events[eventName]) do
@@ -717,7 +703,6 @@ function Daneel.Event.StopListen(eventName, functionOrGameObject)
                 error(errorHead.."Argument 'functionOrGameObject' : gameObject with name '".._function.."' was not found in the scene.")
             end
         end
-        
         for i, storedFunc in ipairs(Daneel.Event.events[eventName]) do
             if type(storedFunc) == "table" and gameObject == storedFunc.gameObject then
                 table.remove(Daneel.Event.events[eventName], i)
@@ -725,7 +710,6 @@ function Daneel.Event.StopListen(eventName, functionOrGameObject)
             end
         end
     end
-
     Daneel.Debug.StackTrace.EndFunction("Daneel.Event.StopListen")
 end
 
@@ -740,9 +724,7 @@ function Daneel.Event.Fire(eventName, ...)
     else
         Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Fire", eventName, unpack(arg))
     end
-    
     Daneel.Debug.CheckArgType(eventName, "eventName", "string", "Daneel.Event.Fire(eventName[, ...]) : ")
-    
     local functions = table.new(Daneel.Event.events[eventName]):merge(Daneel.Event.events["any"])
     for i, func in ipairs(functions) do
         local functionType = type(func)
@@ -763,7 +745,6 @@ function Daneel.Event.Fire(eventName, ...)
             table.remove(Daneel.Event.events[eventName], i)
         end
     end
-
     Daneel.Debug.StackTrace.EndFunction("Daneel.Event.Fire")
 end
 
@@ -776,8 +757,7 @@ function Daneel.Event.FireAtFrame(frame, eventName, ...)
     Daneel.Debug.BeginFunction("Daneel.Event.FireAtFrame", frame, eventName, arg)
     local errorHead = "Daneel.Event.FireAtFrame(frame, eventName[, ...]) : "
     Daneel.Debug.CheckArgType(frame, "frame", "number", errorHead)
-    Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
-    
+    Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead) 
     if Daneel.Event.fireAtFrame[frame] == nil then
         Daneel.Event.fireAtFrame[frame] = {}
     end
@@ -790,7 +770,7 @@ end
 
 --- Queue and event to be fired at a particular time.
 -- If the provided time is the current time or an anterior time, it will never be fired.
--- @param frame (number) The frame at which to fire the event.
+-- @param time (number) The time at which to fire the event.
 -- @param eventName (string) The event name.
 -- @param ... [optional] Argument(s) to pass along.
 function Daneel.Event.FireAtTime(time, eventName, ...)
@@ -798,7 +778,6 @@ function Daneel.Event.FireAtTime(time, eventName, ...)
     local errorHead = "Daneel.Event.FireAtTime(time, eventName[, ...]) : "
     Daneel.Debug.CheckArgType(time, "time", "number", errorHead)
     Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
-
     if Daneel.Event.fireAtTime[time] == nil then
         Daneel.Event.fireAtTime[time] = {}
     end
@@ -825,6 +804,7 @@ function Daneel.Lang.GetLine(key, replacements)
     Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
     local currentLanguage = config.language.current
     local defaultLanguage = config.language.default
+    local searchInDefault = config.language.searchInDefault
 
     local keys = key:split(".")
     local language = currentLanguage
@@ -847,7 +827,7 @@ function Daneel.Lang.GetLine(key, replacements)
             end
 
             -- search for it in the default language
-            if language ~= defaultLanguage and config.language.searchInDefault == true then  
+            if language ~= defaultLanguage and searchInDefault == true then  
                 lines = Daneel.Lang.GetLine(defaultLanguage.."."..noLangKey, replacements)
             else -- already default language or don't want to search in
                 lines =  config.language.keyNotFound
@@ -1028,7 +1008,7 @@ function Daneel.Awake()
     -- scripts
     -- Dynamic getters and setter on Scripts
     for i, path in pairs(config.scriptsPaths) do
-        local script = Asset.Get(path, "Script") -- Asset.Get() helpers does not yet exists
+        local script = Asset.Get(path, "Script") -- Asset.Get() helpers does not exist yet
         if script ~= nil then
             Daneel.Utilities.AllowDynamicGettersAndSetters(script, {Script, Component})
 
@@ -1176,7 +1156,7 @@ function Daneel.Awake()
     end
 
     -- call DaneelAwake()
-    for i, path in pairs(scriptPaths) do
+    for i, path in pairs(config.scriptPaths) do
         local script = Asset.GetScript(path)
         if script ~= nil and type(script.DaneelAwake) == "function" then
             script:DaneelAwake()
@@ -1191,15 +1171,6 @@ function Daneel.Update()
     Daneel.Time.deltaTime = currentTime - Daneel.Time.time
     Daneel.Time.time = currentTime
     Daneel.Time.frameCount = Daneel.Time.frameCount + 1
-
-    -- call fixed update if it's the time
-    -- using math.ceil() and *100 prevent a fixed frame not to be called if it was planned like a millisecond later
-    -- 10.12345 => 1012
-    if math.ceil(Daneel.Time.time*100) >= math.ceil((Daneel.Time.fixedTime + Daneel.Time.fixedDeltaTime)*100) then
-        Daneel.Time.fixedTime = Daneel.Time.time
-        Daneel.Event.Fire("FixedUpdate")
-    end
-
 
     -- Delayed events
     if Daneel.Event.fireAtFrame[Daneel.Time.frameCount] ~= nil then
