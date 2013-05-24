@@ -268,11 +268,8 @@ function table.merge(...)
         Daneel.Debug.StackTrace.BeginFunction("table.merge")
         error("table.merge(...) : No argument provided. Need at least two.")
     end
-
     Daneel.Debug.StackTrace.BeginFunction("table.merge", unpack(arg))
-    
     local fullTable = table.new()
-    
     for i, t in ipairs(arg) do
         local argType = type(t)
         if argType == "table" then
@@ -289,7 +286,6 @@ function table.merge(...)
             end
         end
     end
-    
     Daneel.Debug.StackTrace.EndFunction("table.merge", fullTable)
     return fullTable
 end
