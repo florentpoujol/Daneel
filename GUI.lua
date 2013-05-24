@@ -353,7 +353,7 @@ function Daneel.GUI.Common.GetLayer(element)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetLayer", element)
     local errorHead = "Daneel.GUI.Common.GetLyer(element) : "
     Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
-    return -element.gameObject.transform.localPosition.z)
+    return -element.gameObject.transform.localPosition.z
 end
 
 
