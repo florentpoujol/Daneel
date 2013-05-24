@@ -11,12 +11,14 @@ function Behavior:Start()
     -- the gameObject that touches this trigger
     self.gameObjectsInRange = table.new()
     self.layers = self.layers:split(",")
-    tgos = Daneel.Config.Get("triggerableGameObjects")
+    if tgos == nil then
+        tgos = Daneel.Config.Get("triggerableGameObjects")
+    end
 end
 
 
 function Behavior:Update()
-    if self.range == 0 or self.runCheckOnlyOnDemand == true then 
+    if self.range == 0 or self.isStatic == true then 
         return
     end
     for i, layer in ipairs(self.layers) do
@@ -51,10 +53,10 @@ function Behavior:Update()
 end
 
 --- Get the gameObjets that are closer than the trigger's range.
--- @param layers (string or table) [optional] The layer(s) n which to pick the triggerable gameObject. If nil, ue the trigger's layer.
+-- @param layers (string or table) [optional] The layer(s) in which to pick the triggerable gameObjects. If nil, it uses the trigger's layer(s).
 -- @return (table) The list of the gameObjects in range.
 function Behavior:GetGameObjectsInRange(layers)
-    local gameObjectsInRange = {}
+    local gameObjectsInRange = table.new()
     if layers == nil then
         if self.isStatic == false then
             return self.gameObjectsInRange
