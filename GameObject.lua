@@ -529,4 +529,3 @@ function GameObject.Destroy(gameObject)
     CraftStudio.Destroy(gameObject)
     Daneel.Debug.StackTrace.EndFunction("GameObject.Destroy")
 end
-

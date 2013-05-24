@@ -463,4 +463,3 @@ function table.getkey(t, value)
     Daneel.Debug.StackTrace.EndFunction("table.getkey", key)
     return key
 end
-
