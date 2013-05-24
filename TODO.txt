@@ -3,50 +3,59 @@
 Develop
 
 
-- fixed frame :
-  voir pour utiliser les coroutines plutôt qu'une update
-  sans coroutines, voir pour algo pour faire en sorte de coller le fixedDeltaTime effectif au plus proche de la valeur souhaitée.
+vérifier que tous les changements prévus sont implémentés, sans se soucier du GUI
+vérifier que les changement fonctionnent avec un version post-compo de Minimalist Encounter
+mettre à jour la doc complètement
+
+créer branche pour GUI component
+implémenter la nouvelle version du GUI
+tester
+metre à jour la doc
+
+Publier
 
 
-- garder notion de config par défaut dans fichier Daneel
-  + permettre au dev d'écraser certaines clés + de définir ses clés
-  Daneel.Config.default
-  Daneel.Config.current
-  Daneel.Config.Get()
-  user > 
+Voir à attendre que l'aset "Font" soit lui-même publié > influera sur les GUIText
 
-  config = {}
 
-  function Config()
-      return {
+========
 
-      }
-  end
+Features for Develop branch :
 
-  Config().key = value
-  Daneel.Config.Set("")
+- fixed frame : ne lasser que si possibilité d'utiliser les coroutines
 
 - avoir un cache pour la config pour éviter de parser la clé à chaque fois
 
-
 - function gameObject = GameObject.NewFromScene(sceneNameOrAsset, params) -> retourne le gameObject qui est dans la scène au lieu de créer un GO avec le contenu de la scène dedant
 
-- GameObject.Copy(gameObjectNameOrAsset) copiue un GO déjà présent dans la scène en reproduisant tous ses paramètres
+- GameObject.Copy(gameObjectNameOrAsset) copie un GO déjà présent dans la scène en reproduisant tous ses paramètres
 
-- ajout/set de scriptedBehaviors avec gameObject.Sett > faire comme n'importe quel autre component (nomOrAlias = {})
+- ajout/set de scriptedBehaviors avec gameObject.Set > faire comme n'importe quel autre component (nomOrAlias = {})
 
 
-
+=======
 
 modif doc :
-  - Utilities.AllowDynamicGettersAndSetters()
-  - Debug.GetNameFromValue, GetValueFromName, ToRawString
-  - delayed events
+
+- Utilities.AllowDynamicGettersAndSetters()
+
+- Debug.GetNameFromValue, GetValueFromName, ToRawString
+
+- Fix Time page
+
+- GUI
+  
 
 
 
 ==================
 GUI 
+
+
+- GUI elements are now components
+- HUD is also a component
+
+- supprimer input ou voir comment set-up inputKeys
 
 
 
@@ -71,3 +80,4 @@ BUG :
   wordWrap après label n'a pas d'effet
   ajouter prefix aux label
   :br: mange une letter
+
