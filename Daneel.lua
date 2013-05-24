@@ -132,8 +132,10 @@ function DefaultConfig()
         -- Enable/disble Daneel's debugging features.
         debug = false,
     
+
         ----------------------------------------------------------------------------------
         ----------------------------------------------------------------------------------
+
         -- List of the languages supported by the game.
         -- Automatically filled at runtime with the languages names, based on the keys defined on the 'language' global variable
         languages = {},
@@ -209,7 +211,7 @@ function DefaultConfig()
 
         -- List of the gameObjects that react to the mouse inputs
         mouseInteractiveGameObjects = {},
-    } -- end Daneel.Config.Default
+    }
 end
 
 
@@ -889,11 +891,12 @@ function Daneel.Awake()
     -- built assetTypes and componentTypes
     config.assetTypes = table.getkeys(config.assetObjects)
     config.componentTypes = table.getkeys(config.componentObjects)
-
-    -- built daneelObjects, guiObjects and userObjects
     config.guiTypes = table.getkeys(config.guiObjects)
-    --config.userObjects = table.foreach(Daneel.Config.Get('userTypes'), GetObjectFromType)
     
+    for i, type in ipairs(config.userTypes) do
+        config.userObjects[type] = Daneel.Debug.GetValueFromName(type)
+    end
+        
     -- all objects (for use in GetType())
     config.allObjects = table.merge(
         config.assetObjects,
@@ -901,7 +904,7 @@ function Daneel.Awake()
         config.craftStudioObjects,
         config.daneelObjects,
         config.guiObjects,
-        --config.userObjects
+        config.userObjects
     )
 
 
