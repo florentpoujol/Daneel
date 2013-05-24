@@ -12,7 +12,7 @@ function Behavior:Start()
     self.gameObjectsInRange = table.new()
     self.layers = self.layers:split(",")
     if tgos == nil then
-        tgos = Daneel.Config.Get("triggerableGameObjects")
+        tgos = config.triggerableGameObjects
     end
 end
 

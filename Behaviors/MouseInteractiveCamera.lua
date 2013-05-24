@@ -19,7 +19,7 @@ function Behavior:OnLeftMouseButtonJustPressed()
             gameObject:SendMessage("OnClick")
             
             if gameObject.framesSinceLastLeftClick ~= nil and 
-                gameObject.framesSinceLastLeftClick <= Daneel.Config.Get("input.doubleClickDelay") then
+                gameObject.framesSinceLastLeftClick <= config.input.doubleClickDelay then
                 gameObject:SendMessage("OnDoubleClick")
             else
                 gameObject.framesSinceLastLeftClick = 0

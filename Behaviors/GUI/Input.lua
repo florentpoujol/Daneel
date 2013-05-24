@@ -4,7 +4,8 @@
 local B = Behavior -- Behavior is not accessible from a function
 local function CreateInputKeysEventFunctions()
 	-- create function to catch the event for each inputKeys
-	for key, value in pairs(Daneel.Config.Get("input.inputKeys", {})) do
+	local keys = config.input.inputKeys
+	for key, value in pairs(keys) do
 		-- the button name may be the key or the value
 		local buttonName = value
 		local combinaisons = nil
