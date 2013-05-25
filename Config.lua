@@ -115,7 +115,7 @@ config = {
     -- List of your custom object types (their name as a string), to be returned by Daneel.Debug.GetType().
     -- Daneel.Debug.GetType() will return one the types if an object corresponding to one of the types is the metatable of the supllied object.
     -- Ie :
-    -- "RaycasHit"
+    -- "RaycastHit"
     userTypes = {},
 
 

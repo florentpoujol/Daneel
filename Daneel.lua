@@ -1,5 +1,12 @@
 
-if Daneel == nil then
+local daneel_exists = false
+for key, value in pairs(_G) do
+    if key == "Daneel" then
+        daneel_exists = true
+        break
+    end
+end
+if daneel_exists == false then
     Daneel = {}
 end
 
@@ -138,7 +145,7 @@ function DefaultConfig()
 
         -- List of the languages supported by the game.
         -- Automatically filled at runtime with the languages names, based on the keys defined on the 'language' global variable
-        languages = {},
+        languageNames = {},
 
 
         ----------------------------------------------------------------------------------
@@ -154,7 +161,7 @@ function DefaultConfig()
             Scene = Scene,
             --Document = Document
         },
-        assetTypes = {}, -- filled at runtime
+        assetTypes = {}, -- filled in Daneel.Awake() below
 
         componentObjects = {
             ScriptedBehavior = ScriptedBehavior,
@@ -174,8 +181,8 @@ function DefaultConfig()
             Ray = Ray,
         },
         
-        daneelTypes = {
-            RaycastHit = RaycasHit,
+        daneelObjects = {
+            RaycastHit = RaycastHit,
             Vector2 = Vector2,
         },
         daneelTypes = {},
@@ -191,9 +198,11 @@ function DefaultConfig()
             ["Daneel.GUI.Slider"]       = Daneel.GUI.Slider,
             ["Daneel.GUI.WorldText"]    = Daneel.GUI.WorldText,
         },
-        guiTypes = {}, -- filled at runtime
+        guiTypes = {},
+
+        userObjects = {},
         
-        -- list of all types and objects, filled at runtime
+        -- list of all types and objects
         allObjects = {},
 
 
@@ -412,30 +421,26 @@ end
 --- Return the Lua or CraftStudio type of the provided argument.
 -- "CraftStudio types" includes : GameObject, ModelRenderer, MapRenderer, Camera, Transform, Physiscs, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document, Ray, RaycastHit, Vector3, Plane, Quaternion.
 -- @param object (mixed) The argument to get the type of.
--- @param returnLuaTypeOnly [optional default=false] (boolean) Tell whether to return only Lua's built-in types (string, number, boolean, table, function, userdata or thread).
+-- @param OnlyReturnLuaType [optional default=false] (boolean) Tell whether to return only Lua's built-in types (string, number, boolean, table, function, userdata or thread).
 -- @return (string) The type.
-function Daneel.Debug.GetType(object, returnLuaTypeOnly)
-    local errorHead = "Daneel.Debug.GetType(object[, returnLuaTypeOnly]) : "
+function Daneel.Debug.GetType(object, OnlyReturnLuaType)
+    local errorHead = "Daneel.Debug.GetType(object[, OnlyReturnLuaType]) : "
     -- DO NOT use CheckArgType here since it uses itself GetType() => overflow
-    local argType = type(returnLuaTypeOnly)
+    local argType = type(OnlyReturnLuaType)
     if argType ~= "nil" and argType ~= "boolean" then
-        error(errorHead.."Argument 'returnLuaTypeOnly' is of type '"..argType.."' with value '"..tostring(returnLuaTypeOnly).."' instead of 'boolean'.")
+        error(errorHead.."Argument 'OnlyReturnLuaType' is of type '"..argType.."' with value '"..tostring(OnlyReturnLuaType).."' instead of 'boolean'.")
     end
-
-    if returnLuaTypeOnly == nil then returnLuaTypeOnly = false end
+    if OnlyReturnLuaType == nil then OnlyReturnLuaType = false end
     argType = type(object)
-
-    if returnLuaTypeOnly == false and argType == "table" then
-        -- for all other cases, the type is defined by the object's metatable
+    if OnlyReturnLuaType == false and argType == "table" then
+        -- the type is defined by the object's metatable
         local mt = getmetatable(object)
-
         if mt ~= nil then
-            -- the metatable of the ScriptedBahaviors is the corresponding script asset
-            -- the metatable of all script assets is Script
+            -- the metatable of the ScriptedBehaviors is the corresponding script asset
+            -- the metatable of all script assets is the Script object
             if getmetatable(mt) == Script then
                 return "ScriptedBehavior"
             end
-
             -- other types
             for type, object in pairs(config.allObjects) do
                 if mt == object then
@@ -444,7 +449,6 @@ function Daneel.Debug.GetType(object, returnLuaTypeOnly)
             end
         end
     end
-
     return argType
 end
 
@@ -551,7 +555,7 @@ function Daneel.Debug.GetValueFromName(name)
         return _G[name]
     else
         local subNames = name:split(".")
-        local varName = table.remove(subTypes, 1)
+        local varName = table.remove(subNames, 1)
         local value = _G[varName]
         if value == nil then
             if DEBUG == true then
@@ -810,7 +814,7 @@ function Daneel.Lang.GetLine(key, replacements)
 
     local keys = key:split(".")
     local language = currentLanguage
-    if keys[1]:isoneof(config.languages) then
+    if keys[1]:isoneof(config.languageNames) then
         language = table.remove(keys)
     end
     
@@ -896,7 +900,7 @@ function Daneel.Awake()
     for i, type in ipairs(config.userTypes) do
         config.userObjects[type] = Daneel.Debug.GetValueFromName(type)
     end
-        
+    
     -- all objects (for use in GetType())
     config.allObjects = table.merge(
         config.assetObjects,
@@ -910,7 +914,7 @@ function Daneel.Awake()
 
     -- scripts
     -- Dynamic getters and setter on Scripts
-    for i, path in pairs(config.scriptsPaths) do
+    for i, path in pairs(config.scriptPaths) do
         local script = Asset.Get(path, "Script") -- Asset.Get() helpers does not exist yet
         if script ~= nil then
             Daneel.Utilities.AllowDynamicGettersAndSetters(script, {Script, Component})
@@ -919,9 +923,9 @@ function Daneel.Awake()
                 return "ScriptedBehavior"..tostring(scriptedBehavior.inner):sub(2, 20)
             end
         else
-            config.scriptsPaths[i] = nil
+            config.scriptPaths[i] = nil
             if DEBUG == true then
-                print("WARNING : item with key '"..i.."' and value '"..path.."' in 'config.scriptsPaths' is not a valid script path.")
+                print("WARNING : item with key '"..i.."' and value '"..path.."' in 'config.scriptPaths' is not a valid script path.")
             end
         end
     end
@@ -980,9 +984,9 @@ function Daneel.Awake()
 
 
     -- Languages
-    if language ~= nil then
+    if languages ~= nil then
         Daneel.Lang.lines = languages
-        config.languages = table.getkeys(language)
+        config.languageNames = table.getkeys(languages)
     end
 
 
@@ -1020,9 +1024,9 @@ function Daneel.Awake()
     -- Color TileSets
     local textColorTileSetPaths = config.gui.textColorTileSetPaths
     local textDefaultColorName = config.gui.textDefaultColorName
-    if textDefaultColorName ~= nil and not table.containskey(textColorTileSetPaths, textDefaultColorName) then
+    if textDefaultColorName ~= nil and textColorTileSetPaths[textDefaultColorName] == nil then
         if DEBUG == true then
-            print("WARNING : 'gui.textDefaultColorName' with value '"..textDefaultColorName.."' is not one of the valid color name : "..table.concat(textColorTileSetPaths:getkeys(), "', '").."'")
+            print("WARNING : 'config.gui.textDefaultColorName' with value '"..textDefaultColorName.."' is not one of the valid color name : "..table.concat(textColorTileSetPaths:getkeys(), "', '").."'")
         end
         for color, tileSet in pairs(textColorTileSetPaths) do
             Daneel.Config.Set("gui.textDefaultColorName", color)

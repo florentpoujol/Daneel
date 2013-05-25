@@ -1,5 +1,12 @@
 
-if Daneel == nil then
+local daneel_exists = false
+for key, value in pairs(_G) do
+    if key == "Daneel" then
+        daneel_exists = true
+        break
+    end
+end
+if daneel_exists == false then
     Daneel = {}
 end
 
@@ -34,7 +41,7 @@ function Daneel.GUI.Common.New(name, params)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
-    local parent = config.default.gui.hudOrigin
+    local parent = config.gui.hudOrigin
     if params ~= nil and params.group ~= nil then
         if Daneel.Debug.GetType(params.group) == "Daneel.GUI.Group" then
             params.group = params.group.gameObject
@@ -65,9 +72,9 @@ end
 -- @param element (Daneel.GUI.Text, Daneel.GUI.CheckBox) The element.
 -- @param name (string) The local name.
 function Daneel.GUI.Common.SetName(element, name)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetName", element)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetName", element, name)
     local errorHead = "Daneel.GUI.Common.SetName(element, name) : "
-    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.guiTypes, errorHead)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     if element._name ~= nil then
         Daneel.GUI.elements[element._name] = nil
@@ -83,7 +90,7 @@ end
 function Daneel.GUI.Common.GetName(element)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetName", element)
     local errorHead = "Daneel.GUI.Common.GetName(element) : "
-    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.guiTypes, errorHead)
     Daneel.Debug.StackTrace.EndFunction()
     return element._name
 end
@@ -95,7 +102,7 @@ end
 function Daneel.GUI.Common.SetScale(element, scale)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetScale", element)
     local errorHead = "Daneel.GUI.Common.SetScale(element, scale) : "
-    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.guiTypes, errorHead)
     Daneel.Debug.CheckArgType(scale, "scale", {"number", "Vector3"}, errorHead)
 
     if type(scale) == "number" then
@@ -112,7 +119,7 @@ end
 function Daneel.GUI.Common.GetScale(element, returnAsNumber)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetScale", element, returnAsNumber)
     local errorHead = "Daneel.GUI.Common.GetScale(element[, returnAsNumber]) : "
-    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.guiTypes, errorHead)
     Daneel.Debug.CheckOptionalArgType(returnAsNumber, "returnAsNumber", "boolean", errorHead)
 
     local scale = element.gameObject.transform.localScale
@@ -130,7 +137,7 @@ end
 function Daneel.GUI.Common.SetOpacity(element, opacity)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetOpacity", element)
     local errorHead = "Daneel.GUI.Common.SetOpacity(element, opacity) : "
-    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.guiTypes, errorHead)
     Daneel.Debug.CheckArgType(opacity, "opacity", "number", errorHead)
 
     if element.gameObject.modelRenderer ~= nil then
@@ -148,7 +155,7 @@ end
 function Daneel.GUI.Common.GetOpacity(element)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetOpacity", element)
     local errorHead = "Daneel.GUI.Common.GetOpacity(element) : "
-    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.guiTypes, errorHead)
 
     local opacity = nil
     if element.gameObject.modelRenderer ~= nil then
@@ -196,7 +203,7 @@ function Daneel.GUI.Common.SetLabel(element, label, refreshRate)
     
     element._label = label
 
-    local map = Map.LoadFromPackage(Daneel.Config.Get("gui.emptyTextMapPath"))
+    local map = Map.LoadFromPackage(config.gui.emptyTextMapPath)
     if element.gameObject.mapRenderer == nil then
         element.gameObject:AddMapRenderer()
     end
@@ -209,8 +216,8 @@ function Daneel.GUI.Common.SetLabel(element, label, refreshRate)
 
     local elementType = Daneel.Debug.GetType(element)
     if elementType == "Daneel.GUI.CheckBox" then
-        if config.default.gui.checkBox.tileSet ~= nil then
-            element.gameObject.mapRenderer.tileSet = config.default.gui.checkBox.tileSet
+        if config.gui.checkBox.tileSet ~= nil then
+            element.gameObject.mapRenderer.tileSet = config.gui.checkBox.tileSet
         end
         label = " "..label
         characterPosition = 1
@@ -275,7 +282,7 @@ end
 function Daneel.GUI.Common.SetPosition(element, position)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetPosition", element, position)
     local errorHead = "Daneel.GUI.Common.SetPosition(element, position) : "
-    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.guiTypes, errorHead)
     Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
     
     element._position = position
@@ -294,7 +301,7 @@ end
 function Daneel.GUI.Common.GetPosition(element)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetPosition", element)
     local errorHead = "Daneel.GUI.Common.GetPosition(element) : "
-    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.guiTypes, errorHead)
     if element._position == nil then
         -- the element is at a local pos of {0,0,0} from its parent
         element._position = Vector2.New(0, 0)
@@ -313,7 +320,7 @@ function Daneel.GUI.Common.SetColor(element, color)
     Daneel.Debug.CheckArgType(element, "element", {"Daneel.GUI.Text", "Daneel.GUI.CheckBox", "Daneel.GUI.Input", "Daneel.GUI.WorldText"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(color, "color", "string", errorHead)
 
-    local defaultColor = Daneel.Config.Get("gui.textDefaultColorName")
+    local defaultColor = config.gui.textDefaultColorName
     if color == nil and element._color ~= nil then
         color = element._color
     -- if color arg is not set, and color has not already been set once, put the default color
@@ -321,13 +328,13 @@ function Daneel.GUI.Common.SetColor(element, color)
         color = defaultColor
     end
 
-    if not table.containskey(config.default.gui.textColorTileSets, color) then
+    if config.gui.textColorTileSets[color] == nil then
         if DEBUG == true then
             print("WARNING : "..errorHead.." color '"..color.."' is not one of the correct colors. Defaulting to '"..defaultColor.."'.")
         end
         color = defaultColor
     end
-    element.gameObject.mapRenderer.tileSet = config.default.gui.textColorTileSets[color]
+    element.gameObject.mapRenderer.tileSet = config.gui.textColorTileSets[color]
     element._color = color
     Daneel.Debug.StackTrace.EndFunction()
 end
@@ -339,7 +346,7 @@ end
 function Daneel.GUI.Common.SetLayer(element, layer)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.SetLayer", element)
     local errorHead = "Daneel.GUI.Common.SetLayer(element, layer) : "
-    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.guiTypes, errorHead)
     Daneel.Debug.CheckArgType(layer, "layer", "number", errorHead)
     local pos = element.gameObject.transform.localPosition
     element.gameObject.transform.localPosition = Vector3:New(pos.x, pos.y, -layer)
@@ -352,7 +359,7 @@ end
 function Daneel.GUI.Common.GetLayer(element)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.GetLayer", element)
     local errorHead = "Daneel.GUI.Common.GetLyer(element) : "
-    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.guiTypes, errorHead)
     return -element.gameObject.transform.localPosition.z
 end
 
@@ -362,7 +369,7 @@ end
 function Daneel.GUI.Common.Destroy(element)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Destroy", element)
     local errorHead = "Daneel.GUI.Destroy(element) : "
-    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.guiTypes, errorHead)
     element.gameObject:Destroy()
     Daneel.Debug.StackTrace.EndFunction()
 end
@@ -415,7 +422,7 @@ function Daneel.GUI.Text.New(name, params)
     local element = Daneel.GUI.Common.New(name, params)
     setmetatable(element, Daneel.GUI.Text)
     element.label = name
-    element.scale = Daneel.Config.Get("gui.textDefaultScale")
+    element.scale = config.gui.textDefaultScale
 
     if params ~= nil then
         if params.interactive == true then
@@ -472,7 +479,7 @@ end
 function Daneel.GUI.Image.SetImage(element, image)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Common.Image.SetImage", element, image)
     local errorHead = "Daneel.GUI.Common.Image.SetImage(element, image) : "
-    Daneel.Debug.CheckArgType(element, "element", config.default.guiTypes, errorHead)
+    Daneel.Debug.CheckArgType(element, "element", config.guiTypes, errorHead)
     Daneel.Debug.CheckOptionalArgType(image, "image", {"string", "Model", "Map"}, errorHead)
 
     local assetType = Daneel.Debug.GetType(image)
@@ -540,7 +547,7 @@ function Daneel.GUI.CheckBox.New(name, params)
     element.gameObject:AddScriptedBehavior("Daneel/Behaviors/GUI/CheckBox", {element = element})
     element.label = name
     element.checked = false
-    element.scale = Daneel.Config.Get("gui.textDefaultScale")
+    element.scale = config.gui.textDefaultScale
 
     if params ~= nil then
         for key, value in pairs(params) do
@@ -578,9 +585,9 @@ function Daneel.GUI.CheckBox.SetChecked(element, state, resetMarkAfterSetLabel)
     Daneel.Debug.CheckOptionalArgType(state, "state", "boolean", errorHead)
     if resetMarkAfterSetLabel == true or element._checked ~= state then
         element._checked = state
-        local byte = Daneel.Config.Get("gui.checkBox.checkedBlock") -- default is 251, the valid mark
+        local byte = config.gui.checkBox.checkedBlock -- default is 251, the valid mark
         if state == false then 
-            byte = Daneel.Config.Get("gui.checkBox.notCheckedBlock") -- default is "O",
+            byte = config.gui.checkBox.notCheckedBlock -- default is "O",
         end
         if type(byte) == "string" then
             byte = string.byte(byte)
@@ -633,7 +640,7 @@ function Daneel.GUI.Input.New(name, params)
     element.cursorMapRndr = element.gameObject:AddMapRenderer({opacity = 0.9})
     element._cursorPosition = 1
     element.focused = false
-    element.scale = Daneel.Config.Get("gui.textDefaultScale")
+    element.scale = config.gui.textDefaultScale
     
     if params ~= nil then
         for key, value in pairs(params) do
@@ -702,7 +709,7 @@ function Daneel.GUI.Input.SetFocused(element, state)
         if state == true then
             element:SetCursorPosition()
         else
-            element.cursorMapRndr.map = Map.LoadFromPackage(Daneel.Config.Get("gui.emptyTextMapPath")) -- hide the cursor on unfocus
+            element.cursorMapRndr.map = Map.LoadFromPackage(config.gui.emptyTextMapPath) -- hide the cursor on unfocus
         end
 
         element.gameObject:SendMessage("OnFocusChange", {element = element})
@@ -738,7 +745,7 @@ function Daneel.GUI.Input.SetCursorPosition(element, position, relative)
 
     local byte = string.byte("_")
     byte = 254 -- pipe verticale sur la gauche
-    element.cursorMapRndr.map = Map.LoadFromPackage(Daneel.Config.Get("gui.emptyTextMapPath"))
+    element.cursorMapRndr.map = Map.LoadFromPackage(config.gui.emptyTextMapPath)
     local map = element.cursorMapRndr.map
 
     if position == nil then
