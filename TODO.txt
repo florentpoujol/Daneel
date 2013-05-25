@@ -22,14 +22,10 @@ Voir à attendre que l'asset "Font" soit lui-même publié > influera sur les GU
 
 Features for Develop branch :
 
-- fixed frame : ne laisser que si possibilité d'utiliser les coroutines
-
 - function gameObject = GameObject.NewFromScene(sceneNameOrAsset, params) -> retourne le gameObject qui est dans la scène au lieu de créer un GO avec le contenu de la scène dedant
 =>>>  comment annuler la parentalité d'un GO ?
 
 - GameObject.Copy(gameObjectNameOrAsset) copie un GO déjà présent dans la scène en reproduisant tous ses paramètres
-
-- ajout/set de scriptedBehaviors avec gameObject.Set > faire comme n'importe quel autre component (nomOrAlias = {})
 
 
 =======
@@ -39,6 +35,10 @@ modif doc :
 - Utilities.AllowDynamicGettersAndSetters()
 
 - Debug.GetNameFromValue, GetValueFromName, ToRawString
+
+- GameObject.NewFromScene()
+
+- ajout/set de scriptedBehaviors avec gameObject.Set > faire comme n'importe quel autre component (nomOrAlias = {})
 
 - Fix Time page
 
