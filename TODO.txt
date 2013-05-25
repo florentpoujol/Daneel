@@ -25,6 +25,7 @@ Features for Develop branch :
 - fixed frame : ne laisser que si possibilité d'utiliser les coroutines
 
 - function gameObject = GameObject.NewFromScene(sceneNameOrAsset, params) -> retourne le gameObject qui est dans la scène au lieu de créer un GO avec le contenu de la scène dedant
+=>>>  comment annuler la parentalité d'un GO ?
 
 - GameObject.Copy(gameObjectNameOrAsset) copie un GO déjà présent dans la scène en reproduisant tous ses paramètres
 

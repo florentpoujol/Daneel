@@ -147,6 +147,7 @@ function GameObject.Set(gameObject, params)
         for i, script in pairs(params.scriptedBehaviors) do
             argType = Daneel.Debug.GetType(script)
             if argType ~= "string" and argType ~= "Script" and argType ~= "table" then
+                -- 25/05/2013 > why argType ~= "Script" ?   the value is always the script path of a table of params
                 error(errorHead.."Item n°"..i.." in argument 'params.scriptedBehaviors' is of type '"..argType.."' with value '"..tostring(script).."' instead of 'string', 'Script' or 'table'.")
             end
 
@@ -171,7 +172,7 @@ function GameObject.Set(gameObject, params)
     end
 
     -- components
-    for i, componentType in ipairs({"modelRenderer", "mapRenderer", "camera", "transform"}) do
+    for i, componentType in ipairs({"modelRenderer", "mapRenderer", "camera", "transform", "physics"}) do
         if params[componentType] ~= nil then
             Daneel.Debug.CheckArgType(params[componentType], "params."..componentType, "table", errorHead)
 
@@ -187,10 +188,22 @@ function GameObject.Set(gameObject, params)
 
     -- all other keys/values
     for key, value in pairs(params) do
-        gameObject[key] = value
+        -- if key is a script path or alias
+        if config.scriptPaths[key] ~= nil or table.containsvalue(config.scriptPaths, key) then
+            local scriptPath = key
+            if config.scriptPaths[key] ~= nil then
+                scriptPath = config.scriptPaths[key]
+            end
+            local component = gameObject:GetScriptedBehavior(scriptPath)
+            if component == nil then
+                component = gameObject:AddScriptedBehavior(scriptPath)
+            end
+            component:Set(value)
+        else
+            gameObject[key] = value
+        end
     end
-
-    Daneel.Debug.StackTrace.EndFunction("GameObject.Set")
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
