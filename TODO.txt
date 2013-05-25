@@ -15,14 +15,14 @@ metre à jour la doc
 Publier
 
 
-Voir à attendre que l'aset "Font" soit lui-même publié > influera sur les GUIText
+Voir à attendre que l'asset "Font" soit lui-même publié > influera sur les GUIText
 
 
 ========
 
 Features for Develop branch :
 
-- fixed frame : ne lasser que si possibilité d'utiliser les coroutines
+- fixed frame : ne laisser que si possibilité d'utiliser les coroutines
 
 - function gameObject = GameObject.NewFromScene(sceneNameOrAsset, params) -> retourne le gameObject qui est dans la scène au lieu de créer un GO avec le contenu de la scène dedant
 
