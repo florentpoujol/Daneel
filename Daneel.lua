@@ -81,6 +81,9 @@ function DefaultConfig()
             searchInDefault = true,
         },
 
+        -- List of the languages supported by the game.
+        -- Automatically filled at runtime with the languages names, based on the keys defined on the 'language' global variable
+        languageNames = {},
 
         ----------------------------------------------------------------------------------
 
@@ -130,22 +133,8 @@ function DefaultConfig()
 
         ----------------------------------------------------------------------------------
 
-        -- once Daneel has loaded, the userObjects table below will be filled with the types defined in userTypes as the keys and the actual objects as values
-        userTypes = {},
-
-
-        ----------------------------------------------------------------------------------
-
         -- Enable/disble Daneel's debugging features.
         debug = false,
-    
-
-        ----------------------------------------------------------------------------------
-        ----------------------------------------------------------------------------------
-
-        -- List of the languages supported by the game.
-        -- Automatically filled at runtime with the languages names, based on the keys defined on the 'language' global variable
-        languageNames = {},
 
 
         ----------------------------------------------------------------------------------
@@ -200,6 +189,7 @@ function DefaultConfig()
         },
         guiTypes = {},
 
+        userTypes = {},
         userObjects = {},
         
         -- list of all types and objects

@@ -23,9 +23,11 @@ Voir à attendre que l'asset "Font" soit lui-même publié > influera sur les GU
 Features for Develop branch :
 
 - function gameObject = GameObject.NewFromScene(sceneNameOrAsset, params) -> retourne le gameObject qui est dans la scène au lieu de créer un GO avec le contenu de la scène dedant
-=>>>  comment annuler la parentalité d'un GO ?
+=>>>  comment annuler la parentalité d'un GO ? 
+=> modif SetParent() pour accepter nil comme param
 
-- GameObject.Copy(gameObjectNameOrAsset) copie un GO déjà présent dans la scène en reproduisant tous ses paramètres
+
+
 
 
 =======
@@ -50,13 +52,14 @@ modif doc :
 ==================
 GUI 
 
+- supprimer orthographic scale from the config
 
 - GUI elements are now components
 - HUD is also a component
 
 - supprimer input ou voir comment set-up inputKeys
 
-
+- voir pourquoi un seul click sur un élément interactif lance deux fois l'event
 
 
 
