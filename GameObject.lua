@@ -138,41 +138,15 @@ function GameObject.Set(gameObject, params)
     local errorHead = "GameObject.Set(gameObject, params) : "
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
     local argType = nil
+    
+    -- components
     local component = nil
-
-    -- scriptedBehaviors
-    if params.scriptedBehaviors ~= nil then
-        Daneel.Debug.CheckArgType(params.scriptedBehaviors, "params.scriptedBehaviors", "table", errorHead)
-
-        for i, script in pairs(params.scriptedBehaviors) do
-            argType = Daneel.Debug.GetType(script)
-            if argType ~= "string" and argType ~= "Script" and argType ~= "table" then
-                -- 25/05/2013 > why argType ~= "Script" ?   the value is always the script path of a table of params
-                error(errorHead.."Item n°"..i.." in argument 'params.scriptedBehaviors' is of type '"..argType.."' with value '"..tostring(script).."' instead of 'string', 'Script' or 'table'.")
-            end
-
-            local scriptParams = nil
-            local scriptNameOrAsset = script
-            if argType == "table" then
-                scriptParams = script
-                scriptNameOrAsset = i
-            end
-
-            component = gameObject:GetScriptedBehavior(scriptNameOrAsset)
-            if component == nil then
-                component = gameObject:AddScriptedBehavior(scriptNameOrAsset)
-            end
-
-            if scriptParams ~= nil then
-                component:Set(scriptParams)
-            end
-        end
-
-        params.scriptedBehaviors = nil
+    local componentTypes = table.removevalue(config.componentTypes, "ScriptedBehavior")
+    for i, type in ipairs(componentTypes) do
+        componentTypes[i] = type:lcfirst()
     end
 
-    -- components
-    for i, componentType in ipairs({"modelRenderer", "mapRenderer", "camera", "transform", "physics"}) do
+    for i, componentType in ipairs(componentTypes) do
         if params[componentType] ~= nil then
             Daneel.Debug.CheckArgType(params[componentType], "params."..componentType, "table", errorHead)
 
