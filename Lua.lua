@@ -144,21 +144,19 @@ end
 
 --- Return a copy of the provided table.
 -- @param t (table) The table to copy.
+-- @return (table) The copied table.
 function table.copy(t)
     Daneel.Debug.StackTrace.BeginFunction("table.copy", t)
     Daneel.Debug.CheckArgType(t, "table", "table", "table.copy(table) : ", nil, true)
-    
     local newTable = table.new()
     for key, value in pairs(t) do
         newTable[key] = value
     end
-
     local mt = getmetatable(t)
     if mt ~= nil then
         setmetatable(newTable, mt)
     end
-
-    new.Debug.StackTrace.EndFunction("table.copy", newTable)
+    Debug.StackTrace.EndFunction()
     return newTable
 end
 
@@ -299,7 +297,7 @@ function table.deepmerge(...)
         error("table.deepmerge(...) : No argument provided. Need at least two.")
     end
     Daneel.Debug.StackTrace.BeginFunction("table.deepmerge", unpack(arg))
-    local fullTable = table.new(table.removevalue(arg, 1))
+    local fullTable = table.new(table.remove(arg, 1))
     for i, t in ipairs(arg) do
         for key, value in pairs(t) do
             if math.isinteger(key) then
@@ -390,6 +388,7 @@ function table.removevalue(t, value, singleRemove)
     if value == nil then
         print("WARNING : "..errorHead.."Argument 'value' is nil. Provided table is "..tostring(t))
     end
+    t = table.copy(t)
     for key, _value in pairs(t) do
         if _value == value then
             if math.isinteger(key) then
