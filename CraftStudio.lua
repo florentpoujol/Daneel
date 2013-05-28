@@ -208,42 +208,58 @@ end
 
 --- Check the collision of the ray against the provided set of gameObject or if it is nil, against all castable gameObjects.
 -- @param ray (Ray) The ray.
--- @param gameObjects (table) [optional] The set of gameObjects to cast the ray against (or if nil, the castable gameObjects)
+-- @param gameObjects [optional] (table) The set of gameObjects to cast the ray against (or if nil, the castable gameObjects)
+-- @param sortByDistance [optional default=false] (boolean) Sort the raycastHit by increasing distance in the returned table.
 -- @return (table) A table of RaycastHits (will be empty if the ray didn't intersects anything).
-function Ray.Cast(ray, gameObjects)
+function Ray.Cast(ray, gameObjects, sortByDistance)
     Daneel.Debug.StackTrace.BeginFunction("Ray.Cast", ray, gameObjects)
-    local errorHead = "Ray.Cast(ray) : "
+    local errorHead = "Ray.Cast(ray[, gameObjects]) : "
     Daneel.Debug.CheckArgType(ray, "ray", "Ray", errorHead)
-
     if gameObjects == nil then
+        gameObjects = config.castableGameObjects
+        sortByDistance = false
+    else type(gameObjects) == "boolean" then
+        sortByDistance = gameObjects
         gameObjects = config.castableGameObjects
     else
         Daneel.Debug.CheckArgType(gameObjects, "gameObjects", "table", errorHead)
+        Daneel.Debug.CheckOptionalArgType(sortByDistance, "sortByDistance", "boolean", errorHead)
     end
-
-    local hits = table.new()
-
+    local distances = {}
+    local tempHits = {}
     for i, gameObject in ipairs(gameObjects) do
         local raycastHit = ray:IntersectsGameObject(gameObject)
         if raycastHit ~= nil then
+            local distance = raycastHit.distance
+            table.insert(distances, distance)
+            if tempHits[distance] == nil then
+                tempHits[distance] = {}
+            end
+            table.insert(tempHits[distance], raycastHit)
+        end
+    end
+    table.sort(distances)
+    local hits = table.new()
+    for i, distance in ipairs(distances) do
+        for j, raycastHit in pairs(tempHits[distance]) do
             hits:insert(raycastHit)
         end
     end
-
-    Daneel.Debug.StackTrace.EndFunction("Ray.Cast", hits)
+    Daneel.Debug.StackTrace.EndFunction()
     return hits
 end
+
+
 
 --- Check if the ray intersect the specified gameObject.
 -- @param ray (Ray) The ray.
 -- @param gameObject (string, GameObject) The gameObject instance or name.
--- @return (RaycastHit) A raycastHit if there was a collision, or nil
+-- @return (RaycastHit) A raycastHit if there was a collision, or nil.
 function Ray.IntersectsGameObject(ray, gameObject)
     Daneel.Debug.StackTrace.BeginFunction("Ray.IntersectsGameObject", ray, gameObject)
     local errorHead = "Ray.IntersectsGameObject(ray, gameObject) : "
     Daneel.Debug.CheckArgType(ray, "ray", "Ray", errorHead)
     Daneel.Debug.CheckArgType(gameObject, "gameObject", {"string", "GameObject"}, errorHead)
-
     if type(gameObject) == "string" then
         local name = gameObject
         gameObject = GameObject.Get(name)
