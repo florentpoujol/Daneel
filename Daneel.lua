@@ -14,168 +14,198 @@ DANEEL_LOADED = false
 DEBUG = false
 
 
+defaultConfig = {
+    -- List of the Scripts paths as values and optionally the script alias as the keys.
+    -- Ie :
+    -- "fully-qualified Script path"
+    -- or
+    -- alias = "fully-qualified Script path"
+    --
+    -- Setting a script path here allow you to  :
+    -- * Use the dynamic getters and setters
+    -- * Use component:Set() (for scripts that are ScriptedBehaviors)
+    -- * Call Behavior:DaneelAwake() when Daneel has just loaded, even on scripts that are not ScriptedBehaviors
+    -- * If you defined aliases, dynamically access the ScriptedBehavior on the gameObject via its alias
+    scriptPaths = {
+        "Daneel/Behaviors/DaneelBehavior",
+        trigerScript = "Daneel/Behaviors/Trigger",
+        "Daneel/Behaviors/TriggerableGameObject",
+        "Daneel/Behaviors/CastableGameObject",
+        "Daneel/Behaviors/MouseInteractiveGameObject",
+        "Daneel/Behaviors/MouseInteractiveCamera",
+        "Daneel/Behaviors/GUI/GUIMouseInteractive",
+        "Daneel/Behaviors/GUI/CheckBox",
+        "Daneel/Behaviors/GUI/Input",
+        "Daneel/Behaviors/GUI/WorldText",
+    },
+    allScripts = {},
+
+
+    ----------------------------------------------------------------------------------
+
+    input = {
+        -- Button names as you defined them in the "Administration > Game Controls" tab of your project.
+        -- Button whose name is defined here can be used as HotKeys.
+        buttons = {
+            "LeftMouse",
+            "LeftShift",
+            "Delete",
+            "LeftArrow",
+            "RightArrow",
+        },
+
+        -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
+        doubleClickDelay = 20,
+
+        inputKeys = {
+
+        }
+    },
+
+
+    ----------------------------------------------------------------------------------
+
+    language = {
+        -- Current language
+        current = "english",
+
+        -- Default language
+        default = "english",
+
+        -- Value returned when a language key is not found
+        keyNotFound = "langkeynotfound",
+
+        -- Tell wether Daneel.Lang.GetLine() search a line key in the default language 
+        -- when it is not found in the current language before returning the value of keyNotFound
+        searchInDefault = true,
+    },
+
+    -- List of the languages supported by the game.
+    -- Automatically filled at runtime with the languages names, based on the keys defined on the 'language' global variable
+    languageNames = {},
+
+    ----------------------------------------------------------------------------------
+
+    gui = {
+        -- Name of the gameObject who has the orthographic camera used to render the HUD
+        hudCameraName = "HUDCamera",
+        -- the corresponding GameObject, set at runtime
+        hudCamera = nil,
+
+        -- The gameObject that serve as origin for all GUI elements that aare not in a Group, created at runtime
+        hudOrigin = nil,
+
+        -- The orthographic scale of the HUDCamera
+        hudCameraOrthographicScale = 10,
+
+        -- Fully-qualified path of the map used to render text elements
+        textMapPath = "Daneel/TextMap",
+        emptyTextMapPath = "Daneel/EmptyTextMap",
+
+        -- label's (text) default scale
+        textDefaultScale = 0.3,
+
+        -- TileSets used for the text elements
+        textColorTileSetPaths = {
+            White = "Daneel/ASCII_White",
+            Black = "Daneel/ASCII_Black",
+            Red = "Daneel/ASCII_Red",
+            Green = "Daneel/ASCII_Green",
+            Blue = "Daneel/ASCII_Blue",
+        },
+        textColorTileSets = {
+            -- Name (string) = TileSet (TileSet)
+        }, -- filled at runtime
+
+        textDefaultColorName = "White",
+
+        -- CheckBox
+        checkBox = {
+            tileSetPath = nil,
+
+            -- Set the block ID on the TileSet or the letter/sign as a string
+            checkedBlock = 251, -- valid mark
+            notCheckedBlock = "X",
+        },
+    },
+
+
+    ----------------------------------------------------------------------------------
+
+    -- Enable/disble Daneel's debugging features.
+    debug = false,
+
+
+    ----------------------------------------------------------------------------------
+
+    -- Objects (keys = name, value = object)
+    assetObjects = {
+        Script = Script,
+        Model = Model,
+        ModelAnimation = ModelAnimation,
+        Map = Map,
+        TileSet = TileSet,
+        Sound = Sound,
+        Scene = Scene,
+        --Document = Document,
+        --Font = Font,
+    },
+    assetTypes = {}, -- filled in Daneel.Awake() below
+
+    componentObjects = {
+        ScriptedBehavior = ScriptedBehavior,
+        ModelRenderer = ModelRenderer,
+        MapRenderer = MapRenderer,
+        Camera = Camera,
+        Transform = Transform,
+        Physics = Physics,
+    },
+    componentTypes = {},
+    
+    craftStudioObjects = {
+        GameObject = GameObject,
+        Vector3 = Vector3,
+        Quaternion = Quaternion,
+        Plane = Plane,
+        Ray = Ray,
+    },
+    
+    daneelObjects = {},
+    daneelTypes = {},
+
+    guiObjects = {},
+    guiTypes = {},
+
+    userTypes = {},
+    userObjects = {},
+    
+    -- list of all types and objects
+    allObjects = {},
+
+
+    ----------------------------------------------------------------------------------
+
+    -- Rays
+    -- list of the gameObjects to cast the ray against by default by ray:Cast()
+    -- filled in the CastableGameObjects behavior
+    castableGameObjects = {},
+    
+    -- Triggers
+    -- list of the gameObjects to check for proximity by the triggers
+    -- filled in the TriggerableGameObject behavior
+    triggerableGameObjects = { default = {} },
+
+    -- List of the gameObjects that react to the mouse inputs
+    mouseInteractiveGameObjects = {},
+}
+
+-- for custom things we need to wait for them to exist 
 function DefaultConfig()
     return {
-        -- List of the Scripts paths as values and optionally the script alias as the keys.
-        -- Ie :
-        -- "fully-qualified Script path"
-        -- or
-        -- alias = "fully-qualified Script path"
-        --
-        -- Setting a script path here allow you to  :
-        -- * Use the dynamic getters and setters
-        -- * Use component:Set() (for scripts that are ScriptedBehaviors)
-        -- * Call Behavior:DaneelAwake() when Daneel has just loaded, even on scripts that are not ScriptedBehaviors
-        -- * If you defined aliases, dynamically access the ScriptedBehavior on the gameObject via its alias
-        scriptPaths = {
-            "Daneel/Behaviors/DaneelBehavior",
-            "Daneel/Behaviors/Trigger",
-            "Daneel/Behaviors/TriggerableGameObject",
-            "Daneel/Behaviors/CastableGameObject",
-            "Daneel/Behaviors/MouseInteractiveGameObject",
-            "Daneel/Behaviors/MouseInteractiveCamera",
-            "Daneel/Behaviors/GUI/GUIMouseInteractive",
-            "Daneel/Behaviors/GUI/CheckBox",
-            "Daneel/Behaviors/GUI/Input",
-            "Daneel/Behaviors/GUI/WorldText",
-        },
-        allScripts = {},
-
-
-        ----------------------------------------------------------------------------------
-
-        input = {
-            -- Button names as you defined them in the "Administration > Game Controls" tab of your project.
-            -- Button whose name is defined here can be used as HotKeys.
-            buttons = {
-                "LeftMouse",
-                "LeftShift",
-                "Delete",
-                "LeftArrow",
-                "RightArrow",
-            },
-
-            -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
-            doubleClickDelay = 20,
-
-            inputKeys = {
-
-            }
-        },
-
-
-        ----------------------------------------------------------------------------------
-
-        language = {
-            -- Current language
-            current = "english",
-
-            -- Default language
-            default = "english",
-
-            -- Value returned when a language key is not found
-            keyNotFound = "langkeynotfound",
-
-            -- Tell wether Daneel.Lang.GetLine() search a line key in the default language 
-            -- when it is not found in the current language before returning the value of keyNotFound
-            searchInDefault = true,
-        },
-
-        -- List of the languages supported by the game.
-        -- Automatically filled at runtime with the languages names, based on the keys defined on the 'language' global variable
-        languageNames = {},
-
-        ----------------------------------------------------------------------------------
-
-        gui = {
-            -- Name of the gameObject who has the orthographic camera used to render the HUD
-            hudCameraName = "HUDCamera",
-            -- the corresponding GameObject, set at runtime
-            hudCamera = nil,
-
-            -- The gameObject that serve as origin for all GUI elements that aare not in a Group, created at runtime
-            hudOrigin = nil,
-
-            -- The orthographic scale of the HUDCamera
-            hudCameraOrthographicScale = 10,
-
-            -- Fully-qualified path of the map used to render text elements
-            textMapPath = "Daneel/TextMap",
-            emptyTextMapPath = "Daneel/EmptyTextMap",
-
-            -- label's (text) default scale
-            textDefaultScale = 0.3,
-
-            -- TileSets used for the text elements
-            textColorTileSetPaths = {
-                White = "Daneel/ASCII_White",
-                Black = "Daneel/ASCII_Black",
-                Red = "Daneel/ASCII_Red",
-                Green = "Daneel/ASCII_Green",
-                Blue = "Daneel/ASCII_Blue",
-            },
-            textColorTileSets = {
-                -- Name (string) = TileSet (TileSet)
-            }, -- filled at runtime
-
-            textDefaultColorName = "White",
-
-            -- CheckBox
-            checkBox = {
-                tileSetPath = nil,
-
-                -- Set the block ID on the TileSet or the letter/sign as a string
-                checkedBlock = 251, -- valid mark
-                notCheckedBlock = "X",
-            },
-        },
-
-
-        ----------------------------------------------------------------------------------
-
-        -- Enable/disble Daneel's debugging features.
-        debug = false,
-
-
-        ----------------------------------------------------------------------------------
-
-        -- Objects (keys = name, value = object)
-        assetObjects = {
-            Script = Script,
-            Model = Model,
-            ModelAnimation = ModelAnimation,
-            Map = Map,
-            TileSet = TileSet,
-            Sound = Sound,
-            Scene = Scene,
-            --Document = Document,
-            --Font = Font,
-        },
-        assetTypes = {}, -- filled in Daneel.Awake() below
-
-        componentObjects = {
-            ScriptedBehavior = ScriptedBehavior,
-            ModelRenderer = ModelRenderer,
-            MapRenderer = MapRenderer,
-            Camera = Camera,
-            Transform = Transform,
-            Physics = Physics,
-        },
-        componentTypes = {},
-        
-        craftStudioObjects = {
-            GameObject = GameObject,
-            Vector3 = Vector3,
-            Quaternion = Quaternion,
-            Plane = Plane,
-            Ray = Ray,
-        },
-        
         daneelObjects = {
             RaycastHit = RaycastHit,
             Vector2 = Vector2,
         },
-        daneelTypes = {},
 
         guiObjects = {
             ["Daneel.GUI.Common"]       = Daneel.GUI.Common,
@@ -188,29 +218,6 @@ function DefaultConfig()
             ["Daneel.GUI.Slider"]       = Daneel.GUI.Slider,
             ["Daneel.GUI.WorldText"]    = Daneel.GUI.WorldText,
         },
-        guiTypes = {},
-
-        userTypes = {},
-        userObjects = {},
-        
-        -- list of all types and objects
-        allObjects = {},
-
-
-        ----------------------------------------------------------------------------------
-
-        -- Rays
-        -- list of the gameObjects to cast the ray against by default by ray:Cast()
-        -- filled in the CastableGameObjects behavior
-        castableGameObjects = {},
-        
-        -- Triggers
-        -- list of the gameObjects to check for proximity by the triggers
-        -- filled in the TriggerableGameObject behavior
-        triggerableGameObjects = { default = {} },
-
-        -- List of the gameObjects that react to the mouse inputs
-        mouseInteractiveGameObjects = {},
     }
 end
 
@@ -443,50 +450,49 @@ function Daneel.Debug.GetType(object, OnlyReturnLuaType)
     return argType
 end
 
-local OriginalError = error
+-- prevent to set the new version of error() when DEBUG is false or before the StackTrace is enabled when DEBUG is true.
+local function SetNewError()
+    local OriginalError = error
 
---- Print the stackTrace unless told otherwise then the provided error in the console
--- @param message (string) The error message.
--- @param doNotPrintStacktrace [optional default=false] (boolean) Set to true to prevent the stacktrace to be printed before the error message.
-function error(message, doNotPrintStacktrace)
-    if DEBUG == true and doNotPrintStacktrace ~= true then
-        Daneel.Debug.StackTrace.Print()
+    --- Print the stackTrace unless told otherwise then the provided error in the console
+    -- @param message (string) The error message.
+    -- @param doNotPrintStacktrace [optional default=false] (boolean) Set to true to prevent the stacktrace to be printed before the error message.
+    function error(message, doNotPrintStacktrace)
+        if DEBUG == true and doNotPrintStacktrace ~= true then
+            Daneel.Debug.StackTrace.Print()
+        end
+        OriginalError(message)
     end
-    OriginalError(message)
 end
 
---- Check the value of 'componentType', correct its case or convert it to string and throw error if it is not one of the valid component types or objects.
+--- Check the value of 'componentType', correct its case and throw error if it is not one of the valid component types.
 -- @param componentType (string) The component type as a string.
 -- @return (string) The correct component type.
 function Daneel.Debug.CheckComponentType(componentType)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckComponentType", componentType)
     local errorHead = "Daneel.Debug.CheckComponentType(componentType) : "
     Daneel.Debug.CheckArgType(componentType, "componentType", "string", errorHead)
-
     local componentTypes = config.componentTypes
     componentType = Daneel.Utilities.CaseProof(componentType, componentTypes)
     if not componentType:isoneof(componentTypes) then
         error(errorHead.."Argument 'componentType' with value '"..componentType.."' is not one of the valid component types : "..table.concat(componentTypes, ", "))
     end
-
     Daneel.Debug.StackTrace.EndFunction("Daneel.Debug.CheckComponentType", componentType)
     return componentType
 end
 
---- Check the value of 'assetType', correct its case or convert it to string and throw error if it is not one of the valid asset types or objects.
+--- Check the value of 'assetType', correct its case and throw error if it is not one of the valid asset types.
 -- @param assetType (string) The asset type as a string.
 -- @return (string) The correct asset type.
 function Daneel.Debug.CheckAssetType(assetType)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckAssetType", assetType)
     local errorHead = "Daneel.Debug.CheckAssetType(assetType) : "
     Daneel.Debug.CheckArgType(assetType, "assetType", "string", errorHead)
-
     local assetTypes = config.assetTypes
     assetType = Daneel.Utilities.CaseProof(assetType, assetTypes)
     if not assetType:isoneof(assetTypes) then
         error(errorHead.."Argument 'assetType' with value '"..assetType.."' is not one of the valid asset types : "..table.concat(assetTypes, ", "))
     end
-
     Daneel.Debug.StackTrace.EndFunction("Daneel.Debug.CheckAssetType", assetType)
     return assetType
 end
@@ -538,8 +544,8 @@ end
 -- @param name (string) The variable name.
 -- @param (mixed) The variable value, or nil.
 function Daneel.Debug.GetValueFromName(name)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.GetValueFromName")
-    local errorHead = "Daneel.Debug.GetValueFromName(name)"
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.GetValueFromName", name)
+    local errorHead = "Daneel.Debug.GetValueFromName(name) : "
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     if name:find(".") == nil then
         Daneel.Debug.StackTrace.EndFunction()
@@ -868,16 +874,19 @@ Daneel.Time = {
     deltaTime = -1,
     timeScale = 1.0,
     frameCount = 0,
-    timedUpdates = {-- scriptedBehavior = { frameRate, lastTimedUpdate } },
+    timedUpdates = {
+        -- scriptedBehavior = { interval, lastTimedUpdate } 
+    },
 }
 -- see below in Daneel.Update()
 
 
---- Alow a ScriptedBehavior to ask Daneel to call the TimeUpdate() function on him at the desired frameRate.
+--- Alow a ScriptedBehavior to ask Daneel to call the TimeUpdate() function on him at the desired interval.
 -- @param scriptedBehavior (ScriptedBehavior) The ScriptedBehavior that wants to use TimedUpdate()
-function Daneel.Time.RegisterTimedUpdate(scriptedBehavior, frameRate)
+-- @param interval (number) The time in second between two desired call to Behavior:TimedUpdate().
+function Daneel.Time.RegisterTimedUpdate(scriptedBehavior, interval)
     Daneel.Time.timedUpdates[scriptedBehavior] = {
-        frameRate = frameRate,
+        interval = interval,
         lastTimedUpdate = 0
     }
 end
@@ -891,6 +900,9 @@ local luaDocStop = ""
 function Daneel.Awake()
     config = table.deepmerge(DefaultConfig(), config)
     DEBUG = config.debug
+    if DEBUG == true then
+        SetNewError()
+    end
 
     -- built assetTypes and componentTypes
     config.assetTypes = table.getkeys(config.assetObjects)
@@ -1061,6 +1073,13 @@ function Daneel.Awake()
     if DEBUG == true then
         print("~~~~~ Daneel is loaded ~~~~~")
     end
+
+    for i, path in pairs(config.scriptPaths) do
+        local script = Asset.Get(path, "Script")
+        if type(script.DaneelAwake) == "function" then
+            script.DaneelAwake()
+        end
+    end
 end -- end Daneel.Awake()
 
 
@@ -1073,7 +1092,7 @@ function Daneel.Update()
 
     -- Call to TimedUpdate
     for scriptedBehavior, scriptInfo in pairs(Daneel.Time.timedUpdates) do
-        local interval = Daneel.Time.timeScale / scriptInfo.frameRate
+        local interval = scriptInfo.interval * Daneel.Time.timeScale
         if scriptInfo.lastTimedUpdate + interval >= currentTime then
             local timedDeltaTime = currentTime - scriptInfo.lastTimedUpdate
             scriptInfo.lastTimedUpdate = currentTime
