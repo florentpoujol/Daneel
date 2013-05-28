@@ -26,16 +26,15 @@ A implémenter
     AddComponent, GetComponent, SetComponent, Asset.GetScript
 
 - (ré) ajouter GO.Set[Compoenent]()   dans GameObject et dans Daneel.Awake()
-
-- ré ajouter timescale
+ (ré) ajouter GO.Get[Component]() ?
 
 
 ==========
 A tester
 
-- trigger layouts
-- mass-setting de scriptedBehavior
+
 - comportement de DaneelAwake > vérifier sur les ScriptedBehaviors qu'elle toune bien individuellement pour chaque instance.
+> non ell ne tourne pas individuellement pour chaque ScriptedBehavior, self n'y est pas accessible
 - ray:Cast() qui trie les racastHit par distance
 
 
@@ -44,13 +43,10 @@ A modifier/ajouter dans la doc :
 
 
 - Utilities.AllowDynamicGettersAndSetters()
-
 - Debug.GetNameFromValue, GetValueFromName, ToRawString
-
 - GameObject.NewFromScene()
-
 - Fix Time page
-
+- ray:Cast() (trie par distance)
 - GUI
   
 
