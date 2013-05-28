@@ -282,7 +282,6 @@ end
 
 ----------------------------------------------------------------------------------
 -- RaycastHit
--- keys : distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject, component
 
 RaycastHit = {}
 RaycastHit.__index = RaycastHit
@@ -291,9 +290,18 @@ function RaycastHit.__tostring()
     return "RaycastHit"
 end
 
+--- Create a new RaycastHit
+-- @param distance (number) The distance between the ray's position and the hit.
+-- @param normal (Vector3) The normal of the surface hit.
+-- @param hitBlockLocation [optional] (Vector3) The position of the block that has been hit (only if a mapRenderer has been hit).
+-- @param adjacentBlockLocation [optional] (Vector3) The position of the adjacent block.
+-- @param gameObject (GameObject) The gameObject that has been hit.
+-- @return (RaycastHit) The raycastHit.
 function RaycastHit.New(distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject)
     Daneel.Debug.StackTrace.BeginFunction("RaycastHit.New", distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject)
-
+    local errorHead = "RaycastHit.New(distance, normal[, hitBlockLocation, adjacentBlockLocation, gameObject]) : "
+    Daneel.Debug.CheckArgType(distance, "distance", "number", errorHead)
+    Daneel.Debug.CheckArgType(normal, "normal", "Vector3", errorHead)
     local raycastHit = {
         distance = distance,
         normal = normal,
@@ -302,14 +310,12 @@ function RaycastHit.New(distance, normal, hitBlockLocation, adjacentBlockLocatio
         gameObject = gameObject,
     }
     setmetatable(raycastHit, RaycastHit)
-
     if raycastHit.hitBlockLocation ~= nil then
         raycastHit.component = "MapRenderer"
     else
         raycastHit.component = "ModelRenderer"
     end
-
-    Daneel.Debug.StackTrace.EndFunction("RaycastHit.New", raycastHit)
+    Daneel.Debug.StackTrace.EndFunction()
     return raycastHit
 end
 
