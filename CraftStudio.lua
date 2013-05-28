@@ -67,7 +67,7 @@ Component = {}
 Component.__index = Component
 
 --- Apply the content of the params argument to the provided component.
--- @param component (Scriptedbehavior, ModelRenderer, MapRenderer, Camera or Transform) The component.
+-- @param component (Scriptedbehavior, ModelRenderer, MapRenderer, Camera, Transform or Physics) The component.
 -- @param params (table) A table of parameters to set the component with.
 function Component.Set(component, params)
     Daneel.Debug.StackTrace.BeginFunction("Component.Set", component, params)
@@ -83,8 +83,8 @@ function Component.Set(component, params)
 end
 
 --- Destroy the provided component, removing it from the gameObject.
--- TNote that the component is removed only at the end of the current frame.
--- @param component (ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform) The component.
+-- Note that the component is removed only at the end of the current frame.
+-- @param component (ScriptedBehavior, ModelRenderer, MapRenderer, Camera, Transform or Physics) The component.
 function Component.Destroy(component)
     Daneel.Debug.StackTrace.BeginFunction("Component.Destroy", component)
     local errorHead = "Component.Destroy(component) : "
