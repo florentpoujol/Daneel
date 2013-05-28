@@ -7,15 +7,15 @@
 -- triggerableGameObjects
 local tgos = nil
 
+function Behavior:Awake()
+    tgos = config.triggerableGameObjects
+end
+
 function Behavior:Start()
     -- the gameObject that touches this trigger
     self.gameObjectsInRange = table.new()
     self.layers = self.layers:split(",")
-    if tgos == nil then
-        tgos = config.triggerableGameObjects
-    end
 end
-
 
 function Behavior:Update()
     if self.range == 0 or self.isStatic == true then 

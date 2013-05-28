@@ -2,7 +2,7 @@
 -- public property :
 -- layers
 
-function Behavior:Start()
+function Behavior:Awake()
 	local tgos = config.triggerableGameObjects
 	self.layers = self.layers:split(",")
 	for i, layer in ipairs(self.layers) do
