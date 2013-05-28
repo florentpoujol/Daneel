@@ -321,7 +321,7 @@ end
 
 --- Add a component to the gameObject and optionally initialize it.
 -- @param gameObject (GameObject) The gameObject.
--- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Physics) The component type (as a string) or object.
+-- @param componentType (string) The component type.
 -- @param params [optional] (string, Script or table) A table of parameters to initialize the new component with or, if componentType is 'ScriptedBehavior', the mandatory script name or asset.
 -- @param scriptedBehaviorParams [optional] (table) A table of parameters to initialize the new ScriptedBehavior with.
 -- @return (ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Physics) The component.
@@ -414,7 +414,7 @@ function GameObject.AddPhysics(gameObject, params) end
 
 --- Set the component of the provided type on the gameObject with the provided parameters.
 -- @param gameObject (GameObject) The gameObject.
--- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera, Transform or Physics)
+-- @param componentType (string) The component type.
 -- @param params (string, Script or table) A table of parameters to set the component with or, if componentType is 'ScriptedBehavior', the script name or asset.
 -- @param scriptedBehaviorParams [optional] (table) If componentType is 'ScriptedBehavior', the mandatory table of parameters to set the ScriptedBehavior with.
 function GameObject.SetComponent(gameObject, componentType, params, scriptedBehaviorParams)
@@ -476,7 +476,7 @@ local OriginalGetComponent = GameObject.GetComponent
 
 --- Get the first component of the provided type attached to the gameObject.
 -- @param gameObject (GameObject) The gameObject.
--- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera, Transform or Physics)
+-- @param componentType (string) The component type.
 -- @param scriptNameOrAsset [optional] (string or Script) If componentType is "ScriptedBehavior", the mandatory script name or asset.
 -- @return (ScriptedBehavior, ModelRenderer, MapRenderer, Camera, Transform or Physics) The component instance, or nil if none is found.
 function GameObject.GetComponent(gameObject, componentType, scriptNameOrAsset)
@@ -484,7 +484,6 @@ function GameObject.GetComponent(gameObject, componentType, scriptNameOrAsset)
     local errorHead = "GameObject.GetComponent(gameObject, componentType[, scriptNameOrAsset]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     componentType = Daneel.Debug.CheckComponentType(componentType)
-
     local component = nil
     if componentType == "ScriptedBehavior" then
         Daneel.Debug.CheckArgType(scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead)
@@ -492,7 +491,6 @@ function GameObject.GetComponent(gameObject, componentType, scriptNameOrAsset)
     else
         component = OriginalGetComponent(gameObject, componentType)
     end
-
     Daneel.Debug.StackTrace.EndFunction("GameObject.GetComponent", component)
     return component
 end
@@ -511,9 +509,7 @@ function GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset, calledFro
         Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
         Daneel.Debug.CheckArgType(scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead)
     end
-
     local script = scriptNameOrAsset
-
     if type(scriptNameOrAsset) == "string" then
         script = Asset.Get(scriptNameOrAsset, "Script")
         if script == nil then
@@ -524,7 +520,6 @@ function GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset, calledFro
             end 
         end
     end
-
     local component = OriginalGetScriptedBehavior(gameObject, script)
     if calledFrom__index ~= true then
         Daneel.Debug.StackTrace.EndFunction("GameObject.GetScriptedBehavior", component)
