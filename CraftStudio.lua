@@ -218,7 +218,7 @@ function Ray.Cast(ray, gameObjects, sortByDistance)
     if gameObjects == nil then
         gameObjects = config.castableGameObjects
         sortByDistance = false
-    else type(gameObjects) == "boolean" then
+    elseif type(gameObjects) == "boolean" then
         sortByDistance = gameObjects
         gameObjects = config.castableGameObjects
     else
