@@ -148,7 +148,8 @@ function DefaultConfig()
             TileSet = TileSet,
             Sound = Sound,
             Scene = Scene,
-            --Document = Document
+            --Document = Document,
+            --Font = Font,
         },
         assetTypes = {}, -- filled in Daneel.Awake() below
 

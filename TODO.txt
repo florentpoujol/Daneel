@@ -1,6 +1,6 @@
 
-=================
-Develop
+==========
+Branch Develop
 
 
 vérifier que tous les changements prévus sont implémentés, sans se soucier du GUI
@@ -18,29 +18,34 @@ Publier
 Voir à attendre que l'asset "Font" soit lui-même publié > influera sur les GUIText
 
 
-========
-
-Features for Develop branch :
-
-- function gameObject = GameObject.NewFromScene(sceneNameOrAsset, params) -> retourne le gameObject qui est dans la scène au lieu de créer un GO avec le contenu de la scène dedant
-=>>>  comment annuler la parentalité d'un GO ? 
-=> modif SetParent() pour accepter nil comme param
+==========
+A implémenter
 
 
+- ray:Cast() qui donne les raycasthit par ordre de distance ou donne au moins le premier
+
+- AddScriptedBehavior  qui autorise un alias en lieu et place du nom du script
+  Nouvelle convention : utiliser script alias en lieu et place du nom du script partout
+    AddComponent, GetComponent, SetComponent, Asset.GetScript
+
+
+==========
+A tester
+
+- trigger layouts
+- mass-setting de scriptedBehavior
 
 
 
-=======
+==========
+A modifier/ajouter dans la doc :
 
-modif doc :
 
 - Utilities.AllowDynamicGettersAndSetters()
 
 - Debug.GetNameFromValue, GetValueFromName, ToRawString
 
 - GameObject.NewFromScene()
-
-- ajout/set de scriptedBehaviors avec gameObject.Set > faire comme n'importe quel autre component (nomOrAlias = {})
 
 - Fix Time page
 
@@ -49,8 +54,8 @@ modif doc :
 
 
 
-==================
-GUI 
+====================
+Branch GUI 
 
 - supprimer orthographic scale from the config
 

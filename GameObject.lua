@@ -92,7 +92,7 @@ function GameObject.NewFromScene(sceneNameOrAsset, params)
     end
     local parentGameObject = CraftStudio.Instantiate("NewFromScene", scene)
     local gameObject = parentGameObject.children[1]
-    --gameObject:SetParent(false)
+    gameObject:SetParent(nil)
     parentGameObject:Destroy()
     if params ~= nil then
         gameObject:Set(params)
@@ -201,19 +201,17 @@ local OriginalSetParent = GameObject.SetParent
 --- Set the gameOject's parent. 
 -- Optionaly carry over the gameObject's local transform instead of the global one.
 -- @param gameObject (GameObject) The gameObject.
--- @param parentNameOrInstance (string or GameObject) The parent name or gameObject.
+-- @param parentNameOrInstance [optional] (string or GameObject) The parent name or gameObject (or nil to remove the parent).
 -- @param keepLocalTransform [optional default=false] (boolean) Carry over the game object's local transform instead of the global one.
 function GameObject.SetParent(gameObject, parentNameOrInstance, keepLocalTransform)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.SetParent", gameObject, parentNameOrInstance, keepLocalTransform)
-    local errorHead = "GameObject.SetParent(gameObject, parentNameOrInstance[, keepLocalTransform]) : "
+    local errorHead = "GameObject.SetParent(gameObject, [parentNameOrInstance, keepLocalTransform]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckArgType(parentNameOrInstance, "parentNameOrInstance", {"string", "GameObject"}, errorHead)
+    Daneel.Debug.CheckOptionalArgType(parentNameOrInstance, "parentNameOrInstance", {"string", "GameObject"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(keepLocalTransform, "keepLocalTransform", "boolean", errorHead)
-    
     if keepLocalTransform == nil then
         keepLocalTransform = false
     end
-
     local parent = parentNameOrInstance
     if type(parent) == "string" then
         parent = GameObject.Get(parentNameOrInstance)
@@ -221,7 +219,6 @@ function GameObject.SetParent(gameObject, parentNameOrInstance, keepLocalTransfo
             error(errorHead.."Argument 'parent' : Parent gameObject with name '"..parentNameOrInstance.."' was not found.")
         end
     end
-      
     OriginalSetParent(gameObject, parent, keepLocalTransform)
     Daneel.Debug.StackTrace.EndFunction("GameObject.SetParent")
 end
@@ -324,17 +321,19 @@ end
 
 --- Add a component to the gameObject and optionally initialize it.
 -- @param gameObject (GameObject) The gameObject.
--- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer or Camera) The component type (as a string) or object.
+-- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Physics) The component type (as a string) or object.
 -- @param params [optional] (string, Script or table) A table of parameters to initialize the new component with or, if componentType is 'ScriptedBehavior', the mandatory script name or asset.
 -- @param scriptedBehaviorParams [optional] (table) A table of parameters to initialize the new ScriptedBehavior with.
--- @return (ScriptedBehavior, ModelRenderer, MapRenderer or Camera) The component.
+-- @return (ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Physics) The component.
 function GameObject.AddComponent(gameObject, componentType, params, scriptedBehaviorParams)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.AddComponent", gameObject, componentType, params, scriptedBehaviorParams)
     local errorHead = "GameObject.AddComponent(gameObject, componentType[, params, scriptedBehaviorParams]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     componentType = Daneel.Debug.CheckComponentType(componentType)
     if componentType == "Transform" then
-        error(errorHead.."Can't add a transform because gameObjects may only have one transform.")
+        if DEBUG == true then
+            error(errorHead.."Can't add a transform because gameObjects may only have one transform.")
+        end
     end
 
     local component = nil
@@ -377,7 +376,6 @@ function GameObject.AddScriptedBehavior(gameObject, scriptNameOrAsset, params)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.AddScriptedBehavior", gameObject, scriptNameOrAsset, params)
     local errorHead = "GameObject.AddScriptedBehavior(gameObject, scriptNameOrAsset[, params]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-
     local component = gameObject:AddComponent("ScriptedBehavior", scriptNameOrAsset, params)
     Daneel.Debug.StackTrace.EndFunction("GameObject.AddScriptedBehavior", component)
     return component
@@ -401,6 +399,12 @@ function GameObject.AddMapRenderer(gameObject, params) end
 -- @return (Camera) The component.
 function GameObject.AddCamera(gameObject, params) end
 
+--- Add a Physics component to the gameObject and optionally initialize it.
+-- @param gameObject (GameObject) The gameObject.
+-- @param params [optional] (table) A table of parameters to initialize the new component with.
+-- @return (Physics) The component.
+function GameObject.AddPhysics(gameObject, params) end
+
 -- The actual code of the helpers is generated at runtime in GameObject.Init() below
 -- The declaration are written here to shows up in the documentation generated by LuaDoc
 
@@ -410,7 +414,7 @@ function GameObject.AddCamera(gameObject, params) end
 
 --- Set the component of the provided type on the gameObject with the provided parameters.
 -- @param gameObject (GameObject) The gameObject.
--- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform)
+-- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera, Transform or Physics)
 -- @param params (string, Script or table) A table of parameters to set the component with or, if componentType is 'ScriptedBehavior', the script name or asset.
 -- @param scriptedBehaviorParams [optional] (table) If componentType is 'ScriptedBehavior', the mandatory table of parameters to set the ScriptedBehavior with.
 function GameObject.SetComponent(gameObject, componentType, params, scriptedBehaviorParams)
@@ -472,9 +476,9 @@ local OriginalGetComponent = GameObject.GetComponent
 
 --- Get the first component of the provided type attached to the gameObject.
 -- @param gameObject (GameObject) The gameObject.
--- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Transform)
+-- @param componentType (string, ScriptedBehavior, ModelRenderer, MapRenderer, Camera, Transform or Physics)
 -- @param scriptNameOrAsset [optional] (string or Script) If componentType is "ScriptedBehavior", the mandatory script name or asset.
--- @return (ScriptedBehavior, ModelRenderer, MapRenderer, Camera) The component instance, or nil if none is found.
+-- @return (ScriptedBehavior, ModelRenderer, MapRenderer, Camera, Transform or Physics) The component instance, or nil if none is found.
 function GameObject.GetComponent(gameObject, componentType, scriptNameOrAsset)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.GetComponent", gameObject, componentType, scriptNameOrAsset)
     local errorHead = "GameObject.GetComponent(gameObject, componentType[, scriptNameOrAsset]) : "
@@ -528,7 +532,7 @@ function GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset, calledFro
     return component
 end
 
--- GetComponent helpers does not exists since the component are cached on the gameObject by __index()
+-- GetComponent helpers does not exists since the components are accessible on the gameObject via their "variable" like the transform
 
 
 ----------------------------------------------------------------------------------
