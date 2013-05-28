@@ -866,12 +866,21 @@ end
 Daneel.Time = {
     time = -1,
     deltaTime = -1,
-    fixedTime = -1,
-    fixedDeltaTime = 0.02,
-    frameCount = 0,
     timeScale = 1.0,
+    frameCount = 0,
+    timedUpdates = {-- scriptedBehavior = { frameRate, lastTimedUpdate } },
 }
 -- see below in Daneel.Update()
+
+
+--- Alow a ScriptedBehavior to ask Daneel to call the TimeUpdate() function on him at the desired frameRate.
+-- @param scriptedBehavior (ScriptedBehavior) The ScriptedBehavior that wants to use TimedUpdate()
+function Daneel.Time.RegisterTimedUpdate(scriptedBehavior, frameRate)
+    Daneel.Time.timedUpdates[scriptedBehavior] = {
+        frameRate = frameRate,
+        lastTimedUpdate = 0
+    }
+end
 
 
 ----------------------------------------------------------------------------------
@@ -1052,14 +1061,6 @@ function Daneel.Awake()
     if DEBUG == true then
         print("~~~~~ Daneel is loaded ~~~~~")
     end
-
-    -- call DaneelAwake()
-    for i, path in pairs(config.scriptPaths) do
-        local script = Asset.GetScript(path)
-        if script ~= nil and type(script.DaneelAwake) == "function" then
-            script:DaneelAwake()
-        end
-    end
 end -- end Daneel.Awake()
 
 
@@ -1069,6 +1070,16 @@ function Daneel.Update()
     Daneel.Time.deltaTime = currentTime - Daneel.Time.time
     Daneel.Time.time = currentTime
     Daneel.Time.frameCount = Daneel.Time.frameCount + 1
+
+    -- Call to TimedUpdate
+    for scriptedBehavior, scriptInfo in pairs(Daneel.Time.timedUpdates) do
+        local interval = Daneel.Time.timeScale / scriptInfo.frameRate
+        if scriptInfo.lastTimedUpdate + interval >= currentTime then
+            local timedDeltaTime = currentTime - scriptInfo.lastTimedUpdate
+            scriptInfo.lastTimedUpdate = currentTime
+            scriptedBehavior:TimedUpdate(timedDeltaTime)
+        end
+    end
 
     -- Delayed events
     if Daneel.Event.fireAtFrame[Daneel.Time.frameCount] ~= nil then
