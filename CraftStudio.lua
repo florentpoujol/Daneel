@@ -14,13 +14,15 @@ function Asset.Get(assetName, assetType)
     Daneel.Debug.StackTrace.BeginFunction("Asset.Get", assetName, assetType)
     local errorHead = "Asset.Get(assetName[, assetType]) : "
     Daneel.Debug.CheckArgType(assetName, "assetName", "string", errorHead)
-
     if assetType ~= nil then
         assetType = Daneel.Debug.CheckAssetType(assetType)
     end
-
+    -- if asset is a Script, check if the asset name is actually an alias and resolve its actual name (path)
+    if assetType == "Script" and config.scriptPaths[assetName] ~= nil then
+        assetName = config.scriptPaths[assetName]
+    end
     local asset = CraftStudio.FindAsset(assetName, assetType)
-    Daneel.Debug.StackTrace.EndFunction("Asset.Get", asset)
+    Daneel.Debug.StackTrace.EndFunction()
     return asset
 end
 
@@ -59,6 +61,10 @@ function Asset.GetScene(assetName) end
 -- @return (Sound) The asset, or nil if none is found.
 function Asset.GetSound(assetName) end
 
+--- Get the Font asset with the specified name.
+-- @param assetName (string) The fully-qualified asset name.
+-- @return (Font) The asset, or nil if none is found.
+function Asset.GetFont(assetName) end
 
 ----------------------------------------------------------------------------------
 -- Components

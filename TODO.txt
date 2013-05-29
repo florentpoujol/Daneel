@@ -21,12 +21,6 @@ Voir à attendre que l'asset "Font" soit lui-même publié > influera sur les GU
 ==========
 A implémenter
 
-- AddScriptedBehavior  qui autorise un alias en lieu et place du nom du script
-  Nouvelle convention : utiliser script alias en lieu et place du nom du script partout
-    AddComponent, GetComponent, SetComponent, Asset.GetScript
-
-- (ré) ajouter GO.Set[Compoenent]()   dans GameObject et dans Daneel.Awake()
- (ré) ajouter GO.Get[Component]() ?
 
 
 ==========
@@ -35,6 +29,7 @@ A tester
 
 - comportement de DaneelAwake > vérifier sur les ScriptedBehaviors qu'elle toune bien individuellement pour chaque instance.
 > non ell ne tourne pas individuellement pour chaque ScriptedBehavior, self n'y est pas accessible
+
 - ray:Cast() qui trie les racastHit par distance
 
 

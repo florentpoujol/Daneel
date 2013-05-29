@@ -468,6 +468,8 @@ function GameObject.SetScriptedBehavior(gameObject, scriptNameOrAsset, params)
     Daneel.Debug.StackTrace.EndFunction("GameObject.SetScriptedBehavior")
 end
 
+-- SetComponent helpers do not exist since it makes more sense (?) to use self.gameObject.component:Set()
+
 
 ----------------------------------------------------------------------------------
 -- Get components
