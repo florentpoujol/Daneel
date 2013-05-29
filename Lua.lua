@@ -3,11 +3,11 @@
 -- math
 
 --- Tell whether the provided number is an integer.
+-- The function returns true even if the number has one or severam zeros as decimals (1.0, 2.000, ...)
 -- @param number (number) The number to check.
 -- @param errorIfValueIsNotNumber [optionnal default=false] (boolean) If true, the function returns an error when the 'number' argument is not a number.
 function math.isinteger(number, errorIfValueIsNotNumber)
     Daneel.Debug.StackTrace.BeginFunction("math.isinteger", number, errorIfValueIsNotNumber)
-    
     local argType = type(number)
     if argType ~= "number" then
         if errorIfValueIsNotNumber ~= nil and errorIfValueIsNotNumber == true then
@@ -17,9 +17,8 @@ function math.isinteger(number, errorIfValueIsNotNumber)
             return false
         end
     end
-
     local isinteger = number == math.floor(number)
-    Daneel.Debug.StackTrace.EndFunction("math.isinteger", isinteger)
+    Daneel.Debug.StackTrace.EndFunction()
     return isinteger
 end
 
@@ -28,8 +27,8 @@ end
 -- string
 
 --- Turn a string into a table, one character per index.
--- @param s (string) The string
--- @return (table) The table
+-- @param s (string) The string.
+-- @return (table) The table.
 function string.totable(s)
     Daneel.Debug.StackTrace.BeginFunction("string.totable", s)
     Daneel.Debug.CheckArgType(s, "string", "string", "string.totable(string)")

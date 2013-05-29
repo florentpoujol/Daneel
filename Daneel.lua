@@ -132,8 +132,13 @@ defaultConfig = {
 
     ----------------------------------------------------------------------------------
 
-    -- Enable/disble Daneel's debugging features.
-    debug = false,
+    debug = {
+        -- Enable/disable Daneel's global debugging features.
+        enableDebug = false,
+
+        -- Enable/disable the Stack Trace.
+        enabeStackTrace = true,
+    }
 
 
     ----------------------------------------------------------------------------------
@@ -454,7 +459,8 @@ end
 local function SetNewError()
     local OriginalError = error
 
-    --- Print the stackTrace unless told otherwise then the provided error in the console
+    --- Print the stackTrace unless told otherwise then the provided error in the console.
+    -- Only exists when debug is enabled. When debug in disabled the built-in 'error(message)'' function exists instead.
     -- @param message (string) The error message.
     -- @param doNotPrintStacktrace [optional default=false] (boolean) Set to true to prevent the stacktrace to be printed before the error message.
     function error(message, doNotPrintStacktrace)
@@ -518,6 +524,7 @@ function Daneel.Debug.ToRawString(data)
 end
 
 --- Returns the name as a string of the global variable (including nested tables) whose value is provided.
+-- This only works if the value of the variable is a table or a function.
 -- When the variable is nested in one or several tables (like Daneel.GUI.Text), its name must have been set in the 'userTypes' variable in the config.
 -- @param object (table or function) Any global variable, any object from CraftStudio or Daneel or objects whse name is set in 'userTypes' in the config.
 -- @return (string) The name, or nil.
@@ -588,7 +595,7 @@ Daneel.Debug.StackTrace = { messages = {} }
 -- @param functionName (string) The function name.
 -- @param ... [optional] (mixed) Arguments received by the function.
 function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
-    if DEBUG == false then return end
+    if DEBUG ~= true or config.debug.enableStackTrace ~= true then return end
     local errorHead = "Daneel.Debug.StackTrace.BeginFunction(functionName[, ...]) : "
     Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
     local msg = functionName.."("
@@ -609,7 +616,7 @@ end
 
 --- Closes a successful function call, removing it from the stacktrace.
 function Daneel.Debug.StackTrace.EndFunction()
-    if DEBUG == false then return end
+    if DEBUG ~= true or config.debug.enableStackTrace ~= true then return end
     -- since 16/05/2013 no arguments is needed anymore, since the StackTrace only keeps open functions calls and never keep returned values
     -- I didn't rewrote all the calls to EndFunction() 
     table.remove(Daneel.Debug.StackTrace.messages)
@@ -617,7 +624,7 @@ end
 
 --- Print the StackTrace.
 function Daneel.Debug.StackTrace.Print()
-    if DEBUG == false then return end
+    if DEBUG ~= true or config.debug.enableStackTrace ~= true then return end
     local messages = Daneel.Debug.StackTrace.messages
     Daneel.Debug.StackTrace.messages = {}
     print("~~~~~ Daneel.Debug.StackTrace ~~~~~")
@@ -880,15 +887,23 @@ Daneel.Time = {
 }
 -- see below in Daneel.Update()
 
-
 --- Alow a ScriptedBehavior to ask Daneel to call the TimeUpdate() function on him at the desired interval.
 -- @param scriptedBehavior (ScriptedBehavior) The ScriptedBehavior that wants to use TimedUpdate()
 -- @param interval (number) The time in second between two desired call to Behavior:TimedUpdate().
 function Daneel.Time.RegisterTimedUpdate(scriptedBehavior, interval)
-    Daneel.Time.timedUpdates[scriptedBehavior] = {
-        interval = interval,
-        lastTimedUpdate = 0
-    }
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Time.RegisterTimedUpdate", scriptedBehavior, interval)
+    local errorHead = "Daneel.Time.RegisterTimedUpdate(scriptedBehavior, interval) : "
+    Daneel.Debug.CheckArgType(scriptedBehavior, "scriptedBehavior", "ScriptedBehavior", errorHead)
+    Daneel.Debug.CheckArgType(interval, "interval", "number", errorHead)
+    if interval <= 0 then
+        Daneel.Time.timedUpdates[scriptedBehavior] = nil
+    else
+        Daneel.Time.timedUpdates[scriptedBehavior] = {
+            interval = interval,
+            lastTimedUpdate = 0
+        }
+    end
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
@@ -899,8 +914,8 @@ local luaDocStop = ""
 -- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
     config = table.deepmerge(DefaultConfig(), config)
-    DEBUG = config.debug
-    if DEBUG == true then
+    DEBUG = config.debug.enableDebug
+    if DEBUG == true and config.debug.enableStackTrace == true then
         SetNewError()
     end
 

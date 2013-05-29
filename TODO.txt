@@ -21,14 +21,15 @@ Voir à attendre que l'asset "Font" soit lui-même publié > influera sur les GU
 ==========
 A implémenter
 
+- revoir liens entre timedupdate et timescale, et corriger doc a propos
+> faire agir timescale sur deltaTime, mais pas sur time frame rate au lieu de timeDeltaTime
+> dans timeupdate, multiplier une valeur par timeDeltaTime la rend insenssible à la 
+
+> voir dans Unity l'iplication du time scale sur le frame rate ou le delta time
 
 
 ==========
 A tester
-
-
-- comportement de DaneelAwake > vérifier sur les ScriptedBehaviors qu'elle toune bien individuellement pour chaque instance.
-> non ell ne tourne pas individuellement pour chaque ScriptedBehavior, self n'y est pas accessible
 
 - ray:Cast() qui trie les racastHit par distance
 
@@ -38,7 +39,7 @@ A modifier/ajouter dans la doc :
 
 
 - Utilities.AllowDynamicGettersAndSetters()
-- Debug.GetNameFromValue, GetValueFromName, ToRawString
+
 - GameObject.NewFromScene()
 - Fix Time page
 - ray:Cast() (trie par distance)

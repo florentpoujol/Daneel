@@ -121,8 +121,13 @@ config = {
 
     ----------------------------------------------------------------------------------
 
-    -- Enable/disble Daneel's debugging features.
-    debug = false,
+    debug = {
+        -- Enable/disable Daneel's global debugging features.
+        enableDebug = false,
+
+        -- Enable/disable the Stack Trace.
+        enabeStackTrace = true,
+    }
 }
 
     
