@@ -127,7 +127,7 @@ config = {
 
         -- Enable/disable the Stack Trace.
         enabeStackTrace = true,
-    }
+    },
 }
 
     

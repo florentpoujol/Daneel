@@ -138,7 +138,7 @@ defaultConfig = {
 
         -- Enable/disable the Stack Trace.
         enabeStackTrace = true,
-    }
+    },
 
 
     ----------------------------------------------------------------------------------
@@ -875,7 +875,7 @@ end
 -- Time
 
 Daneel.Time = {
-    realtime = 0.0,
+    realTime = 0.0,
     realDeltaTime = 0.0,
 
     time = 0.0,
@@ -884,27 +884,32 @@ Daneel.Time = {
 
     frameCount = 0,
     timedUpdates = {
-        -- scriptedBehavior = { interval, lastTimedUpdate } 
+        -- scriptedBehavior = { timedDeltaTime, lastTimedUpdate } 
     },
 }
 -- see below in Daneel.Update()
 
 --- Alow a ScriptedBehavior to ask Daneel to call the TimeUpdate() function on him at the desired interval.
 -- @param scriptedBehavior (ScriptedBehavior) The ScriptedBehavior that wants to use TimedUpdate()
--- @param interval (number) The time in second between two desired call to Behavior:TimedUpdate().
-function Daneel.Time.RegisterTimedUpdate(scriptedBehavior, interval)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Time.RegisterTimedUpdate", scriptedBehavior, interval)
-    local errorHead = "Daneel.Time.RegisterTimedUpdate(scriptedBehavior, interval) : "
+-- @param timedFrameRateOrDeltaTime (number) The desired timed frame rate (if >= 1) or timed delta time (if < 1).
+function Daneel.Time.RegisterTimedUpdate(scriptedBehavior, timedFrameRateOrDeltaTime)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Time.RegisterTimedUpdate", scriptedBehavior, timedFrameRateOrDeltaTime)
+    local errorHead = "Daneel.Time.RegisterTimedUpdate(scriptedBehavior, timedFrameRateOrDeltaTime) : "
     Daneel.Debug.CheckArgType(scriptedBehavior, "scriptedBehavior", "ScriptedBehavior", errorHead)
-    Daneel.Debug.CheckArgType(interval, "interval", "number", errorHead)
-    if interval <= 0 then
+    Daneel.Debug.CheckArgType(timedFrameRateOrDeltaTime, "timedFrameRateOrDeltaTime", "number", errorHead)
+    if timedFrameRateOrDeltaTime <= 0 then
         Daneel.Time.timedUpdates[scriptedBehavior] = nil
-    else
-        Daneel.Time.timedUpdates[scriptedBehavior] = {
-            interval = interval,
-            lastTimedUpdate = 0
-        }
+        Daneel.Debug.StackTrace.EndFunction()
+        return
     end
+    local timedDeltaTime = timedFrameRateOrDeltaTime
+    if timedDeltaTime >= 1 then -- timedFrameRateOrDeltaTime is a frame rate
+        timedDeltaTime = 1 / timedDeltaTime
+    end
+    Daneel.Time.timedUpdates[scriptedBehavior] = {
+        timedDeltaTime = timedDeltaTime,
+        lastTimedUpdate = 0
+    }
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -915,7 +920,7 @@ local luaDocStop = ""
 
 -- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
-    config = table.deepmerge(DefaultConfig(), config)
+    config = table.deepmerge(defaultConfig, DefaultConfig(), config)
     DEBUG = config.debug.enableDebug
     if DEBUG == true and config.debug.enableStackTrace == true then
         SetNewError()
@@ -1103,8 +1108,8 @@ end -- end Daneel.Awake()
 function Daneel.Update()
     -- Time
     local currentTime = os.clock()
-    Daneel.Time.realDeltaTime = currentTime - Daneel.Time.realtime
-    Daneel.Time.realtime = currentTime
+    Daneel.Time.realDeltaTime = currentTime - Daneel.Time.realTime
+    Daneel.Time.realTime = currentTime
 
     Daneel.Time.deltaTime = Daneel.Time.realDeltaTime * Daneel.Time.timeScale
     Daneel.Time.time = Daneel.Time.time + Daneel.Time.deltaTime
@@ -1116,9 +1121,9 @@ function Daneel.Update()
         local timeScale = math.abs(Daneel.Time.timeScale)
         
         for scriptedBehavior, scriptInfo in pairs(Daneel.Time.timedUpdates) do
-            local interval = scriptInfo.interval / timeScale
-            if scriptInfo.lastTimedUpdate + interval >= Daneel.Time.realTime then
-                local timedDeltaTime = Daneel.Time.realTime - scriptInfo.lastTimedUpdate
+            local timedDeltaTime = scriptInfo.timedDeltaTime / timeScale -- target delta time
+            if Daneel.Time.realTime >= scriptInfo.lastTimedUpdate + timedDeltaTime then
+                timedDeltaTime = Daneel.Time.realTime - scriptInfo.lastTimedUpdate -- real delta time
                 scriptInfo.lastTimedUpdate = Daneel.Time.realTime
                 scriptedBehavior:TimedUpdate(timedDeltaTime)
             end

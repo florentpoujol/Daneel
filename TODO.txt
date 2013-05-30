@@ -21,17 +21,6 @@ Voir à attendre que l'asset "Font" soit lui-même publié > influera sur les GU
 ==========
 A implémenter
 
-- revoir liens entre timedupdate et timescale, et corriger doc a propos
-> faire agir timescale sur deltaTime, mais pas sur time frame rate au lieu de timeDeltaTime
-> dans timeupdate, multiplier une valeur par timeDeltaTime la rend insenssible à la 
-
-> voir dans Unity l'iplication du time scale sur le frame rate ou le delta time
-
-timeScale modifier la manière dont le temp (.time) avance, ce qui du coup influe sur deltaTime qui en est dépendant.
-Le frameRate effectif n'est pas affecté par timeScale
-
-
-> quid de event.fireattime    utilise-t-on le real time ou le scaled time ?
 
 ==========
 A tester
@@ -46,10 +35,11 @@ A modifier/ajouter dans la doc :
 - Utilities.AllowDynamicGettersAndSetters()
 
 - GameObject.NewFromScene()
-- Fix Time page
+
 - ray:Cast() (trie par distance)
 - GUI
-  
+
+- finir page time 
 
 
 

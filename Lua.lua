@@ -155,7 +155,7 @@ function table.copy(t)
     if mt ~= nil then
         setmetatable(newTable, mt)
     end
-    Debug.StackTrace.EndFunction()
+    Daneel.Debug.StackTrace.EndFunction()
     return newTable
 end
 
