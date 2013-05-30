@@ -271,20 +271,19 @@ function Daneel.Utilities.ReplaceInString(string, replacements)
     return string
 end
 
---- Allow to call getters and setters as if they were variable on the provided object.
+--- Allow to call getters and setters as if they were variable on the instance of the provided Object
+-- The instances are tables that have the provided object as metatable.
 -- Optionaly allow to search in a ancestry of objects.
 -- @param Object (mixed) The object.
--- @param ancestors (mixed) One or several (as a table) objects the Object "inherits" from.
+-- @param ancestors [optional] (mixed) One or several (as a table) objects the Object "inherits" from.
 function Daneel.Utilities.AllowDynamicGettersAndSetters(Object, ancestors)
     function Object.__index(instance, key)
         local funcName = "Get"..key:ucfirst()
-
         if Object[funcName] ~= nil then
             return Object[funcName](instance)
         elseif Object[key] ~= nil then
             return Object[key]
         end
-
         if ancestors ~= nil then
             for i, Ancestor in ipairs(ancestors) do
                 if Ancestor[funcName] ~= nil then
@@ -294,7 +293,6 @@ function Daneel.Utilities.AllowDynamicGettersAndSetters(Object, ancestors)
                 end
             end
         end
-
         return nil
     end
 
@@ -877,9 +875,13 @@ end
 -- Time
 
 Daneel.Time = {
-    time = -1,
-    deltaTime = -1,
+    realtime = 0.0,
+    realDeltaTime = 0.0,
+
+    time = 0.0,
+    deltaTime = 0.0,
     timeScale = 1.0,
+
     frameCount = 0,
     timedUpdates = {
         -- scriptedBehavior = { interval, lastTimedUpdate } 
@@ -1101,17 +1103,25 @@ end -- end Daneel.Awake()
 function Daneel.Update()
     -- Time
     local currentTime = os.clock()
-    Daneel.Time.deltaTime = currentTime - Daneel.Time.time
-    Daneel.Time.time = currentTime
+    Daneel.Time.realDeltaTime = currentTime - Daneel.Time.realtime
+    Daneel.Time.realtime = currentTime
+
+    Daneel.Time.deltaTime = Daneel.Time.realDeltaTime * Daneel.Time.timeScale
+    Daneel.Time.time = Daneel.Time.time + Daneel.Time.deltaTime
+
     Daneel.Time.frameCount = Daneel.Time.frameCount + 1
 
-    -- Call to TimedUpdate
-    for scriptedBehavior, scriptInfo in pairs(Daneel.Time.timedUpdates) do
-        local interval = scriptInfo.interval * Daneel.Time.timeScale
-        if scriptInfo.lastTimedUpdate + interval >= currentTime then
-            local timedDeltaTime = currentTime - scriptInfo.lastTimedUpdate
-            scriptInfo.lastTimedUpdate = currentTime
-            scriptedBehavior:TimedUpdate(timedDeltaTime)
+    -- Call to TimedUpdate()
+    if Daneel.Time.timeScale ~= 0 then
+        local timeScale = math.abs(Daneel.Time.timeScale)
+        
+        for scriptedBehavior, scriptInfo in pairs(Daneel.Time.timedUpdates) do
+            local interval = scriptInfo.interval / timeScale
+            if scriptInfo.lastTimedUpdate + interval >= Daneel.Time.realTime then
+                local timedDeltaTime = Daneel.Time.realTime - scriptInfo.lastTimedUpdate
+                scriptInfo.lastTimedUpdate = Daneel.Time.realTime
+                scriptedBehavior:TimedUpdate(timedDeltaTime)
+            end
         end
     end
 

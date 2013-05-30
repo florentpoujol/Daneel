@@ -12,7 +12,7 @@ config = {
     -- * If you defined aliases, dynamically access the ScriptedBehavior on the gameObject via its alias
     scriptPaths = {
         "Daneel/Behaviors/DaneelBehavior",
-        "Daneel/Behaviors/Trigger",
+        triggerScript = "Daneel/Behaviors/Trigger",
         "Daneel/Behaviors/TriggerableGameObject",
         "Daneel/Behaviors/CastableGameObject",
         "Daneel/Behaviors/MouseInteractiveGameObject",

@@ -27,6 +27,11 @@ A implémenter
 
 > voir dans Unity l'iplication du time scale sur le frame rate ou le delta time
 
+timeScale modifier la manière dont le temp (.time) avance, ce qui du coup influe sur deltaTime qui en est dépendant.
+Le frameRate effectif n'est pas affecté par timeScale
+
+
+> quid de event.fireattime    utilise-t-on le real time ou le scaled time ?
 
 ==========
 A tester
