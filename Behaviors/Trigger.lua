@@ -21,11 +21,12 @@ function Behavior:Update()
     if self.range == 0 or self.isStatic == true then 
         return
     end
+    local triggerPosition = self.gameObject.transform.position
     for i, layer in ipairs(self.layers) do
         if tgos[layer] ~= nil then
             for i, gameObject in ipairs(tgos[layer]) do
                 if gameObject ~= nil and gameObject.inner ~= nil then
-                    if Vector3.Distance(gameObject.transform.position, self.gameObject.transform.position) < self.range then
+                    if Vector3.Distance(gameObject.transform.position, triggerPosition) < self.range then
                         if self.gameObjectsInRange:containsvalue(gameObject) == false then
                             -- just entered the trigger
                             self.gameObjectsInRange:insert(gameObject)
@@ -66,11 +67,12 @@ function Behavior:GetGameObjectsInRange(layers)
     if type(layers) == "string" then
         layers = layers:split(",")
     end
+    local triggerPosition = self.gameObject.transform.position
     for i, layer in ipairs(layers) do
         if tgos[layer] ~= nil then
             for i, gameObject in ipairs(tgos[layer]) do
                 if gameObject ~= nil and gameObject.inner ~= nil then
-                    if Vector3.Distance(gameObject.transform.position, self.gameObject.transform.position) < self.range then
+                    if Vector3.Distance(gameObject.transform.position, triggerPosition) <= self.range then
                         table.insert(gameObjectsInRange, gameObject)
                     end
                 else
