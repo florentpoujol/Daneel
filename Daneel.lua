@@ -1147,7 +1147,7 @@ function Daneel.Update()
 
     local times = {}
     for time, events in pairs(Daneel.Event.fireAtTime) do
-        if time <= Daneel.Time.time then
+        if time <= Daneel.Time.realTime then
             table.insert(times, time)
         end
     end

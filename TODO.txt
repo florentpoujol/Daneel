@@ -21,6 +21,8 @@ Voir à attendre que l'asset "Font" soit lui-même publié > influera sur les GU
 ==========
 A implémenter
 
+- fonction pour trier des tables selon la valeur d'une clé des valeurs
+
 
 ==========
 A tester
@@ -32,15 +34,11 @@ A tester
 A modifier/ajouter dans la doc :
 
 
-- Utilities.AllowDynamicGettersAndSetters()
-
 - GameObject.NewFromScene()
 
 - ray:Cast() (trie par distance)
 - GUI
 
-- finir page time 
-timedupdate toujours appelé une fois avant le premier appel à update
 
 
 

@@ -18,7 +18,7 @@ function Behavior:Start()
 end
 
 function Behavior:Update()
-    if self.range == 0 or self.isStatic == true then 
+    if self.range == 0 or self.isStatic == true then
         return
     end
     local triggerPosition = self.gameObject.transform.position
