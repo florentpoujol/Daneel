@@ -1121,11 +1121,15 @@ function Daneel.Update()
         local timeScale = math.abs(Daneel.Time.timeScale)
         
         for scriptedBehavior, scriptInfo in pairs(Daneel.Time.timedUpdates) do
-            local timedDeltaTime = scriptInfo.timedDeltaTime / timeScale -- target delta time
-            if Daneel.Time.realTime >= scriptInfo.lastTimedUpdate + timedDeltaTime then
-                timedDeltaTime = Daneel.Time.realTime - scriptInfo.lastTimedUpdate -- real delta time
-                scriptInfo.lastTimedUpdate = Daneel.Time.realTime
-                scriptedBehavior:TimedUpdate(timedDeltaTime)
+            if scriptedBehavior.gameObject ~= nil and scriptedBehavior.gameObject.inner ~= nil then
+                local timedDeltaTime = scriptInfo.timedDeltaTime / timeScale -- target delta time
+                if Daneel.Time.realTime >= scriptInfo.lastTimedUpdate + timedDeltaTime then
+                    timedDeltaTime = Daneel.Time.realTime - scriptInfo.lastTimedUpdate -- real delta time
+                    scriptInfo.lastTimedUpdate = Daneel.Time.realTime
+                    scriptedBehavior:TimedUpdate(timedDeltaTime)
+                end
+            else
+                Daneel.Time.timedUpdates[scriptedBehavior] = nil
             end
         end
     end
