@@ -878,12 +878,13 @@ end
 Daneel.Time = {
     realTime = 0.0,
     realDeltaTime = 0.0,
-
+    
     time = 0.0,
     deltaTime = 0.0,
     timeScale = 1.0,
 
     frameCount = 0,
+
     timedUpdates = {
         -- scriptedBehavior = { timedDeltaTime, lastTimedUpdate } 
     },

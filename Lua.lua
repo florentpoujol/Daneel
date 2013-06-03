@@ -442,22 +442,63 @@ end
 --- Get the key associated with the first occurence of the provided value.
 -- @param t (table) The table.
 -- @param value (mixed) The value.
+-- @return (mixed) The value's key or nil if the value is not found.
 function table.getkey(t, value)
     Daneel.Debug.StackTrace.BeginFunction("table.getkey", t, value)
     local errorHead = "table.getkey(table, value) : "
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
-
     if value == nil then
         error(errorHead.."Argument 'value' is nil.")
     end
-
     local key = nil
     for k, v in pairs(t) do
         if value == v then
             key = k
         end
     end
-
-    Daneel.Debug.StackTrace.EndFunction("table.getkey", key)
+    Daneel.Debug.StackTrace.EndFunction()
     return key
+end
+
+--- Sort a list of table using by one of the tables property as criteria.
+-- @param t (table) The table.
+-- @param property (string) The property used as criteriato sort the table.
+-- @param orderBy [optional default="asc"] (string) How the sort should be made. Can be "asc" or "desc". Asc means small values first.
+-- @return (table) The ordered table.
+function table.sortby(t, property, orderBy)
+    Daneel.Debug.StackTrace.BeginFunction("table.sortby", t, property, orderBy)
+    local errorHead = "table.sortby(table, property[, orderBy]) : "
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
+    Daneel.Debug.CheckArgType(property, "property", "string", errorHead)
+    Daneel.Debug.CheckOptionalArgType(orderBy, "orderBy", "string", errorHead)
+    if orderBy == nil or not orderBy:isoneof({"asc", "desc"}) then
+        orderBy = "asc"
+    end
+
+    local propertyValues = {}
+    local itemsByPropertyValue = {} -- propertyValue = _table (values in the t table)
+    for i, _table in ipairs(t) do
+        local propertyValue = _table[property]
+        table.insert(propertyValues, propertyValue)
+        if itemsByPropertyValue[propertyValue] == nil then
+            itemsByPropertyValue[propertyValue] = {}
+        end
+        table.insert(itemsByPropertyValue[propertyValue], _table)
+    end
+
+    if orderBy == "desc" then
+        table.sort(propertyValues, function(a,b) return a>b end)
+    else
+        table.sort(propertyValues)
+    end
+
+    t = table.new()
+    for i, propertyValue in ipairs(propertyValues) do
+        for j, _table in pairs(itemsByProperty[propertyValue]) do
+            table.insert(t, _table)
+        end
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return t
 end
