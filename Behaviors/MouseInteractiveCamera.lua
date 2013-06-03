@@ -1,5 +1,9 @@
 
 -- Add this script as ScriptedBehavior on your camera to enable mouse interactions
+-- If it is not already done, you also need to 
+-- add "LeftMouse" and/or "RightMouse" in the 'config.input.buttons' table 
+-- create the corresponding buttons in your project administration
+
 
 local interactiveGameObjects = {}
 

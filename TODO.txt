@@ -21,11 +21,13 @@ Voir à attendre que l'asset "Font" soit lui-même publié > influera sur les GU
 ==========
 A implémenter
 
+LORSQUE LA NOUVELLE VERSIN DE CS EST SORTIE
+- enlever l'orthographic scale en dure dans Daneel.Awake()
 
 ==========
 A tester
 
-- ray:Cast() qui trie les racastHit par distance
+
 
 
 ==========
@@ -38,7 +40,21 @@ A modifier/ajouter dans la doc :
 ====================
 Branch GUI 
 
-- supprimer orthographic scale from the config
+HUD > positionement en % au lieu de pixels
+
+- Text > disparait, suffit d'ajouter un textRenderer
+- Checkbox > wrapper autour de setText
+              isChecked (SetIsChecked) > ou voir si in peut tricker dans la __index __nexindex
+               SwitchState()
+- Input
+- ProgressBar
+- Slider
+
+
+
+
+
+
 
 - GUI elements are now components
 - HUD is also a component

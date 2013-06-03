@@ -38,6 +38,7 @@ defaultConfig = {
         "Daneel/Behaviors/GUI/Input",
         "Daneel/Behaviors/GUI/WorldText",
     },
+
     allScripts = {},
 
 
@@ -90,43 +91,14 @@ defaultConfig = {
         -- Name of the gameObject who has the orthographic camera used to render the HUD
         hudCameraName = "HUDCamera",
         -- the corresponding GameObject, set at runtime
-        hudCamera = nil,
+        hudCameraGO = nil,
 
-        -- The gameObject that serve as origin for all GUI elements that aare not in a Group, created at runtime
-        hudOrigin = nil,
+        -- The gameObject that serve as origin for all GUI elements that are not in a Group, created at runtime
+        hudOriginGO = nil,
 
-        -- The orthographic scale of the HUDCamera
-        hudCameraOrthographicScale = 10,
+        textDefaultFontName = "GUITextFont",
 
-        -- Fully-qualified path of the map used to render text elements
-        textMapPath = "Daneel/TextMap",
-        emptyTextMapPath = "Daneel/EmptyTextMap",
-
-        -- label's (text) default scale
-        textDefaultScale = 0.3,
-
-        -- TileSets used for the text elements
-        textColorTileSetPaths = {
-            White = "Daneel/ASCII_White",
-            Black = "Daneel/ASCII_Black",
-            Red = "Daneel/ASCII_Red",
-            Green = "Daneel/ASCII_Green",
-            Blue = "Daneel/ASCII_Blue",
-        },
-        textColorTileSets = {
-            -- Name (string) = TileSet (TileSet)
-        }, -- filled at runtime
-
-        textDefaultColorName = "White",
-
-        -- CheckBox
-        checkBox = {
-            tileSetPath = nil,
-
-            -- Set the block ID on the TileSet or the letter/sign as a string
-            checkedBlock = 251, -- valid mark
-            notCheckedBlock = "X",
-        },
+        checkBoxDefaultState = false, -- false = not checked, true = checked
     },
 
 
@@ -137,7 +109,7 @@ defaultConfig = {
         enableDebug = false,
 
         -- Enable/disable the Stack Trace.
-        enabeStackTrace = true,
+        enableStackTrace = true,
     },
 
 
@@ -164,7 +136,8 @@ defaultConfig = {
         Camera = Camera,
         Transform = Transform,
         Physics = Physics,
-        --TextRenderer = TextRenderer
+        --TextRenderer = TextRenderer,
+        --NetworkSync = NetworkSync,
     },
     componentTypes = {},
     
@@ -179,9 +152,9 @@ defaultConfig = {
     daneelObjects = {},
     daneelTypes = {},
 
-    guiObjects = {},
-    guiTypes = {},
-
+    daneelComponentObjects = {},
+    daneelComponentTypes = {},
+    
     userTypes = {},
     userObjects = {},
     
@@ -213,16 +186,11 @@ function DefaultConfig()
             Vector2 = Vector2,
         },
 
-        guiObjects = {
-            ["Daneel.GUI.Common"]       = Daneel.GUI.Common,
-            ["Daneel.GUI.Group"]        = Daneel.GUI.Group,
-            ["Daneel.GUI.Text"]         = Daneel.GUI.Text,
-            ["Daneel.GUI.Image"]        = Daneel.GUI.Image,
-            ["Daneel.GUI.CheckBox"]     = Daneel.GUI.CheckBox,
-            ["Daneel.GUI.Input"]        = Daneel.GUI.Input,
-            ["Daneel.GUI.ProgressBar"]  = Daneel.GUI.ProgressBar,
-            ["Daneel.GUI.Slider"]       = Daneel.GUI.Slider,
-            ["Daneel.GUI.WorldText"]    = Daneel.GUI.WorldText,
+        daneelComponentObjects = {
+            Hud = Daneel.GUI.Hud,
+            CheckBox = Daneel.GUI.CheckBox,
+            --ProgressBar = Danee.GUI.ProgressBar,
+            --Slider = Daneel.GUI.Slider,
         },
     }
 end
@@ -627,11 +595,15 @@ function Daneel.Debug.StackTrace.Print()
     local messages = Daneel.Debug.StackTrace.messages
     Daneel.Debug.StackTrace.messages = {}
     print("~~~~~ Daneel.Debug.StackTrace ~~~~~")
-    for i, msg in ipairs(messages) do
-        if i < 10 then
-            i = "0"..i
+    if #messages <= 0 then
+        print("No message in the StackTrace.")
+    else
+        for i, msg in ipairs(messages) do
+            if i < 10 then
+                i = "0"..i
+            end
+            print("#"..i.." "..msg)
         end
-        print("#"..i.." "..msg)
     end
 end
 
@@ -932,10 +904,15 @@ function Daneel.Awake()
         SetNewError()
     end
 
+    config.componentObjects = table.merge(
+        config.componentObjects,
+        config.daneelComponentObjects
+    )
+
     -- built assetTypes and componentTypes
     config.assetTypes = table.getkeys(config.assetObjects)
     config.componentTypes = table.getkeys(config.componentObjects)
-    config.guiTypes = table.getkeys(config.guiObjects)
+    config.daneelComponentTypes = table.getkeys(config.daneelComponentObjects)
     
     for i, type in ipairs(config.userTypes) do
         config.userObjects[type] = Daneel.Debug.GetValueFromName(type)
@@ -947,7 +924,7 @@ function Daneel.Awake()
         config.componentObjects,
         config.craftStudioObjects,
         config.daneelObjects,
-        config.guiObjects,
+        config.daneelComponentObjects,
         config.userObjects
     )
 
@@ -957,7 +934,7 @@ function Daneel.Awake()
     for i, path in pairs(config.scriptPaths) do
         local script = Asset.Get(path, "Script") -- Asset.Get() helpers does not exist yet
         if script ~= nil then
-            Daneel.Utilities.AllowDynamicGettersAndSetters(script, {Script, Component})
+            Daneel.Utilities.AllowDynamicGettersAndSetters(script, { Script, Component })
 
             script['__tostring'] = function(scriptedBehavior)
                 return "ScriptedBehavior"..tostring(scriptedBehavior.inner):sub(2, 20)
@@ -988,13 +965,24 @@ function Daneel.Awake()
         end
 
         -- Components getters-setter-tostring
-        Daneel.Utilities.AllowDynamicGettersAndSetters(componentObject, { Component })
+        local ancestors = { Component }
+        if componentType == "CheckBox" then
+            --ancestors = { TextRenderer, Component }
+        end
+        Daneel.Utilities.AllowDynamicGettersAndSetters(componentObject, ancestors)
 
         if componentType ~= "ScriptedBehavior" then
-            componentObject["__tostring"] = function(component)
-                -- returns something like "ModelRenderer: 123456789"
-                -- component.inner is "?: [some ID]"
-                return componentType..tostring(component.inner):sub(2, 20) -- leave 2 as the starting index, only the transform has an extra space
+            if not componentType:isoneof(config.daneelComponentTypes) then
+                componentObject["__tostring"] = function(component)
+                    -- returns something like "ModelRenderer: 123456789"
+                    -- component.inner is "?: [some ID]"
+                    return componentType..tostring(component.inner):sub(2, 20) -- leave 2 as the starting index, only the transform has an extra space
+                end
+            else -- one of the daneel component types
+                componentObject["__tostring"] = function(component)
+                    -- returns something like "Hud: 1234"
+                    return componentType..": "..math.round(math.randomrange(100000, 999999))
+                end
             end
         end
     end
@@ -1031,15 +1019,7 @@ function Daneel.Awake()
 
 
     -- GUI
-    for guiType, guiObject in pairs(config.guiObjects) do
-        Daneel.Utilities.AllowDynamicGettersAndSetters(guiObject, { Daneel.GUI.Common })
-        
-        function guiObject.__tostring(element)
-            return guiType..": '"..element._name.."'"
-        end
-    end
-
-    config.gui.hudCamera = GameObject.Get(config.gui.hudCameraName)
+    config.gui.hudCameraGO = GameObject.Get(config.gui.hudCameraName)
 
     -- setting pixelToUnits  
     local screenSize = CraftStudio.Screen.GetSize()
@@ -1051,49 +1031,18 @@ function Daneel.Awake()
 
     -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
     -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and 3D world units
-    Daneel.GUI.pixelsToUnits = config.gui.hudCameraOrthographicScale / smallSideSize
+    Daneel.GUI.pixelsToUnits = 10 / smallSideSize
+    --Daneel.GUI.pixelsToUnits = config.gui.hudCameraGO.camera.orthographicScale / smallSideSize
 
-    config.gui.hudOrigin = GameObject.New("HUDOrigin", {parent = config.gui.hudCamera})
-    config.gui.hudOrigin.transform.localPosition = Vector3:New(
+
+    config.gui.hudOriginGO = GameObject.New("HUDOrigin", { parent = config.gui.hudCameraGO })
+    config.gui.hudOriginGO.transform.localPosition = Vector3:New(
         -screenSize.x * Daneel.GUI.pixelsToUnits / 2, 
         screenSize.y * Daneel.GUI.pixelsToUnits / 2,
         0
     )
     -- the HUDOrigin is now at the top-left corner of the screen
 
-    -- Color TileSets
-    local textColorTileSetPaths = config.gui.textColorTileSetPaths
-    local textDefaultColorName = config.gui.textDefaultColorName
-    if textDefaultColorName ~= nil and textColorTileSetPaths[textDefaultColorName] == nil then
-        if DEBUG == true then
-            print("WARNING : 'config.gui.textDefaultColorName' with value '"..textDefaultColorName.."' is not one of the valid color name : "..table.concat(textColorTileSetPaths:getkeys(), "', '").."'")
-        end
-        for color, tileSet in pairs(textColorTileSetPaths) do
-            Daneel.Config.Set("gui.textDefaultColorName", color)
-            break
-        end
-    end
-
-    for name, path in pairs(textColorTileSetPaths) do
-        local tileSet = Asset.Get(path, "TileSet")
-        if tileSet == nil then
-            print("WARNING : item with key '"..name.."' and value '"..path.."' in 'gui.textColorTileSetPaths' is not a valid TileSet path.")
-        else
-            config.gui.textColorTileSets[name] = tileSet
-        end
-    end
-
-    -- CheckBox
-    local tileSetPath = config.gui.checkBox.tileSetPath
-    if tileSetPath ~= nil then
-        local asset = Asset.Get(tileSetPath, "TileSet")
-        if asset ~= nil then
-            config.gui.checkBox.tileSet = asset
-        elseif DEBUG == true then
-            print("WARNING : 'gui.checkBox.tileSetPath' with value '"..tileSetPath.."' is not a valid TileSet path.")
-        end
-    end
-    
 
     -- Awakening is over
     DANEEL_LOADED = true

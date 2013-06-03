@@ -65,44 +65,11 @@ config = {
     gui = {
         -- Name of the gameObject who has the orthographic camera used to render the HUD
         hudCameraName = "HUDCamera",
-        -- the corresponding GameObject, set at runtime
-        hudCamera = nil,
 
-        -- The gameObject that serve as origin for all GUI elements that aare not in a Group, created at runtime
-        hudOrigin = nil,
-
-        -- The orthographic scale of the HUDCamera
-        hudCameraOrthographicScale = 10,
-
-        -- Fully-qualified path of the map used to render text elements
-        textMapPath = "Daneel/TextMap",
-        emptyTextMapPath = "Daneel/EmptyTextMap",
-
-        -- label's (text) default scale
-        textDefaultScale = 0.3,
-
-        -- TileSets used for the text elements
-        textColorTileSetPaths = {
-            White = "Daneel/ASCII_White",
-            Black = "Daneel/ASCII_Black",
-            Red = "Daneel/ASCII_Red",
-            Green = "Daneel/ASCII_Green",
-            Blue = "Daneel/ASCII_Blue",
-        },
-        textColorTileSets = {
-            -- Name (string) = TileSet (TileSet)
-        }, -- filled at runtime
-
-        textDefaultColorName = "White",
-
-        -- CheckBox
-        checkBox = {
-            tileSetPath = nil,
-
-            -- Set the block ID on the TileSet or the letter/sign as a string
-            checkedBlock = 251, -- valid mark
-            notCheckedBlock = "X",
-        },
+        -- default Font path for text and checkbox
+        textDefaultFontName = "Daneel/GUITextFont",
+        
+        checkBoxDefaultState = false, -- false = not checked, true = checked
     },
 
 
@@ -122,7 +89,7 @@ config = {
         enableDebug = false,
 
         -- Enable/disable the Stack Trace.
-        enabeStackTrace = true,
+        enableStackTrace = true,
     },
 }
 
