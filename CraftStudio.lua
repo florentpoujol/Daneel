@@ -66,6 +66,7 @@ function Asset.GetSound(assetName) end
 -- @return (Font) The asset, or nil if none is found.
 function Asset.GetFont(assetName) end
 
+
 ----------------------------------------------------------------------------------
 -- Components
 
@@ -128,9 +129,9 @@ end
 
 local OriginalSetAnimation = ModelRenderer.SetAnimation
 
---- Set the specified animation for the modelRenderer's current model
+--- Set the specified animation for the modelRenderer's current model.
 -- @param modelRenderer (ModelRenderer) The modelRenderer.
--- @param animationNameOrAsset (string or ModelAnimation) The animation name or asset
+-- @param animationNameOrAsset (string or ModelAnimation) The animation name or asset.
 function ModelRenderer.SetAnimation(modelRenderer, animationNameOrAsset)
     Daneel.Debug.StackTrace.BeginFunction("ModelRenderer.SetModelAnimation", modelRenderer, animationNameOrAsset)
     local errorHead = "ModelRenderer.SetModelAnimation(modelRenderer, animationNameOrAsset) : "
@@ -158,7 +159,7 @@ local OriginalSetMap = MapRenderer.SetMap
 --- Attach the provided map to the provided mapRenderer.
 -- @param mapRenderer (MapRenderer) The mapRenderer.
 -- @param mapNameOrAsset (string or Map) The map name or asset.
--- @param keepTileSet [optional default=false] (boolean) Keep the current TileSet
+-- @param keepTileSet [optional default=false] (boolean) Keep the current TileSet.
 function MapRenderer.SetMap(mapRenderer, mapNameOrAsset, keepTileSet)
     Daneel.Debug.StackTrace.BeginFunction("MapRenderer.SetMap", mapRenderer, mapNameOrAsset)
     local errorHead = "MapRenderer.SetMap(mapRenderer, mapNameOrAsset) : "
@@ -187,9 +188,9 @@ end
 
 local OriginalSetTileSet = MapRenderer.SetTileSet
 
---- Set the specified tileSet for the mapRenderer's map
+--- Set the specified tileSet for the mapRenderer's map.
 -- @param mapRenderer (MapRenderer) The mapRenderer.
--- @param tileSetNameOrAsset (string or TileSet) The tileSet name or asset
+-- @param tileSetNameOrAsset (string or TileSet) The tileSet name or asset.
 function MapRenderer.SetTileSet(mapRenderer, tileSetNameOrAsset)
     Daneel.Debug.StackTrace.BeginFunction("MapRenderer.SetTileSet", mapRenderer, tileSetNameOrAsset)
     local errorHead = "MapRenderer.SetTileSet(mapRenderer, tileSetNameOrAsset) : "
@@ -210,6 +211,33 @@ end
 
 
 ----------------------------------------------------------------------------------
+-- TextRenderer
+
+local OriginalSetFont = TextRenderer.SetFont
+
+--- Set the specified font for the textRenderer.
+-- @param textRenderer (TextRenderer) The textRenderer.
+-- @param fontNameOrAsset (string or Font) The font name or asset
+function TextRenderer.SetFont(textRenderer, fontNameOrAsset)
+    Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetFont", textRenderer, fontNameOrAsset)
+    local errorHead = "TextRenderer.SetFont(textRenderer, fontNameOrAsset) : "
+    Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
+    Daneel.Debug.CheckArgType(fontNameOrAsset, "fontNameOrAsset", {"string", "Font"}, errorHead)
+
+    local font = fontNameOrAsset
+    if type(fontNameOrAsset) == "string" then
+        font = Asset.Get(fontNameOrAsset, "Font")
+        if font == nil then
+            error(errorHead.."Argument 'fontNameOrAsset' : font with name '"..fontNameOrAsset.."' was not found.")
+        end
+    end
+
+    OriginalSetFont(textRenderer, font)
+    Daneel.Debug.StackTrace.EndFunction("TextRenderer.SetFont")
+end
+
+
+----------------------------------------------------------------------------------
 -- Ray
 
 --- Check the collision of the ray against the provided set of gameObject or if it is nil, against all castable gameObjects.
@@ -221,6 +249,7 @@ function Ray.Cast(ray, gameObjects, sortByDistance)
     Daneel.Debug.StackTrace.BeginFunction("Ray.Cast", ray, gameObjects)
     local errorHead = "Ray.Cast(ray[, gameObjects]) : "
     Daneel.Debug.CheckArgType(ray, "ray", "Ray", errorHead)
+    
     if gameObjects == nil then
         gameObjects = config.castableGameObjects
         sortByDistance = false
@@ -231,6 +260,7 @@ function Ray.Cast(ray, gameObjects, sortByDistance)
         Daneel.Debug.CheckArgType(gameObjects, "gameObjects", "table", errorHead)
         Daneel.Debug.CheckOptionalArgType(sortByDistance, "sortByDistance", "boolean", errorHead)
     end
+
     local distances = {}
     local tempHits = {}
     for i, gameObject in ipairs(gameObjects) do
@@ -251,6 +281,7 @@ function Ray.Cast(ray, gameObjects, sortByDistance)
             hits:insert(raycastHit)
         end
     end
+
     Daneel.Debug.StackTrace.EndFunction()
     return hits
 end

@@ -164,6 +164,7 @@ defaultConfig = {
         Camera = Camera,
         Transform = Transform,
         Physics = Physics,
+        --TextRenderer = TextRenderer
     },
     componentTypes = {},
     

@@ -30,11 +30,7 @@ config = {
         -- Button names as you defined them in the "Administration > Game Controls" tab of your project.
         -- Button whose name is defined here can be used as HotKeys.
         buttons = {
-            "LeftMouse",
-            "LeftShift",
-            "Delete",
-            "LeftArrow",
-            "RightArrow",
+            
         },
 
         -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
