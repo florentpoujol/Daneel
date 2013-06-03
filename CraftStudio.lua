@@ -269,7 +269,7 @@ function Ray.Cast(ray, gameObjects, sortByDistance)
         end
     end
     if sortByDistance == true then
-        hits = table.sortby(hits, distance)
+        hits = table.sortby(hits, "distance")
     end
 
     Daneel.Debug.StackTrace.EndFunction()

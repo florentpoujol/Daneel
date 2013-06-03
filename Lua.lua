@@ -353,22 +353,19 @@ function table.combine(keys, values, returnFalseIfNotSameLength)
     Daneel.Debug.CheckArgType(keys, "keys", "table", errorHead)
     Daneel.Debug.CheckArgType(values, "values", "table", errorHead)
     Daneel.Debug.CheckOptionalArgType(returnFalseIfNotSameLength, "returnFalseIfNotSameLength", "boolean", errorHead)
-
     if table.length(keys) ~= table.length(values) then
-        print(errorHead.."WARNING : Arguments 'keys' and 'values' have different length.")
-
+        if DEBUG == true then
+            print(errorHead.."WARNING : Arguments 'keys' and 'values' have different length.")
+        end
         if returnFalseIfNotSameLength == true then
             Daneel.Debug.StackTrace.EndFunction("table.combine", false)
             return false
         end
     end
-
     local newTable = table.new()
-
     for i, key in ipairs(keys) do
         newTable[key] = values[i]
     end
-
     Daneel.Debug.StackTrace.EndFunction("table.compare", newTable)
     return newTable
 end
@@ -384,8 +381,8 @@ function table.removevalue(t, value, singleRemove)
     local errorHead = "table.removevalue(table, value[, singleRemove]) : "
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
     Daneel.Debug.CheckOptionalArgType(singleRemove, "singleRemove", "boolean", errorHead)
-    if value == nil then
-        print("WARNING : "..errorHead.."Argument 'value' is nil. Provided table is "..tostring(t))
+    if value == nil and DEBUG == true then
+        print("WARNING : "..errorHead.."Argument 'value' is nil. Provided table is '"..tostring(t).."'")
     end
     t = table.copy(t)
     for key, _value in pairs(t) do
@@ -412,12 +409,10 @@ function table.getkeys(t)
     Daneel.Debug.StackTrace.BeginFunction("table.getkeys", t)
     local errorHead = "table.getkeys(table) : "
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
-
     local keys = table.new()
     for key, value in pairs(t) do
         keys:insert(key)
     end
-
     Daneel.Debug.StackTrace.EndFunction("table.getkeys", keys)
     return keys
 end
@@ -429,12 +424,10 @@ function table.getvalues(t)
     Daneel.Debug.StackTrace.BeginFunction("table.getvalues", t)
     local errorHead = "table.getvalues(t) : "
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
-
     local values = table.new()
     for key, value in pairs(t) do
         values:insert(value)
     end
-
     Daneel.Debug.StackTrace.EndFunction("table.getvalues", values)
     return values
 end
@@ -494,7 +487,7 @@ function table.sortby(t, property, orderBy)
 
     t = table.new()
     for i, propertyValue in ipairs(propertyValues) do
-        for j, _table in pairs(itemsByProperty[propertyValue]) do
+        for j, _table in pairs(itemsByPropertyValue[propertyValue]) do
             table.insert(t, _table)
         end
     end
