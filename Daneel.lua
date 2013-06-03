@@ -88,6 +88,8 @@ defaultConfig = {
     ----------------------------------------------------------------------------------
 
     gui = {
+        screenSize = CraftStudio.Screen.GetSize(),
+
         -- Name of the gameObject who has the orthographic camera used to render the HUD
         hudCameraName = "HUDCamera",
         -- the corresponding GameObject, set at runtime
@@ -1022,11 +1024,11 @@ function Daneel.Awake()
     config.gui.hudCameraGO = GameObject.Get(config.gui.hudCameraName)
 
     -- setting pixelToUnits  
-    local screenSize = CraftStudio.Screen.GetSize()
+    config.gui.screenSize = CraftStudio.Screen.GetSize()
     -- get the smaller side of the screen (usually screenSize.y, the height)
-    local smallSideSize = screenSize.y
-    if screenSize.x < screenSize.y then
-        smallSideSize = screenSize.x
+    local smallSideSize = config.gui.screenSize.y
+    if config.gui.screenSize.x < config.gui.screenSize.y then
+        smallSideSize = config.gui.screenSize.x
     end
 
     -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)

@@ -18,13 +18,16 @@ Vector2 = {}
 Vector2.__index = Vector2
 
 function Vector2.New(x, y)
+    Daneel.Debug.StackTrace.BeginFunction("Vector2.new", x, y)
     local errorHead = "Vector2.New(x, y) : "
-    Daneel.Debug.CheckArgType(x, "x", "number", errorHead)
-    Daneel.Debug.CheckOptionalArgType(y, "y", "number", errorHead)
+    Daneel.Debug.CheckArgType(x, "x", {"string", "number"}, errorHead)
+    Daneel.Debug.CheckOptionalArgType(y, "y", {"string", "number"}, errorHead)
     if y == nil then
         y = x
     end
-    return setmetatable({x = x, y = y}, Vector2)
+    local vector = setmetatable({ x = x, y = y }, Vector2)
+    Daneel.Debug.StackTrace.EndFunction()
+    return vector
 end
 
 function Vector2.__tostring(vector2)
@@ -44,18 +47,27 @@ Daneel.GUI = {}
 Daneel.GUI.Hud = {}
 
 
+-- Create a new Hud component instance.
+-- @param gameObject (GameObject) The gameObject to add to the compoenent to.
+-- @return (Hud) The hud component.
 function Daneel.GUI.Hud.New(gameObject)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.New", gameObject)
+    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", "Daneel.GUI.Hud.New(gameObject) : ")
     local hud = setmetatable({ gameObject = gameObject }, Daneel.GUI.Hud)
     gameObject.hud = hud
-    gameObject.parent = config.gui.hudOriginGO
+    if gameObject.parent == nil then
+        gameObject.parent = config.gui.hudOriginGO
+    end
     gameObject.transform.localPosition = Vector3:New(0,0,-5)
     hud._position = Vector2.New(0)
+    Daneel.Debug.StackTrace.EndFunction()
     return hud
 end
 
---- Sets the relative position of the hud's gameObject on the screen.
--- The postion is relative to the hud's parent which is the HUDOrigin gameObject, 
--- at the top-left corner fo the screen, or a GUI.Group.
+
+--- Sets the position of the gameObject on screen, relative to its parent.
+-- If the gameObject has no parent, it is actually parented to the HUDOrigin gameObject.
+-- Which is at the top-left corner of the screen.
 -- @param hud (Daneel.GUI.Hud) The hud component.
 -- @param position (Vector2) The position as a Vector2.
 function Daneel.GUI.Hud.SetPosition(hud, position)
@@ -64,6 +76,9 @@ function Daneel.GUI.Hud.SetPosition(hud, position)
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
     Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
     
+    if type(position.x) == "string" then
+
+    end
     hud._position = position
     local position3D = Vector3:New(
         position.x * Daneel.GUI.pixelsToUnits,
