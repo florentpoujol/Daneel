@@ -261,25 +261,15 @@ function Ray.Cast(ray, gameObjects, sortByDistance)
         Daneel.Debug.CheckOptionalArgType(sortByDistance, "sortByDistance", "boolean", errorHead)
     end
 
-    local distances = {}
-    local tempHits = {}
+    local hits = table.new()
     for i, gameObject in ipairs(gameObjects) do
         local raycastHit = ray:IntersectsGameObject(gameObject)
         if raycastHit ~= nil then
-            local distance = raycastHit.distance
-            table.insert(distances, distance)
-            if tempHits[distance] == nil then
-                tempHits[distance] = {}
-            end
-            table.insert(tempHits[distance], raycastHit)
+            table.insert(hits, raycastHit)
         end
     end
-    table.sort(distances)
-    local hits = table.new()
-    for i, distance in ipairs(distances) do
-        for j, raycastHit in pairs(tempHits[distance]) do
-            hits:insert(raycastHit)
-        end
+    if sortByDistance == true then
+        hits = table.sortby(hits, distance)
     end
 
     Daneel.Debug.StackTrace.EndFunction()
