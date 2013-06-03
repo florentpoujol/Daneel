@@ -878,7 +878,7 @@ end
 Daneel.Time = {
     realTime = 0.0,
     realDeltaTime = 0.0,
-    
+
     time = 0.0,
     deltaTime = 0.0,
     timeScale = 1.0,
@@ -893,21 +893,25 @@ Daneel.Time = {
 
 --- Alow a ScriptedBehavior to ask Daneel to call the TimeUpdate() function on him at the desired interval.
 -- @param scriptedBehavior (ScriptedBehavior) The ScriptedBehavior that wants to use TimedUpdate()
--- @param timedFrameRateOrDeltaTime (number) The desired timed frame rate (if >= 1) or timed delta time (if < 1).
-function Daneel.Time.RegisterTimedUpdate(scriptedBehavior, timedFrameRateOrDeltaTime)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Time.RegisterTimedUpdate", scriptedBehavior, timedFrameRateOrDeltaTime)
-    local errorHead = "Daneel.Time.RegisterTimedUpdate(scriptedBehavior, timedFrameRateOrDeltaTime) : "
+-- @param timedDeltaTime (number) The desired timed delta time.
+-- @param isFrameRate [optional default=false] (boolean) If true, the 'timedDeltaTime' argument is actually a frame rate.
+function Daneel.Time.RegisterTimedUpdate(scriptedBehavior, timedDeltaTime, isFrameRate)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Time.RegisterTimedUpdate", scriptedBehavior, timedDeltaTime, isFrameRate)
+    local errorHead = "Daneel.Time.RegisterTimedUpdate(scriptedBehavior, timedDeltaTime[, isFrameRate]) : "
     Daneel.Debug.CheckArgType(scriptedBehavior, "scriptedBehavior", "ScriptedBehavior", errorHead)
-    Daneel.Debug.CheckArgType(timedFrameRateOrDeltaTime, "timedFrameRateOrDeltaTime", "number", errorHead)
-    if timedFrameRateOrDeltaTime <= 0 then
+    Daneel.Debug.CheckArgType(timedDeltaTime, "timedDeltaTime", "number", errorHead)
+    Daneel.Debug.CheckOptionalArgType(isFrameRate, "isFrameRate", "boolean", errorHead)
+    if isFrameRate == nil then isFrameRate = false end
+
+    if timedDeltaTime <= 0 then
         Daneel.Time.timedUpdates[scriptedBehavior] = nil
         Daneel.Debug.StackTrace.EndFunction()
         return
     end
-    local timedDeltaTime = timedFrameRateOrDeltaTime
-    if timedDeltaTime >= 1 then -- timedFrameRateOrDeltaTime is a frame rate
+    if isFrameRate == true then
         timedDeltaTime = 1 / timedDeltaTime
     end
+
     Daneel.Time.timedUpdates[scriptedBehavior] = {
         timedDeltaTime = timedDeltaTime,
         lastTimedUpdate = 0
