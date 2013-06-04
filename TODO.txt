@@ -35,17 +35,29 @@ A modifier/ajouter dans la doc :
 
 
 - GUI
+- Tween
 
 
 ====================
 Branch GUI 
 
 HUD > positionement en % au lieu de pixels
+positionnnement Global + local sans besoin de parenter
+GetPosition en calculant la positin à partir des parents ou de la position 3D
 
-- Text > disparait, suffit d'ajouter un textRenderer
-- Checkbox > wrapper autour de setText
-              isChecked (SetIsChecked) > ou voir si in peut tricker dans la __index __nexindex
-               SwitchState()
+
+ScriptedBehaviors pour ajouter les composants et les initialisés lorsque das l'éditeur de scène :
+- HUD avec propriétés (string)
+  - positionX
+  - positionY
+
+- CheckBox avec propriété 
+  - isChecked (boolean)
+  - text (string)
+
+
+
+
 - Input
 - ProgressBar
 - Slider
