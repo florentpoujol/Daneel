@@ -41,14 +41,103 @@ local function Callback(tween, callback, ...)
     end
 end
 
-local tweenId = 0
 
-function Daneel.Tween.New(target, property, endValue, duration, params)
-    local tween = config.tween.defaultTweenParams
-    setmetatable(tween, Daneel.Tween)
+-- called from Daneel.Update()
+function Daneel.Tween.Update()
+    for id, tweener in pairs(Daneel.Tween.Tweener.tweeners) do
+        if tweener.isEnabled == true and tweener.isPaused ~= true and tweener.isComplete ~= true then
 
-    tweenId = tweenId + 1
-    tween.id = tweenId
+            local deltaDuration = Daneel.Time.deltaTime
+            if tweener.durationType == "RealTime" then
+                deltaDuration = Daneel.Time.realDeltaTime
+            elseif tweener.durationType == "Frame" then
+                deltaDuration = 1
+            end
+
+
+            if tweener.delay <= 0 then
+                -- no more delay before starting the tweener, update the tweener
+                
+                if tweener.hasStarted == false then
+                    -- firt loop for this tweener
+                    tweener.hasStarted = true
+
+                    if tweener.startValue == nil then
+                        tweener.startValue = tweener.target[tweener.property]
+                    else
+                        -- when start value and a target are set move the target to startValue before updating the tweener
+                        tweener.target[tweener.property] = tweener.startValue
+                    end
+                    tweener.value = tweener.startValue
+
+                    if tweener.isRelative == true then
+                        tweener.diffValue = tweener.endValue
+                    else
+                        tweener.diffValue = tweener.endValue - tweener.startValue
+                    end
+
+                    Callback(tweener, tweener.OnStart)
+                end
+                
+                -- update the tweener
+                local newValue = nil
+
+                tweener.elapsed = tweener.elapsed + deltaDuration
+                if tweener.elapsed > tweener.duration then
+                    tweener.isComplete = true
+                    tweener.elapsed = tweener.duration
+                    newValue = tweener.endValue
+                
+                else
+                    if Daneel.Tween.Ease[tweener.easeType] == nil then
+                        if DEBUG == true then
+                            print("Daneel.Tween.Update() : Easing '"..tostring(tweener.easeType).."' for tweener ID '"..tween.id.."' does not exists. Setting it back for the default easing '"..config.tween.defaultTweenerParams.."'.")
+                        end
+                        tweener.easeType = config.tween.defaultTweenerParams.easeType
+                    end
+                    newValue = Daneel.Tween.Ease[tweener.easeType](tweener.elapsed, tweener.startValue, tweener.diffValue, tweener.duration)
+                end
+
+                if tweener.target ~= nil then
+                    tweener.target[tweener.property] = newValue
+                end
+                tweener.value = newValue
+
+                Callback(tweener, tweener.OnUpdate, newValue)
+            else
+                tweener.delay = tweener.delay - deltaDuration
+            end -- end if tweener.delay <= 0
+
+            if tweener.isComplete == true then
+                Callback(tweener, tweener.OnComplete)
+
+                -- set loop if any
+
+                tweener:Destroy()
+            end
+        end -- end if tweener.isEnabled == true
+    end -- end for tweens
+end
+
+
+----------------------------------------------------------------------------------
+-- Tweener
+
+Daneel.Tween.Tweener = { tweeners = {} }
+
+Daneel.Tween.Tweener.__index = Daneel.Tween.Tweener
+Daneel.Tween.Tweener.__tostring = function(tweener)
+    return "Tweener id:'"..tweener.id.."'"
+end
+
+local tweenerId = 0
+
+function Daneel.Tween.Tweener.New(target, property, endValue, duration, params)
+    local tweener = config.tween.defaultTweenerParams
+    setmetatable(tweener, Daneel.Tween.Tweener)
+
+    tweenerId = tweenerId + 1
+    tweener.id = tweenerId
 
     -- three constructors :
     -- target, property, endvalue, duration[, params]
@@ -57,154 +146,79 @@ function Daneel.Tween.New(target, property, endValue, duration, params)
 
     if type(target) == "number" then
         -- constructor n°2
-        tween.startValue = target
-        tween.endValue = property
-        tween.duration = endValue
+        tweener.startValue = target
+        tweener.endValue = property
+        tweener.duration = endValue
         if type(duration) == "table" then
-            tween:Set(duration)
+            tweener:Set(duration)
         end
     elseif property == nil then
         -- constructor n°3
-        tween:Set(target)
+        tweener:Set(target)
     else
         -- constructor n°1
-        tween.gameObject = target.gameObject -- if target is a component
-        if tween.gameObject == nil and getmetatable(target) == GameObject then
-            tween.gameObject = target
+        tweener.gameObject = target.gameObject -- if target is a component
+        if tweener.gameObject == nil and getmetatable(target) == GameObject then
+            tweener.gameObject = target
         end
 
-        tween.target = target
-        tween.property = property
-        tween.endValue = endValue
-        tween.duration = duration
+        tweener.target = target
+        tweener.property = property
+        tweener.endValue = endValue
+        tweener.duration = duration
         if type(params) == "table" then
-            tween:Set(params)
+            tweener:Set(params)
         end
     end
     
-    Daneel.Tween.tweens[tween.id] = tween
-    return tween
+    Daneel.Tween.Tweener.tweeners[tweener.id] = tweener
+    return tweener
 end
 
-function Daneel.Tween.Set(tween, params)
+function Daneel.Tween.Tweener.Set(tweener, params)
     for key, value in pairs(params) do
-        tween[key] = value
+        tweener[key] = value
     end
-    return tween
+    return tweener
 end
 
-function Daneel.Tween.Play(tween)
-    if tween.isEnabled == false then return end
-    tween.isPaused = false
-    Callback(tween, tween.OnPlay)
+function Daneel.Tween.Tweener.Play(tweener)
+    if tweener.isEnabled == false then return end
+    tweener.isPaused = false
+    Callback(tweener, tweener.OnPlay)
 end
 
-function Daneel.Tween.Pause(tween)
-    if tween.isEnabled == false then return end
-    tween.isPaused = true
-    Callback(tween, tween.OnPause)
+function Daneel.Tween.Tweener.Pause(tweener)
+    if tweener.isEnabled == false then return end
+    tweener.isPaused = true
+    Callback(tweener, tweener.OnPause)
 end
 
-function Daneel.Tween.Complete(tween)
-    if tween.isEnabled == false then return end
-    tween.isComplete = true
+function Daneel.Tween.Tweener.Complete(tweener)
+    if tweener.isEnabled == false then return end
+    tweener.isComplete = true
     -- faire avancer valeur au bout
-    tween.target[tween.property] = tween.endValue
-    Callback(tween, tween.OnComplete)
+    tweener.target[tweener.property] = tweener.endValue
+    Callback(tweener, tweener.OnComplete)
 end
 
-function Daneel.Tween.Restart(tween)
-    if tween.isEnabled == false then return end
-    tween.elapsed = 0
-    tween.hasStarted = false
-    tween.position = 0
+function Daneel.Tween.Tweener.Restart(tweener)
+    if tweener.isEnabled == false then return end
+    tweener.elapsed = 0
+    tweener.hasStarted = false
+    tweener.position = 0
     -- faire revenir la valeur au début
-    tween.target[tween.property] = tween.startValue
+    tweener.target[tweener.property] = tweener.startValue
 end
 
-function Daneel.Tween.Destroy(tween)
-    if tween.isEnabled == false then return end
-    tween.isEnabled = false
-    Callback(tween, tween.OnDestroy)
+function Daneel.Tween.Tweener.Destroy(tweener)
+    if tweener.isEnabled == false then return end
+    tweener.isEnabled = false
+    Callback(tweener, tweener.OnDestroy)
 end
 
 
--- called from Daneel.Update()
-function Daneel.Tween.Update()
-    for id, tween in pairs(Daneel.Tween.tweens) do
-        if tween.isEnabled == true and tween.isPaused ~= true and tween.isComplete ~= true then
 
-            local deltaDuration = Daneel.Time.deltaTime
-            if tween.durationType == "RealTime" then
-                deltaDuration = Daneel.Time.realDeltaTime
-            elseif tween.durationType == "Frame" then
-                deltaDuration = 1
-            end
-
-
-            if tween.delay <= 0 then
-                -- no more delay before starting the tween, update the tween
-                
-                if tween.hasStarted == false then
-                    -- firt loop for this tween
-                    tween.hasStarted = true
-
-                    if tween.startValue == nil then
-                        tween.startValue = tween.target[tween.property]
-                    else
-                        -- when start value and a target are set move the target to startValue before updating the tween
-                        tween.target[tween.property] = tween.startValue
-                    end
-                    tween.value = tween.startValue
-
-                    if tween.isRelative == true then
-                        tween.diffValue = tween.endValue
-                    else
-                        tween.diffValue = tween.endValue - tween.startValue
-                    end
-
-                    Callback(tween, tween.OnStart)
-                end
-                
-                -- update the tween
-                local newValue = nil
-
-                tween.elapsed = tween.elapsed + deltaDuration
-                if tween.elapsed > tween.duration then
-                    tween.isComplete = true
-                    tween.elapsed = tween.duration
-                    newValue = tween.endValue
-                
-                else
-                    if Daneel.Tween.Ease[tween.easeType] == nil then
-                        if DEBUG == true then
-                            print("Daneel.tween.Update() : Easing '"..tostring(tween.easeType).."' for tween ID '"..tween.id.."' does not exists. Setting it back for the default easing '"..config.tween.defaultTweenParams.."'.")
-                        end
-                        tween.easeType = config.tween.defaultTweenParams.easeType
-                    end
-                    newValue = Daneel.Tween.Ease[tween.easeType](tween.elapsed, tween.startValue, tween.diffValue, tween.duration)
-                end
-
-                if tween.target ~= nil then
-                    tween.target[tween.property] = newValue
-                end
-                tween.value = newValue
-
-                Callback(tween, tween.OnUpdate, newValue)
-            else
-                tween.delay = tween.delay - deltaDuration
-            end -- end if tween.delay <= 0
-
-            if tween.isComplete == true then
-                Callback(tween, tween.OnComplete)
-
-                -- set loop if any
-
-                tween:Destroy()
-            end
-        end -- end if tween.isEnabled == true
-    end -- end for tweens
-end
 
 
 ----------------------------------------------------------------------------------
@@ -212,7 +226,7 @@ end
 
  
 Daneel.Tween.Ease = {}
--- filled with the easing equations in Daneel.Awake
+-- filled with the easing equations from the "Lib/Easing" script in Daneel.Awake() 
 
 
 ----------------------------------------------------------------------------------

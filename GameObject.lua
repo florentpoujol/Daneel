@@ -64,13 +64,11 @@ function GameObject.New(name, params)
     local errorHead = "GameObject.New(name[, params]) : "
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
-
     local gameObject = CraftStudio.CreateGameObject(name)
     if params ~= nil then
         gameObject:Set(params)
     end
-
-    Daneel.Debug.StackTrace.EndFunction("GameObject.New", gameObject)
+    Daneel.Debug.StackTrace.EndFunction()
     return gameObject
 end
 

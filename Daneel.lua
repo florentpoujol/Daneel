@@ -107,7 +107,7 @@ defaultConfig = {
     ----------------------------------------------------------------------------------
 
     tween = {
-        defaultTweenParams = {
+        defaultTweenerParams = {
             isEnabled = true,
             isPaused = false,
 
