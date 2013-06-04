@@ -306,12 +306,10 @@ function GameObject.BroadcastMessage(gameObject, functionName, data)
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(data, "data", "table", errorHead)
-
     local allGos = gameObject:GetChildren(true, true) -- the gameObject + all of its children
     for i, go in ipairs(allGos) do
         go:SendMessage(functionName, data)
     end
-
     Daneel.Debug.StackTrace.EndFunction("GameObject.BroadcastMessage")
 end
 
@@ -414,7 +412,7 @@ function GameObject.AddPhysics(gameObject, params) end
 -- @param gameObject (GameObject) The gameObject.
 -- @param params [optional] (table) A table of parameters to initialize the new component with.
 -- @return (FontRenderer) The component.
-function GameObject.FontRenderer(gameObject, params) end
+function GameObject.AddFontRenderer(gameObject, params) end
 
 --- Add a Hud component to the gameObject and optionally initialize it.
 -- @param gameObject (GameObject) The gameObject.

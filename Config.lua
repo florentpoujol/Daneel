@@ -77,7 +77,7 @@ config = {
 
     tween = {
         defaultTweenParams = {
-            enabled = true,
+            isEnabled = true,
             isPaused = false,
 
             delay = 0.0, -- delay before start (in the same unit (durationType) than the duration)
@@ -94,7 +94,7 @@ config = {
             
             isRelative = false, -- If false, tween the value TO endValue. If true, tween the value BY endValue.
             broadcastCallbacks = false, -- broadcast (instead of send) the callbacks when they are messages
-        }
+        },
     },
 
 

@@ -24,6 +24,9 @@ A implémenter
 LORSQUE LA NOUVELLE VERSIN DE CS EST SORTIE
 - enlever l'orthographic scale en dure dans Daneel.Awake()
 
+- vérif que si on ajoute plusieurs "MouseInteractiveGameObject", ou castable, ou triggerable, le gameObject se fait pas ajouter plusieurs fois dans la liste
+- vérif avec checkbox que les messages reçoivent bien l'instance du component comme argument, et non juste un copie du contenu de la table
+
 ==========
 A tester
 
@@ -99,6 +102,8 @@ BUG :
 
 ======================
 Tween
+
+paser enabled en isEnabled
 
 Daneel.Tween.To(target, propname, endValue, duration, isRelative)
 Daneel.Tween.From()

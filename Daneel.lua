@@ -108,7 +108,7 @@ defaultConfig = {
 
     tween = {
         defaultTweenParams = {
-            enabled = true,
+            isEnabled = true,
             isPaused = false,
 
             delay = 0.0, -- delay before start (in the same unit (durationType) than the duration)

@@ -94,19 +94,19 @@ function Daneel.Tween.Set(tween, params)
 end
 
 function Daneel.Tween.Play(tween)
-    if tween.enabled == false then return end
+    if tween.isEnabled == false then return end
     tween.isPaused = false
     Callback(tween, tween.OnPlay)
 end
 
 function Daneel.Tween.Pause(tween)
-    if tween.enabled == false then return end
+    if tween.isEnabled == false then return end
     tween.isPaused = true
     Callback(tween, tween.OnPause)
 end
 
 function Daneel.Tween.Complete(tween)
-    if tween.enabled == false then return end
+    if tween.isEnabled == false then return end
     tween.isComplete = true
     -- faire avancer valeur au bout
     tween.target[tween.property] = tween.endValue
@@ -114,7 +114,7 @@ function Daneel.Tween.Complete(tween)
 end
 
 function Daneel.Tween.Restart(tween)
-    if tween.enabled == false then return end
+    if tween.isEnabled == false then return end
     tween.elapsed = 0
     tween.hasStarted = false
     tween.position = 0
@@ -123,8 +123,8 @@ function Daneel.Tween.Restart(tween)
 end
 
 function Daneel.Tween.Destroy(tween)
-    if tween.enabled == false then return end
-    tween.enabled = false
+    if tween.isEnabled == false then return end
+    tween.isEnabled = false
     Callback(tween, tween.OnDestroy)
 end
 
@@ -132,7 +132,7 @@ end
 -- called from Daneel.Update()
 function Daneel.Tween.Update()
     for id, tween in pairs(Daneel.Tween.tweens) do
-        if tween.enabled == true and tween.isPaused ~= true and tween.isComplete ~= true then
+        if tween.isEnabled == true and tween.isPaused ~= true and tween.isComplete ~= true then
 
             local deltaDuration = Daneel.Time.deltaTime
             if tween.durationType == "RealTime" then
@@ -202,7 +202,7 @@ function Daneel.Tween.Update()
 
                 tween:Destroy()
             end
-        end -- end if tween.enabled == true
+        end -- end if tween.isEnabled == true
     end -- end for tweens
 end
 

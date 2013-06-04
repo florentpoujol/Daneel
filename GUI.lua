@@ -41,6 +41,20 @@ end
 Daneel.GUI = {}
 
 
+local function Callback(component, callback, ...)
+    if arg == nil then arg = {} end
+    local callbackType = type(callback)
+    
+    if callbackType == "function" then
+        callback(component, unpack(arg))
+    
+    elseif callbackType == "string" and component.gameObject ~= nil then
+        --arg.component = component
+        gameObject:SendMessage(callback, component)
+    end
+end
+
+
 ----------------------------------------------------------------------------------
 -- Hud
 
@@ -146,16 +160,15 @@ function Daneel.GUI.CheckBox.New(gameObject)
     gameObject:AddComponent("TextRenderer", { font = { config.gui.textDefaultFontName } })
     gameObject:AddScriptedBehavior("Daneel/Behaviors/MouseInteractiveGameObject", { component = component })
     
-    component.text = "CheckBox"
     component.isChecked = config.gui.checkBoxDefaultState
-
+    component.text = "CheckBox"
+    -- component may be updated with params in gameObject:AddComponent()
     Daneel.Debug.StackTrace.EndFunction()
     return component
 end
 
 
 function Daneel.GUI.CheckBox.SetText(component, text)
-    component._text = text
     if component.isChecked == true then
         text = "√ "..text
     else
@@ -165,50 +178,21 @@ function Daneel.GUI.CheckBox.SetText(component, text)
 end
 
 function Daneel.GUI.CheckBox.GetText(component, text)
-    return component._text
+    return component.gameObject.textRenderer.text:sub(3, 100)
 end 
 
--- Set the checked state of the checkbox.
--- Update the _isChecked variable and the textRenderer
--- @param component (Daneel.GUI.CheckBox) The component.
--- @param state (boolean) The state.
+
 function Daneel.GUI.CheckBox.SetIsChecked(component, state)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.SetChecked", component, state)
-    local errorHead = "Daneel.GUI.CheckBox.SetChecked(component, state) : "
-    Daneel.Debug.CheckArgType(component, "component", "Daneel.GUI.CheckBox", errorHead)
-    Daneel.Debug.CheckArgType(state, "state", "boolean", errorHead)
+    if state == nil then state = true end
     if component._isChecked ~= state then
-        local text = component._text
-        if state == true then
-            text = "√ "..text
-        else
-            text = "X "..text
-        end
-        component.gameObject.textRenderer.text = text
         component._isChecked = state
-        -- callback OnUpdate(state)
+        component.text = component.text -- "reload" the check mark
+        Callback(component, component.OnCheck)
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
--- Get the checked state of the checkbox.
--- @param component (Daneel.GUI.CheckBox) The component.
--- @return (boolean) The state.
 function Daneel.GUI.CheckBox.GetIsChecked(component)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.GetChecked", component)
-    local errorHead = "Daneel.GUI.CheckBox.GetChecked(component) : "
-    Daneel.Debug.CheckArgType(component, "component", "Daneel.GUI.CheckBox", errorHead)
-    Daneel.Debug.StackTrace.EndFunction()
-    return component._isChecked    
+    return component._isChecked
 end
 
--- Switch the checked state of the checkbox.
--- @param component (Daneel.GUI.CheckBox) The component.
-function Daneel.GUI.CheckBox.SwitchState(component)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.SwitchState", component)
-    local errorHead = "Daneel.GUI.CheckBox.SwitchState(component) : "
-    Daneel.Debug.CheckArgType(component, "component", "Daneel.GUI.CheckBox", errorHead)
-    component.isChecked = not component._isChecked
-    Daneel.Debug.StackTrace.EndFunction()
-end
 
