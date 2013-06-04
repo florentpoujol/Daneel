@@ -75,6 +75,31 @@ config = {
 
     ----------------------------------------------------------------------------------
 
+    tween = {
+        defaultTweenParams = {
+            enabled = true,
+            isPaused = false,
+
+            delay = 0.0, -- delay before start (in the same unit (durationType) than the duration)
+            duration = 0.0, -- time or frame the tween (or one loop) should take
+            durationType = "Time", -- unit for for delay, duration, elapsed, fullElapsed. Can be Time, RealTime or Frame
+
+            startValue = nil,
+            endValue = 0.0,
+
+            loops = 0, -- number of remaining loops to perform (-1 = infinite)
+            loopType = "simple", -- type of loop. Can be "simple" (X to Y, repeat), "yoyo" (X to Y, Y to X, repeat)
+            
+            easeType = "linear", -- type of easing, check the doc for all possible values
+            
+            isRelative = false, -- If false, tween the value TO endValue. If true, tween the value BY endValue.
+            broadcastCallbacks = false, -- broadcast (instead of send) the callbacks when they are messages
+        }
+    },
+
+
+    ----------------------------------------------------------------------------------
+
     -- List of your custom object types (their name as a string), to be returned by Daneel.Debug.GetType().
     -- Daneel.Debug.GetType() will return one the types if an object corresponding to one of the types is the metatable of the supllied object.
     -- Ie :

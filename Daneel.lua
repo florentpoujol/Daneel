@@ -1045,6 +1045,8 @@ function Daneel.Awake()
     )
     -- the HUDOrigin is now at the top-left corner of the screen
 
+    -- Tween
+    Daneel.Tween.Ease = GetEasingEquations()
 
     -- Awakening is over
     DANEEL_LOADED = true
@@ -1134,4 +1136,7 @@ function Daneel.Update()
             Daneel.Event.Fire("On"..buttonName:ucfirst().."ButtonJustReleased")
         end
     end
+
+    -- Tween
+    Daneel.Tween.Update()
 end

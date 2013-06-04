@@ -97,3 +97,66 @@ BUG :
   ajouter prefix aux label
   :br: mange une letter
 
+======================
+Tween
+
+Daneel.Tween.To(target, propname, endValue, duration, isRelative)
+Daneel.Tween.From()
+ou avec table params : Daneel.Tween.To/From(params)
+Retournent un "Tweener"
+
+Tweener
+  methods:
+    GoTo()
+    Play()
+    Pause()
+    Destroy()
+    Restart()
+    Complete()
+  callbacks :
+    OnStart
+    OnComplete
+    OnPlay
+    OnPause
+    OnDestroy
+  params :
+    target
+    duration
+    durationType ? > also for delay
+    fullDuration (duration * loops)
+    propName
+    targetValue
+    isRelative
+    enabled
+    isPaused
+    position (temps < duration)
+    id > plusieur tween peuvent avoir la même id si désiré
+    loops (-1 = infinite)
+    delay (delay before autostart)
+    easeType
+    loops
+    loopType
+  "read only" properties :
+    completedLoops
+    hasStarted
+
+valeurs par défaut
+  > config de daneel ? config.tween.defaultProperties = { isPause = false, ... } }
+
+
+"Enums"
+Daneel.Tween
+  EaseType
+  LoopType
+  DurationTime ? (time, realTime, frame)
+
+Tween valeur arbitraire (non liée à un component ou GO)
+  Daneel.Tween.Value(from, to, duration)
+  > OnUpdate reçoit la valeur ? > Oui
+
+
+Sequences
+  > simple stack de tween
+  ou bien timeline
+
+  
