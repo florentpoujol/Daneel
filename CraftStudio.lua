@@ -81,12 +81,25 @@ function Component.Set(component, params)
     local errorHead = "Component.Set(component, params) : "
     Daneel.Debug.CheckArgType(component, "component", config.componentTypes, errorHead)
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
-
-    for key, value in pairs(params) do
-        component[key] = value
+    local componentType = Daneel.Debug.GetType(component)
+    if componentType == "ProgressBar" then
+        local progress = params.progress
+        params.progress = nil
+        for key, value in pairs(params) do
+            component[key] = value
+        end
+        if progress ~= nil then
+            component.progress = progress
+        elseif params.minValue or params.maxValue or params.minLength or params.maxLength or params.height then
+            -- one of the parameter has been modified, refrash the progressBar
+            component.progress = component.progress
+        end
+    else
+        for key, value in pairs(params) do
+            component[key] = value
+        end
     end
-
-    Daneel.Debug.StackTrace.EndFunction("Component.Set", component)
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Destroy the provided component, removing it from the gameObject.

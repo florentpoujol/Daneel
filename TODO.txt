@@ -27,6 +27,12 @@ LORSQUE LA NOUVELLE VERSIN DE CS EST SORTIE
 - vérif que si on ajoute plusieurs "MouseInteractiveGameObject", ou castable, ou triggerable, le gameObject se fait pas ajouter plusieurs fois dans la liste
 - vérif avec checkbox que les messages reçoivent bien l'instance du component comme argument, et non juste un copie du contenu de la table
 
+- A voir avec TextRenderer >
+  permettre de facilement suater des lignes ou définir un wordWrap ou permettre les :br: avec un TextRenderer
+
+- modelRenderer:SetDimension(Vector3) ou vector2
+
+
 ==========
 A tester
 
@@ -49,6 +55,10 @@ positionnnement Global + local sans besoin de parenter
 GetPosition en calculant la positin à partir des parents ou de la position 3D
 
 
+progressbar > 
+  autoriser de définir les longueurs en units ou pixels, le progress en unit, pixel ou percentage
+
+
 ScriptedBehaviors pour ajouter les composants et les initialisés lorsque das l'éditeur de scène :
 - HUD avec propriétés (string)
   - positionX
@@ -58,7 +68,8 @@ ScriptedBehaviors pour ajouter les composants et les initialisés lorsque das l'
   - isChecked (boolean)
   - text (string)
 
-
+- ProgressBar
+  - 
 
 
 - Input
@@ -68,15 +79,6 @@ ScriptedBehaviors pour ajouter les composants et les initialisés lorsque das l'
 
 
 
-
-
-
-- GUI elements are now components
-- HUD is also a component
-
-- supprimer input ou voir comment set-up inputKeys
-
-- voir pourquoi un seul click sur un élément interactif lance deux fois l'event
 
 
 
@@ -94,11 +96,7 @@ input
 	- param size qui limite la taille du champs mais pas du texte (flèches font se déplacer le texte)
 
 
-BUG : 
-  ajouter color property à worldtext
-  wordWrap après label n'a pas d'effet
-  ajouter prefix aux label
-  :br: mange une letter
+  
 
 ======================
 Tween

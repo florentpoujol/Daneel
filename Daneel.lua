@@ -227,7 +227,7 @@ function DefaultConfig()
         daneelComponentObjects = {
             Hud = Daneel.GUI.Hud,
             CheckBox = Daneel.GUI.CheckBox,
-            --ProgressBar = Danee.GUI.ProgressBar,
+            ProgressBar = Daneel.GUI.ProgressBar,
             --Slider = Daneel.GUI.Slider,
         },
     }
@@ -1075,8 +1075,8 @@ function Daneel.Awake()
 
     config.gui.hudOriginGO = GameObject.New("HUDOrigin", { parent = config.gui.hudCameraGO })
     config.gui.hudOriginGO.transform.localPosition = Vector3:New(
-        -screenSize.x * Daneel.GUI.pixelsToUnits / 2, 
-        screenSize.y * Daneel.GUI.pixelsToUnits / 2,
+        -config.gui.screenSize.x * Daneel.GUI.pixelsToUnits / 2, 
+        config.gui.screenSize.y * Daneel.GUI.pixelsToUnits / 2,
         0
     )
     -- the HUDOrigin is now at the top-left corner of the screen

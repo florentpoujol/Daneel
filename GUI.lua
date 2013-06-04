@@ -62,11 +62,11 @@ Daneel.GUI.Hud = {}
 
 
 -- Create a new Hud component instance.
--- @param gameObject (GameObject) The gameObject to add to the compoenent to.
+-- @param gameObject (GameObject) The gameObject to add to the component to.
 -- @return (Hud) The hud component.
 function Daneel.GUI.Hud.New(gameObject)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.New", gameObject)
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", "Daneel.GUI.Hud.New(gameObject) : ")
+    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", "Hud.New(gameObject) : ")
     local hud = setmetatable({ gameObject = gameObject }, Daneel.GUI.Hud)
     gameObject.hud = hud
     if gameObject.parent == nil then
@@ -186,8 +186,8 @@ function Daneel.GUI.CheckBox.SetIsChecked(component, state)
     if state == nil then state = true end
     if component._isChecked ~= state then
         component._isChecked = state
-        component.text = component.text -- "reload" the check mark
-        Callback(component, component.OnCheck)
+        component.text = component.text -- "reload" the check mark based on the new checked state
+        Callback(component, component.OnUpdate)
     end
 end
 
@@ -195,4 +195,157 @@ function Daneel.GUI.CheckBox.GetIsChecked(component)
     return component._isChecked
 end
 
+
+----------------------------------------------------------------------------------
+-- ProgressBar
+
+Daneel.GUI.ProgressBar = {}
+
+--- Create a new GUI.ProgressBar.
+-- @param name (string) The component name.
+-- @param params [optional] (table) A table with initialisation parameters.
+-- @return (Daneel.GUI.ProgressBar) The new component.
+function Daneel.GUI.ProgressBar.New(gameObject)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.New", gameObject)
+    local errorHead = "Daneel.GUI.ProgressBar.New(gameObject) : "
+    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+
+    local progressBar = setmetatable({ gameObject = gameObject }, Daneel.GUI.ProgressBar)
+    gameObject.progressBar = progressBar
+    progressBar._height = 1
+    progressBar.minValue = 0
+    progressBar.maxValue = 100
+    progressBar.minLength = 0
+    progressBar.maxLength = 5
+    progressBar._progress = 100
+    progressBar.progress = "100%"
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return progressBar
+end
+
+
+--- Set the progress of the progress bar, adjusting its length.
+-- @param progressBar (Daneel.GUI.ProgressBar) The progressBar.
+-- @param pogress (number or string) The progress as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
+function Daneel.GUI.ProgressBar.SetProgress(progressBar, progress)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.SetProgress", progressBar, progress)
+    local errorHead = "Daneel.GUI.ProgressBar.SetProgress(progressBar, progress) : "
+    Daneel.Debug.CheckArgType(progressBar, "progressBar", "ProgressBar", errorHead)
+    Daneel.Debug.CheckArgType(progress, "progress", {"string", "number"}, errorHead)
+
+    local minVal = progressBar.minValue
+    local maxVal = progressBar.maxValue
+    local percentageOfProgress = nil
+
+    if type(progress) == "string" then
+        if progress:endswith("%") then
+            percentageOfProgress = tonumber(progress:sub(1, #progress-1)) / 100
+
+            local oldPercentage = percentageOfProgress
+            percentageOfProgress = math.clamp(percentageOfProgress, 0.0, 1.0)
+            if percentageOfProgress ~= oldPercentage and DEBUG == true then
+                print(errorHead.."WARNING : progress in percentage with value '"..progress.."' is below 0% or above 100%.")
+            end
+
+            progress = (maxVal - minVal) * percentageOfProgress + minVal
+        else
+            progress = tonumber(progress)
+        end
+    end
+
+    -- now progress is a number and should be a value between minVal and maxVal
+    local oldProgress = progress
+    progress = math.clamp(progress, minVal, maxVal)
+    if progress ~= oldProgress and DEBUG == true then
+        print(errorHead.." WARNING : progress with value '"..oldProgress.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
+    end
+
+    percentageOfProgress = (progress - minVal) / (maxVal - minVal)
+    
+    --
+    progressBar._progress = progress
+    
+    local minLength = progressBar.minLength
+    local maxLength = progressBar.maxLength
+
+    if type(minLength) == "string" then
+        local length = minLength:len()
+        if minLength:endswith("px") then
+            minLength = tonumber(minLength:sub(0, length-2)) * Daneel.GUI.pixelsToUnits
+        elseif minLength:endswith("u") then
+            minLength = tonumber(minLength:sub(0, length-1))
+        else
+            minLength = tonumber(minLength)
+        end
+        progressBar.minLength = minLength
+    end
+    if type(maxLength) == "string" then
+        local length = maxLength:len()
+        if maxLength:endswith("px") then
+            maxLength = tonumber(maxLength:sub(0, length-2)) * Daneel.GUI.pixelsToUnits
+        elseif maxLength:endswith("u") then
+            maxLength = tonumber(maxLength:sub(0, length-1))
+        else
+            maxLength = tonumber(maxLength)
+        end
+        progressBar.maxLength = maxLength
+    end
+
+    local newLength = (maxLength - minLength) * percentageOfProgress + minLength 
+    local currentScale = progressBar.gameObject.transform.localScale
+    progressBar.gameObject.transform.localScale = Vector3:New(newLength, currentScale.y, currentScale.z)
+    -- newLength = scale only because the base size of the model is of one unit at a scale of one
+
+    Callback(progressBar, progressBar.OnUpdate)
+end
+
+--- Get the current progress of the progress bar.
+-- @param progressBar (Daneel.GUI.ProgressBar) The progressBar.
+-- @param getAsPercentage [optional default=false] (boolean) Get the progress as a percentage instead of an absolute value.
+-- @return (number) The progress.
+function Daneel.GUI.ProgressBar.GetProgress(progressBar, getAsPercentage)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.GetProgress", progressBar, getAsPercentage)
+    local errorHead = "Daneel.GUI.ProgressBar.GetProgress(progressBar[, getAsPercentage]) : "
+    Daneel.Debug.CheckArgType(progressBar, "progressBar", "ProgressBar", errorHead)
+    Daneel.Debug.CheckOptionalArgType(getAsPercentage, "getAsPercentage", "boolean", errorHead)
+    local progress = progressBar._progress
+    if getAsPercentage == true then
+        progress = progress / progressBar.maxValue * 100
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+    return progress
+end
+
+--- Set the height of the progress bar.
+-- Can be in units (as a number or a string suffixed wih "u") or pixels (as a string suffixed with "px").
+-- @param progressBar (Daneel.GUI.ProgressBar) The progressBar.
+-- @param height (number or string) The heigt.
+function Daneel.GUI.ProgressBar.SetHeight(progressBar, height)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.SetHeight", progressBar, height)
+    local errorHead = "Daneel.GUI.ProgressBar.SetHeight(progressBar, height) : "
+    Daneel.Debug.CheckArgType(progressBar, "progressBar", "ProgressBar", errorHead)
+    Daneel.Debug.CheckArgType(height, "height", {"string", "number"}, errorHead)
+    if type(height) == "string" then
+        if height:endswith("px") then
+            height = tonumber(height:sub(0, #height-2)) * Daneel.GUI.pixelsToUnits
+        elseif height:endswith("u") then
+            height = tonumber(height:sub(0, #height-1))
+        else
+            height = tonumber(height)
+        end
+    end
+    progressBar._height = height
+    local currentScale = progressBar.gameObject.transform.localScale
+    progressBar.gameObject.transform.localScale = Vector3:New(currentScale.x, height, currentScale.z)
+end
+
+function Daneel.GUI.ProgressBar.GetHeight(progressBar, getInPixels)
+    if getInPixels == nil then getInPixels = false end
+    local height = progressBar._height
+    if getInPixels == true then
+        height = height / Daneel.GUI.pixelsToUnits
+    end
+    return height
+end
 

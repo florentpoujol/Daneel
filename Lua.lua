@@ -127,7 +127,7 @@ function string.startswith(s, chunk)
     local errorHead = "string.startswith(string, chunk) : "
     Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
     Daneel.Debug.CheckArgType(chunk, "chunk", "string", errorHead)
-    local sChunk = s:sub(1, chunk:len())
+    local sChunk = s:sub(1, #chunk)
     local startsWith = false
     if sChunk == chunk then 
         startsWith = true
@@ -145,8 +145,8 @@ function string.endswith(s, chunk)
     local errorHead = "string.endswith(string, chunk) : "
     Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
     Daneel.Debug.CheckArgType(chunk, "chunk", "string", errorHead)
-    local length = s:len()
-    local sChunk = s:sub(length-chunk:len(), length)
+    local length = #s
+    local sChunk = s:sub(length-#chunk+1, length)
     local endsWith = false
     if sChunk == chunk then 
         endsWith = true
