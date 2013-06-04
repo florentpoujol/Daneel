@@ -118,6 +118,43 @@ function string.split(s, delimiter)
     return chunks
 end
 
+--- Tell wether the provided string begins by the provided chunk or not.
+-- @param s (string) The string.
+-- @param chunk (string) The searched chunk.
+-- @param (boolean) True or false.
+function string.startswith(s, chunk)
+    Daneel.Debug.StackTrace.BeginFunction("string.startswith", s, chunk)
+    local errorHead = "string.startswith(string, chunk) : "
+    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
+    Daneel.Debug.CheckArgType(chunk, "chunk", "string", errorHead)
+    local sChunk = s:sub(1, chunk:len())
+    local startsWith = false
+    if sChunk == chunk then 
+        startsWith = true
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+    return startsWith
+end
+
+--- Tell wether the provided string ends by the provided chunk or not.
+-- @param s (string) The string.
+-- @param chunk (string) The searched chunk.
+-- @param (boolean) True or false.
+function string.endswith(s, chunk)
+    Daneel.Debug.StackTrace.BeginFunction("string.endswith", s, chunk)
+    local errorHead = "string.endswith(string, chunk) : "
+    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
+    Daneel.Debug.CheckArgType(chunk, "chunk", "string", errorHead)
+    local length = s:len()
+    local sChunk = s:sub(length-chunk:len(), length)
+    local endsWith = false
+    if sChunk == chunk then 
+        endsWith = true
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+    return endsWith
+end
+
 
 ----------------------------------------------------------------------------------
 -- table
