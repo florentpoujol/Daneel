@@ -18,25 +18,19 @@ Daneel.Tween = {
     tweens = {},
 }
 
-Daneel.Tween.__index = Daneel.Tween
-Daneel.Tween.__tostring = function(tween)
-    return "Tween id:'"..tween.id.."'"
-end
 
-
-local function Callback(tween, callback, ...)
+local function Callback(tweener, callback, ...)
     if arg == nil then arg = {} end
     local callbackType = type(callback)
     
     if callbackType == "function" then
-        callback(tween, unpack(arg))
+        callback(tweener, unpack(arg))
     
-    elseif callbackType == "string" and tween.gameObject ~= nil then
-        arg.tween = tween
-        if tween.broadcastCallbacks == true then
-            gameObject:BroadcastMessage(callback, arg)
+    elseif callbackType == "string" and tweener.gameObject ~= nil then
+        if tweener.broadcastCallbacks == true then
+            tweener.gameObject:BroadcastMessage(callback, tweener)
         else
-            gameObject:SendMessage(callback, arg)
+            tweener.gameObject:SendMessage(callback, tweener)
         end
     end
 end
@@ -48,9 +42,9 @@ function Daneel.Tween.Update()
         if tweener.isEnabled == true and tweener.isPaused ~= true and tweener.isCompleted ~= true then
 
             local deltaDuration = Daneel.Time.deltaTime
-            if tweener.durationType == "RealTime" then
+            if tweener.durationType == "realTime" then
                 deltaDuration = Daneel.Time.realDeltaTime
-            elseif tweener.durationType == "Frame" then
+            elseif tweener.durationType == "frame" then
                 deltaDuration = 1
             end
 
@@ -63,8 +57,12 @@ function Daneel.Tween.Update()
                     tweener.hasStarted = true
 
                     if tweener.startValue == nil then
-                        tweener.startValue = tweener.target[tweener.property]
-                    else
+                        if tweener.target ~= nil then
+                            tweener.startValue = tweener.target[tweener.property]
+                        else
+                            error("ERROR : startValue is nil by not target is set")
+                        end
+                    elseif tweener.target ~= nil then
                         -- when start value and a target are set move the target to startValue before updating the tweener
                         tweener.target[tweener.property] = tweener.startValue
                     end
@@ -83,10 +81,16 @@ function Daneel.Tween.Update()
                 local newValue = nil
 
                 tweener.elapsed = tweener.elapsed + deltaDuration
+                tweener.fullElapsed = tweener.fullElapsed + deltaDuration
+
                 if tweener.elapsed > tweener.duration then
                     tweener.isCompleted = true
                     tweener.elapsed = tweener.duration
-                    newValue = tweener.endValue
+                    if tweener.isRelative == true then
+                        newValue = tweener.startValue + tweener.endValue
+                    else
+                        newValue = tweener.endValue
+                    end
                 
                 else
                     if Daneel.Tween.Ease[tweener.easeType] == nil then
@@ -103,17 +107,33 @@ function Daneel.Tween.Update()
                 end
                 tweener.value = newValue
 
-                Callback(tweener, tweener.OnUpdate, newValue)
+                Callback(tweener, tweener.OnUpdate)
             else
                 tweener.delay = tweener.delay - deltaDuration
             end -- end if tweener.delay <= 0
 
+
             if tweener.isCompleted == true then
-                Callback(tweener, tweener.OnComplete)
+                tweener.completedLoops = tweener.completedLoops + 1
+                if tweener.loops == -1 or tweener.completedLoops < tweener.loops then
+                    tweener.isCompleted = false
+                    tweener.elapsed = 0
 
-                -- set loop if any
+                    if tweener.loopType:lower() == "yoyo" then
+                        local startValue = tweener.startValue
+                        tweener.startValue = tweener.endValue
+                        tweener.endValue = startValue
+                        tweener.diffValue = -tweener.diffValue
+                    elseif tweener.target ~= nil then
+                        tweener.target[tweener.property] = tweener.startValue
+                    end
 
-                tweener:Destroy()
+                    tweener.value = tweener.startValue
+
+                else
+                    Callback(tweener, tweener.OnComplete)
+                    tweener:Destroy()
+                end
             end
         end -- end if tweener.isEnabled == true
     end -- end for tweens
@@ -133,7 +153,7 @@ end
 local tweenerId = 0
 
 function Daneel.Tween.Tweener.New(target, property, endValue, duration, params)
-    local tweener = config.tween.defaultTweenerParams
+    local tweener = table.copy(config.tween.defaultTweenerParams)
     setmetatable(tweener, Daneel.Tween.Tweener)
 
     tweenerId = tweenerId + 1
@@ -197,8 +217,19 @@ end
 function Daneel.Tween.Tweener.Complete(tweener)
     if tweener.isEnabled == false then return end
     tweener.isCompleted = true
-    -- faire avancer valeur au bout
-    tweener.target[tweener.property] = tweener.endValue
+    local endValue = tweener.endValue
+    if tweener.loopType == "yoyo" then
+        if
+            (tweener.loops % 2 == 0 and tweener.completedLoops % 2 == 0) or -- endValue must be original startValue (because of even number of loops) | current X to Y loop, 
+            (tweener.loops % 2 ~= 0 and tweener.completedLoops % 2 ~= 0) -- endValue must be the original endValue but the current loop is Y to X, so endValue and startValue are inversed
+        then
+            endValue = tweener.startValue
+        end
+    end
+    if tweener.target ~= nil then
+        tweener.target[tweener.property] = endValue
+    end
+    tweener.value = endValue
     Callback(tweener, tweener.OnComplete)
 end
 
@@ -206,11 +237,17 @@ function Daneel.Tween.Tweener.Restart(tweener)
     if tweener.isEnabled == false then return end
     tweener.elapsed = 0
     tweener.fullElapsed = 0
+    tweener.completedLoops = 0
     tweener.isCompleted = false
     tweener.hasStarted = false
-    tweener.position = 0
-    -- faire revenir la valeur au début
-    tweener.target[tweener.property] = tweener.startValue
+    local startValue = tweener.startValue
+    if tweener.loopType == "yoyo" and tweener.completedLoops % 2 ~= 0 then -- the current loop is Y to X, so endValue and startValue are inversed
+        startValue = tweener.endValue
+    end
+    if tweener.target ~= nil then
+        tweener.target[tweener.property] = startValue
+    end
+    tweener.value = startValue
 end
 
 function Daneel.Tween.Tweener.Destroy(tweener)

@@ -34,13 +34,16 @@ IDEAS
     -----
     TWEEN
 
+    param "property" > si la propriété n'existe pas, essayer d'utiliser les getter/setter correspondant à la place
+    Restart() > restart aussi le delay ?
 
     Tweener
         methods:
             GoTo()
 
-            Destroy > ne destroy rien   
-                faire enlever le tweener de la liste des tweeners, permettant de la virer de la mémoire s'il n'est pas stocké dans une variable ailleur
+            Rewind() > comme restart() sans incluer le delay et ne rapelle pas OnStart()
+
+        - les loops : 1 boucle = aller-retour, ou bien, 1 boucle = 1 aller, 1 autre boucle = 1 retour
             
 
     Sequences
@@ -91,6 +94,7 @@ A implémenter
     -----
     DEVELOP 
 
+    - permettre de court-circuiter la fonction New() avec mt.__call()
 
     LORSQUE LA NOUVELLE VERSIN DE CS EST SORTIE
     - enlever l'orthographic scale en dure dans Daneel.Awake()
@@ -120,11 +124,9 @@ A implémenter
     -----
     TWEEN
 
-    implémenter param restant sur tweener simples > a tester
-    - destroyWhenComplete = true
-
-    - tweener loops
-    - param position et fonction GoTo()
+        
+    - fonction GoTo()
+    
 
 ==========
 A tester
