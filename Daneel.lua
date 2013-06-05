@@ -131,7 +131,7 @@ defaultConfig = {
 
             id = 0,
             hasStarted = false,
-            isComplete = false,
+            isCompleted = false,
             elapsed = 0, -- elapsed time or frame (in durationType unit)
             fullElapsed = 0, -- elapsed time, including loops
             diffValue = 0.0, -- endValue - startValue

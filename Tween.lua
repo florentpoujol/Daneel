@@ -45,7 +45,7 @@ end
 -- called from Daneel.Update()
 function Daneel.Tween.Update()
     for id, tweener in pairs(Daneel.Tween.Tweener.tweeners) do
-        if tweener.isEnabled == true and tweener.isPaused ~= true and tweener.isComplete ~= true then
+        if tweener.isEnabled == true and tweener.isPaused ~= true and tweener.isCompleted ~= true then
 
             local deltaDuration = Daneel.Time.deltaTime
             if tweener.durationType == "RealTime" then
@@ -84,7 +84,7 @@ function Daneel.Tween.Update()
 
                 tweener.elapsed = tweener.elapsed + deltaDuration
                 if tweener.elapsed > tweener.duration then
-                    tweener.isComplete = true
+                    tweener.isCompleted = true
                     tweener.elapsed = tweener.duration
                     newValue = tweener.endValue
                 
@@ -108,7 +108,7 @@ function Daneel.Tween.Update()
                 tweener.delay = tweener.delay - deltaDuration
             end -- end if tweener.delay <= 0
 
-            if tweener.isComplete == true then
+            if tweener.isCompleted == true then
                 Callback(tweener, tweener.OnComplete)
 
                 -- set loop if any
@@ -196,7 +196,7 @@ end
 
 function Daneel.Tween.Tweener.Complete(tweener)
     if tweener.isEnabled == false then return end
-    tweener.isComplete = true
+    tweener.isCompleted = true
     -- faire avancer valeur au bout
     tweener.target[tweener.property] = tweener.endValue
     Callback(tweener, tweener.OnComplete)
@@ -205,6 +205,8 @@ end
 function Daneel.Tween.Tweener.Restart(tweener)
     if tweener.isEnabled == false then return end
     tweener.elapsed = 0
+    tweener.fullElapsed = 0
+    tweener.isCompleted = false
     tweener.hasStarted = false
     tweener.position = 0
     -- faire revenir la valeur au début
@@ -214,7 +216,7 @@ end
 function Daneel.Tween.Tweener.Destroy(tweener)
     if tweener.isEnabled == false then return end
     tweener.isEnabled = false
-    Callback(tweener, tweener.OnDestroy)
+    Daneel.Tween.Tweener.tweeners[tweener.id] = nil
 end
 
 

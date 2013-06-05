@@ -1,165 +1,141 @@
-
 ==========
-Branch Develop
+IDEAS
+
+    -----
+    MISC
+
+    - A voir avec TextRenderer > permettre de facilement sauter des lignes (avec :br:) ou définir un wordWrap
+
+    - modelRenderer:SetDimension(Vector3) ou idem avec Vector2
 
 
-vérifier que tous les changements prévus sont implémentés, sans se soucier du GUI
-vérifier que les changement fonctionnent avec un version post-compo de Minimalist Encounter
-mettre à jour la doc complètement
+    -----
+    GUI
 
-créer branche pour GUI component
-implémenter la nouvelle version du GUI
-tester
-metre à jour la doc
+    Hud composant >
+    - positionnnement Global + local sans besoin de parenter le gameObject
+    - GetPosition en calculant la positin à partir des parents ou de la position 3D
 
-Publier
+    - Input
+    - Slider
 
 
-Voir à attendre que l'asset "Font" soit lui-même publié > influera sur les GUIText
+    Slider composant >
+        - scale de la progress bar affecte le handle
+
+    "progress bar" mais avec plusieurs éléments
+    - lorsque élément pas utilisé, il a opacity, scale etc au choix dans la config, donc
+      out et in state  
+
+    input
+    - param size qui limite la taille du champs mais pas du texte (flèches font se déplacer le texte)
+
+
+    -----
+    TWEEN
+
+
+    Tweener
+        methods:
+            GoTo()
+
+            Destroy > ne destroy rien   
+                faire enlever le tweener de la liste des tweeners, permettant de la virer de la mémoire s'il n'est pas stocké dans une variable ailleur
+            
+
+    Sequences
+        > simple stack de tweeners qui jouent les un après les autres
+        lorsque la sequence joue, elle prend le premier tween, le fait joue, lorsqu'il est complèté, il est supprimé de la liste puis la sequence prend le nouveau tweeners arrivé en tête de liste
+        > forcer isPaused à true, enpècher les loop infinies
+        > comment détecter la fin d'un tweener sans réécrire OnComplete ? : si le tweener a une propriété sequence, appel d'une fonction "PlayNext()"
+            
+
+        > timeline
+        les clés des tweeners sont un temps (temps, temps réel ou frame)
+        à chaque frame, on vérif si le temp existe comme clé puis on comence à jouer les tweener qui y snt stockés 
+
+        methods
+            Play
+            Pause
+            Restart > les tweeners ne doivent pas être supprimés lorsque terminé
+            Complete > est-ce que cela complete tous les tweeners ?
+            Destroy > loop sur ses tweeners pour les enlever de Daneel.Tween.Tweener.tweeners
+
+            Insert(time, tweener) > lorsque timeline
+
+        params
+            isEnabled
+            isPaused
+            hasStarted
+            isCompleted
+
+            delay
+
+            isTimeline
+            timeType > le time est un Daneel.Time.time, realTime ou frames
+            isRelative > les temps indiqué sont relatifs au temps de début de la sequence (un temps de 5 signifie 5sec après que delay soit terminé)
+
+            stackId > id dans la sequence, du tween qui joue actuellement
+
+            loops
+            completedLoops
+            loopType
+
+
+
 
 
 ==========
 A implémenter
 
-LORSQUE LA NOUVELLE VERSIN DE CS EST SORTIE
-- enlever l'orthographic scale en dure dans Daneel.Awake()
+    -----
+    DEVELOP 
 
-- vérif que si on ajoute plusieurs "MouseInteractiveGameObject", ou castable, ou triggerable, le gameObject se fait pas ajouter plusieurs fois dans la liste
-- vérif avec checkbox que les messages reçoivent bien l'instance du component comme argument, et non juste un copie du contenu de la table
 
-- A voir avec TextRenderer >
-  permettre de facilement suater des lignes ou définir un wordWrap ou permettre les :br: avec un TextRenderer
+    LORSQUE LA NOUVELLE VERSIN DE CS EST SORTIE
+    - enlever l'orthographic scale en dure dans Daneel.Awake()
 
-- modelRenderer:SetDimension(Vector3) ou vector2
+    -----
+    GUI
 
+    ScriptedBehaviors pour ajouter les composants et les initialiser lorsque dans l'éditeur de scène :
+    - HUD avec propriétés (string) (A voit lorsque Hud sera refait avec position globale et locale)
+      - positionX
+      - positionY
+
+    - CheckBox avec propriété 
+      - isChecked (boolean)
+      - text (string) > si le textRenderer est ajouté seulement après, comment attendre qu'il soit ajouté ?
+                        > obliger le dev à ajhouter le checkbox après le TextRenderer ?
+
+    - ProgressBar (toutes les prop en string)
+      - minValue
+      - MaxValue
+      - minLength
+      - maxLength
+      - progress
+      - height
+
+
+    -----
+    TWEEN
+
+    implémenter param restant sur tweener simples > a tester
+    - destroyWhenComplete = true
+
+    - tweener loops
+    - param position et fonction GoTo()
 
 ==========
 A tester
 
-
+    - vérif que si on ajoute plusieurs "MouseInteractiveGameObject", ou castable, ou triggerable, le gameObject se fait pas ajouter plusieurs fois dans la liste
+    - vérif avec checkbox que les messages reçoivent bien l'instance du component comme argument, et non juste un copie du contenu de la table
 
 
 ==========
 A modifier/ajouter dans la doc :
 
 
-- GUI
-- Tween
-
-
-====================
-Branch GUI 
-
-HUD > positionement en % au lieu de pixels
-positionnnement Global + local sans besoin de parenter
-GetPosition en calculant la positin à partir des parents ou de la position 3D
-
-
-progressbar > 
-  autoriser de définir les longueurs en units ou pixels, le progress en unit, pixel ou percentage
-
-
-ScriptedBehaviors pour ajouter les composants et les initialisés lorsque das l'éditeur de scène :
-- HUD avec propriétés (string)
-  - positionX
-  - positionY
-
-- CheckBox avec propriété 
-  - isChecked (boolean)
-  - text (string)
-
-- ProgressBar
-  - 
-
-
-- Input
-- ProgressBar
-- Slider
-
-
-
-
-
-
-
-Slider
-    - scale de la progress bar affecte le handle
-
-
-"progress bar" mais avec plusieurs éléments
-> lorsque élément pas utilisé, il a opacity, scale etc au choix dans la config, donc
-	out et in state  
-
-
-
-input
-	- param size qui limite la taille du champs mais pas du texte (flèches font se déplacer le texte)
-
-
-  
-
-======================
-Tween
-
-paser enabled en isEnabled
-
-Daneel.Tween.To(target, propname, endValue, duration, isRelative)
-Daneel.Tween.From()
-ou avec table params : Daneel.Tween.To/From(params)
-Retournent un "Tweener"
-
-Tweener
-  methods:
-    GoTo()
-    Play()
-    Pause()
-    Destroy()
-    Restart()
-    Complete()
-  callbacks :
-    OnStart
-    OnComplete
-    OnPlay
-    OnPause
-    OnDestroy
-  params :
-    target
-    duration
-    durationType ? > also for delay
-    fullDuration (duration * loops)
-    propName
-    targetValue
-    isRelative
-    enabled
-    isPaused
-    position (temps < duration)
-    id > plusieur tween peuvent avoir la même id si désiré
-    loops (-1 = infinite)
-    delay (delay before autostart)
-    easeType
-    loops
-    loopType
-  "read only" properties :
-    completedLoops
-    hasStarted
-
-valeurs par défaut
-  > config de daneel ? config.tween.defaultProperties = { isPause = false, ... } }
-
-
-"Enums"
-Daneel.Tween
-  EaseType
-  LoopType
-  DurationTime ? (time, realTime, frame)
-
-Tween valeur arbitraire (non liée à un component ou GO)
-  Daneel.Tween.Value(from, to, duration)
-  > OnUpdate reçoit la valeur ? > Oui
-
-
-Sequences
-  > simple stack de tween
-  ou bien timeline
-
-  
+    - GUI
+    - Tween
