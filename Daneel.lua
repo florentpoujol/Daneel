@@ -279,7 +279,7 @@ function Daneel.Utilities.ReplaceInString(string, replacements)
     return string
 end
 
---- Allow to call getters and setters as if they were variable on the instance of the provided Object
+--- Allow to call getters and setters as if they were variable on the instance of the provided Object.
 -- The instances are tables that have the provided object as metatable.
 -- Optionaly allow to search in a ancestry of objects.
 -- @param Object (mixed) The object.

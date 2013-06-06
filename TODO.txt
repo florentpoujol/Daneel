@@ -8,6 +8,8 @@ IDEAS
 
     - modelRenderer:SetDimension(Vector3) ou idem avec Vector2
 
+    - est-ce que LuaDoc permet d'avoir plusieurs doc pour la même fonction ? si on veut avoir plusieurs construteurs
+
 
     -----
     GUI
@@ -99,6 +101,11 @@ A implémenter
     LORSQUE LA NOUVELLE VERSIN DE CS EST SORTIE
     - enlever l'orthographic scale en dure dans Daneel.Awake()
 
+    - transformer l'actuel Event.FireAtTime() en FireAtRealTime() puis ajouter Event.FireAtTime()
+        à modifier dans Daneel.Awake()
+
+    - ajouter fonctions mathématiques (+ - / *) à Vector2 afin qu'il puisse être utilisé avec les tweeners
+
     -----
     GUI
 
@@ -126,7 +133,7 @@ A implémenter
 
         
     - fonction GoTo()
-    
+    - neutraliser Complete() for infinite loops
 
 ==========
 A tester
