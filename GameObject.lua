@@ -235,7 +235,6 @@ function GameObject.GetChild(gameObject, name, recursive)
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(recursive, "recursive", "boolean", errorHead)
-
     local child = gameObject:FindChild(name, recursive)
     Daneel.Debug.StackTrace.EndFunction("GameObject.GetChild", child)
     return child
@@ -328,10 +327,10 @@ function GameObject.AddComponent(gameObject, componentType, params, scriptedBeha
     local errorHead = "GameObject.AddComponent(gameObject, componentType[, params, scriptedBehaviorParams]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     componentType = Daneel.Debug.CheckComponentType(componentType)
-    if componentType == "Transform" then
-        if DEBUG == true then
-            error(errorHead.."Can't add a transform component because gameObjects may only have one transform.")
-        end
+    if componentType == "Transform" and DEBUG == true then
+        print(errorHead.."Can't add a transform component because gameObjects may only have one transform.")
+        Daneel.Debug.StackTrace.EndFunction()
+        return
     end
 
     local component = nil
@@ -496,7 +495,6 @@ function GameObject.SetScriptedBehavior(gameObject, scriptNameOrAsset, params)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.SetScriptedBehavior", gameObject, scriptNameOrAsset, params)
     local errorHead = "GameObject.SetScriptedBehavior(gameObject, scriptNameOrAsset, params) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-
     local component = gameObject:SetComponent("ScriptedBehavior", scriptNameOrAsset, params)
     Daneel.Debug.StackTrace.EndFunction("GameObject.SetScriptedBehavior")
 end

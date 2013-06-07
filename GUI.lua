@@ -285,6 +285,7 @@ function Daneel.GUI.ProgressBar.SetProgress(progressBar, progress)
     -- newLength = scale only because the base size of the model is of one unit at a scale of one
 
     Callback(progressBar, progressBar.OnUpdate)
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Get the current progress of the progress bar.

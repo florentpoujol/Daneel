@@ -87,7 +87,7 @@ IDEAS
             loopType
 
 
-
+    Ray/TextRenderer > vérifier que les ray pourront intersecter les TextRenderer
 
 
 ==========
@@ -99,6 +99,9 @@ A implémenter
 
     LORSQUE LA NOUVELLE VERSIN DE CS EST SORTIE
     - enlever l'orthographic scale en dure dans Daneel.Awake()
+    - enlever commentaire autour de TextRenderer.SetFont()
+    - décommenter nouveaux component dans la config
+
 
     -----
     GUI
@@ -126,20 +129,18 @@ A implémenter
     TWEEN
 
         
-    - fonction GoTo()
-    - fonction Rewind() ?
-    - neutraliser Complete() for infinite loops
+    - fonction GoTo() > changer l'elapsed ?
+    - fonction Rewind() ? > comme restart sauf que pas de onstart
+
 
 ==========
 A tester
 
     - vérif que si on ajoute plusieurs "MouseInteractiveGameObject", ou castable, ou triggerable, le gameObject se fait pas ajouter plusieurs fois dans la liste
-    - vérif avec checkbox que les messages reçoivent bien l'instance du component comme argument, et non juste un copie du contenu de la table
-
+    
 
 ==========
 A modifier/ajouter dans la doc :
-
 
     - GUI
     - Tween
@@ -148,6 +149,4 @@ A modifier/ajouter dans la doc :
 =========
 BUGS
 
-    
-    stacktrace fonctionne mal parfois
 

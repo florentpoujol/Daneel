@@ -225,7 +225,7 @@ end
 
 ----------------------------------------------------------------------------------
 -- TextRenderer
-
+--[[
 local OriginalSetFont = TextRenderer.SetFont
 
 --- Set the specified font for the textRenderer.
@@ -248,7 +248,7 @@ function TextRenderer.SetFont(textRenderer, fontNameOrAsset)
     OriginalSetFont(textRenderer, font)
     Daneel.Debug.StackTrace.EndFunction("TextRenderer.SetFont")
 end
-
+]]
 
 ----------------------------------------------------------------------------------
 -- Ray

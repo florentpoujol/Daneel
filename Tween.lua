@@ -216,7 +216,7 @@ function Daneel.Tween.Tweener.Pause(tweener)
 end
 
 function Daneel.Tween.Tweener.Complete(tweener)
-    if tweener.isEnabled == false then return end
+    if tweener.isEnabled == false or tweener.loops == -1 then return end
     tweener.isCompleted = true
     local endValue = tweener.endValue
     if tweener.loopType == "yoyo" then
