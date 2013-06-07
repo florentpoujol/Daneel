@@ -253,6 +253,9 @@ end
 ----------------------------------------------------------------------------------
 -- Ray
 
+setmetatable(Ray, { __call = function(Object, ...) return Object:New(...) end })
+
+
 --- Check the collision of the ray against the provided set of gameObject or if it is nil, against all castable gameObjects.
 -- @param ray (Ray) The ray.
 -- @param gameObjects [optional] (table) The set of gameObjects to cast the ray against (or if nil, the castable gameObjects)
@@ -339,8 +342,10 @@ end
 ----------------------------------------------------------------------------------
 -- RaycastHit
 
+
 RaycastHit = {}
 RaycastHit.__index = RaycastHit
+setmetatable(RaycastHit, { __call = function(Object, ...) return Object.New(...) end })
 
 function RaycastHit.__tostring() 
     return "RaycastHit"
@@ -432,3 +437,9 @@ function Scene.Append(sceneNameOrAsset, gameObjectNameOrInstance)
     Daneel.Debug.StackTrace.EndFunction("Scene.Append")
 end
 
+
+----------------------------------------------------------------------------------
+
+setmetatable(Vector3, { __call = function(Object, ...) return Object:New(...) end })
+setmetatable(Quaternion, { __call = function(Object, ...) return Object:New(...) end })
+setmetatable(Plane, { __call = function(Object, ...) return Object:New(...) end })

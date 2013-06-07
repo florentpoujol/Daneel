@@ -1,4 +1,6 @@
 
+setmetatable(GameObject, { __call = function(Object, ...) return Object.New(...) end })
+
 function GameObject.__tostring(gameObject)
     -- returns something like "GameObject: 'MyName': 123456789"
     local id = tostring(gameObject.inner):sub(3,20)

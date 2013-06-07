@@ -16,6 +16,7 @@ end
 
 Vector2 = {}
 Vector2.__index = Vector2
+setmetatable(Vector2, { __call = function(Object, ...) return Object.New(...) end })
 
 function Vector2.New(x, y)
     Daneel.Debug.StackTrace.BeginFunction("Vector2.new", x, y)

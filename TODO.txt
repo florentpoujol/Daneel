@@ -97,6 +97,7 @@ A implémenter
     DEVELOP 
 
     - permettre de court-circuiter la fonction New() avec mt.__call()
+        >  Tweener, Sequence, 
 
     LORSQUE LA NOUVELLE VERSIN DE CS EST SORTIE
     - enlever l'orthographic scale en dure dans Daneel.Awake()
@@ -148,3 +149,11 @@ A modifier/ajouter dans la doc :
 
     - GUI
     - Tween
+
+
+=========
+BUGS
+
+    
+    stacktrace fonctionne mal parfois
+

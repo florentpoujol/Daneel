@@ -144,9 +144,10 @@ end
 -- Tweener
 
 Daneel.Tween.Tweener = { tweeners = {} }
-
 Daneel.Tween.Tweener.__index = Daneel.Tween.Tweener
-Daneel.Tween.Tweener.__tostring = function(tweener)
+setmetatable(Daneel.Tween.Tweener, { __call = function(Object, ...) return Object.New(...) end })
+
+function Daneel.Tween.Tweener.__tostring(tweener)
     return "Tweener id:'"..tweener.id.."'"
 end
 
@@ -273,6 +274,11 @@ Daneel.Tween.Ease = {}
 
 Daneel.Tween.Sequence = { sequences = {} }
 Daneel.Tween.Sequence.__index = Daneel.Tween.Sequence
+setmetatable(Daneel.Tween.Sequence, { __call = function(Object, ...) return Object.New(...) end })
+
+function Daneel.Tween.Sequence.__tostring(tweener)
+    return "Sequence id:'"..tweener.id.."'"
+end
 
 function Daneel.Tween.Sequence.New()
     local sequence = {}
