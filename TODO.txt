@@ -97,6 +97,7 @@ A implémenter
     - enlever commentaire autour de TextRenderer.SetFont()
     - décommenter nouveaux component dans la config
 
+    - autoriser les table comme premier argument de Event.Listen (pour enregistr plusieurs event sur la même fonction ou le même gameObject en une seule ligne)
 
     -----
     GUI
@@ -135,6 +136,8 @@ A modifier/ajouter dans la doc :
 
     - GUI
     - Tween
+
+    - callback : page à part + function list + sidebar
 
 
 =========
