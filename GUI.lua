@@ -183,7 +183,7 @@ Daneel.GUI.ProgressBar = {}
 --- Create a new GUI.ProgressBar.
 -- @param name (string) The component name.
 -- @param params [optional] (table) A table with initialisation parameters.
--- @return (Daneel.GUI.ProgressBar) The new component.
+-- @return (ProgressBar) The new component.
 function Daneel.GUI.ProgressBar.New(gameObject)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.New", gameObject)
     local errorHead = "Daneel.GUI.ProgressBar.New(gameObject) : "

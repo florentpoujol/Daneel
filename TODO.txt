@@ -106,24 +106,10 @@ A implémenter
         - GetPosition en calculant la position à partir des parents ou de la position 3D
 
 
-
     ScriptedBehaviors pour ajouter les composants et les initialiser lorsque dans l'éditeur de scène :
     - HUD avec propriétés (string) (A voit lorsque Hud sera refait avec position globale et locale)
         - positionX
         - positionY
-
-    - CheckBox avec propriété 
-        - isChecked (boolean)
-        - text (string) > si le textRenderer est ajouté seulement après, comment attendre qu'il soit ajouté ?
-                        > obliger le dev à ajhouter le checkbox après le TextRenderer ?
-
-    - ProgressBar (toutes les prop en string)
-        - minValue
-        - MaxValue
-        - minLength
-        - maxLength
-        - progress
-        - height
 
     - Slider
         minValue
@@ -143,8 +129,6 @@ A implémenter
 ==========
 A tester
 
-    - vérif que si on ajoute plusieurs "MouseInteractiveGameObject", ou castable, ou triggerable, le gameObject se fait pas ajouter plusieurs fois dans la liste
-    
 
 ==========
 A modifier/ajouter dans la doc :
