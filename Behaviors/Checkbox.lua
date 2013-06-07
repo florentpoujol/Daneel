@@ -9,6 +9,9 @@
 
 function Behavior:Start()
 	if self.gameObject.checkBox == nil then
-		self.gameObject:AddComponent("CheckBox", { isChecked = self.isChecked })
+		self.gameObject:AddComponent("CheckBox", { 
+			isChecked = self.isChecked,
+			text = self.text
+		})
 	end
 end

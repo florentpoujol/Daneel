@@ -17,20 +17,6 @@ end
 Daneel.GUI = {}
 
 
-local function Callback(component, callback, ...)
-    if arg == nil then arg = {} end
-    local callbackType = type(callback)
-    
-    if callbackType == "function" then
-        callback(component, unpack(arg))
-    
-    elseif callbackType == "string" and component.gameObject ~= nil then
-        --arg.component = component
-        gameObject:SendMessage(callback, component)
-    end
-end
-
-
 ----------------------------------------------------------------------------------
 -- Hud
 
@@ -124,37 +110,54 @@ Daneel.GUI.CheckBox = {}
 
 -- Create a new GUI.CheckBox component.
 -- @param gameObject (GameObject) The component gameObject.
--- @return (Daneel.GUI.CheckBox) The new component.
+-- @return (CheckBox) The new component.
 function Daneel.GUI.CheckBox.New(gameObject)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.New", gameObject)
     local errorHead = "Daneel.GUI.CheckBox.New(gameObject) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "string", errorHead)
-
-    local component = setmetatable({ gameObject = gameObject }, Daneel.GUI.CheckBox)
-    gameObject.checkBox = component
-
-    gameObject:AddComponent("TextRenderer", { font = { config.gui.textDefaultFontName } })
-    gameObject:AddScriptedBehavior("Daneel/Behaviors/MouseInteractiveGameObject", { component = component })
     
-    component.isChecked = config.gui.checkBoxDefaultState
-    component.text = "CheckBox"
-    -- component may be updated with params in gameObject:AddComponent()
+    local checkBox = setmetatable({ gameObject = gameObject }, Daneel.GUI.CheckBox)
+    gameObject.checkBox = checkBox
+
+    if gameObject["Daneel/Behaviors/MouseInteractiveGameObject"] == nil and
+       not table.containsvalue(config.mouseInteractiveGameObjects, gameObject) then
+        table.insert(config.mouseInteractiveGameObjects, gameObject)
+    end
+    if gameObject.textRenderer == nil then
+        -- "wait" for the TextRenderer to be added
+        checkBox.OnNewComponent = function(newComponent)
+            if getmetatable(newComponent) == TextRenderer then
+                checkBox.text = checkBox._text
+            end
+        end
+        checkBox._text = "CheckBox"
+    else
+        checkBox.text = gameObject.textRenderer.text
+    end
+    
+    checkBox.isChecked = config.gui.checkBoxDefaultState
+
     Daneel.Debug.StackTrace.EndFunction()
-    return component
+    return checkBox
 end
 
 
-function Daneel.GUI.CheckBox.SetText(component, text)
-    if component.isChecked == true then
+function Daneel.GUI.CheckBox.SetText(checkBox, text)
+    local errorHead = "Daneel.GUI.CheckBox.SetText(checkBox, text) : "
+    if checkBox.isChecked == true then
         text = "√ "..text
     else
         text = "X "..text
     end
-    component.gameObject.textRenderer.text = text
+    if checkBox.gameObject.textRenderer ~= nil then
+        checkBox.gameObject.textRenderer.text = text
+    elseif DEBUG == true then
+        print(errorHead.."Can't set the text because no TextRenderer component has been found on the gameObject '"..tostring(checkBox.gameObject).."'.")
+    end
 end
 
-function Daneel.GUI.CheckBox.GetText(component, text)
-    return component.gameObject.textRenderer.text:sub(3, 100)
+function Daneel.GUI.CheckBox.GetText(checkBox, text)
+    return checkBox.gameObject.textRenderer.text:sub(3, 100)
 end 
 
 
@@ -163,7 +166,7 @@ function Daneel.GUI.CheckBox.SetIsChecked(component, state)
     if component._isChecked ~= state then
         component._isChecked = state
         component.text = component.text -- "reload" the check mark based on the new checked state
-        Callback(component, component.OnUpdate)
+        Daneel.Utilities.SendCallback(component, "OnUpdate")
     end
 end
 
@@ -284,7 +287,7 @@ function Daneel.GUI.ProgressBar.SetProgress(progressBar, progress)
     progressBar.gameObject.transform.localScale = Vector3:New(newLength, height, currentScale.z)
     -- newLength = scale only because the base size of the model is of one unit at a scale of one
 
-    Callback(progressBar, progressBar.OnUpdate)
+    Daneel.Utilities.SendCallback(component, "OnUpdate")
     Daneel.Debug.StackTrace.EndFunction()
 end
 

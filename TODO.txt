@@ -18,9 +18,10 @@ IDEAS
     callback > définir une fonction ou un message qui sera appelé lors de l'évènement approprié si il existe
     se rapporte toujours à un object en particulier (à l'inverse des Event)
 
-
     parfois pas d'intéret de définir un aute nom
 
+    Appeler ça plutôt "notice", "local event"
+    > voit ce qui existe dans laravel
 
 
 
