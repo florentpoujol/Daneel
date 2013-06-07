@@ -33,8 +33,9 @@ defaultConfig = {
         "Daneel/Behaviors/CastableGameObject",
         "Daneel/Behaviors/MouseInteractiveGameObject",
         "Daneel/Behaviors/MouseInteractiveCamera",
+        "Daneel/Behaviors/CheckBox",
+
         "Daneel/Behaviors/GUI/GUIMouseInteractive",
-        "Daneel/Behaviors/GUI/CheckBox",
         "Daneel/Behaviors/GUI/Input",
         "Daneel/Behaviors/GUI/WorldText",
     },
@@ -311,6 +312,43 @@ function Daneel.Utilities.AllowDynamicGettersAndSetters(Object, ancestors)
         end
         return rawset(instance, key, value)
     end
+end
+
+--- Call or send the provided function or message on the provided object, passing along all optional arguments.
+-- @param object (table) The object.
+-- @param callbackName (string) The name of the callback.
+-- @param ... Any other arguments to pass along. The object is always passed along as first argument.
+function Daneel.Utilities.SendCallback(object, callbackName, ...)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.SendCallback", object, callbackName, unpack(arg))
+    local errorHead = "Daneel.Utilities.SendCallback(object, callbackName[, ...]) : "
+    Daneel.Debug.CheckArgType(object, "object", "table", errorHead)
+    Daneel.Debug.CheckArgType(callbackName, "callbackName", "string", errorHead)
+
+    local callback = object[callbackName]
+    local callbackType = type(callback)
+    if callbackType == nil then 
+        callback = callbackName
+        callbackType = "string"
+    end
+
+    if callbackType == "function" then
+        callback(object, unpack(arg))
+    elseif callbackType == "string" then
+        local gameObject = object
+        if getmetatable(gameObject) ~= GameObject then
+            gameObject = object.gameObject
+            if getmetatable(gameObject) ~= GameObject then
+                if DEBUG == true then
+                    print(errorHead.."Callback '"..callbackName.."' is a message of name '"..callback.."' but the provided object '"..tostring(object).."' is not a gameObject and has no 'gameObject' property. Can't send the message.")
+                end
+                Daneel.Debug.EndFunction()            
+                return
+            end
+        end
+        table.insert(arg, 1, object)
+        gameObject:SendMessage(callback, object)
+    end
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 

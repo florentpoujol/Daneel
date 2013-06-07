@@ -5,47 +5,41 @@ IDEAS
     MISC
 
     - A voir avec TextRenderer > permettre de facilement sauter des lignes (avec :br:) ou définir un wordWrap
-
+    - Si pas possible de base > permettre de cast un ray contre un text renderer (ajoute un model transparent, le scale en fonction de la longueur du text, caste le ray contre le model)
     - modelRenderer:SetDimension(Vector3) ou idem avec Vector2
-
     - est-ce que LuaDoc permet d'avoir plusieurs doc pour la même fonction ? si on veut avoir plusieurs construteurs
+
+
+    - introduire plus de callback. fonction Utilities.SendCallback(object, callbackName, args)
+        - gameObject.OnNewComponent(gameObject, component)
+        - gameObject.OnDestroyComponent(gameObject, component)
+
+
+    callback > définir une fonction ou un message qui sera appelé lors de l'évènement approprié si il existe
+    se rapporte toujours à un object en particulier (à l'inverse des Event)
+
+
+    parfois pas d'intéret de définir un aute nom
+
+
+
 
 
     -----
     GUI
 
-    Hud composant >
-    - positionnnement Global + local sans besoin de parenter le gameObject
-    - GetPosition en calculant la positin à partir des parents ou de la position 3D
-
     - Input
-    - Slider
-
-
-    Slider composant >
-        - scale de la progress bar affecte le handle
-
-    "progress bar" mais avec plusieurs éléments
-    - lorsque élément pas utilisé, il a opacity, scale etc au choix dans la config, donc
+        - param size qui limite la taille du champs mais pas du texte (flèches font se déplacer le texte)
+    
+    - "progress bar" mais avec plusieurs éléments
+    lorsque élément pas utilisé, il a opacity, scale etc au choix dans la config, donc
       out et in state  
-
-    input
-    - param size qui limite la taille du champs mais pas du texte (flèches font se déplacer le texte)
 
 
     -----
     TWEEN
 
-    param "property" > si la propriété n'existe pas, essayer d'utiliser les getter/setter correspondant à la place
-    Restart() > restart aussi le delay ?
-
-    Tweener
-        methods:
-            GoTo()
-
-            Rewind() > comme restart() sans incluer le delay et ne rapelle pas OnStart()
-
-    
+    pour le param "property" > si la propriété n'existe pas, essayer d'utiliser les getter/setter correspondant à la place   
             
 
     Sequences
@@ -97,7 +91,7 @@ A implémenter
     DEVELOP 
 
 
-    LORSQUE LA NOUVELLE VERSIN DE CS EST SORTIE
+    LORSQUE LA NOUVELLE VERSION DE CS EST SORTIE
     - enlever l'orthographic scale en dure dans Daneel.Awake()
     - enlever commentaire autour de TextRenderer.SetFont()
     - décommenter nouveaux component dans la config
@@ -106,31 +100,43 @@ A implémenter
     -----
     GUI
 
+    - HUD
+        - positionnnement Global + local sans besoin de parenter le gameObject
+        - GetPosition en calculant la position à partir des parents ou de la position 3D
+
+
+
     ScriptedBehaviors pour ajouter les composants et les initialiser lorsque dans l'éditeur de scène :
     - HUD avec propriétés (string) (A voit lorsque Hud sera refait avec position globale et locale)
-      - positionX
-      - positionY
+        - positionX
+        - positionY
 
     - CheckBox avec propriété 
-      - isChecked (boolean)
-      - text (string) > si le textRenderer est ajouté seulement après, comment attendre qu'il soit ajouté ?
+        - isChecked (boolean)
+        - text (string) > si le textRenderer est ajouté seulement après, comment attendre qu'il soit ajouté ?
                         > obliger le dev à ajhouter le checkbox après le TextRenderer ?
 
     - ProgressBar (toutes les prop en string)
-      - minValue
-      - MaxValue
-      - minLength
-      - maxLength
-      - progress
-      - height
+        - minValue
+        - MaxValue
+        - minLength
+        - maxLength
+        - progress
+        - height
 
+    - Slider
+        minValue
+        maxValue
+        minLength
+        maxLength
+        progress
+
+        model comme handle avec script Mouseinteractive
 
     -----
     TWEEN
 
-        
-    - fonction GoTo() > changer l'elapsed ?
-    - fonction Rewind() ? > comme restart sauf que pas de onstart
+    Sequence
 
 
 ==========
