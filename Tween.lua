@@ -19,23 +19,6 @@ Daneel.Tween = {
 }
 
 
-local function Callback(tweener, callback, ...)
-    if arg == nil then arg = {} end
-    local callbackType = type(callback)
-    
-    if callbackType == "function" then
-        callback(tweener, unpack(arg))
-    
-    elseif callbackType == "string" and tweener.gameObject ~= nil then
-        if tweener.broadcastCallbacks == true then
-            tweener.gameObject:BroadcastMessage(callback, tweener)
-        else
-            tweener.gameObject:SendMessage(callback, tweener)
-        end
-    end
-end
-
-
 -- called from Daneel.Update()
 function Daneel.Tween.Update()
     for id, tweener in pairs(Daneel.Tween.Tweener.tweeners) do
@@ -74,7 +57,7 @@ function Daneel.Tween.Update()
                         tweener.diffValue = tweener.endValue - tweener.startValue
                     end
 
-                    Callback(tweener, tweener.OnStart)
+                    Daneel.Utilities.SendCallback(tweener, "OnStart")
                 end
                 
                 -- update the tweener
@@ -107,7 +90,7 @@ function Daneel.Tween.Update()
                 end
                 tweener.value = newValue
 
-                Callback(tweener, tweener.OnUpdate)
+                Daneel.Utilities.SendCallback(tweener, "OnUpdate")
             else
                 tweener.delay = tweener.delay - deltaDuration
             end -- end if tweener.delay <= 0
@@ -131,7 +114,7 @@ function Daneel.Tween.Update()
                     tweener.value = tweener.startValue
 
                 else
-                    Callback(tweener, tweener.OnComplete)
+                    Daneel.Utilities.SendCallback(tweener, "OnComplete")
                     tweener:Destroy()
                 end
             end
@@ -206,13 +189,13 @@ end
 function Daneel.Tween.Tweener.Play(tweener)
     if tweener.isEnabled == false then return end
     tweener.isPaused = false
-    Callback(tweener, tweener.OnPlay)
+    Daneel.Utilities.SendCallback(tweener, "OnPlay")
 end
 
 function Daneel.Tween.Tweener.Pause(tweener)
     if tweener.isEnabled == false then return end
     tweener.isPaused = true
-    Callback(tweener, tweener.OnPause)
+    Daneel.Utilities.SendCallback(tweener, "OnPause")
 end
 
 function Daneel.Tween.Tweener.Complete(tweener)
@@ -231,7 +214,7 @@ function Daneel.Tween.Tweener.Complete(tweener)
         tweener.target[tweener.property] = endValue
     end
     tweener.value = endValue
-    Callback(tweener, tweener.OnComplete)
+    Daneel.Utilities.SendCallback(tweener, "OnComplete")
 end
 
 function Daneel.Tween.Tweener.Restart(tweener)
