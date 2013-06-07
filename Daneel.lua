@@ -652,8 +652,9 @@ end
 
 Daneel.Event = { 
     events = { any = {} },
-    fireAtFrame = {},
+    fireAtRealTime = {},
     fireAtTime = {},
+    fireAtFrame = {},
 }
 
 --- Make the provided function listen to the provided event.
@@ -768,6 +769,44 @@ function Daneel.Event.Fire(eventName, ...)
     Daneel.Debug.StackTrace.EndFunction("Daneel.Event.Fire")
 end
 
+--- Queue and event to be fired at a particular real time.
+-- @param time (number) The real time (do not depends on the time scale) at which to fire the event.
+-- @param eventName (string) The event name.
+-- @param ... [optional] Argument(s) to pass along.
+function Daneel.Event.FireAtRealTime(realTime, eventName, ...)
+    Daneel.Debug.BeginFunction("Daneel.Event.FireAtTime", realTime, eventName, arg)
+    local errorHead = "Daneel.Event.FireAtTime(realTime, eventName[, ...]) : "
+    Daneel.Debug.CheckArgType(realTime, "realTime", "number", errorHead)
+    Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
+    if Daneel.Event.fireAtTime[realTime] == nil then
+        Daneel.Event.fireAtTime[realTime] = {}
+    end
+    table.insert(Daneel.Event.fireAtRealTime[realTime], {
+        name = eventName,
+        args = arg
+    })
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+--- Queue and event to be fired at a particular time.
+-- @param time (number) The time at which to fire the event.
+-- @param eventName (string) The event name.
+-- @param ... [optional] Argument(s) to pass along.
+function Daneel.Event.FireAtTime(time, eventName, ...)
+    Daneel.Debug.BeginFunction("Daneel.Event.FireAtTime", time, eventName, arg)
+    local errorHead = "Daneel.Event.FireAtTime(time, eventName[, ...]) : "
+    Daneel.Debug.CheckArgType(time, "time", "number", errorHead)
+    Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
+    if Daneel.Event.fireAtTime[time] == nil then
+        Daneel.Event.fireAtTime[time] = {}
+    end
+    table.insert(Daneel.Event.fireAtTime[time], {
+        name = eventName,
+        args = arg
+    })
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
 --- Queue and event to be fired at a particular frame.
 -- If the provided frame is the current frame or an anterior frame, it will never be fired.
 -- @param frame (number) The frame at which to fire the event. 
@@ -788,25 +827,7 @@ function Daneel.Event.FireAtFrame(frame, eventName, ...)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Queue and event to be fired at a particular time.
--- If the provided time is the current time or an anterior time, it will never be fired.
--- @param time (number) The time at which to fire the event.
--- @param eventName (string) The event name.
--- @param ... [optional] Argument(s) to pass along.
-function Daneel.Event.FireAtTime(time, eventName, ...)
-    Daneel.Debug.BeginFunction("Daneel.Event.FireAtTime", time, eventName, arg)
-    local errorHead = "Daneel.Event.FireAtTime(time, eventName[, ...]) : "
-    Daneel.Debug.CheckArgType(time, "time", "number", errorHead)
-    Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
-    if Daneel.Event.fireAtTime[time] == nil then
-        Daneel.Event.fireAtTime[time] = {}
-    end
-    table.insert(Daneel.Event.fireAtTime[time], {
-        name = eventName,
-        args = arg
-    })
-    Daneel.Debug.StackTrace.EndFunction()
-end
+
 
 
 ----------------------------------------------------------------------------------
@@ -1141,9 +1162,28 @@ function Daneel.Update()
         Daneel.Event.fireAtFrame[Daneel.Time.frameCount] = nil
     end
 
+    -- real time
+    local realTimes = {}
+    for realTime, events in pairs(Daneel.Event.fireAtRealTime) do
+        if realTime <= Daneel.Time.realTime then
+            table.insert(realTimes, realTime)
+        end
+    end
+    table.sort(realTimes)
+    for i, realTime in ipairs(realTimes) do
+        for i, event in ipairs(Daneel.Event.fireAtRealTime[realTime]) do
+            if event.args == nil then
+                event.args = {}
+            end
+            Daneel.Event.Fire(event.name, unpack(event.args))
+        end
+        Daneel.Event.fireAtRealTime[realTime] = nil
+    end
+
+    -- time
     local times = {}
     for time, events in pairs(Daneel.Event.fireAtTime) do
-        if time <= Daneel.Time.realTime then
+        if time <= Daneel.Time.time then
             table.insert(times, time)
         end
     end
@@ -1155,6 +1195,7 @@ function Daneel.Update()
             end
             Daneel.Event.Fire(event.name, unpack(event.args))
         end
+        Daneel.Event.fireAtTime[time] = nil
     end
 
 
