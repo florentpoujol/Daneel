@@ -45,7 +45,7 @@ IDEAS
 
             Rewind() > comme restart() sans incluer le delay et ne rapelle pas OnStart()
 
-        - les loops : 1 boucle = aller-retour, ou bien, 1 boucle = 1 aller, 1 autre boucle = 1 retour
+    
             
 
     Sequences
@@ -100,8 +100,6 @@ A implémenter
     LORSQUE LA NOUVELLE VERSIN DE CS EST SORTIE
     - enlever l'orthographic scale en dure dans Daneel.Awake()
 
-    - ajouter fonctions mathématiques (+ - / *) à Vector2 afin qu'il puisse être utilisé avec les tweeners
-
     -----
     GUI
 
@@ -129,6 +127,7 @@ A implémenter
 
         
     - fonction GoTo()
+    - fonction Rewind() ?
     - neutraliser Complete() for infinite loops
 
 ==========
