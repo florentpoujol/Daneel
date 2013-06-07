@@ -1,5 +1,5 @@
 
--- public property :
+-- Public property :
 -- layers
 
 function Behavior:Awake()
@@ -9,6 +9,8 @@ function Behavior:Awake()
 		if tgos[layer] == nil then
 			tgos[layer] = {}
 		end
-		table.insert(tgos[layer], self.gameObject)
+		if not table.containsvalue(tgos[layer], self.gameObject) then
+			table.insert(tgos[layer], self.gameObject)
+		end
 	end
 end
