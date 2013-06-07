@@ -12,31 +12,6 @@ end
 
 
 ----------------------------------------------------------------------------------
--- Vector 2
-
-Vector2 = {}
-Vector2.__index = Vector2
-setmetatable(Vector2, { __call = function(Object, ...) return Object.New(...) end })
-
-function Vector2.New(x, y)
-    Daneel.Debug.StackTrace.BeginFunction("Vector2.new", x, y)
-    local errorHead = "Vector2.New(x, y) : "
-    Daneel.Debug.CheckArgType(x, "x", {"string", "number"}, errorHead)
-    Daneel.Debug.CheckOptionalArgType(y, "y", {"string", "number"}, errorHead)
-    if y == nil then
-        y = x
-    end
-    local vector = setmetatable({ x = x, y = y }, Vector2)
-    Daneel.Debug.StackTrace.EndFunction()
-    return vector
-end
-
-function Vector2.__tostring(vector2)
-    return "Vector2: { x="..vector2.x..", y="..vector2.y.." }"
-end
-
-
-----------------------------------------------------------------------------------
 -- GUI
 
 Daneel.GUI = {}
@@ -329,3 +304,111 @@ function Daneel.GUI.ProgressBar.GetProgress(progressBar, getAsPercentage)
     return progress
 end
 
+
+
+----------------------------------------------------------------------------------
+-- Vector 2
+
+Vector2 = {}
+Vector2.__index = Vector2
+setmetatable(Vector2, { __call = function(Object, ...) return Object.New(...) end })
+
+function Vector2.__tostring(vector2)
+    return "Vector2: { x="..vector2.x..", y="..vector2.y.." }"
+end
+
+function Vector2.New(x, y)
+    Daneel.Debug.StackTrace.BeginFunction("Vector2.New", x, y)
+    local errorHead = "Vector2.New(x, y) : "
+    Daneel.Debug.CheckArgType(x, "x", {"string", "number"}, errorHead)
+    Daneel.Debug.CheckOptionalArgType(y, "y", {"string", "number"}, errorHead)
+    if y == nil then
+        y = x
+    end
+    local vector = setmetatable({ x = x, y = y }, Vector2)
+    Daneel.Debug.StackTrace.EndFunction()
+    return vector
+end
+
+function Vector2.__add(a, b)
+    Daneel.Debug.StackTrace.BeginFunction("Vector2.__add", a, b)
+    local errorHead = "Vector2.__add(a, b) : "
+    Daneel.Debug.CheckArgType(a, "a", "Vector2", errorHead)
+    Daneel.Debug.CheckArgType(b, "b", "Vector2", errorHead)
+    a = Vector2.New(a.x + b.x, a.y + b.y)
+    Daneel.Debug.StackTrace.EndFunction()
+    return a
+end
+  
+function Vector2.__sub(a, b)
+    Daneel.Debug.StackTrace.BeginFunction("Vector2.__sub", a, b)
+    local errorHead = "Vector2.__sub(a, b) : "
+    Daneel.Debug.CheckArgType(a, "a", "Vector2", errorHead)
+    Daneel.Debug.CheckArgType(b, "b", "Vector2", errorHead)
+    a = Vector2.New(a.x - b.x, a.y - b.y)
+    Daneel.Debug.StackTrace.EndFunction()
+    return a
+end
+  
+function Vector2.__mul(a, b)
+    Daneel.Debug.StackTrace.BeginFunction("Vector2.__mull", a, b)
+    local errorHead = "Vector2.__mul(a, b) : "
+    Daneel.Debug.CheckArgType(a, "a", {"Vector2", "number"}, errorHead)
+    Daneel.Debug.CheckArgType(b, "b", {"Vector2", "number"}, errorHead)
+    local newVector = 0
+    if type(a) == "number" then
+        newVector = Vector2.New(a * b.x, a * b.y)
+    elseif type(b) == "number" then
+        newVector = Vector2.New(a.x * b, a.y * b)
+    else
+        newVector = Vector2.New(a.x * b.x, a.y * b.y)
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+    return newVector
+end
+  
+function Vector2.__div(a, b)
+    Daneel.Debug.StackTrace.BeginFunction("Vector2.__div", a, b)
+    local errorHead = "Vector2.__div(a, b) : "
+    Daneel.Debug.CheckArgType(a, "a", {"Vector2", "number"}, errorHead)
+    Daneel.Debug.CheckArgType(b, "b", {"Vector2", "number"}, errorHead)
+    local newVector = 0
+    if type(a) == "number" then
+        newVector = Vector2.New(a / b.x, a / b.y)
+    elseif type(b) == "number" then
+        newVector = Vector2.New(a.x / b, a.y / b)
+    else
+        newVector = Vector2.New(a.x / b.x, a.y / b.y)
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+    return newVector
+  end
+  
+function Vector2.__unm(vector)
+    Daneel.Debug.StackTrace.BeginFunction("Vector2.__unm", vector)
+    local errorHead = "Vector2.__unm(vector) : "
+    Daneel.Debug.CheckArgType(vector, "vector", "Vector2", errorHead)
+    local vector = Vector2.New(-vector.x, -vector.y)
+    Daneel.Debug.StackTrace.EndFunction()
+    return vector
+  end
+  
+function Vector2.__pow(vector, exp)
+    Daneel.Debug.StackTrace.BeginFunction("Vector2.__pow", vector, exp)
+    local errorHead = "Vector2.__pow(vector, exp) : "
+    Daneel.Debug.CheckArgType(vector, "vector", "Vector2", errorHead)
+    Daneel.Debug.CheckArgType(exp, "exp", "number", errorHead)
+    vector = Vector2.New(vector.x ^ exp, vector.y ^ exp)
+    Daneel.Debug.StackTrace.EndFunction()
+    return vector
+  end
+  
+function Vector2.__eq(a, b)
+    Daneel.Debug.StackTrace.BeginFunction("Vector2.__eq", a, b)
+    local errorHead = "Vector2.__eq(a, b) : "
+    Daneel.Debug.CheckArgType(a, "a", "Vector2", errorHead)
+    Daneel.Debug.CheckArgType(b, "b", "Vector2", errorHead)
+    local eq = ((a.x == b.x) and (a.y == b.y))
+    Daneel.Debug.StackTrace.EndFunction()
+    return eq
+end
