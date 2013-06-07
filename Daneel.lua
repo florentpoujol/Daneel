@@ -1130,7 +1130,7 @@ function Daneel.Update()
         end
     end
 
-    -- Delayed events
+    -- Planned events
     if Daneel.Event.fireAtFrame[Daneel.Time.frameCount] ~= nil then
         for i, event in ipairs(Daneel.Event.fireAtFrame[Daneel.Time.frameCount]) do
             if event.args == nil then

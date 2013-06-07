@@ -212,12 +212,11 @@ function Daneel.GUI.ProgressBar.New(gameObject)
 
     local progressBar = setmetatable({ gameObject = gameObject }, Daneel.GUI.ProgressBar)
     gameObject.progressBar = progressBar
-    progressBar._height = 1
+    progressBar.height = 1
     progressBar.minValue = 0
     progressBar.maxValue = 100
     progressBar.minLength = 0
     progressBar.maxLength = 5
-    progressBar._progress = 100
     progressBar.progress = "100%"
 
     Daneel.Debug.StackTrace.EndFunction()
@@ -267,8 +266,6 @@ function Daneel.GUI.ProgressBar.SetProgress(progressBar, progress)
     progressBar._progress = progress
     
     local minLength = progressBar.minLength
-    local maxLength = progressBar.maxLength
-
     if type(minLength) == "string" then
         local length = minLength:len()
         if minLength:endswith("px") then
@@ -280,6 +277,8 @@ function Daneel.GUI.ProgressBar.SetProgress(progressBar, progress)
         end
         progressBar.minLength = minLength
     end
+
+    local maxLength = progressBar.maxLength
     if type(maxLength) == "string" then
         local length = maxLength:len()
         if maxLength:endswith("px") then
@@ -292,9 +291,21 @@ function Daneel.GUI.ProgressBar.SetProgress(progressBar, progress)
         progressBar.maxLength = maxLength
     end
 
+    local height = progressBar.height
+    if type(height) == "string" then
+        if height:endswith("px") then
+            height = tonumber(height:sub(0, #height-2)) * Daneel.GUI.pixelsToUnits
+        elseif height:endswith("u") then
+            height = tonumber(height:sub(0, #height-1))
+        else
+            height = tonumber(height)
+        end
+        progressBar.height = height
+    end
+
     local newLength = (maxLength - minLength) * percentageOfProgress + minLength 
     local currentScale = progressBar.gameObject.transform.localScale
-    progressBar.gameObject.transform.localScale = Vector3:New(newLength, currentScale.y, currentScale.z)
+    progressBar.gameObject.transform.localScale = Vector3:New(newLength, height, currentScale.z)
     -- newLength = scale only because the base size of the model is of one unit at a scale of one
 
     Callback(progressBar, progressBar.OnUpdate)
@@ -315,37 +326,5 @@ function Daneel.GUI.ProgressBar.GetProgress(progressBar, getAsPercentage)
     end
     Daneel.Debug.StackTrace.EndFunction()
     return progress
-end
-
---- Set the height of the progress bar.
--- Can be in units (as a number or a string suffixed wih "u") or pixels (as a string suffixed with "px").
--- @param progressBar (Daneel.GUI.ProgressBar) The progressBar.
--- @param height (number or string) The heigt.
-function Daneel.GUI.ProgressBar.SetHeight(progressBar, height)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.SetHeight", progressBar, height)
-    local errorHead = "Daneel.GUI.ProgressBar.SetHeight(progressBar, height) : "
-    Daneel.Debug.CheckArgType(progressBar, "progressBar", "ProgressBar", errorHead)
-    Daneel.Debug.CheckArgType(height, "height", {"string", "number"}, errorHead)
-    if type(height) == "string" then
-        if height:endswith("px") then
-            height = tonumber(height:sub(0, #height-2)) * Daneel.GUI.pixelsToUnits
-        elseif height:endswith("u") then
-            height = tonumber(height:sub(0, #height-1))
-        else
-            height = tonumber(height)
-        end
-    end
-    progressBar._height = height
-    local currentScale = progressBar.gameObject.transform.localScale
-    progressBar.gameObject.transform.localScale = Vector3:New(currentScale.x, height, currentScale.z)
-end
-
-function Daneel.GUI.ProgressBar.GetHeight(progressBar, getInPixels)
-    if getInPixels == nil then getInPixels = false end
-    local height = progressBar._height
-    if getInPixels == true then
-        height = height / Daneel.GUI.pixelsToUnits
-    end
-    return height
 end
 
