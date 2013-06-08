@@ -314,43 +314,6 @@ function Daneel.Utilities.AllowDynamicGettersAndSetters(Object, ancestors)
     end
 end
 
---- Call or send the provided function or message on the provided object, passing along all optional arguments.
--- @param object (table) The object.
--- @param callbackName (string) The name of the callback.
--- @param ... Any other arguments to pass along. The object is always passed along as first argument.
-function Daneel.Utilities.SendCallback(object, callbackName, ...)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.SendCallback", object, callbackName, unpack(arg))
-    local errorHead = "Daneel.Utilities.SendCallback(object, callbackName[, ...]) : "
-    Daneel.Debug.CheckArgType(object, "object", "table", errorHead)
-    Daneel.Debug.CheckArgType(callbackName, "callbackName", "string", errorHead)
-
-    local callback = object[callbackName]
-    local callbackType = type(callback)
-    if callbackType == nil then 
-        callback = callbackName
-        callbackType = "string"
-    end
-
-    if callbackType == "function" then
-        callback(object, unpack(arg))
-    elseif callbackType == "string" then
-        local gameObject = object
-        if getmetatable(gameObject) ~= GameObject then
-            gameObject = object.gameObject
-            if getmetatable(gameObject) ~= GameObject then
-                if DEBUG == true then
-                    print(errorHead.."Callback '"..callbackName.."' is a message of name '"..callback.."' but the provided object '"..tostring(object).."' is not a gameObject and has no 'gameObject' property. Can't send the message.")
-                end
-                Daneel.Debug.EndFunction()            
-                return
-            end
-        end
-        table.insert(arg, 1, object)
-        gameObject:SendMessage(callback, object)
-    end
-    Daneel.Debug.StackTrace.EndFunction()
-end
-
 
 ----------------------------------------------------------------------------------
 -- Debug
@@ -689,84 +652,52 @@ end
 -- Event
 
 Daneel.Event = { 
-    events = { any = {} },
+    events = { wildcard = {} },
     fireAtRealTime = {},
     fireAtTime = {},
     fireAtFrame = {},
 }
 
---- Make the provided function listen to the provided event.
+--- Make the provided function or object listen to the provided event(s).
 -- The function will be called whenever the provided event will be fired.
--- @param eventName (string) The event name.
--- @param p_function (function, string or GameObject) The function (not the function name) or the gameObject name or instance.
--- @param functionName [optional default="[eventName]"] (string) If 'p_function' is a gameObject name or instance, the name of the function to send the message to.
--- @param broadcast [optional default=false] (boolean) If 'p_function' is a gameObject name or instance, tell whether to broadcast the message to all the gameObject's childrens (if true).
-function Daneel.Event.Listen(eventName, p_function, functionName, broadcast)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Listen", eventName, p_function)
-    local errorHead = "Daneel.Event.Listen(eventName, function) : "
-    Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
-    if Daneel.Event.events[eventName] == nil then
-        Daneel.Event.events[eventName] = {}
+-- @param eventName (string or table) The event name (or names in a table).
+-- @param functionOrObject (function or table) The function (not the function name) or the object.
+function Daneel.Event.Listen(eventName, functionOrObject)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Listen", eventName, functionOrObject)
+    local errorHead = "Daneel.Event.Listen(eventName, functionOrObject) : "
+    Daneel.Debug.CheckArgType(eventName, "eventName", {"string", "table"}, errorHead)
+    Daneel.Debug.CheckArgType(functionOrObject, "functionOrObject", {"table", "function"}, errorHead)
+    local eventNames = eventName
+    if type(eventName) == "string" then
+        eventNames = { eventName }
     end
-    local functionType = type(p_function)
-    if functionType == "function" then
-        if not table.containsvalue(Daneel.Event.events[eventName], p_function) then
-            table.insert(Daneel.Event.events[eventName], p_function)
+    for i, eventName in ipairs(eventNames) do
+        if Daneel.Event.events[eventName] == nil then
+            Daneel.Event.events[eventName] = {}
         end
-    else
-        Daneel.Debug.CheckArgType(p_function, "p_function", {"string", "GameObject"}, errorHead)
-        Daneel.Debug.CheckOptionalArgType(functionName, "functionName", "string", errorHead)
-        Daneel.Debug.CheckOptionalArgType(broadcast, "broadcast", "boolean", errorHead)
-        local gameObject = p_function
-        if functionType == "string" then
-            gameObject = GameObject.Get(p_function)
-            if gameObject == nil then
-                error(errorHead.."Argument 'p_function' : gameObject with name '"..p_function.."' was not found in the scene.")
-            end
+        if not table.containsvalue(Daneel.Event.events[eventName], functionOrObject) then
+            table.insert(Daneel.Event.events[eventName], functionOrObject)
         end
-        if functionName == nil then
-            functionName = eventName
-        end
-        if broadcast == nil then
-            broadcast = false
-        end
-        table.insert(Daneel.Event.events[eventName], {
-            gameObject = gameObject,
-            functionName = functionName,
-            broadcast = broadcast
-        })
     end
-    Daneel.Debug.StackTrace.EndFunction("Daneel.Event.Listen")
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Make the provided function or gameObject to stop listen to the provided event.
--- @param eventName (string) The event name.
--- @param functionOrGameObject (function, string or GameObject) The function, or the gameObject name or instance.
-function Daneel.Event.StopListen(eventName, functionOrGameObject)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.StopListen", eventName, functionOrGameObject)
-    local errorHead = "Daneel.Event.StopListen(eventName, functionOrGameObject) : "
+--- Make the provided function or object to stop listen to the provided event(s).
+-- @param eventName (string or table) The event name (or names in a table).
+-- @param functionOrObject (function, string or GameObject) The function, or the gameObject name or instance.
+function Daneel.Event.StopListen(eventName, functionOrObject)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.StopListen", eventName, functionOrObject)
+    local errorHead = "Daneel.Event.StopListen(eventName, functionOrObject) : "
     Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
-    local functionType = type(functionOrGameObject)
-    if functionType == "function" then
-        for i, storedFunc in ipairs(Daneel.Event.events[eventName]) do
-            if functionOrGameObject == storedFunc then
-                table.remove(Daneel.Event.events[eventName], i)
-                break
-            end
-        end
-    else
-        local gameObject = functionOrGameObject
-        if functionType == "string" then
-            gameObject = GameObject.Get(functionOrGameObject)
-            if gameObject == nil then
-                error(errorHead.."Argument 'functionOrGameObject' : gameObject with name '".._function.."' was not found in the scene.")
-            end
-        end
-        for i, storedFunc in ipairs(Daneel.Event.events[eventName]) do
-            if type(storedFunc) == "table" and gameObject == storedFunc.gameObject then
-                table.remove(Daneel.Event.events[eventName], i)
-                break
-            end
+    Daneel.Debug.CheckArgType(functionOrObject, "functionOrObject", {"table", "function"}, errorHead)
+    local eventNames = eventName
+    if type(eventName) == "string" then
+        eventNames = { eventName }
+    end
+    for i, eventName in ipairs(eventNames) do
+        local objects = Daneel.Event.events[eventName]
+        if objects ~= nil and table.containsvalue(objects, functionOrObject) then
+            Daneel.Event.events[eventName] = table.removevalue(objects, functionOrObject)
         end
     end
     Daneel.Debug.StackTrace.EndFunction("Daneel.Event.StopListen")
@@ -805,6 +736,43 @@ function Daneel.Event.Fire(eventName, ...)
         end
     end
     Daneel.Debug.StackTrace.EndFunction("Daneel.Event.Fire")
+end
+
+--- Call or send the provided function or message on the provided object, passing along all optional arguments.
+-- @param object (table) The object.
+-- @param callbackName (string) The name of the callback.
+-- @param ... Any other arguments to pass along. The object is always passed along as first argument.
+function Daneel.Utilities.SendCallback(object, callbackName, ...)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.SendCallback", object, callbackName, unpack(arg))
+    local errorHead = "Daneel.Utilities.SendCallback(object, callbackName[, ...]) : "
+    Daneel.Debug.CheckArgType(object, "object", "table", errorHead)
+    Daneel.Debug.CheckArgType(callbackName, "callbackName", "string", errorHead)
+
+    local callback = object[callbackName]
+    local callbackType = type(callback)
+    if callbackType == nil then 
+        callback = callbackName
+        callbackType = "string"
+    end
+
+    if callbackType == "function" then
+        callback(object, unpack(arg))
+    elseif callbackType == "string" then
+        local gameObject = object
+        if getmetatable(gameObject) ~= GameObject then
+            gameObject = object.gameObject
+            if getmetatable(gameObject) ~= GameObject then
+                if DEBUG == true then
+                    print(errorHead.."Callback '"..callbackName.."' is a message of name '"..callback.."' but the provided object '"..tostring(object).."' is not a gameObject and has no 'gameObject' property. Can't send the message.")
+                end
+                Daneel.Debug.EndFunction()            
+                return
+            end
+        end
+        table.insert(arg, 1, object)
+        gameObject:SendMessage(callback, object)
+    end
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Queue and event to be fired at a particular real time.

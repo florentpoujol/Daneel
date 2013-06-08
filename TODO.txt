@@ -5,12 +5,11 @@ IDEAS
     MISC
 
     - A voir avec TextRenderer > permettre de facilement sauter des lignes (avec :br:) ou définir un wordWrap
-    - Si pas possible de base > permettre de cast un ray contre un text renderer (ajoute un model transparent, le scale en fonction de la longueur du text, caste le ray contre le model)
     - modelRenderer:SetDimension(Vector3) ou idem avec Vector2
     - est-ce que LuaDoc permet d'avoir plusieurs doc pour la même fonction ? si on veut avoir plusieurs construteurs
 
 
-    - introduire plus de callback. fonction Utilities.SendCallback(object, callbackName, args)
+    - introduire plus de callback. 
         - gameObject.OnNewComponent(gameObject, component)
         - gameObject.OnDestroyComponent(gameObject, component)
 
@@ -23,7 +22,17 @@ IDEAS
     Appeler ça plutôt "notice", "local event"
     > voit ce qui existe dans laravel
 
+    Listen("eventName", function)
+    Listen("EventName")
+    Listen("eventname", object)
+        the object has an eventName property pointing to a function
+        the object is a GameObject or has a gameObject property and has an eventName property with an message name or no property
 
+    Listen({eventnames}, {functions or objects})
+
+    Daneel.Event.Fire("eventName"[, args]) 
+    Daneel.Event.Fire(object, "EventName"[, args])
+    Daneel.Event.Fire({ objects }, "EventName"[, args])
 
 
     -----
