@@ -703,91 +703,89 @@ function Daneel.Event.StopListen(eventName, functionOrObject)
     Daneel.Debug.StackTrace.EndFunction("Daneel.Event.StopListen")
 end
 
---- Fire the provided event transmitting along all subsequent parameters to 'eventName' if some exists. 
--- All functions that listen to this event will be called and receive all parameters.
+--- Fire the provided event on the provided objects (or the one that listen to it),
+-- transmitting along all subsequent arguments if some exists. 
+-- @param object [optional] (table) The object to which fire the event at. If nil or abscent, will send the event to its listeners.
 -- @param eventName (string) The event name.
--- @param ... [optional] Argument(s) to pass along.
-function Daneel.Event.Fire(eventName, ...)
-    if arg == nil then
-        Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Fire", eventName, nil)
-        arg = {}
-    else
-        Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Fire", eventName, unpack(arg))
+-- @param ... [optional] Some arguments to pass along.
+function Daneel.Event.Fire(object, eventName,  ...)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Fire", object, eventName, unpack(arg))
+    local errorHead = "Daneel.Event.Fire([object, ]eventName[, ...]) : "
+    if type(object) == "string" then
+        if eventName ~= nil then
+            table.insert(arg, 1, eventName)
+        end
+        eventName = object
+        object = nil
     end
-    Daneel.Debug.CheckArgType(eventName, "eventName", "string", "Daneel.Event.Fire(eventName[, ...]) : ")
-    local functions = table.new(Daneel.Event.events[eventName]):merge(Daneel.Event.events["any"])
-    for i, func in ipairs(functions) do
-        local functionType = type(func)
-        if functionType == "function" then
-            func(unpack(arg))
-        elseif functionType == "table" then
-            if func.gameObject ~= nil then
-                if func.broadcast then
-                    func.gameObject:BroadcastMessage(func.functionName, arg)
-                else
-                    func.gameObject:SendMessage(func.functionName, arg)
-                end
-            else
-                table.remove(Daneel.Event.events[eventName], i)
-            end
+    Daneel.Debug.CheckOptionalArgType(object, "object", "table", errorHead)
+    Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
+    
+    local listeners = { object }
+    if object == nil and Daneel.Event.events[eventName] ~= nil then
+        listeners = Daneel.Event.events[eventName]
+    end
+
+    for i, listener in ipairs(listeners) then
+        if type(listener) == "function" then
+            listener(unpack(arg))
         else
-            -- func is nil (a priori), function has been destroyed (probably was a public function on a destroyed ScriptedBehavior)
-            table.remove(Daneel.Event.events[eventName], i)
-        end
-    end
-    Daneel.Debug.StackTrace.EndFunction("Daneel.Event.Fire")
-end
+            -- an object
+            -- look for the value of the EventName property on the object
+            local funcOrMessage = listener[eventName]
+            if funcOrMessage == nil then 
+                funcOrMessage = eventName
+            end
 
---- Call or send the provided function or message on the provided object, passing along all optional arguments.
--- @param object (table) The object.
--- @param callbackName (string) The name of the callback.
--- @param ... Any other arguments to pass along. The object is always passed along as first argument.
-function Daneel.Utilities.SendCallback(object, callbackName, ...)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.SendCallback", object, callbackName, unpack(arg))
-    local errorHead = "Daneel.Utilities.SendCallback(object, callbackName[, ...]) : "
-    Daneel.Debug.CheckArgType(object, "object", "table", errorHead)
-    Daneel.Debug.CheckArgType(callbackName, "callbackName", "string", errorHead)
-
-    local callback = object[callbackName]
-    local callbackType = type(callback)
-    if callbackType == nil then 
-        callback = callbackName
-        callbackType = "string"
-    end
-
-    if callbackType == "function" then
-        callback(object, unpack(arg))
-    elseif callbackType == "string" then
-        local gameObject = object
-        if getmetatable(gameObject) ~= GameObject then
-            gameObject = object.gameObject
-            if getmetatable(gameObject) ~= GameObject then
-                if DEBUG == true then
-                    print(errorHead.."Callback '"..callbackName.."' is a message of name '"..callback.."' but the provided object '"..tostring(object).."' is not a gameObject and has no 'gameObject' property. Can't send the message.")
+            if type(funcOrMessage) == "function" then
+                funcOrMessage(unpack(arg))
+            else
+                local sendMessage = true
+                local gameObject = listener
+                if getmetatable(gameObject) ~= GameObject then
+                    gameObject = listener.gameObject
+                    if getmetatable(gameObject) ~= GameObject then
+                        sendMessage = false
+                        if DEBUG == true then
+                            print(errorHead.."Can't fire event '"..eventName.."' by sending message '"..funcOrMessage.."' on object '"..tostring(listener).."'  because it not a gameObject and has no 'gameObject' property.")                      
+                        end
+                    end
                 end
-                Daneel.Debug.EndFunction()            
-                return
+                if sendMessage = true then
+                    gameObject:SendMessage(funcOrMessage, arg)
+                end
             end
         end
-        table.insert(arg, 1, object)
-        gameObject:SendMessage(callback, object)
     end
     Daneel.Debug.StackTrace.EndFunction()
 end
 
+
+
 --- Queue and event to be fired at a particular real time.
--- @param time (number) The real time (do not depends on the time scale) at which to fire the event.
+-- @param realTime (number) The real time at which to fire the event.
+-- @param object [optional] (table) The object to which fire the event at. If nil or abscent, will send the event to its listeners.
 -- @param eventName (string) The event name.
 -- @param ... [optional] Argument(s) to pass along.
-function Daneel.Event.FireAtRealTime(realTime, eventName, ...)
-    Daneel.Debug.BeginFunction("Daneel.Event.FireAtTime", realTime, eventName, arg)
-    local errorHead = "Daneel.Event.FireAtTime(realTime, eventName[, ...]) : "
+function Daneel.Event.FireAtRealTime(realTime, object, eventName, ...)
+    Daneel.Debug.BeginFunction("Daneel.Event.FireAtTime", realTime, object, eventName, arg)
+    local errorHead = "Daneel.Event.FireAtTime(realTime[, object], ]eventName[, ...]) : "
     Daneel.Debug.CheckArgType(realTime, "realTime", "number", errorHead)
+    if type(object) == "string" then
+        if eventName ~= nil then
+            table.insert(arg, 1, eventName)
+        end
+        eventName = object
+        object = nil
+    end
+    Daneel.Debug.CheckOptionalArgType(object, "object", "table", errorHead)
     Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
+
     if Daneel.Event.fireAtTime[realTime] == nil then
         Daneel.Event.fireAtTime[realTime] = {}
     end
     table.insert(Daneel.Event.fireAtRealTime[realTime], {
+        object = object,
         name = eventName,
         args = arg
     })
@@ -796,17 +794,28 @@ end
 
 --- Queue and event to be fired at a particular time.
 -- @param time (number) The time at which to fire the event.
+-- @param object [optional] (table) The object to which fire the event at. If nil or abscent, will send the event to its listeners.
 -- @param eventName (string) The event name.
 -- @param ... [optional] Argument(s) to pass along.
-function Daneel.Event.FireAtTime(time, eventName, ...)
-    Daneel.Debug.BeginFunction("Daneel.Event.FireAtTime", time, eventName, arg)
-    local errorHead = "Daneel.Event.FireAtTime(time, eventName[, ...]) : "
+function Daneel.Event.FireAtTime(time, object, eventName, ...)
+    Daneel.Debug.BeginFunction("Daneel.Event.FireAtTime", time, object, eventName, arg)
+    local errorHead = "Daneel.Event.FireAtTime(time[, object], eventName[, ...]) : "
     Daneel.Debug.CheckArgType(time, "time", "number", errorHead)
+    if type(object) == "string" then
+        if eventName ~= nil then
+            table.insert(arg, 1, eventName)
+        end
+        eventName = object
+        object = nil
+    end
+    Daneel.Debug.CheckOptionalArgType(object, "object", "table", errorHead)
     Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
+
     if Daneel.Event.fireAtTime[time] == nil then
         Daneel.Event.fireAtTime[time] = {}
     end
     table.insert(Daneel.Event.fireAtTime[time], {
+        object = object,
         name = eventName,
         args = arg
     })
@@ -816,17 +825,28 @@ end
 --- Queue and event to be fired at a particular frame.
 -- If the provided frame is the current frame or an anterior frame, it will never be fired.
 -- @param frame (number) The frame at which to fire the event. 
+-- @param object [optional] (table) The object to which fire the event at. If nil or abscent, will send the event to its listeners.
 -- @param eventName (string) The event name.
 -- @param ... [optional] Argument(s) to pass along.
-function Daneel.Event.FireAtFrame(frame, eventName, ...)
+function Daneel.Event.FireAtFrame(frame, object, eventName, ...)
     Daneel.Debug.BeginFunction("Daneel.Event.FireAtFrame", frame, eventName, arg)
-    local errorHead = "Daneel.Event.FireAtFrame(frame, eventName[, ...]) : "
+    local errorHead = "Daneel.Event.FireAtFrame(frame[, object], eventName[, ...]) : "
     Daneel.Debug.CheckArgType(frame, "frame", "number", errorHead)
+    if type(object) == "string" then
+        if eventName ~= nil then
+            table.insert(arg, 1, eventName)
+        end
+        eventName = object
+        object = nil
+    end
+    Daneel.Debug.CheckOptionalArgType(object, "object", "table", errorHead)
     Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead) 
+    
     if Daneel.Event.fireAtFrame[frame] == nil then
         Daneel.Event.fireAtFrame[frame] = {}
     end
     table.insert(Daneel.Event.fireAtFrame[frame], {
+        object = object,
         name = eventName,
         args = arg
     })
