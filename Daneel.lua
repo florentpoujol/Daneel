@@ -760,8 +760,6 @@ function Daneel.Event.Fire(object, eventName,  ...)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
-
-
 --- Queue and event to be fired at a particular real time.
 -- @param realTime (number) The real time at which to fire the event.
 -- @param object [optional] (table) The object to which fire the event at. If nil or abscent, will send the event to its listeners.
@@ -852,8 +850,6 @@ function Daneel.Event.FireAtFrame(frame, object, eventName, ...)
     })
     Daneel.Debug.StackTrace.EndFunction()
 end
-
-
 
 
 ----------------------------------------------------------------------------------
@@ -1177,13 +1173,13 @@ function Daneel.Update()
         end
     end
 
-    -- Planned events
+    -- Scheduled events
     if Daneel.Event.fireAtFrame[Daneel.Time.frameCount] ~= nil then
         for i, event in ipairs(Daneel.Event.fireAtFrame[Daneel.Time.frameCount]) do
             if event.args == nil then
                 event.args = {}
             end
-            Daneel.Event.Fire(event.name, unpack(event.args))
+            Daneel.Event.Fire(event.object, event.name, unpack(event.args))
         end
         Daneel.Event.fireAtFrame[Daneel.Time.frameCount] = nil
     end
@@ -1201,7 +1197,7 @@ function Daneel.Update()
             if event.args == nil then
                 event.args = {}
             end
-            Daneel.Event.Fire(event.name, unpack(event.args))
+            Daneel.Event.Fire(event.object, event.name, unpack(event.args))
         end
         Daneel.Event.fireAtRealTime[realTime] = nil
     end
@@ -1219,7 +1215,7 @@ function Daneel.Update()
             if event.args == nil then
                 event.args = {}
             end
-            Daneel.Event.Fire(event.name, unpack(event.args))
+            Daneel.Event.Fire(event.object, event.name, unpack(event.args))
         end
         Daneel.Event.fireAtTime[time] = nil
     end
