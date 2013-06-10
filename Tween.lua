@@ -57,7 +57,7 @@ function Daneel.Tween.Update()
                         tweener.diffValue = tweener.endValue - tweener.startValue
                     end
 
-                    Daneel.Event.Fire(tweener, "OnStart")
+                    Daneel.Event.Fire(tweener, "OnStart", tweener)
                 end
                 
                 -- update the tweener
@@ -90,7 +90,7 @@ function Daneel.Tween.Update()
                 end
                 tweener.value = newValue
 
-                Daneel.Event.Fire(tweener, "OnUpdate")
+                Daneel.Event.Fire(tweener, "OnUpdate", tweener)
             else
                 tweener.delay = tweener.delay - deltaDuration
             end -- end if tweener.delay <= 0
@@ -114,7 +114,7 @@ function Daneel.Tween.Update()
                     tweener.value = tweener.startValue
 
                 else
-                    Daneel.Event.Fire(tweener, "OnComplete")
+                    Daneel.Event.Fire(tweener, "OnComplete", tweener)
                     tweener:Destroy()
                 end
             end
@@ -189,13 +189,13 @@ end
 function Daneel.Tween.Tweener.Play(tweener)
     if tweener.isEnabled == false then return end
     tweener.isPaused = false
-    Daneel.Event.Fire(tweener, "OnPlay")
+    Daneel.Event.Fire(tweener, "OnPlay", tweener)
 end
 
 function Daneel.Tween.Tweener.Pause(tweener)
     if tweener.isEnabled == false then return end
     tweener.isPaused = true
-    Daneel.Event.Fire(tweener, "OnPause")
+    Daneel.Event.Fire(tweener, "OnPause", tweener)
 end
 
 function Daneel.Tween.Tweener.Complete(tweener)
@@ -214,7 +214,7 @@ function Daneel.Tween.Tweener.Complete(tweener)
         tweener.target[tweener.property] = endValue
     end
     tweener.value = endValue
-    Daneel.Event.Fire(tweener, "OnComplete")
+    Daneel.Event.Fire(tweener, "OnComplete", tweener)
 end
 
 function Daneel.Tween.Tweener.Restart(tweener)
@@ -241,13 +241,9 @@ function Daneel.Tween.Tweener.Destroy(tweener)
 end
 
 
-
-
-
 ----------------------------------------------------------------------------------
--- Easing equation
+-- Easing equations
 
- 
 Daneel.Tween.Ease = {}
 -- filled with the easing equations from the "Lib/Easing" script in Daneel.Awake() 
 

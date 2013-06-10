@@ -12,8 +12,7 @@ function Behavior:Awake()
 end
 
 function Behavior:Start()
-    -- the gameObject that touches this trigger
-    self.gameObjectsInRange = table.new()
+    self.gameObjectsInRange = table.new() -- the gameObjects that touches this trigger
     self.layers = self.layers:split(",")
 end
 
@@ -30,19 +29,19 @@ function Behavior:Update()
                         if self.gameObjectsInRange:containsvalue(gameObject) == false then
                             -- just entered the trigger
                             self.gameObjectsInRange:insert(gameObject)
-                            gameObject:SendMessage("OnTriggerEnter", self.gameObject)
-                            self.gameObject:SendMessage("OnTriggerEnter", gameObject)
+                            Daneel.Event.Fire(gameObject, "OnTriggerEnter", self.gameObject)
+                            Daneel.Event.Fire(self.gameObject, "OnTriggerEnter", gameObject)
                         else
                             -- already in this trigger
-                            gameObject:SendMessage("OnTriggerStay", self.gameObject)
-                            self.gameObject:SendMessage("OnTriggerStay", gameObject)
+                            Daneel.Event.Fire(gameObject, "OnTriggerStay", self.gameObject)
+                            Daneel.Event.Fire(self.gameObject, "OnTriggerStay", gameObject)
                         end
                     else
                         -- was the gameObject still in this trigger the last frame ?
                         if self.gameObjectsInRange:containsvalue(gameObject) == true then
                             self.gameObjectsInRange = self.gameObjectsInRange:removevalue(gameObject)
-                            gameObject:SendMessage("OnTriggerExit", self.gameObject)
-                            self.gameObject:SendMessage("OnTriggerExit", gameObject)
+                            Daneel.Event.Fire(gameObject, "OnTriggerExit", self.gameObject)
+                            Daneel.Event.Fire(self.gameObject, "OnTriggerExit", gameObject)
                         end
                     end
                 else

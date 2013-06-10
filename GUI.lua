@@ -166,7 +166,7 @@ function Daneel.GUI.CheckBox.SetIsChecked(component, state)
     if component._isChecked ~= state then
         component._isChecked = state
         component.text = component.text -- "reload" the check mark based on the new checked state
-        Daneel.Utilities.SendCallback(component, "OnUpdate")
+        Daneel.Event.Fire(component, "OnUpdate", component)
     end
 end
 
@@ -287,7 +287,7 @@ function Daneel.GUI.ProgressBar.SetProgress(progressBar, progress)
     progressBar.gameObject.transform.localScale = Vector3:New(newLength, height, currentScale.z)
     -- newLength = scale only because the base size of the model is of one unit at a scale of one
 
-    Daneel.Utilities.SendCallback(component, "OnUpdate")
+    Daneel.Event.Fire(component, "OnUpdate", component)
     Daneel.Debug.StackTrace.EndFunction()
 end
 

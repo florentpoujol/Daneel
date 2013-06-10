@@ -9,10 +9,7 @@ IDEAS
     - est-ce que LuaDoc permet d'avoir plusieurs doc pour la même fonction ? si on veut avoir plusieurs construteurs
 
 
-    - introduire plus de callback. 
-        - gameObject.OnNewComponent(gameObject, component)
-        - gameObject.OnDestroyComponent(gameObject, component)
-
+    -
 
     -----
     GUI
@@ -85,9 +82,6 @@ A implémenter
     - enlever commentaire autour de TextRenderer.SetFont()
     - décommenter nouveaux component dans la config
 
-    - remplacer les sendCallback par Event.Fire()
-        implémenter les events avec les triggers, mouseinteractive
-
     - Vector2:GetLength() math.sqrt( self.x ^ 2 + self.y ^ 2 )
     
 
@@ -132,7 +126,7 @@ A modifier/ajouter dans la doc :
     - GUI
     - Tween
 
-    - callback : page à part + function list + sidebar
+    - rajouter la liste des event anvoyés par daneel
 
 
 =========
