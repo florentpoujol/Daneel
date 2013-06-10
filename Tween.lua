@@ -57,7 +57,7 @@ function Daneel.Tween.Update()
                         tweener.diffValue = tweener.endValue - tweener.startValue
                     end
 
-                    Daneel.Utilities.SendCallback(tweener, "OnStart")
+                    Daneel.Event.Fire(tweener, "OnStart")
                 end
                 
                 -- update the tweener
@@ -90,7 +90,7 @@ function Daneel.Tween.Update()
                 end
                 tweener.value = newValue
 
-                Daneel.Utilities.SendCallback(tweener, "OnUpdate")
+                Daneel.Event.Fire(tweener, "OnUpdate")
             else
                 tweener.delay = tweener.delay - deltaDuration
             end -- end if tweener.delay <= 0
@@ -114,7 +114,7 @@ function Daneel.Tween.Update()
                     tweener.value = tweener.startValue
 
                 else
-                    Daneel.Utilities.SendCallback(tweener, "OnComplete")
+                    Daneel.Event.Fire(tweener, "OnComplete")
                     tweener:Destroy()
                 end
             end
@@ -189,13 +189,13 @@ end
 function Daneel.Tween.Tweener.Play(tweener)
     if tweener.isEnabled == false then return end
     tweener.isPaused = false
-    Daneel.Utilities.SendCallback(tweener, "OnPlay")
+    Daneel.Event.Fire(tweener, "OnPlay")
 end
 
 function Daneel.Tween.Tweener.Pause(tweener)
     if tweener.isEnabled == false then return end
     tweener.isPaused = true
-    Daneel.Utilities.SendCallback(tweener, "OnPause")
+    Daneel.Event.Fire(tweener, "OnPause")
 end
 
 function Daneel.Tween.Tweener.Complete(tweener)
@@ -214,7 +214,7 @@ function Daneel.Tween.Tweener.Complete(tweener)
         tweener.target[tweener.property] = endValue
     end
     tweener.value = endValue
-    Daneel.Utilities.SendCallback(tweener, "OnComplete")
+    Daneel.Event.Fire(tweener, "OnComplete")
 end
 
 function Daneel.Tween.Tweener.Restart(tweener)

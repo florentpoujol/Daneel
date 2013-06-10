@@ -364,7 +364,7 @@ function GameObject.AddComponent(gameObject, componentType, params, scriptedBeha
     if params ~= nil then
         component:Set(params)
     end   
-    Daneel.Utilities.SendCallback(component, "OnNewComponent")
+    Daneel.Event.Fire(component, "OnNewComponent")
     Daneel.Debug.StackTrace.EndFunction("GameObject.AddComponent", component)
     return component
 end

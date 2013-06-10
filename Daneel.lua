@@ -652,7 +652,7 @@ end
 -- Event
 
 Daneel.Event = { 
-    events = { wildcard = {} },
+    events = {},
     fireAtRealTime = {},
     fireAtTime = {},
     fireAtFrame = {},
