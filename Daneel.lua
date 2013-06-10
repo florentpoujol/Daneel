@@ -861,7 +861,7 @@ Daneel.Lang = { lines = {} }
 -- @param key (string) The language key.
 -- @param replacements [optional] (table) The placeholders and their replacements.
 -- @return (string) The line.
-function Daneel.Lang.GetLine(key, replacements)
+function Daneel.Lang.Get(key, replacements)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Lang.GetLine", key, replacements)
     local errorHead = "Daneel.Lang.GetLine(key[, replacements]) : "
     Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
@@ -914,15 +914,6 @@ function Daneel.Lang.GetLine(key, replacements)
 
     Daneel.Debug.StackTrace.EndFunction()
     return line
-end
-
---- Get the localized line identified by the provided key.
--- Alias for Daneel.Lang.GetLine().
--- @param key (string) The language key.
--- @param replacements [optional] (table) The placeholders and their replacements.
--- @return (string) The line.
-function line(key, replacements)
-    return Daneel.Lang.GetLine(key, replacements)
 end
 
 
