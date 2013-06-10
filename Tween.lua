@@ -112,6 +112,7 @@ function Daneel.Tween.Update()
                     end
 
                     tweener.value = tweener.startValue
+                    Daneel.Event.Fire(tweener, "OnLoopComplete", tweener)
 
                 else
                     Daneel.Event.Fire(tweener, "OnComplete", tweener)

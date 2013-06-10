@@ -67,8 +67,6 @@ IDEAS
             loopType
 
 
-    Ray/TextRenderer > vérifier que les ray pourront intersecter les TextRenderer
-
 
 ==========
 A implémenter
@@ -81,7 +79,7 @@ A implémenter
     - enlever l'orthographic scale en dure dans Daneel.Awake()
     - enlever commentaire autour de TextRenderer.SetFont()
     - décommenter nouveaux component dans la config
- 
+
 
     -----
     GUI
@@ -108,9 +106,13 @@ A implémenter
     -----
     TWEEN
 
-    tweener.OnLoopCompleted
-
     Sequence
+
+
+    -----
+    LANG
+
+    Transformer GetLine en Get, enlever fonction globale, modif doc
 
 
 ==========
@@ -118,13 +120,13 @@ A tester
 
     - exemples des events dans la doc
 
+
 ==========
 A modifier/ajouter dans la doc :
 
     - GUI
-    - Tween
-
-    - rajouter la liste des event anvoyés par daneel
+    - Tween  ajouter Timeline
+    - vector2:GetLength() + autres opération
 
 
 =========
