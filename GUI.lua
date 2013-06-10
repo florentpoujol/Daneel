@@ -456,3 +456,11 @@ function Vector2.__eq(a, b)
     Daneel.Debug.StackTrace.EndFunction()
     return eq
 end
+
+-- Return the length of the vector.
+-- @param vector (Vector2) The vector.
+function Vector2.GetLength(vector)
+    return math.sqrt(vector.x^2 + vector.y^2)
+end
+
+

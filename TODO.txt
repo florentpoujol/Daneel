@@ -81,9 +81,7 @@ A implémenter
     - enlever l'orthographic scale en dure dans Daneel.Awake()
     - enlever commentaire autour de TextRenderer.SetFont()
     - décommenter nouveaux component dans la config
-
-    - Vector2:GetLength() math.sqrt( self.x ^ 2 + self.y ^ 2 )
-    
+ 
 
     -----
     GUI
