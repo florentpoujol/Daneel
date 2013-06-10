@@ -19,10 +19,36 @@ Daneel.Tween = {
 }
 
 
+local function GetTweenerProperty(tweener)
+    local value = nil
+    if tweener.target ~= nil then
+        value = tweener.target[tweener.property]
+        if value == nil then
+            local functionName = "Get"..tweener.property:ucfirst()
+            if tweener.target[functionName] ~= nil then
+                value = tweener.target[functionName]()
+            end
+        end
+    end
+    return value
+end
+
+local function SetTweenerProperty(tweener, value)
+    if tweener.target ~= nil then
+        if tweener.target[tweener.property] == nil then
+            local functionName = "Set"..tweener.property:ucfirst()
+            if tweener.target[functionName] ~= nil then
+                tweener.target[functionName](property)
+            end
+        end
+    end
+end
+
+
 -- called from Daneel.Update()
 function Daneel.Tween.Update()
     for id, tweener in pairs(Daneel.Tween.Tweener.tweeners) do
-        if tweener.isEnabled == true and tweener.isPaused ~= true and tweener.isCompleted ~= true then
+        if  tweener.isEnabled == true and tweener.isPaused == false and tweener.isCompleted == false then
 
             local deltaDuration = Daneel.Time.deltaTime
             if tweener.durationType == "realTime" then
@@ -41,13 +67,13 @@ function Daneel.Tween.Update()
 
                     if tweener.startValue == nil then
                         if tweener.target ~= nil then
-                            tweener.startValue = tweener.target[tweener.property]
+                            tweener.startValue = GetTweenerProperty(tweener)
                         else
                             error("ERROR : startValue is nil by not target is set")
                         end
                     elseif tweener.target ~= nil then
                         -- when start value and a target are set move the target to startValue before updating the tweener
-                        tweener.target[tweener.property] = tweener.startValue
+                        SetTweenerProperty(tweener, tweener.startValue)
                     end
                     tweener.value = tweener.startValue
 
@@ -86,7 +112,7 @@ function Daneel.Tween.Update()
                 end
 
                 if tweener.target ~= nil then
-                    tweener.target[tweener.property] = newValue
+                    SetTweenerProperty(tweener, newValue)
                 end
                 tweener.value = newValue
 
@@ -108,7 +134,7 @@ function Daneel.Tween.Update()
                         tweener.endValue = startValue
                         tweener.diffValue = -tweener.diffValue
                     elseif tweener.target ~= nil then
-                        tweener.target[tweener.property] = tweener.startValue
+                        SetTweenerProperty(tweener, tweener.startValue)
                     end
 
                     tweener.value = tweener.startValue
@@ -212,7 +238,7 @@ function Daneel.Tween.Tweener.Complete(tweener)
         end
     end
     if tweener.target ~= nil then
-        tweener.target[tweener.property] = endValue
+        SetTweenerProperty(tweener, endValue)
     end
     tweener.value = endValue
     Daneel.Event.Fire(tweener, "OnComplete", tweener)
@@ -230,7 +256,7 @@ function Daneel.Tween.Tweener.Restart(tweener)
         startValue = tweener.endValue
     end
     if tweener.target ~= nil then
-        tweener.target[tweener.property] = startValue
+        SetTweenerProperty(tweener, startValue)
     end
     tweener.value = startValue
 end
@@ -247,31 +273,3 @@ end
 
 Daneel.Tween.Ease = {}
 -- filled with the easing equations from the "Lib/Easing" script in Daneel.Awake() 
-
-
-----------------------------------------------------------------------------------
--- Sequences
-
-Daneel.Tween.Sequence = { sequences = {} }
-Daneel.Tween.Sequence.__index = Daneel.Tween.Sequence
-setmetatable(Daneel.Tween.Sequence, { __call = function(Object, ...) return Object.New(...) end })
-
-function Daneel.Tween.Sequence.__tostring(tweener)
-    return "Sequence id:'"..tweener.id.."'"
-end
-
-function Daneel.Tween.Sequence.New()
-    local sequence = {}
-    setmetatable(sequence, Daneel.Tween.Sequence)
-
-    table.insert(Daneel.Tween.Sequence.sequences, sequence)
-    return sequence
-end
-
-function Daneel.Tween.Sequence.Insert(tweenOrSequence, place)
-    if place ~= nil then
-        table.insert(Daneel.Tween.Sequence.sequences, place, tweenOrSequence)
-    else
-        table.insert(Daneel.Tween.Sequence.sequences, tweenOrSequence)
-    end
-end

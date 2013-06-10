@@ -93,7 +93,6 @@ config = {
             easeType = "linear", -- type of easing, check the doc for all possible values
             
             isRelative = false, -- If false, tween the value TO endValue. If true, tween the value BY endValue.
-            broadcastCallbacks = false, -- broadcast (instead of send) the callbacks when they are messages
         },
     },
 

@@ -24,8 +24,6 @@ IDEAS
 
     -----
     TWEEN
-
-    pour le param "property" > si la propriété n'existe pas, essayer d'utiliser les getter/setter correspondant à la place   
             
 
     Sequences
@@ -103,22 +101,13 @@ A implémenter
 
         model comme handle avec script Mouseinteractive
 
-    -----
-    TWEEN
-
-    Sequence
-
-
-    -----
-    LANG
-
-    Transformer GetLine en Get, enlever fonction globale, modif doc
-
 
 ==========
 A tester
 
     - exemples des events dans la doc
+    - voir pourqoi certains eseType renvoient des erreurs
+    - Get/SetTweenerProperty()
 
 
 ==========
@@ -126,7 +115,6 @@ A modifier/ajouter dans la doc :
 
     - GUI
     - Tween  ajouter Timeline
-    - vector2:GetLength() + autres opération
 
 
 =========

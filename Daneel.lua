@@ -126,7 +126,6 @@ defaultConfig = {
             easeType = "linear", -- type of easing, check the doc or the end of the "Daneel/Lib/Easing" script for all possible values
             
             isRelative = false, -- If false, tween the value TO endValue. If true, tween the value BY endValue.
-            broadcastCallbacks = false, -- broadcast (instead of send) the callbacks when they are messages
 
             ------------
             -- "read-only" properties or properties the user has no interest to change the value of
@@ -138,7 +137,7 @@ defaultConfig = {
             completedLoops = 0,
             diffValue = 0.0, -- endValue - startValue
             value = 0.0, -- current value (between startValue and endValue)
-        }
+        },
     },
 
 
