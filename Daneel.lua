@@ -28,16 +28,13 @@ defaultConfig = {
     -- * If you defined aliases, dynamically access the ScriptedBehavior on the gameObject via its alias
     scriptPaths = {
         "Daneel/Behaviors/DaneelBehavior",
-        trigerScript = "Daneel/Behaviors/Trigger",
+        triggerScript = "Daneel/Behaviors/Trigger",
         "Daneel/Behaviors/TriggerableGameObject",
         "Daneel/Behaviors/CastableGameObject",
         "Daneel/Behaviors/MouseInteractiveGameObject",
         "Daneel/Behaviors/MouseInteractiveCamera",
         "Daneel/Behaviors/CheckBox",
-
-        "Daneel/Behaviors/GUI/GUIMouseInteractive",
-        "Daneel/Behaviors/GUI/Input",
-        "Daneel/Behaviors/GUI/WorldText",
+        "Daneel/Behaviors/ProgressBar",
     },
 
     allScripts = {},
@@ -229,7 +226,7 @@ function DefaultConfig()
             Hud = Daneel.GUI.Hud,
             CheckBox = Daneel.GUI.CheckBox,
             ProgressBar = Daneel.GUI.ProgressBar,
-            --Slider = Daneel.GUI.Slider,
+            Slider = Daneel.GUI.Slider,
         },
     }
 end
@@ -461,10 +458,10 @@ function Daneel.Debug.GetType(object, OnlyReturnLuaType)
     return argType
 end
 
+local OriginalError = error
+
 -- prevent to set the new version of error() when DEBUG is false or before the StackTrace is enabled when DEBUG is true.
 local function SetNewError()
-    local OriginalError = error
-
     --- Print the stackTrace unless told otherwise then the provided error in the console.
     -- Only exists when debug is enabled. When debug in disabled the built-in 'error(message)'' function exists instead.
     -- @param message (string) The error message.
@@ -475,6 +472,11 @@ local function SetNewError()
         end
         OriginalError(message)
     end
+end
+
+function Daneel.Debug.Disable()
+    error = OriginalError
+    DEBUG = false
 end
 
 --- Check the value of 'componentType', correct its case and throw error if it is not one of the valid component types.
@@ -725,7 +727,7 @@ function Daneel.Event.Fire(object, eventName,  ...)
         listeners = Daneel.Event.events[eventName]
     end
 
-    for i, listener in ipairs(listeners) then
+    for i, listener in ipairs(listeners) do
         if type(listener) == "function" then
             listener(unpack(arg))
         else
@@ -745,12 +747,14 @@ function Daneel.Event.Fire(object, eventName,  ...)
                     gameObject = listener.gameObject
                     if getmetatable(gameObject) ~= GameObject then
                         sendMessage = false
-                        if DEBUG == true then
+                        if listener[eventName] ~= nil and DEBUG == true then
+                            -- only prints the debug when the user setted up the event property because otherwise
+                            -- it would print it every time an event has not been set up (which is OK) on an arbitrary object like a tweener
                             print(errorHead.."Can't fire event '"..eventName.."' by sending message '"..funcOrMessage.."' on object '"..tostring(listener).."'  because it not a gameObject and has no 'gameObject' property.")                      
                         end
                     end
                 end
-                if sendMessage = true then
+                if sendMessage == true then
                     gameObject:SendMessage(funcOrMessage, arg)
                 end
             end
