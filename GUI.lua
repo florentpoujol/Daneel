@@ -119,8 +119,7 @@ function Daneel.GUI.CheckBox.New(gameObject)
     local checkBox = setmetatable({ gameObject = gameObject }, Daneel.GUI.CheckBox)
     gameObject.checkBox = checkBox
 
-    if gameObject["Daneel/Behaviors/MouseInteractiveGameObject"] == nil and
-       not table.containsvalue(config.mouseInteractiveGameObjects, gameObject) then
+    if not table.containsvalue(config.mouseInteractiveGameObjects, gameObject) then
         table.insert(config.mouseInteractiveGameObjects, gameObject)
     end
     if gameObject.textRenderer == nil then
@@ -202,9 +201,8 @@ function Daneel.GUI.ProgressBar.New(gameObject)
     return progressBar
 end
 
-
 --- Set the progress of the progress bar, adjusting its length.
--- @param progressBar (Daneel.GUI.ProgressBar) The progressBar.
+-- @param progressBar (ProgressBar) The progressBar.
 -- @param pogress (number or string) The progress as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
 function Daneel.GUI.ProgressBar.SetProgress(progressBar, progress)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.SetProgress", progressBar, progress)
@@ -292,7 +290,7 @@ function Daneel.GUI.ProgressBar.SetProgress(progressBar, progress)
 end
 
 --- Get the current progress of the progress bar.
--- @param progressBar (Daneel.GUI.ProgressBar) The progressBar.
+-- @param progressBar (ProgressBar) The progressBar.
 -- @param getAsPercentage [optional default=false] (boolean) Get the progress as a percentage instead of an absolute value.
 -- @return (number) The progress.
 function Daneel.GUI.ProgressBar.GetProgress(progressBar, getAsPercentage)
@@ -308,6 +306,78 @@ function Daneel.GUI.ProgressBar.GetProgress(progressBar, getAsPercentage)
     return progress
 end
 
+
+----------------------------------------------------------------------------------
+-- Slider
+
+Daneel.GUI.Slider = {}
+
+--- Create a new GUI.Slider.
+-- @param name (string) The component name.
+-- @param params [optional] (table) A table with initialisation parameters.
+-- @return (Slider) The new component.
+function Daneel.GUI.Slider.New(gameObject)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.New", gameObject)
+    local errorHead = "Daneel.GUI.Slider.New(gameObject) : "
+    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+
+    local slider = setmetatable({ gameObject = gameObject }, Daneel.GUI.Slider)
+    gameObject.slider = slider
+
+    if not table.containsvalue(config.mouseInteractiveGameObjects, gameObject) then
+        table.insert(config.mouseInteractiveGameObjects, gameObject)
+    end
+
+    slider.minValue = 0
+    slider.maxValue = 100
+    slider.value = "0%"
+
+    slider.length = 5
+    slider.minPosition = gameObject.transform.localPosition
+    slider.maxPosition = slider.minPosition + slider.length
+
+    slider.positionTweener = Daneel.Tween.Tweener.New({
+        target = gameObject.transform,
+        property = "localPosition",
+        startValue = slider.minPosition,
+        endValue = slider.maxPosition,
+        
+        easeType = "linear",
+        elapsed = slider.minValue,
+        duration = slider.maxValue,
+
+        isPaused = true,
+    }) 
+
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return slider
+end
+
+
+--- Set the value of the slider, adjusting its position.
+-- @param slider (Slider) The slider.
+-- @param pogress (number or string) The value as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
+function Daneel.GUI.Slider.SetValue(slider, value)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.SetValue", slider, value)
+    local errorHead = "Daneel.GUI.Slider.SetValue(slider, value) : "
+    Daneel.Debug.CheckArgType(slider, "slider", "Slider", errorHead)
+    Daneel.Debug.CheckArgType(value, "value", {"string", "number"}, errorHead)
+
+    slider.tweenerPosition.elapsed = value
+    slider.tweenerPosition:Update()
+
+    Daneel.Event.Fire(component, "OnUpdate")
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+function Daneel.GUI.Slider.GetValue(slider)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.SetValue", slider, value)
+    local errorHead = "Daneel.GUI.Slider.SetValue(slider, value) : "
+    Daneel.Debug.CheckArgType(slider, "slider", "Slider", errorHead)
+    Daneel.Debug.StackTrace.EndFunction()
+    return slider.tweenerPosition.elapsed
+end
 
 
 ----------------------------------------------------------------------------------
