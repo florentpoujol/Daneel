@@ -75,20 +75,20 @@ A implémenter
     -----
     DEVELOP 
 
-    - tester locco.lua pour générer les référence de script
 
     LORSQUE LA NOUVELLE VERSION DE CS EST SORTIE
     - enlever l'orthographic scale en dure dans Daneel.Awake()
     - enlever commentaire autour de TextRenderer.SetFont()
     - décommenter nouveaux component dans la config
 
+    CS.Input.GetMousePosition et mouseDelta retournent vector2 et s'appelles avec les variables
 
     -----
     GUI
 
     - HUD
-        - positionnnement Global + local sans besoin de parenter le gameObject
-        - GetPosition en calculant la position à partir des parents ou de la position 3D
+        - déterminer Position et localPosition à partir de la position effective
+        - ajouter le local layer
 
 
     ScriptedBehaviors pour ajouter les composants et les initialiser lorsque dans l'éditeur de scène :
@@ -109,22 +109,22 @@ A implémenter
     TWEENER
 
     - rajouter LuaDoc comments
+    - virer le mess introduit le 11/06
 
 
 ==========
 A tester
 
     - exemples des events dans la doc
-    - voir pourqoi certains eseType renvoient des erreurs
-    - Get/SetTweenerProperty()
-    - value-based tweener
-
+    - voir pourquoi certains eseType renvoient des erreurs
+    - comportement des variable "gameObject.checkBox" etc, lorsque les scriptedBehaviors sont ajouté aux gameObjects
+        > rien car la creation des components set la variable sur le GO, ce que la creation des SB ne fait pas
 
 ==========
 A modifier/ajouter dans la doc :
 
     - GUI
-    - value-based tweener
+    - tweener Get/SetTweenerProperty()
 
 
 =========

@@ -35,6 +35,7 @@ defaultConfig = {
         "Daneel/Behaviors/MouseInteractiveCamera",
         "Daneel/Behaviors/CheckBox",
         "Daneel/Behaviors/ProgressBar",
+        "Daneel/Behaviors/Slider",
     },
 
     allScripts = {},
@@ -45,13 +46,7 @@ defaultConfig = {
     input = {
         -- Button names as you defined them in the "Administration > Game Controls" tab of your project.
         -- Button whose name is defined here can be used as HotKeys.
-        buttons = {
-            "LeftMouse",
-            "LeftShift",
-            "Delete",
-            "LeftArrow",
-            "RightArrow",
-        },
+        buttons = {},
 
         -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
         doubleClickDelay = 20,
