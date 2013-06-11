@@ -215,6 +215,7 @@ function DefaultConfig()
         daneelObjects = {
             RaycastHit = RaycastHit,
             Vector2 = Vector2,
+            ["Daneel.Tween.Tweener"] = Daneel.Tween.Tweener,
         },
 
         daneelComponentObjects = {

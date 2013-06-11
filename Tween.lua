@@ -14,11 +14,9 @@ end
 ----------------------------------------------------------------------------------
 -- Tween
 
-Daneel.Tween = { 
-    tweens = {},
-}
+Daneel.Tween = {}
 
-
+-- Allow to get the target's "property" even if it is virtual and normally handled via getter/setter.
 local function GetTweenerProperty(tweener)
     local value = nil
     if tweener.target ~= nil then
@@ -33,6 +31,7 @@ local function GetTweenerProperty(tweener)
     return value
 end
 
+-- Allow to set the target's "property" even if it is virtual and normally handled via getter/setter.
 local function SetTweenerProperty(tweener, value)
     if tweener.target ~= nil then
         if tweener.target[tweener.property] == nil then
@@ -45,7 +44,6 @@ local function SetTweenerProperty(tweener, value)
         end
     end
 end
-
 
 -- called from Daneel.Update()
 function Daneel.Tween.Update()
@@ -118,7 +116,7 @@ function Daneel.Tween.Update()
                 end
             end
         end -- end if tweener.isEnabled == true
-    end -- end for tweens
+    end -- end for tweeners
 end
 
 
@@ -135,6 +133,16 @@ end
 
 local tweenerId = 0
 
+--- Creates a new tweener via one of the tree allowed constructors :
+-- Tweener.New(target, property, endValue, duration[, params])
+-- Tweener.New(startValue, endValue, duration[, params])
+-- Tweener.New(params)
+-- @param target (table) An object.
+-- @param property (string) The name of the propertty to animate.
+-- @param endValue (number) The value the property should have at the end of the duration.
+-- @param duration (number) The time or frame it should take for the property to reach endValue.
+-- @param params [optional] (table) A table of parameters.
+-- @return (Tweener) The Tweener.
 function Daneel.Tween.Tweener.New(target, property, endValue, duration, params)
     local tweener = table.copy(config.tween.defaultTweenerParams)
     setmetatable(tweener, Daneel.Tween.Tweener)
@@ -178,6 +186,9 @@ function Daneel.Tween.Tweener.New(target, property, endValue, duration, params)
     return tweener
 end
 
+-- Sets parameters in mass.
+-- Should not be used after the tweener has been created.
+-- That's why it is not in the function reference.
 function Daneel.Tween.Tweener.Set(tweener, params)
     for key, value in pairs(params) do
         tweener[key] = value
@@ -185,18 +196,24 @@ function Daneel.Tween.Tweener.Set(tweener, params)
     return tweener
 end
 
+--- Unpause the tweener and send the OnPlay event.
+-- @param tweener (Daneel.Tween.Tweener) The tweener.
 function Daneel.Tween.Tweener.Play(tweener)
     if tweener.isEnabled == false then return end
     tweener.isPaused = false
     Daneel.Event.Fire(tweener, "OnPlay", tweener)
 end
 
+--- Pause the tweener and send the OnPause event.
+-- @param tweener (Daneel.Tween.Tweener) The tweener.
 function Daneel.Tween.Tweener.Pause(tweener)
     if tweener.isEnabled == false then return end
     tweener.isPaused = true
     Daneel.Event.Fire(tweener, "OnPause", tweener)
 end
 
+--- Completely restart the tweener.
+-- @param tweener (Daneel.Tween.Tweener) The tweener.
 function Daneel.Tween.Tweener.Restart(tweener)
     if tweener.isEnabled == false then return end
     tweener.elapsed = 0
@@ -214,6 +231,8 @@ function Daneel.Tween.Tweener.Restart(tweener)
     tweener.value = startValue
 end
 
+--- Complete the tweener send the OnComple event.
+-- @param tweener (Daneel.Tween.Tweener) The tweener.
 function Daneel.Tween.Tweener.Complete(tweener)
     if tweener.isEnabled == false or tweener.loops == -1 then return end
     tweener.isCompleted = true
@@ -233,13 +252,20 @@ function Daneel.Tween.Tweener.Complete(tweener)
     Daneel.Event.Fire(tweener, "OnComplete", tweener)
 end
 
+--- Destroy the tweener.
+-- @param tweener (Daneel.Tween.Tweener) The tweener.
 function Daneel.Tween.Tweener.Destroy(tweener)
     if tweener.isEnabled == false then return end
     tweener.isEnabled = false
     Daneel.Tween.Tweener.tweeners[tweener.id] = nil
 end
 
-function Daneel.Tween.Tweener.Update(tweener, deltaDuration)
+
+--- Update the tweener's value based on the tweener's elapsed property.
+-- Send the OnUpdate event.
+-- This allows the tweener to fast-forward to a certain time.
+-- @param tweener (Daneel.Tween.Tweener) The tweener.
+function Daneel.Tween.Tweener.Update(tweener, deltaDuration) -- the deltaDuration argument is only used from the Tween.Update() function
     if tweener.isEnabled == false then return end
 
     if Daneel.Tween.Ease[tweener.easeType] == nil then

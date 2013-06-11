@@ -110,9 +110,6 @@ A implémenter
     -----
     TWEENER
 
-    - rajouter LuaDoc comments
-    - virer le mess introduit le 11/06
-
 
 ==========
 A tester
@@ -127,6 +124,7 @@ A modifier/ajouter dans la doc :
 
     - GUI
     - tweener Get/SetTweenerProperty()
+    - tweener fastforwarding with Update
 
     - CS.Input.GetMousePosition/Delta qui retournent Vector2
 
