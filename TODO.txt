@@ -24,7 +24,10 @@ IDEAS
 
     -----
     TWEEN
-            
+    
+    function Update qui met à jour la propriété, en fonction du elapsed ou de la value
+    appelée par Tween.Update() ou appelée à la main
+
 
     Sequences
         > simple stack de tweeners qui jouent les un après les autres
@@ -72,6 +75,7 @@ A implémenter
     -----
     DEVELOP 
 
+    - tester locco.lua pour générer les référence de script
 
     LORSQUE LA NOUVELLE VERSION DE CS EST SORTIE
     - enlever l'orthographic scale en dure dans Daneel.Awake()
@@ -101,6 +105,11 @@ A implémenter
 
         model comme handle avec script Mouseinteractive
 
+    -----
+    TWEENER
+
+    - rajouter LuaDoc comments
+
 
 ==========
 A tester
@@ -108,13 +117,14 @@ A tester
     - exemples des events dans la doc
     - voir pourqoi certains eseType renvoient des erreurs
     - Get/SetTweenerProperty()
+    - value-based tweener
 
 
 ==========
 A modifier/ajouter dans la doc :
 
     - GUI
-    - Tween  ajouter Timeline
+    - value-based tweener
 
 
 =========

@@ -48,7 +48,7 @@ end
 -- called from Daneel.Update()
 function Daneel.Tween.Update()
     for id, tweener in pairs(Daneel.Tween.Tweener.tweeners) do
-        if  tweener.isEnabled == true and tweener.isPaused == false and tweener.isCompleted == false then
+        if  tweener.isEnabled == true and tweener.isPaused == false and tweener.isCompleted == false and tweener.duration > 0 then
 
             local deltaDuration = Daneel.Time.deltaTime
             if tweener.durationType == "realTime" then
@@ -87,36 +87,7 @@ function Daneel.Tween.Update()
                 end
                 
                 -- update the tweener
-                local newValue = nil
-
-                tweener.elapsed = tweener.elapsed + deltaDuration
-                tweener.fullElapsed = tweener.fullElapsed + deltaDuration
-
-                if tweener.elapsed > tweener.duration then
-                    tweener.isCompleted = true
-                    tweener.elapsed = tweener.duration
-                    if tweener.isRelative == true then
-                        newValue = tweener.startValue + tweener.endValue
-                    else
-                        newValue = tweener.endValue
-                    end
-                
-                else
-                    if Daneel.Tween.Ease[tweener.easeType] == nil then
-                        if DEBUG == true then
-                            print("Daneel.Tween.Update() : Easing '"..tostring(tweener.easeType).."' for tweener ID '"..tween.id.."' does not exists. Setting it back for the default easing '"..config.tween.defaultTweenerParams.."'.")
-                        end
-                        tweener.easeType = config.tween.defaultTweenerParams.easeType
-                    end
-                    newValue = Daneel.Tween.Ease[tweener.easeType](tweener.elapsed, tweener.startValue, tweener.diffValue, tweener.duration)
-                end
-
-                if tweener.target ~= nil then
-                    SetTweenerProperty(tweener, newValue)
-                end
-                tweener.value = newValue
-
-                Daneel.Event.Fire(tweener, "OnUpdate", tweener)
+                tweener:Update(deltaDuration)
             else
                 tweener.delay = tweener.delay - deltaDuration
             end -- end if tweener.delay <= 0
@@ -267,6 +238,44 @@ function Daneel.Tween.Tweener.Destroy(tweener)
     Daneel.Tween.Tweener.tweeners[tweener.id] = nil
 end
 
+
+function Daneel.Tween.Tweener.Update(tweener, deltaDuration)
+    if tweener.isEnabled == false then return end
+
+    if Daneel.Tween.Ease[tweener.easeType] == nil then
+        if DEBUG == true then
+            print("Daneel.Tween.Tweener.Update() : Easing '"..tostring(tweener.easeType).."' for tweener ID '"..tween.id.."' does not exists. Setting it back for the default easing '"..config.tween.defaultTweenerParams.."'.")
+        end
+        tweener.easeType = config.tween.defaultTweenerParams.easeType
+    end
+
+
+    if deltaDuration ~= nil then
+        tweener.elapsed = tweener.elapsed + deltaDuration
+        tweener.fullElapsed = tweener.fullElapsed + deltaDuration
+    end
+    local value = nil
+
+    if tweener.elapsed > tweener.duration then
+        tweener.isCompleted = true
+        tweener.elapsed = tweener.duration
+        if tweener.isRelative == true then
+            value = tweener.startValue + tweener.endValue
+        else
+            value = tweener.endValue
+        end
+    else
+        value = Daneel.Tween.Ease[tweener.easeType](tweener.elapsed, tweener.startValue, tweener.diffValue, tweener.duration)
+    end
+
+
+    if tweener.target ~= nil then
+        SetTweenerProperty(tweener, value)
+    end
+    tweener.value = value
+
+    Daneel.Event.Fire(tweener, "OnUpdate", tweener)
+end
 
 ----------------------------------------------------------------------------------
 -- Easing equations
