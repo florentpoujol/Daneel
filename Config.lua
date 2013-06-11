@@ -17,10 +17,8 @@ config = {
         "Daneel/Behaviors/CastableGameObject",
         "Daneel/Behaviors/MouseInteractiveGameObject",
         "Daneel/Behaviors/MouseInteractiveCamera",
-        "Daneel/Behaviors/GUI/GUIMouseInteractive",
-        "Daneel/Behaviors/GUI/CheckBox",
-        "Daneel/Behaviors/GUI/Input",
-        "Daneel/Behaviors/GUI/WorldText",
+        "Daneel/Behaviors/CheckBox",
+        "Daneel/Behaviors/ProgressBar",
     },
 
 
