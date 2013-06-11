@@ -26,7 +26,7 @@ local function GetTweenerProperty(tweener)
         if value == nil then
             local functionName = "Get"..tweener.property:ucfirst()
             if tweener.target[functionName] ~= nil then
-                value = tweener.target[functionName]()
+                value = tweener.target[functionName](tweener.target)
             end
         end
     end
@@ -38,8 +38,10 @@ local function SetTweenerProperty(tweener, value)
         if tweener.target[tweener.property] == nil then
             local functionName = "Set"..tweener.property:ucfirst()
             if tweener.target[functionName] ~= nil then
-                tweener.target[functionName](property)
+                tweener.target[functionName](tweener.target, tweener.property)
             end
+        else
+            tweener.target[tweener.property] = value
         end
     end
 end
@@ -60,11 +62,10 @@ function Daneel.Tween.Update()
 
             if tweener.delay <= 0 then
                 -- no more delay before starting the tweener, update the tweener
-                
                 if tweener.hasStarted == false then
                     -- firt loop for this tweener
                     tweener.hasStarted = true
-
+                    
                     if tweener.startValue == nil then
                         if tweener.target ~= nil then
                             tweener.startValue = GetTweenerProperty(tweener)
@@ -196,6 +197,23 @@ function Daneel.Tween.Tweener.Pause(tweener)
     Daneel.Event.Fire(tweener, "OnPause", tweener)
 end
 
+function Daneel.Tween.Tweener.Restart(tweener)
+    if tweener.isEnabled == false then return end
+    tweener.elapsed = 0
+    tweener.fullElapsed = 0
+    tweener.completedLoops = 0
+    tweener.isCompleted = false
+    tweener.hasStarted = false
+    local startValue = tweener.startValue
+    if tweener.loopType == "yoyo" and tweener.completedLoops % 2 ~= 0 then -- the current loop is Y to X, so endValue and startValue are inversed
+        startValue = tweener.endValue
+    end
+    if tweener.target ~= nil then
+        SetTweenerProperty(tweener, startValue)
+    end
+    tweener.value = startValue
+end
+
 function Daneel.Tween.Tweener.Complete(tweener)
     if tweener.isEnabled == false or tweener.loops == -1 then return end
     tweener.isCompleted = true
@@ -215,29 +233,11 @@ function Daneel.Tween.Tweener.Complete(tweener)
     Daneel.Event.Fire(tweener, "OnComplete", tweener)
 end
 
-function Daneel.Tween.Tweener.Restart(tweener)
-    if tweener.isEnabled == false then return end
-    tweener.elapsed = 0
-    tweener.fullElapsed = 0
-    tweener.completedLoops = 0
-    tweener.isCompleted = false
-    tweener.hasStarted = false
-    local startValue = tweener.startValue
-    if tweener.loopType == "yoyo" and tweener.completedLoops % 2 ~= 0 then -- the current loop is Y to X, so endValue and startValue are inversed
-        startValue = tweener.endValue
-    end
-    if tweener.target ~= nil then
-        SetTweenerProperty(tweener, startValue)
-    end
-    tweener.value = startValue
-end
-
 function Daneel.Tween.Tweener.Destroy(tweener)
     if tweener.isEnabled == false then return end
     tweener.isEnabled = false
     Daneel.Tween.Tweener.tweeners[tweener.id] = nil
 end
-
 
 function Daneel.Tween.Tweener.Update(tweener, deltaDuration)
     if tweener.isEnabled == false then return end
@@ -248,7 +248,6 @@ function Daneel.Tween.Tweener.Update(tweener, deltaDuration)
         end
         tweener.easeType = config.tween.defaultTweenerParams.easeType
     end
-
 
     if deltaDuration ~= nil then
         tweener.elapsed = tweener.elapsed + deltaDuration
@@ -276,6 +275,7 @@ function Daneel.Tween.Tweener.Update(tweener, deltaDuration)
 
     Daneel.Event.Fire(tweener, "OnUpdate", tweener)
 end
+
 
 ----------------------------------------------------------------------------------
 -- Easing equations
