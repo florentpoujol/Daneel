@@ -440,6 +440,32 @@ end
 
 ----------------------------------------------------------------------------------
 
+local OriginalGetMousePosition = CraftStudio.Input.GetMousePosition
+
+--- Return the mouse position on screen coordinates {x, y}
+-- @return (Vector2) The on-screen mouse position.
+function CraftStudio.Input.GetMousePosition()
+    Daneel.Debug.StackTrace.BeginFunction("CraftStudio.Input.GetMousePosition")
+    local vector = setmetatable(OriginalGetMousePosition(), Vector2)
+    Daneel.Debug.StackTrace.EndFunction()
+    return vector
+end
+
+local OriginalGetMouseDelta = CraftStudio.Input.GetMouseDelta
+
+--- Return the mouse delta (the variation of position) since the last frame.
+-- Positive x is right, positive y is bottom. 
+-- @return (Vector2) The position's delta.
+function CraftStudio.Input.GetMouseDelta()
+    Daneel.Debug.StackTrace.BeginFunction("CraftStudio.Input.GetMouseDelta")
+    local vector = setmetatable(OriginalGetMouseDelta(), Vector2)
+    Daneel.Debug.StackTrace.EndFunction()
+    return vector
+end
+
+
+----------------------------------------------------------------------------------
+
 setmetatable(Vector3, { __call = function(Object, ...) return Object:New(...) end })
 setmetatable(Quaternion, { __call = function(Object, ...) return Object:New(...) end })
 setmetatable(Plane, { __call = function(Object, ...) return Object:New(...) end })

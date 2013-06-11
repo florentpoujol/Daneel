@@ -83,6 +83,8 @@ A implémenter
 
     CS.Input.GetMousePosition et mouseDelta retournent vector2 et s'appelles avec les variables
 
+    virer RegisterTimedUpdate ? Utiliser les tweener à la place
+
     -----
     GUI
 
@@ -117,8 +119,8 @@ A tester
 
     - exemples des events dans la doc
     - voir pourquoi certains eseType renvoient des erreurs
-    - comportement des variable "gameObject.checkBox" etc, lorsque les scriptedBehaviors sont ajouté aux gameObjects
-        > rien car la creation des components set la variable sur le GO, ce que la creation des SB ne fait pas
+    - CS.Input.GetMousePosition/Delta qui retournent Vector2
+
 
 ==========
 A modifier/ajouter dans la doc :
@@ -126,6 +128,7 @@ A modifier/ajouter dans la doc :
     - GUI
     - tweener Get/SetTweenerProperty()
 
+    - CS.Input.GetMousePosition/Delta qui retournent Vector2
 
 =========
 BUGS
