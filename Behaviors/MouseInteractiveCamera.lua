@@ -8,8 +8,7 @@
 local interactiveGameObjects = {}
 
 function Behavior:Start()
-    Daneel.Event.Listen("OnLeftMouseButtonJustPressed", self.gameObject)
-    Daneel.Event.Listen("OnRightMouseButtonJustPressed", self.gameObject)
+    Daneel.Event.Listen({ "OnLeftMouseButtonJustPressed", "OnLeftMouseButtonDown", "OnRightMouseButtonJustPressed" }, self.gameObject)
     interactiveGameObjects = config.mouseInteractiveGameObjects
 end
 
@@ -29,6 +28,18 @@ function Behavior:OnLeftMouseButtonJustPressed()
             end
         else
             table.remove(interactiveGameObjects, i)
+        end
+    end
+end
+
+
+function Behavior:OnLeftMouseButtonDown()
+    local vector = CraftStudio.Input.GetMouseDelta()
+    if vector.x >= 1 or Vector.y >= 1 then
+        for i, gameObject in ipairs(interactiveGameObjects) do
+            if gameObject ~= nil and gameObject.inner ~= nil and gameObject.isHoveredByMouse == true then
+                Daneel.Event.Fire(gameObject, "OnDrag")
+            end
         end
     end
 end
