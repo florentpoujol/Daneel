@@ -31,11 +31,8 @@ function Daneel.GUI.Hud.New(gameObject)
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", "Hud.New(gameObject) : ")
     local hud = setmetatable({ gameObject = gameObject }, Daneel.GUI.Hud)
     gameObject.hud = hud
-    if gameObject.parent == nil then
-        gameObject.parent = config.gui.hudOriginGO
-    end
-    gameObject.transform.localPosition = Vector3:New(0,0,-5)
-    hud._position = Vector2.New(0)
+    hud.position = Vector2.New(0)
+    hud.layer = 1
     Daneel.Debug.StackTrace.EndFunction()
     return hud
 end
@@ -51,17 +48,15 @@ function Daneel.GUI.Hud.SetPosition(hud, position)
     local errorHead = "Daneel.GUI.Hud.SetPosition(hud, position) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
     Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
-    
-    if type(position.x) == "string" then
-
-    end
     hud._position = position
-    local position3D = Vector3:New(
+    local newPosition = config.gui.hudOriginGO.transform.position + 
+    Vector3:New(
         position.x * Daneel.GUI.pixelsToUnits,
         -position.y * Daneel.GUI.pixelsToUnits,
-        hud.gameObject.transform.localPosition.z
+        0
     )
-    hud.gameObject.transform.localPosition = position3D
+    newPosition.z = hud.gameObject.transform.position.z
+    hud.gameObject.transform.position = newPosition
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -77,29 +72,79 @@ function Daneel.GUI.Hud.GetPosition(hud)
 end
 
 
---- Set the huds's layer which is actually its local position's z hud.
+function Daneel.GUI.Hud.SetLocalPosition(hud, position)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.SetLocalPosition", hud, position)
+    local errorHead = "Daneel.GUI.Hud.SetLocalPosition(hud, position) : "
+    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
+    Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
+    local parent = hud.gameObject.parent
+    if parent == nil then parent = config.gui.hudOriginGO end
+    local newPosition = parent.transform.position + 
+    Vector3:New(
+        position.x * Daneel.GUI.pixelsToUnits,
+        -position.y * Daneel.GUI.pixelsToUnits,
+        0
+    )
+    newPosition.z = hud.gameObject.transform.position.z
+    hud.gameObject.transform.position = newPosition
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+
+--- Set the gameObject's layer.
 -- @param hud (Daneel.GUI.Hud) The hud component.
--- @param layer (number) The layer (a postiv number).
+-- @param layer (number) The layer (a postive number).
 function Daneel.GUI.Hud.SetLayer(hud, layer)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.SetLayer", hud)
     local errorHead = "Daneel.GUI.Hud.SetLayer(hud, layer) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
     Daneel.Debug.CheckArgType(layer, "layer", "number", errorHead)
-    local pos = hud.gameObject.transform.localPosition
-    hud.gameObject.transform.localPosition = Vector3:New(pos.x, pos.y, -layer)
+    local originLayer = config.gui.hudOriginGO.transform.position.z
+    local currentPosition = hud.gameObject.transform.position
+    hud.gameObject.transform.position = Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Get the gameObject's layer which is actually the inverse of its local position's z component.
+--- Get the gameObject's layer.
 -- @param hud (Daneel.GUI.Hud) The hud component.
 -- @return (number) The layer.
 function Daneel.GUI.Hud.GetLayer(hud)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.GetLayer", hud)
     local errorHead = "Daneel.GUI.Hud.GetLyer(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
-    return -hud.gameObject.transform.localPosition.z
+    local originLayer = config.gui.hudOriginGO.transform.position.z
+    local layer = originLayer - hud.gameObject.transform.position.z 
+    Daneel.Debug.EndFunction()
+    return layer
 end
 
+
+--- Set the huds's local layer.
+-- @param hud (Daneel.GUI.Hud) The hud component.
+-- @param layer (number) The layer (a postiv number).
+function Daneel.GUI.Hud.SetLocalLayer(hud, layer)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.SetLayer", hud)
+    local errorHead = "Daneel.GUI.Hud.SetLayer(hud, layer) : "
+    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
+    Daneel.Debug.CheckArgType(layer, "layer", "number", errorHead)
+    local originLayer = config.gui.hudOriginGO.transform.position.z
+    local currentPosition = hud.gameObject.transform.position
+    hud.gameObject.transform.position = Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer)
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+--- Get the gameObject's layer which is actually the inverse of its local position's z component.
+-- @param hud (Daneel.GUI.Hud) The hud component.
+-- @return (number) The layer.
+function Daneel.GUI.Hud.GetLocalLayer(hud)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.GetLayer", hud)
+    local errorHead = "Daneel.GUI.Hud.GetLyer(hud) : "
+    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
+    local originLayer = config.gui.hudOriginGO.transform.position.z
+    local layer = originLayer - hud.gameObject.transform.position.z 
+    Daneel.Debug.EndFunction()
+    return layer
+end
 
 ----------------------------------------------------------------------------------
 -- CheckBox
@@ -160,17 +205,22 @@ function Daneel.GUI.CheckBox.GetText(checkBox, text)
 end 
 
 
-function Daneel.GUI.CheckBox.SetIsChecked(component, state)
+function Daneel.GUI.CheckBox.SetIsChecked(checkBox, state)
     if state == nil then state = true end
-    if component._isChecked ~= state then
-        component._isChecked = state
-        component.text = component.text -- "reload" the check mark based on the new checked state
-        Daneel.Event.Fire(component, "OnUpdate")
+    if checkBox._isChecked ~= state then
+        checkBox._isChecked = state
+        checkBox.text = checkBox.text -- "reload" the check mark based on the new checked state
+        Daneel.Event.Fire(checkBox, "OnUpdate")
     end
 end
 
-function Daneel.GUI.CheckBox.GetIsChecked(component)
-    return component._isChecked
+function Daneel.GUI.CheckBox.GetIsChecked(checkBox)
+    return checkBox._isChecked
+    --[[local isChecked = true
+    if checkBox.gameObject.textRenderer.text[1] == "X" then
+        isChecked = false
+    end
+    return isChecked]]
 end
 
 
@@ -236,7 +286,6 @@ function Daneel.GUI.ProgressBar.SetProgress(progressBar, progress)
     if progress ~= oldProgress and DEBUG == true then
         print(errorHead.." WARNING : progress with value '"..oldProgress.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
     end
-
     percentageOfProgress = (progress - minVal) / (maxVal - minVal)
     
     --
@@ -285,7 +334,7 @@ function Daneel.GUI.ProgressBar.SetProgress(progressBar, progress)
     progressBar.gameObject.transform.localScale = Vector3:New(newLength, height, currentScale.z)
     -- newLength = scale only because the base size of the model is of one unit at a scale of one
 
-    Daneel.Event.Fire(component, "OnUpdate")
+    Daneel.Event.Fire(progressBar, "OnUpdate")
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -330,25 +379,9 @@ function Daneel.GUI.Slider.New(gameObject)
 
     slider.minValue = 0
     slider.maxValue = 100
-    slider.value = "0%"
-
     slider.length = 5
-    slider.minPosition = gameObject.transform.localPosition
-    slider.maxPosition = slider.minPosition + slider.length
-
-    slider.positionTweener = Daneel.Tween.Tweener.New({
-        target = gameObject.transform,
-        property = "localPosition",
-        startValue = slider.minPosition,
-        endValue = slider.maxPosition,
-        
-        easeType = "linear",
-        elapsed = slider.minValue,
-        duration = slider.maxValue,
-
-        isPaused = true,
-    }) 
-
+    slider.value = "0%"
+    slider.startPosition = slider.gameObject.transform.localPosition
 
     Daneel.Debug.StackTrace.EndFunction()
     return slider
@@ -364,19 +397,68 @@ function Daneel.GUI.Slider.SetValue(slider, value)
     Daneel.Debug.CheckArgType(slider, "slider", "Slider", errorHead)
     Daneel.Debug.CheckArgType(value, "value", {"string", "number"}, errorHead)
 
-    slider.tweenerPosition.elapsed = value
-    slider.tweenerPosition:Update()
+    local maxVal = slider.maxValue
+    local minVal = slider.minValue
+    local percentageOfProgress = nil
 
-    Daneel.Event.Fire(component, "OnUpdate")
+    if type(value) == "string" then
+        if value:endswith("%") then
+            percentageOfProgress = tonumber(value:sub(1, #value-1)) / 100
+            local oldPercentage = percentageOfProgress
+            percentageOfProgress = math.clamp(percentageOfProgress, 0.0, 1.0)
+            if percentageOfProgress ~= oldPercentage and DEBUG == true then
+                print(errorHead.."WARNING : value in percentageOfProgress '"..value.."' is below 0% or above 100%.")
+            end
+            value = (maxVal - minVal) * percentageOfProgress + minVal
+        else
+            value = tonumber(value)
+        end
+    end
+    slider._value = value
+
+
+    -- now progress is a number and should be a value between minVal and maxVal
+    -- now value is a number and should be a value between minVal and maxVal
+    local oldValue = value
+    value = math.clamp(value, minVal, maxVal)
+    if value ~= oldValue and DEBUG == true then
+        print(errorHead.." WARNING : progress with value '"..oldValue.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
+    end
+    percentageOfProgress = (value - minVal) / (maxVal - minVal)
+
+
+    -- update the actual position
+    local length = slider.length
+    if type(length) == "string" then
+        if length:endswith("px") then
+            length = tonumber(length:sub(0, #length-2)) * Daneel.GUI.pixelsToUnits
+        elseif length:endswith("u") then
+            length = tonumber(length:sub(0, #length-1))
+        else
+            length = tonumber(length)
+        end
+        slider.length = length
+    end
+
+    length = Vector3:New(length)
+    if slider.gameObject.hud ~= nil then
+        length.z = 0
+    end
+
+    local newPos = slider.startPosition + (length * percentageOfProgress)
+    slider.gameObject.transform.localPosition = newPos
+
+
+    Daneel.Event.Fire(slider, "OnUpdate")
     Daneel.Debug.StackTrace.EndFunction()
 end
 
 function Daneel.GUI.Slider.GetValue(slider)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.SetValue", slider, value)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.SetValue", slider)
     local errorHead = "Daneel.GUI.Slider.SetValue(slider, value) : "
     Daneel.Debug.CheckArgType(slider, "slider", "Slider", errorHead)
     Daneel.Debug.StackTrace.EndFunction()
-    return slider.tweenerPosition.elapsed
+    return slider._value
 end
 
 
