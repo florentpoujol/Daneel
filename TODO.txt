@@ -44,14 +44,7 @@ A implémenter
     -----
     GUI
 
-    - HUD
-        - déterminer Position et localPosition à partir de la position effective
-
-
     ScriptedBehaviors pour ajouter les composants et les initialiser lorsque dans l'éditeur de scène :
-    - HUD avec propriétés (string) (A voit lorsque Hud sera refait avec position globale et locale)
-        - positionX
-        - positionY
 
     - Slider
         minValue
@@ -94,5 +87,8 @@ BUGS
 ==========
 LONG TERM modifs à faire (pour une v2 par exemple)
 
-- CheckOptionalArgType retourne une valeur par default
+- DEBUG
+    - Check OptionalArgType retourne une valeur par default
+    - supprimer les arguments p_errorEnd
+    - introduire un CheckArgValue, CheckOptionalArgValue
 - dans les commentaires LuaDoc, mettre le texte [optional] après le type de l'argument
