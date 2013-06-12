@@ -1009,11 +1009,7 @@ function Daneel.Awake()
         end
 
         -- Components getters-setter-tostring
-        local ancestors = { Component }
-        if componentType == "CheckBox" then
-            --ancestors = { TextRenderer, Component }
-        end
-        Daneel.Utilities.AllowDynamicGettersAndSetters(componentObject, ancestors)
+        Daneel.Utilities.AllowDynamicGettersAndSetters(componentObject, { Component })
 
         if componentType ~= "ScriptedBehavior" then
             if not componentType:isoneof(config.daneelComponentTypes) then
