@@ -28,6 +28,8 @@ IDEAS
 ==========
 A implémenter
 
+    - enmeber
+
     -----
     DEVELOP 
 
@@ -83,6 +85,7 @@ A modifier/ajouter dans la doc :
     - tweener fastforwarding with Update
 
     - CS.Input.GetMousePosition/Delta qui retournent Vector2
+    - virer timedupdate
 
 =========
 BUGS

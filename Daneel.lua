@@ -935,35 +935,6 @@ Daneel.Time = {
 }
 -- see below in Daneel.Update()
 
---- Alow a ScriptedBehavior to ask Daneel to call the TimeUpdate() function on him at the desired interval.
--- @param scriptedBehavior (ScriptedBehavior) The ScriptedBehavior that wants to use TimedUpdate()
--- @param timedDeltaTime (number) The desired timed delta time.
--- @param isFrameRate [optional default=false] (boolean) If true, the 'timedDeltaTime' argument is actually a frame rate.
-function Daneel.Time.RegisterTimedUpdate(scriptedBehavior, timedDeltaTime, isFrameRate)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Time.RegisterTimedUpdate", scriptedBehavior, timedDeltaTime, isFrameRate)
-    local errorHead = "Daneel.Time.RegisterTimedUpdate(scriptedBehavior, timedDeltaTime[, isFrameRate]) : "
-    Daneel.Debug.CheckArgType(scriptedBehavior, "scriptedBehavior", "ScriptedBehavior", errorHead)
-    Daneel.Debug.CheckArgType(timedDeltaTime, "timedDeltaTime", "number", errorHead)
-    Daneel.Debug.CheckOptionalArgType(isFrameRate, "isFrameRate", "boolean", errorHead)
-    if isFrameRate == nil then isFrameRate = false end
-
-    if timedDeltaTime <= 0 then
-        Daneel.Time.timedUpdates[scriptedBehavior] = nil
-        Daneel.Debug.StackTrace.EndFunction()
-        return
-    end
-    if isFrameRate == true then
-        timedDeltaTime = 1 / timedDeltaTime
-    end
-
-    Daneel.Time.timedUpdates[scriptedBehavior] = {
-        timedDeltaTime = timedDeltaTime,
-        lastTimedUpdate = 0
-    }
-    Daneel.Debug.StackTrace.EndFunction()
-end
-
-
 ----------------------------------------------------------------------------------
 -- Runtime
 local luaDocStop = ""
@@ -1145,23 +1116,6 @@ function Daneel.Update()
 
     Daneel.Time.frameCount = Daneel.Time.frameCount + 1
 
-    -- Call to TimedUpdate()
-    if Daneel.Time.timeScale ~= 0 then
-        local timeScale = math.abs(Daneel.Time.timeScale)
-        
-        for scriptedBehavior, scriptInfo in pairs(Daneel.Time.timedUpdates) do
-            if scriptedBehavior.gameObject ~= nil and scriptedBehavior.gameObject.inner ~= nil then
-                local timedDeltaTime = scriptInfo.timedDeltaTime / timeScale -- target delta time
-                if Daneel.Time.realTime >= scriptInfo.lastTimedUpdate + timedDeltaTime then
-                    timedDeltaTime = Daneel.Time.realTime - scriptInfo.lastTimedUpdate -- real delta time
-                    scriptInfo.lastTimedUpdate = Daneel.Time.realTime
-                    scriptedBehavior:TimedUpdate(timedDeltaTime)
-                end
-            else
-                Daneel.Time.timedUpdates[scriptedBehavior] = nil
-            end
-        end
-    end
 
     -- Scheduled events
     if Daneel.Event.fireAtFrame[Daneel.Time.frameCount] ~= nil then
