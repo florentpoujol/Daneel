@@ -28,7 +28,6 @@ IDEAS
 ==========
 A implémenter
 
-    - enmeber
 
     -----
     DEVELOP 
@@ -39,9 +38,6 @@ A implémenter
     - enlever commentaire autour de TextRenderer.SetFont()
     - décommenter nouveaux component dans la config
 
-    CS.Input.GetMousePosition et mouseDelta retournent vector2 et s'appelles avec les variables
-
-    virer RegisterTimedUpdate ? Utiliser les tweener à la place
 
     -----
     GUI
