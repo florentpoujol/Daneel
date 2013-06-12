@@ -144,45 +144,55 @@ local tweenerId = 0
 -- @param params [optional] (table) A table of parameters.
 -- @return (Tweener) The Tweener.
 function Daneel.Tween.Tweener.New(target, property, endValue, duration, params)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.New", target, property, endValue, duration, params)
+    local errorHead = "Daneel.Tween.Tweener.New(target, property, endValue, duration[, params]) : "
     local tweener = table.copy(config.tween.defaultTweenerParams)
     setmetatable(tweener, Daneel.Tween.Tweener)
-
     tweenerId = tweenerId + 1
     tweener.id = tweenerId
 
     -- three constructors :
-    -- target, property, endvalue, duration[, params]
-    -- startvalue, endvalue, duration[, params]
+    -- target, property, endValue, duration[, params]
+    -- startValue, endValue, duration[, params]
     -- params
-
     if type(target) == "number" then
         -- constructor n°2
+        errorHead = "Daneel.Tween.Tweener.New(startValue, endValue, duration[, params]) : "
+        Daneel.Debug.CheckArgType(target, "startValue", "number", errorHead)
+        Daneel.Debug.CheckArgType(property, "endValue", "number", errorHead)
+        Daneel.Debug.CheckArgType(endValue, "duration", "number", errorHead)
+        Daneel.Debug.CheckOptionalArgType(duration, "params", "table", errorHead)
+
         tweener.startValue = target
         tweener.endValue = property
         tweener.duration = endValue
-        if type(duration) == "table" then
+        if params ~= nil then
             tweener:Set(duration)
         end
     elseif property == nil then
         -- constructor n°3
+        Daneel.Debug.CheckArgType(target, "params", "table", errorHead)
+        errorHead = "Daneel.Tween.Tweener.New(params) : "
         tweener:Set(target)
     else
         -- constructor n°1
-        tweener.gameObject = target.gameObject -- if target is a component
-        if tweener.gameObject == nil and getmetatable(target) == GameObject then
-            tweener.gameObject = target
-        end
+        Daneel.Debug.CheckArgType(target, "target", "table", errorHead)
+        Daneel.Debug.CheckArgType(property, "property", "string", errorHead)
+        Daneel.Debug.CheckArgType(endValue, "endValue", "number", errorHead)
+        Daneel.Debug.CheckArgType(duration, "duration", "number", errorHead)
+        Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
         tweener.target = target
         tweener.property = property
         tweener.endValue = endValue
         tweener.duration = duration
-        if type(params) == "table" then
+        if params ~= nil then
             tweener:Set(params)
         end
     end
     
     Daneel.Tween.Tweener.tweeners[tweener.id] = tweener
+    Daneel.Debug.StackTrace.EndFunction()
     return tweener
 end
 
@@ -190,9 +200,14 @@ end
 -- Should not be used after the tweener has been created.
 -- That's why it is not in the function reference.
 function Daneel.Tween.Tweener.Set(tweener, params)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.Set", tweener, params)
+    local errorHead = "Daneel.Tween.Tweener.Set(tweener, params) : "
+    Daneel.Debug.CheckArgType(tweener, "tweener", "Daneel.Tween.Tweener", errorHead)
+
     for key, value in pairs(params) do
         tweener[key] = value
     end
+    Daneel.Debug.StackTrace.EndFunction()
     return tweener
 end
 
@@ -200,22 +215,36 @@ end
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
 function Daneel.Tween.Tweener.Play(tweener)
     if tweener.isEnabled == false then return end
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.Play", tweener)
+    local errorHead = "Daneel.Tween.Tweener.Play(tweener) : "
+    Daneel.Debug.CheckArgType(tweener, "tweener", "Daneel.Tween.Tweener", errorHead)
+
     tweener.isPaused = false
     Daneel.Event.Fire(tweener, "OnPlay", tweener)
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Pause the tweener and send the OnPause event.
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
 function Daneel.Tween.Tweener.Pause(tweener)
     if tweener.isEnabled == false then return end
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.Pause", tweener)
+    local errorHead = "Daneel.Tween.Tweener.Pause(tweener) : "
+    Daneel.Debug.CheckArgType(tweener, "tweener", "Daneel.Tween.Tweener", errorHead)
+
     tweener.isPaused = true
     Daneel.Event.Fire(tweener, "OnPause", tweener)
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Completely restart the tweener.
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
 function Daneel.Tween.Tweener.Restart(tweener)
     if tweener.isEnabled == false then return end
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.Restart", tweener)
+    local errorHead = "Daneel.Tween.Tweener.Restart(tweener) : "
+    Daneel.Debug.CheckArgType(tweener, "tweener", "Daneel.Tween.Tweener", errorHead)
+
     tweener.elapsed = 0
     tweener.fullElapsed = 0
     tweener.completedLoops = 0
@@ -229,12 +258,17 @@ function Daneel.Tween.Tweener.Restart(tweener)
         SetTweenerProperty(tweener, startValue)
     end
     tweener.value = startValue
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Complete the tweener send the OnComple event.
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
 function Daneel.Tween.Tweener.Complete(tweener)
     if tweener.isEnabled == false or tweener.loops == -1 then return end
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.Complete", tweener)
+    local errorHead = "Daneel.Tween.Tweener.Complete(tweener) : "
+    Daneel.Debug.CheckArgType(tweener, "tweener", "Daneel.Tween.Tweener", errorHead)
+
     tweener.isCompleted = true
     local endValue = tweener.endValue
     if tweener.loopType == "yoyo" then
@@ -250,16 +284,21 @@ function Daneel.Tween.Tweener.Complete(tweener)
     end
     tweener.value = endValue
     Daneel.Event.Fire(tweener, "OnComplete", tweener)
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Destroy the tweener.
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
 function Daneel.Tween.Tweener.Destroy(tweener)
     if tweener.isEnabled == false then return end
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.Destroy", tweener)
+    local errorHead = "Daneel.Tween.Tweener.Destroy(tweener) : "
+    Daneel.Debug.CheckArgType(tweener, "tweener", "Daneel.Tween.Tweener", errorHead)
+
     tweener.isEnabled = false
     Daneel.Tween.Tweener.tweeners[tweener.id] = nil
+    Daneel.Debug.StackTrace.EndFunction()
 end
-
 
 --- Update the tweener's value based on the tweener's elapsed property.
 -- Send the OnUpdate event.
@@ -267,6 +306,10 @@ end
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
 function Daneel.Tween.Tweener.Update(tweener, deltaDuration) -- the deltaDuration argument is only used from the Tween.Update() function
     if tweener.isEnabled == false then return end
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.Update", tweener, deltaDuration)
+    local errorHead = "Daneel.Tween.Tweener.Update(tweener[, deltaDuration]) : "
+    Daneel.Debug.CheckArgType(tweener, "tweener", "Daneel.Tween.Tweener", errorHead)
+    Daneel.Debug.CheckArgType(deltaDuration, "deltaDuration", "number", errorHead)
 
     if Daneel.Tween.Ease[tweener.easeType] == nil then
         if DEBUG == true then
@@ -300,6 +343,7 @@ function Daneel.Tween.Tweener.Update(tweener, deltaDuration) -- the deltaDuratio
     tweener.value = value
 
     Daneel.Event.Fire(tweener, "OnUpdate", tweener)
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
