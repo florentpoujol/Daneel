@@ -38,10 +38,8 @@ function Daneel.GUI.Hud.New(gameObject)
     return hud
 end
 
-
---- Sets the position of the gameObject on screen, relative to its parent.
--- If the gameObject has no parent, it is actually parented to the HUDOrigin gameObject.
--- Which is at the top-left corner of the screen.
+--- Sets the position of the gameObject on screen.
+-- With the top-left corner of the screen as origin.
 -- @param hud (Daneel.GUI.Hud) The hud component.
 -- @param position (Vector2) The position as a Vector2.
 function Daneel.GUI.Hud.SetPosition(hud, position)
@@ -69,14 +67,16 @@ function Daneel.GUI.Hud.GetPosition(hud)
     local errorHead = "Daneel.GUI.Hud.GetPosition(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
     
-    local pos = hud.gameObject.transform.position - config.gui.hudOriginPosition
-    pos = pos * Daneel.GUI.pixelsToUnits
-    pos = Vector2.New(math.round(pos.x), math.round(-pos.y))
+    local position = hud.gameObject.transform.position - config.gui.hudOriginPosition
+    position = position * Daneel.GUI.pixelsToUnits
+    position = Vector2.New(math.round(position.x), math.round(-position.y))
     Daneel.Debug.StackTrace.EndFunction()
-    return pos
+    return position
 end
 
-
+--- Sets the local position (relative to its parent) of the gameObject on screen .
+-- @param hud (Daneel.GUI.Hud) The hud component.
+-- @param position (Vector2) The position as a Vector2.
 function Daneel.GUI.Hud.SetLocalPosition(hud, position)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.SetLocalPosition", hud, position)
     local errorHead = "Daneel.GUI.Hud.SetLocalPosition(hud, position) : "
@@ -96,6 +96,22 @@ function Daneel.GUI.Hud.SetLocalPosition(hud, position)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
+--- Get the local position (relative to its parent) of the gameObject on screen.
+-- @param hud (Daneel.GUI.Hud) The hud component.
+-- @return (Vector2) The position.
+function Daneel.GUI.Hud.GetLocalPosition(hud)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.GetLocalPosition", hud)
+    local errorHead = "Daneel.GUI.Hud.GetLocalPosition(hud) : "
+    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
+    
+    local parent = hud.gameObject.parent
+    if parent == nil then parent = config.gui.hudOriginGO end
+    local position = hud.gameObject.transform.position - parent.transform.position
+    position = position / Daneel.GUI.pixelsToUnits
+    position = Vector2.New(math.round(position.x), math.round(-position.y))
+    Daneel.Debug.StackTrace.EndFunction()
+    return position
+end
 
 --- Set the gameObject's layer.
 -- @param hud (Daneel.GUI.Hud) The hud component.
@@ -125,7 +141,6 @@ function Daneel.GUI.Hud.GetLayer(hud)
     Daneel.Debug.StackTrace.EndFunction()
     return layer
 end
-
 
 --- Set the huds's local layer.
 -- @param hud (Daneel.GUI.Hud) The hud component.
