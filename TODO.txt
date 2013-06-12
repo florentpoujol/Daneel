@@ -6,10 +6,7 @@ IDEAS
 
     - A voir avec TextRenderer > permettre de facilement sauter des lignes (avec :br:) ou définir un wordWrap
     - modelRenderer:SetDimension(Vector3) ou idem avec Vector2
-    - est-ce que LuaDoc permet d'avoir plusieurs doc pour la même fonction ? si on veut avoir plusieurs construteurs
 
-
-    -
 
     -----
     GUI
@@ -24,49 +21,8 @@ IDEAS
 
     -----
     TWEEN
-    
-    function Update qui met à jour la propriété, en fonction du elapsed ou de la value
-    appelée par Tween.Update() ou appelée à la main
 
-
-    Sequences
-        > simple stack de tweeners qui jouent les un après les autres
-        lorsque la sequence joue, elle prend le premier tween, le fait joue, lorsqu'il est complèté, il est supprimé de la liste puis la sequence prend le nouveau tweeners arrivé en tête de liste
-        > forcer isPaused à true, enpècher les loop infinies
-        > comment détecter la fin d'un tweener sans réécrire OnComplete ? : si le tweener a une propriété sequence, appel d'une fonction "PlayNext()"
-            
-
-        > timeline
-        les clés des tweeners sont un temps (temps, temps réel ou frame)
-        à chaque frame, on vérif si le temp existe comme clé puis on comence à jouer les tweener qui y snt stockés 
-
-        methods
-            Play
-            Pause
-            Restart > les tweeners ne doivent pas être supprimés lorsque terminé
-            Complete > est-ce que cela complete tous les tweeners ?
-            Destroy > loop sur ses tweeners pour les enlever de Daneel.Tween.Tweener.tweeners
-
-            Insert(time, tweener) > lorsque timeline
-
-        params
-            isEnabled
-            isPaused
-            hasStarted
-            isCompleted
-
-            delay
-
-            isTimeline
-            timeType > le time est un Daneel.Time.time, realTime ou frames
-            isRelative > les temps indiqué sont relatifs au temps de début de la sequence (un temps de 5 signifie 5sec après que delay soit terminé)
-
-            stackId > id dans la sequence, du tween qui joue actuellement
-
-            loops
-            completedLoops
-            loopType
-
+    -- quel est le type d'un tweener Tweener or Daneel.Tween.Tweener ?
 
 
 ==========

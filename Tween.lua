@@ -133,7 +133,7 @@ end
 
 local tweenerId = 0
 
---- Creates a new tweener via one of the tree allowed constructors :
+--- Creates a new tweener via one of the three allowed constructors :
 -- Tweener.New(target, property, endValue, duration[, params])
 -- Tweener.New(startValue, endValue, duration[, params])
 -- Tweener.New(params)
@@ -304,6 +304,7 @@ end
 -- Send the OnUpdate event.
 -- This allows the tweener to fast-forward to a certain time.
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
+-- @param deltaDuration [optional] (number) Only used internaly. If nil, the tweener's value will be updated based on the current value of tweener.elapsed.
 function Daneel.Tween.Tweener.Update(tweener, deltaDuration) -- the deltaDuration argument is only used from the Tween.Update() function
     if tweener.isEnabled == false then return end
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.Update", tweener, deltaDuration)
