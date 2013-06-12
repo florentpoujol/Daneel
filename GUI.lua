@@ -29,6 +29,7 @@ Daneel.GUI.Hud = {}
 function Daneel.GUI.Hud.New(gameObject)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.New", gameObject)
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", "Hud.New(gameObject) : ")
+
     local hud = setmetatable({ gameObject = gameObject }, Daneel.GUI.Hud)
     gameObject.hud = hud
     hud.position = Vector2.New(0)
@@ -48,8 +49,8 @@ function Daneel.GUI.Hud.SetPosition(hud, position)
     local errorHead = "Daneel.GUI.Hud.SetPosition(hud, position) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
     Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
-    hud._position = position
-    local newPosition = config.gui.hudOriginGO.transform.position + 
+
+    local newPosition = config.gui.hudOriginPosition + 
     Vector3:New(
         position.x * Daneel.GUI.pixelsToUnits,
         -position.y * Daneel.GUI.pixelsToUnits,
@@ -67,8 +68,12 @@ function Daneel.GUI.Hud.GetPosition(hud)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.GetPosition", hud)
     local errorHead = "Daneel.GUI.Hud.GetPosition(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
+    
+    local pos = hud.gameObject.transform.position - config.gui.hudOriginPosition
+    pos = pos * Daneel.GUI.pixelsToUnits
+    pos = Vector2.New(math.round(pos.x), math.round(-pos.y))
     Daneel.Debug.StackTrace.EndFunction()
-    return hud._position
+    return pos
 end
 
 
@@ -77,6 +82,7 @@ function Daneel.GUI.Hud.SetLocalPosition(hud, position)
     local errorHead = "Daneel.GUI.Hud.SetLocalPosition(hud, position) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
     Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
+
     local parent = hud.gameObject.parent
     if parent == nil then parent = config.gui.hudOriginGO end
     local newPosition = parent.transform.position + 

@@ -11,6 +11,7 @@ IDEAS
         Event.ListenRecuringEvent(time, TimedUpdate, object)
         Event.Ask
 
+
     -----
     GUI
 
@@ -21,7 +22,7 @@ IDEAS
     lorsque élément pas utilisé, il a opacity, scale etc au choix dans la config, donc
       out et in state  
 
-
+      
     -----
     TWEEN
 
@@ -76,6 +77,7 @@ A tester
 A modifier/ajouter dans la doc :
 
     - GUI
+        - hud local layer
     - tweener Get/SetTweenerProperty()
     - tweener fastforwarding with Update
 
