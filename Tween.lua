@@ -166,7 +166,7 @@ function Daneel.Tween.Tweener.New(target, property, endValue, duration, params)
         tweener.startValue = target
         tweener.endValue = property
         tweener.duration = endValue
-        if params ~= nil then
+        if duration ~= nil then
             tweener:Set(duration)
         end
     elseif property == nil then
