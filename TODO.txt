@@ -41,6 +41,8 @@ A implémenter
     - décommenter nouveaux component dans la config
 
 
+    - Utilities.ToPixel  ToUnit
+
     -----
     GUI
 
@@ -78,6 +80,7 @@ A modifier/ajouter dans la doc :
     - CS.Input.GetMousePosition/Delta qui retournent Vector2
     - virer timedupdate
 
+
 =========
 BUGS
 
@@ -92,3 +95,4 @@ LONG TERM modifs à faire (pour une v2 par exemple)
     - supprimer les arguments p_errorEnd
     - introduire un CheckArgValue, CheckOptionalArgValue
 - dans les commentaires LuaDoc, mettre le texte [optional] après le type de l'argument
+
