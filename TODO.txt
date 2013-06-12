@@ -7,6 +7,9 @@ IDEAS
     - A voir avec TextRenderer > permettre de facilement sauter des lignes (avec :br:) ou définir un wordWrap
     - modelRenderer:SetDimension(Vector3) ou idem avec Vector2
 
+    - système plus flexible que TimedUpdate afin qu'un object s'inscrive à un event récurent
+        Event.ListenRecuringEvent(time, TimedUpdate, object)
+        Event.Ask
 
     -----
     GUI
@@ -21,8 +24,6 @@ IDEAS
 
     -----
     TWEEN
-
-    -- quel est le type d'un tweener Tweener or Daneel.Tween.Tweener ?
 
 
 ==========
@@ -44,7 +45,6 @@ A implémenter
 
     - HUD
         - déterminer Position et localPosition à partir de la position effective
-        - ajouter le local layer
 
 
     ScriptedBehaviors pour ajouter les composants et les initialiser lorsque dans l'éditeur de scène :
@@ -70,7 +70,6 @@ A tester
 
     - exemples des events dans la doc
     - voir pourquoi certains eseType renvoient des erreurs
-    - CS.Input.GetMousePosition/Delta qui retournent Vector2
 
 
 ==========

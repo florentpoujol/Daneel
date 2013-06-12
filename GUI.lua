@@ -99,7 +99,8 @@ function Daneel.GUI.Hud.SetLayer(hud, layer)
     local errorHead = "Daneel.GUI.Hud.SetLayer(hud, layer) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
     Daneel.Debug.CheckArgType(layer, "layer", "number", errorHead)
-    local originLayer = config.gui.hudOriginGO.transform.position.z
+
+    local originLayer = config.gui.hudOriginPosition.z
     local currentPosition = hud.gameObject.transform.position
     hud.gameObject.transform.position = Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer)
     Daneel.Debug.StackTrace.EndFunction()
@@ -112,9 +113,10 @@ function Daneel.GUI.Hud.GetLayer(hud)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.GetLayer", hud)
     local errorHead = "Daneel.GUI.Hud.GetLyer(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
-    local originLayer = config.gui.hudOriginGO.transform.position.z
+
+    local originLayer = config.gui.hudOriginPosition.z
     local layer = originLayer - hud.gameObject.transform.position.z 
-    Daneel.Debug.EndFunction()
+    Daneel.Debug.StackTrace.EndFunction()
     return layer
 end
 
@@ -127,7 +129,10 @@ function Daneel.GUI.Hud.SetLocalLayer(hud, layer)
     local errorHead = "Daneel.GUI.Hud.SetLayer(hud, layer) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
     Daneel.Debug.CheckArgType(layer, "layer", "number", errorHead)
-    local originLayer = config.gui.hudOriginGO.transform.position.z
+
+    local parent = hud.gameObject.parent
+    if parent == nil then parent = config.gui.hudOriginGO end
+    local originLayer = parent.transform.position.z
     local currentPosition = hud.gameObject.transform.position
     hud.gameObject.transform.position = Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer)
     Daneel.Debug.StackTrace.EndFunction()
@@ -140,11 +145,15 @@ function Daneel.GUI.Hud.GetLocalLayer(hud)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.GetLayer", hud)
     local errorHead = "Daneel.GUI.Hud.GetLyer(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
-    local originLayer = config.gui.hudOriginGO.transform.position.z
+
+    local parent = hud.gameObject.parent
+    if parent == nil then parent = config.gui.hudOriginGO end
+    local originLayer = parent.transform.position.z
     local layer = originLayer - hud.gameObject.transform.position.z 
-    Daneel.Debug.EndFunction()
+    Daneel.Debug.StackTrace.EndFunction()
     return layer
 end
+
 
 ----------------------------------------------------------------------------------
 -- CheckBox
@@ -380,8 +389,8 @@ function Daneel.GUI.Slider.New(gameObject)
     slider.minValue = 0
     slider.maxValue = 100
     slider.length = 5
+    slider.startPosition = slider.gameObject.transform.position
     slider.value = "0%"
-    slider.startPosition = slider.gameObject.transform.localPosition
 
     Daneel.Debug.StackTrace.EndFunction()
     return slider
@@ -446,7 +455,7 @@ function Daneel.GUI.Slider.SetValue(slider, value)
     end
 
     local newPos = slider.startPosition + (length * percentageOfProgress)
-    slider.gameObject.transform.localPosition = newPos
+    slider.gameObject.transform.position = newPos
 
 
     Daneel.Event.Fire(slider, "OnUpdate")

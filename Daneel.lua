@@ -90,6 +90,7 @@ defaultConfig = {
 
         -- The gameObject that serve as origin for all GUI elements that are not in a Group, created at runtime
         hudOriginGO = nil,
+        hudOriginPosition = Vector3:New(0),
 
         textDefaultFontName = "GUITextFont",
 
@@ -1085,6 +1086,7 @@ function Daneel.Awake()
         0
     )
     -- the HUDOrigin is now at the top-left corner of the screen
+    config.gui.hudOriginPosition = config.gui.hudOriginGO.transform.position
 
     -- Tween
     Daneel.Tween.Ease = GetEasingEquations()
