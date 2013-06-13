@@ -13,8 +13,10 @@ end
 DANEEL_LOADED = false
 DEBUG = false
 
+config = {}
 
-defaultConfig = {
+function DaneelDefaultConfig()
+    return {
     -- List of the Scripts paths as values and optionally the script alias as the keys.
     -- Ie :
     -- "fully-qualified Script path"
@@ -59,6 +61,11 @@ defaultConfig = {
     ----------------------------------------------------------------------------------
 
     language = {
+        -- list of the languages supported by the game
+        languageNames = {
+            "english",
+        },
+
         -- Current language
         current = "english",
 
@@ -73,9 +80,6 @@ defaultConfig = {
         searchInDefault = true,
     },
 
-    -- List of the languages supported by the game.
-    -- Automatically filled at runtime with the languages names, based on the keys defined on the 'language' global variable
-    languageNames = {},
 
     ----------------------------------------------------------------------------------
 
@@ -180,10 +184,19 @@ defaultConfig = {
         Ray = Ray,
     },
     
-    daneelObjects = {},
+    daneelObjects = {
+            RaycastHit = RaycastHit,
+            Vector2 = Vector2,
+            ["Daneel.Tween.Tweener"] = Daneel.Tween.Tweener,
+        },
     daneelTypes = {},
 
-    daneelComponentObjects = {},
+    daneelComponentObjects = {
+            Hud = Daneel.GUI.Hud,
+            CheckBox = Daneel.GUI.CheckBox,
+            ProgressBar = Daneel.GUI.ProgressBar,
+            Slider = Daneel.GUI.Slider,
+        },
     daneelComponentTypes = {},
     
     userTypes = {},
@@ -203,23 +216,6 @@ defaultConfig = {
     -- List of the gameObjects that react to the mouse inputs
     mouseInteractiveGameObjects = {},
 }
-
--- for custom things we need to wait for them to exist 
-function DefaultConfig()
-    return {
-        daneelObjects = {
-            RaycastHit = RaycastHit,
-            Vector2 = Vector2,
-            ["Daneel.Tween.Tweener"] = Daneel.Tween.Tweener,
-        },
-
-        daneelComponentObjects = {
-            Hud = Daneel.GUI.Hud,
-            CheckBox = Daneel.GUI.CheckBox,
-            ProgressBar = Daneel.GUI.ProgressBar,
-            Slider = Daneel.GUI.Slider,
-        },
-    }
 end
 
 
@@ -840,7 +836,7 @@ function Daneel.Lang.Get(key, replacements)
 
     local keys = key:split(".")
     local language = currentLanguage
-    if keys[1]:isoneof(config.languageNames) then
+    if keys[1]:isoneof(config.language.languageNames) then
         language = table.remove(keys)
     end
     
@@ -911,7 +907,7 @@ local luaDocStop = ""
 
 -- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
-    config = table.deepmerge(defaultConfig, DefaultConfig(), config)
+    config = table.deepmerge(DaneelDefaultConfig(), DaneelConfig()) -- ajouter config à la fin ?
     DEBUG = config.debug.enableDebug
     if DEBUG == true and config.debug.enableStackTrace == true then
         SetNewError()
@@ -1021,9 +1017,11 @@ function Daneel.Awake()
 
 
     -- Languages
-    if languages ~= nil then
-        Daneel.Lang.lines = languages
-        config.languageNames = table.getkeys(languages)
+    for i, language in ipairs(config.language.languages) do
+        local functionName = "DaneelLanguage"..language:ucfirst()
+        if _G[functionName] ~= nil then
+            Daneel.Lang.lines[language] = _G[functionName]()
+        end
     end
 
 

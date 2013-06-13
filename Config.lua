@@ -1,5 +1,6 @@
 
-config = {
+function DaneelConfig()
+    return {
     -- List of the Scripts paths as values and optionally the script alias as the keys.
     -- Ie :
     -- "fully-qualified Script path"
@@ -43,6 +44,11 @@ config = {
     ----------------------------------------------------------------------------------
 
     language = {
+        -- list of the languages supported by the game
+        languageNames = {
+
+        },
+
         -- Current language
         current = "english",
 
@@ -114,6 +120,7 @@ config = {
         enableStackTrace = true,
     },
 }
+end
 
     
 --[[
