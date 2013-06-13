@@ -2,9 +2,9 @@
 setmetatable(GameObject, { __call = function(Object, ...) return Object.New(...) end })
 
 function GameObject.__tostring(gameObject)
-    -- returns something like "GameObject: 'MyName': 123456789"
+    -- returns something like "GameObject: 123456789: 'MyName'"
     local id = tostring(gameObject.inner):sub(3,20)
-    return "GameObject: '"..gameObject:GetName().."'"..id
+    return "GameObject: "..id..": '"..gameObject:GetName().."'"
 end
 
 -- Dynamic getters
@@ -174,12 +174,23 @@ end
 --- Alias of CraftStudio.FindGameObject(name).
 -- Get the first gameObject with the provided name.
 -- @param name (string) The gameObject name.
+-- @param errorIfGameObjectNotFound [optional default=false] (boolean) Throw an error if the gameObject was not found (instead of returning nil).
 -- @return (GameObject) The gameObject or nil if none is found.
-function GameObject.Get(name)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.Get", name)
-    Daneel.Debug.CheckArgType(name, "name", "string", "GameObject.Get(name) :")
+function GameObject.Get(name, errorIfGameObjectNotFound)
+    Daneel.Debug.StackTrace.BeginFunction("GameObject.Get", name, errorIfGameObjectNotFound)
+    if getmetatable(name) == GameObject then
+        Daneel.Debug.StackTrace.EndFunction()
+        return name
+    end
+    local errorHead = "GameObject.Get(name[, errorIfGameObjectNotFound]) : "
+    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
+    Daneel.Debug.CheckArgType(errorIfGameObjectNotFound, "errorIfGameObjectNotFound", "boolean", errorHead)
+    
     local gameObject = CraftStudio.FindGameObject(name)
-    Daneel.Debug.StackTrace.EndFunction("GameObject.Get", gameObject)
+    if gameObject == nil and errorIfGameObjectNotFound == true then
+        error(errorHead.."GameObject with name '"..name.."' was not found.")
+    end
+    Daneel.Debug.StackTrace.EndFunction()
     return gameObject
 end
 
@@ -515,7 +526,7 @@ function GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset, calledFro
         Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
         Daneel.Debug.CheckArgType(scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead)
     end
-    
+
     local script = scriptNameOrAsset
     if type(scriptNameOrAsset) == "string" then
         script = Asset.Get(scriptNameOrAsset, "Script")
