@@ -1028,7 +1028,7 @@ function Daneel.Awake()
 
 
     -- GUI
-    config.gui.hudCameraGO = GameObject.Get(config.gui.hudCameraName)
+    config.gui.hudCameraGO = GameObject.Get(config.gui.hudCameraName, true)
 
     -- setting pixelToUnits  
     config.gui.screenSize = CraftStudio.Screen.GetSize()

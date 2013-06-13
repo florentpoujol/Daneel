@@ -259,21 +259,15 @@ end
 
 --- Check if the ray intersect the specified gameObject.
 -- @param ray (Ray) The ray.
--- @param gameObject (string, GameObject) The gameObject instance or name.
+-- @param gameObjectNameOrInstance (string or GameObject) The gameObject instance or name.
 -- @return (RaycastHit) A raycastHit if there was a collision, or nil.
-function Ray.IntersectsGameObject(ray, gameObject)
-    Daneel.Debug.StackTrace.BeginFunction("Ray.IntersectsGameObject", ray, gameObject)
-    local errorHead = "Ray.IntersectsGameObject(ray, gameObject) : "
+function Ray.IntersectsGameObject(ray, gameObjectNameOrInstance)
+    Daneel.Debug.StackTrace.BeginFunction("Ray.IntersectsGameObject", ray, gameObjectNameOrInstance)
+    local errorHead = "Ray.IntersectsGameObject(ray, gameObjectNameOrInstance) : "
     Daneel.Debug.CheckArgType(ray, "ray", "Ray", errorHead)
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", {"string", "GameObject"}, errorHead)
-    if type(gameObject) == "string" then
-        local name = gameObject
-        gameObject = GameObject.Get(name)
-        if gameObject == nil then
-            error(errorHead.."Argument 'gameObject' : gameObject with name '"..name.."' was not found.")
-        end
-    end
-
+    Daneel.Debug.CheckArgType(gameObjectNameOrInstance, "gameObjectNameOrInstance", {"string", "GameObject"}, errorHead)
+    
+    local gameObject = GameObject.Get(gameObjectNameOrInstance, true)
     local distance = nil
     local normal = nil
     local hitBlockLocation = nil
@@ -378,13 +372,7 @@ function Scene.Append(sceneNameOrAsset, gameObjectNameOrInstance)
     Daneel.Debug.CheckOptionalArgType(gameObjectNameOrInstance, "gameObjectNameOrInstance", {"string", "GameObject"}, errorHead)
 
     local scene = Asset.Get(sceneNameOrAsset, "Scene", true)
-    local gameObject = gameObjectNameOrInstance
-    if type(gameObjectNameOrInstance) == "string" then
-        gameObject = GameObject.Get(name)
-        if gameObject == nil then
-            error(errorHead.."Argument 'gameObject' : gameObject with name '"..gameObjectNameOrInstance.."' was not found.")
-        end
-    end
+    local gameObject = GameObject.Get(gameObjectNameOrInstance, true)
     CraftStudio.AppendScene(scene, gameObject)
     Daneel.Debug.StackTrace.EndFunction("Scene.Append")
 end

@@ -206,19 +206,11 @@ function GameObject.SetParent(gameObject, parentNameOrInstance, keepLocalTransfo
     local errorHead = "GameObject.SetParent(gameObject, [parentNameOrInstance, keepLocalTransform]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     Daneel.Debug.CheckOptionalArgType(parentNameOrInstance, "parentNameOrInstance", {"string", "GameObject"}, errorHead)
-    Daneel.Debug.CheckOptionalArgType(keepLocalTransform, "keepLocalTransform", "boolean", errorHead)
-    if keepLocalTransform == nil then
-        keepLocalTransform = false
-    end
-    local parent = parentNameOrInstance
-    if type(parent) == "string" then
-        parent = GameObject.Get(parentNameOrInstance)
-        if parent == nil then
-            error(errorHead.."Argument 'parent' : Parent gameObject with name '"..parentNameOrInstance.."' was not found.")
-        end
-    end
+    keepLocalTransform = Daneel.Debug.CheckOptionalArgType(keepLocalTransform, "keepLocalTransform", "boolean", errorHead, false)
+
+    local parent = GameObject.Get(parentNameOrInstance, true)
     OriginalSetParent(gameObject, parent, keepLocalTransform)
-    Daneel.Debug.StackTrace.EndFunction("GameObject.SetParent")
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Alias of GameObject:FindChild().
