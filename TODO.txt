@@ -18,10 +18,10 @@ IDEAS
 
         CheckArgType() va toujours retourner l'erreur depuis Daneel.lua, mais on a le nom de la fonction impliquée
 
-    - Asset.Assert(model, "Model")
-        - retourne l'asset si s'en est un
-        - retourne l'asset correspondant au nom
-        - erreur si besoin
+        Debug.Beginfunction("function name", {
+            argName = argValue
+        })
+
 
     -----
     GUI

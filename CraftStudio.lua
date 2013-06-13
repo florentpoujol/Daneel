@@ -141,14 +141,7 @@ function ModelRenderer.SetModel(modelRenderer, modelNameOrAsset)
     Daneel.Debug.CheckArgType(modelRenderer, "modelRenderer", "ModelRenderer", errorHead)
     Daneel.Debug.CheckArgType(modelNameOrAsset, "modelNameOrAsset", {"string", "Model"}, errorHead)
 
-    local model = modelNameOrAsset
-    if type(modelNameOrAsset) == "string" then
-        model = Asset.Get(modelNameOrAsset, "Model")
-        if model == nil then
-            error(errorHead.."Argument 'modelNameOrAsset' : model with name '"..modelNameOrAsset.."' was not found.")
-        end
-    end
-
+    local model = Asset.Get(modelNameOrAsset, "Model", true)
     OriginalSetModel(modelRenderer, model)
     Daneel.Debug.StackTrace.EndFunction("ModelRenderer.SetModel")
 end
@@ -164,14 +157,7 @@ function ModelRenderer.SetAnimation(modelRenderer, animationNameOrAsset)
     Daneel.Debug.CheckArgType(modelRenderer, "modelRenderer", "ModelRenderer", errorHead)
     Daneel.Debug.CheckArgType(animationNameOrAsset, "animationNameOrAsset", {"string", "ModelAnimation"}, errorHead)
 
-    local animation = animationNameOrAsset
-    if type(animationNameOrAsset) == "string" then
-        animation = Asset.Get(animationNameOrAsset, "ModelAnimation")
-        if animation == nil then
-            error(errorHead.."Argument 'animationNameOrAsset' : animation with name '"..animationNameOrAsset.."' was not found.")
-        end
-    end
-
+    local animation = Asset.Get(animationNameOrAsset, "ModelAnimation", true)
     OriginalSetAnimation(modelRenderer, animation)
     Daneel.Debug.StackTrace.EndFunction("ModelRenderer.SetModelAnimation")
 end
@@ -192,18 +178,8 @@ function MapRenderer.SetMap(mapRenderer, mapNameOrAsset, keepTileSet)
     Daneel.Debug.CheckArgType(mapRenderer, "mapRenderer", "MapRenderer", errorHead)
     Daneel.Debug.CheckArgType(mapNameOrAsset, "mapNameOrAsset", {"string", "Map"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(keepTileSet, "keepTileSet", "boolean", errorHead)
-    if keepTileSet == nil then
-        keepTileSet = false
-    end
 
-    local map = mapNameOrAsset
-    if type(mapNameOrAsset) == "string" then
-        map = Asset.Get(mapNameOrAsset, "Map")
-        if map == nil then
-            error(errorHead.."Argument 'mapNameOrAsset' : map with name '"..mapNameOrAsset.."' was not found.")
-        end
-    end
-
+    local map = Asset.Get(mapNameOrAsset, "Map", true)
     if keepTileSet == true then
         OriginalSetMap(mapRenderer, map, true)
     else
@@ -223,14 +199,7 @@ function MapRenderer.SetTileSet(mapRenderer, tileSetNameOrAsset)
     Daneel.Debug.CheckArgType(mapRenderer, "mapRenderer", "MapRenderer", errorHead)
     Daneel.Debug.CheckArgType(tileSetNameOrAsset, "tileSetNameOrAsset", {"string", "TileSet"}, errorHead)
 
-    local tileSet = tileSetNameOrAsset
-    if type(tileSetNameOrAsset) == "string" then
-        tileSet = Asset.Get(tileSetNameOrAsset, "TileSet")
-        if tileSet == nil then
-            error(errorHead.."Argument 'tileSetNameOrAsset' : tileSet with name '"..tileSetNameOrAsset.."' was not found.")
-        end
-    end
-
+    local tileSet = Asset.Get(tileSetNameOrAsset, "TileSet", true)
     OriginalSetTileSet(mapRenderer, tileSet)
     Daneel.Debug.StackTrace.EndFunction("MapRenderer.SetTileSet")
 end
@@ -250,14 +219,7 @@ function TextRenderer.SetFont(textRenderer, fontNameOrAsset)
     Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
     Daneel.Debug.CheckArgType(fontNameOrAsset, "fontNameOrAsset", {"string", "Font"}, errorHead)
 
-    local font = fontNameOrAsset
-    if type(fontNameOrAsset) == "string" then
-        font = Asset.Get(fontNameOrAsset, "Font")
-        if font == nil then
-            error(errorHead.."Argument 'fontNameOrAsset' : font with name '"..fontNameOrAsset.."' was not found.")
-        end
-    end
-
+    local font = Asset.Get(fontNameOrAsset, "Font", true)
     OriginalSetFont(textRenderer, font)
     Daneel.Debug.StackTrace.EndFunction("TextRenderer.SetFont")
 end
@@ -407,14 +369,7 @@ function Scene.Load(sceneNameOrAsset)
     local errorHead = "Scene.Load(sceneNameOrAsset) : "
     Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
 
-    local scene = sceneNameOrAsset
-    if type(sceneNameOrAsset) == "string" then
-        scene = Asset.Get(sceneNameOrAsset, "Scene")
-        if scene == nil then
-            error(errorHead.."Argument 'sceneNameOrAsset' : scene with name '"..sceneNameOrAsset.."' was not found.")
-        end
-    end
-
+    local scene = Asset.Get(sceneNameOrAsset, "Scene", true)
     CraftStudio.LoadScene(scene)
     Daneel.Debug.StackTrace.EndFunction("Scene.Load")
 end
@@ -430,14 +385,7 @@ function Scene.Append(sceneNameOrAsset, gameObjectNameOrInstance)
     Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(gameObjectNameOrInstance, "gameObjectNameOrInstance", {"string", "GameObject"}, errorHead)
 
-    local scene = sceneNameOrAsset
-    if type(sceneNameOrAsset) == "string" then
-        scene = Asset.Get(sceneNameOrAsset, "Scene")
-        if scene == nil then
-            error(errorHead.."Argument 'sceneNameOrAsset' : scene with name '"..sceneNameOrAsset.."' was not found.")
-        end
-    end
-
+    local scene = Asset.Get(sceneNameOrAsset, "Scene", true)
     local gameObject = gameObjectNameOrInstance
     if type(gameObjectNameOrInstance) == "string" then
         gameObject = GameObject.Get(name)
@@ -445,7 +393,6 @@ function Scene.Append(sceneNameOrAsset, gameObjectNameOrInstance)
             error(errorHead.."Argument 'gameObject' : gameObject with name '"..gameObjectNameOrInstance.."' was not found.")
         end
     end
-
     CraftStudio.AppendScene(scene, gameObject)
     Daneel.Debug.StackTrace.EndFunction("Scene.Append")
 end
