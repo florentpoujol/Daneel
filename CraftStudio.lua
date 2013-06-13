@@ -232,25 +232,16 @@ setmetatable(Ray, { __call = function(Object, ...) return Object:New(...) end })
 
 --- Check the collision of the ray against the provided set of gameObject or if it is nil, against all castable gameObjects.
 -- @param ray (Ray) The ray.
--- @param gameObjects [optional] (table) The set of gameObjects to cast the ray against (or if nil, the castable gameObjects)
+-- @param gameObjects (table) The set of gameObjects to cast the ray against.
 -- @param sortByDistance [optional default=false] (boolean) Sort the raycastHit by increasing distance in the returned table.
 -- @return (table) A table of RaycastHits (will be empty if the ray didn't intersects anything).
 function Ray.Cast(ray, gameObjects, sortByDistance)
     Daneel.Debug.StackTrace.BeginFunction("Ray.Cast", ray, gameObjects)
-    local errorHead = "Ray.Cast(ray[, gameObjects]) : "
+    local errorHead = "Ray.Cast(ray, gameObjects) : "
     Daneel.Debug.CheckArgType(ray, "ray", "Ray", errorHead)
+    Daneel.Debug.CheckArgType(gameObjects, "gameObjects", "table", errorHead)
+    Daneel.Debug.CheckOptionalArgType(sortByDistance, "sortByDistance", "boolean", errorHead)
     
-    if gameObjects == nil then
-        gameObjects = config.castableGameObjects
-        sortByDistance = false
-    elseif type(gameObjects) == "boolean" then
-        sortByDistance = gameObjects
-        gameObjects = config.castableGameObjects
-    else
-        Daneel.Debug.CheckArgType(gameObjects, "gameObjects", "table", errorHead)
-        Daneel.Debug.CheckOptionalArgType(sortByDistance, "sortByDistance", "boolean", errorHead)
-    end
-
     local hits = table.new()
     for i, gameObject in ipairs(gameObjects) do
         local raycastHit = ray:IntersectsGameObject(gameObject)

@@ -30,7 +30,6 @@ defaultConfig = {
         "Daneel/Behaviors/DaneelBehavior",
         triggerScript = "Daneel/Behaviors/Trigger",
         "Daneel/Behaviors/TriggerableGameObject",
-        "Daneel/Behaviors/CastableGameObject",
         "Daneel/Behaviors/MouseInteractiveGameObject",
         "Daneel/Behaviors/MouseInteractiveCamera",
         "Daneel/Behaviors/CheckBox",
@@ -195,12 +194,7 @@ defaultConfig = {
 
 
     ----------------------------------------------------------------------------------
-
-    -- Rays
-    -- list of the gameObjects to cast the ray against by default by ray:Cast()
-    -- filled in the CastableGameObjects behavior
-    castableGameObjects = {},
-    
+   
     -- Triggers
     -- list of the gameObjects to check for proximity by the triggers
     -- filled in the TriggerableGameObject behavior
