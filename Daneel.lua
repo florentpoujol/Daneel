@@ -358,8 +358,11 @@ end
 -- @param argumentName (string) The argument name.
 -- @param expectedArgumentTypes (string) The expected argument type(s).
 -- @param p_errorHead [optional] (string) The beginning of the error message.
-function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, p_errorHead, p_errorEnd)
-    if argument == nil or DEBUG == false then return end
+-- @param defaultValue [optional] (mixed) The default value to return if 'argument' is nil.
+-- @return (mixed) The value of 'argument' if it is non-nil, or the value of 'defaultValue'.
+function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, p_errorHead, defaultValue)
+    if DEBUG == false then return end
+    if argument == nil then return defaultValue end
     local errorHead = "Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd) : "
     
     local argType = type(argumentName)
@@ -387,7 +390,7 @@ function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgum
     local luaArgType = type(argument)
     for i, expectedType in ipairs(expectedArgumentTypes) do
         if argType == expectedType or luaArgType == expectedType then
-            return
+            return argument
         end
     end
     error(p_errorHead.."Optional argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'.")

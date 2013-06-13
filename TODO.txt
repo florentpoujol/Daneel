@@ -11,6 +11,17 @@ IDEAS
         Event.ListenRecuringEvent(time, TimedUpdate, object)
         Event.Ask
 
+    - revoir l'utilisation de error(), print() et de la stacktrace
+        lorsque debug activé, la localisation des erreurs se trouve toujours dans dans Daneel
+
+        il faut que error() utiliser dans n'importe quel fichier puisse afficher la stacktrace > pas possible sans la réécrire
+
+        CheckArgType() va toujours retourner l'erreur depuis Daneel.lua, mais on a le nom de la fonction impliquée
+
+    - Asset.Assert(model, "Model")
+        - retourne l'asset si s'en est un
+        - retourne l'asset correspondant au nom
+        - erreur si besoin
 
     -----
     GUI
@@ -42,6 +53,8 @@ A implémenter
 
 
     - Utilities.ToPixel  ToUnit
+
+    - réintroduire Debug.Error() to print the stacktrace
 
     -----
     GUI
@@ -76,7 +89,7 @@ A modifier/ajouter dans la doc :
         - slider
     - tweener Get/SetTweenerProperty()
     - tweener fastforwarding with Update
-
+    - disable debug
     - CS.Input.GetMousePosition/Delta qui retournent Vector2
     - virer timedupdate
 
@@ -91,8 +104,7 @@ BUGS
 LONG TERM modifs à faire (pour une v2 par exemple)
 
 - DEBUG
-    - Check OptionalArgType retourne une valeur par default
-    - supprimer les arguments p_errorEnd
-    - introduire un CheckArgValue, CheckOptionalArgValue
+    - introduire un CheckArgValue, CheckOptionalArgValue > remplace CheckAssetType(), CheckComponentType()
+
 - dans les commentaires LuaDoc, mettre le texte [optional] après le type de l'argument
 
