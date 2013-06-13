@@ -16,6 +16,21 @@ end
 
 Daneel.GUI = {}
 
+-- used in ProgresBar.SetProgress()
+local function tounit(value)
+    if type(value) == "string" then
+        local length = #value
+        if value:endswith("px") then
+            value = tonumber(value:sub(0, length-2)) * Daneel.GUI.pixelsToUnits
+        elseif value:endswith("u") then
+            value = tonumber(value:sub(0, length-1))
+        else
+            value = tonumber(value)
+        end
+    end
+    return value
+end
+
 
 ----------------------------------------------------------------------------------
 -- Hud
@@ -340,49 +355,13 @@ function Daneel.GUI.ProgressBar.SetProgress(progressBar, progress)
     percentageOfProgress = (progress - minVal) / (maxVal - minVal)
     
     --
-    progressBar._progress = progress
-    
-    local minLength = progressBar.minLength
-    if type(minLength) == "string" then
-        local length = minLength:len()
-        if minLength:endswith("px") then
-            minLength = tonumber(minLength:sub(0, length-2)) * Daneel.GUI.pixelsToUnits
-        elseif minLength:endswith("u") then
-            minLength = tonumber(minLength:sub(0, length-1))
-        else
-            minLength = tonumber(minLength)
-        end
-        progressBar.minLength = minLength
-    end
+    progressBar.minLength = tounit(progressBar.minLength)
+    progressBar.maxLength = tounit(progressBar.maxLength)
+    progressBar.height = tounit(progressBar.height)
 
-    local maxLength = progressBar.maxLength
-    if type(maxLength) == "string" then
-        local length = maxLength:len()
-        if maxLength:endswith("px") then
-            maxLength = tonumber(maxLength:sub(0, length-2)) * Daneel.GUI.pixelsToUnits
-        elseif maxLength:endswith("u") then
-            maxLength = tonumber(maxLength:sub(0, length-1))
-        else
-            maxLength = tonumber(maxLength)
-        end
-        progressBar.maxLength = maxLength
-    end
-
-    local height = progressBar.height
-    if type(height) == "string" then
-        if height:endswith("px") then
-            height = tonumber(height:sub(0, #height-2)) * Daneel.GUI.pixelsToUnits
-        elseif height:endswith("u") then
-            height = tonumber(height:sub(0, #height-1))
-        else
-            height = tonumber(height)
-        end
-        progressBar.height = height
-    end
-
-    local newLength = (maxLength - minLength) * percentageOfProgress + minLength 
+    local newLength = (progressBar.maxLength - progressBar.minLength) * percentageOfProgress + progressBar.minLength 
     local currentScale = progressBar.gameObject.transform.localScale
-    progressBar.gameObject.transform.localScale = Vector3:New(newLength, height, currentScale.z)
+    progressBar.gameObject.transform.localScale = Vector3:New(newLength, progressBar.height, currentScale.z)
     -- newLength = scale only because the base size of the model is of one unit at a scale of one
 
     Daneel.Event.Fire(progressBar, "OnUpdate")
@@ -472,8 +451,6 @@ function Daneel.GUI.Slider.SetValue(slider, value)
     end
     slider._value = value
 
-
-    -- now progress is a number and should be a value between minVal and maxVal
     -- now value is a number and should be a value between minVal and maxVal
     local oldValue = value
     value = math.clamp(value, minVal, maxVal)
@@ -481,29 +458,16 @@ function Daneel.GUI.Slider.SetValue(slider, value)
         print(errorHead.." WARNING : progress with value '"..oldValue.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
     end
     percentageOfProgress = (value - minVal) / (maxVal - minVal)
-
-
+    
     -- update the actual position
-    local length = slider.length
-    if type(length) == "string" then
-        if length:endswith("px") then
-            length = tonumber(length:sub(0, #length-2)) * Daneel.GUI.pixelsToUnits
-        elseif length:endswith("u") then
-            length = tonumber(length:sub(0, #length-1))
-        else
-            length = tonumber(length)
-        end
-        slider.length = length
-    end
-
-    length = Vector3:New(length)
+    slider.length = tounit(slider.length)
+    local length = Vector3:New(slider.length)
     if slider.gameObject.hud ~= nil then
         length.z = 0
     end
 
     local newPos = slider.startPosition + (length * percentageOfProgress)
     slider.gameObject.transform.position = newPos
-
 
     Daneel.Event.Fire(slider, "OnUpdate")
     Daneel.Debug.StackTrace.EndFunction()
