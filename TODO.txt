@@ -33,18 +33,6 @@ IDEAS
         et fait appeler Debug.Check.. en fonction des valeurs trouvées
 
 
-    - système de tags/layer pour les gameObjects
-        gameObject:AddTag()
-        gameObject:GetTag()
-        gameObject:RemoveTag()
-        gameObject:HasTag()
-
-        Les GO ajoutés à un tag sont aussi référencés dans GameObject.tags[tag] = { GO }
-        Scriptedbehavior Tag 
-
-        remplace list de MouseOverableGO et Triggerable
-
-
     -----
     GUI
 
@@ -76,6 +64,8 @@ A implémenter
 
 
     faire en sorte que table.removevalue() alter la table fournie et retourne la valeur supprimée
+    faire en sorte que table.merger et deepmerge   n'ajoutent pas une valeur lorsque sa clé est un int et que la valeur existe déjà
+    faire en sorte qu'un GameObject étant détruit se retire tous ses tags
 
     -----
     GUI
@@ -101,6 +91,8 @@ A tester
     - exemples des events dans la doc
     - voir pourquoi certains eseType renvoient des erreurs
 
+    - quand un GO est visible de deux camera, empècher MouseIputs d'envoyer deuxfois les event si es deux caméra ont le script
+
 
 ==========
 A modifier/ajouter dans la doc :
@@ -108,15 +100,6 @@ A modifier/ajouter dans la doc :
     - GUI
         - hud local layer / local position
         - slider
-    - tweener Get/SetTweenerProperty()
-    - tweener fastforwarding with Update
-    - disable debug
-    - CS.Input.GetMousePosition/Delta qui retournent Vector2 + Sreen.GetSize()
-    - virer timedupdate
-    - virer notion de castable gameObject
-    - nouvelle façon de géré les languages
-    - nouvelle façon de gérer la cnfig
-    - gameObject tags
 
 
 =========

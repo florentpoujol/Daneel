@@ -236,8 +236,8 @@ setmetatable(Ray, { __call = function(Object, ...) return Object:New(...) end })
 -- @param sortByDistance [optional default=false] (boolean) Sort the raycastHit by increasing distance in the returned table.
 -- @return (table) A table of RaycastHits (will be empty if the ray didn't intersects anything).
 function Ray.Cast(ray, gameObjects, sortByDistance)
-    Daneel.Debug.StackTrace.BeginFunction("Ray.Cast", ray, gameObjects)
-    local errorHead = "Ray.Cast(ray, gameObjects) : "
+    Daneel.Debug.StackTrace.BeginFunction("Ray.Cast", ray, gameObjects, sortByDistance)
+    local errorHead = "Ray.Cast(ray, gameObjects[, sortByDistance]) : "
     Daneel.Debug.CheckArgType(ray, "ray", "Ray", errorHead)
     Daneel.Debug.CheckArgType(gameObjects, "gameObjects", "table", errorHead)
     Daneel.Debug.CheckOptionalArgType(sortByDistance, "sortByDistance", "boolean", errorHead)
