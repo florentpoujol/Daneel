@@ -524,13 +524,19 @@ function Daneel.Debug.GetValueFromName(name)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.GetValueFromName", name)
     local errorHead = "Daneel.Debug.GetValueFromName(name) : "
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
+    local value = nil
     if name:find(".") == nil then
+        if Daneel.Debug.GlobalExists(name) == true then
+            value = _G[name]
+        end
         Daneel.Debug.StackTrace.EndFunction()
-        return _G[name]
+        return value
     else
         local subNames = name:split(".")
         local varName = table.remove(subNames, 1)
-        local value = _G[varName]
+        if Daneel.Debug.GlobalExists(varName) == true then
+            value = _G[varName]
+        end
         if value == nil then
             if DEBUG == true then
                 print("WARNING : "..errorHead.." : variable '"..varName.."' (from provided name '"..name.."' ) does not exists. Returning nil.")
@@ -553,6 +559,25 @@ function Daneel.Debug.GetValueFromName(name)
         Daneel.Debug.StackTrace.EndFunction()
         return value
     end
+end
+
+--- Tell wether the provided global variable name exists (is non-nil).
+-- Only works for first-level global variables.
+-- Since CraftStudio uses Strict.lua, you can not write (variable == nil), nor (_G[variable] == nil).
+-- @param name (string) The variable name.
+-- @return (boolean) True if it exists, false otherwise.
+function Daneel.Debug.GlobalExists(name)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.GlobalExists", name)
+    Daneel.Debug.CheckArgType(name, "name", "string", "Daneel.Debug.GlobalExists(name) : ")
+    local exists = false
+    for key, value in pairs(_G) do
+        if key == name then
+            exists = true
+            break
+        end
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+    return exists
 end
 
 
@@ -901,6 +926,7 @@ Daneel.Time = {
 }
 -- see below in Daneel.Update()
 
+
 ----------------------------------------------------------------------------------
 -- Runtime
 local luaDocStop = ""
@@ -908,6 +934,8 @@ local luaDocStop = ""
 -- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
     config = table.deepmerge(DaneelDefaultConfig(), DaneelConfig()) -- ajouter config à la fin ?
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Awake")
+    
     DEBUG = config.debug.enableDebug
     if DEBUG == true and config.debug.enableStackTrace == true then
         SetNewError()
@@ -1017,9 +1045,9 @@ function Daneel.Awake()
 
 
     -- Languages
-    for i, language in ipairs(config.language.languages) do
+    for i, language in ipairs(config.language.languageNames) do
         local functionName = "DaneelLanguage"..language:ucfirst()
-        if _G[functionName] ~= nil then
+        if Daneel.Debug.GlobalExists(functionName) == true then
             Daneel.Lang.lines[language] = _G[functionName]()
         end
     end
