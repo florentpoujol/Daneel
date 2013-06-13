@@ -64,7 +64,6 @@ A implémenter
 
     - Utilities.ToPixel  ToUnit
 
-    - réintroduire Debug.Error() to print the stacktrace
 
     -----
     GUI
@@ -89,6 +88,7 @@ A tester
 
     - exemples des events dans la doc
     - voir pourquoi certains eseType renvoient des erreurs
+    - GetValueFromName()
 
 
 ==========
@@ -100,9 +100,11 @@ A modifier/ajouter dans la doc :
     - tweener Get/SetTweenerProperty()
     - tweener fastforwarding with Update
     - disable debug
-    - CS.Input.GetMousePosition/Delta qui retournent Vector2
+    - CS.Input.GetMousePosition/Delta qui retournent Vector2 + Sreen.GetSize()
     - virer timedupdate
     - virer notion de castable gameObject
+    - nouvelle façon de géré les languages
+    - nouvelle façon de gérer la cnfig
 
 =========
 BUGS

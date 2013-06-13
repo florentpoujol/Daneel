@@ -403,6 +403,17 @@ function CraftStudio.Input.GetMouseDelta()
     return vector
 end
 
+local OriginalGetSize = CraftStudio.Screen.GetSize
+
+--- Return the size of the screen, in pixels.
+-- @return (Vector2) The screen's size.
+function CraftStudio.Screen.GetSize()
+    Daneel.Debug.StackTrace.BeginFunction("CraftStudio.Screen.GetSize")
+    local vector = setmetatable(OriginalGetSize(), Vector2)
+    Daneel.Debug.StackTrace.EndFunction()
+    return vector
+end
+
 
 ----------------------------------------------------------------------------------
 
