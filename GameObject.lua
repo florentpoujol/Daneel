@@ -600,7 +600,7 @@ function GameObject.AddTags(gameObject, tags)
 end
 
 --- Remove the provided tag(s) from the provided gameObject.
--- If the 'tags' argument is not provided, 
+-- If the 'tags' argument is not provided, all tags of the gameObject will be removed.
 -- @param gameObject (GameObject) The gameObject.
 -- @param tags [optional] (string or table) One or several tags (as a string or table of strings).
 function GameObject.RemoveTags(gameObject, tags)

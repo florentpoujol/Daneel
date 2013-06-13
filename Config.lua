@@ -12,14 +12,7 @@ function DaneelConfig()
     -- * Implements Behavior:DaneelAwake(). It is called when Daneel has just loaded, even on scripts that are not ScriptedBehaviors
     -- * If you defined aliases, dynamically access the ScriptedBehavior on the gameObject via its alias
     scriptPaths = {
-        "Daneel/Behaviors/DaneelBehavior",
-        triggerScript = "Daneel/Behaviors/Trigger",
-        "Daneel/Behaviors/TriggerableGameObject",
-        "Daneel/Behaviors/CastableGameObject",
-        "Daneel/Behaviors/MouseInteractiveGameObject",
-        "Daneel/Behaviors/MouseInteractiveCamera",
-        "Daneel/Behaviors/CheckBox",
-        "Daneel/Behaviors/ProgressBar",
+
     },
 
 

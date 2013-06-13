@@ -207,9 +207,8 @@ function Daneel.GUI.CheckBox.New(gameObject)
     local checkBox = setmetatable({ gameObject = gameObject }, Daneel.GUI.CheckBox)
     gameObject.checkBox = checkBox
 
-    if not table.containsvalue(config.mouseInteractiveGameObjects, gameObject) then
-        table.insert(config.mouseInteractiveGameObjects, gameObject)
-    end
+    gameObject:AddTags("mouseInteractive")
+
     if gameObject.textRenderer == nil then
         -- "wait" for the TextRenderer to be added
         checkBox.OnNewComponent = function(newComponent)
@@ -223,7 +222,6 @@ function Daneel.GUI.CheckBox.New(gameObject)
     end
     
     checkBox:Check(config.gui.checkBoxDefaultState)
-
     Daneel.Debug.StackTrace.EndFunction()
     return checkBox
 end
@@ -408,9 +406,7 @@ function Daneel.GUI.Slider.New(gameObject)
     local slider = setmetatable({ gameObject = gameObject }, Daneel.GUI.Slider)
     gameObject.slider = slider
 
-    if not table.containsvalue(config.mouseInteractiveGameObjects, gameObject) then
-        table.insert(config.mouseInteractiveGameObjects, gameObject)
-    end
+    gameObject:AddTags("mouseInteractive")
 
     slider.minValue = 0
     slider.maxValue = 100
