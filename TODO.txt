@@ -19,8 +19,18 @@ IDEAS
         CheckArgType() va toujours retourner l'erreur depuis Daneel.lua, mais on a le nom de la fonction impliquée
 
         Debug.Beginfunction("function name", {
-            argName = argValue
+            {
+                name = "argumentName",
+                value = argValue,
+                expectedType = Type, > appel CheckArgType
+                expectedValue = Values, > appel auto CheckValue ou checkDefault Value
+                defaultValue = "machin" > si expectedType or Value sont définits, fait appeler la version "optional" des fonctions
+            },
+
+            minimun info = argValue
         })
+        > cette fonction enregistre la stacktrace
+        et fait appeler Debug.Check.. en fonction des valeurs trouvées
 
 
     -----

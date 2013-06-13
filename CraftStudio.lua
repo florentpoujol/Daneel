@@ -230,7 +230,6 @@ end
 
 setmetatable(Ray, { __call = function(Object, ...) return Object:New(...) end })
 
-
 --- Check the collision of the ray against the provided set of gameObject or if it is nil, against all castable gameObjects.
 -- @param ray (Ray) The ray.
 -- @param gameObjects [optional] (table) The set of gameObjects to cast the ray against (or if nil, the castable gameObjects)
@@ -267,8 +266,6 @@ function Ray.Cast(ray, gameObjects, sortByDistance)
     return hits
 end
 
-
-
 --- Check if the ray intersect the specified gameObject.
 -- @param ray (Ray) The ray.
 -- @param gameObject (string, GameObject) The gameObject instance or name.
@@ -295,11 +292,16 @@ function Ray.IntersectsGameObject(ray, gameObject)
     if component ~= nil then
         distance, normal = ray:IntersectsModelRenderer(component)
     end
-
     if distance == nil then
         component = gameObject:GetComponent("MapRenderer")
         if component ~= nil then
             distance, normal, hitBlockLocation, adjacentBlockLocation = ray:IntersectsMapRenderer(component)
+        end
+    end
+    if distance == nil then
+        component = gameObject:GetComponent("TextRenderer")
+        if component ~= nil then
+            distance, normal, hitBlockLocation, adjacentBlockLocation = ray:IntersectsTextRenderer(component)
         end
     end
 
@@ -316,7 +318,6 @@ end
 
 ----------------------------------------------------------------------------------
 -- RaycastHit
-
 
 RaycastHit = {}
 RaycastHit.__index = RaycastHit
