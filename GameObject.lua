@@ -83,13 +83,8 @@ function GameObject.NewFromScene(sceneNameOrAsset, params)
     local errorHead = "GameObject.NewFromScene(sceneNameOrAsset[, params]) : "
     Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
-    local scene = sceneNameOrAsset
-    if type(sceneNameOrAsset) == "string" then
-        scene = Asset.Get(sceneNameOrAsset, "Scene")
-        if scene == nil then
-            error(errorHead.."Argument 'scene' : Scene asset with name '"..sceneNameOrAsset.."' was not found.")
-        end
-    end
+    
+    local scene = Asset.Get(sceneNameOrAsset, "Scene", true)
     local parentGameObject = CraftStudio.Instantiate("NewFromScene", scene)
     local gameObject = parentGameObject.children[1]
     gameObject:SetParent(nil)
@@ -113,19 +108,11 @@ function GameObject.Instantiate(gameObjectName, sceneNameOrAsset, params)
     Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
-    local scene = sceneNameOrAsset
-    if type(sceneNameOrAsset) == "string" then
-        scene = Asset.Get(sceneNameOrAsset, "Scene")
-        if scene == nil then
-            error(errorHead.."Argument 'scene' : Scene asset with name '"..sceneNameOrAsset.."' was not found.")
-        end
-    end
-    
+    local scene = Asset.Get(sceneNameOrAsset, "Scene", true)   
     local gameObject = CraftStudio.Instantiate(gameObjectName, scene)
     if params ~= nil then
         gameObject:Set(params)
     end
-
     Daneel.Debug.StackTrace.EndFunction("GameObject.Instantiate", gameObject)
     return gameObject
 end
@@ -235,6 +222,7 @@ function GameObject.GetChild(gameObject, name, recursive)
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(recursive, "recursive", "boolean", errorHead)
+    
     local child = gameObject:FindChild(name, recursive)
     Daneel.Debug.StackTrace.EndFunction("GameObject.GetChild", child)
     return child
@@ -255,13 +243,10 @@ function GameObject.GetChildren(gameObject, recursive, includeSelf)
     Daneel.Debug.CheckOptionalArgType(includeSelf, "includeSelf", "boolean", errorHead)
     
     local allChildren = table.new()
-    
     if includeSelf == true then
         allChildren:insert(gameObject)
     end
-
     local selfChildren = OriginalGetChildren(gameObject)
-    
     if recursive == true then
         -- get the rest of the children
         for i, child in ipairs(selfChildren) do
@@ -270,7 +255,6 @@ function GameObject.GetChildren(gameObject, recursive, includeSelf)
     else
         allChildren = allChildren:merge(selfChildren)
     end
-
     Daneel.Debug.StackTrace.EndFunction("GameObject.GetChildren", allChildren)
     return allChildren
 end
@@ -289,6 +273,7 @@ function GameObject.SendMessage(gameObject, functionName, data)
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(data, "data", "table", errorHead)
+    
     OriginalSendMessage(gameObject, functionName, data)
     Daneel.Debug.StackTrace.EndFunction("GameObject.SendMessage")
 end
@@ -305,6 +290,7 @@ function GameObject.BroadcastMessage(gameObject, functionName, data)
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(data, "data", "table", errorHead)
+    
     local allGos = gameObject:GetChildren(true, true) -- the gameObject + all of its children
     for i, go in ipairs(allGos) do
         go:SendMessage(functionName, data)
@@ -338,14 +324,7 @@ function GameObject.AddComponent(gameObject, componentType, params, scriptedBeha
     -- ScriptedBehavior
     if componentType == "ScriptedBehavior" then
         Daneel.Debug.CheckArgType(params, "params", {"string", "Script"}, errorHead)
-        local script = params
-        if type(script) == "string" then
-            script = Asset.Get(script, "Script")
-            if script == nil then
-                error(errorHead.."Argument 'params' : Script asset with name '"..params.."' was not found.")
-            end
-        end
-
+        local script = Asset.Get(params, "Script", true)
         Daneel.Debug.CheckOptionalArgType(scriptedBehaviorParams, "scriptedBehaviorParams", "table", errorHead)
         params = scriptedBehaviorParams
         component = gameObject:CreateScriptedBehavior(script)
@@ -378,6 +357,7 @@ function GameObject.AddScriptedBehavior(gameObject, scriptNameOrAsset, params)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.AddScriptedBehavior", gameObject, scriptNameOrAsset, params)
     local errorHead = "GameObject.AddScriptedBehavior(gameObject, scriptNameOrAsset[, params]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+    
     local component = gameObject:AddComponent("ScriptedBehavior", scriptNameOrAsset, params)
     Daneel.Debug.StackTrace.EndFunction("GameObject.AddScriptedBehavior", component)
     return component
@@ -407,11 +387,11 @@ function GameObject.AddCamera(gameObject, params) end
 -- @return (Physics) The component.
 function GameObject.AddPhysics(gameObject, params) end
 
---- Add a FontRenderer component to the gameObject and optionally initialize it.
+--- Add a TextRenderer component to the gameObject and optionally initialize it.
 -- @param gameObject (GameObject) The gameObject.
 -- @param params [optional] (table) A table of parameters to initialize the new component with.
--- @return (FontRenderer) The component.
-function GameObject.AddFontRenderer(gameObject, params) end
+-- @return (TextRenderer) The component.
+function GameObject.AddTextRenderer(gameObject, params) end
 
 --- Add a Hud component to the gameObject and optionally initialize it.
 -- @param gameObject (GameObject) The gameObject.
@@ -460,14 +440,7 @@ function GameObject.SetComponent(gameObject, componentType, params, scriptedBeha
     -- ScriptedBehavior
     if componentType == "ScriptedBehavior" then
         Daneel.Debug.CheckArgType(params, "params", {"string", "Script"}, errorHead)
-        local script = params
-        if type(script) == "string" then
-            script = Asset.Get(script, "Script")
-            if script == nil then
-                error(errorHead.."Argument 'params' : Script asset with name '"..params.."' was not found.")
-            end
-        end
-
+        local script = Asset.Get(params, "Script")
         Daneel.Debug.CheckArgType(scriptedBehaviorParams, "scriptedBehaviorParams", "table", errorHead)
         params = scriptedBehaviorParams
         component = gameObject:GetScriptedBehavior(script)
@@ -495,6 +468,7 @@ function GameObject.SetScriptedBehavior(gameObject, scriptNameOrAsset, params)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.SetScriptedBehavior", gameObject, scriptNameOrAsset, params)
     local errorHead = "GameObject.SetScriptedBehavior(gameObject, scriptNameOrAsset, params) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+    
     local component = gameObject:SetComponent("ScriptedBehavior", scriptNameOrAsset, params)
     Daneel.Debug.StackTrace.EndFunction("GameObject.SetScriptedBehavior")
 end
@@ -515,6 +489,7 @@ function GameObject.GetComponent(gameObject, componentType, scriptNameOrAsset)
     local errorHead = "GameObject.GetComponent(gameObject, componentType[, scriptNameOrAsset]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     componentType = Daneel.Debug.CheckComponentType(componentType)
+    
     local component = nil
     if componentType == "ScriptedBehavior" then
         Daneel.Debug.CheckArgType(scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead)
@@ -540,6 +515,7 @@ function GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset, calledFro
         Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
         Daneel.Debug.CheckArgType(scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead)
     end
+    
     local script = scriptNameOrAsset
     if type(scriptNameOrAsset) == "string" then
         script = Asset.Get(scriptNameOrAsset, "Script")

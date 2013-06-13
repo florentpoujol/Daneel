@@ -102,7 +102,7 @@ A modifier/ajouter dans la doc :
     - disable debug
     - CS.Input.GetMousePosition/Delta qui retournent Vector2
     - virer timedupdate
-
+    - virer notion de castable gameObject
 
 =========
 BUGS
