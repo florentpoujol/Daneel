@@ -318,10 +318,8 @@ Daneel.Debug = {}
 -- @param argumentName (string) The argument name.
 -- @param expectedArgumentTypes (string or table) The expected argument type(s).
 -- @param p_errorHead [optional] (string) The beginning of the error message.
--- @param p_errorEnd [optional] (string) The end of the error message.
-function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes, p_errorHead, p_errorEnd)
+function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes, p_errorHead)
     if DEBUG == false then return end
-
     local errorHead = "Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes[, errorHead, errorEnd]) : "
     
     local argType = type(argumentName)
@@ -333,7 +331,6 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
     if argType ~= "string" and argType ~= "table" then
         error(errorHead.."Argument 'expectedArgumentTypes' is of type '"..argType.."' with value '"..tostring(expectedArgumentTypes).."' instead of 'string' or 'table'.")
     end
-
     if argType == "string" then
         expectedArgumentTypes = {expectedArgumentTypes}
     elseif #expectedArgumentTypes <= 0 then
@@ -344,17 +341,8 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
     if argType ~= "nil" and argType ~= "string" then
         error(errorHead.."Argument 'p_errorHead' is of type '"..argType.."' with value '"..tostring(p_errorHead).."' instead of 'string'.")
     end
-
     if p_errorHead == nil then p_errorHead = "" end
 
-    argType = type(p_errorEnd)
-    if argType ~= "nil" and argType ~= "string" then
-        error(errorHead.."Argument 'p_errorEnd' is of type '"..argType.."' with value '"..tostring(p_errorEnd).."' instead of 'string'.")
-    end
-
-    if p_errorEnd == nil then p_errorEnd = "" end
-
-    --
     argType = Daneel.Debug.GetType(argument)
     local luaArgType = type(argument) -- any object (that are tables) will now pass the test even when Daneel.Debug.GetType(argument) does not return "table" 
     for i, expectedType in ipairs(expectedArgumentTypes) do
@@ -362,8 +350,7 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
             return
         end
     end
-    
-    error(p_errorHead.."Argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..p_errorEnd)
+    error(p_errorHead.."Argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'.")
 end
 
 --- If the provided argument is not nil, check the provided argument's type against the provided type(s) and display error if they don't match.
@@ -371,12 +358,8 @@ end
 -- @param argumentName (string) The argument name.
 -- @param expectedArgumentTypes (string) The expected argument type(s).
 -- @param p_errorHead [optional] (string) The beginning of the error message.
--- @param p_errorEnd [optional] (string) The end of the error message.
 function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, p_errorHead, p_errorEnd)
-    if argument == nil or DEBUG == false then
-        return
-    end
-
+    if argument == nil or DEBUG == false then return end
     local errorHead = "Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd) : "
     
     local argType = type(argumentName)
@@ -388,7 +371,6 @@ function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgum
     if argType ~= "string" and argType ~= "table" then
         error(errorHead.."Argument 'expectedArgumentTypes' is of type '"..argType.."' with value '"..tostring(expectedArgumentTypes).."' instead of 'string' or 'table'.")
     end
-
     if argType == "string" then
         expectedArgumentTypes = {expectedArgumentTypes}
     elseif #expectedArgumentTypes <= 0 then
@@ -399,17 +381,8 @@ function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgum
     if argType ~= "nil" and argType ~= "string" then
         error(errorHead.."Argument 'p_errorHead' is of type '"..argType.."' with value '"..tostring(p_errorHead).."' instead of 'string'.")
     end
-
     if p_errorHead == nil then errorHead = "" end
 
-    argType = type(p_errorEnd)
-    if argType ~= "nil" and argType ~= "string" then
-        error(errorHead.."Argument 'p_errorEnd' is of type '"..argType.."' with value '"..tostring(p_errorEnd).."' instead of 'string'.")
-    end
-
-    if p_errorEnd == nil then p_errorEnd = "" end
-
-    --
     argType = Daneel.Debug.GetType(argument)
     local luaArgType = type(argument)
     for i, expectedType in ipairs(expectedArgumentTypes) do
@@ -417,8 +390,7 @@ function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgum
             return
         end
     end
-    
-    error(p_errorHead.."Optional argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'. "..p_errorEnd)
+    error(p_errorHead.."Optional argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'.")
 end
 
 --- Return the Lua or CraftStudio type of the provided argument.
