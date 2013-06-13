@@ -283,12 +283,12 @@ function Ray.IntersectsGameObject(ray, gameObjectNameOrInstance)
             distance, normal, hitBlockLocation, adjacentBlockLocation = ray:IntersectsMapRenderer(component)
         end
     end
-    if distance == nil then
+    --[[if distance == nil then
         component = gameObject:GetComponent("TextRenderer")
         if component ~= nil then
             distance, normal, hitBlockLocation, adjacentBlockLocation = ray:IntersectsTextRenderer(component)
         end
-    end
+    end]]
 
     if distance == nil then
         Daneel.Debug.StackTrace.EndFunction()

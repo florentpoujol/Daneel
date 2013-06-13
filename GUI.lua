@@ -458,7 +458,7 @@ function Daneel.GUI.Slider.SetValue(slider, value)
         print(errorHead.." WARNING : progress with value '"..oldValue.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
     end
     percentageOfProgress = (value - minVal) / (maxVal - minVal)
-    
+
     -- update the actual position
     slider.length = tounit(slider.length)
     local length = Vector3:New(slider.length)
@@ -634,5 +634,3 @@ end
 function Vector2.GetLength(vector)
     return math.sqrt(vector.x^2 + vector.y^2)
 end
-
-

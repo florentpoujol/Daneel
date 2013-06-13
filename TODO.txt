@@ -33,6 +33,18 @@ IDEAS
         et fait appeler Debug.Check.. en fonction des valeurs trouvées
 
 
+    - système de tags/layer pour les gameObjects
+        gameObject:AddTag()
+        gameObject:GetTag()
+        gameObject:RemoveTag()
+        gameObject:HasTag()
+
+        Les GO ajoutés à un tag sont aussi référencés dans GameObject.tags[tag] = { GO }
+        Scriptedbehavior Tag 
+
+        remplace list de MouseOverableGO et Triggerable
+
+
     -----
     GUI
 
@@ -60,10 +72,10 @@ A implémenter
     - enlever l'orthographic scale en dure dans Daneel.Awake()
     - enlever commentaire autour de TextRenderer.SetFont()
     - décommenter nouveaux component dans la config
+    - commentaire dans ray:IntersectsGameObject()
 
 
-    - Utilities.ToPixel  ToUnit
-
+    faire en sorte que table.removevalue() alter la table fournie et retourne la valeur supprimée
 
     -----
     GUI
@@ -88,7 +100,6 @@ A tester
 
     - exemples des events dans la doc
     - voir pourquoi certains eseType renvoient des erreurs
-    - GetValueFromName()
 
 
 ==========
@@ -105,11 +116,13 @@ A modifier/ajouter dans la doc :
     - virer notion de castable gameObject
     - nouvelle façon de géré les languages
     - nouvelle façon de gérer la cnfig
+    - gameObject tags
+
 
 =========
 BUGS
 
-
+    - parfois, une ligne de la stacktrace n'est pas complète : #04 GameObject.Ge)
 
 
 ==========
