@@ -3,9 +3,10 @@
 -- math
 
 --- Tell whether the provided number is an integer.
--- The function returns true even if the number has one or severam zeros as decimals (1.0, 2.000, ...)
+-- That include numbers that have one or several zeros as decimals (1.0, 2.000, ...).
 -- @param number (number) The number to check.
 -- @param errorIfValueIsNotNumber [optionnal default=false] (boolean) If true, the function returns an error when the 'number' argument is not a number.
+-- @return (boolean) True if the provided number is an integer, false otherwise.
 function math.isinteger(number, errorIfValueIsNotNumber)
     Daneel.Debug.StackTrace.BeginFunction("math.isinteger", number, errorIfValueIsNotNumber)
     local argType = type(number)
