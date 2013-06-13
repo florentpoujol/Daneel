@@ -9,7 +9,7 @@ local interactiveGameObjects = {}
 
 function Behavior:Start()
     Daneel.Event.Listen({ "OnLeftMouseButtonJustPressed", "OnLeftMouseButtonDown", "OnRightMouseButtonJustPressed" }, self.gameObject)
-    interactiveGameObjects = config.mouseInteractiveGameObjects
+    interactiveGameObjects = GameObject.tags.mouseInteractive
 end
 
 

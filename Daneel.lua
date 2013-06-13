@@ -212,9 +212,6 @@ function DaneelDefaultConfig()
     -- list of the gameObjects to check for proximity by the triggers
     -- filled in the TriggerableGameObject behavior
     triggerableGameObjects = { default = {} },
-
-    -- List of the gameObjects that react to the mouse inputs
-    mouseInteractiveGameObjects = {},
 }
 end
 

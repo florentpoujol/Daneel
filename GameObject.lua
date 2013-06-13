@@ -567,7 +567,9 @@ end
 ----------------------------------------------------------------------------------
 -- Tags
 
-GameObject.tags = {}
+GameObject.tags = {
+    mouseInteractive = {},
+}
 
 --- Add the provided tag(s) to the provided gameObject.
 -- @param gameObject (GameObject) The gameObject.
