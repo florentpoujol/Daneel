@@ -161,6 +161,7 @@ end
 -- table
 
 table.__index = table
+setmetatable(table, { __call = function(Object, ...) return Object.new(...) end })
 
 --- Constructor for dynamic tables that allow to use the functions in the table library on the table copies (like what you can do with the strings).
 -- @param t [optional] (table) A table.
@@ -299,7 +300,7 @@ end
 -- @param ... (table) At least two tables to merge together. Arguments that are not of type 'table' are ignored.
 -- @return (table) The new table.
 function table.merge(...)
-    if arg == nil then
+    if arg == nil or #arg == 0 then
         Daneel.Debug.StackTrace.BeginFunction("table.merge")
         error("table.merge(...) : No argument provided. Need at least two.")
     end
@@ -309,16 +310,14 @@ function table.merge(...)
         local argType = type(t)
         if argType == "table" then
             for key, value in pairs(t) do
-                if math.isinteger(key) then
+                if math.isinteger(key) and not table.containsvalue(fullTable, value) then
                     table.insert(fullTable, value)
                 else
                     fullTable[key] = value
                 end
             end
-        else
-            if DEBUG == true then
-                print("table.merge(...) : WARNING : Argument n°"..i.." is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'. The argument as been ignored.")
-            end
+        elseif DEBUG == true then
+            print("WARNING : table.merge(...) : Argument n°"..i.." is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'. The argument as been ignored.")
         end
     end
     Daneel.Debug.StackTrace.EndFunction("table.merge", fullTable)
@@ -329,23 +328,28 @@ end
 -- @param ... (table) At least two tables to merge together. Arguments that are not of type 'table' are ignored.
 -- @return (table) The new table.
 function table.deepmerge(...)
-    if arg == nil then
+    if arg == nil or #arg == 0 then
         Daneel.Debug.StackTrace.BeginFunction("table.deepmerge")
         error("table.deepmerge(...) : No argument provided. Need at least two.")
     end
     Daneel.Debug.StackTrace.BeginFunction("table.deepmerge", unpack(arg))
-    local fullTable = table.new(table.remove(arg, 1))
+    local fullTable = table.new()
     for i, t in ipairs(arg) do
-        for key, value in pairs(t) do
-            if math.isinteger(key) then
-                table.insert(fullTable, value)
-            else
-                if fullTable[key] ~= nil and type(value) == "table" then
-                    fullTable[key] = table.deepmerge(fullTable[key], value)
+        local argType = type(t)
+        if argType == "table" then
+            for key, value in pairs(t) do
+                if math.isinteger(key) and not table.containsvalue(fullTable, value) then
+                    table.insert(fullTable, value)
                 else
-                    fullTable[key] = value
+                    if fullTable[key] ~= nil and type(value) == "table" then
+                        fullTable[key] = table.deepmerge(fullTable[key], value)
+                    else
+                        fullTable[key] = value
+                    end
                 end
             end
+        elseif DEBUG == true then
+            print("WARNING : table.deepmerge(...) : Argument n°"..i.." is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'. The argument as been ignored.")
         end
     end
     Daneel.Debug.StackTrace.EndFunction()

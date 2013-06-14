@@ -66,11 +66,6 @@ A implémenter
     - commentaire dans ray:IntersectsGameObject()
 
 
-    faire en sorte que table.removevalue() alter la table fournie et retourne la valeur supprimée
-    faire en sorte que table.merger et deepmerge   n'ajoutent pas une valeur lorsque sa clé est un int et que la valeur existe déjà
-    faire en sorte qu'un GameObject étant détruit se retire tous ses tags
-    autoriser table() pour table.new()
-
     -----
     GUI
 
