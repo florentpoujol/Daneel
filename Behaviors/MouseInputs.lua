@@ -35,7 +35,7 @@ end
 
 function Behavior:OnLeftMouseButtonDown()
     local vector = CraftStudio.Input.GetMouseDelta()
-    if vector.x >= 1 or Vector.y >= 1 then
+    if vector.x >= 1 or vector.y >= 1 then
         for i, gameObject in ipairs(interactiveGameObjects) do
             if gameObject ~= nil and gameObject.inner ~= nil and gameObject.isHoveredByMouse == true then
                 Daneel.Event.Fire(gameObject, "OnDrag")

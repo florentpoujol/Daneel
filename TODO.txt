@@ -65,6 +65,7 @@ A implémenter
     - décommenter nouveaux component dans la config
     - commentaire dans ray:IntersectsGameObject()
 
+    - enlever les valeurs par défautl dans config.language + implémenter valeur par défaut dans Daneel.Lang.get()
 
     -----
     GUI
@@ -90,8 +91,8 @@ A tester
     - exemples des events dans la doc
     - voir pourquoi certains eseType renvoient des erreurs
 
-    - quand un GO est visible de deux camera, empècher MouseIputs d'envoyer deuxfois les event si es deux caméra ont le script
-
+    - set localPosition à la création ne fonctionne toujours pas, voir idem avec set de parent
+        > solution , fire un event une frame plus tard
 
 ==========
 A modifier/ajouter dans la doc :
@@ -99,6 +100,7 @@ A modifier/ajouter dans la doc :
     - GUI
         - slider
 
+    - Example project : minimalist encounter
 
 =========
 BUGS

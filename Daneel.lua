@@ -15,6 +15,7 @@ DEBUG = false
 
 config = {}
 
+
 function DaneelDefaultConfig()
     return {
         -- List of the Scripts paths as values and optionally the script alias as the keys.
@@ -347,7 +348,7 @@ end
 -- @param defaultValue [optional] (mixed) The default value to return if 'argument' is nil.
 -- @return (mixed) The value of 'argument' if it is non-nil, or the value of 'defaultValue'.
 function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, p_errorHead, defaultValue)
-    if DEBUG == false then return end
+    if DEBUG == false then return defaultValue end
     if argument == nil then return defaultValue end
     local errorHead = "Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd) : "
     
@@ -929,6 +930,59 @@ local luaDocStop = ""
 
 -- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
+    Daneel.LoadOnce()
+
+
+    -- GUI
+    -- setting pixelToUnits  
+    config.gui.screenSize = CraftStudio.Screen.GetSize()
+    -- get the smaller side of the screen (usually screenSize.y, the height)
+    local smallSideSize = config.gui.screenSize.y
+    if config.gui.screenSize.x < config.gui.screenSize.y then
+        smallSideSize = config.gui.screenSize.x
+    end
+
+    config.gui.hudCameraGO = GameObject.Get(config.gui.hudCameraName)
+
+    if config.gui.hudCameraGO ~= nil then
+        -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
+        -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and 3D world units
+        Daneel.GUI.pixelsToUnits = 10 / smallSideSize
+        --Daneel.GUI.pixelsToUnits = config.gui.hudCameraGO.camera.orthographicScale / smallSideSize
+
+
+        config.gui.hudOriginGO = GameObject.New("HUDOrigin", { parent = config.gui.hudCameraGO })
+        config.gui.hudOriginGO.transform.localPosition = Vector3:New(
+            -config.gui.screenSize.x * Daneel.GUI.pixelsToUnits / 2, 
+            config.gui.screenSize.y * Daneel.GUI.pixelsToUnits / 2,
+            0
+        )
+        -- the HUDOrigin is now at the top-left corner of the screen
+        config.gui.hudOriginPosition = config.gui.hudOriginGO.transform.position
+    elseif DEBUG == true then
+        print("WARNING : HUD Camera gameObject with name '"..config.gui.hudCameraName.."' was not found. HUD origin gameObject not set up.")
+    end
+
+
+    -- Awakening is over
+    DANEEL_LOADED = true
+
+    if DEBUG == true then
+        print("~~~~~ Daneel is loaded ~~~~~")
+    end
+
+    for i, path in pairs(config.scriptPaths) do
+        local script = Asset.Get(path, "Script")
+        if type(script.DaneelAwake) == "function" then
+            script.DaneelAwake()
+        end
+    end
+end -- end Daneel.Awake()
+
+
+function Daneel.LoadOnce()
+    if DANEEL_LOADED == true then return end
+
     config = table.deepmerge(DaneelDefaultConfig(), DaneelConfig()) -- ajouter config à la fin ?
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Awake")
     
@@ -1045,54 +1099,17 @@ function Daneel.Awake()
         local functionName = "DaneelLanguage"..language:ucfirst()
         if Daneel.Debug.GlobalExists(functionName) == true then
             Daneel.Lang.lines[language] = _G[functionName]()
+        elseif DEBUG == true then
+            print("WARNING : Can't load the language '"..language.."' because the global function "..functionName.."() does not exists.")
         end
     end
 
-
-    -- GUI
-    config.gui.hudCameraGO = GameObject.Get(config.gui.hudCameraName, true)
-
-    -- setting pixelToUnits  
-    config.gui.screenSize = CraftStudio.Screen.GetSize()
-    -- get the smaller side of the screen (usually screenSize.y, the height)
-    local smallSideSize = config.gui.screenSize.y
-    if config.gui.screenSize.x < config.gui.screenSize.y then
-        smallSideSize = config.gui.screenSize.x
-    end
-
-    -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
-    -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and 3D world units
-    Daneel.GUI.pixelsToUnits = 10 / smallSideSize
-    --Daneel.GUI.pixelsToUnits = config.gui.hudCameraGO.camera.orthographicScale / smallSideSize
-
-
-    config.gui.hudOriginGO = GameObject.New("HUDOrigin", { parent = config.gui.hudCameraGO })
-    config.gui.hudOriginGO.transform.localPosition = Vector3:New(
-        -config.gui.screenSize.x * Daneel.GUI.pixelsToUnits / 2, 
-        config.gui.screenSize.y * Daneel.GUI.pixelsToUnits / 2,
-        0
-    )
-    -- the HUDOrigin is now at the top-left corner of the screen
-    config.gui.hudOriginPosition = config.gui.hudOriginGO.transform.position
 
     -- Tween
-    Daneel.Tween.Ease = GetEasingEquations()
-
-    -- Awakening is over
-    DANEEL_LOADED = true
-
-    if DEBUG == true then
-        print("~~~~~ Daneel is loaded ~~~~~")
+    if Daneel.Tween ~= nil then
+        Daneel.Tween.Ease = GetEasingEquations()
     end
-
-    for i, path in pairs(config.scriptPaths) do
-        local script = Asset.Get(path, "Script")
-        if type(script.DaneelAwake) == "function" then
-            script.DaneelAwake()
-        end
-    end
-end -- end Daneel.Awake()
-
+end
 
 function Daneel.Update()
     -- Time
