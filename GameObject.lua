@@ -132,7 +132,8 @@ function GameObject.Set(gameObject, params)
     
     -- components
     local component = nil
-    local componentTypes = table.removevalue(config.componentTypes, "ScriptedBehavior")
+    local componentTypes = table.copy(config.componentTypes)
+    table.removevalue(componentTypes, "ScriptedBehavior")
     for i, type in ipairs(componentTypes) do
         componentTypes[i] = type:lcfirst()
     end
@@ -620,9 +621,7 @@ function GameObject.RemoveTags(gameObject, tags)
         tags = { tags }
     end
     for i, tag in ipairs(tags) do
-        if table.containsvalue(gameObject.tags, tag) then
-            gameObject.tags = table.removevalue(gameObject.tags, tag)
-        end
+        table.removevalue(gameObject.tags, tag)
         if GameObject.tags[tag] ~= nil then
             GameObject.tags[tag] = table.removevalue(GameObject.tags[tag], gameObject)
         end

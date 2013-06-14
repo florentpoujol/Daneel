@@ -39,7 +39,7 @@ function Behavior:Update()
                     else
                         -- was the gameObject still in this trigger the last frame ?
                         if self.gameObjectsInRange:containsvalue(gameObject) == true then
-                            self.gameObjectsInRange = self.gameObjectsInRange:removevalue(gameObject)
+                            self.gameObjectsInRange:removevalue(gameObject)
                             Daneel.Event.Fire(gameObject, "OnTriggerExit", self.gameObject)
                             Daneel.Event.Fire(self.gameObject, "OnTriggerExit", gameObject)
                         end

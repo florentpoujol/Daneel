@@ -681,7 +681,7 @@ function Daneel.Event.StopListen(eventName, functionOrObject)
     for i, eventName in ipairs(eventNames) do
         local objects = Daneel.Event.events[eventName]
         if objects ~= nil and table.containsvalue(objects, functionOrObject) then
-            Daneel.Event.events[eventName] = table.removevalue(objects, functionOrObject)
+            table.removevalue(objects, functionOrObject)
         end
     end
     Daneel.Debug.StackTrace.EndFunction("Daneel.Event.StopListen")

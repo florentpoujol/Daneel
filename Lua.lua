@@ -413,7 +413,7 @@ end
 -- @param t (table) The table.
 -- @param value (mixed) The value to remove.
 -- @param singleRemove [optional default=false] (boolean) Tell whether to remove all occurences of the value or just the first one.
--- @return (table) The table.
+-- @return (boolean) True if a value has been removed.
 function table.removevalue(t, value, singleRemove)
     Daneel.Debug.StackTrace.BeginFunction("table.removevalue", t, value, singleRemove)
     local errorHead = "table.removevalue(table, value[, singleRemove]) : "
@@ -422,9 +422,10 @@ function table.removevalue(t, value, singleRemove)
     if value == nil and DEBUG == true then
         print("WARNING : "..errorHead.."Argument 'value' is nil. Provided table is '"..tostring(t).."'")
     end
-    t = table.copy(t)
+    local hasRemovedAValue = false
     for key, _value in pairs(t) do
         if _value == value then
+            hasRemovedAValue = true
             if math.isinteger(key) then
                 table.remove(t, key)
             else
@@ -436,8 +437,8 @@ function table.removevalue(t, value, singleRemove)
             end
         end
     end
-    Daneel.Debug.StackTrace.EndFunction("table.removevalue", t)
-    return t
+    Daneel.Debug.StackTrace.EndFunction()
+    return hasRemovedAValue
 end
 
 --- Return all the keys of the provided table.
