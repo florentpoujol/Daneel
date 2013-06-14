@@ -566,6 +566,8 @@ function GameObject.Destroy(gameObject)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.Destroy", gameObject)
     local errorHead = "GameObject.Destroy(gameObject) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+
+    gameObject:RemoveTags()
     CraftStudio.Destroy(gameObject)
     Daneel.Debug.StackTrace.EndFunction("GameObject.Destroy")
 end
