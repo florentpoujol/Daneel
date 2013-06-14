@@ -206,7 +206,6 @@ function Daneel.GUI.CheckBox.New(gameObject)
     
     local checkBox = setmetatable({ gameObject = gameObject }, Daneel.GUI.CheckBox)
     gameObject.checkBox = checkBox
-
     gameObject:AddTags("mouseInteractive")
 
     if gameObject.textRenderer == nil then

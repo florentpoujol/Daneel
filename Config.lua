@@ -1,118 +1,118 @@
 
 function DaneelConfig()
     return {
-    -- List of the Scripts paths as values and optionally the script alias as the keys.
-    -- Ie :
-    -- "fully-qualified Script path"
-    -- or
-    -- alias = "fully-qualified Script path"
-    -- Setting a script path here allow you to  :
-    -- * Use the dynamic getters and setters
-    -- * Use component:Set() (for scripts that are ScriptedBehaviors)
-    -- * Implements Behavior:DaneelAwake(). It is called when Daneel has just loaded, even on scripts that are not ScriptedBehaviors
-    -- * If you defined aliases, dynamically access the ScriptedBehavior on the gameObject via its alias
-    scriptPaths = {
-
-    },
-
-
-    ----------------------------------------------------------------------------------
-
-    input = {
-        -- Button names as you defined them in the "Administration > Game Controls" tab of your project.
-        -- Button whose name is defined here can be used as HotKeys.
-        buttons = {
-            
-        },
-
-        -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
-        doubleClickDelay = 20,
-
-        inputKeys = {
-
-        }
-    },
-
-
-    ----------------------------------------------------------------------------------
-
-    language = {
-        -- list of the languages supported by the game
-        languageNames = {
+        -- List of the Scripts paths as values and optionally the script alias as the keys.
+        -- Ie :
+        -- "fully-qualified Script path"
+        -- or
+        -- alias = "fully-qualified Script path"
+        -- Setting a script path here allow you to  :
+        -- * Use the dynamic getters and setters
+        -- * Use component:Set() (for scripts that are ScriptedBehaviors)
+        -- * Implements Behavior:DaneelAwake(). It is called when Daneel has just loaded, even on scripts that are not ScriptedBehaviors
+        -- * If you defined aliases, dynamically access the ScriptedBehavior on the gameObject via its alias
+        scriptPaths = {
 
         },
 
-        -- Current language
-        current = "english",
 
-        -- Default language
-        default = "english",
+        ----------------------------------------------------------------------------------
 
-        -- Value returned when a language key is not found
-        keyNotFound = "langkeynotfound",
+        input = {
+            -- Button names as you defined them in the "Administration > Game Controls" tab of your project.
+            -- Button whose name is defined here can be used as HotKeys.
+            buttons = {
+                
+            },
 
-        -- Tell wether Daneel.Lang.GetLine() search a line key in the default language 
-        -- when it is not found in the current language before returning the value of keyNotFound
-        searchInDefault = true,
-    },
+            -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
+            doubleClickDelay = 20,
 
+            inputKeys = {
 
-    ----------------------------------------------------------------------------------
-
-    gui = {
-        -- Name of the gameObject who has the orthographic camera used to render the HUD
-        hudCameraName = "HUDCamera",
-
-        -- default Font path for text and checkbox
-        textDefaultFontName = "Daneel/GUITextFont",
-        
-        checkBoxDefaultState = false, -- false = not checked, true = checked
-    },
-
-
-    ----------------------------------------------------------------------------------
-
-    tween = {
-        defaultTweenerParams = {
-            isEnabled = true,
-            isPaused = false,
-
-            delay = 0.0, -- delay before start (in the same unit (durationType) than the duration)
-            duration = 0.0, -- time or frame the tween (or one loop) should take
-            durationType = "Time", -- unit for for delay, duration, elapsed, fullElapsed. Can be Time, RealTime or Frame
-
-            startValue = nil,
-            endValue = 0.0,
-
-            loops = 0, -- number of remaining loops to perform (-1 = infinite)
-            loopType = "simple", -- type of loop. Can be "simple" (X to Y, repeat), "yoyo" (X to Y, Y to X, repeat)
-            
-            easeType = "linear", -- type of easing, check the doc for all possible values
-            
-            isRelative = false, -- If false, tween the value TO endValue. If true, tween the value BY endValue.
+            }
         },
-    },
 
 
-    ----------------------------------------------------------------------------------
+        ----------------------------------------------------------------------------------
 
-    -- List of your custom object types (their name as a string), to be returned by Daneel.Debug.GetType().
-    -- Daneel.Debug.GetType() will return one the types if an object corresponding to one of the types is the metatable of the supllied object.
-    -- Ie :
-    -- "RaycastHit"
-    userTypes = {},
+        language = {
+            -- list of the languages supported by the game
+            languageNames = {
+
+            },
+
+            -- Current language
+            current = "english",
+
+            -- Default language
+            default = "english",
+
+            -- Value returned when a language key is not found
+            keyNotFound = "langkeynotfound",
+
+            -- Tell wether Daneel.Lang.GetLine() search a line key in the default language 
+            -- when it is not found in the current language before returning the value of keyNotFound
+            searchInDefault = true,
+        },
 
 
-    ----------------------------------------------------------------------------------
+        ----------------------------------------------------------------------------------
 
-    debug = {
-        -- Enable/disable Daneel's global debugging features.
-        enableDebug = false,
+        gui = {
+            -- Name of the gameObject who has the orthographic camera used to render the HUD
+            hudCameraName = "HUDCamera",
 
-        -- Enable/disable the Stack Trace.
-        enableStackTrace = true,
-    },
-}
+            -- default Font path for text and checkbox
+            textDefaultFontName = "Daneel/GUITextFont",
+            
+            checkBoxDefaultState = false, -- false = not checked, true = checked
+        },
+
+
+        ----------------------------------------------------------------------------------
+
+        tween = {
+            defaultTweenerParams = {
+                isEnabled = true,
+                isPaused = false,
+
+                delay = 0.0, -- delay before start (in the same unit (durationType) than the duration)
+                duration = 0.0, -- time or frame the tween (or one loop) should take
+                durationType = "Time", -- unit for for delay, duration, elapsed, fullElapsed. Can be Time, RealTime or Frame
+
+                startValue = nil,
+                endValue = 0.0,
+
+                loops = 0, -- number of remaining loops to perform (-1 = infinite)
+                loopType = "simple", -- type of loop. Can be "simple" (X to Y, repeat), "yoyo" (X to Y, Y to X, repeat)
+                
+                easeType = "linear", -- type of easing, check the doc for all possible values
+                
+                isRelative = false, -- If false, tween the value TO endValue. If true, tween the value BY endValue.
+            },
+        },
+
+
+        ----------------------------------------------------------------------------------
+
+        -- List of your custom object types (their name as a string), to be returned by Daneel.Debug.GetType().
+        -- Daneel.Debug.GetType() will return one the types if an object corresponding to one of the types is the metatable of the supllied object.
+        -- Ie :
+        -- "RaycastHit"
+        userTypes = {},
+
+
+        ----------------------------------------------------------------------------------
+
+        debug = {
+            -- Enable/disable Daneel's global debugging features.
+            enableDebug = false,
+
+            -- Enable/disable the Stack Trace.
+            enableStackTrace = true,
+        },
+    }
 end
 
     

@@ -4,6 +4,9 @@ IDEAS
     -----
     MISC
 
+    - DEBUG
+        - introduire un CheckArgValue, CheckOptionalArgValue > remplace CheckAssetType(), CheckComponentType()
+
     - A voir avec TextRenderer > permettre de facilement sauter des lignes (avec :br:) ou définir un wordWrap
     - modelRenderer:SetDimension(Vector3) ou idem avec Vector2
 
@@ -66,6 +69,7 @@ A implémenter
     faire en sorte que table.removevalue() alter la table fournie et retourne la valeur supprimée
     faire en sorte que table.merger et deepmerge   n'ajoutent pas une valeur lorsque sa clé est un int et que la valeur existe déjà
     faire en sorte qu'un GameObject étant détruit se retire tous ses tags
+    autoriser table() pour table.new()
 
     -----
     GUI
@@ -98,7 +102,6 @@ A tester
 A modifier/ajouter dans la doc :
 
     - GUI
-        - hud local layer / local position
         - slider
 
 
@@ -106,13 +109,6 @@ A modifier/ajouter dans la doc :
 BUGS
 
     - parfois, une ligne de la stacktrace n'est pas complète : #04 GameObject.Ge)
+        > quadn argument attendus est nil ?
 
-
-==========
-LONG TERM modifs à faire (pour une v2 par exemple)
-
-- DEBUG
-    - introduire un CheckArgValue, CheckOptionalArgValue > remplace CheckAssetType(), CheckComponentType()
-
-- dans les commentaires LuaDoc, mettre le texte [optional] après le type de l'argument
 
