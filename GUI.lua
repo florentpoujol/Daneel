@@ -229,6 +229,7 @@ end
 -- Actually set the text of the TextRenderer component on the same gameObject,
 -- but add the correct check mark in front of the provided text.
 -- @param checkBox (CheckBox) The checkBox component.
+-- @param text (string) The text to display.
 function Daneel.GUI.CheckBox.SetText(checkBox, text)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.SetText", checkBox, text)
     local errorHead = "Daneel.GUI.CheckBox.SetText(checkBox, text) : "
@@ -267,7 +268,7 @@ function Daneel.GUI.CheckBox.GetText(checkBox)
     return text
 end 
 
---- Check or uncheck the provided checkBox.
+--- Check or uncheck the provided checkBox and fire the OnUpdate event.
 -- You can get the checkbox's state via checkBox.isChecked.
 -- @param checkBox (CheckBox) The checkBox component.
 -- @param state [optional default=true] (boolean) The new state of the checkBox.
@@ -292,9 +293,8 @@ end
 
 Daneel.GUI.ProgressBar = {}
 
---- Create a new GUI.ProgressBar.
--- @param name (string) The component name.
--- @param params [optional] (table) A table with initialisation parameters.
+-- Create a new GUI.ProgressBar.
+-- @param gameObject (GameObject) The component gameObject.
 -- @return (ProgressBar) The new component.
 function Daneel.GUI.ProgressBar.New(gameObject)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.New", gameObject)
@@ -316,7 +316,7 @@ end
 
 --- Set the progress of the progress bar, adjusting its length.
 -- @param progressBar (ProgressBar) The progressBar.
--- @param pogress (number or string) The progress as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
+-- @param progress (number or string) The progress as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
 function Daneel.GUI.ProgressBar.SetProgress(progressBar, progress)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.SetProgress", progressBar, progress)
     local errorHead = "Daneel.GUI.ProgressBar.SetProgress(progressBar, progress) : "
@@ -393,9 +393,8 @@ end
 
 Daneel.GUI.Slider = {}
 
---- Create a new GUI.Slider.
--- @param name (string) The component name.
--- @param params [optional] (table) A table with initialisation parameters.
+-- Create a new GUI.Slider.
+-- @param gameObject (GameObject) The component gameObject.
 -- @return (Slider) The new component.
 function Daneel.GUI.Slider.New(gameObject)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.New", gameObject)
@@ -420,7 +419,7 @@ end
 
 --- Set the value of the slider, adjusting its position.
 -- @param slider (Slider) The slider.
--- @param pogress (number or string) The value as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
+-- @param value (number or string) The value as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
 function Daneel.GUI.Slider.SetValue(slider, value)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.SetValue", slider, value)
     local errorHead = "Daneel.GUI.Slider.SetValue(slider, value) : "
@@ -468,6 +467,7 @@ function Daneel.GUI.Slider.SetValue(slider, value)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
+-- @param slider (Slider) The slider.
 function Daneel.GUI.Slider.GetValue(slider)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.SetValue", slider)
     local errorHead = "Daneel.GUI.Slider.SetValue(slider, value) : "
@@ -624,7 +624,7 @@ function Vector2.__eq(a, b)
     return eq
 end
 
--- Return the length of the vector.
+--- Return the length of the vector.
 -- @param vector (Vector2) The vector.
 function Vector2.GetLength(vector)
     return math.sqrt(vector.x^2 + vector.y^2)

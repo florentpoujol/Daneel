@@ -122,7 +122,7 @@ end
 --- Tell wether the provided string begins by the provided chunk or not.
 -- @param s (string) The string.
 -- @param chunk (string) The searched chunk.
--- @param (boolean) True or false.
+-- @return (boolean) True or false.
 function string.startswith(s, chunk)
     Daneel.Debug.StackTrace.BeginFunction("string.startswith", s, chunk)
     local errorHead = "string.startswith(string, chunk) : "
@@ -140,7 +140,7 @@ end
 --- Tell wether the provided string ends by the provided chunk or not.
 -- @param s (string) The string.
 -- @param chunk (string) The searched chunk.
--- @param (boolean) True or false.
+-- @return (boolean) True or false.
 function string.endswith(s, chunk)
     Daneel.Debug.StackTrace.BeginFunction("string.endswith", s, chunk)
     local errorHead = "string.endswith(string, chunk) : "

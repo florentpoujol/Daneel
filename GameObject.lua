@@ -406,6 +406,12 @@ function GameObject.AddPhysics(gameObject, params) end
 -- @return (TextRenderer) The component.
 function GameObject.AddTextRenderer(gameObject, params) end
 
+--- Add a NetworkSync component to the gameObject and optionally initialize it.
+-- @param gameObject (GameObject) The gameObject.
+-- @param params [optional] (table) A table of parameters to initialize the new component with.
+-- @return (NetworkSync) The component.
+function GameObject.AddNetworkSync(gameObject, params) end
+
 --- Add a Hud component to the gameObject and optionally initialize it.
 -- @param gameObject (GameObject) The gameObject.
 -- @param params [optional] (table) A table of parameters to initialize the new component with.

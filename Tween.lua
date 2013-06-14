@@ -133,9 +133,9 @@ end
 
 local tweenerId = 0
 
---- Creates a new tweener via one of the three allowed constructors :
--- Tweener.New(target, property, endValue, duration[, params])
--- Tweener.New(startValue, endValue, duration[, params])
+--- Creates a new tweener via one of the three allowed constructors : <br>
+-- Tweener.New(target, property, endValue, duration[, params]) <br>
+-- Tweener.New(startValue, endValue, duration[, params]) <br>
 -- Tweener.New(params)
 -- @param target (table) An object.
 -- @param property (string) The name of the propertty to animate.
@@ -211,7 +211,7 @@ function Daneel.Tween.Tweener.Set(tweener, params)
     return tweener
 end
 
---- Unpause the tweener and send the OnPlay event.
+--- Unpause the tweener and fire the OnPlay event.
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
 function Daneel.Tween.Tweener.Play(tweener)
     if tweener.isEnabled == false then return end
@@ -224,7 +224,7 @@ function Daneel.Tween.Tweener.Play(tweener)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Pause the tweener and send the OnPause event.
+--- Pause the tweener and fire the OnPause event.
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
 function Daneel.Tween.Tweener.Pause(tweener)
     if tweener.isEnabled == false then return end
@@ -261,7 +261,7 @@ function Daneel.Tween.Tweener.Restart(tweener)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Complete the tweener send the OnComple event.
+--- Complete the tweener fire the OnComple event.
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
 function Daneel.Tween.Tweener.Complete(tweener)
     if tweener.isEnabled == false or tweener.loops == -1 then return end
@@ -301,10 +301,10 @@ function Daneel.Tween.Tweener.Destroy(tweener)
 end
 
 --- Update the tweener's value based on the tweener's elapsed property.
--- Send the OnUpdate event.
+-- Fire the OnUpdate event.
 -- This allows the tweener to fast-forward to a certain time.
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
--- @param deltaDuration [optional] (number) Only used internaly. If nil, the tweener's value will be updated based on the current value of tweener.elapsed.
+-- @param deltaDuration [optional] (number) <strong>Only used internaly.</strong> If nil, the tweener's value will be updated based on the current value of tweener.elapsed.
 function Daneel.Tween.Tweener.Update(tweener, deltaDuration) -- the deltaDuration argument is only used from the Tween.Update() function
     if tweener.isEnabled == false then return end
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.Update", tweener, deltaDuration)
