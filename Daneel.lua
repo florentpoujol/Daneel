@@ -492,7 +492,7 @@ end
 --- Returns the name as a string of the global variable (including nested tables) whose value is provided.
 -- This only works if the value of the variable is a table or a function.
 -- When the variable is nested in one or several tables (like Daneel.GUI.Text), its name must have been set in the 'userTypes' variable in the config.
--- @param object (table or function) Any global variable, any object from CraftStudio or Daneel or objects whse name is set in 'userTypes' in the config.
+-- @param value (table or function) Any global variable, any object from CraftStudio or Daneel or objects whse name is set in 'userTypes' in the config.
 -- @return (string) The name, or nil.
 function Daneel.Debug.GetNameFromValue(value)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.GetNameFromValue", value)
@@ -515,7 +515,7 @@ end
 --- Returns the value of any global variable (including nested tables) from its name as a string.
 -- When the variable is nested in one or several tables (like Daneel.GUI.Text), put a dot between the names.
 -- @param name (string) The variable name.
--- @param (mixed) The variable value, or nil.
+-- @return (mixed) The variable value, or nil.
 function Daneel.Debug.GetValueFromName(name)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.GetValueFromName", name)
     local errorHead = "Daneel.Debug.GetValueFromName(name) : "
