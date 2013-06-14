@@ -297,7 +297,8 @@ function table.print(t)
 end
 
 --- Merge two or more tables into one. Integer keys are not overrided.
--- @param ... (table) At least two tables to merge together. Arguments that are not of type 'table' are ignored.
+-- When several tables have the same value (with an integer key), the value is only added once in the returned table.
+-- @param ... (table) At least two tables to merge together.
 -- @return (table) The new table.
 function table.merge(...)
     if arg == nil or #arg == 0 then
@@ -324,8 +325,10 @@ function table.merge(...)
     return fullTable
 end
 
---- Merge two or more tables into one. Integer keys are not overrided.
--- @param ... (table) At least two tables to merge together. Arguments that are not of type 'table' are ignored.
+--- Deeply merge two or more tables into one. Integer keys are not overrided.
+-- A deep merge means that the table values are also deeply merged.
+-- When several tables have the same value (with an integer key), the value is only added once in the returned table.
+-- @param ... (table) At least two tables to merge together.
 -- @return (table) The new table.
 function table.deepmerge(...)
     if arg == nil or #arg == 0 then
