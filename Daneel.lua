@@ -702,7 +702,8 @@ function Daneel.Event.Fire(object, eventName,  ...)
     end
 
     for i, listener in ipairs(listeners) do
-        if type(listener) == "function" then
+        local _type = type(listener)
+        if _type == "function" or _type == "userdata" then
             listener(unpack(arg))
         else
             -- an object
@@ -712,7 +713,8 @@ function Daneel.Event.Fire(object, eventName,  ...)
                 funcOrMessage = eventName
             end
 
-            if type(funcOrMessage) == "function" then
+            _type = type(funcOrMessage)
+            if _type == "function" or _type == "userdata" then
                 funcOrMessage(unpack(arg))
             else
                 local sendMessage = true
