@@ -12,9 +12,7 @@ end
 
 DANEEL_LOADED = false
 DEBUG = false
-
 config = {}
-
 
 function DaneelDefaultConfig()
     return {
@@ -30,18 +28,10 @@ function DaneelDefaultConfig()
         -- * Call Behavior:DaneelAwake() when Daneel has just loaded, even on scripts that are not ScriptedBehaviors
         -- * If you defined aliases, dynamically access the ScriptedBehavior on the gameObject via its alias
         scriptPaths = {
-            "Daneel/Behaviors/DaneelBehavior",
-            triggerScript = "Daneel/Behaviors/Trigger",
-            "Daneel/Behaviors/TriggerableGameObject",
-            "Daneel/Behaviors/MouseInputs",
-            "Daneel/Behaviors/CheckBox",
-            "Daneel/Behaviors/ProgressBar",
-            "Daneel/Behaviors/Slider",
+            trigger = "Daneel/Behaviors/Trigger",
         },
 
-        allScripts = {},
-
-
+ 
         ----------------------------------------------------------------------------------
 
         input = {
@@ -51,10 +41,6 @@ function DaneelDefaultConfig()
 
             -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
             doubleClickDelay = 20,
-
-            inputKeys = {
-
-            }
         },
 
 
@@ -63,14 +49,14 @@ function DaneelDefaultConfig()
         language = {
             -- list of the languages supported by the game
             languageNames = {
-                "english",
+                
             },
 
             -- Current language
-            current = "english",
+            current = nil,
 
             -- Default language
-            default = "english",
+            default = nil,
 
             -- Value returned when a language key is not found
             keyNotFound = "langkeynotfound",
@@ -141,7 +127,7 @@ function DaneelDefaultConfig()
 
         debug = {
             -- Enable/disable Daneel's global debugging features.
-            enableDebug = false,
+            enableDebug = true,
 
             -- Enable/disable the Stack Trace.
             enableStackTrace = true,
@@ -149,8 +135,28 @@ function DaneelDefaultConfig()
 
 
         ----------------------------------------------------------------------------------
-
         -- Objects (keys = name, value = object)
+
+        -- CraftStudio
+        craftStudioObjects = {
+            GameObject = GameObject,
+            Vector3 = Vector3,
+            Quaternion = Quaternion,
+            Plane = Plane,
+            Ray = Ray,
+        },
+
+        craftStudioComponentObjects = {
+            ScriptedBehavior = ScriptedBehavior,
+            ModelRenderer = ModelRenderer,
+            MapRenderer = MapRenderer,
+            Camera = Camera,
+            Transform = Transform,
+            Physics = Physics,
+            --TextRenderer = TextRenderer,
+            --NetworkSync = NetworkSync,
+        },
+
         assetObjects = {
             Script = Script,
             Model = Model,
@@ -162,48 +168,30 @@ function DaneelDefaultConfig()
             --Document = Document,
             --Font = Font,
         },
-        assetTypes = {}, -- filled in Daneel.Awake() below
-
-        componentObjects = {
-            ScriptedBehavior = ScriptedBehavior,
-            ModelRenderer = ModelRenderer,
-            MapRenderer = MapRenderer,
-            Camera = Camera,
-            Transform = Transform,
-            Physics = Physics,
-            --TextRenderer = TextRenderer,
-            --NetworkSync = NetworkSync,
-        },
-        componentTypes = {},
         
-        craftStudioObjects = {
-            GameObject = GameObject,
-            Vector3 = Vector3,
-            Quaternion = Quaternion,
-            Plane = Plane,
-            Ray = Ray,
-        },
-        
+        -- Daneel
         daneelObjects = {
-                RaycastHit = RaycastHit,
-                Vector2 = Vector2,
-                ["Daneel.Tween.Tweener"] = Daneel.Tween.Tweener,
-            },
-        daneelTypes = {},
+            RaycastHit = RaycastHit,
+            Vector2 = Vector2,
+            ["Daneel.Tween.Tweener"] = Daneel.Tween.Tweener,
+        },
 
         daneelComponentObjects = {
-                Hud = Daneel.GUI.Hud,
-                CheckBox = Daneel.GUI.CheckBox,
-                ProgressBar = Daneel.GUI.ProgressBar,
-                Slider = Daneel.GUI.Slider,
-            },
-        daneelComponentTypes = {},
-        
-        userTypes = {},
+            Hud = Daneel.GUI.Hud,
+            CheckBox = Daneel.GUI.CheckBox,
+            ProgressBar = Daneel.GUI.ProgressBar,
+            Slider = Daneel.GUI.Slider,
+        },
+
+        -- custom
         userObjects = {},
-        
-        -- list of all types and objects
-        allObjects = {},
+
+        -- other properties created at runtime :
+        -- componentObjects : a merge of craftStudioComponentObjects and daneelComponentObjects
+        -- componentTypes : the list of the component types (the keys of componentObjects)
+        -- daneelComponentTypes
+        -- assetTypes
+        -- allObjects : a merge of all *Objects tables
 
 
         ----------------------------------------------------------------------------------
@@ -407,9 +395,11 @@ function Daneel.Debug.GetType(object, OnlyReturnLuaType)
                 return "ScriptedBehavior"
             end
             -- other types
-            for type, object in pairs(config.allObjects) do
-                if mt == object then
-                    return type
+            if config.allObjects ~= nil then
+                for type, object in pairs(config.allObjects) do
+                    if mt == object then
+                        return type
+                    end
                 end
             end
         end
@@ -461,10 +451,10 @@ function Daneel.Debug.CheckAssetType(assetType)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckAssetType", assetType)
     local errorHead = "Daneel.Debug.CheckAssetType(assetType) : "
     Daneel.Debug.CheckArgType(assetType, "assetType", "string", errorHead)
-    local assetTypes = config.assetTypes
-    assetType = Daneel.Utilities.CaseProof(assetType, assetTypes)
-    if not assetType:isoneof(assetTypes) then
-        error(errorHead.."Argument 'assetType' with value '"..assetType.."' is not one of the valid asset types : "..table.concat(assetTypes, ", "))
+
+    assetType = Daneel.Utilities.CaseProof(assetType, config.assetTypes)
+    if not assetType:isoneof(config.assetTypes) then
+        error(errorHead.."Argument 'assetType' with value '"..assetType.."' is not one of the valid asset types : "..table.concat(config.assetTypes, ", "))
     end
     Daneel.Debug.StackTrace.EndFunction("Daneel.Debug.CheckAssetType", assetType)
     return assetType
@@ -928,96 +918,38 @@ Daneel.Time = {
 -- Runtime
 local luaDocStop = ""
 
--- called from DaneelBehavior Behavior:Awake()
-function Daneel.Awake()
-    Daneel.LoadOnce()
-
-
-    -- GUI
-    -- setting pixelToUnits  
-    config.gui.screenSize = CraftStudio.Screen.GetSize()
-    -- get the smaller side of the screen (usually screenSize.y, the height)
-    local smallSideSize = config.gui.screenSize.y
-    if config.gui.screenSize.x < config.gui.screenSize.y then
-        smallSideSize = config.gui.screenSize.x
-    end
-
-    config.gui.hudCameraGO = GameObject.Get(config.gui.hudCameraName)
-
-    if config.gui.hudCameraGO ~= nil then
-        -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
-        -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and 3D world units
-        Daneel.GUI.pixelsToUnits = 10 / smallSideSize
-        --Daneel.GUI.pixelsToUnits = config.gui.hudCameraGO.camera.orthographicScale / smallSideSize
-
-
-        config.gui.hudOriginGO = GameObject.New("HUDOrigin", { parent = config.gui.hudCameraGO })
-        config.gui.hudOriginGO.transform.localPosition = Vector3:New(
-            -config.gui.screenSize.x * Daneel.GUI.pixelsToUnits / 2, 
-            config.gui.screenSize.y * Daneel.GUI.pixelsToUnits / 2,
-            0
-        )
-        -- the HUDOrigin is now at the top-left corner of the screen
-        config.gui.hudOriginPosition = config.gui.hudOriginGO.transform.position
-    elseif DEBUG == true then
-        print("WARNING : HUD Camera gameObject with name '"..config.gui.hudCameraName.."' was not found. HUD origin gameObject not set up.")
-    end
-
-
-    -- Awakening is over
-    DANEEL_LOADED = true
-
-    if DEBUG == true then
-        print("~~~~~ Daneel is loaded ~~~~~")
-    end
-
-    for i, path in pairs(config.scriptPaths) do
-        local script = Asset.Get(path, "Script")
-        if type(script.DaneelAwake) == "function" then
-            script.DaneelAwake()
-        end
-    end
-end -- end Daneel.Awake()
-
-
-function Daneel.LoadOnce()
+-- load Daneel at the start of the game
+function Daneel.Load()
     if DANEEL_LOADED == true then return end
 
-    config = table.deepmerge(DaneelDefaultConfig(), DaneelConfig()) -- ajouter config à la fin ?
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Awake")
+    config = table.deepmerge(DaneelDefaultConfig(), DaneelConfig())
     
     DEBUG = config.debug.enableDebug
     if DEBUG == true and config.debug.enableStackTrace == true then
         SetNewError()
     end
 
+    -- Objects
     config.componentObjects = table.merge(
-        config.componentObjects,
+        config.craftStudioComponentObjects,
         config.daneelComponentObjects
     )
-
-    -- built assetTypes and componentTypes
-    config.assetTypes = table.getkeys(config.assetObjects)
     config.componentTypes = table.getkeys(config.componentObjects)
     config.daneelComponentTypes = table.getkeys(config.daneelComponentObjects)
-    
-    for i, type in ipairs(config.userTypes) do
-        config.userObjects[type] = Daneel.Debug.GetValueFromName(type)
-    end
+    config.assetTypes = table.getkeys(config.assetObjects)
     
     -- all objects (for use in GetType())
     config.allObjects = table.merge(
-        config.assetObjects,
-        config.componentObjects,
         config.craftStudioObjects,
+        config.craftStudioAssetObjects,
         config.daneelObjects,
-        config.daneelComponentObjects,
+        config.componentObjects,
         config.userObjects
     )
 
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Load")
 
-    -- scripts
-    -- Dynamic getters and setter on Scripts
+    -- Scripts
     for i, path in pairs(config.scriptPaths) do
         local script = Asset.Get(path, "Script") -- Asset.Get() helpers does not exist yet
         if script ~= nil then
@@ -1027,13 +959,16 @@ function Daneel.LoadOnce()
                 return "ScriptedBehavior"..tostring(scriptedBehavior.inner):sub(2, 20)
             end
         else
-            config.scriptPaths[i] = nil
+            if math.isinteger(i) then
+                table.remove(config.scriptPaths, i)
+            else
+                config.scriptPaths[i] = nil
+            end
             if DEBUG == true then
                 print("WARNING : item with key '"..i.."' and value '"..path.."' in 'config.scriptPaths' is not a valid script path.")
             end
         end
     end
-
 
     -- Components
     for componentType, componentObject in pairs(config.componentObjects) do
@@ -1070,7 +1005,6 @@ function Daneel.LoadOnce()
         end
     end
 
-
     -- Assets
     for assetType, assetObject in pairs(config.assetObjects) do
         -- Get helpers : GetModelRenderer() ...
@@ -1093,7 +1027,6 @@ function Daneel.LoadOnce()
         end
     end
 
-
     -- Languages
     for i, language in ipairs(config.language.languageNames) do
         local functionName = "DaneelLanguage"..language:ucfirst()
@@ -1103,14 +1036,73 @@ function Daneel.LoadOnce()
             print("WARNING : Can't load the language '"..language.."' because the global function "..functionName.."() does not exists.")
         end
     end
-
+    if config.language.default == nil then
+        config.language.default = config.language.languageNames[1]
+    end
+    if config.language.current == nil then
+        config.language.current = config.language.default
+    end
 
     -- Tween
-    if Daneel.Tween ~= nil then
-        Daneel.Tween.Ease = GetEasingEquations()
-    end
-end
+    Daneel.Tween.Ease = GetEasingEquations()
 
+    DANEEL_LOADED = true
+    Daneel.Debug.StackTrace.EndFunction()
+end -- end Daneel.Load()
+
+-- called from DaneelBehavior Behavior:Awake()
+function Daneel.Awake()
+    Daneel.Load()
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Awake")
+
+    -- GUI
+    -- setting pixelToUnits  
+    config.gui.screenSize = CraftStudio.Screen.GetSize()
+    -- get the smaller side of the screen (usually screenSize.y, the height)
+    local smallSideSize = config.gui.screenSize.y
+    if config.gui.screenSize.x < config.gui.screenSize.y then
+        smallSideSize = config.gui.screenSize.x
+    end
+
+    config.gui.hudCameraGO = GameObject.Get(config.gui.hudCameraName)
+
+    if config.gui.hudCameraGO ~= nil then
+        -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
+        -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and 3D world units
+        Daneel.GUI.pixelsToUnits = 10 / smallSideSize
+        --Daneel.GUI.pixelsToUnits = config.gui.hudCameraGO.camera.orthographicScale / smallSideSize
+
+
+        config.gui.hudOriginGO = GameObject.New("HUDOrigin", { parent = config.gui.hudCameraGO })
+        config.gui.hudOriginGO.transform.localPosition = Vector3:New(
+            -config.gui.screenSize.x * Daneel.GUI.pixelsToUnits / 2, 
+            config.gui.screenSize.y * Daneel.GUI.pixelsToUnits / 2,
+            0
+        )
+        -- the HUDOrigin is now at the top-left corner of the screen
+        config.gui.hudOriginPosition = config.gui.hudOriginGO.transform.position
+    elseif DEBUG == true then
+        print("WARNING : HUD Camera gameObject with name '"..config.gui.hudCameraName.."' was not found. HUD origin gameObject not set up.")
+    end
+
+
+    -- Awakening is over
+
+    if DEBUG == true then
+        print("~~~~~ Daneel is loaded ~~~~~")
+    end
+
+    for i, path in pairs(config.scriptPaths) do
+        local script = Asset.Get(path, "Script")
+        if type(script.DaneelAwake) == "function" then
+            script.DaneelAwake()
+        end
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()
+end 
+
+-- called from DaneelBehavior Behavior:Update()
 function Daneel.Update()
     -- Time
     local currentTime = os.clock()
