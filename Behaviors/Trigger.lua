@@ -1,31 +1,34 @@
 
 -- public properties :
 -- range (default = 0)
--- layers (default = "default")
+-- layers (default = "")
 -- isStatic (default = false)
 
--- triggerableGameObjects
-local tgos = nil
-
-function Behavior:Awake()
-    tgos = config.triggerableGameObjects
-end
 
 function Behavior:Start()
     self.gameObjectsInRange = table.new() -- the gameObjects that touches this trigger
-    self.layers = self.layers:split(",")
+    if self.layers == "" then
+        self.layers = {}
+    else
+        self.layers = self.layers:split(",")
+    end
 end
 
+
 function Behavior:Update()
-    if self.range == 0 or self.isStatic == true then
+    if self.range == 0 or self.isStatic == true or self.tags == "" then
         return
     end
     local triggerPosition = self.gameObject.transform.position
     for i, layer in ipairs(self.layers) do
-        if tgos[layer] ~= nil then
-            for i, gameObject in ipairs(tgos[layer]) do
+        local gameObjects = GameObject.tags[layer]
+        if gameObjects ~= nil then
+            for i, gameObject in ipairs(gameObjects) do
                 if gameObject ~= nil and gameObject.inner ~= nil then
-                    if Vector3.Distance(gameObject.transform.position, triggerPosition) < self.range then
+                    if 
+                        gameObject ~= self.gameObject and 
+                        Vector3.Distance(gameObject.transform.position, triggerPosition) < self.range 
+                    then
                         if self.gameObjectsInRange:containsvalue(gameObject) == false then
                             -- just entered the trigger
                             self.gameObjectsInRange:insert(gameObject)
@@ -45,7 +48,7 @@ function Behavior:Update()
                         end
                     end
                 else
-                    table.remove(tgos[layer], i)
+                    table.remove(gameObjects, i)
                 end
             end
         end
@@ -68,14 +71,18 @@ function Behavior:GetGameObjectsInRange(layers)
     end
     local triggerPosition = self.gameObject.transform.position
     for i, layer in ipairs(layers) do
-        if tgos[layer] ~= nil then
-            for i, gameObject in ipairs(tgos[layer]) do
+        local gameObjects = GameObject.tags[layer]
+        if gameObjects ~= nil then
+            for i, gameObject in ipairs(gameObjects) do
                 if gameObject ~= nil and gameObject.inner ~= nil then
-                    if Vector3.Distance(gameObject.transform.position, triggerPosition) <= self.range then
+                    if 
+                        gameObject ~= self.gameObject and 
+                        Vector3.Distance(gameObject.transform.position, triggerPosition) <= self.range
+                    then
                         table.insert(gameObjectsInRange, gameObject)
                     end
                 else
-                    table.remove(tgos[layer], i)
+                    table.remove(gameObjects, i)
                 end
             end
         end

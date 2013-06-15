@@ -100,6 +100,9 @@ A modifier/ajouter dans la doc :
     - GUI
         - slider
 
+    - elever notion de triggerable, modif doc trigger
+    - update doc setup
+
     - Example project : minimalist encounter
 
 =========
