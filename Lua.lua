@@ -157,6 +157,43 @@ function string.endswith(s, chunk)
 end
 
 
+
+function string.trimstart(s)
+    local start = 0
+    local ts = s:totable()
+    for i, char in ipairs(ts) do
+        print("char",i, char)
+        if char == " " then
+            start = i+1
+        else
+            break
+        end
+    end
+    local ns = s:sub(start)
+    return ns
+end
+    
+function string.trimend(s)
+    local ts = s:totable()
+    local _end = #ts
+    for i=#ts, 1, -1 do
+        local char = ts[i]
+        if char == " " then
+            _end = i-1
+        else
+            break
+        end
+    end
+    local ns = s:sub(1, _end)
+    return ns
+end
+
+function string.trim(s)
+    local ns = s:trimstart():trimend()
+    return ns
+end
+
+
 ----------------------------------------------------------------------------------
 -- table
 
