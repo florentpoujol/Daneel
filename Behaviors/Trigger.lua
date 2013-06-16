@@ -16,7 +16,7 @@ end
 
 
 function Behavior:Update()
-    if self.range == 0 or self.isStatic == true or self.tags == "" then
+    if self.range == 0 or self.isStatic == true or #self.layers == 0 then
         return
     end
     local triggerPosition = self.gameObject.transform.position
