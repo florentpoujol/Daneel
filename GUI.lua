@@ -206,7 +206,7 @@ function Daneel.GUI.CheckBox.New(gameObject)
     
     local checkBox = setmetatable({ gameObject = gameObject }, Daneel.GUI.CheckBox)
     gameObject.checkBox = checkBox
-    gameObject:AddTags("mouseInteractive")
+    gameObject:AddTag("mouseInteractive")
 
     if gameObject.textRenderer == nil then
         -- "wait" for the TextRenderer to be added
@@ -404,7 +404,7 @@ function Daneel.GUI.Slider.New(gameObject)
     local slider = setmetatable({ gameObject = gameObject }, Daneel.GUI.Slider)
     gameObject.slider = slider
 
-    gameObject:AddTags("mouseInteractive")
+    gameObject:AddTag("mouseInteractive")
 
     slider.minValue = 0
     slider.maxValue = 100
