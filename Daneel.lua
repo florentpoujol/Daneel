@@ -641,7 +641,7 @@ function Daneel.Event.Listen(eventName, functionOrObject)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Listen", eventName, functionOrObject)
     local errorHead = "Daneel.Event.Listen(eventName, functionOrObject) : "
     Daneel.Debug.CheckArgType(eventName, "eventName", {"string", "table"}, errorHead)
-    Daneel.Debug.CheckArgType(functionOrObject, "functionOrObject", {"table", "function"}, errorHead)
+    Daneel.Debug.CheckArgType(functionOrObject, "functionOrObject", {"table", "function", "userdata"}, errorHead)
     local eventNames = eventName
     if type(eventName) == "string" then
         eventNames = { eventName }
@@ -943,7 +943,7 @@ function Daneel.Load()
     -- all objects (for use in GetType())
     config.allObjects = table.merge(
         config.craftStudioObjects,
-        config.craftStudioAssetObjects,
+        config.assetObjects,
         config.daneelObjects,
         config.componentObjects,
         config.userObjects
