@@ -745,7 +745,7 @@ end
 -- @param eventName (string) The event name.
 -- @param ... [optional] Argument(s) to pass along.
 function Daneel.Event.FireAtRealTime(realTime, object, eventName, ...)
-    Daneel.Debug.BeginFunction("Daneel.Event.FireAtTime", realTime, object, eventName, arg)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.FireAtTime", realTime, object, eventName, arg)
     local errorHead = "Daneel.Event.FireAtTime(realTime[, object], ]eventName[, ...]) : "
     Daneel.Debug.CheckArgType(realTime, "realTime", "number", errorHead)
     if type(object) == "string" then
@@ -775,7 +775,7 @@ end
 -- @param eventName (string) The event name.
 -- @param ... [optional] Argument(s) to pass along.
 function Daneel.Event.FireAtTime(time, object, eventName, ...)
-    Daneel.Debug.BeginFunction("Daneel.Event.FireAtTime", time, object, eventName, arg)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.FireAtTime", time, object, eventName, arg)
     local errorHead = "Daneel.Event.FireAtTime(time[, object], eventName[, ...]) : "
     Daneel.Debug.CheckArgType(time, "time", "number", errorHead)
     if type(object) == "string" then
@@ -806,7 +806,7 @@ end
 -- @param eventName (string) The event name.
 -- @param ... [optional] Argument(s) to pass along.
 function Daneel.Event.FireAtFrame(frame, object, eventName, ...)
-    Daneel.Debug.BeginFunction("Daneel.Event.FireAtFrame", frame, eventName, arg)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.FireAtFrame", frame, eventName, arg)
     local errorHead = "Daneel.Event.FireAtFrame(frame[, object], eventName[, ...]) : "
     Daneel.Debug.CheckArgType(frame, "frame", "number", errorHead)
     if type(object) == "string" then
