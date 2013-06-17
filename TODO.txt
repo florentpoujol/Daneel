@@ -4,6 +4,12 @@ IDEAS
     -----
     MISC
 
+    - trigger, tags : stocker les tags en tant que clé et non en tant que valeur
+        > gain de perf ?
+
+    - table.rebuiltindex()
+        recomplète l'index d'une table numérotée en gardant l'ordre
+
     - DEBUG
         - introduire un CheckArgValue, CheckOptionalArgValue > remplace CheckAssetType(), CheckComponentType()
 
@@ -80,6 +86,8 @@ A implémenter
 
         model comme handle avec script Mouseinteractive
 
+    - ajouter variable inner à tous les composant avec pour valeur " : "..math.round(math.randomrange(100000, 999999))
+
     -----
     TWEENER
 
@@ -95,7 +103,7 @@ A tester
 
     - GO qui a deux tag/layer > fonction OnTrigger.. envoyé deux fois ?
 
-    - suppression de valeurs dans table bouclée avec fir numérique
+    - Tester destruction de ScriptedBehavior
 
 
 ==========

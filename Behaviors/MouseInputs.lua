@@ -76,7 +76,7 @@ function Behavior:Update()
                 end
             end
         else
-            table.remove(gameObjectsToRemove, gameObject)
+            table.insert(gameObjectsToRemove, gameObject)
         end
     end
 
