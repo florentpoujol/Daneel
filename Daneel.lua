@@ -1052,6 +1052,7 @@ function Daneel.Load()
     Daneel.Debug.StackTrace.EndFunction()
 end -- end Daneel.Load()
 
+
 -- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
     Daneel.Load()
@@ -1091,15 +1092,16 @@ function Daneel.Awake()
     -- Awakening is over
 
     if DEBUG == true then
-        print("~~~~~ Daneel is loaded ~~~~~")
+        print("~~~~~ Daneel is awake ~~~~~")
     end
 
-    for i, path in pairs(config.scriptPaths) do
+    Daneel.Event.Fire("DaneelAwake")
+    --[[for i, path in pairs(config.scriptPaths) do
         local script = Asset.Get(path, "Script")
         if type(script.DaneelAwake) == "function" then
             script.DaneelAwake()
         end
-    end
+    end]]
 
     Daneel.Debug.StackTrace.EndFunction()
 end 
