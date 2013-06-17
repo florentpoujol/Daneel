@@ -1054,17 +1054,10 @@ function Daneel.Load()
         Daneel.Utilities.AllowDynamicGettersAndSetters(componentObject, { Component })
 
         if componentType ~= "ScriptedBehavior" then
-            if not componentType:isoneof(config.daneelComponentTypes) then
-                componentObject["__tostring"] = function(component)
-                    -- returns something like "ModelRenderer: 123456789"
-                    -- component.inner is "?: [some ID]"
-                    return componentType..tostring(component.inner):sub(2, 20) -- leave 2 as the starting index, only the transform has an extra space
-                end
-            else -- one of the daneel component types
-                componentObject["__tostring"] = function(component)
-                    -- returns something like "Hud: 1234"
-                    return componentType..": "..math.round(math.randomrange(100000, 999999))
-                end
+            componentObject["__tostring"] = function(component)
+                -- returns something like "ModelRenderer: 123456789"
+                -- component.inner is "?: [some ID]"
+                return componentType..tostring(component.inner):sub(2, 20) -- leave 2 as the starting index, only the transform has an extra space
             end
         end
     end
