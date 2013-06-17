@@ -94,7 +94,9 @@ A tester
         > solution , fire un event une frame plus tard
 
     - GO qui a deux tag/layer > fonction OnTrigger.. envoyé deux fois ?
-    
+
+    - suppression de valeurs dans table bouclée avec fir numérique
+
 
 ==========
 A modifier/ajouter dans la doc :

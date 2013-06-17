@@ -61,33 +61,30 @@ function Behavior:Update()
 end
 
 --- Get the gameObjets that are closer than the trigger's range.
--- @param layers (string or table) [optional] The layer(s) in which to pick the triggerable gameObjects. If nil, it uses the trigger's layer(s).
--- @return (table) The list of the gameObjects in range.
-function Behavior:GetGameObjectsInRange(layers)
+-- @param tags [optional] (string or table) The tags(s) the gameObjects must have. If nil, it uses the trigger's layer(s).
+-- @return (table) The list of the gameObjects in range (empty if none in range).
+function Behavior:GetGameObjectsInRange(tags)
     local gameObjectsInRange = table.new()
-    if layers == nil then
+    if tags == nil then
         if self.isStatic == false then
             return self.gameObjectsInRange
         end
-        layers = self.layers
+        tags = self.layers
     end
-    if type(layers) == "string" then
-        layers = layers:split(",")
+    if type(tags) == "string" then
+        tags = tags:split(",", true)
     end
     local triggerPosition = self.gameObject.transform.position
-    for i, layer in ipairs(layers) do
+    for i, layer in ipairs(tags) do
         local gameObjects = GameObject.tags[layer]
         if gameObjects ~= nil then
             for i, gameObject in ipairs(gameObjects) do
-                if gameObject ~= nil and gameObject.inner ~= nil then
-                    if 
-                        gameObject ~= self.gameObject and 
-                        Vector3.Distance(gameObject.transform.position, triggerPosition) <= self.range
-                    then
-                        table.insert(gameObjectsInRange, gameObject)
-                    end
-                else
-                    table.remove(gameObjects, i)
+                if 
+                    gameObject ~= nil and gameObject.inner ~= nil and
+                    gameObject ~= self.gameObject and 
+                    Vector3.Distance(gameObject.transform.position, triggerPosition) <= self.range
+                then
+                    table.insert(gameObjectsInRange, gameObject)
                 end
             end
         end
