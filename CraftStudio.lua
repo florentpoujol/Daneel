@@ -122,6 +122,7 @@ function Component.Destroy(component)
     Daneel.Debug.StackTrace.BeginFunction("Component.Destroy", component)
     local errorHead = "Component.Destroy(component) : "
     Daneel.Debug.CheckArgType(component, "component", config.componentTypes, errorHead)
+
     CraftStudio.Destroy(component)
     Daneel.Debug.StackTrace.EndFunction("Component.Destroy")
 end
@@ -346,7 +347,7 @@ end
 -- Scene
 
 --- Alias of CraftStudio.LoadScene().
--- Schedules loading the specified scene after the current tick (1/60th of a second) has completed.
+-- Schedules loading the specified scene after the current tick (frame) (1/60th of a second) has completed.
 -- When the new scene is loaded, all of the current scene's game objects will be removed.
 -- Calling this function doesn't immediately stops the calling function. As such, you might want to add a return statement afterwards. 
 -- @param sceneNameOrAsset (string or Scene) The scene name or asset
@@ -355,9 +356,34 @@ function Scene.Load(sceneNameOrAsset)
     local errorHead = "Scene.Load(sceneNameOrAsset) : "
     Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
 
+    CraftStudio.LoadScene(sceneNameOrAsset)
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+local OriginalLoadScene = CraftStudio.LoadScene
+
+--- Schedules loading the specified scene after the current tick (1/60th of a second) has completed.
+-- When the new scene is loaded, all of the current scene's game objects will be removed.
+-- Calling this function doesn't immediately stops the calling function. As such, you might want to add a return statement afterwards. 
+-- @param sceneNameOrAsset (string or Scene) The scene name or asset
+function CraftStudio.LoadScene(sceneNameOrAsset)
+    Daneel.Debug.StackTrace.BeginFunction("CraftStudio.LoadScene", sceneNameOrAsset)
+    local errorHead = "CraftStudio.LoadScene(sceneNameOrAsset) : "
+    Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
+
+    -- sanitize some lists of gameObjects
+    GameObject.tags = {}
+    Daneel.Event.events = {}
+    Daneel.Event.fireAtTime = {}
+    Daneel.Event.fireAtRealTime = {}
+    Daneel.Event.fireAtFrame = {}
+    if Daneel.tween ~= nil then
+        Daneel.Tween.Tweeners.tweeners = {}
+    end
+    
     local scene = Asset.Get(sceneNameOrAsset, "Scene", true)
-    CraftStudio.LoadScene(scene)
-    Daneel.Debug.StackTrace.EndFunction("Scene.Load")
+    OriginalLoadScene(scene)
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Alias of CraftStudio.AppendScene().
@@ -414,6 +440,35 @@ function CraftStudio.Screen.GetSize()
     return vector
 end
 
+
+local OriginalDestroy = CraftStudio.Destroy
+
+--- Removes the specified game object (and all of its descendants) or the specified component from its game object.
+-- You can also optionally specify a dynamically loaded asset for unloading (See Map.LoadFromPackage )
+-- @param object (GameObject, a component, a dynamically loaded asset) The gameObject, CraftStudio component or a dynamically loaded asset (like a map loaded with Map.LoadFromPackage).
+function CraftStudio.Destroy(object)
+    Daneel.Debug.StackTrace.BeginFunction("CraftStudio.Destroy", object)
+    local Type = Daneel.Debug.GetType(object)
+
+    if Type == "GameObject" then
+        object:RemoveTag()
+    elseif Type:isoneof(config.componentTypes) then
+        object.gameObject[Type:lcfirst()] = nil
+        setmetatable(object, nil)
+        
+        if Type:isoneof(config.daneelComponentTypes) then 
+            object.inner = nil -- object.inner is needed by CS.Destroy() to actually removes the component
+            local behavior = object.gameObject:GetScriptedBehavior("Daneel/Behaviors/"..Type)
+            if behavior ~= nil then
+                CraftStudio.Destroy(behavior)
+            end
+        end
+        object.gameObject = nil
+    end
+
+    OriginalDestroy(object)
+    Daneel.Debug.StackTrace.EndFunction()
+end
 
 ----------------------------------------------------------------------------------
 
