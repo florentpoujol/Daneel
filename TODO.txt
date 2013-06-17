@@ -14,6 +14,7 @@ IDEAS
         Event.ListenRecuringEvent(time, TimedUpdate, object)
         Event.Ask
 
+
     - revoir l'utilisation de error(), print() et de la stacktrace
         lorsque debug activé, la localisation des erreurs se trouve toujours dans dans Daneel
 
@@ -65,8 +66,6 @@ A implémenter
     - décommenter nouveaux component dans la config
     - commentaire dans ray:IntersectsGameObject()
 
-    - enlever les valeurs par défautl dans config.language + implémenter valeur par défaut dans Daneel.Lang.get()
-
     -----
     GUI
 
@@ -94,6 +93,9 @@ A tester
     - set localPosition à la création ne fonctionne toujours pas, voir idem avec set de parent
         > solution , fire un event une frame plus tard
 
+    - GO qui a deux tag/layer > fonction OnTrigger.. envoyé deux fois ?
+    
+
 ==========
 A modifier/ajouter dans la doc :
 
@@ -101,7 +103,6 @@ A modifier/ajouter dans la doc :
         - slider
 
     - elever notion de triggerable, modif doc trigger
-    - update doc setup
     - event avec userdata
     - Example project : minimalist encounter
 

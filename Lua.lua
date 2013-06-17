@@ -88,12 +88,14 @@ end
 -- If the string does not contain the delimiter, it returns a table containing only the whole string.
 -- @param s (string) The string.
 -- @param delimiter (string) The delimiter (must be a single character long).
+-- @param trim [optional default=false] (boolean) Trim the chunks.
 -- @return (table) The chunks.
-function string.split(s, delimiter)
-    Daneel.Debug.StackTrace.BeginFunction("string.split", s, delimiter)
-    local errorHead = "string.split(string, delimiter) : "
+function string.split(s, delimiter, trim)
+    Daneel.Debug.StackTrace.BeginFunction("string.split", s, delimiter, trim)
+    local errorHead = "string.split(string, delimiter[, trim]) : "
     Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
     Daneel.Debug.CheckArgType(delimiter, "delimiter", "string", errorHead)
+    Daneel.Debug.CheckOptionalArgType(trim, "trim", "boolean", errorHead)
 
     local chunks = {}
     if s:find(delimiter) == nil then
@@ -103,6 +105,9 @@ function string.split(s, delimiter)
         s = s:totable()
         for i, char in ipairs(s) do
             if char == delimiter then
+                if trim == true then
+                    chunk = chunk:trim()
+                end
                 table.insert(chunks, chunk)
                 chunk = ""
             else
@@ -110,6 +115,9 @@ function string.split(s, delimiter)
             end
         end
         if #chunk > 0 then
+            if trim == true then
+                chunk = chunk:trim()
+            end
             table.insert(chunks, chunk)
         end
     end
