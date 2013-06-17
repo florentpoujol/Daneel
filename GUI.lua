@@ -45,6 +45,10 @@ function Daneel.GUI.Hud.New(gameObject)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.New", gameObject)
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", "Hud.New(gameObject) : ")
 
+    if config.gui.hudCameraGO == nil and DEBUG == true then
+        error("GUI was not set up or the HUD Camera gameObject with name '"..config.gui.hudCameraName.."' was not found. Be sure that you call Daneel.Awake() early on from your scene and check your config.")
+    end
+
     local hud = setmetatable({ gameObject = gameObject }, Daneel.GUI.Hud)
     gameObject.hud = hud
     hud.position = Vector2.New(0)

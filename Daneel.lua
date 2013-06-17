@@ -1046,7 +1046,13 @@ function Daneel.Load()
     end
 
     -- Tween
-    Daneel.Tween.Ease = GetEasingEquations()
+    if Daneel.Tween ~= nil then
+        if Daneel.Debug.GlobalExists("GetEasingEquations") then
+            Daneel.Tween.Ease = GetEasingEquations()
+        else
+            error("Daneel.Load() : Daneel.Tween object exists but the 'Easing' file is missing.")
+        end
+    end
 
     DANEEL_LOADED = true
     Daneel.Debug.StackTrace.EndFunction()
@@ -1075,7 +1081,6 @@ function Daneel.Awake()
         Daneel.GUI.pixelsToUnits = 10 / smallSideSize
         --Daneel.GUI.pixelsToUnits = config.gui.hudCameraGO.camera.orthographicScale / smallSideSize
 
-
         config.gui.hudOriginGO = GameObject.New("HUDOrigin", { parent = config.gui.hudCameraGO })
         config.gui.hudOriginGO.transform.localPosition = Vector3:New(
             -config.gui.screenSize.x * Daneel.GUI.pixelsToUnits / 2, 
@@ -1084,25 +1089,14 @@ function Daneel.Awake()
         )
         -- the HUDOrigin is now at the top-left corner of the screen
         config.gui.hudOriginPosition = config.gui.hudOriginGO.transform.position
-    elseif DEBUG == true then
-        print("WARNING : HUD Camera gameObject with name '"..config.gui.hudCameraName.."' was not found. HUD origin gameObject not set up.")
     end
 
-
     -- Awakening is over
-
     if DEBUG == true then
         print("~~~~~ Daneel is awake ~~~~~")
     end
 
     Daneel.Event.Fire("DaneelAwake")
-    --[[for i, path in pairs(config.scriptPaths) do
-        local script = Asset.Get(path, "Script")
-        if type(script.DaneelAwake) == "function" then
-            script.DaneelAwake()
-        end
-    end]]
-
     Daneel.Debug.StackTrace.EndFunction()
 end 
 
@@ -1184,5 +1178,7 @@ function Daneel.Update()
     end
 
     -- Tween
-    Daneel.Tween.Update()
+    if Daneel.Tween ~= nil then
+        Daneel.Tween.Update()
+    end
 end
