@@ -33,6 +33,7 @@ end
 function string.totable(s)
     Daneel.Debug.StackTrace.BeginFunction("string.totable", s)
     Daneel.Debug.CheckArgType(s, "string", "string", "string.totable(string)")
+
     local strLen = s:len()
     local t = table.new()
     for i = 1, strLen do
@@ -54,6 +55,7 @@ function string.isoneof(s, t, ignoreCase)
     Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
     Daneel.Debug.CheckOptionalArgType(ignoreCase, "ignoreCase", "boolean", errorHead)
+
     local isOneOf = table.containsvalue(t, s, ignoreCase)
     Daneel.Debug.StackTrace.EndFunction("string.isoneof", isOneOf)
     return isOneOf
@@ -66,6 +68,7 @@ function string.ucfirst(s)
     Daneel.Debug.StackTrace.BeginFunction("string.ucfirst", s)
     local errorHead = "string.ucfirst(string) : "
     Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
+
     local t = s:totable()
     t[1] = t[1]:upper()
     s = t:concat()
@@ -80,6 +83,7 @@ function string.lcfirst(s)
     Daneel.Debug.StackTrace.BeginFunction("string.lcfirst", s)
     local errorHead = "string.lcfirst(string) : "
     Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
+
     local t = s:totable()
     t[1] = t[1]:lower()
     s = t:concat()
@@ -97,6 +101,7 @@ function string.split(s, delimiter)
     local errorHead = "string.split(string, delimiter) : "
     Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
     Daneel.Debug.CheckArgType(delimiter, "delimiter", "string", errorHead)
+
     local chunks = {}
     if s:find(delimiter) == nil then
         chunks = {s}
@@ -128,6 +133,7 @@ function string.startswith(s, chunk)
     local errorHead = "string.startswith(string, chunk) : "
     Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
     Daneel.Debug.CheckArgType(chunk, "chunk", "string", errorHead)
+
     local sChunk = s:sub(1, #chunk)
     local startsWith = false
     if sChunk == chunk then 
@@ -146,6 +152,7 @@ function string.endswith(s, chunk)
     local errorHead = "string.endswith(string, chunk) : "
     Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
     Daneel.Debug.CheckArgType(chunk, "chunk", "string", errorHead)
+
     local length = #s
     local sChunk = s:sub(length-#chunk+1, length)
     local endsWith = false
@@ -156,13 +163,17 @@ function string.endswith(s, chunk)
     return endsWith
 end
 
-
-
+--- Removes the white spaces at the beginning of the provided string.
+-- @param s (string) The string.
+-- @return (string) The trimmed string.
 function string.trimstart(s)
+    Daneel.Debug.StackTrace.BeginFunction("string.trimstart", s)
+    local errorHead = "string.trimstart(string) : "
+    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
+
     local start = 0
     local ts = s:totable()
     for i, char in ipairs(ts) do
-        print("char",i, char)
         if char == " " then
             start = i+1
         else
@@ -170,26 +181,42 @@ function string.trimstart(s)
         end
     end
     local ns = s:sub(start)
+    Daneel.Debug.StackTrace.EndFunction()
     return ns
 end
-    
+
+--- Removes the white spaces at the end of the provided string.
+-- @param s (string) The string.
+-- @return (string) The trimmed string.
 function string.trimend(s)
+Daneel.Debug.StackTrace.BeginFunction("string.trimend", s)
+    local errorHead = "string.trimend(string) : "
+    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
+
     local ts = s:totable()
     local _end = #ts
     for i=#ts, 1, -1 do
-        local char = ts[i]
-        if char == " " then
+        if ts[i] == " " then
             _end = i-1
         else
             break
         end
     end
     local ns = s:sub(1, _end)
+    Daneel.Debug.StackTrace.EndFunction()
     return ns
 end
 
+--- Removes the white spaces at the beginning and the end of the provided string.
+-- @param s (string) The string.
+-- @return (string) The trimmed string.
 function string.trim(s)
+    Daneel.Debug.StackTrace.BeginFunction("string.trim", s)
+    local errorHead = "string.trim(string) : "
+    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
+
     local ns = s:trimstart():trimend()
+    Daneel.Debug.StackTrace.EndFunction()
     return ns
 end
 
