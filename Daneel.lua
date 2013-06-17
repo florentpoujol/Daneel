@@ -679,20 +679,35 @@ function Daneel.Event.StopListen(eventName, functionOrObject)
 end
 
 --- Fire the provided event on the provided objects (or the one that listen to it),
--- transmitting along all subsequent arguments if some exists. 
+-- or call the provided function,
+-- transmitting along all subsequent arguments if some exists. <br>
+-- Allowed set of arguments are : <br>
+-- (eventName[, ...]) <br>
+-- (object, eventName[, ...]) <br>
+-- (function[, ...])
 -- @param object [optional] (table) The object to which fire the event at. If nil or abscent, will send the event to its listeners.
 -- @param eventName (string) The event name.
 -- @param ... [optional] Some arguments to pass along.
 function Daneel.Event.Fire(object, eventName,  ...)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Fire", object, eventName, unpack(arg))
     local errorHead = "Daneel.Event.Fire([object, ]eventName[, ...]) : "
-    if type(object) == "string" then
+    
+    local argType = type(object)
+    if argType == "string" then
         if eventName ~= nil then
             table.insert(arg, 1, eventName)
         end
         eventName = object
         object = nil
+    elseif argType == "function" or argType == "userdata" then
+        if eventName ~= nil then
+            table.insert(arg, 1, eventName)
+        end
+        object(unpack(arg))
+        Daneel.Debug.StackTrace.EndFunction()
+        return
     end
+
     Daneel.Debug.CheckOptionalArgType(object, "object", "table", errorHead)
     Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
     
@@ -739,7 +754,11 @@ function Daneel.Event.Fire(object, eventName,  ...)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Queue and event to be fired at a particular real time.
+--- Schedule an event to be fired or a function to be called at a particular real time.
+-- Allowed set of arguments are : <br>
+-- (realTime, eventName[, ...]) <br>
+-- (realTime, object, eventName[, ...]) <br>
+-- (realTime, function[, ...])
 -- @param realTime (number) The real time at which to fire the event.
 -- @param object [optional] (table) The object to which fire the event at. If nil or abscent, will send the event to its listeners.
 -- @param eventName (string) The event name.
@@ -748,28 +767,42 @@ function Daneel.Event.FireAtRealTime(realTime, object, eventName, ...)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.FireAtTime", realTime, object, eventName, arg)
     local errorHead = "Daneel.Event.FireAtTime(realTime[, object], ]eventName[, ...]) : "
     Daneel.Debug.CheckArgType(realTime, "realTime", "number", errorHead)
-    if type(object) == "string" then
+    
+    local argType = type(object)
+    if argType == "string" then
         if eventName ~= nil then
             table.insert(arg, 1, eventName)
         end
         eventName = object
         object = nil
+
+
+    elseif argType == "function" or argType == "userdata" then
+        if eventName ~= nil then
+            table.insert(arg, 1, eventName)
+        end
+        eventName = nil
+
+    elseif argType ~= "table" then
+        error(errorHead.."Argument 'object' with value '"..tostring(object).."' is not if type 'string', 'table', 'function' or 'userdata'.")
     end
-    Daneel.Debug.CheckOptionalArgType(object, "object", "table", errorHead)
-    Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
 
     if Daneel.Event.fireAtTime[realTime] == nil then
         Daneel.Event.fireAtTime[realTime] = {}
     end
     table.insert(Daneel.Event.fireAtRealTime[realTime], {
-        object = object,
-        name = eventName,
-        args = arg
+        object = object, -- function or object
+        name = eventName, -- may be nil
+        args = arg 
     })
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Queue and event to be fired at a particular time.
+--- Schedule an event to be fired or a function to be called at a particular time.
+-- Allowed set of arguments are : <br>
+-- (time, eventName[, ...]) <br>
+-- (time, object, eventName[, ...]) <br>
+-- (time, function[, ...])
 -- @param time (number) The time at which to fire the event.
 -- @param object [optional] (table) The object to which fire the event at. If nil or abscent, will send the event to its listeners.
 -- @param eventName (string) The event name.
@@ -778,15 +811,25 @@ function Daneel.Event.FireAtTime(time, object, eventName, ...)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.FireAtTime", time, object, eventName, arg)
     local errorHead = "Daneel.Event.FireAtTime(time[, object], eventName[, ...]) : "
     Daneel.Debug.CheckArgType(time, "time", "number", errorHead)
-    if type(object) == "string" then
+    
+    local argType = type(object)
+    if argType == "string" then
         if eventName ~= nil then
             table.insert(arg, 1, eventName)
         end
         eventName = object
         object = nil
+
+
+    elseif argType == "function" or argType == "userdata" then
+        if eventName ~= nil then
+            table.insert(arg, 1, eventName)
+        end
+        eventName = nil
+
+    elseif argType ~= "table" then
+        error(errorHead.."Argument 'object' with value '"..tostring(object).."' is not if type 'string', 'table', 'function' or 'userdata'.")
     end
-    Daneel.Debug.CheckOptionalArgType(object, "object", "table", errorHead)
-    Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
 
     if Daneel.Event.fireAtTime[time] == nil then
         Daneel.Event.fireAtTime[time] = {}
@@ -799,8 +842,11 @@ function Daneel.Event.FireAtTime(time, object, eventName, ...)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Queue and event to be fired at a particular frame.
--- If the provided frame is the current frame or an anterior frame, it will never be fired.
+--- Schedule an event to be fired or a function to be called at a particular frame.
+-- Allowed set of arguments are : <br>
+-- (frame, eventName[, ...]) <br>
+-- (frame, object, eventName[, ...]) <br>
+-- (frame, function[, ...])
 -- @param frame (number) The frame at which to fire the event. 
 -- @param object [optional] (table) The object to which fire the event at. If nil or abscent, will send the event to its listeners.
 -- @param eventName (string) The event name.
@@ -809,15 +855,25 @@ function Daneel.Event.FireAtFrame(frame, object, eventName, ...)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.FireAtFrame", frame, eventName, arg)
     local errorHead = "Daneel.Event.FireAtFrame(frame[, object], eventName[, ...]) : "
     Daneel.Debug.CheckArgType(frame, "frame", "number", errorHead)
-    if type(object) == "string" then
+    
+    local argType = type(object)
+    if argType == "string" then
         if eventName ~= nil then
             table.insert(arg, 1, eventName)
         end
         eventName = object
         object = nil
-    end
-    Daneel.Debug.CheckOptionalArgType(object, "object", "table", errorHead)
-    Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead) 
+
+
+    elseif argType == "function" or argType == "userdata" then
+        if eventName ~= nil then
+            table.insert(arg, 1, eventName)
+        end
+        eventName = nil
+
+    elseif argType ~= "table" then
+        error(errorHead.."Argument 'object' with value '"..tostring(object).."' is not if type 'string', 'table', 'function' or 'userdata'.")
+    end 
     
     if Daneel.Event.fireAtFrame[frame] == nil then
         Daneel.Event.fireAtFrame[frame] = {}
@@ -1112,14 +1168,15 @@ function Daneel.Update()
 
     Daneel.Time.frameCount = Daneel.Time.frameCount + 1
 
-
     -- Scheduled events
+    -- frame
     if Daneel.Event.fireAtFrame[Daneel.Time.frameCount] ~= nil then
         for i, event in ipairs(Daneel.Event.fireAtFrame[Daneel.Time.frameCount]) do
-            if event.args == nil then
-                event.args = {}
+            if event.name == nil then
+                Daneel.Event.Fire(event.object, unpack(event.args))
+            else
+                Daneel.Event.Fire(event.object, event.name, unpack(event.args))
             end
-            Daneel.Event.Fire(event.object, event.name, unpack(event.args))
         end
         Daneel.Event.fireAtFrame[Daneel.Time.frameCount] = nil
     end
@@ -1134,10 +1191,11 @@ function Daneel.Update()
     table.sort(realTimes)
     for i, realTime in ipairs(realTimes) do
         for i, event in ipairs(Daneel.Event.fireAtRealTime[realTime]) do
-            if event.args == nil then
-                event.args = {}
+            if event.name == nil then
+                Daneel.Event.Fire(event.object, unpack(event.args))
+            else
+                Daneel.Event.Fire(event.object, event.name, unpack(event.args))
             end
-            Daneel.Event.Fire(event.object, event.name, unpack(event.args))
         end
         Daneel.Event.fireAtRealTime[realTime] = nil
     end
@@ -1152,14 +1210,14 @@ function Daneel.Update()
     table.sort(times)
     for i, time in ipairs(times) do
         for i, event in ipairs(Daneel.Event.fireAtTime[time]) do
-            if event.args == nil then
-                event.args = {}
+            if event.name == nil then
+                Daneel.Event.Fire(event.object, unpack(event.args))
+            else
+                Daneel.Event.Fire(event.object, event.name, unpack(event.args))
             end
-            Daneel.Event.Fire(event.object, event.name, unpack(event.args))
         end
         Daneel.Event.fireAtTime[time] = nil
     end
-
 
     -- HotKeys
     -- fire an event whenever a registered button is pressed

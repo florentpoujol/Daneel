@@ -104,8 +104,6 @@ A modifier/ajouter dans la doc :
     - GUI
         - slider
 
-    - elever notion de triggerable, modif doc trigger
-    - event avec userdata
     - Example project : minimalist encounter
 
 =========
