@@ -423,7 +423,13 @@ local function SetNewError()
     end
 end
 
-function Daneel.Debug.Disable()
+--- Disable the debug from this point onward.
+-- @param info [optional] (string) Some info about why or where you disabled the debug. Will be printed in the Runtime Report.
+function Daneel.Debug.Disable(info)
+    if info ~= nil then
+        info == " : "..tostring(info)
+    end
+    print("Daneel.Debug.Disable()"info)
     error = OriginalError
     DEBUG = false
 end
@@ -577,7 +583,7 @@ Daneel.Debug.StackTrace = { messages = {} }
 -- @param functionName (string) The function name.
 -- @param ... [optional] (mixed) Arguments received by the function.
 function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
-    if DEBUG ~= true or config.debug.enableStackTrace ~= true then return end
+    if DEBUG == false or config.debug.enableStackTrace == false then return end
     local errorHead = "Daneel.Debug.StackTrace.BeginFunction(functionName[, ...]) : "
     Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
     local msg = functionName.."("
