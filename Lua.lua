@@ -5,20 +5,13 @@
 --- Tell whether the provided number is an integer.
 -- That include numbers that have one or several zeros as decimals (1.0, 2.000, ...).
 -- @param number (number) The number to check.
--- @param errorIfValueIsNotNumber [optionnal default=false] (boolean) If true, the function returns an error when the 'number' argument is not a number.
 -- @return (boolean) True if the provided number is an integer, false otherwise.
-function math.isinteger(number, errorIfValueIsNotNumber)
-    Daneel.Debug.StackTrace.BeginFunction("math.isinteger", number, errorIfValueIsNotNumber)
-    local argType = type(number)
-    if argType ~= "number" then
-        if errorIfValueIsNotNumber ~= nil and errorIfValueIsNotNumber == true then
-            error("math.isinterger(number[, errorIfValueIsNotNumber]) : Argument 'number' is of type '"..argType.."' instead of 'number'.")
-        else
-            Daneel.Debug.StackTrace.EndFunction("math.isinteger", false)
-            return false
-        end
+function math.isinteger(number)
+    Daneel.Debug.StackTrace.BeginFunction("math.isinteger", number)
+    local isinteger = false
+    if type(number) == "number" then
+        isinteger = number == math.floor(number)
     end
-    local isinteger = number == math.floor(number)
     Daneel.Debug.StackTrace.EndFunction()
     return isinteger
 end
