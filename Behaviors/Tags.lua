@@ -6,7 +6,7 @@
 
 function Behavior:Start()
 	if self.tags ~= "" then
-		local tags = self.tags:split(",")
+		local tags = self.tags:split(",", true)
 		self.gameObject:AddTag(tags)
 	end
 end

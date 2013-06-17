@@ -10,7 +10,7 @@ function Behavior:Start()
     if self.layers == "" then
         self.layers = {}
     else
-        self.layers = self.layers:split(",")
+        self.layers = self.layers:split(",", true)
     end
 end
 
@@ -23,6 +23,7 @@ function Behavior:Update()
     for i, layer in ipairs(self.layers) do
         local gameObjects = GameObject.tags[layer]
         if gameObjects ~= nil then
+            local gameObjectsToRemove = {}
             for i, gameObject in ipairs(gameObjects) do
                 if gameObject ~= nil and gameObject.inner ~= nil then
                     if 
@@ -48,8 +49,12 @@ function Behavior:Update()
                         end
                     end
                 else
-                    table.remove(gameObjects, i)
+                    table.insert(gameObjectsToRemove, gameObject)
                 end
+            end
+
+            for i, gameObject in ipairs(gameObjectsToRemove) do
+                table.removevalue(gameObjects, gameObject)
             end
         end
     end

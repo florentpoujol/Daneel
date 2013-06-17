@@ -8,26 +8,24 @@
 local interactiveGameObjects = {}
 
 function Behavior:Start()
-    Daneel.Event.Listen({ "OnLeftMouseButtonJustPressed", "OnLeftMouseButtonDown", "OnRightMouseButtonJustPressed" }, self.gameObject)
+    Daneel.Event.Listen("OnLeftMouseButtonJustPressed", self.gameObject)
+    Daneel.Event.Listen("OnLeftMouseButtonDown", self.gameObject)
+    Daneel.Event.Listen("OnRightMouseButtonJustPressed", self.gameObject)
     interactiveGameObjects = GameObject.tags.mouseInteractive
 end
 
 
 function Behavior:OnLeftMouseButtonJustPressed()
     for i, gameObject in ipairs(interactiveGameObjects) do
-        if gameObject ~= nil and gameObject.inner ~= nil then
-            if gameObject.isHoveredByMouse == true then
-                Daneel.Event.Fire(gameObject, "OnClick")
-                
-                if gameObject.lastLeftClickFrame ~= nil and 
-                   Daneel.Time.frameCount <= gameObject.lastLeftClickFrame + config.input.doubleClickDelay then
-                    Daneel.Event.Fire(gameObject, "OnDoubleClick")
-                end
-                
-                gameObject.lastLeftClickFrame = Daneel.Time.frameCount
+        if gameObject ~= nil and gameObject.inner ~= nil and gameObject.isHoveredByMouse == true then
+            Daneel.Event.Fire(gameObject, "OnClick")
+            
+            if gameObject.lastLeftClickFrame ~= nil and 
+               Daneel.Time.frameCount <= gameObject.lastLeftClickFrame + config.input.doubleClickDelay then
+                Daneel.Event.Fire(gameObject, "OnDoubleClick")
             end
-        else
-            table.remove(interactiveGameObjects, i)
+            
+            gameObject.lastLeftClickFrame = Daneel.Time.frameCount
         end
     end
 end
@@ -47,12 +45,8 @@ end
 
 function Behavior:OnRightMouseButtonJustPressed()
     for i, gameObject in ipairs(interactiveGameObjects) do
-        if gameObject ~= nil and gameObject.iner ~= nil then 
-            if gameObject.isHoveredByMouse == true then
-                Daneel.Event.Fire(gameObject, "OnRightClick")
-            end
-        else
-            table.remove(interactiveGameObjects, i)
+        if gameObject ~= nil and gameObject.iner ~= nil and gameObject.isHoveredByMouse == true then
+            Daneel.Event.Fire(gameObject, "OnRightClick")
         end
     end
 end
@@ -60,7 +54,7 @@ end
 
 function Behavior:Update()
     local ray = self.gameObject.camera:CreateRay(CraftStudio.Input.GetMousePosition())
-
+    local gameObjectsToRemove = {}
     for i, gameObject in ipairs(interactiveGameObjects) do
         if gameObject ~= nil and gameObject.inner ~= nil then
             if ray:IntersectsGameObject(gameObject) ~= nil then
@@ -82,7 +76,11 @@ function Behavior:Update()
                 end
             end
         else
-            table.remove(interactiveGameObjects, i)
+            table.remove(gameObjectsToRemove, gameObject)
         end
+    end
+
+    for i, gameObject in ipairs(gameObjectsToRemove) do
+        table.removevalue(interactiveGameObjects, gameObject)
     end
 end
