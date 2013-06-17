@@ -3,7 +3,7 @@ setmetatable(GameObject, { __call = function(Object, ...) return Object.New(...)
 
 function GameObject.__tostring(gameObject)
     if gameObject.inner == nil then
-        return "Destroyed gameObject:"..Daneel.Debug.ToRawString(gameObject)
+        return "Destroyed gameObject: "..Daneel.Debug.ToRawString(gameObject)
         -- the important here was to prevent throwing an error
     end
     -- returns something like "GameObject: 123456789: 'MyName'"
@@ -571,9 +571,22 @@ function GameObject.Destroy(gameObject)
     local errorHead = "GameObject.Destroy(gameObject) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
 
-    gameObject:RemoveTag()
     CraftStudio.Destroy(gameObject)
-    Daneel.Debug.StackTrace.EndFunction("GameObject.Destroy")
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+local OriginalDestroy = CraftStudio.Destroy
+
+--- Removes the specified game object (and all of its descendants) or the specified component from its game object.
+-- You can also optionally specify a dynamically loaded asset for unloading (See Map.LoadFromPackage )
+-- @param object (GameObject, a component, a dynamically loaded asset) The gameObject, CraftStudio component or a dynamically loaded asset (like a map loaded with Map.LoadFromPackage).
+function CraftStudio.Destroy(object)
+    Daneel.Debug.StackTrace.BeginFunction("CraftStudio.Destroy", object)
+    if getmetatable(object) == GameObject then
+        object:RemoveTag()
+    end
+    OriginalDestroy(object)
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
