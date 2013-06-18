@@ -444,31 +444,40 @@ end
 local OriginalDestroy = CraftStudio.Destroy
 
 --- Removes the specified game object (and all of its descendants) or the specified component from its game object.
--- You can also optionally specify a dynamically loaded asset for unloading (See Map.LoadFromPackage )
--- @param object (GameObject, a component, a dynamically loaded asset) The gameObject, CraftStudio component or a dynamically loaded asset (like a map loaded with Map.LoadFromPackage).
+-- You can also optionally specify a dynamically loaded asset for unloading (See Map.LoadFromPackage ).
+-- Fire the OnDestroy event on the object.
+-- @param object (GameObject, a component or a dynamically loaded asset) The gameObject, component or a dynamically loaded asset (like a map loaded with Map.LoadFromPackage).
 function CraftStudio.Destroy(object)
     Daneel.Debug.StackTrace.BeginFunction("CraftStudio.Destroy", object)
+    if object == nil then
+        error("CraftStudio.Destroy(object) : provided object is nil")
+    end
     local Type = Daneel.Debug.GetType(object)
 
     if Type == "GameObject" then
         object:RemoveTag()
+
     elseif Type:isoneof(config.componentTypes) then
-        object.gameObject[Type:lcfirst()] = nil
-        setmetatable(object, nil)
-        
         if Type:isoneof(config.daneelComponentTypes) then 
-            object.inner = nil -- object.inner is needed by CS.Destroy() to actually removes the component
+            object.inner = nil -- object.inner is needed by CS.Destroy() to actually removes the CS component
+            
+            -- if a Daneel component, must ensure that the corresponding Behavior is also removed
             local behavior = object.gameObject:GetScriptedBehavior("Daneel/Behaviors/"..Type)
             if behavior ~= nil then
                 CraftStudio.Destroy(behavior)
             end
         end
-        object.gameObject = nil
+        
+        table.removevalue(object.gameObject, object)
+        --object.gameObject = nil
     end
 
+    --setmetatable(object, nil)
+    Daneel.Event.Fire(object, "OnDestroy")
     OriginalDestroy(object)
     Daneel.Debug.StackTrace.EndFunction()
 end
+
 
 ----------------------------------------------------------------------------------
 
