@@ -44,13 +44,14 @@ Daneel.GUI.Hud = {}
 function Daneel.GUI.Hud.New(gameObject)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.New", gameObject)
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", "Hud.New(gameObject) : ")
-
     if config.gui.hudCameraGO == nil and DEBUG == true then
         error("GUI was not set up or the HUD Camera gameObject with name '"..config.gui.hudCameraName.."' was not found. Be sure that you call Daneel.Awake() early on from your scene and check your config.")
     end
 
-    local hud = setmetatable({ gameObject = gameObject }, Daneel.GUI.Hud)
+    local hud = setmetatable({}, Daneel.GUI.Hud)
     gameObject.hud = hud
+    hud.gameObject = gameObject
+    hud.inner = " : "..math.round(math.randomrange(100000, 999999))
     hud.position = Vector2.New(0)
     hud.layer = 1
     Daneel.Debug.StackTrace.EndFunction()
@@ -208,8 +209,12 @@ function Daneel.GUI.CheckBox.New(gameObject)
     local errorHead = "Daneel.GUI.CheckBox.New(gameObject) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "string", errorHead)
     
-    local checkBox = setmetatable({ gameObject = gameObject }, Daneel.GUI.CheckBox)
+    local checkBox = setmetatable({}, Daneel.GUI.CheckBox)
     gameObject.checkBox = checkBox
+    checkBox.gameObject = gameObject
+    checkBox.inner = " : "..math.round(math.randomrange(100000, 999999))
+    checkBox.isChecked = config.gui.checkBoxDefaultState
+
     gameObject:AddTag("mouseInteractive")
 
     if gameObject.textRenderer == nil then
@@ -224,7 +229,6 @@ function Daneel.GUI.CheckBox.New(gameObject)
         checkBox.text = gameObject.textRenderer.text
     end
     
-    checkBox:Check(config.gui.checkBoxDefaultState)
     Daneel.Debug.StackTrace.EndFunction()
     return checkBox
 end
@@ -253,7 +257,7 @@ function Daneel.GUI.CheckBox.SetText(checkBox, text)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Get the provided checBox's text.
+--- Get the provided checkBox's text.
 -- Actually get the text of the TextRenderer component on the same gameObject but without the check mark.
 -- @param checkBox (CheckBox) The checkBox component.
 -- @return (string) The text.
@@ -305,8 +309,11 @@ function Daneel.GUI.ProgressBar.New(gameObject)
     local errorHead = "Daneel.GUI.ProgressBar.New(gameObject) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
 
-    local progressBar = setmetatable({ gameObject = gameObject }, Daneel.GUI.ProgressBar)
+    local progressBar = setmetatable({}, Daneel.GUI.ProgressBar)
     gameObject.progressBar = progressBar
+    progressBar.gameObject = gameObject
+    progressBar.inner = " : "..math.round(math.randomrange(100000, 999999))
+
     progressBar.height = 1
     progressBar.minValue = 0
     progressBar.maxValue = 100
@@ -405,8 +412,10 @@ function Daneel.GUI.Slider.New(gameObject)
     local errorHead = "Daneel.GUI.Slider.New(gameObject) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
 
-    local slider = setmetatable({ gameObject = gameObject }, Daneel.GUI.Slider)
+    local slider = setmetatable({}, Daneel.GUI.Slider)
     gameObject.slider = slider
+    slider.gameObject = gameObject
+    slider.inner = " : "..math.round(math.randomrange(100000, 999999))
 
     gameObject:AddTag("mouseInteractive")
 
