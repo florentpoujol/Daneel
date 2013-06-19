@@ -78,7 +78,15 @@ function DaneelDefaultConfig()
 
             textDefaultFontName = "GUITextFont",
 
-            checkBoxDefaultState = false, -- false = not checked, true = checked
+            checkBox = {
+                defaultState = false, -- false = unchecked, true = checked
+
+                defaultCheckedMark = "√ :text",
+                defaultUncheckedMark = "X :text",
+
+                defaultCheckedModel = nil,
+                defaultUncheckedModel = nil,
+            },
         },
 
 

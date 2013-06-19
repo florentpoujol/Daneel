@@ -213,7 +213,13 @@ function Daneel.GUI.CheckBox.New(gameObject)
     gameObject.checkBox = checkBox
     checkBox.gameObject = gameObject
     checkBox.inner = " : "..math.round(math.randomrange(100000, 999999))
-    checkBox.isChecked = config.gui.checkBoxDefaultState
+
+    checkBox.checkedMark = config.gui.checkBox.defaultCheckedMark,
+    checkBox.uncheckedMark = config.gui.checkBox.defaultUncheckedMark,
+    checkBox.checkedModel = config.gui.checkBox.defaultCheckedModel,
+    checkBox.uncheckedModel = config.gui.checkBox.defaultUncheckedModel,
+
+    checkBox.isChecked = config.gui.checkBox.defaultState
 
     gameObject:AddTag("mouseInteractive")
 
@@ -244,15 +250,16 @@ function Daneel.GUI.CheckBox.SetText(checkBox, text)
     Daneel.Debug.CheckArgType(checkBox, "checkBox", "CheckBox", errorHead)
     Daneel.Debug.CheckArgType(text, "text", "string", errorHead)
 
-    if checkBox.isChecked == true then
-        text = "√ "..text
-    else
-        text = "X "..text
-    end
     if checkBox.gameObject.textRenderer ~= nil then
+        if checkBox.isChecked == true then
+            text = Daneel.Utilities.ReplaceInString(checkBox.checkedMark, { text = text })
+        else
+            text = Daneel.Utilities.ReplaceInString(checkBox.uncheckedMark, { text = text })
+        end
         checkBox.gameObject.textRenderer.text = text
-    elseif DEBUG == true then
-        print(errorHead.."Can't set the checkBox's text because no TextRenderer component has been found on the gameObject '"..tostring(checkBox.gameObject).."'.")
+
+    else
+        error(errorHead.."Can't set the checkBox's text because no TextRenderer component has been found on the gameObject '"..tostring(checkBox.gameObject).."'.")
     end
     Daneel.Debug.StackTrace.EndFunction()
 end
@@ -268,9 +275,18 @@ function Daneel.GUI.CheckBox.GetText(checkBox)
 
     local text = nil
     if checkBox.gameObject.textRenderer ~= nil then
-        text = checkBox.gameObject.textRenderer.text:sub(3, 500)
-    elseif DEBUG == true then
-        print(errorHead.."Can't get the checkBox's text because no TextRenderer component has been found on the gameObject '"..tostring(checkBox.gameObject).."'.")
+        local textMark = checkBox.checkedMark
+        if checkBox.isChecked == false then
+            textMark = checkBox.checkedMark
+        end
+        local start, _end = textMark:find(":text")
+        local prefix = textMark:sub(1, start-1)
+        local suffix = textMark:sub(_end+1)
+        local text = checkBox.gameObject.textRenderer.text
+        text = text:gsub(prefix, ""):gsub(suffix, "")
+
+    else
+        error(errorHead.."Can't get the checkBox's text because no TextRenderer component has been found on the gameObject '"..tostring(checkBox.gameObject).."'.")
     end
     Daneel.Debug.StackTrace.EndFunction()
     return text
@@ -289,7 +305,17 @@ function Daneel.GUI.CheckBox.Check(checkBox, state)
     if state == nil then state = true end
     if checkBox.isChecked ~= state then
         checkBox.isChecked = state
-        checkBox.text = checkBox.text -- "reload" the check mark based on the new checked state
+        
+        if checkBox.gameObject.textRenderer ~= nil then
+            checkBox.text = checkBox.text -- "reload" the check mark based on the new checked state
+        elseif checkBox.gameObject.modelRenderer ~= nil then
+            if state == true then
+                checkBox.gameObject.modelRenderer.model = checkBox.checkedModel
+            else
+                checkBox.gameObject.modelRenderer.model = checkBox.uncheckedModel
+            end
+        end
+
         Daneel.Event.Fire(checkBox, "OnUpdate")
     end
     Daneel.Debug.StackTrace.EndFunction()
