@@ -53,6 +53,7 @@ IDEAS
     lorsque élément pas utilisé, il a opacity, scale etc au choix dans la config, donc
       out et in state  
 
+    -  chekbox group > plusieurs checbox dont seulment une peu être true
 
     -----
     TWEEN
@@ -86,7 +87,6 @@ A implémenter
 
         model comme handle avec script Mouseinteractive
 
-    - ajouter variable inner à tous les composant avec pour valeur " : "..math.round(math.randomrange(100000, 999999))
 
     -----
     TWEENER

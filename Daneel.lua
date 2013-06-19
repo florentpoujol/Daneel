@@ -25,7 +25,6 @@ function DaneelDefaultConfig()
         -- Setting a script path here allow you to  :
         -- * Use the dynamic getters and setters
         -- * Use component:Set() (for scripts that are ScriptedBehaviors)
-        -- * Call Behavior:DaneelAwake() when Daneel has just loaded, even on scripts that are not ScriptedBehaviors
         -- * If you defined aliases, dynamically access the ScriptedBehavior on the gameObject via its alias
         scriptPaths = {},
 
