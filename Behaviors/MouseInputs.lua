@@ -7,11 +7,24 @@
 
 local interactiveGameObjects = {}
 
-function Behavior:Start()
+function Behavior:Awake()
+    Daneel.Debug.StackTrace.BeginFunction("MouseInputs:Awake")
+
     Daneel.Event.Listen("OnLeftMouseButtonJustPressed", self.gameObject)
     Daneel.Event.Listen("OnLeftMouseButtonDown", self.gameObject)
     Daneel.Event.Listen("OnRightMouseButtonJustPressed", self.gameObject)
+    
+    if GameObject.tags == nil then
+        error("MouseInputs:Awake() : Variable 'GameObject.tags' does not exists because the GameObject file probably missing.")
+    end
     interactiveGameObjects = GameObject.tags.mouseInteractive
+
+    if self.gameObject.camera == nil then
+        CS.Destroy(self)
+        error("MouseInputs:Awake() : GameObject with name '"..self.gameObject:GetName().."' has no camera component attached.")
+    end
+    
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
