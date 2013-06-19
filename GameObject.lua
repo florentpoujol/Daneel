@@ -134,6 +134,12 @@ function GameObject.Set(gameObject, params)
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
     local argType = nil
     
+    if params.parent ~= nil then
+        -- do that first so that setting a local position works
+        gameObject:SetParent(params.parent)
+        params.parent = nil
+    end
+    
     -- components
     local component = nil
     local componentTypes = table.copy(config.componentTypes)

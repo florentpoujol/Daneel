@@ -42,6 +42,8 @@ IDEAS
         > cette fonction enregistre la stacktrace
         et fait appeler Debug.Check.. en fonction des valeurs trouvées
 
+    - transform global layer
+
 
     -----
     GUI
@@ -53,7 +55,8 @@ IDEAS
     lorsque élément pas utilisé, il a opacity, scale etc au choix dans la config, donc
       out et in state  
 
-    -  chekbox group > plusieurs checbox dont seulment une peu être true
+    
+
 
     -----
     TWEEN
@@ -73,10 +76,15 @@ A implémenter
     - décommenter nouveaux component dans la config
     - commentaire dans ray:IntersectsGameObject()
 
+    - transform global scale
+        > remonter les parents, adapter la local scale récursivement
+
     -----
     GUI
 
-    ScriptedBehaviors pour ajouter les composants et les initialiser lorsque dans l'éditeur de scène :
+    - hud > passer de position 3D à position en pixels + layer
+        transform gethudposition
+                  gethudlayer
 
     - Slider
         minValue
@@ -87,6 +95,9 @@ A implémenter
 
         model comme handle avec script Mouseinteractive
 
+    - chekbox group > plusieurs checbox dont seulment une peu être true
+    - check box qui gère les models > set des deux models via propriété checkedModel uncheckedModel
+        idem pour les text, permettre de set un préfixe ou suffixe au choix : checkedMark = "ok :text"  ":text: OK
 
     -----
     TWEENER
@@ -95,15 +106,7 @@ A implémenter
 ==========
 A tester
 
-    - exemples des events dans la doc
     - voir pourquoi certains eseType renvoient des erreurs
-
-    - set localPosition à la création ne fonctionne toujours pas, voir idem avec set de parent
-        > solution , fire un event une frame plus tard
-
-    - GO qui a deux tag/layer > fonction OnTrigger.. envoyé deux fois ?
-
-    - Tester destruction de ScriptedBehavior
 
 
 ==========
