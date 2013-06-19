@@ -12,9 +12,7 @@ function DaneelConfig()
         -- * Use component:Set() (for scripts that are ScriptedBehaviors)
         -- * Call Behavior:DaneelAwake() when Daneel has just loaded, even on scripts that are not ScriptedBehaviors
         -- * If you defined aliases, dynamically access the ScriptedBehavior on the gameObject via its alias
-        scriptPaths = {
-            trigger = "Daneel/Behaviors/Trigger",
-        },
+        scriptPaths = {},
 
  
         ----------------------------------------------------------------------------------
@@ -33,9 +31,7 @@ function DaneelConfig()
 
         language = {
             -- list of the languages supported by the game
-            languageNames = {
-                
-            },
+            languageNames = {},
 
             -- Current language
             current = nil,

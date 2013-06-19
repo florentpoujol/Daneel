@@ -440,7 +440,6 @@ function CraftStudio.Screen.GetSize()
     return vector
 end
 
-
 local OriginalDestroy = CraftStudio.Destroy
 
 --- Removes the specified game object (and all of its descendants) or the specified component from its game object.
