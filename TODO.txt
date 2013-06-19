@@ -96,8 +96,7 @@ A implémenter
         model comme handle avec script Mouseinteractive
 
     - chekbox group > plusieurs checbox dont seulement une peu être true
-    - check box qui gère les models > set des deux models via propriété checkedModel uncheckedModel
-        idem pour les text, permettre de set un préfixe ou suffixe au choix : checkedMark = "ok :text"  ":text: OK
+
 
     -----
     TWEENER
@@ -108,6 +107,9 @@ A tester
 
     - voir pourquoi certains eseType renvoient des erreurs
     - que'est-ce qu empèche le type des gui composant d'être nommé 'Daneel.GUI.Checkbox' au lieu de juste 'CheckBox'
+
+    - checkbox group
+    - checkBox avec model et custom mark
 
 ==========
 A modifier/ajouter dans la doc :

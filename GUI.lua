@@ -300,10 +300,12 @@ function Daneel.GUI.CheckBox.Check(checkBox, state)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.Check", checkBox, state)
     local errorHead = "Daneel.GUI.CheckBox.Check(checkBox[, state]) : "
     Daneel.Debug.CheckArgType(checkBox, "checkBox", "CheckBox", errorHead)
-    Daneel.Debug.CheckOptionalArgType(state, "state", "boolean", errorHead)
+    state = Daneel.Debug.CheckOptionalArgType(state, "state", "boolean", errorHead, true)
 
-    if state == nil then state = true end
-    if checkBox.isChecked ~= state then
+    if 
+        ((checkBox._group ~= nil and checkBox.isChecked == false) or checkBox._group == nil) and
+        checkBox.isChecked ~= state
+    then
         checkBox.isChecked = state
         
         if checkBox.gameObject.textRenderer ~= nil then
@@ -317,8 +319,51 @@ function Daneel.GUI.CheckBox.Check(checkBox, state)
         end
 
         Daneel.Event.Fire(checkBox, "OnUpdate")
+
+        if checkBox._group ~= nil then
+            local gameObjects = GameObject.tags[checkBox._group]
+            for i, gameObject in ipairs(gameObjects) do
+                if gameObject ~= checkBox.gameObject then
+                    gameObject.checkBox:Check(false)
+                end
+            end
+        end
     end
     Daneel.Debug.StackTrace.EndFunction()
+end
+
+--- Set the checkBox's group.
+-- If the checkBox was already in a group it will be removed from it.
+-- @param checkBox (CheckBox) The checkBox component.
+-- @param group [optional] (string) The new group, or nil to remove from its group.
+function Daneel.GUI.CheckBox.SetGroup(checkBox, group)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.SetGroup", checkBox, group)
+    local errorHead = "Daneel.GUI.CheckBox.SetGroup(checkBox[, group]) : "
+    Daneel.Debug.CheckArgType(checkBox, "checkBox", "CheckBox", errorHead)
+    Daneel.Debug.CheckOptionalArgType(group, "group", "string", errorHead)
+
+    if group == nil and checkBox._group ~= nil then
+        checkBox.gameObject:RemoveTag(checkBox._group)
+    else
+        if checkBox._group ~= nil then
+            checkBox.gameObject:RemoveTag(checkBox._group)
+        end
+        checkBox:Check(false)
+        checkBox._group = group
+        checkBox.gameObject:AddTag(checkBox._group)
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+-- Get the checkBox's group.
+-- @param checkBox (CheckBox) The checkBox component.
+-- @return (string) The group, or nil.
+function Daneel.GUI.CheckBox.GetGroup(checkBox)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.GetGroup", checkBox)
+    local errorHead = "Daneel.GUI.CheckBox.GetGroup(checkBox) : "
+    Daneel.Debug.CheckArgType(checkBox, "checkBox", "CheckBox", errorHead)
+    Daneel.Debug.StackTrace.EndFunction()
+    return checkBox._group
 end
 
 
