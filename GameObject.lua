@@ -236,19 +236,26 @@ end
 
 --- Alias of GameObject:FindChild().
 -- Find the first gameObject's child with the provided name.
+-- If the name is not provided, it returns the first child.
 -- @param gameObject (GameObject) The gameObject.
--- @param name (string) The child name.
+-- @param name [optional] (string) The child name.
 -- @param recursive [optional default=false] (boolean) Search for the child in all descendants instead of just the first generation.
 -- @return (GameObject) The child or nil if none is found.
 function GameObject.GetChild(gameObject, name, recursive)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.GetChild", gameObject, name, recursive)
     local errorHead = "GameObject.GetChild(gameObject, name[, recursive]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
+    Daneel.Debug.CheckOptionalArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(recursive, "recursive", "boolean", errorHead)
     
-    local child = gameObject:FindChild(name, recursive)
-    Daneel.Debug.StackTrace.EndFunction("GameObject.GetChild", child)
+    local child = nil
+    if name == nil then
+        local children = gameObject:GetChildren()
+        child = children[1]
+    else
+        child = gameObject:FindChild(name, recursive)
+    end
+    Daneel.Debug.StackTrace.EndFunction()
     return child
 end
 
