@@ -1,6 +1,5 @@
 
 -- Behavior for Daneel.GUI.CheckBox component.
--- Only add to a gameObject while in the scene editor.
 
 -- Public properties :
 -- isChecked (boolean) [default=false]

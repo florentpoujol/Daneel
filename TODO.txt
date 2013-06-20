@@ -116,8 +116,9 @@ A modifier/ajouter dans la doc :
 
     - Example project : minimalist encounter
     - transform.GetScale
-    - modifs sur les checkbox*
+    - modifs sur les checkbox + slider
     - modifs sur les events
+    - HUD ToHudPosition
 
 
 =========

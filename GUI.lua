@@ -595,13 +595,13 @@ function Daneel.GUI.Slider.New(gameObject)
     slider.maxValue = 100
     slider.length = 5 -- 5 units
     slider.startPosition = slider.gameObject.transform.position
+    slider.axis = "x"
 
-    slider.value = "0%"
+    slider.value = 0
 
     Daneel.Debug.StackTrace.EndFunction()
     return slider
 end
-
 
 --- Set the value of the slider, adjusting its position.
 -- @param slider (Slider) The slider.
@@ -614,35 +614,34 @@ function Daneel.GUI.Slider.SetValue(slider, value)
 
     local maxVal = slider.maxValue
     local minVal = slider.minValue
-    local percentageOfProgress = nil
+    local percentage = nil
 
     if type(value) == "string" then
         if value:endswith("%") then
-            percentageOfProgress = tonumber(value:sub(1, #value-1)) / 100
-            local oldPercentage = percentageOfProgress
-            percentageOfProgress = math.clamp(percentageOfProgress, 0.0, 1.0)
-            if percentageOfProgress ~= oldPercentage and DEBUG == true then
-                print(errorHead.."WARNING : value in percentageOfProgress '"..value.."' is below 0% or above 100%.")
-            end
-            value = (maxVal - minVal) * percentageOfProgress + minVal
+            percentage = tonumber(value:sub(1, #value-1)) / 100
+            value = (maxVal - minVal) * percentage + minVal
         else
             value = tonumber(value)
         end
     end
-    slider._value = value
 
     -- now value is a number and should be a value between minVal and maxVal
     local oldValue = value
     value = math.clamp(value, minVal, maxVal)
     if value ~= oldValue and DEBUG == true then
-        print(errorHead.." WARNING : progress with value '"..oldValue.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
+        print(errorHead.." WARNING : Argument 'value' with value '"..oldValue.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
     end
-    percentageOfProgress = (value - minVal) / (maxVal - minVal)
+    percentage = (value - minVal) / (maxVal - minVal)
 
-    -- update the actual position
     slider.length = tounit(slider.length)
-    local newPos = slider.startPosition + -Vector3:Left() * slider.length * percentageOfProgress
-    slider.gameObject.transform.position = newPos
+
+    local direction = -Vector3:Left()
+    if slider.axis == "y" then
+        direction = Vector3:Up()
+    end
+    local orientation = Vector3.Transform( direction, slider.gameObject.transform.orientation )
+    local newPosition = slider.startPosition + orientation * slider.length * percentage
+    slider.gameObject.transform.position = newPosition
 
     Daneel.Event.Fire(slider, "OnUpdate")
     Daneel.Debug.StackTrace.EndFunction()

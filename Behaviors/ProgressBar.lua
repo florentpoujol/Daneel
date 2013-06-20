@@ -1,6 +1,5 @@
 
 -- Behavior for Daneel.GUI.ProgressBar component.
--- Only add to a gameObject while in the scene editor.
 
 -- Public properties :
 -- minValue (number) [default=0]
