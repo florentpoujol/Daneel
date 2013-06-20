@@ -226,7 +226,7 @@ function Daneel.GUI.CheckBox.New(gameObject)
                 --checkBox.text = checkBox._text
             --elseif getmetatable(newComponent) == ModelRenderer and checkBox.checkedModel ~= nil then
             if getmetatable(newComponent) == ModelRenderer and checkBox.checkedModel ~= nil then
-                if checkbox.isChecked then
+                if checkBox.isChecked then
                     checkBox.gameObject.modelRenderer.model = checkBox.checkedModel
                 else
                     checkBox.gameObject.modelRenderer.model = checkBox.uncheckedModel
@@ -241,7 +241,7 @@ function Daneel.GUI.CheckBox.New(gameObject)
     end
 
     if gameObject.modelRenderer ~= nil then
-        if checkbox.isChecked then
+        if checkBox.isChecked then
             checkBox.gameObject.modelRenderer.model = checkBox.checkedModel
         else
             checkBox.gameObject.modelRenderer.model = checkBox.uncheckedModel
@@ -311,7 +311,7 @@ function Daneel.GUI.CheckBox.GetText(checkBox)
 end 
 
 --- Check or uncheck the provided checkBox and fire the OnUpdate event.
--- You can get the checkbox's state via checkBox.isChecked.
+-- You can get the checkBox's state via checkBox.isChecked.
 -- @param checkBox (CheckBox) The checkBox component.
 -- @param state [optional default=true] (boolean) The new state of the checkBox.
 function Daneel.GUI.CheckBox.Check(checkBox, state)
