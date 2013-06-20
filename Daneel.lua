@@ -695,6 +695,7 @@ function Daneel.Event.Fire(object, eventName,  ...)
     
     local argType = type(object)
     if argType == "string" then
+        -- no object provided, fire on the listeners
         if eventName ~= nil then
             table.insert(arg, 1, eventName)
         end
@@ -729,26 +730,34 @@ function Daneel.Event.Fire(object, eventName,  ...)
                 funcOrMessage = eventName
             end
 
+            -- call function if needed
             _type = type(funcOrMessage)
             if _type == "function" or _type == "userdata" then
                 funcOrMessage(unpack(arg))
-            else
-                local sendMessage = true
-                local gameObject = listener
+                funcOrMessage = eventName
+            end
+
+            -- always try to send the message, even when funcOrMessage was a function
+            local sendMessage = true
+            local gameObject = listener
+            
+            if getmetatable(gameObject) ~= GameObject then
+                gameObject = listener.gameObject
+                
                 if getmetatable(gameObject) ~= GameObject then
-                    gameObject = listener.gameObject
-                    if getmetatable(gameObject) ~= GameObject then
-                        sendMessage = false
-                        if listener[eventName] ~= nil and DEBUG == true then
-                            -- only prints the debug when the user setted up the event property because otherwise
-                            -- it would print it every time an event has not been set up (which is OK) on an arbitrary object like a tweener
-                            print(errorHead.."Can't fire event '"..eventName.."' by sending message '"..funcOrMessage.."' on object '"..tostring(listener).."'  because it not a gameObject and has no 'gameObject' property.")                      
-                        end
+                    sendMessage = false
+                    
+                    if type(listener[eventName]) == "string" and DEBUG == true then
+                        -- the user obviously wanted to send a message but the object is not a gameObject and has no gameObject property
+
+                        -- only prints the debug when the user setted up the event property because otherwise
+                        -- it would print it every time an event has not been set up (which is OK) on an non-gameObject object like a tweener
+                        print(errorHead.."Can't fire event '"..eventName.."' by sending message '"..funcOrMessage.."' on object '"..tostring(listener).."'  because it not a gameObject and has no 'gameObject' property.")                      
                     end
                 end
-                if sendMessage == true then
-                    gameObject:SendMessage(funcOrMessage, arg)
-                end
+            end
+            if sendMessage then
+                gameObject:SendMessage(funcOrMessage, arg)
             end
         end
     end
