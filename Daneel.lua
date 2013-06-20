@@ -212,6 +212,75 @@ function Daneel.Utilities.AllowDynamicGettersAndSetters(Object, ancestors)
     end
 end
 
+--- Returns the value of any global variable (including nested tables) from its name as a string.
+-- When the variable is nested in one or several tables (like Daneel.GUI.Text), put a dot between the names.
+-- @param name (string) The variable name.
+-- @return (mixed) The variable value, or nil.
+function Daneel.Utilities.GetValueFromName(name)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.GetValueFromName", name)
+    local errorHead = "Daneel.Utilities.GetValueFromName(name) : "
+    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
+    
+    local value = nil
+    if name:find(".") == nil then
+        if Daneel.Utilities.GlobalExists(name) == true then
+            value = _G[name]
+        end
+        Daneel.Debug.StackTrace.EndFunction()
+        return value
+    
+    else
+        local subNames = name:split(".")
+        local varName = table.remove(subNames, 1)
+        if Daneel.Utilities.GlobalExists(varName) == true then
+            value = _G[varName]
+        end
+        
+        if value == nil then
+            if DEBUG == true then
+                print("WARNING : "..errorHead.." : variable '"..varName.."' (from provided name '"..name.."' ) does not exists. Returning nil.")
+            end
+            Daneel.Debug.StackTrace.EndFunction()
+            return nil
+        end
+        
+        for i, _key in ipairs(subNames) do
+            varName = varName..".".._key
+            if value[_key] == nil then
+                if DEBUG == true then
+                    print("WARNING : "..errorHead.." : variable '"..varName.."' (from provided name '"..name.."' ) does not exists. Returning nil.")
+                end
+                Daneel.Debug.StackTrace.EndFunction()
+                return nil
+            else
+                value = value[_key]
+            end
+        end
+        Daneel.Debug.StackTrace.EndFunction()
+        return value
+    end
+end
+
+--- Tell wether the provided global variable name exists (is non-nil).
+-- Since CraftStudio uses Strict.lua, you can not write (variable == nil), nor (_G[variable] == nil).
+-- Only works for first-level global variables. Check if Daneel.Utilities.GetValueFromName() returns nil for the same effect with nested tables.
+-- @param name (string) The variable name.
+-- @return (boolean) True if it exists, false otherwise.
+function Daneel.Utilities.GlobalExists(name)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.GlobalExists", name)
+    Daneel.Debug.CheckArgType(name, "name", "string", "Daneel.Utilities.GlobalExists(name) : ")
+    
+    local exists = false
+    for key, value in pairs(_G) do
+        if key == name then
+            exists = true
+            break
+        end
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+    return exists
+end
+
 
 ----------------------------------------------------------------------------------
 -- Debug
@@ -418,18 +487,14 @@ end
 
 --- Returns the name as a string of the global variable (including nested tables) whose value is provided.
 -- This only works if the value of the variable is a table or a function.
--- When the variable is nested in one or several tables (like Daneel.GUI.Text), its name must have been set in the 'userTypes' variable in the config.
--- @param value (table or function) Any global variable, any object from CraftStudio or Daneel or objects whse name is set in 'userTypes' in the config.
+-- When the variable is nested in one or several tables (like Daneel.GUI.Hud), it must have been set in the 'userObject' table in the config if not already part of CraftStudio or Daneel.
+-- @param value (table or function) Any global variable, any object from CraftStudio or Daneel or objects whose name is set in 'userObjects' in the config.
 -- @return (string) The name, or nil.
 function Daneel.Debug.GetNameFromValue(value)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.GetNameFromValue", value)
     local errorHead = "Daneel.Debug.GetNameFromValue(value) : "
     if value == nil then
-        if DEBUG == true then
-            print("WARNING : "..errorHead.." Argument 'value' is nil. Returning nil.")
-        end
-        Daneel.Debug.StackTrace.EndFunction()
-        return nil
+        error(errorHead.." Argument 'value' is nil.")
     end
     local result = table.getkey(config.allObjects, value)
     if result == nil then
@@ -437,70 +502,6 @@ function Daneel.Debug.GetNameFromValue(value)
     end
     Daneel.Debug.StackTrace.EndFunction()
     return result
-end
-
---- Returns the value of any global variable (including nested tables) from its name as a string.
--- When the variable is nested in one or several tables (like Daneel.GUI.Text), put a dot between the names.
--- @param name (string) The variable name.
--- @return (mixed) The variable value, or nil.
-function Daneel.Debug.GetValueFromName(name)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.GetValueFromName", name)
-    local errorHead = "Daneel.Debug.GetValueFromName(name) : "
-    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
-    local value = nil
-    if name:find(".") == nil then
-        if Daneel.Debug.GlobalExists(name) == true then
-            value = _G[name]
-        end
-        Daneel.Debug.StackTrace.EndFunction()
-        return value
-    else
-        local subNames = name:split(".")
-        local varName = table.remove(subNames, 1)
-        if Daneel.Debug.GlobalExists(varName) == true then
-            value = _G[varName]
-        end
-        if value == nil then
-            if DEBUG == true then
-                print("WARNING : "..errorHead.." : variable '"..varName.."' (from provided name '"..name.."' ) does not exists. Returning nil.")
-            end
-            Daneel.Debug.StackTrace.EndFunction()
-            return nil
-        end
-        for i, _key in ipairs(subNames) do
-            varName = varName..".".._key
-            if value[_key] == nil then
-                if DEBUG == true then
-                    print("WARNING : "..errorHead.." : variable '"..varName.."' (from provided name '"..name.."' ) does not exists. Returning nil.")
-                end
-                Daneel.Debug.StackTrace.EndFunction()
-                return nil
-            else
-                value = value[_key]
-            end
-        end
-        Daneel.Debug.StackTrace.EndFunction()
-        return value
-    end
-end
-
---- Tell wether the provided global variable name exists (is non-nil).
--- Only works for first-level global variables.
--- Since CraftStudio uses Strict.lua, you can not write (variable == nil), nor (_G[variable] == nil).
--- @param name (string) The variable name.
--- @return (boolean) True if it exists, false otherwise.
-function Daneel.Debug.GlobalExists(name)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.GlobalExists", name)
-    Daneel.Debug.CheckArgType(name, "name", "string", "Daneel.Debug.GlobalExists(name) : ")
-    local exists = false
-    for key, value in pairs(_G) do
-        if key == name then
-            exists = true
-            break
-        end
-    end
-    Daneel.Debug.StackTrace.EndFunction()
-    return exists
 end
 
 
@@ -928,18 +929,18 @@ function Daneel.Load()
     -- load default config, modules config, then user config
     config = DaneelDefaultConfig()
     -- do this once here to get the user list of modules
-    if Daneel.Debug.GlobalExists("DaneelConfig") and DaneelConfig().modules ~= nil then
+    if Daneel.Utilities.GlobalExists("DaneelConfig") and DaneelConfig().modules ~= nil then
         config.modules = table.deepmerge(config.modules, DaneelConfig().modules)
     end
 
     for i, module in ipairs(config.modules) do
         local functionName = "DaneelModule"..module.."Config"
-        if Daneel.Debug.GlobalExists(functionName) then
+        if Daneel.Utilities.GlobalExists(functionName) then
             config = table.deepmerge(config, _G[functionName]())
         end
     end
     
-    if Daneel.Debug.GlobalExists("DaneelConfig") then
+    if Daneel.Utilities.GlobalExists("DaneelConfig") then
         config = table.deepmerge(config, DaneelConfig())
     end
 
@@ -1043,7 +1044,7 @@ function Daneel.Load()
     -- Languages
     for i, language in ipairs(config.language.languageNames) do
         local functionName = "DaneelLanguage"..language:ucfirst()
-        if Daneel.Debug.GlobalExists(functionName) == true then
+        if Daneel.Utilities.GlobalExists(functionName) == true then
             Daneel.Lang.lines[language] = _G[functionName]()
         elseif DEBUG == true then
             print("WARNING : Can't load the language '"..language.."' because the global function "..functionName.."() does not exists.")
@@ -1059,7 +1060,7 @@ function Daneel.Load()
     -- Load modules 
     for i, module in ipairs(config.modules) do
         local functionName = "DaneelModule"..module.."Load"
-        if Daneel.Debug.GlobalExists(functionName) then
+        if Daneel.Utilities.GlobalExists(functionName) then
             _G[functionName]()
         end
     end
@@ -1081,7 +1082,7 @@ function Daneel.Awake()
     -- Awake modules 
     for i, module in ipairs(config.modules) do
         local functionName = "DaneelModule"..module.."Awake"
-        if Daneel.Debug.GlobalExists(functionName) then
+        if Daneel.Utilities.GlobalExists(functionName) then
             _G[functionName]()
         end
     end
@@ -1177,7 +1178,7 @@ function Daneel.Update()
     -- Update modules 
     for i, module in ipairs(config.modules) do
         local functionName = "DaneelModule"..module.."Update"
-        if Daneel.Debug.GlobalExists(functionName) then
+        if Daneel.Utilities.GlobalExists(functionName) then
             _G[functionName]()
         end
     end

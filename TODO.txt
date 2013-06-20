@@ -61,7 +61,6 @@ IDEAS
     MODULE / PLUGIN / EXTENSION
 
     - voir plus en profondeur comment Composer (php), node.js font pour gérer ça
-
     - module = un object global, sur lequel existe ou non les fonctions Config, Load, Awake, Start, Update
 
 
@@ -74,7 +73,7 @@ A implémenter
 
 
     LORSQUE LA NOUVELLE VERSION DE CS EST SORTIE
-    - enlever l'orthographic scale en dure dans Daneel.Awake()
+    - enlever l'orthographic scale en dure dans DaneelModuleGUIAwake()
     - enlever commentaire autour de TextRenderer.SetFont()
     - décommenter nouveaux component dans la config
     - commentaire dans ray:IntersectsGameObject()
@@ -103,7 +102,7 @@ A implémenter
 ==========
 A tester
 
-    - voir pourquoi certains eseType renvoient des erreurs
+    - voir pourquoi certains easeType renvoient des erreurs
     - que'est-ce qu empèche le type des gui composant d'être nommé 'Daneel.GUI.Checkbox' au lieu de juste 'CheckBox'
 
     - checkBox avec custom mark
@@ -117,7 +116,8 @@ A modifier/ajouter dans la doc :
 
     - Example project : minimalist encounter
     - transform.GetScale
-    - modifs sur les checkbox*- modifs sur les events
+    - modifs sur les checkbox*
+    - modifs sur les events
 
 
 =========
