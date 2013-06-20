@@ -480,6 +480,43 @@ end
 
 ----------------------------------------------------------------------------------
 
+--- Set the transform's global scale.
+-- @param transform (Transform) The transform component.
+-- @param scale (Vector3) The global scale.
+function Transform.SetScale(transform, scale)
+    Daneel.Debug.StackTrace.BeginFunction("Transform.SetScale", transform, scale)
+    local errorHead = "Transform.SetScale(transform, scale) : "
+    Daneel.Debug.CheckArgType(transform, "transform", "Transform", errorHead)
+    Daneel.Debug.CheckArgType(scale, "scale", "Vector3", errorHead)
+
+    local parent = transform.gameObject.parent
+    if parent ~= nil then
+        scale = scale / parent.transform.scale
+    end
+    transform.localScale = scale
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+--- Get the transform's global scale.
+-- @param transform (Transform) The transform component.
+-- @return (Vector3) The global scale.
+function Transform.GetScale(transform)
+    Daneel.Debug.StackTrace.BeginFunction("Transform.GetScale", transform)
+    local errorHead = "Transform.GetScale(transform) : "
+    Daneel.Debug.CheckArgType(transform, "transform", "Transform", errorHead)
+
+    local scale = transform.localScale
+    local parent = transform.gameObject.parent
+    if parent ~= nil then
+        scale = scale * parent.transform.scale
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+    return scale
+end
+
+
+----------------------------------------------------------------------------------
+
 setmetatable(Vector3, { __call = function(Object, ...) return Object:New(...) end })
 setmetatable(Quaternion, { __call = function(Object, ...) return Object:New(...) end })
 setmetatable(Plane, { __call = function(Object, ...) return Object:New(...) end })

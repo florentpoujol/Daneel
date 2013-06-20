@@ -42,8 +42,6 @@ IDEAS
         > cette fonction enregistre la stacktrace
         et fait appeler Debug.Check.. en fonction des valeurs trouvées
 
-    - transform global layer
-
 
     -----
     GUI
@@ -76,8 +74,6 @@ A implémenter
     - décommenter nouveaux component dans la config
     - commentaire dans ray:IntersectsGameObject()
 
-    - transform global scale
-        > remonter les parents, adapter la local scale récursivement
 
     -----
     GUI
@@ -95,9 +91,6 @@ A implémenter
 
         model comme handle avec script Mouseinteractive
 
-    - chekbox group > plusieurs checbox dont seulement une peu être true
-
-
     -----
     TWEENER
 
@@ -108,8 +101,8 @@ A tester
     - voir pourquoi certains eseType renvoient des erreurs
     - que'est-ce qu empèche le type des gui composant d'être nommé 'Daneel.GUI.Checkbox' au lieu de juste 'CheckBox'
 
-    - checkbox group
-    - checkBox avec model et custom mark
+    - checkBox avec custom mark
+
 
 ==========
 A modifier/ajouter dans la doc :
@@ -118,6 +111,9 @@ A modifier/ajouter dans la doc :
         - slider
 
     - Example project : minimalist encounter
+    - transform.GetScale
+    - modifs sur les checkbox*- modifs sur les events
+
 
 =========
 BUGS
