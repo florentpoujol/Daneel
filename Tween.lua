@@ -12,6 +12,51 @@ end
 
 
 ----------------------------------------------------------------------------------
+
+function DaneelModuleTweenConfig()
+    return {
+        tween = {
+            defaultTweenerParams = {
+                id = 0, -- can be anything, not restricted to numbers
+                isEnabled = true, -- a disabled tweener won't update but the function like Play(), Pause(), Complete(), Destroy() will have no effect
+                isPaused = false,
+
+                delay = 0.0, -- delay before the tweener starts (in the same time unit as the duration (durationType))
+                duration = 0.0, -- time or frames the tween (or one loop) should take (in durationType unit)
+                durationType = "time", -- the unit of time for delay, duration, elapsed and fullElapsed. Can be "time", "realTime" or "frame"
+
+                startValue = nil, -- it will be the current value of the target's property
+                endValue = 0.0,
+
+                loops = 0, -- number of loops to perform (-1 = infinite)
+                loopType = "simple", -- type of loop. Can be "simple" (X to Y, repeat), "yoyo" (X to Y, Y to X, repeat)
+                
+                easeType = "linear", -- type of easing, check the doc or the end of the "Daneel/Lib/Easing" script for all possible values
+                
+                isRelative = false, -- If false, tween the value TO endValue. If true, tween the value BY endValue.
+
+                ------------
+                -- "read-only" properties or properties the user has no interest to change the value of
+
+                hasStarted = false,
+                isCompleted = false,
+                elapsed = 0, -- elapsed time or frame (in durationType unit), delay excluded
+                fullElapsed = 0, -- elapsed time, including loops, excluding delay
+                completedLoops = 0,
+                diffValue = 0.0, -- endValue - startValue
+                value = 0.0, -- current value (between startValue and endValue)
+            },
+        },
+
+        daneelObjects = {
+            ["Daneel.Tween.Tweener"] = Daneel.Tween.Tweener,
+        },
+    }
+end
+
+
+
+----------------------------------------------------------------------------------
 -- Tween
 
 Daneel.Tween = {}
@@ -118,6 +163,8 @@ function Daneel.Tween.Update()
         end -- end if tweener.isEnabled == true
     end -- end for tweeners
 end
+
+DaneelModuleTweenUpdate = Daneel.Tween.Update
 
 
 ----------------------------------------------------------------------------------

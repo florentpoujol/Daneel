@@ -64,70 +64,6 @@ function DaneelDefaultConfig()
 
         ----------------------------------------------------------------------------------
 
-        gui = {
-            screenSize = CraftStudio.Screen.GetSize(),
-
-            -- Name of the gameObject who has the orthographic camera used to render the HUD
-            hudCameraName = "HUDCamera",
-            -- the corresponding GameObject, set at runtime
-            hudCameraGO = nil,
-
-            -- The gameObject that serve as origin for all GUI elements that are not in a Group, created at runtime
-            hudOriginGO = nil,
-            hudOriginPosition = Vector3:New(0),
-
-            textDefaultFontName = "GUITextFont",
-
-            checkBox = {
-                defaultState = false, -- false = unchecked, true = checked
-
-                defaultCheckedMark = "√ :text",
-                defaultUncheckedMark = "X :text",
-
-                defaultCheckedModel = nil,
-                defaultUncheckedModel = nil,
-            },
-        },
-
-
-        ----------------------------------------------------------------------------------
-
-        tween = {
-            defaultTweenerParams = {
-                id = 0, -- can be anything, not restricted to numbers
-                isEnabled = true, -- a disabled tweener won't update but the function like Play(), Pause(), Complete(), Destroy() will have no effect
-                isPaused = false,
-
-                delay = 0.0, -- delay before the tweener starts (in the same time unit as the duration (durationType))
-                duration = 0.0, -- time or frames the tween (or one loop) should take (in durationType unit)
-                durationType = "time", -- the unit of time for delay, duration, elapsed and fullElapsed. Can be "time", "realTime" or "frame"
-
-                startValue = nil, -- it will be the current value of the target's property
-                endValue = 0.0,
-
-                loops = 0, -- number of loops to perform (-1 = infinite)
-                loopType = "simple", -- type of loop. Can be "simple" (X to Y, repeat), "yoyo" (X to Y, Y to X, repeat)
-                
-                easeType = "linear", -- type of easing, check the doc or the end of the "Daneel/Lib/Easing" script for all possible values
-                
-                isRelative = false, -- If false, tween the value TO endValue. If true, tween the value BY endValue.
-
-                ------------
-                -- "read-only" properties or properties the user has no interest to change the value of
-
-                hasStarted = false,
-                isCompleted = false,
-                elapsed = 0, -- elapsed time or frame (in durationType unit), delay excluded
-                fullElapsed = 0, -- elapsed time, including loops, excluding delay
-                completedLoops = 0,
-                diffValue = 0.0, -- endValue - startValue
-                value = 0.0, -- current value (between startValue and endValue)
-            },
-        },
-
-
-        ----------------------------------------------------------------------------------
-
         debug = {
             -- Enable/disable Daneel's global debugging features.
             enableDebug = true,
@@ -176,15 +112,9 @@ function DaneelDefaultConfig()
         daneelObjects = {
             RaycastHit = RaycastHit,
             Vector2 = Vector2,
-            ["Daneel.Tween.Tweener"] = Daneel.Tween.Tweener,
         },
 
-        daneelComponentObjects = {
-            Hud = Daneel.GUI.Hud,
-            CheckBox = Daneel.GUI.CheckBox,
-            ProgressBar = Daneel.GUI.ProgressBar,
-            Slider = Daneel.GUI.Slider,
-        },
+        daneelComponentObjects = {},
 
         -- custom
         userObjects = {},
@@ -195,6 +125,11 @@ function DaneelDefaultConfig()
         -- daneelComponentTypes
         -- assetTypes
         -- allObjects : a merge of all *Objects tables
+
+        modules = {
+            "Tween",
+            "GUI"
+        }
     }
 end
 
@@ -990,11 +925,24 @@ local luaDocStop = ""
 function Daneel.Load()
     if DANEEL_LOADED == true then return end
 
-    if Daneel.Debug.GlobalExists("DaneelConfig") then
-        config = table.deepmerge(DaneelDefaultConfig(), DaneelConfig())
-    else
-        config = DaneelDefaultConfig()
+    -- load default config, modules config, then user config
+    config = DaneelDefaultConfig()
+    -- do this once here to get the user list of modules
+    if Daneel.Debug.GlobalExists("DaneelConfig") and DaneelConfig().modules ~= nil then
+        config.modules = table.deepmerge(config.modules, DaneelConfig().modules)
     end
+
+    for i, module in ipairs(config.modules) do
+        local functionName = "DaneelModule"..module.."Config"
+        if Daneel.Debug.GlobalExists(functionName) then
+            config = table.deepmerge(config, _G[functionName]())
+        end
+    end
+    
+    if Daneel.Debug.GlobalExists("DaneelConfig") then
+        config = table.deepmerge(config, DaneelConfig())
+    end
+
     
     DEBUG = config.debug.enableDebug
     if DEBUG == true and config.debug.enableStackTrace == true then
@@ -1023,7 +971,7 @@ function Daneel.Load()
 
     -- Scripts
     for i, path in pairs(config.scriptPaths) do
-        local script = Asset.Get(path, "Script") -- Asset.Get() helpers does not exist yet
+        local script = CraftStudio.FindAsset(path, "Script") -- Asset.Get() helpers does not exist yet
         if script ~= nil then
             Daneel.Utilities.AllowDynamicGettersAndSetters(script, { Script, Component })
 
@@ -1108,16 +1056,19 @@ function Daneel.Load()
         config.language.current = config.language.default
     end
 
-    -- Tween
-    if Daneel.Tween ~= nil then
-        if Daneel.Debug.GlobalExists("GetEasingEquations") then
-            Daneel.Tween.Ease = GetEasingEquations()
-        else
-            error("Daneel.Load() : Daneel.Tween object exists but the 'Easing' file is missing.")
+    -- Load modules 
+    for i, module in ipairs(config.modules) do
+        local functionName = "DaneelModule"..module.."Load"
+        if Daneel.Debug.GlobalExists(functionName) then
+            _G[functionName]()
         end
     end
 
     DANEEL_LOADED = true
+    if DEBUG == true then
+        print("~~~~~ Daneel is loaded ~~~~~")
+    end
+
     Daneel.Debug.StackTrace.EndFunction()
 end -- end Daneel.Load()
 
@@ -1127,31 +1078,12 @@ function Daneel.Awake()
     Daneel.Load()
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Awake")
 
-    -- GUI
-    -- setting pixelToUnits  
-    config.gui.screenSize = CraftStudio.Screen.GetSize()
-    -- get the smaller side of the screen (usually screenSize.y, the height)
-    local smallSideSize = config.gui.screenSize.y
-    if config.gui.screenSize.x < config.gui.screenSize.y then
-        smallSideSize = config.gui.screenSize.x
-    end
-
-    config.gui.hudCameraGO = GameObject.Get(config.gui.hudCameraName)
-
-    if config.gui.hudCameraGO ~= nil then
-        -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
-        -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and 3D world units
-        Daneel.GUI.pixelsToUnits = 10 / smallSideSize
-        --Daneel.GUI.pixelsToUnits = config.gui.hudCameraGO.camera.orthographicScale / smallSideSize
-
-        config.gui.hudOriginGO = GameObject.New("HUDOrigin", { parent = config.gui.hudCameraGO })
-        config.gui.hudOriginGO.transform.localPosition = Vector3:New(
-            -config.gui.screenSize.x * Daneel.GUI.pixelsToUnits / 2, 
-            config.gui.screenSize.y * Daneel.GUI.pixelsToUnits / 2,
-            0
-        )
-        -- the HUDOrigin is now at the top-left corner of the screen
-        config.gui.hudOriginPosition = config.gui.hudOriginGO.transform.position
+    -- Awake modules 
+    for i, module in ipairs(config.modules) do
+        local functionName = "DaneelModule"..module.."Awake"
+        if Daneel.Debug.GlobalExists(functionName) then
+            _G[functionName]()
+        end
     end
 
     -- Awakening is over
@@ -1159,7 +1091,7 @@ function Daneel.Awake()
         print("~~~~~ Daneel is awake ~~~~~")
     end
 
-    Daneel.Event.Fire("DaneelAwake")
+    Daneel.Event.Fire("DaneelModuleAwake")
     Daneel.Debug.StackTrace.EndFunction()
 end 
 
@@ -1242,9 +1174,12 @@ function Daneel.Update()
         end
     end
 
-    -- Tween
-    if Daneel.Tween ~= nil then
-        Daneel.Tween.Update()
+    -- Update modules 
+    for i, module in ipairs(config.modules) do
+        local functionName = "DaneelModule"..module.."Update"
+        if Daneel.Debug.GlobalExists(functionName) then
+            _G[functionName]()
+        end
     end
 end
 

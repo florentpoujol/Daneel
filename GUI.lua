@@ -12,6 +12,73 @@ end
 
 
 ----------------------------------------------------------------------------------
+
+function DaneelModuleGUIConfig()
+    return {
+        gui = {
+            screenSize = CraftStudio.Screen.GetSize(),
+
+            -- Name of the gameObject who has the orthographic camera used to render the HUD
+            hudCameraName = "HUDCamera",
+            -- the corresponding GameObject, set at runtime
+            hudCameraGO = nil,
+
+            -- The gameObject that serve as origin for all GUI elements that are not in a Group, created at runtime
+            hudOriginGO = nil,
+            hudOriginPosition = Vector3:New(0),
+
+            textDefaultFontName = "GUITextFont",
+
+            checkBox = {
+                defaultState = false, -- false = unchecked, true = checked
+
+                defaultCheckedMark = "√ :text",
+                defaultUncheckedMark = "X :text",
+
+                defaultCheckedModel = nil,
+                defaultUncheckedModel = nil,
+            },
+        },
+
+        daneelComponentObjects = {
+            Hud = Daneel.GUI.Hud,
+            CheckBox = Daneel.GUI.CheckBox,
+            ProgressBar = Daneel.GUI.ProgressBar,
+            Slider = Daneel.GUI.Slider,
+        },
+    }
+end
+
+function DaneelModuleGUIAwake()
+    -- setting pixelToUnits  
+    config.gui.screenSize = CraftStudio.Screen.GetSize()
+    -- get the smaller side of the screen (usually screenSize.y, the height)
+    local smallSideSize = config.gui.screenSize.y
+    if config.gui.screenSize.x < config.gui.screenSize.y then
+        smallSideSize = config.gui.screenSize.x
+    end
+
+    config.gui.hudCameraGO = GameObject.Get(config.gui.hudCameraName)
+
+    if config.gui.hudCameraGO ~= nil then
+        -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
+        -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and 3D world units
+        Daneel.GUI.pixelsToUnits = 10 / smallSideSize
+        --Daneel.GUI.pixelsToUnits = config.gui.hudCameraGO.camera.orthographicScale / smallSideSize
+
+        config.gui.hudOriginGO = GameObject.New("HUDOrigin", { parent = config.gui.hudCameraGO })
+        config.gui.hudOriginGO.transform.localPosition = Vector3:New(
+            -config.gui.screenSize.x * Daneel.GUI.pixelsToUnits / 2, 
+            config.gui.screenSize.y * Daneel.GUI.pixelsToUnits / 2,
+            0
+        )
+        -- the HUDOrigin is now at the top-left corner of the screen
+        config.gui.hudOriginPosition = config.gui.hudOriginGO.transform.position
+    end
+end
+
+
+----------------------------------------------------------------------------------
 -- GUI
 
 Daneel.GUI = {}

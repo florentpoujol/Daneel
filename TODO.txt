@@ -54,10 +54,15 @@ IDEAS
       out et in state  
 
     
-
-
     -----
     TWEEN
+
+    -----
+    MODULE / PLUGIN / EXTENSION
+
+    - voir plus en profondeur comment Composer (php), node.js font pour gérer ça
+
+    - module = un object global, sur lequel existe ou non les fonctions Config, Load, Awake, Start, Update
 
 
 ==========
@@ -120,5 +125,14 @@ BUGS
 
     - parfois, une ligne de la stacktrace n'est pas complète : #04 GameObject.Ge)
         > quadn argument attendus est nil ?
+
+
+=========
+
+ordre chargement des fichiers :
+- dans l'ordre de création (id d'asset croissant)
+- dernier script modifié sans faire de révision depuis le dernier export est chargé en premier
+
+
 
 
