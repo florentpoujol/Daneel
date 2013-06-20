@@ -107,6 +107,18 @@ function Component.Set(component, params)
             component[key] = value
         end
         component.progress = progress
+
+    elseif componentType == "Slider" then
+        local value = params.value
+        params.value = nil
+        if value == nil then
+            value = component.value
+        end
+        for key, value in pairs(params) do
+            component[key] = value
+        end
+        component.value = value
+        
     else
         for key, value in pairs(params) do
             component[key] = value

@@ -43,6 +43,8 @@ IDEAS
         et fait appeler Debug.Check.. en fonction des valeurs trouvées
 
 
+    - obtenir la direction de la flche 'oriantation vers la flèche d'un model
+
     -----
     GUI
 
@@ -103,8 +105,6 @@ A implémenter
 A tester
 
     - voir pourquoi certains easeType renvoient des erreurs
-    - que'est-ce qu empèche le type des gui composant d'être nommé 'Daneel.GUI.Checkbox' au lieu de juste 'CheckBox'
-
     - checkBox avec custom mark
 
 

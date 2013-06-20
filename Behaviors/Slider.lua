@@ -2,13 +2,16 @@
 
 -- when the handle is dragged
 function Behavior:OnDrag()
-	-- prendre la position de la souris
-	-- = position 2D du handle
+	
+	local mousePos = CraftStudio.Input.GetMousePosition()
+	local curHudPos = self.gameObject.hud.position
+	local start =
+	local size = self.gameObject.slider.length / Daneel.GUI.pixelsToUnits
+	local percentage = self.gameObject.slider:GetValue(true)/100
+	
+	local start = _end
 
-	-- cnvertir en position 3D le long du path
-
-
-	-- delta donne la variation en pixel
-	self.gameObject.hud.position = CraftStudio.Input.GetMousePosition()
-
+    self.gameObject.hud.position = Vector2(CraftStudio.Input.GetMousePosition().x, self.gameObject.hud.position.y)
+    
+    Daneel.Event.Fire(self.gameObject.slider, "OnUpdate")
 end

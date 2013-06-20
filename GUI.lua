@@ -104,6 +104,24 @@ end
 
 Daneel.GUI.Hud = {}
 
+--- Transform the 3D position into a Hud position and a layer.
+-- @param position (Vector3) The 3D position.
+-- @return (Vector2) The hud position.
+-- @return (numbe) The layer.
+function Daneel.GUI.Hud.ToHudPosition(position)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.ToHudPosition", position)
+    local errorHead = "Daneel.GUI.Hud.ToHudPosition(hud, position) : "
+    Daneel.Debug.CheckArgType(position, "position", "Vector3", errorHead)
+   
+    local layer = config.gui.hudOriginPosition.z - position.z
+    position = position - config.gui.hudOriginPosition
+    position = Vector2(
+        position.x / Daneel.GUI.pixelsToUnits,
+        -position.y / Daneel.GUI.pixelsToUnits
+    )
+    Daneel.Debug.StackTrace.EndFunction()
+    return position, layer
+end
 
 -- Create a new Hud component instance.
 -- @param gameObject (GameObject) The gameObject to add to the component to.
@@ -127,7 +145,7 @@ end
 
 --- Sets the position of the gameObject on screen.
 -- With the top-left corner of the screen as origin.
--- @param hud (Daneel.GUI.Hud) The hud component.
+-- @param hud (Hud) The hud component.
 -- @param position (Vector2) The position as a Vector2.
 function Daneel.GUI.Hud.SetPosition(hud, position)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.SetPosition", hud, position)
@@ -147,7 +165,7 @@ function Daneel.GUI.Hud.SetPosition(hud, position)
 end
 
 --- Get the position of the provided hud on the screen.
--- @param hud (Daneel.GUI.Hud) The hud component.
+-- @param hud (Hud) The hud component.
 -- @return (Vector2) The position.
 function Daneel.GUI.Hud.GetPosition(hud)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.GetPosition", hud)
@@ -155,14 +173,14 @@ function Daneel.GUI.Hud.GetPosition(hud)
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
     
     local position = hud.gameObject.transform.position - config.gui.hudOriginPosition
-    position = position * Daneel.GUI.pixelsToUnits
+    position = position / Daneel.GUI.pixelsToUnits
     position = Vector2.New(math.round(position.x), math.round(-position.y))
     Daneel.Debug.StackTrace.EndFunction()
     return position
 end
 
 --- Sets the local position (relative to its parent) of the gameObject on screen .
--- @param hud (Daneel.GUI.Hud) The hud component.
+-- @param hud (Hud) The hud component.
 -- @param position (Vector2) The position as a Vector2.
 function Daneel.GUI.Hud.SetLocalPosition(hud, position)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.SetLocalPosition", hud, position)
@@ -184,7 +202,7 @@ function Daneel.GUI.Hud.SetLocalPosition(hud, position)
 end
 
 --- Get the local position (relative to its parent) of the gameObject on screen.
--- @param hud (Daneel.GUI.Hud) The hud component.
+-- @param hud (Hud) The hud component.
 -- @return (Vector2) The position.
 function Daneel.GUI.Hud.GetLocalPosition(hud)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.GetLocalPosition", hud)
@@ -201,7 +219,7 @@ function Daneel.GUI.Hud.GetLocalPosition(hud)
 end
 
 --- Set the gameObject's layer.
--- @param hud (Daneel.GUI.Hud) The hud component.
+-- @param hud (Hud) The hud component.
 -- @param layer (number) The layer (a postive number).
 function Daneel.GUI.Hud.SetLayer(hud, layer)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.SetLayer", hud)
@@ -216,7 +234,7 @@ function Daneel.GUI.Hud.SetLayer(hud, layer)
 end
 
 --- Get the gameObject's layer.
--- @param hud (Daneel.GUI.Hud) The hud component.
+-- @param hud (Hud) The hud component.
 -- @return (number) The layer.
 function Daneel.GUI.Hud.GetLayer(hud)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.GetLayer", hud)
@@ -230,7 +248,7 @@ function Daneel.GUI.Hud.GetLayer(hud)
 end
 
 --- Set the huds's local layer.
--- @param hud (Daneel.GUI.Hud) The hud component.
+-- @param hud (Hud) The hud component.
 -- @param layer (number) The layer (a postiv number).
 function Daneel.GUI.Hud.SetLocalLayer(hud, layer)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.SetLayer", hud)
@@ -247,7 +265,7 @@ function Daneel.GUI.Hud.SetLocalLayer(hud, layer)
 end
 
 --- Get the gameObject's layer which is actually the inverse of its local position's z component.
--- @param hud (Daneel.GUI.Hud) The hud component.
+-- @param hud (Hud) The hud component.
 -- @return (number) The layer.
 function Daneel.GUI.Hud.GetLocalLayer(hud)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.GetLayer", hud)
@@ -531,7 +549,7 @@ end
 
 --- Get the current progress of the progress bar.
 -- @param progressBar (ProgressBar) The progressBar.
--- @param getAsPercentage [optional default=false] (boolean) Get the progress as a percentage instead of an absolute value.
+-- @param getAsPercentage [optional default=false] (boolean) Get the progress as a percentage (between 0 and 100) instead of an absolute value.
 -- @return (number) The progress.
 function Daneel.GUI.ProgressBar.GetProgress(progressBar, getAsPercentage)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.GetProgress", progressBar, getAsPercentage)
@@ -544,7 +562,7 @@ function Daneel.GUI.ProgressBar.GetProgress(progressBar, getAsPercentage)
     if getAsPercentage == true then
         progress = progress * 100
     else
-        progress = (progressBar.maxValue - progressBar.minValue) * progress
+        progress = (progressBar.maxValue - progressBar.minValue) * progress + progressBar.minValue
     end
     progress = math.round(progress)
     Daneel.Debug.StackTrace.EndFunction()
@@ -571,11 +589,13 @@ function Daneel.GUI.Slider.New(gameObject)
     slider.inner = " : "..math.round(math.randomrange(100000, 999999))
 
     gameObject:AddTag("mouseInteractive")
+    gameObject:AddScriptedBehavior("Daneel/Behaviors/Slider")
 
     slider.minValue = 0
     slider.maxValue = 100
-    slider.length = 5
+    slider.length = 5 -- 5 units
     slider.startPosition = slider.gameObject.transform.position
+
     slider.value = "0%"
 
     Daneel.Debug.StackTrace.EndFunction()
@@ -621,23 +641,29 @@ function Daneel.GUI.Slider.SetValue(slider, value)
 
     -- update the actual position
     slider.length = tounit(slider.length)
-    local length = Vector3:New(slider.length)
-    if slider.gameObject.hud ~= nil then
-        length.z = 0
-    end
-
-    local newPos = slider.startPosition + (length * percentageOfProgress)
+    local newPos = slider.startPosition + -Vector3:Left() * slider.length * percentageOfProgress
     slider.gameObject.transform.position = newPos
 
     Daneel.Event.Fire(slider, "OnUpdate")
     Daneel.Debug.StackTrace.EndFunction()
 end
 
+--- Get the current slider's value.
 -- @param slider (Slider) The slider.
-function Daneel.GUI.Slider.GetValue(slider)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.SetValue", slider)
-    local errorHead = "Daneel.GUI.Slider.SetValue(slider, value) : "
+-- @param getAsPercentage [optional default=false] (boolean) Get the value as a percentage (between 0 and 100) instead of an absolute value.
+-- @return (number) The value.
+function Daneel.GUI.Slider.GetValue(slider, getAsPercentage)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.GetValue", slider, getAsPercentage)
+    local errorHead = "Daneel.GUI.Slider.GetValue(slider, value) : "
     Daneel.Debug.CheckArgType(slider, "slider", "Slider", errorHead)
+    Daneel.Debug.CheckOptionalArgType(getAsPercentage, "getAsPercentage", "boolean", errorHead)
+   
+    local percentage = Vector3.Distance(slider.startPosition, slider.gameObject.transform.position) / slider.length
+    local value = percentage * 100
+    if getAsPercentage ~= true then
+        value = (slider.maxValue - slider.minValue) * percentage + slider.minValue
+    end
+    value = math.round(value)
     Daneel.Debug.StackTrace.EndFunction()
-    return slider._value
+    return value
 end
