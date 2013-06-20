@@ -207,33 +207,51 @@ Daneel.GUI.CheckBox = {}
 function Daneel.GUI.CheckBox.New(gameObject)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.New", gameObject)
     local errorHead = "Daneel.GUI.CheckBox.New(gameObject) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "string", errorHead)
+    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     
     local checkBox = setmetatable({}, Daneel.GUI.CheckBox)
     gameObject.checkBox = checkBox
     checkBox.gameObject = gameObject
     checkBox.inner = " : "..math.round(math.randomrange(100000, 999999))
 
-    checkBox.checkedMark = config.gui.checkBox.defaultCheckedMark,
-    checkBox.uncheckedMark = config.gui.checkBox.defaultUncheckedMark,
-    checkBox.checkedModel = config.gui.checkBox.defaultCheckedModel,
-    checkBox.uncheckedModel = config.gui.checkBox.defaultUncheckedModel,
+    checkBox.checkedMark = config.gui.checkBox.defaultCheckedMark
+    checkBox.uncheckedMark = config.gui.checkBox.defaultUncheckedMark
+    checkBox.checkedModel = config.gui.checkBox.defaultCheckedModel
+    checkBox.uncheckedModel = config.gui.checkBox.defaultUncheckedModel
 
-    checkBox.isChecked = config.gui.checkBox.defaultState
-
-    gameObject:AddTag("mouseInteractive")
-
-    if gameObject.textRenderer == nil then
-        -- "wait" for the TextRenderer to be added
+    if gameObject.textRenderer == nil or gameObject.modelRenderer == nil then
+        -- "wait" for the TextRenderer or ModelRenderer to be added
         checkBox.OnNewComponent = function(newComponent)
-            if getmetatable(newComponent) == TextRenderer then
-                checkBox.text = checkBox._text
+            --if getmetatable(newComponent) == TextRenderer then
+                --checkBox.text = checkBox._text
+            --elseif getmetatable(newComponent) == ModelRenderer and checkBox.checkedModel ~= nil then
+            if getmetatable(newComponent) == ModelRenderer and checkBox.checkedModel ~= nil then
+                if checkbox.isChecked then
+                    checkBox.gameObject.modelRenderer.model = checkBox.checkedModel
+                else
+                    checkBox.gameObject.modelRenderer.model = checkBox.uncheckedModel
+                end
             end
         end
         checkBox._text = "CheckBox"
-    else
+    end
+
+    if gameObject.textRenderer ~= nil then
         checkBox.text = gameObject.textRenderer.text
     end
+
+    if gameObject.modelRenderer ~= nil then
+        if checkbox.isChecked then
+            checkBox.gameObject.modelRenderer.model = checkBox.checkedModel
+        else
+            checkBox.gameObject.modelRenderer.model = checkBox.uncheckedModel
+        end
+    end
+
+    checkBox:Check(config.gui.checkBox.defaultState)
+    
+    gameObject:AddScriptedBehavior("Daneel/Behaviors/CheckBox")
+    gameObject:AddTag("mouseInteractive")
     
     Daneel.Debug.StackTrace.EndFunction()
     return checkBox
@@ -302,10 +320,7 @@ function Daneel.GUI.CheckBox.Check(checkBox, state)
     Daneel.Debug.CheckArgType(checkBox, "checkBox", "CheckBox", errorHead)
     state = Daneel.Debug.CheckOptionalArgType(state, "state", "boolean", errorHead, true)
 
-    if 
-        ((checkBox._group ~= nil and checkBox.isChecked == false) or checkBox._group == nil) and
-        checkBox.isChecked ~= state
-    then
+    if checkBox.isChecked ~= state then
         checkBox.isChecked = state
         
         if checkBox.gameObject.textRenderer ~= nil then
@@ -320,7 +335,7 @@ function Daneel.GUI.CheckBox.Check(checkBox, state)
 
         Daneel.Event.Fire(checkBox, "OnUpdate")
 
-        if checkBox._group ~= nil then
+        if checkBox._group ~= nil and state == true then
             local gameObjects = GameObject.tags[checkBox._group]
             for i, gameObject in ipairs(gameObjects) do
                 if gameObject ~= checkBox.gameObject then

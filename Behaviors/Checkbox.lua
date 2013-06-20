@@ -14,3 +14,8 @@ function Behavior:Start()
 		})
 	end
 end
+
+-- when the gameObject is clicked by the mouse
+function Behavior:OnClick()
+    self.gameObject.checkBox:Check(not checkBox.isChecked)
+end
