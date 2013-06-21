@@ -78,7 +78,6 @@ A implémenter
     -----
     DEVELOP 
 
-
     LORSQUE LA NOUVELLE VERSION DE CS EST SORTIE
     - enlever l'orthographic scale en dure dans DaneelModuleGUIAwake()
     - enlever commentaire autour de TextRenderer.SetFont()
@@ -89,19 +88,6 @@ A implémenter
     -----
     GUI
 
-    - hud > passer de position 3D à position en pixels + layer
-        transform gethudposition
-                  gethudlayer
-
-    - Slider
-        minValue
-        maxValue
-        minLength
-        maxLength
-        progress
-
-        model comme handle avec script Mouseinteractive
-
     -----
     TWEENER
 
@@ -111,19 +97,15 @@ A tester
 
     - voir pourquoi certains easeType renvoient des erreurs
     - checkBox avec custom mark
+    - input
 
 
 ==========
 A modifier/ajouter dans la doc :
 
-    - GUI
-        - slider
-
     - Example project : minimalist encounter
-    - transform.GetScale
-    - modifs sur les checkbox + slider
-    - modifs sur les events
-    - HUD ToHudPosition
+
+    - slider + input
 
 
 =========

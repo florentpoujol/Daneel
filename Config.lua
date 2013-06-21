@@ -59,6 +59,7 @@ function DaneelConfig()
             checkBox = {
                 defaultState = false, -- false = unchecked, true = checked
 
+                -- ':text' represents the checkBox's text
                 defaultCheckedMark = "√ :text",
                 defaultUncheckedMark = "X :text",
 
