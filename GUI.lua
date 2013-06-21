@@ -37,7 +37,7 @@ function DaneelModuleGUIConfig()
                 defaultUncheckedModel = nil,
             },
 
-            defaultInputKeySet = "azerty",
+            defaultInputKeyMap = "qwerty",
         },
 
         daneelComponentObjects = {
@@ -690,7 +690,7 @@ function Daneel.GUI.Input.New(gameObject, params)
     gameObject:AddScriptedBehavior("Daneel/Behaviors/Input")
 
     input.isFocused = false
-    input.keySet = config.gui.defaultInputKeySet
+    input.keyMap = config.gui.defaultInputKeyMap
 
     Daneel.Debug.StackTrace.EndFunction()
     return input
@@ -702,12 +702,40 @@ end
 function Daneel.GUI.Input.Focus(input, state)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Input.Focus", input, state)
     local errorHead = "Daneel.GUI.Input.Focus(input[, state]) : "
-    Daneel.Debug.CheckArgType(input, "input", "Daneel.GUI.Input", errorHead)
+    Daneel.Debug.CheckArgType(input, "input", "Input", errorHead)
     state = Daneel.Debug.CheckOptionalArgType(state, "state", "boolean", errorHead, true)
     
     if input.isFocused ~= state then
         input.isFocused = state
         Daneel.Event.Fire(input, "OnFocus")
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+-- Set the focused state of the input.
+-- @param input (Daneel.GUI.Input) The input component.
+-- @param text (string) The text to add to the current text.
+-- @param replaceText [optional default=false] (boolean) Tell wether the provided text should be added (false) or replace (true) the current text.
+function Daneel.GUI.Input.Update(input, text, replaceText)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Input.Update", input, text)
+    local errorHead = "Daneel.GUI.Input.Update(input, text) : "
+    Daneel.Debug.CheckArgType(input, "input", "Input", errorHead)
+    Daneel.Debug.CheckArgType(text, "text", "string", errorHead)
+    Daneel.Debug.CheckOptionalArgType(replaceText, "replaceText", "boolean", errorHead)
+
+    if input.isFocused == false then 
+        Daneel.Debug.StackTrace.EndFunction()
+        return
+    end
+    
+    local oldText = self.gameObject.textRenderer.text
+    if replaceText then
+        self.gameObject.textRenderer.text = text
+    else
+        self.gameObject.textRenderer.text = oldText + text
+    end
+    if oldText ~= self.gameObject.textRenderer.text then
+        Daneel.Event.Fire(input, "OnUpdate")
     end
     Daneel.Debug.StackTrace.EndFunction()
 end

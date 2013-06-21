@@ -25,9 +25,7 @@ function DaneelConfig()
             doubleClickDelay = 20,
 
             --
-            keySets = {
-
-            }   
+            keyMaps = {}   
         },
 
 

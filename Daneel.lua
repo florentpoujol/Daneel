@@ -40,10 +40,10 @@ function DaneelDefaultConfig()
             doubleClickDelay = 20,
 
             --
-            keySets = {
-                azerty = {
-                    
-                }   
+            keyMaps = {
+                -- see at the end of the file
+                qwerty = keymapqwerty,
+                azerty = keymapazerty,
             } 
         },
 
@@ -1344,3 +1344,241 @@ end
 function Vector2.GetLength(vector)
     return math.sqrt(vector.x^2 + vector.y^2)
 end
+
+
+----------------------------------------------------------------------------------
+
+keymapqwerty = {
+    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+    Space = " ",
+    -- num pad
+    Divide = "/", Multiply = "*", Substract = "-", Add = "+",
+    NumPad0 = "0", NumPad1 = "1", NumPad2 = "2", NumPad3 = "3", NumPad4 = "4",
+    NumPad5 = "5", NumPad6 = "6", NumPad7 = "7", NumPad8 = "8", NumPad9 = "9",
+    -- /num pad
+    D1 = {
+        "1",
+        LeftShift = "!",
+        RightShift = "!",
+    },
+    D2 = {
+        "2",
+        LeftShift = "\"",
+        RightShift = "\"",
+    },
+    D3 = {
+        "3",
+        LeftShift = "£",
+        RightShift = "£",
+    },
+    D4 = {
+        "4",
+        LeftShift = "$",
+        RightShift = "$",
+        RightAlt = "€",
+    },
+    D5 = {
+        "5",
+        LeftShift = "%",
+        RightShift = "%",
+    },
+    D6 = {
+        "6",
+        LeftShift = "^",
+        RightShift = "^",
+    },
+    D7 = {
+        "7",
+        LeftShift = "&",
+        RightShift = "&",
+    },
+    D8 = {
+        "8",
+        LeftShift = "*",
+        RightShift = "*",
+    },
+    D9 = {
+        "9",
+        LeftShift = "(",
+        RightShift = "(",
+    },
+    D0 = {
+        "0",
+        LeftShift = ")",
+        RightShift = ")",
+    },
+    
+    OemMinus = {
+        "-",
+        LeftShift = "_",
+        RightShift = "_",
+    },
+    OemPlus = {
+        "=",
+        LeftShift = "+",
+        RightShift = "+",
+    },
+    OemOpenBrackets = {
+        "[",
+        LeftShift = "{",
+        RightShift = "{",
+    },
+    OemCloseBrackets = {
+        "]",
+        LeftShift = "}",
+        RightShift = "}",
+    },
+    OemSemicolon = {
+        ";",
+        LeftShift = ":",
+        RightShift = ":",
+    },
+    Oem8 = {
+        "'",
+        LeftShift = "@",
+        RightShift = "@",
+    },
+    OemTilde = {
+        "#",
+        LeftShift = "~",
+        RightShift = "~",
+        RightAlt = "\\",
+    },
+    OemComma = {
+        ",",
+        LeftShift = "<",
+        RightShift = "<",
+    },
+    OemPeriod = {
+        ".",
+        LeftShift = ">",
+        RightShift = ">",
+    },
+    OemQuestion = {
+        "/",
+        LeftShift = "?",
+        RightShift = "?",
+    },
+    OemQuotes = {
+        "\\",
+        LeftShift = "|",
+        RightShift = "|",
+    },
+}  -- end qwerty keySet
+
+keymapazerty = {
+    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+    Space = " ", 
+    -- num pad
+    Divide = "/", Multiply = "*", Substract = "-", Add = "+",
+    NumPad0 = "0", NumPad1 = "1", NumPad2 = "2", NumPad3 = "3", NumPad4 = "4",
+    NumPad5 = "5", NumPad6 = "6", NumPad7 = "7", NumPad8 = "8", NumPad9 = "9",
+    -- /num pad
+    OemTilde = "²",
+    D1 = {
+        "&",
+        LeftShift = "1",
+        RightShift = "1",
+    },
+    D2 = {
+        "é",
+        LeftShift = "2",
+        RightShift = "2",
+        RightAlt = "~",
+    },
+    D3 = {
+        '"',
+        LeftShift = "3",
+        RightShift = "3",
+        RightAlt = "#",
+    },
+    D4 = {
+        "'",
+        LeftShift = "4",
+        RightShift = "4",
+        RightAlt = "{",
+    },
+    D5 = {
+        "(",
+        LeftShift = "5",
+        RightShift = "5",
+        RightAlt = "[",
+    },
+    D6 = {
+        "-",
+        LeftShift = "6",
+        RightShift = "6",
+        RightAlt = "|",
+    },
+    D7 = {
+        "è",
+        LeftShift = "7",
+        RightShift = "7",
+        RightAlt = "`",
+    },
+    D8 = {
+        "_",
+        LeftShift = "8",
+        RightShift = "8",
+        RightAlt = "\"",
+    },
+    D9 = {
+        "ç",
+        LeftShift = "9",
+        RightShift = "9",
+        RightAlt = "^",
+    },
+    D0 = {
+        "à",
+        LeftShift = "0",
+        RightShift = "0",
+        RightAlt = "@",
+    },
+    OemCloseBrackets = {
+        ")",
+        LeftShift = "°",
+        RightShift = "°",
+        RightAlt = "]",
+    },
+    OemPlus = {
+        "=",
+        LeftShift = "+",
+        RightShift = "+",
+        RightAlt = "}",
+    },
+    OemSemicolon = {
+        "^",
+        LeftShift = "¨",
+        RightShift = "¨",
+    },
+    OemQuotes = {
+        "ù",
+        LeftShift = "%",
+        RightShift = "%",
+    },
+    OemPipe = {
+        "*",
+        LeftShift = "µ",
+        RightShift = "µ",
+    },
+    OemPeriod = {
+        ",",
+        LeftShift = "?",
+        RightShift = "?",
+    },
+    OemQuestion = {
+        ";",
+        LeftShift = ".",
+        RightShift = ".",
+    },
+    Oem8 = {
+        ":",
+        LeftShift = "/",
+        RightShift = "/",
+    },
+    OemBackslash = {
+        "<",
+        LeftShift = ">",
+        RightShift = ">",
+    },
+} -- end azerty keySet

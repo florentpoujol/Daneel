@@ -42,8 +42,13 @@ IDEAS
         > cette fonction enregistre la stacktrace
         et fait appeler Debug.Check.. en fonction des valeurs trouvées
 
+    sur azerty
+    touche $£¤ = M
+    touche !§ = none
 
-    - obtenir la direction de la flche 'oriantation vers la flèche d'un model
+    sur qwerty
+    MANqUE OemBackslash OemPipe
+    ``¬¬¦¦ = tilde
 
     -----
     GUI

@@ -3,7 +3,7 @@
 
 -- Public properties :
 -- isFocused (boolean) [default=false]
--- keySet (string) [default=""]
+-- keyMap (string) [default=""]
 
 local B = Behavior
 
@@ -11,17 +11,26 @@ function Behavior:Start()
 	if self.gameObject.input == nil then
 		self.gameObject:AddComponent("Input", { 
 			isFocused = self.isFocused,
-			keySet = self.keySet,
+			keyMap = self.keyMap,
 		})
 	end
 
-	Daneel.Events.Listen("OnDeleteButtonJustPressed", self.gameObject)
-	Daneel.Events.Listen("OnMajButtonJustPressed", self.gameObject)
-	Daneel.Events.Listen("OnMajButtonJustReleased", self.gameObject)
-	self.gameObject.majButtonDown = false
+	Daneel.Events.Listen({
+		"OnDeleteButtonJustPressed",
+		"OnEnterButtonJustReleased",
+
+		"OnLeftShiftButtonJustPressed",
+		"OnLeftShiftButtonJustReleased",
+		"OnRightShiftButtonJustPressed",
+		"OnRightShiftButtonJustReleased",
+		"OnCapsLockButtonJustPressed",
+		"OnCapsLockButtonJustReleased",
+	}, self.gameObject)
+	self.gameObject.capsLockOn = false
+	self.gameObject.uppercaseMode = false
 
 	-- create functions to catch the event for each input keys
-	for key, value in pairs(self.gameObject.input.keySet) do
+	for key, value in pairs(self.gameObject.input.keyMap) do
 		-- the button name may be the key or the value
 		local buttonName = value
 		local combinaisons = nil
@@ -43,39 +52,42 @@ function Behavior:Start()
 				if combinaisons ~= nil then 
 					-- key=button name , value = combinaisons
 					--[[
-					inputkeys = {
-						buttonName = {
-							"value",
-							otherButton = "other value",
+					ie : 
+					inputKeys = {
+						D5 = {
+							"(", 				-- when button is pressed without combinaison
+							leftShift = "5", 	-- leftShift + ( (in this order) = "5"
+							rightShift = "5",
+							rightAlt = "["
 						}
 					}
 					]]
 					for button, value in pairs(combinaisons) do
 						if type(button) ~= "number" and CraftStudio.Input.IsButtonDown(button) then
-							self.gameObject.textRenderer.text = self.gameObject.textRenderer.text + value
+							self.gameObject.input:Update(value)
 							return
 						end
 					end
 
-					-- pourquoi ?? quel intéret ??
+					-- when pressed without combinaison
 					if combinaisons[1] ~= nil then
-						if CraftStudio.Input.IsButtonDown(buttonName) then
-							self.gameObject.textRenderer.text = self.gameObject.textRenderer.text + combinaisons[1]
-							return
-						end
+						--if CraftStudio.Input.IsButtonDown(buttonName) then
+							self.gameObject.input:Update(combinaisons[1])
+							--return
+						--end
 					end
 
 				elseif buttonValue ~= nil then 
 					-- key=button name , value = replacement value
-					self.gameObject.textRenderer.text = self.gameObject.textRenderer.text + buttonValue
+					self.gameObject.input:Update(buttonValue)
 				
 				else 
 					-- value = buttonName  or, combined with LeftShift : ButtonName (uppercase)
 					local value = buttonName
-					if self.gameObject.majButtonDown then
+					if self.gameObject.uppercaseMode then
 						value = ButtonName
 					end
-					self.gameObject.textRenderer.text = self.gameObject.textRenderer.text + value
+					self.gameObject.input:Update(value)
 				end
 			end
 		end -- end function self.gameObject["On"..ButtonName.."ButtonJustPressed"]
@@ -83,24 +95,42 @@ function Behavior:Start()
 end
 
 
--- focus on the input and place the cursor to the letter
--- the gameObject has already registered to the "OnLeftMouseButtonJustReleased" event in GUI/Interactive
 function Behavior:OnClick()
 	self.gameObject.input:Focus(self.gameObject.onMouseOver)
 end
 
 function Behavior:OnDeleteButtonJustPressed()
 	if self.gameObject.input.isFocused then
-		local text = self.gameObject.textRenderer.text:totable()
-		table.remove(text)
-		self.gameObject.textRenderer.text = table.concat(text)
+		self.gameObject.input:Update("", true)
 	end
 end
 
-function Behavior:OnMajButtonJustPressed()
-	self.gameObject.majButtonDown = true
+function Behavior:OnEnterButtonJustReleased()
+	Daneel.Fire.Event(self.gameObject.input, "OnValidate")
 end
 
-function Behavior:OnMajButtonJustReleased()
-	self.gameObject.majButtonDown = false
+-- handle uppercase mode
+function Behavior:OnLeftShiftButtonJustPressed()
+	self.gameObject.uppercaseMode = not self.gameObject.capsLockOn
 end
+
+function Behavior:OnLeftShiftButtonJustReleased()
+	self.gameObject.uppercaseMode = not self.gameObject.capsLockOn
+end
+
+function Behavior:OnRightShiftButtonJustPressed()
+	self.gameObject.uppercaseMode = not self.gameObject.capsLockOn
+end
+
+function Behavior:OnRightShiftButtonJustReleased()
+	self.gameObject.uppercaseMode = not self.gameObject.capsLockOn
+end
+
+function Behavior:OnCapsLockButtonJustPressed()
+	self.gameObject.capsLockOn = not self.gameObject.capsLockOn
+end
+
+function Behavior:OnCapsLockButtonJustReleased()
+	self.gameObject.capsLockOn = not self.gameObject.capsLockOn
+end
+
