@@ -23,6 +23,11 @@ function DaneelConfig()
 
             -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
             doubleClickDelay = 20,
+
+            --
+            keySets = {
+
+            }   
         },
 
 
@@ -53,8 +58,6 @@ function DaneelConfig()
             -- Name of the gameObject who has the orthographic camera used to render the HUD
             hudCameraName = "HUDCamera",
             
-            textDefaultFontName = "GUITextFont",
-
             checkBox = {
                 defaultState = false, -- false = unchecked, true = checked
 
@@ -64,6 +67,8 @@ function DaneelConfig()
                 defaultCheckedModel = nil,
                 defaultUncheckedModel = nil,
             },
+
+            defaultInputKeySet = "azerty",
         },
 
 

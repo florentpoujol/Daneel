@@ -27,8 +27,6 @@ function DaneelModuleGUIConfig()
             hudOriginGO = nil,
             hudOriginPosition = Vector3:New(0),
 
-            textDefaultFontName = "GUITextFont",
-
             checkBox = {
                 defaultState = false, -- false = unchecked, true = checked
 
@@ -38,6 +36,8 @@ function DaneelModuleGUIConfig()
                 defaultCheckedModel = nil,
                 defaultUncheckedModel = nil,
             },
+
+            defaultInputKeySet = "azerty",
         },
 
         daneelComponentObjects = {
@@ -668,7 +668,6 @@ function Daneel.GUI.Slider.GetValue(slider, getAsPercentage)
 end
 
 
-
 ----------------------------------------------------------------------------------
 -- Input
 
@@ -690,13 +689,12 @@ function Daneel.GUI.Input.New(gameObject, params)
     gameObject:AddTag("mouseInteractive")
     gameObject:AddScriptedBehavior("Daneel/Behaviors/Input")
 
-    input.text = "input"
     input.isFocused = false
+    input.keySet = config.gui.defaultInputKeySet
 
     Daneel.Debug.StackTrace.EndFunction()
     return input
 end
-
 
 -- Set the focused state of the input.
 -- @param input (Daneel.GUI.Input) The input component.
@@ -705,7 +703,7 @@ function Daneel.GUI.Input.Focus(input, state)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Input.Focus", input, state)
     local errorHead = "Daneel.GUI.Input.Focus(input[, state]) : "
     Daneel.Debug.CheckArgType(input, "input", "Daneel.GUI.Input", errorHead)
-    Daneel.Debug.CheckOptionalArgType(state, "state", "boolean", errorHead)
+    state = Daneel.Debug.CheckOptionalArgType(state, "state", "boolean", errorHead, true)
     
     if input.isFocused ~= state then
         input.isFocused = state
