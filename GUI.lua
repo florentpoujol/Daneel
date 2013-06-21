@@ -666,3 +666,50 @@ function Daneel.GUI.Slider.GetValue(slider, getAsPercentage)
     Daneel.Debug.StackTrace.EndFunction()
     return value
 end
+
+
+
+----------------------------------------------------------------------------------
+-- Input
+
+Daneel.GUI.Input = {}
+
+-- Create a new GUI.Input.
+-- @param name (string) The element name.
+-- @param params [optional] (table) A table with initialisation parameters.
+-- @return (Input) The new component.
+function Daneel.GUI.Input.New(gameObject, params)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Input.New", name, params)
+    local errorHead = "Daneel.GUI.Input.New(gameObject) : "
+    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+
+    local input = setmetatable({}, Daneel.GUI.Input)
+    input.gameObject = gameObject
+    gameObject.input = input
+
+    gameObject:AddTag("mouseInteractive")
+    gameObject:AddScriptedBehavior("Daneel/Behaviors/Input")
+
+    input.text = "input"
+    input.isFocused = false
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return input
+end
+
+
+-- Set the focused state of the input.
+-- @param input (Daneel.GUI.Input) The input component.
+-- @param state [optional default=true] (boolean) The new state.
+function Daneel.GUI.Input.Focus(input, state)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Input.Focus", input, state)
+    local errorHead = "Daneel.GUI.Input.Focus(input[, state]) : "
+    Daneel.Debug.CheckArgType(input, "input", "Daneel.GUI.Input", errorHead)
+    Daneel.Debug.CheckOptionalArgType(state, "state", "boolean", errorHead)
+    
+    if input.isFocused ~= state then
+        input.isFocused = state
+        Daneel.Event.Fire(input, "OnFocus")
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+end
