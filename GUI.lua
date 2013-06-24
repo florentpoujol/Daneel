@@ -18,14 +18,12 @@ function DaneelModuleGUIConfig()
         gui = {
             screenSize = CraftStudio.Screen.GetSize(),
 
-            -- Name of the gameObject who has the orthographic camera used to render the HUD
-            hudCameraName = "HUDCamera",
-            -- the corresponding GameObject, set at runtime
-            hudCameraGO = nil,
-
-            -- The gameObject that serve as origin for all GUI elements that are not in a Group, created at runtime
-            hudOriginGO = nil,
-            hudOriginPosition = Vector3:New(0),
+            hud = {
+                cameraName = "HUDCamera",
+                cameraGameObject = nil, -- the corresponding GameObject, set at runtime
+                originGameObject = nil, -- "parent" gameObject for global hud positioning, created at runtime in DaneelModuleGUIAwake
+                originPosition = Vector3:New(0),
+            },
 
             checkBox = {
                 isChecked = false, -- false = unchecked, true = checked
@@ -66,6 +64,7 @@ function DaneelModuleGUIConfig()
             CheckBox = Daneel.GUI.CheckBox,
             ProgressBar = Daneel.GUI.ProgressBar,
             Slider = Daneel.GUI.Slider,
+            Input = Daneel.GUI.Input,
         },
 
         daneelObjects = {
@@ -76,29 +75,29 @@ end
 
 function DaneelModuleGUIAwake()
     -- setting pixelToUnits  
-    config.gui.screenSize = CraftStudio.Screen.GetSize()
+    
     -- get the smaller side of the screen (usually screenSize.y, the height)
     local smallSideSize = config.gui.screenSize.y
     if config.gui.screenSize.x < config.gui.screenSize.y then
         smallSideSize = config.gui.screenSize.x
     end
 
-    config.gui.hudCameraGO = GameObject.Get(config.gui.hudCameraName)
+    config.gui.hud.cameraGameObject = GameObject.Get(config.gui.hud.cameraName)
 
-    if config.gui.hudCameraGO ~= nil then
+    if config.gui.hud.cameraGameObject ~= nil then
         -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
         -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and 3D world units
         Daneel.GUI.pixelsToUnits = 10 / smallSideSize
-        --Daneel.GUI.pixelsToUnits = config.gui.hudCameraGO.camera.orthographicScale / smallSideSize
+        --Daneel.GUI.pixelsToUnits = config.gui.hud.cameraGameObject.camera.orthographicScale / smallSideSize
 
-        config.gui.hudOriginGO = GameObject.New("HUDOrigin", { parent = config.gui.hudCameraGO })
-        config.gui.hudOriginGO.transform.localPosition = Vector3:New(
+        config.gui.hud.originGameObject = GameObject.New("HUDOrigin", { parent = config.gui.hud.cameraGameObject })
+        config.gui.hud.originGameObject.transform.localPosition = Vector3:New(
             -config.gui.screenSize.x * Daneel.GUI.pixelsToUnits / 2, 
             config.gui.screenSize.y * Daneel.GUI.pixelsToUnits / 2,
             0
         )
         -- the HUDOrigin is now at the top-left corner of the screen
-        config.gui.hudOriginPosition = config.gui.hudOriginGO.transform.position
+        config.gui.hud.originPosition = config.gui.hud.originGameObject.transform.position
     end
 end
 
@@ -138,8 +137,8 @@ function Daneel.GUI.Hud.ToHudPosition(position)
     local errorHead = "Daneel.GUI.Hud.ToHudPosition(hud, position) : "
     Daneel.Debug.CheckArgType(position, "position", "Vector3", errorHead)
    
-    local layer = config.gui.hudOriginPosition.z - position.z
-    position = position - config.gui.hudOriginPosition
+    local layer = config.gui.hud.originPosition.z - position.z
+    position = position - config.gui.hud.originPosition
     position = Vector2(
         position.x / Daneel.GUI.pixelsToUnits,
         -position.y / Daneel.GUI.pixelsToUnits
@@ -178,7 +177,7 @@ function Daneel.GUI.Hud.SetPosition(hud, position)
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
     Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
 
-    local newPosition = config.gui.hudOriginPosition + 
+    local newPosition = config.gui.hud.originPosition + 
     Vector3:New(
         position.x * Daneel.GUI.pixelsToUnits,
         -position.y * Daneel.GUI.pixelsToUnits,
@@ -197,7 +196,7 @@ function Daneel.GUI.Hud.GetPosition(hud)
     local errorHead = "Daneel.GUI.Hud.GetPosition(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
     
-    local position = hud.gameObject.transform.position - config.gui.hudOriginPosition
+    local position = hud.gameObject.transform.position - config.gui.hud.originPosition
     position = position / Daneel.GUI.pixelsToUnits
     position = Vector2.New(math.round(position.x), math.round(-position.y))
     Daneel.Debug.StackTrace.EndFunction()
@@ -214,7 +213,7 @@ function Daneel.GUI.Hud.SetLocalPosition(hud, position)
     Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
 
     local parent = hud.gameObject.parent
-    if parent == nil then parent = config.gui.hudOriginGO end
+    if parent == nil then parent = config.gui.hud.originGameObject end
     local newPosition = parent.transform.position + 
     Vector3:New(
         position.x * Daneel.GUI.pixelsToUnits,
@@ -235,7 +234,7 @@ function Daneel.GUI.Hud.GetLocalPosition(hud)
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
     
     local parent = hud.gameObject.parent
-    if parent == nil then parent = config.gui.hudOriginGO end
+    if parent == nil then parent = config.gui.hud.originGameObject end
     local position = hud.gameObject.transform.position - parent.transform.position
     position = position / Daneel.GUI.pixelsToUnits
     position = Vector2.New(math.round(position.x), math.round(-position.y))
@@ -252,7 +251,7 @@ function Daneel.GUI.Hud.SetLayer(hud, layer)
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
     Daneel.Debug.CheckArgType(layer, "layer", "number", errorHead)
 
-    local originLayer = config.gui.hudOriginPosition.z
+    local originLayer = config.gui.hud.originPosition.z
     local currentPosition = hud.gameObject.transform.position
     hud.gameObject.transform.position = Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer)
     Daneel.Debug.StackTrace.EndFunction()
@@ -266,7 +265,7 @@ function Daneel.GUI.Hud.GetLayer(hud)
     local errorHead = "Daneel.GUI.Hud.GetLyer(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
 
-    local originLayer = config.gui.hudOriginPosition.z
+    local originLayer = config.gui.hud.originPosition.z
     local layer = originLayer - hud.gameObject.transform.position.z 
     Daneel.Debug.StackTrace.EndFunction()
     return layer
@@ -282,7 +281,7 @@ function Daneel.GUI.Hud.SetLocalLayer(hud, layer)
     Daneel.Debug.CheckArgType(layer, "layer", "number", errorHead)
 
     local parent = hud.gameObject.parent
-    if parent == nil then parent = config.gui.hudOriginGO end
+    if parent == nil then parent = config.gui.hud.originGameObject end
     local originLayer = parent.transform.position.z
     local currentPosition = hud.gameObject.transform.position
     hud.gameObject.transform.position = Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer)
@@ -298,7 +297,7 @@ function Daneel.GUI.Hud.GetLocalLayer(hud)
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
 
     local parent = hud.gameObject.parent
-    if parent == nil then parent = config.gui.hudOriginGO end
+    if parent == nil then parent = config.gui.hud.originGameObject end
     local originLayer = parent.transform.position.z
     local layer = originLayer - hud.gameObject.transform.position.z 
     Daneel.Debug.StackTrace.EndFunction()
