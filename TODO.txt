@@ -4,9 +4,6 @@ IDEAS
     -----
     MISC
 
-    - trigger, tags : stocker les tags en tant que clé et non en tant que valeur
-        > gain de perf ?
-
     - table.rebuiltindex()
         recomplète l'index d'une table numérotée en gardant l'ordre
 
@@ -46,10 +43,12 @@ IDEAS
     touche $£¤ = M
     touche !§ = none
 
-    sur qwerty
+    sur GB
     MANqUE OemBackslash OemPipe
-    ``¬¬¦¦ = tilde
+    ``¬¬¦¦ = tilde `~
 
+    
+    
     -----
     GUI
 
@@ -84,9 +83,17 @@ A implémenter
     - décommenter nouveaux component dans la config
     - commentaire dans ray:IntersectsGameObject()
 
+    - Triggers et MouseInput : faire boucle avec for en sens inverse pour pouvoir vider la table
+
+    - si event lancé sur object avec fonction et pas d'argument, placer l'object en argument
 
     -----
     GUI
+
+    - Input
+        - limitation du nombre caractère
+        - activer/désactiver la capitalisation automatique
+        - Préfixer les bouttons nécessaire aux inputs par "Input"
 
     -----
     TWEENER

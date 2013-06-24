@@ -28,20 +28,37 @@ function DaneelModuleGUIConfig()
             hudOriginPosition = Vector3:New(0),
 
             checkBox = {
-                defaultState = false, -- false = unchecked, true = checked
-
+                isChecked = false, -- false = unchecked, true = checked
                 -- ':text' represents the checkBox's text
                 defaultCheckedMark = "√ :text",
                 defaultUncheckedMark = "X :text",
-
                 defaultCheckedModel = nil,
                 defaultUncheckedModel = nil,
             },
 
+            progressBar = {
+                height = 1,
+                minValue = 0,
+                maxValue = 100,
+                minLength = 0,
+                maxLength = 5, -- in units
+                progress = "100%",
+            },
+
+            slider = {
+                minValue = 0,
+                maxValue = 100,
+                length = 5, -- 5 units
+                axis = "x",
+                value = "0%",
+            },
+
             input = {
-                defaultButtonMap = config.input.buttonMaps.letters,
+                isFocused = false,
+                buttonMap = config.input.buttonMaps.letters,
                 allowAutoCapitalisation = true,
-            }
+                maxLength = 99999,
+            },
         },
 
         daneelComponentObjects = {
@@ -302,15 +319,14 @@ function Daneel.GUI.CheckBox.New(gameObject)
     local errorHead = "Daneel.GUI.CheckBox.New(gameObject) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     
-    local checkBox = setmetatable({}, Daneel.GUI.CheckBox)
-    gameObject.checkBox = checkBox
+    local checkBox = table.copy(config.gui.checkBox)
     checkBox.gameObject = gameObject
     checkBox.inner = " : "..math.round(math.randomrange(100000, 999999))
-
-    checkBox.checkedMark = config.gui.checkBox.defaultCheckedMark
-    checkBox.uncheckedMark = config.gui.checkBox.defaultUncheckedMark
-    checkBox.checkedModel = config.gui.checkBox.defaultCheckedModel
-    checkBox.uncheckedModel = config.gui.checkBox.defaultUncheckedModel
+    setmetatable(checkBox, Daneel.GUI.CheckBox)
+    
+    gameObject.checkBox = checkBox
+    gameObject:AddTag("mouseInteractive")
+    gameObject:AddScriptedBehavior("Daneel/Behaviors/CheckBox")
 
     if gameObject.textRenderer == nil or gameObject.modelRenderer == nil then
         -- "wait" for the TextRenderer or ModelRenderer to be added
@@ -341,11 +357,8 @@ function Daneel.GUI.CheckBox.New(gameObject)
         end
     end
 
-    checkBox:Check(config.gui.checkBox.defaultState)
-    
-    gameObject:AddScriptedBehavior("Daneel/Behaviors/CheckBox")
-    gameObject:AddTag("mouseInteractive")
-    
+    checkBox:Check(checkBox.isChecked)
+
     Daneel.Debug.StackTrace.EndFunction()
     return checkBox
 end
@@ -488,17 +501,14 @@ function Daneel.GUI.ProgressBar.New(gameObject)
     local errorHead = "Daneel.GUI.ProgressBar.New(gameObject) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
 
-    local progressBar = setmetatable({}, Daneel.GUI.ProgressBar)
-    gameObject.progressBar = progressBar
+    local progressBar = table.copy(config.gui.progressBar)
     progressBar.gameObject = gameObject
     progressBar.inner = " : "..math.round(math.randomrange(100000, 999999))
-
-    progressBar.height = 1
-    progressBar.minValue = 0
-    progressBar.maxValue = 100
-    progressBar.minLength = 0
-    progressBar.maxLength = 5
-    progressBar.progress = "100%"
+    progressBar.progress = nil -- remove the property to allow to use the dynamic getter/setter
+    setmetatable(progressBar, Daneel.GUI.ProgressBar)
+    progressBar.progress = config.gui.progressBar.progress
+    
+    gameObject.progressBar = progressBar
 
     Daneel.Debug.StackTrace.EndFunction()
     return progressBar
@@ -591,21 +601,17 @@ function Daneel.GUI.Slider.New(gameObject)
     local errorHead = "Daneel.GUI.Slider.New(gameObject) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
 
-    local slider = setmetatable({}, Daneel.GUI.Slider)
-    gameObject.slider = slider
+    local slider = table.copy(config.gui.slider)
     slider.gameObject = gameObject
     slider.inner = " : "..math.round(math.randomrange(100000, 999999))
-
+    slider.startPosition = gameObject.transform.position
+    slider.value = nil
+    setmetatable(slider, Daneel.GUI.Slider)
+    slider.value = config.gui.slider.value
+    
+    gameObject.slider = slider
     gameObject:AddTag("mouseInteractive")
     gameObject:AddScriptedBehavior("Daneel/Behaviors/Slider")
-
-    slider.minValue = 0
-    slider.maxValue = 100
-    slider.length = 5 -- 5 units
-    slider.startPosition = slider.gameObject.transform.position
-    slider.axis = "x"
-
-    slider.value = 0
 
     Daneel.Debug.StackTrace.EndFunction()
     return slider
@@ -690,16 +696,14 @@ function Daneel.GUI.Input.New(gameObject, params)
     local errorHead = "Daneel.GUI.Input.New(gameObject) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
 
-    local input = setmetatable({}, Daneel.GUI.Input)
+    local input = table.copy(config.gui.input)
     input.gameObject = gameObject
-    gameObject.input = input
+    input.inner = " : "..math.round(math.randomrange(100000, 999999))
+    setmetatable(input, Daneel.GUI.Input)
 
+    gameObject.input = input
     gameObject:AddTag("mouseInteractive")
     gameObject:AddScriptedBehavior("Daneel/Behaviors/Input")
-
-    input.isFocused = false
-    input.buttonMap = config.gui.input.defaultButtonMap
-    input.allowAutoCapitalisation = config.gui.allowAutoCapitalisation
 
     Daneel.Debug.StackTrace.EndFunction()
     return input
@@ -730,7 +734,7 @@ function Daneel.GUI.Input.Update(input, text, replaceText)
     local errorHead = "Daneel.GUI.Input.Update(input, text) : "
     Daneel.Debug.CheckArgType(input, "input", "Input", errorHead)
     Daneel.Debug.CheckArgType(text, "text", "string", errorHead)
-    Daneel.Debug.CheckOptionalArgType(replaceText, "replaceText", "boolean", errorHead)
+    replaceText = Daneel.Debug.CheckOptionalArgType(replaceText, "replaceText", "boolean", errorHead, false)
 
     if input.isFocused == false then 
         Daneel.Debug.StackTrace.EndFunction()
@@ -738,12 +742,14 @@ function Daneel.GUI.Input.Update(input, text, replaceText)
     end
     
     local oldText = self.gameObject.textRenderer.text
-    if replaceText then
-        self.gameObject.textRenderer.text = text
-    else
-        self.gameObject.textRenderer.text = oldText + text
+    if replaceText == false then
+        text = oldText + text
     end
-    if oldText ~= self.gameObject.textRenderer.text then
+    if #text > input.maxLength then
+        text = text:sub(1, input.maxLength)
+    end
+    if oldText ~= text then
+        self.gameObject.textRenderer.text = text
         Daneel.Event.Fire(input, "OnUpdate")
     end
     Daneel.Debug.StackTrace.EndFunction()

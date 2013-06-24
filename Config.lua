@@ -25,7 +25,7 @@ function DaneelConfig()
             doubleClickDelay = 20,
 
             --
-            keyMaps = {}   
+            buttonMaps = {}   
         },
 
 
@@ -57,17 +57,37 @@ function DaneelConfig()
             hudCameraName = "HUDCamera",
             
             checkBox = {
-                defaultState = false, -- false = unchecked, true = checked
-
+                isChecked = false, -- false = unchecked, true = checked
                 -- ':text' represents the checkBox's text
                 defaultCheckedMark = "√ :text",
                 defaultUncheckedMark = "X :text",
-
                 defaultCheckedModel = nil,
                 defaultUncheckedModel = nil,
             },
 
-            defaultInputKeySet = "azerty",
+            progressBar = {
+                height = 1,
+                minValue = 0,
+                maxValue = 100,
+                minLength = 0,
+                maxLength = 5, -- in units
+                progress = "100%",
+            },
+
+            slider = {
+                minValue = 0,
+                maxValue = 100,
+                length = 5, -- 5 units
+                axis = "x",
+                value = "0%",
+            },
+
+            input = {
+                isFocused = false,
+                buttonMap = config.input.buttonMaps.letters,
+                allowAutoCapitalisation = true,
+                maxLength = 99999,
+            },
         },
 
 

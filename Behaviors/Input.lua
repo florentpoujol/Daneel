@@ -5,6 +5,7 @@
 -- isFocused (boolean) [default=false]
 -- buttonMap (string) [default=""]
 -- allowAutoCapitalisation (boolean) [default=true]
+-- maxLength (number) [default=9999]
 
 local B = Behavior
 
@@ -13,7 +14,8 @@ function Behavior:Start()
 		self.gameObject:AddComponent("Input", { 
 			isFocused = self.isFocused,
 			buttonMap = self.buttonMap,
-			allowAutoCapitalisation = self.allowAutoCapitalisation
+			allowAutoCapitalisation = self.allowAutoCapitalisation,
+			maxLength = self.maxLength
 		})
 	end
 
