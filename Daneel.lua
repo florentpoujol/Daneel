@@ -686,7 +686,11 @@ function Daneel.Event.Fire(object, eventName,  ...)
             -- call function if needed
             _type = type(funcOrMessage)
             if _type == "function" or _type == "userdata" then
-                funcOrMessage(unpack(arg))
+                if #arg == 0 then
+                    funcOrMessage(listener)
+                else
+                    funcOrMessage(unpack(arg))
+                end
                 funcOrMessage = eventName
             end
 
