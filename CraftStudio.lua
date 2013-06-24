@@ -424,7 +424,10 @@ local OriginalGetMousePosition = CraftStudio.Input.GetMousePosition
 -- @return (Vector2) The on-screen mouse position.
 function CraftStudio.Input.GetMousePosition()
     Daneel.Debug.StackTrace.BeginFunction("CraftStudio.Input.GetMousePosition")
-    local vector = setmetatable(OriginalGetMousePosition(), Vector2)
+    local vector = OriginalGetMousePosition()
+    if Daneel.Utilities.GlobalExists("Vector2") then
+        setmetatable(vector, Vector2)
+    end
     Daneel.Debug.StackTrace.EndFunction()
     return vector
 end
@@ -436,7 +439,10 @@ local OriginalGetMouseDelta = CraftStudio.Input.GetMouseDelta
 -- @return (Vector2) The position's delta.
 function CraftStudio.Input.GetMouseDelta()
     Daneel.Debug.StackTrace.BeginFunction("CraftStudio.Input.GetMouseDelta")
-    local vector = setmetatable(OriginalGetMouseDelta(), Vector2)
+    local vector = OriginalGetMouseDelta()
+    if Daneel.Utilities.GlobalExists("Vector2") then
+        setmetatable(vector, Vector2)
+    end
     Daneel.Debug.StackTrace.EndFunction()
     return vector
 end
@@ -447,7 +453,10 @@ local OriginalGetSize = CraftStudio.Screen.GetSize
 -- @return (Vector2) The screen's size.
 function CraftStudio.Screen.GetSize()
     Daneel.Debug.StackTrace.BeginFunction("CraftStudio.Screen.GetSize")
-    local vector = setmetatable(OriginalGetSize(), Vector2)
+    local vector = OriginalGetSize()
+    if Daneel.Utilities.GlobalExists("Vector2") then
+        setmetatable(vector, Vector2)
+    end
     Daneel.Debug.StackTrace.EndFunction()
     return vector
 end
