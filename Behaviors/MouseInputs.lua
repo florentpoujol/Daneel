@@ -67,8 +67,9 @@ end
 
 function Behavior:Update()
     local ray = self.gameObject.camera:CreateRay(CraftStudio.Input.GetMousePosition())
-    local gameObjectsToRemove = {}
-    for i, gameObject in ipairs(interactiveGameObjects) do
+
+    for i = #interactiveGameObjects, 1, -1 do
+        local gameObject = interactiveGameObjects[i]
         if gameObject ~= nil and gameObject.inner ~= nil then
             if ray:IntersectsGameObject(gameObject) ~= nil then
                 -- the mouse pointer is over the gameObject
@@ -89,11 +90,7 @@ function Behavior:Update()
                 end
             end
         else
-            table.insert(gameObjectsToRemove, gameObject)
+            table.remove(interactiveGameObjects)
         end
-    end
-
-    for i, gameObject in ipairs(gameObjectsToRemove) do
-        table.removevalue(interactiveGameObjects, gameObject)
     end
 end

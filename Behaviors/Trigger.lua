@@ -20,11 +20,13 @@ function Behavior:Update()
         return
     end
     local triggerPosition = self.gameObject.transform.position
+    
     for i, layer in ipairs(self.layers) do
         local gameObjects = GameObject.tags[layer]
         if gameObjects ~= nil then
-            local gameObjectsToRemove = {}
-            for i, gameObject in ipairs(gameObjects) do
+            
+            for i = #gameObjects, i, -1 do
+                local gameObject = gameObjects[i]
                 if gameObject ~= nil and gameObject.inner ~= nil then
                     if 
                         gameObject ~= self.gameObject and 
@@ -49,13 +51,10 @@ function Behavior:Update()
                         end
                     end
                 else
-                    table.insert(gameObjectsToRemove, gameObject)
+                    table.remove(gameObjects)
                 end
             end
 
-            for i, gameObject in ipairs(gameObjectsToRemove) do
-                table.removevalue(gameObjects, gameObject)
-            end
         end
     end
 end
