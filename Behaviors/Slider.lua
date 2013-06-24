@@ -4,7 +4,7 @@
 -- Public properties :
 -- minValue (number) [default=0]
 -- maxValue (number) [default=100]
--- length (string) [default="0"]
+-- length (string) [default="5"]
 -- value (string) [default="0%"]
 -- axis (string) [default="x"]
 

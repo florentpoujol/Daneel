@@ -3,7 +3,8 @@
 
 -- Public properties :
 -- isFocused (boolean) [default=false]
--- keyMap (string) [default=""]
+-- buttonMap (string) [default=""]
+-- allowAutoCapitalisation (boolean) [default=true]
 
 local B = Behavior
 
@@ -11,34 +12,40 @@ function Behavior:Start()
 	if self.gameObject.input == nil then
 		self.gameObject:AddComponent("Input", { 
 			isFocused = self.isFocused,
-			keyMap = self.keyMap,
+			buttonMap = self.buttonMap,
+			allowAutoCapitalisation = self.allowAutoCapitalisation
 		})
 	end
 
 	Daneel.Events.Listen({
 		"OnDeleteButtonJustPressed",
 		"OnEnterButtonJustReleased",
-
-		"OnLeftShiftButtonJustPressed",
-		"OnLeftShiftButtonJustReleased",
-		"OnRightShiftButtonJustPressed",
-		"OnRightShiftButtonJustReleased",
-		"OnCapsLockButtonJustPressed",
-		"OnCapsLockButtonJustReleased",
 	}, self.gameObject)
+
+	if self.gameObject.input.allowAutoCapitalisation then
+		Daneel.Event.Listen({
+			"OnLeftShiftButtonJustPressed",
+			"OnLeftShiftButtonJustReleased",
+			"OnRightShiftButtonJustPressed",
+			"OnRightShiftButtonJustReleased",
+			"OnCapsLockButtonJustPressed",
+			"OnCapsLockButtonJustReleased",
+		}, self.gameObject)
+	end
 	self.gameObject.capsLockOn = false
 	self.gameObject.uppercaseMode = false
 
+
 	-- create functions to catch the event for each input keys
-	for key, value in pairs(self.gameObject.input.keyMap) do
+	for key, value in pairs(self.gameObject.input.buttonMap) do
 		-- the button name may be the key or the value
 		local buttonName = value
-		local combinaisons = nil
+		local combinations = nil
 		local buttonValue = nil
 		if type(key) == "string" then
 			buttonName = key
 			if type(value) == "table" then
-				combinaisons = value
+				combinations = value
 			else
 				buttonValue = value
 			end
@@ -49,8 +56,8 @@ function Behavior:Start()
 
 		B["On"..ButtonName.."ButtonJustPressed"] = function(self)
 			if self.gameObject.input.isFocused then
-				if combinaisons ~= nil then 
-					-- key=button name , value = combinaisons
+				if combinations ~= nil then 
+					-- key=button name , value = combinations
 					--[[
 					ie : 
 					inputKeys = {
@@ -62,7 +69,7 @@ function Behavior:Start()
 						}
 					}
 					]]
-					for button, value in pairs(combinaisons) do
+					for button, value in pairs(combinations) do
 						if type(button) ~= "number" and CraftStudio.Input.IsButtonDown(button) then
 							self.gameObject.input:Update(value)
 							return
@@ -70,9 +77,9 @@ function Behavior:Start()
 					end
 
 					-- when pressed without combinaison
-					if combinaisons[1] ~= nil then
+					if combinations[1] ~= nil then
 						--if CraftStudio.Input.IsButtonDown(buttonName) then
-							self.gameObject.input:Update(combinaisons[1])
+							self.gameObject.input:Update(combinations[1])
 							--return
 						--end
 					end
@@ -101,12 +108,15 @@ end
 
 function Behavior:OnDeleteButtonJustPressed()
 	if self.gameObject.input.isFocused then
-		self.gameObject.input:Update("", true)
+		local text = self.gameObject.textRenderer.text
+		self.gameObject.input:Update(text:sub(1, #text-1), true)
 	end
 end
 
 function Behavior:OnEnterButtonJustReleased()
-	Daneel.Fire.Event(self.gameObject.input, "OnValidate")
+	if self.gameObject.input.isFocused then
+		Daneel.Fire.Event(self.gameObject.input, "OnValidate")
+	end
 end
 
 -- handle uppercase mode
