@@ -23,6 +23,9 @@ function DaneelModuleGUIConfig()
                 cameraGameObject = nil, -- the corresponding GameObject, set at runtime
                 originGameObject = nil, -- "parent" gameObject for global hud positioning, created at runtime in DaneelModuleGUIAwake
                 originPosition = Vector3:New(0),
+
+                localPosition = Vector2.New(0, 0),
+                layer = 1,
             },
 
             checkBox = {
@@ -75,7 +78,7 @@ end
 
 function DaneelModuleGUIAwake()
     -- setting pixelToUnits  
-    
+
     -- get the smaller side of the screen (usually screenSize.y, the height)
     local smallSideSize = config.gui.screenSize.y
     if config.gui.screenSize.x < config.gui.screenSize.y then
@@ -153,16 +156,16 @@ end
 function Daneel.GUI.Hud.New(gameObject)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.New", gameObject)
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", "Hud.New(gameObject) : ")
-    if config.gui.hudCameraGO == nil and DEBUG == true then
-        error("GUI was not set up or the HUD Camera gameObject with name '"..config.gui.hudCameraName.."' was not found. Be sure that you call Daneel.Awake() early on from your scene and check your config.")
+    if config.gui.hud.cameraGameObject == nil then
+        error("GUI was not set up or the HUD Camera gameObject with name '"..config.gui.hud.cameraName.."' (value of config.gui.hud.cameraName) was not found. Be sure that you call Daneel.Awake() early on from your scene and check your config.")
     end
 
     local hud = setmetatable({}, Daneel.GUI.Hud)
-    gameObject.hud = hud
     hud.gameObject = gameObject
     hud.inner = " : "..math.round(math.randomrange(100000, 999999))
-    hud.position = Vector2.New(0)
-    hud.layer = 1
+    hud.localPosition = config.gui.hud.localPosition
+    hud.layer = config.gui.hud.layer
+    gameObject.hud = hud
     Daneel.Debug.StackTrace.EndFunction()
     return hud
 end

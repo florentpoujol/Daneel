@@ -54,15 +54,20 @@ function DaneelConfig()
 
         gui = {
             -- Name of the gameObject who has the orthographic camera used to render the HUD
-            hudCameraName = "HUDCamera",
+            hud = {
+                cameraName = "HUDCamera",
+
+                localPosition = Vector2.New(0, 0),
+                layer = 1,
+            },
             
             checkBox = {
                 isChecked = false, -- false = unchecked, true = checked
                 -- ':text' represents the checkBox's text
-                defaultCheckedMark = "√ :text",
-                defaultUncheckedMark = "X :text",
-                defaultCheckedModel = nil,
-                defaultUncheckedModel = nil,
+                checkedMark = "√ :text",
+                uncheckedMark = "X :text",
+                checkedModel = nil,
+                uncheckedModel = nil,
             },
 
             progressBar = {

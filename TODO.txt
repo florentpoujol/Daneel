@@ -90,11 +90,6 @@ A implémenter
     -----
     GUI
 
-    - Input
-        - limitation du nombre caractère
-        - activer/désactiver la capitalisation automatique
-        - Préfixer les bouttons nécessaire aux inputs par "Input"
-
     -----
     TWEENER
 
@@ -111,8 +106,6 @@ A tester
 A modifier/ajouter dans la doc :
 
     - Example project : minimalist encounter
-
-    - slider + input
 
 
 =========
