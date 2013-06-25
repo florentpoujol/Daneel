@@ -84,8 +84,6 @@ A implémenter
     -----
     DEVELOP   
 
-    - event mettre l'object en argument même dans le message lorsqu'il n'y a pas d'autres arguments
-    
     -----
     GUI
 

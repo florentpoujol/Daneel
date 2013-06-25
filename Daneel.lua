@@ -696,6 +696,9 @@ function Daneel.Event.Fire(object, eventName,  ...)
                 end
             end
             if sendMessage then
+                if #arg == 0 then
+                    table.insert(arg, listener)
+                end
                 gameObject:SendMessage(funcOrMessage, arg)
             end
         end
