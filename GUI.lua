@@ -57,6 +57,7 @@ function DaneelModuleGUIConfig()
             input = {
                 isFocused = false,
                 maxLength = 99999,
+                characterRange = nil,
             },
         },
 
@@ -709,6 +710,9 @@ function Daneel.GUI.Input.New( gameObject )
         
         -- Any character between 32 and 127 is regular printable ASCII
         elseif charNumber >= 32 and charNumber <= 127 then
+            if input.characterRange ~= nil and input.characterRange:find( char ) == nil then
+                return
+            end
             input:Update( char )
         end
     end

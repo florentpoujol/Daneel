@@ -72,7 +72,7 @@ IDEAS
     - permettre dépendances (un module oblige d'autre à se charger aussi)
     - liste des modules chargés + empècher plusieurs chargements du même modules
 
-    - renommer DaneelModule[module]Config() en DaneelInitModule[module]() > gère les dépendances et retourne la config
+    - renommer DaneelModule[module]Config() en DaneelLoadModule[module]() > gère les dépendances et retourne la config
     DaneelAwakeModule[module]()
     DaneelStartModule[module]()
     DaneelUpdateModule[module]()
@@ -98,8 +98,6 @@ A tester
 
     - voir pourquoi certains easeType renvoient des erreurs
 
-    - input
-
     - arg data de OnNewComponent is nil when component is scriptedBehavior (ou au moins checkbox)
 
 
@@ -108,7 +106,7 @@ A modifier/ajouter dans la doc :
 
     - Example project : minimalist encounter
     - enlever GO.NewFromScene
-    - corriger input
+    - corriger input + character range
 
 
 =========
