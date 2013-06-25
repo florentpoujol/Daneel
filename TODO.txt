@@ -83,9 +83,12 @@ A implémenter
     - décommenter nouveaux component dans la config
     - commentaire dans ray:IntersectsGameObject()
 
+
     -----
     GUI
 
+    - input : ajouter caracter range
+    
     -----
     TWEENER
 
@@ -102,6 +105,8 @@ A tester
 A modifier/ajouter dans la doc :
 
     - Example project : minimalist encounter
+    - enlever GO.NewFromScene
+    - corriger input
 
 
 =========
