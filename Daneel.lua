@@ -38,24 +38,6 @@ function DaneelDefaultConfig()
 
             -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
             doubleClickDelay = 20,
-
-            --
-            buttonMaps = {
-
-                letters = {
-                    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
-                    "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
-                    -- by default, the letters are capitalized automatically
-                    Space = " ",
-                },
-
-                numbers = {
-                    NumPad0 = "0", NumPad1 = "1", NumPad2 = "2", NumPad3 = "3", NumPad4 = "4",
-                    NumPad5 = "5", NumPad6 = "6", NumPad7 = "7", NumPad8 = "8", NumPad9 = "9",
-                    D1 = "1", D2 = "21", D3 = "3", D4 = "4", D5 = "5", D6 = "6", D7 = "7", D8 = "8", D9 = "9", D0 = "0",
-                },
-
-            },
         },
 
 

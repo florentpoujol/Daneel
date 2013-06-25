@@ -56,8 +56,6 @@ function DaneelModuleGUIConfig()
 
             input = {
                 isFocused = false,
-                buttonMap = config.input.buttonMaps.letters,
-                allowAutoCapitalisation = true,
                 maxLength = 99999,
             },
         },
@@ -701,6 +699,23 @@ function Daneel.GUI.Input.New(gameObject, params)
     local input = table.copy(config.gui.input)
     input.gameObject = gameObject
     input.inner = " : "..math.round(math.randomrange(100000, 999999))
+    -- adapted from Blast Turtles
+    input.OnTextEntered = function( char )
+        if not input.isFocused then return end
+        local charNumber = string.byte( char )
+        
+        if charNumber == 8 then -- Backspace
+            local text = gameObject.textRenderer.text
+            input:Update( text:sub( 1, #text - 1 ), true )
+        
+        elseif charNumber == 13 then -- Enter
+            Daneel.Event.Fire( input, "OnValidate" )
+        
+        -- Any character between 32 and 127 is regular printable ASCII
+        elseif charNumber >= 32 and charNumber <= 127 then
+            input:Update( char )
+        end
+    end
     setmetatable(input, Daneel.GUI.Input)
 
     gameObject.input = input
@@ -714,15 +729,20 @@ end
 -- Set the focused state of the input.
 -- @param input (Daneel.GUI.Input) The input component.
 -- @param state [optional default=true] (boolean) The new state.
-function Daneel.GUI.Input.Focus(input, state)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Input.Focus", input, state)
+function Daneel.GUI.Input.Focus( input, state )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.Input.Focus", input, state )
     local errorHead = "Daneel.GUI.Input.Focus(input[, state]) : "
-    Daneel.Debug.CheckArgType(input, "input", "Input", errorHead)
-    state = Daneel.Debug.CheckOptionalArgType(state, "state", "boolean", errorHead, true)
+    Daneel.Debug.CheckArgType( input, "input", "Input", errorHead )
+    state = Daneel.Debug.CheckOptionalArgType( state, "state", "boolean", errorHead, true )
     
     if input.isFocused ~= state then
         input.isFocused = state
-        Daneel.Event.Fire(input, "OnFocus")
+        if state == true then
+            CS.Input.OnTextEntered( input.OnTextEntered )
+        else
+            CS.Input.OnTextEntered( nil )
+        end
+        Daneel.Event.Fire( input, "OnFocus" )
     end
     Daneel.Debug.StackTrace.EndFunction()
 end
