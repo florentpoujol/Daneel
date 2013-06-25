@@ -15,7 +15,7 @@ function Behavior:Awake()
     Daneel.Event.Listen("OnRightMouseButtonJustPressed", self.gameObject)
     
     if GameObject.tags == nil then
-        error("MouseInputs:Awake() : Variable 'GameObject.tags' does not exists because the GameObject file probably missing.")
+        error("MouseInputs:Awake() : Variable 'GameObject.tags' does not exists because the GameObject file is probably missing.")
     end
     interactiveGameObjects = GameObject.tags.mouseInteractive
 
@@ -30,7 +30,7 @@ end
 
 function Behavior:OnLeftMouseButtonJustPressed()
     for i, gameObject in ipairs(interactiveGameObjects) do
-        if gameObject ~= nil and gameObject.inner ~= nil and gameObject.isHoveredByMouse == true then
+        if gameObject ~= nil and gameObject.inner ~= nil and gameObject.isMouseOver == true then
             Daneel.Event.Fire(gameObject, "OnClick")
             
             if gameObject.lastLeftClickFrame ~= nil and 
@@ -48,7 +48,7 @@ function Behavior:OnLeftMouseButtonDown()
     local vector = CraftStudio.Input.GetMouseDelta()
     if vector.x ~= 0 or vector.y ~= 0 then
         for i, gameObject in ipairs(interactiveGameObjects) do
-            if gameObject ~= nil and gameObject.inner ~= nil and gameObject.isHoveredByMouse == true then
+            if gameObject ~= nil and gameObject.inner ~= nil and gameObject.isMouseOver == true then
                 Daneel.Event.Fire(gameObject, "OnDrag")
             end
         end
@@ -58,7 +58,7 @@ end
 
 function Behavior:OnRightMouseButtonJustPressed()
     for i, gameObject in ipairs(interactiveGameObjects) do
-        if gameObject ~= nil and gameObject.iner ~= nil and gameObject.isHoveredByMouse == true then
+        if gameObject ~= nil and gameObject.iner ~= nil and gameObject.isMouseOver == true then
             Daneel.Event.Fire(gameObject, "OnRightClick")
         end
     end
@@ -76,16 +76,16 @@ function Behavior:Update()
                 -- the action will depend on if this is the first time it hovers the gameObject
                 -- or if it was already over it the last frame
                 -- also on the user's input (clicks) while it hovers the gameObject
-                if gameObject.isHoveredByMouse == true then
+                if gameObject.isMouseOver == true then
                     Daneel.Event.Fire(gameObject, "OnMouseOver")
                 else
-                    gameObject.isHoveredByMouse = true
+                    gameObject.isMouseOver = true
                     Daneel.Event.Fire(gameObject, "OnMouseEnter")
                 end
             else
                 -- was the gameObject still hovered the last frame ?
-                if gameObject.isHoveredByMouse == true then
-                    gameObject.isHoveredByMouse = false
+                if gameObject.isMouseOver == true then
+                    gameObject.isMouseOver = false
                     Daneel.Event.Fire(gameObject, "OnMouseExit")
                 end
             end
