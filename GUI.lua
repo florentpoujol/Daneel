@@ -685,17 +685,16 @@ end
 Daneel.GUI.Input = {}
 
 -- Create a new GUI.Input.
--- @param name (string) The element name.
--- @param params [optional] (table) A table with initialisation parameters.
+-- @param gameObject (GameObject) The component gameObject.
 -- @return (Input) The new component.
-function Daneel.GUI.Input.New(gameObject, params)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Input.New", name, params)
+function Daneel.GUI.Input.New( gameObject )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.Input.New", gameObject )
     local errorHead = "Daneel.GUI.Input.New(gameObject) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
 
-    local input = table.copy(config.gui.input)
+    local input = table.copy( config.gui.input )
     input.gameObject = gameObject
-    input.inner = " : "..math.round(math.randomrange(100000, 999999))
+    input.inner = " : "..math.round( math.randomrange( 100000, 999999 ) )
     -- adapted from Blast Turtles
     input.OnTextEntered = function( char )
         if not input.isFocused then return end
@@ -713,11 +712,19 @@ function Daneel.GUI.Input.New(gameObject, params)
             input:Update( char )
         end
     end
-    setmetatable(input, Daneel.GUI.Input)
+    setmetatable( input, Daneel.GUI.Input )
 
     gameObject.input = input
-    gameObject:AddTag("mouseInteractive")
-    gameObject:AddScriptedBehavior("Daneel/Behaviors/Input")
+    gameObject:AddTag( "mouseInteractive" )
+    
+    Daneel.Event.Listen( "OnLeftMouseButtonJustPressed", 
+        function()
+            if input.gameObject.isMouseOver == nil then
+                input.gameObject.isMouseOver = false
+            end
+            input.gameObject.input:Focus( input.gameObject.isMouseOver )
+        end 
+    )
 
     Daneel.Debug.StackTrace.EndFunction()
     return input
@@ -760,15 +767,15 @@ function Daneel.GUI.Input.Update(input, text, replaceText)
         return
     end
     
-    local oldText = self.gameObject.textRenderer.text
+    local oldText = input.gameObject.textRenderer.text
     if replaceText == false then
-        text = oldText + text
+        text = oldText .. text
     end
     if #text > input.maxLength then
         text = text:sub(1, input.maxLength)
     end
     if oldText ~= text then
-        self.gameObject.textRenderer.text = text
+        input.gameObject.textRenderer.text = text
         Daneel.Event.Fire(input, "OnUpdate")
     end
     Daneel.Debug.StackTrace.EndFunction()

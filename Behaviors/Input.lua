@@ -3,7 +3,7 @@
 
 -- Public properties :
 -- isFocused (boolean) [default=false]
--- maxLength (number) [default=9999]
+-- maxLength (number) [default=999999]
 
 function Behavior:Start()
 	if self.gameObject.input == nil then
@@ -12,8 +12,4 @@ function Behavior:Start()
 			maxLength = self.maxLength
 		})
 	end
-end
-
-function Behavior:OnClick()
-	self.gameObject.input:Focus( self.gameObject.onMouseOver )
 end
