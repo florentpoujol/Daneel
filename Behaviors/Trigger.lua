@@ -1,8 +1,8 @@
 
--- public properties :
--- range (default = 0)
--- layers (default = "")
--- isStatic (default = false)
+-- Public properties :
+-- range (number) [default= 0]
+-- layers (string) [default=""]
+-- isStatic (boolean) [default=false]
 
 
 function Behavior:Start()

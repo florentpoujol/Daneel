@@ -3,29 +3,29 @@
 -- Only add to a gameObject while in the scene editor.
 
 -- Public properties :
--- positionX (number) [default=-1]
--- positionY (number) [default=-1]
--- localPositionX (number) [default=-1]
--- localPositionY (number) [default=-1]
--- layer (number) [default=-1]
--- localLayer (number) [default=-1]
+-- positionX (string) [default=""]
+-- positionY (string) [default=""]
+-- localPositionX (string) [default=""]
+-- localPositionY (string) [default=""]
+-- layer (string) [default=""]
+-- localLayer (string) [default=""]
 
 function Behavior:Start()
-	if self.gameObject.checkBox == nil then
+	if self.gameObject.hud == nil then
 		local params = {}
-		if self.positionX >= 0 and self.positionY >= 0 then
-			params.position = Vector2.New(self.positionX, self.positionY)
+		if self.positionX ~= "" and self.positionY ~= "" then
+			params.position = Vector2.New(tonumber(self.positionX), tonumber(self.positionY))
 		end
-		if self.localPositionX >= 0 and self.localPositionY >= 0 then
-			params.localPosition = Vector2.New(self.localPositionX, self.localPositionY)
+		if self.localPositionX ~= "" and self.localPositionY ~= "" then
+			params.localPosition = Vector2.New(tonumber(self.localPositionX), tonumber(self.localPositionY))
 		end
-		if self.layer >= 0  then
-			params.layer = self.layer
+		if self.layer ~= "" then
+			params.layer = tonumber(self.layer)
 		end
-		if self.localLayer >= 0  then
-			params.localLayer = self.localLayer
+		if self.localLayer ~= "" then
+			params.localLayer = tonumber(self.localLayer)
 		end
 
-		self.gameObject:AddComponent("CheckBox", params)
+		self.gameObject:AddComponent("Hud", params)
 	end
 end
