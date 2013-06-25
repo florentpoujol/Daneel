@@ -17,13 +17,12 @@ function DaneelModuleGUIConfig()
     return {
         gui = {
             screenSize = CraftStudio.Screen.GetSize(),
+            cameraName = "HUDCamera",
+            cameraGO = nil, -- the corresponding GameObject, set at runtime
+            originGO = nil, -- "parent" gameObject for global hud positioning, created at runtime in DaneelModuleGUIAwake
+            originPosition = Vector3:New(0),
 
             hud = {
-                cameraName = "HUDCamera",
-                cameraGameObject = nil, -- the corresponding GameObject, set at runtime
-                originGameObject = nil, -- "parent" gameObject for global hud positioning, created at runtime in DaneelModuleGUIAwake
-                originPosition = Vector3:New(0),
-
                 localPosition = Vector2.New(0, 0),
                 layer = 1,
             },
@@ -83,22 +82,22 @@ function DaneelModuleGUIAwake()
         smallSideSize = config.gui.screenSize.x
     end
 
-    config.gui.hud.cameraGameObject = GameObject.Get(config.gui.hud.cameraName)
+    config.gui.cameraGO = GameObject.Get(config.gui.cameraName)
 
-    if config.gui.hud.cameraGameObject ~= nil then
+    if config.gui.cameraGO ~= nil then
         -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
         -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and 3D world units
-        Daneel.GUI.pixelsToUnits = 10 / smallSideSize
-        --Daneel.GUI.pixelsToUnits = config.gui.hud.cameraGameObject.camera.orthographicScale / smallSideSize
+        Daneel.GUI.pixelsToUnits = config.gui.cameraGO.camera.orthographicScale / smallSideSize
+        --Daneel.GUI.pixelsToUnits = config.gui.cameraGO.camera.orthographicScale / smallSideSize
 
-        config.gui.hud.originGameObject = GameObject.New("HUDOrigin", { parent = config.gui.hud.cameraGameObject })
-        config.gui.hud.originGameObject.transform.localPosition = Vector3:New(
+        config.gui.originGO = GameObject.New("HUDOrigin", { parent = config.gui.cameraGO })
+        config.gui.originGO.transform.localPosition = Vector3:New(
             -config.gui.screenSize.x * Daneel.GUI.pixelsToUnits / 2, 
             config.gui.screenSize.y * Daneel.GUI.pixelsToUnits / 2,
             0
         )
         -- the HUDOrigin is now at the top-left corner of the screen
-        config.gui.hud.originPosition = config.gui.hud.originGameObject.transform.position
+        config.gui.originPosition = config.gui.originGO.transform.position
     end
 end
 
@@ -138,8 +137,8 @@ function Daneel.GUI.Hud.ToHudPosition(position)
     local errorHead = "Daneel.GUI.Hud.ToHudPosition(hud, position) : "
     Daneel.Debug.CheckArgType(position, "position", "Vector3", errorHead)
    
-    local layer = config.gui.hud.originPosition.z - position.z
-    position = position - config.gui.hud.originPosition
+    local layer = config.gui.originPosition.z - position.z
+    position = position - config.gui.originPosition
     position = Vector2(
         position.x / Daneel.GUI.pixelsToUnits,
         -position.y / Daneel.GUI.pixelsToUnits
@@ -154,8 +153,8 @@ end
 function Daneel.GUI.Hud.New(gameObject)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.New", gameObject)
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", "Hud.New(gameObject) : ")
-    if config.gui.hud.cameraGameObject == nil then
-        error("GUI was not set up or the HUD Camera gameObject with name '"..config.gui.hud.cameraName.."' (value of config.gui.hud.cameraName) was not found. Be sure that you call Daneel.Awake() early on from your scene and check your config.")
+    if config.gui.cameraGO == nil then
+        error("GUI was not set up or the HUD Camera gameObject with name '"..config.gui.cameraName.."' (value of config.gui.cameraName) was not found. Be sure that you call Daneel.Awake() early on from your scene and check your config.")
     end
 
     local hud = setmetatable({}, Daneel.GUI.Hud)
@@ -178,7 +177,7 @@ function Daneel.GUI.Hud.SetPosition(hud, position)
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
     Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
 
-    local newPosition = config.gui.hud.originPosition + 
+    local newPosition = config.gui.originPosition + 
     Vector3:New(
         position.x * Daneel.GUI.pixelsToUnits,
         -position.y * Daneel.GUI.pixelsToUnits,
@@ -197,7 +196,7 @@ function Daneel.GUI.Hud.GetPosition(hud)
     local errorHead = "Daneel.GUI.Hud.GetPosition(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
     
-    local position = hud.gameObject.transform.position - config.gui.hud.originPosition
+    local position = hud.gameObject.transform.position - config.gui.originPosition
     position = position / Daneel.GUI.pixelsToUnits
     position = Vector2.New(math.round(position.x), math.round(-position.y))
     Daneel.Debug.StackTrace.EndFunction()
@@ -214,7 +213,7 @@ function Daneel.GUI.Hud.SetLocalPosition(hud, position)
     Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
 
     local parent = hud.gameObject.parent
-    if parent == nil then parent = config.gui.hud.originGameObject end
+    if parent == nil then parent = config.gui.originGO end
     local newPosition = parent.transform.position + 
     Vector3:New(
         position.x * Daneel.GUI.pixelsToUnits,
@@ -235,7 +234,7 @@ function Daneel.GUI.Hud.GetLocalPosition(hud)
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
     
     local parent = hud.gameObject.parent
-    if parent == nil then parent = config.gui.hud.originGameObject end
+    if parent == nil then parent = config.gui.originGO end
     local position = hud.gameObject.transform.position - parent.transform.position
     position = position / Daneel.GUI.pixelsToUnits
     position = Vector2.New(math.round(position.x), math.round(-position.y))
@@ -252,7 +251,7 @@ function Daneel.GUI.Hud.SetLayer(hud, layer)
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
     Daneel.Debug.CheckArgType(layer, "layer", "number", errorHead)
 
-    local originLayer = config.gui.hud.originPosition.z
+    local originLayer = config.gui.originPosition.z
     local currentPosition = hud.gameObject.transform.position
     hud.gameObject.transform.position = Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer)
     Daneel.Debug.StackTrace.EndFunction()
@@ -266,7 +265,7 @@ function Daneel.GUI.Hud.GetLayer(hud)
     local errorHead = "Daneel.GUI.Hud.GetLyer(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
 
-    local originLayer = config.gui.hud.originPosition.z
+    local originLayer = config.gui.originPosition.z
     local layer = originLayer - hud.gameObject.transform.position.z 
     Daneel.Debug.StackTrace.EndFunction()
     return layer
@@ -282,7 +281,7 @@ function Daneel.GUI.Hud.SetLocalLayer(hud, layer)
     Daneel.Debug.CheckArgType(layer, "layer", "number", errorHead)
 
     local parent = hud.gameObject.parent
-    if parent == nil then parent = config.gui.hud.originGameObject end
+    if parent == nil then parent = config.gui.originGO end
     local originLayer = parent.transform.position.z
     local currentPosition = hud.gameObject.transform.position
     hud.gameObject.transform.position = Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer)
@@ -298,7 +297,7 @@ function Daneel.GUI.Hud.GetLocalLayer(hud)
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
 
     local parent = hud.gameObject.parent
-    if parent == nil then parent = config.gui.hud.originGameObject end
+    if parent == nil then parent = config.gui.originGO end
     local originLayer = parent.transform.position.z
     local layer = originLayer - hud.gameObject.transform.position.z 
     Daneel.Debug.StackTrace.EndFunction()
@@ -331,10 +330,9 @@ function Daneel.GUI.CheckBox.New(gameObject)
     if gameObject.textRenderer == nil or gameObject.modelRenderer == nil then
         -- "wait" for the TextRenderer or ModelRenderer to be added
         checkBox.OnNewComponent = function(newComponent)
-            --if getmetatable(newComponent) == TextRenderer then
-                --checkBox.text = checkBox._text
-            --elseif getmetatable(newComponent) == ModelRenderer and checkBox.checkedModel ~= nil then
-            if getmetatable(newComponent) == ModelRenderer and checkBox.checkedModel ~= nil then
+            if getmetatable(newComponent) == TextRenderer then
+                checkBox.text = checkBox._text
+            elseif getmetatable(newComponent) == ModelRenderer and checkBox.checkedModel ~= nil then
                 if checkBox.isChecked then
                     checkBox.gameObject.modelRenderer.model = checkBox.checkedModel
                 else
@@ -798,6 +796,7 @@ function Vector2.New(x, y)
     local errorHead = "Vector2.New(x, y) : "
     Daneel.Debug.CheckArgType(x, "x", {"string", "number"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(y, "y", {"string", "number"}, errorHead)
+    
     if y == nil then y = x end
     local vector = setmetatable({ x = x, y = y }, Vector2)
     Daneel.Debug.StackTrace.EndFunction()
