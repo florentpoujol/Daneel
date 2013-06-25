@@ -92,8 +92,8 @@ function DaneelDefaultConfig()
             Camera = Camera,
             Transform = Transform,
             Physics = Physics,
-            --TextRenderer = TextRenderer,
-            --NetworkSync = NetworkSync,
+            TextRenderer = TextRenderer,
+            NetworkSync = NetworkSync,
         },
 
         assetObjects = {
@@ -105,7 +105,7 @@ function DaneelDefaultConfig()
             Sound = Sound,
             Scene = Scene,
             --Document = Document,
-            --Font = Font,
+            Font = Font,
         },
         
         -- Daneel
@@ -212,7 +212,7 @@ function Daneel.Utilities.AllowDynamicGettersAndSetters(Object, ancestors)
 end
 
 --- Returns the value of any global variable (including nested tables) from its name as a string.
--- When the variable is nested in one or several tables (like Daneel.GUI.Text), put a dot between the names.
+-- When the variable is nested in one or several tables (like Daneel.GUI.Hud), put a dot between the names.
 -- @param name (string) The variable name.
 -- @return (mixed) The variable value, or nil.
 function Daneel.Utilities.GetValueFromName(name)
@@ -975,7 +975,7 @@ function Daneel.Load()
 
     -- Scripts
     for i, path in pairs(config.scriptPaths) do
-        local script = CraftStudio.FindAsset(path, "Script") -- Asset.Get() helpers does not exist yet
+        local script = CraftStudio.FindAsset(path, "Script")
         if script ~= nil then
             Daneel.Utilities.AllowDynamicGettersAndSetters(script, { Script, Component })
 
@@ -983,11 +983,7 @@ function Daneel.Load()
                 return "ScriptedBehavior"..tostring(scriptedBehavior.inner):sub(2, 20)
             end
         else
-            if math.isinteger(i) then
-                table.remove(config.scriptPaths, i)
-            else
-                config.scriptPaths[i] = nil
-            end
+            config.scriptPaths[i] = nil
             if DEBUG == true then
                 print("WARNING : item with key '"..i.."' and value '"..path.."' in 'config.scriptPaths' is not a valid script path.")
             end

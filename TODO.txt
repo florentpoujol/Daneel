@@ -69,20 +69,20 @@ IDEAS
 
     - voir plus en profondeur comment Composer (php), node.js font pour gérer ça
     - module = un object global, sur lequel existe ou non les fonctions Config, Load, Awake, Start, Update
+    - permettre dépendances (un module oblige d'autre à se charger aussi)
+    - liste des modules chargés + empècher plusieurs chargements du même modules
+
+    - renommer DaneelModule[module]Config() en DaneelInitModule[module]() > gère les dépendances et retourne la config
+    DaneelAwakeModule[module]()
+    DaneelStartModule[module]()
+    DaneelUpdateModule[module]()
 
 
 ==========
 A implémenter
 
     -----
-    DEVELOP 
-
-    LORSQUE LA NOUVELLE VERSION DE CS EST SORTIE
-    - enlever l'orthographic scale en dure dans DaneelModuleGUIAwake()
-    - enlever commentaire autour de TextRenderer.SetFont()
-    - décommenter nouveaux component dans la config
-    - commentaire dans ray:IntersectsGameObject()
-
+    DEVELOP   
 
     -----
     GUI
