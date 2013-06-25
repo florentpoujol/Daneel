@@ -97,7 +97,17 @@ function Component.Set(component, params)
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
 
     local componentType = Daneel.Debug.GetType(component)
-    if componentType == "ProgressBar" then
+    if componentType == "CheckBox" then
+        local isChecked = params.isChecked
+        params.isChecked = nil
+        for key, value in pairs(params) do
+            component[key] = value
+        end
+        if isChecked ~= nil then
+            component:Check(isChecked)
+        end        
+        
+    elseif componentType == "ProgressBar" then
         local progress = params.progress
         params.progress = nil
         if progress == nil then

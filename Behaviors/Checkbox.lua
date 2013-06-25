@@ -23,3 +23,27 @@ function Behavior:OnClick()
         checkBox:Check(not checkBox.isChecked)
     end
 end
+
+
+-- "wait" for the TextRenderer or ModelRenderer to be added
+function Behavior:OnNewComponent(data)
+    if data == nil then return end -- FIXME : happens when the component is a scriptedBehavior
+    local component = data[1]
+    if component == nil then return end
+    local mt = getmetatable(component)
+
+    if mt == TextRenderer then
+        local text = component.text
+        if text == nil then
+            text = self.gameObject.checkBox.defaultText
+        end
+        self.gameObject.checkBox.text = text
+
+    elseif mt == ModelRenderer and checkBox.checkedModel ~= nil then
+        if checkBox.isChecked then
+            checkBox.gameObject.modelRenderer.model = checkBox.checkedModel
+        else
+            checkBox.gameObject.modelRenderer.model = checkBox.uncheckedModel
+        end
+    end
+end

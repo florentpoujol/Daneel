@@ -363,8 +363,6 @@ function GameObject.AddComponent(gameObject, componentType, params, scriptedBeha
 
         if componentType:isoneof(config.daneelComponentTypes) then
             component = Daneel.GUI[componentType].New(gameObject)
-            --component = Daneel.Utilities.GetValueFromName(componentType).New(gameObject)
-            -- this allow for type like Daneel.GUI.Hud
         else
             component = gameObject:CreateComponent(componentType)
         end
@@ -373,8 +371,8 @@ function GameObject.AddComponent(gameObject, componentType, params, scriptedBeha
     if params ~= nil then
         component:Set(params)
     end   
-    Daneel.Event.Fire(component, "OnNewComponent")
-    Daneel.Debug.StackTrace.EndFunction("GameObject.AddComponent", component)
+    Daneel.Event.Fire(component, "OnNewComponent", component)
+    Daneel.Debug.StackTrace.EndFunction()
     return component
 end
 

@@ -84,6 +84,8 @@ A implémenter
     -----
     DEVELOP   
 
+    - event mettre l'object en argument même dans le message lorsqu'il n'y a pas d'autres arguments
+    
     -----
     GUI
 
@@ -97,8 +99,10 @@ A implémenter
 A tester
 
     - voir pourquoi certains easeType renvoient des erreurs
-    - checkBox avec custom mark
+
     - input
+
+    - arg data de OnNewComponent is nil when component is scriptedBehavior (ou au moins checkbox)
 
 
 ==========
