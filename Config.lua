@@ -44,7 +44,7 @@ function DaneelConfig()
             -- Value returned when a language key is not found
             keyNotFound = "langkeynotfound",
 
-            -- Tell wether Daneel.Lang.GetLine() search a line key in the default language 
+            -- Tell wether Daneel.Lang.Get() search a line key in the default language 
             -- when it is not found in the current language before returning the value of keyNotFound
             searchInDefault = true,
         },
@@ -54,9 +54,9 @@ function DaneelConfig()
 
         gui = {
             -- Name of the gameObject who has the orthographic camera used to render the HUD
-            hud = {
-                cameraName = "HUDCamera",
+            cameraName = "HUDCamera",
 
+            hud = {
                 localPosition = Vector2.New(0, 0),
                 layer = 1,
             },
@@ -71,11 +71,11 @@ function DaneelConfig()
             },
 
             progressBar = {
-                height = 1,
                 minValue = 0,
                 maxValue = 100,
                 minLength = 0,
                 maxLength = 5, -- in units
+                height = 1,
                 progress = "100%",
             },
 
@@ -89,8 +89,6 @@ function DaneelConfig()
 
             input = {
                 isFocused = false,
-                buttonMap = config.input.buttonMaps.letters,
-                allowAutoCapitalisation = true,
                 maxLength = 99999,
             },
         },
