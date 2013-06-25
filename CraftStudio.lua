@@ -220,7 +220,7 @@ end
 
 ----------------------------------------------------------------------------------
 -- TextRenderer
---[[
+
 local OriginalSetFont = TextRenderer.SetFont
 
 --- Set the specified font for the textRenderer.
@@ -236,7 +236,7 @@ function TextRenderer.SetFont(textRenderer, fontNameOrAsset)
     OriginalSetFont(textRenderer, font)
     Daneel.Debug.StackTrace.EndFunction("TextRenderer.SetFont")
 end
-]]
+
 
 ----------------------------------------------------------------------------------
 -- Ray
@@ -296,12 +296,12 @@ function Ray.IntersectsGameObject(ray, gameObjectNameOrInstance)
             distance, normal, hitBlockLocation, adjacentBlockLocation = ray:IntersectsMapRenderer(component)
         end
     end
-    --[[if distance == nil then
+    if distance == nil then
         component = gameObject:GetComponent("TextRenderer")
         if component ~= nil then
             distance, normal, hitBlockLocation, adjacentBlockLocation = ray:IntersectsTextRenderer(component)
         end
-    end]]
+    end
 
     if distance == nil then
         Daneel.Debug.StackTrace.EndFunction()
