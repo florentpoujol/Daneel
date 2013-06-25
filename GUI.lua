@@ -419,7 +419,11 @@ function Daneel.GUI.CheckBox.Check(checkBox, state)
     state = Daneel.Debug.CheckOptionalArgType(state, "state", "boolean", errorHead, true)
 
     if checkBox.isChecked ~= state then
-        local text = checkBox.text
+        local text = nil
+        if checkBox.gameObject.textRenderer ~= nil then
+            text = checkBox.text
+        end
+        
         checkBox.isChecked = state
         
         if checkBox.gameObject.textRenderer ~= nil then
