@@ -190,13 +190,13 @@ end
 -- @param s (string) The string.
 -- @return (string) The trimmed string.
 function string.trimend(s)
-Daneel.Debug.StackTrace.BeginFunction("string.trimend", s)
+    Daneel.Debug.StackTrace.BeginFunction("string.trimend", s)
     local errorHead = "string.trimend(string) : "
     Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
 
     local ts = s:totable()
     local _end = #ts
-    for i=#ts, 1, -1 do
+    for i = #ts, 1, -1 do
         if ts[i] == " " then
             _end = i-1
         else
@@ -371,7 +371,8 @@ function table.merge(...)
         error("table.merge(...) : No argument provided. Need at least two.")
     end
     Daneel.Debug.StackTrace.BeginFunction("table.merge", unpack(arg))
-    local fullTable = table.new()
+    
+    local fullTable = {}
     for i, t in ipairs(arg) do
         local argType = type(t)
         if argType == "table" then
@@ -401,21 +402,29 @@ function table.deepmerge(...)
         error("table.deepmerge(...) : No argument provided. Need at least two.")
     end
     Daneel.Debug.StackTrace.BeginFunction("table.deepmerge", unpack(arg))
-    local fullTable = table.new()
+    
+    local fullTable = {}
     for i, t in ipairs(arg) do
         local argType = type(t)
         if argType == "table" then
+            
             for key, value in pairs(t) do
                 if math.isinteger(key) and not table.containsvalue(fullTable, value) then
                     table.insert(fullTable, value)
                 else
                     if fullTable[key] ~= nil and type(value) == "table" then
-                        fullTable[key] = table.deepmerge(fullTable[key], value)
+                        local mt = getmetatable(fullTable[key])
+                        if mt ~= nil then -- consider the value an intance of an object, just replace the instance
+                            fullTable[key] = value
+                        else
+                            fullTable[key] = table.deepmerge(fullTable[key], value)
+                        end
                     else
                         fullTable[key] = value
                     end
                 end
             end
+
         elseif DEBUG == true then
             print("WARNING : table.deepmerge(...) : Argument n°"..i.." is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'. The argument as been ignored.")
         end
