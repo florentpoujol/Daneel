@@ -129,8 +129,6 @@ function DaneelDefaultConfig()
             "Tween",
             "GUI"
         }
-
-        loadedModules = {}
     }
 end
 
@@ -1062,7 +1060,7 @@ function Daneel.Load()
     end
 
     -- Load modules 
-    for i, module in ipairs(config.loadedModules) do
+    for i, module in ipairs(config.modules) do
         local functionName = "DaneelLoadModule"..module
         if Daneel.Utilities.GlobalExists(functionName) then
             _G[functionName]()
