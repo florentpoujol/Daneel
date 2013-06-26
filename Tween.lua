@@ -51,6 +51,7 @@ DaneelTween = {}
 
 -- Allow to get the target's "property" even if it is virtual and normally handled via getter/setter.
 local function GetTweenerProperty(tweener)
+    Daneel.Debug.StackTrace.BeginFunction("GetTweenerProperty", tweener)
     local value = nil
     if tweener.target ~= nil then
         value = tweener.target[tweener.property]
@@ -61,11 +62,13 @@ local function GetTweenerProperty(tweener)
             end
         end
     end
+    Daneel.Debug.StackTrace.EndFunction()
     return value
 end
 
 -- Allow to set the target's "property" even if it is virtual and normally handled via getter/setter.
 local function SetTweenerProperty(tweener, value)
+    Daneel.Debug.StackTrace.BeginFunction("SetTweenerProperty", tweener, value)
     if tweener.target ~= nil then
         if tweener.target[tweener.property] == nil then
             local functionName = "Set"..tweener.property:ucfirst()
@@ -76,6 +79,7 @@ local function SetTweenerProperty(tweener, value)
             tweener.target[tweener.property] = value
         end
     end
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
@@ -90,64 +94,65 @@ function DaneelTween.Update()
                 deltaDuration = 1
             end
 
-
-            if tweener.delay <= 0 then
-                -- no more delay before starting the tweener, update the tweener
-                if tweener.hasStarted == false then
-                    -- firt loop for this tweener
-                    tweener.hasStarted = true
-                    
-                    if tweener.startValue == nil then
-                        if tweener.target ~= nil then
-                            tweener.startValue = GetTweenerProperty(tweener)
-                        else
-                            error("ERROR : startValue is nil by not target is set")
+            if deltaDuration > 0 then
+                if tweener.delay <= 0 then
+                    -- no more delay before starting the tweener, update the tweener
+                    if tweener.hasStarted == false then
+                        -- firt loop for this tweener
+                        tweener.hasStarted = true
+                        
+                        if tweener.startValue == nil then
+                            if tweener.target ~= nil then
+                                tweener.startValue = GetTweenerProperty(tweener)
+                            else
+                                error("ERROR : startValue is nil by not target is set")
+                            end
+                        elseif tweener.target ~= nil then
+                            -- when start value and a target are set move the target to startValue before updating the tweener
+                            SetTweenerProperty(tweener, tweener.startValue)
                         end
-                    elseif tweener.target ~= nil then
-                        -- when start value and a target are set move the target to startValue before updating the tweener
-                        SetTweenerProperty(tweener, tweener.startValue)
+                        tweener.value = tweener.startValue
+
+                        if tweener.isRelative == true then
+                            tweener.diffValue = tweener.endValue
+                        else
+                            tweener.diffValue = tweener.endValue - tweener.startValue
+                        end
+
+                        Daneel.Event.Fire(tweener, "OnStart", tweener)
                     end
-                    tweener.value = tweener.startValue
-
-                    if tweener.isRelative == true then
-                        tweener.diffValue = tweener.endValue
-                    else
-                        tweener.diffValue = tweener.endValue - tweener.startValue
-                    end
-
-                    Daneel.Event.Fire(tweener, "OnStart", tweener)
-                end
-                
-                -- update the tweener
-                tweener:Update(deltaDuration)
-            else
-                tweener.delay = tweener.delay - deltaDuration
-            end -- end if tweener.delay <= 0
-
-
-            if tweener.isCompleted == true then
-                tweener.completedLoops = tweener.completedLoops + 1
-                if tweener.loops == -1 or tweener.completedLoops < tweener.loops then
-                    tweener.isCompleted = false
-                    tweener.elapsed = 0
-
-                    if tweener.loopType:lower() == "yoyo" then
-                        local startValue = tweener.startValue
-                        tweener.startValue = tweener.endValue
-                        tweener.endValue = startValue
-                        tweener.diffValue = -tweener.diffValue
-                    elseif tweener.target ~= nil then
-                        SetTweenerProperty(tweener, tweener.startValue)
-                    end
-
-                    tweener.value = tweener.startValue
-                    Daneel.Event.Fire(tweener, "OnLoopComplete", tweener)
-
+                    
+                    -- update the tweener
+                    tweener:Update(deltaDuration)
                 else
-                    Daneel.Event.Fire(tweener, "OnComplete", tweener)
-                    tweener:Destroy()
+                    tweener.delay = tweener.delay - deltaDuration
+                end -- end if tweener.delay <= 0
+
+
+                if tweener.isCompleted == true then
+                    tweener.completedLoops = tweener.completedLoops + 1
+                    if tweener.loops == -1 or tweener.completedLoops < tweener.loops then
+                        tweener.isCompleted = false
+                        tweener.elapsed = 0
+
+                        if tweener.loopType:lower() == "yoyo" then
+                            local startValue = tweener.startValue
+                            tweener.startValue = tweener.endValue
+                            tweener.endValue = startValue
+                            tweener.diffValue = -tweener.diffValue
+                        elseif tweener.target ~= nil then
+                            SetTweenerProperty(tweener, tweener.startValue)
+                        end
+
+                        tweener.value = tweener.startValue
+                        Daneel.Event.Fire(tweener, "OnLoopComplete", tweener)
+
+                    else
+                        Daneel.Event.Fire(tweener, "OnComplete", tweener)
+                        tweener:Destroy()
+                    end
                 end
-            end
+            end -- end if deltaDuration > 0
         end -- end if tweener.isEnabled == true
     end -- end for tweeners
 end
@@ -193,8 +198,8 @@ function DaneelTween.Tweener.New(target, property, endValue, duration, params)
     if type(target) == "number" then
         -- constructor n°2
         errorHead = "Daneel.Tween.Tweener.New(startValue, endValue, duration[, params]) : "
-        Daneel.Debug.CheckArgType(target, "startValue", "number", errorHead)
-        Daneel.Debug.CheckArgType(property, "endValue", "number", errorHead)
+        --Daneel.Debug.CheckArgType(target, "startValue", "number", errorHead)
+        --Daneel.Debug.CheckArgType(property, "endValue", "number", errorHead)
         Daneel.Debug.CheckArgType(endValue, "duration", "number", errorHead)
         Daneel.Debug.CheckOptionalArgType(duration, "params", "table", errorHead)
 
@@ -213,7 +218,7 @@ function DaneelTween.Tweener.New(target, property, endValue, duration, params)
         -- constructor n°1
         Daneel.Debug.CheckArgType(target, "target", "table", errorHead)
         Daneel.Debug.CheckArgType(property, "property", "string", errorHead)
-        Daneel.Debug.CheckArgType(endValue, "endValue", "number", errorHead)
+        --Daneel.Debug.CheckArgType(endValue, "endValue", "number", errorHead)
         Daneel.Debug.CheckArgType(duration, "duration", "number", errorHead)
         Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
