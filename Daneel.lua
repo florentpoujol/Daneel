@@ -621,7 +621,7 @@ end
 -- (eventName[, ...]) <br>
 -- (object, eventName[, ...]) <br>
 -- (function[, ...])
--- @param object [optional] (table) The object to which fire the event at. If nil or abscent, will send the event to its listeners.
+-- @param object [optional] (table, function or userdata) The object to which fire the event at. If nil or abscent, will send the event to its listeners.
 -- @param eventName (string) The event name.
 -- @param ... [optional] Some arguments to pass along.
 function Daneel.Event.Fire(object, eventName,  ...)
@@ -657,23 +657,16 @@ function Daneel.Event.Fire(object, eventName,  ...)
         local _type = type(listener)
         if _type == "function" or _type == "userdata" then
             listener(unpack(arg))
-        else
-            -- an object
+        else -- an object
+            local message = eventName
+
             -- look for the value of the EventName property on the object
             local funcOrMessage = listener[eventName]
-            if funcOrMessage == nil then 
-                funcOrMessage = eventName
-            end
-
-            -- call function if needed
             _type = type(funcOrMessage)
             if _type == "function" or _type == "userdata" then
-                if #arg == 0 then
-                    funcOrMessage(listener)
-                else
-                    funcOrMessage(unpack(arg))
-                end
-                funcOrMessage = eventName
+                funcOrMessage(unpack(arg))
+            elseif _type == "string" then
+                message = funcOrMessage
             end
 
             -- always try to send the message, even when funcOrMessage was a function
@@ -691,15 +684,12 @@ function Daneel.Event.Fire(object, eventName,  ...)
 
                         -- only prints the debug when the user setted up the event property because otherwise
                         -- it would print it every time an event has not been set up (which is OK) on an non-gameObject object like a tweener
-                        print(errorHead.."Can't fire event '"..eventName.."' by sending message '"..funcOrMessage.."' on object '"..tostring(listener).."'  because it not a gameObject and has no 'gameObject' property.")                      
+                        print(errorHead.."Can't fire event '"..eventName.."' by sending message '"..message.."' on object '"..tostring(listener).."'  because it not a gameObject and has no 'gameObject' property.")                      
                     end
                 end
             end
             if sendMessage then
-                if #arg == 0 then
-                    table.insert(arg, listener)
-                end
-                gameObject:SendMessage(funcOrMessage, arg)
+                gameObject:SendMessage(message, arg)
             end
         end
     end
@@ -1164,16 +1154,18 @@ function Daneel.Update()
     -- HotKeys
     -- fire an event whenever a registered button is pressed
     for i, buttonName in ipairs(config.input.buttons) do
+        local ButtonName = buttonName:ucfirst()
+
         if CraftStudio.Input.WasButtonJustPressed(buttonName) then
-            Daneel.Event.Fire("On"..buttonName:ucfirst().."ButtonJustPressed")
+            Daneel.Event.Fire("On"..ButtonName.."ButtonJustPressed")
         end
 
         if CraftStudio.Input.IsButtonDown(buttonName) then
-            Daneel.Event.Fire("On"..buttonName:ucfirst().."ButtonDown")
+            Daneel.Event.Fire("On"..ButtonName.."ButtonDown")
         end
 
         if CraftStudio.Input.WasButtonJustReleased(buttonName) then
-            Daneel.Event.Fire("On"..buttonName:ucfirst().."ButtonJustReleased")
+            Daneel.Event.Fire("On"..ButtonName.."ButtonJustReleased")
         end
     end
 

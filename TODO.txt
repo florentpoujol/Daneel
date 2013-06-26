@@ -39,7 +39,7 @@ IDEAS
     GUI
 
     - Input
-        - param size qui limite la taille du champs mais pas du texte (flèches font se déplacer le texte)
+        - curseur et tout ce qui va avec
     
     - "progress bar" mais avec plusieurs éléments
     lorsque élément pas utilisé, il a opacity, scale etc au choix dans la config, donc
@@ -72,11 +72,6 @@ IDEAS
     - permettre dépendances (un module oblige d'autre à se charger aussi)
     - liste des modules chargés + empècher plusieurs chargements du même modules
 
-    - renommer DaneelModule[module]Config() en DaneelLoadModule[module]() > gère les dépendances et retourne la config
-    DaneelAwakeModule[module]()
-    DaneelStartModule[module]()
-    DaneelUpdateModule[module]()
-
 
 ==========
 A implémenter
@@ -86,9 +81,7 @@ A implémenter
 
     -----
     GUI
-
-    - input : ajouter caracter range
-    
+   
     -----
     TWEENER
 
@@ -105,8 +98,6 @@ A tester
 A modifier/ajouter dans la doc :
 
     - Example project : minimalist encounter
-    - enlever GO.NewFromScene
-    - corriger input + character range
 
 
 =========
@@ -115,6 +106,8 @@ BUGS
     - parfois, une ligne de la stacktrace n'est pas complète : #04 GameObject.Ge)
         > quadn argument attendus est nil ?
 
+    - when a GameObject event is catched by a userdata like CS.Exit, it does not work and throw an error relatd to SendMessage()
+    l'erreur arrivait avant que l'event OnClick ne soit lancé
 
 =========
 

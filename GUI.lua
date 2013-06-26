@@ -425,7 +425,7 @@ function DaneelGUI.CheckBox.Check(checkBox, state)
             end
         end
 
-        Daneel.Event.Fire(checkBox, "OnUpdate")
+        Daneel.Event.Fire(checkBox, "OnUpdate", checkBox)
 
         if checkBox._group ~= nil and state == true then
             local gameObjects = GameObject.tags[checkBox._group]
@@ -547,7 +547,7 @@ function DaneelGUI.ProgressBar.SetProgress(progressBar, progress)
     progressBar.gameObject.transform.localScale = Vector3:New(newLength, progressBar.height, currentScale.z)
     -- newLength = scale only because the base size of the model is of one unit at a scale of one
 
-    Daneel.Event.Fire(progressBar, "OnUpdate")
+    Daneel.Event.Fire(progressBar, "OnUpdate", progressBar)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -643,7 +643,7 @@ function DaneelGUI.Slider.SetValue(slider, value)
     local newPosition = slider.startPosition + orientation * slider.length * percentage
     slider.gameObject.transform.position = newPosition
 
-    Daneel.Event.Fire(slider, "OnUpdate")
+    Daneel.Event.Fire(slider, "OnUpdate", slider)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -694,7 +694,7 @@ function DaneelGUI.Input.New( gameObject )
             input:Update( text:sub( 1, #text - 1 ), true )
         
         elseif charNumber == 13 then -- Enter
-            Daneel.Event.Fire( input, "OnValidate" )
+            Daneel.Event.Fire( input, "OnValidate", input )
         
         -- Any character between 32 and 127 is regular printable ASCII
         elseif charNumber >= 32 and charNumber <= 127 then
@@ -738,7 +738,7 @@ function DaneelGUI.Input.Focus( input, state )
         else
             CS.Input.OnTextEntered( nil )
         end
-        Daneel.Event.Fire( input, "OnFocus" )
+        Daneel.Event.Fire( input, "OnFocus", input )
     end
     Daneel.Debug.StackTrace.EndFunction()
 end
@@ -768,7 +768,7 @@ function DaneelGUI.Input.Update(input, text, replaceText)
     end
     if oldText ~= text then
         input.gameObject.textRenderer.text = text
-        Daneel.Event.Fire(input, "OnUpdate")
+        Daneel.Event.Fire(input, "OnUpdate", input)
     end
     Daneel.Debug.StackTrace.EndFunction()
 end

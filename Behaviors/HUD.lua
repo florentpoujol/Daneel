@@ -26,6 +26,15 @@ function Behavior:Start()
 			params.localLayer = tonumber(self.localLayer)
 		end
 
+		-- allow the gameObject to stay at the same position than defined in the scene
+		local position, layer = Daneel.GUI.Hud.ToHudPosition(self.gameObject.transform.position)
+		if params.position == nil and params.localPosition == nil then
+			params.position = position
+		end
+		if params.layer == nil and params.localLayer == nil then
+			params.layer = layer
+		end
+
 		self.gameObject:AddComponent("Hud", params)
 	end
 end
