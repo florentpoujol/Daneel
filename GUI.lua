@@ -1,19 +1,7 @@
 
-local daneel_exists = false
-for key, value in pairs(_G) do
-    if key == "Daneel" then
-        daneel_exists = true
-        break
-    end
-end
-if daneel_exists == false then
-    Daneel = {}
-end
+function DaneelConfigModuleGUI()
+    Daneel.GUI = DaneelGUI
 
-
-----------------------------------------------------------------------------------
-
-function DaneelModuleGUIConfig()
     return {
         gui = {
             screenSize = CraftStudio.Screen.GetSize(),
@@ -75,7 +63,7 @@ function DaneelModuleGUIConfig()
     }
 end
 
-function DaneelModuleGUIAwake()
+function DaneelAwakeModuleGUI()
     -- setting pixelToUnits  
 
     -- get the smaller side of the screen (usually screenSize.y, the height)
@@ -107,7 +95,7 @@ end
 ----------------------------------------------------------------------------------
 -- GUI
 
-Daneel.GUI = {}
+DaneelGUI = {}
 
 -- used in ProgresBar.SetProgress()
 local function tounit(value)
@@ -128,17 +116,17 @@ end
 ----------------------------------------------------------------------------------
 -- Hud
 
-Daneel.GUI.Hud = {}
+DaneelGUI.Hud = {}
 
 --- Transform the 3D position into a Hud position and a layer.
 -- @param position (Vector3) The 3D position.
 -- @return (Vector2) The hud position.
 -- @return (numbe) The layer.
-function Daneel.GUI.Hud.ToHudPosition(position)
+function DaneelGUI.Hud.ToHudPosition(position)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.ToHudPosition", position)
     local errorHead = "Daneel.GUI.Hud.ToHudPosition(hud, position) : "
     Daneel.Debug.CheckArgType(position, "position", "Vector3", errorHead)
-   
+
     local layer = config.gui.originPosition.z - position.z
     position = position - config.gui.originPosition
     position = Vector2(
@@ -152,7 +140,7 @@ end
 -- Create a new Hud component instance.
 -- @param gameObject (GameObject) The gameObject to add to the component to.
 -- @return (Hud) The hud component.
-function Daneel.GUI.Hud.New(gameObject)
+function DaneelGUI.Hud.New(gameObject)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.New", gameObject)
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", "Hud.New(gameObject) : ")
     if config.gui.cameraGO == nil then
@@ -173,7 +161,7 @@ end
 -- With the top-left corner of the screen as origin.
 -- @param hud (Hud) The hud component.
 -- @param position (Vector2) The position as a Vector2.
-function Daneel.GUI.Hud.SetPosition(hud, position)
+function DaneelGUI.Hud.SetPosition(hud, position)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.SetPosition", hud, position)
     local errorHead = "Daneel.GUI.Hud.SetPosition(hud, position) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
@@ -193,7 +181,7 @@ end
 --- Get the position of the provided hud on the screen.
 -- @param hud (Hud) The hud component.
 -- @return (Vector2) The position.
-function Daneel.GUI.Hud.GetPosition(hud)
+function DaneelGUI.Hud.GetPosition(hud)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.GetPosition", hud)
     local errorHead = "Daneel.GUI.Hud.GetPosition(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
@@ -208,7 +196,7 @@ end
 --- Sets the local position (relative to its parent) of the gameObject on screen .
 -- @param hud (Hud) The hud component.
 -- @param position (Vector2) The position as a Vector2.
-function Daneel.GUI.Hud.SetLocalPosition(hud, position)
+function DaneelGUI.Hud.SetLocalPosition(hud, position)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.SetLocalPosition", hud, position)
     local errorHead = "Daneel.GUI.Hud.SetLocalPosition(hud, position) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
@@ -230,7 +218,7 @@ end
 --- Get the local position (relative to its parent) of the gameObject on screen.
 -- @param hud (Hud) The hud component.
 -- @return (Vector2) The position.
-function Daneel.GUI.Hud.GetLocalPosition(hud)
+function DaneelGUI.Hud.GetLocalPosition(hud)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.GetLocalPosition", hud)
     local errorHead = "Daneel.GUI.Hud.GetLocalPosition(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
@@ -247,7 +235,7 @@ end
 --- Set the gameObject's layer.
 -- @param hud (Hud) The hud component.
 -- @param layer (number) The layer (a postive number).
-function Daneel.GUI.Hud.SetLayer(hud, layer)
+function DaneelGUI.Hud.SetLayer(hud, layer)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.SetLayer", hud)
     local errorHead = "Daneel.GUI.Hud.SetLayer(hud, layer) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
@@ -262,7 +250,7 @@ end
 --- Get the gameObject's layer.
 -- @param hud (Hud) The hud component.
 -- @return (number) The layer.
-function Daneel.GUI.Hud.GetLayer(hud)
+function DaneelGUI.Hud.GetLayer(hud)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.GetLayer", hud)
     local errorHead = "Daneel.GUI.Hud.GetLyer(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
@@ -276,7 +264,7 @@ end
 --- Set the huds's local layer.
 -- @param hud (Hud) The hud component.
 -- @param layer (number) The layer (a postiv number).
-function Daneel.GUI.Hud.SetLocalLayer(hud, layer)
+function DaneelGUI.Hud.SetLocalLayer(hud, layer)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.SetLayer", hud)
     local errorHead = "Daneel.GUI.Hud.SetLayer(hud, layer) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
@@ -293,7 +281,7 @@ end
 --- Get the gameObject's layer which is actually the inverse of its local position's z component.
 -- @param hud (Hud) The hud component.
 -- @return (number) The layer.
-function Daneel.GUI.Hud.GetLocalLayer(hud)
+function DaneelGUI.Hud.GetLocalLayer(hud)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Hud.GetLayer", hud)
     local errorHead = "Daneel.GUI.Hud.GetLyer(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
@@ -310,12 +298,12 @@ end
 ----------------------------------------------------------------------------------
 -- CheckBox
 
-Daneel.GUI.CheckBox = {}
+DaneelGUI.CheckBox = {}
 
 -- Create a new CheckBox component.
 -- @param gameObject (GameObject) The component gameObject.
 -- @return (CheckBox) The new component.
-function Daneel.GUI.CheckBox.New(gameObject)
+function DaneelGUI.CheckBox.New(gameObject)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.New", gameObject)
     local errorHead = "Daneel.GUI.CheckBox.New(gameObject) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
@@ -354,7 +342,7 @@ end
 -- but add the correct check mark in front of the provided text.
 -- @param checkBox (CheckBox) The checkBox component.
 -- @param text (string) The text to display.
-function Daneel.GUI.CheckBox.SetText(checkBox, text)
+function DaneelGUI.CheckBox.SetText(checkBox, text)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.SetText", checkBox, text)
     local errorHead = "Daneel.GUI.CheckBox.SetText(checkBox, text) : "
     Daneel.Debug.CheckArgType(checkBox, "checkBox", "CheckBox", errorHead)
@@ -381,7 +369,7 @@ end
 -- Actually get the text of the TextRenderer component on the same gameObject but without the check mark.
 -- @param checkBox (CheckBox) The checkBox component.
 -- @return (string) The text.
-function Daneel.GUI.CheckBox.GetText(checkBox)
+function DaneelGUI.CheckBox.GetText(checkBox)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.GetText", checkBox)
     local errorHead = "Daneel.GUI.CheckBox.GetText(checkBox, text) : "
     Daneel.Debug.CheckArgType(checkBox, "checkBox", "CheckBox", errorHead)
@@ -413,7 +401,7 @@ end
 -- You can get the checkBox's state via checkBox.isChecked.
 -- @param checkBox (CheckBox) The checkBox component.
 -- @param state [optional default=true] (boolean) The new state of the checkBox.
-function Daneel.GUI.CheckBox.Check(checkBox, state)
+function DaneelGUI.CheckBox.Check(checkBox, state)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.Check", checkBox, state)
     local errorHead = "Daneel.GUI.CheckBox.Check(checkBox[, state]) : "
     Daneel.Debug.CheckArgType(checkBox, "checkBox", "CheckBox", errorHead)
@@ -455,7 +443,7 @@ end
 -- If the checkBox was already in a group it will be removed from it.
 -- @param checkBox (CheckBox) The checkBox component.
 -- @param group [optional] (string) The new group, or nil to remove from its group.
-function Daneel.GUI.CheckBox.SetGroup(checkBox, group)
+function DaneelGUI.CheckBox.SetGroup(checkBox, group)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.SetGroup", checkBox, group)
     local errorHead = "Daneel.GUI.CheckBox.SetGroup(checkBox[, group]) : "
     Daneel.Debug.CheckArgType(checkBox, "checkBox", "CheckBox", errorHead)
@@ -477,7 +465,7 @@ end
 -- Get the checkBox's group.
 -- @param checkBox (CheckBox) The checkBox component.
 -- @return (string) The group, or nil.
-function Daneel.GUI.CheckBox.GetGroup(checkBox)
+function DaneelGUI.CheckBox.GetGroup(checkBox)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.GetGroup", checkBox)
     local errorHead = "Daneel.GUI.CheckBox.GetGroup(checkBox) : "
     Daneel.Debug.CheckArgType(checkBox, "checkBox", "CheckBox", errorHead)
@@ -489,12 +477,12 @@ end
 ----------------------------------------------------------------------------------
 -- ProgressBar
 
-Daneel.GUI.ProgressBar = {}
+DaneelGUI.ProgressBar = {}
 
 -- Create a new GUI.ProgressBar.
 -- @param gameObject (GameObject) The component gameObject.
 -- @return (ProgressBar) The new component.
-function Daneel.GUI.ProgressBar.New(gameObject)
+function DaneelGUI.ProgressBar.New(gameObject)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.New", gameObject)
     local errorHead = "Daneel.GUI.ProgressBar.New(gameObject) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
@@ -515,7 +503,7 @@ end
 --- Set the progress of the progress bar, adjusting its length.
 -- @param progressBar (ProgressBar) The progressBar.
 -- @param progress (number or string) The progress as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
-function Daneel.GUI.ProgressBar.SetProgress(progressBar, progress)
+function DaneelGUI.ProgressBar.SetProgress(progressBar, progress)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.SetProgress", progressBar, progress)
     local errorHead = "Daneel.GUI.ProgressBar.SetProgress(progressBar, progress) : "
     Daneel.Debug.CheckArgType(progressBar, "progressBar", "ProgressBar", errorHead)
@@ -567,7 +555,7 @@ end
 -- @param progressBar (ProgressBar) The progressBar.
 -- @param getAsPercentage [optional default=false] (boolean) Get the progress as a percentage (between 0 and 100) instead of an absolute value.
 -- @return (number) The progress.
-function Daneel.GUI.ProgressBar.GetProgress(progressBar, getAsPercentage)
+function DaneelGUI.ProgressBar.GetProgress(progressBar, getAsPercentage)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.ProgressBar.GetProgress", progressBar, getAsPercentage)
     local errorHead = "Daneel.GUI.ProgressBar.GetProgress(progressBar[, getAsPercentage]) : "
     Daneel.Debug.CheckArgType(progressBar, "progressBar", "ProgressBar", errorHead)
@@ -589,12 +577,12 @@ end
 ----------------------------------------------------------------------------------
 -- Slider
 
-Daneel.GUI.Slider = {}
+DaneelGUI.Slider = {}
 
 -- Create a new GUI.Slider.
 -- @param gameObject (GameObject) The component gameObject.
 -- @return (Slider) The new component.
-function Daneel.GUI.Slider.New(gameObject)
+function DaneelGUI.Slider.New(gameObject)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.New", gameObject)
     local errorHead = "Daneel.GUI.Slider.New(gameObject) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
@@ -618,7 +606,7 @@ end
 --- Set the value of the slider, adjusting its position.
 -- @param slider (Slider) The slider.
 -- @param value (number or string) The value as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
-function Daneel.GUI.Slider.SetValue(slider, value)
+function DaneelGUI.Slider.SetValue(slider, value)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.SetValue", slider, value)
     local errorHead = "Daneel.GUI.Slider.SetValue(slider, value) : "
     Daneel.Debug.CheckArgType(slider, "slider", "Slider", errorHead)
@@ -663,7 +651,7 @@ end
 -- @param slider (Slider) The slider.
 -- @param getAsPercentage [optional default=false] (boolean) Get the value as a percentage (between 0 and 100) instead of an absolute value.
 -- @return (number) The value.
-function Daneel.GUI.Slider.GetValue(slider, getAsPercentage)
+function DaneelGUI.Slider.GetValue(slider, getAsPercentage)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.GetValue", slider, getAsPercentage)
     local errorHead = "Daneel.GUI.Slider.GetValue(slider, value) : "
     Daneel.Debug.CheckArgType(slider, "slider", "Slider", errorHead)
@@ -683,12 +671,12 @@ end
 ----------------------------------------------------------------------------------
 -- Input
 
-Daneel.GUI.Input = {}
+DaneelGUI.Input = {}
 
 -- Create a new GUI.Input.
 -- @param gameObject (GameObject) The component gameObject.
 -- @return (Input) The new component.
-function Daneel.GUI.Input.New( gameObject )
+function DaneelGUI.Input.New( gameObject )
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.Input.New", gameObject )
     local errorHead = "Daneel.GUI.Input.New(gameObject) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
@@ -735,9 +723,9 @@ function Daneel.GUI.Input.New( gameObject )
 end
 
 -- Set the focused state of the input.
--- @param input (Daneel.GUI.Input) The input component.
+-- @param input (Input) The input component.
 -- @param state [optional default=true] (boolean) The new state.
-function Daneel.GUI.Input.Focus( input, state )
+function DaneelGUI.Input.Focus( input, state )
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.Input.Focus", input, state )
     local errorHead = "Daneel.GUI.Input.Focus(input[, state]) : "
     Daneel.Debug.CheckArgType( input, "input", "Input", errorHead )
@@ -756,10 +744,10 @@ function Daneel.GUI.Input.Focus( input, state )
 end
 
 -- Set the focused state of the input.
--- @param input (Daneel.GUI.Input) The input component.
+-- @param input (Input) The input component.
 -- @param text (string) The text to add to the current text.
 -- @param replaceText [optional default=false] (boolean) Tell wether the provided text should be added (false) or replace (true) the current text.
-function Daneel.GUI.Input.Update(input, text, replaceText)
+function DaneelGUI.Input.Update(input, text, replaceText)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Input.Update", input, text)
     local errorHead = "Daneel.GUI.Input.Update(input, text) : "
     Daneel.Debug.CheckArgType(input, "input", "Input", errorHead)
