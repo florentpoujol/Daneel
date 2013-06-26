@@ -1,19 +1,7 @@
 
-local daneel_exists = false
-for key, value in pairs(_G) do
-    if key == "Daneel" then
-        daneel_exists = true
-        break
-    end
-end
-if daneel_exists == false then
-    Daneel = {}
-end
-
-
-----------------------------------------------------------------------------------
-
 function DaneelConfigModuleTween()
+    Daneel.Tween = DaneelTween
+
     return {
         tween = {
             defaultTweenerParams = {
@@ -59,7 +47,7 @@ end
 ----------------------------------------------------------------------------------
 -- Tween
 
-Daneel.Tween = {}
+DaneelTween = {}
 
 -- Allow to get the target's "property" even if it is virtual and normally handled via getter/setter.
 local function GetTweenerProperty(tweener)
@@ -90,8 +78,8 @@ local function SetTweenerProperty(tweener, value)
     end
 end
 
--- called from Daneel.Update()
-function Daneel.Tween.Update()
+
+function DaneelTween.Update()
     for id, tweener in pairs(Daneel.Tween.Tweener.tweeners) do
         if  tweener.isEnabled == true and tweener.isPaused == false and tweener.isCompleted == false and tweener.duration > 0 then
 
@@ -164,17 +152,17 @@ function Daneel.Tween.Update()
     end -- end for tweeners
 end
 
-DaneelModuleTweenUpdate = Daneel.Tween.Update
+DaneelUpdateModuleTween = DaneelTween.Update
 
 
 ----------------------------------------------------------------------------------
 -- Tweener
 
-Daneel.Tween.Tweener = { tweeners = {} }
-Daneel.Tween.Tweener.__index = Daneel.Tween.Tweener
-setmetatable(Daneel.Tween.Tweener, { __call = function(Object, ...) return Object.New(...) end })
+DaneelTween.Tweener = { tweeners = {} }
+DaneelTween.Tweener.__index = DaneelTween.Tweener
+setmetatable(DaneelTween.Tweener, { __call = function(Object, ...) return Object.New(...) end })
 
-function Daneel.Tween.Tweener.__tostring(tweener)
+function DaneelTween.Tweener.__tostring(tweener)
     return "Tweener id:'"..tweener.id.."'"
 end
 
@@ -190,7 +178,7 @@ local tweenerId = 0
 -- @param duration (number) The time or frame it should take for the property to reach endValue.
 -- @param params [optional] (table) A table of parameters.
 -- @return (Tweener) The Tweener.
-function Daneel.Tween.Tweener.New(target, property, endValue, duration, params)
+function DaneelTween.Tweener.New(target, property, endValue, duration, params)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.New", target, property, endValue, duration, params)
     local errorHead = "Daneel.Tween.Tweener.New(target, property, endValue, duration[, params]) : "
     local tweener = table.copy(config.tween.defaultTweenerParams)
@@ -246,7 +234,7 @@ end
 -- Sets parameters in mass.
 -- Should not be used after the tweener has been created.
 -- That's why it is not in the function reference.
-function Daneel.Tween.Tweener.Set(tweener, params)
+function DaneelTween.Tweener.Set(tweener, params)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.Set", tweener, params)
     local errorHead = "Daneel.Tween.Tweener.Set(tweener, params) : "
     Daneel.Debug.CheckArgType(tweener, "tweener", "Daneel.Tween.Tweener", errorHead)
@@ -260,7 +248,7 @@ end
 
 --- Unpause the tweener and fire the OnPlay event.
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
-function Daneel.Tween.Tweener.Play(tweener)
+function DaneelTween.Tweener.Play(tweener)
     if tweener.isEnabled == false then return end
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.Play", tweener)
     local errorHead = "Daneel.Tween.Tweener.Play(tweener) : "
@@ -273,7 +261,7 @@ end
 
 --- Pause the tweener and fire the OnPause event.
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
-function Daneel.Tween.Tweener.Pause(tweener)
+function DaneelTween.Tweener.Pause(tweener)
     if tweener.isEnabled == false then return end
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.Pause", tweener)
     local errorHead = "Daneel.Tween.Tweener.Pause(tweener) : "
@@ -286,7 +274,7 @@ end
 
 --- Completely restart the tweener.
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
-function Daneel.Tween.Tweener.Restart(tweener)
+function DaneelTween.Tweener.Restart(tweener)
     if tweener.isEnabled == false then return end
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.Restart", tweener)
     local errorHead = "Daneel.Tween.Tweener.Restart(tweener) : "
@@ -310,7 +298,7 @@ end
 
 --- Complete the tweener fire the OnComple event.
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
-function Daneel.Tween.Tweener.Complete(tweener)
+function DaneelTween.Tweener.Complete(tweener)
     if tweener.isEnabled == false or tweener.loops == -1 then return end
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.Complete", tweener)
     local errorHead = "Daneel.Tween.Tweener.Complete(tweener) : "
@@ -336,7 +324,7 @@ end
 
 --- Destroy the tweener.
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
-function Daneel.Tween.Tweener.Destroy(tweener)
+function DaneelTween.Tweener.Destroy(tweener)
     if tweener.isEnabled == false then return end
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.Destroy", tweener)
     local errorHead = "Daneel.Tween.Tweener.Destroy(tweener) : "
@@ -352,7 +340,7 @@ end
 -- This allows the tweener to fast-forward to a certain time.
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
 -- @param deltaDuration [optional] (number) <strong>Only used internaly.</strong> If nil, the tweener's value will be updated based on the current value of tweener.elapsed.
-function Daneel.Tween.Tweener.Update(tweener, deltaDuration) -- the deltaDuration argument is only used from the Tween.Update() function
+function DaneelTween.Tweener.Update(tweener, deltaDuration) -- the deltaDuration argument is only used from the Tween.Update() function
     if tweener.isEnabled == false then return end
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.Update", tweener, deltaDuration)
     local errorHead = "Daneel.Tween.Tweener.Update(tweener[, deltaDuration]) : "
@@ -791,8 +779,8 @@ local function outInBounce(t, b, c, d)
   end
 end
 
--- Modifications for Daneel : replaced 'return' by 'Daneel.Tween.Ease ='
-Daneel.Tween.Ease = {
+-- Modifications for Daneel : replaced 'return' by 'DaneelTween.Ease ='
+DaneelTween.Ease = {
   linear = linear,
   inQuad = inQuad,
   outQuad = outQuad,
