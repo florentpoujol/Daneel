@@ -95,7 +95,7 @@ end
 ----------------------------------------------------------------------------------
 -- GUI
 
-DaneelGUI = {}
+DaneelGUI = { pixelsToUnits = 0 }
 
 -- used in ProgresBar.SetProgress()
 local function tounit(value)
@@ -598,7 +598,7 @@ function DaneelGUI.Slider.New(gameObject)
     gameObject.slider = slider
     gameObject:AddTag("mouseInteractive")
     gameObject:AddScriptedBehavior("Daneel/Behaviors/Slider")
-
+    
     Daneel.Debug.StackTrace.EndFunction()
     return slider
 end

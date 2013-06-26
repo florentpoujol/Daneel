@@ -31,3 +31,15 @@ function Behavior:OnDrag()
     self.gameObject.hud.position = newPosition
     slider.value = math.clamp(slider.value, slider.minValue, slider.maxValue)
 end
+
+
+function Behavior:OnNewComponent(data)
+    if data == nil then return end -- FIXME : happens when the component is a scriptedBehavior
+    local component = data[1]
+    if component == nil then return end
+    local mt = getmetatable(component)
+
+    if mt == Daneel.GUI.Hud then
+        self.gameObject.slider.startPosition = self.gameObject.transform.position
+    end
+end
