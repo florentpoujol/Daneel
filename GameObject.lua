@@ -151,10 +151,10 @@ function GameObject.Set(gameObject, params)
 
             component = gameObject:GetComponent(componentType)
             if component == nil then
-                component = gameObject:AddComponent(componentType)
+                component = gameObject:AddComponent(componentType, params[componentType])
+            else
+                component:Set(params[componentType])
             end
-
-            component:Set(params[componentType])
             params[componentType] = nil
         end
     end
@@ -169,9 +169,10 @@ function GameObject.Set(gameObject, params)
             end
             local component = gameObject:GetScriptedBehavior(scriptPath)
             if component == nil then
-                component = gameObject:AddScriptedBehavior(scriptPath)
+                component = gameObject:AddScriptedBehavior(scriptPath, value)
+            else
+                component:Set(value)
             end
-            component:Set(value)
         elseif key == "tags"  then
             gameObject:RemoveTag()
             gameObject:AddTag(value)
@@ -370,8 +371,9 @@ function GameObject.AddComponent(gameObject, componentType, params, scriptedBeha
 
     if params ~= nil then
         component:Set(params)
-    end   
-    Daneel.Event.Fire(component, "OnNewComponent", component)
+    end
+
+    Daneel.Event.Fire(gameObject, "OnNewComponent", component)
     Daneel.Debug.StackTrace.EndFunction()
     return component
 end
