@@ -31,11 +31,11 @@ end
 function Behavior:OnLeftMouseButtonJustPressed()
     for i, gameObject in ipairs(interactiveGameObjects) do
         if gameObject ~= nil and gameObject.inner ~= nil and gameObject.isMouseOver == true then
-            Daneel.Event.Fire(gameObject, "OnClick")
+            Daneel.Event.Fire(gameObject, "OnClick", gameObject)
             
             if gameObject.lastLeftClickFrame ~= nil and 
                Daneel.Time.frameCount <= gameObject.lastLeftClickFrame + config.input.doubleClickDelay then
-                Daneel.Event.Fire(gameObject, "OnDoubleClick")
+                Daneel.Event.Fire(gameObject, "OnDoubleClick", gameObject)
             end
             
             gameObject.lastLeftClickFrame = Daneel.Time.frameCount
@@ -49,7 +49,7 @@ function Behavior:OnLeftMouseButtonDown()
     if vector.x ~= 0 or vector.y ~= 0 then
         for i, gameObject in ipairs(interactiveGameObjects) do
             if gameObject ~= nil and gameObject.inner ~= nil and gameObject.isMouseOver == true then
-                Daneel.Event.Fire(gameObject, "OnDrag")
+                Daneel.Event.Fire(gameObject, "OnDrag", gameObject)
             end
         end
     end
@@ -59,7 +59,7 @@ end
 function Behavior:OnRightMouseButtonJustPressed()
     for i, gameObject in ipairs(interactiveGameObjects) do
         if gameObject ~= nil and gameObject.iner ~= nil and gameObject.isMouseOver == true then
-            Daneel.Event.Fire(gameObject, "OnRightClick")
+            Daneel.Event.Fire(gameObject, "OnRightClick", gameObject)
         end
     end
 end
@@ -77,16 +77,16 @@ function Behavior:Update()
                 -- or if it was already over it the last frame
                 -- also on the user's input (clicks) while it hovers the gameObject
                 if gameObject.isMouseOver == true then
-                    Daneel.Event.Fire(gameObject, "OnMouseOver")
+                    Daneel.Event.Fire(gameObject, "OnMouseOver", gameObject)
                 else
                     gameObject.isMouseOver = true
-                    Daneel.Event.Fire(gameObject, "OnMouseEnter")
+                    Daneel.Event.Fire(gameObject, "OnMouseEnter", gameObject)
                 end
             else
                 -- was the gameObject still hovered the last frame ?
                 if gameObject.isMouseOver == true then
                     gameObject.isMouseOver = false
-                    Daneel.Event.Fire(gameObject, "OnMouseExit")
+                    Daneel.Event.Fire(gameObject, "OnMouseExit", gameObject)
                 end
             end
         else
