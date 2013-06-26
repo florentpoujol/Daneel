@@ -129,6 +129,8 @@ function DaneelDefaultConfig()
             "Tween",
             "GUI"
         }
+
+        loadedModules = {}
     }
 end
 
@@ -935,12 +937,12 @@ function Daneel.Load()
     -- load default config, modules config, then user config
     config = DaneelDefaultConfig()
     -- do this once here to get the user list of modules
-    if Daneel.Utilities.GlobalExists("DaneelConfig") and DaneelConfig().modules ~= nil then
-        config.modules = table.deepmerge(config.modules, DaneelConfig().modules)
-    end
+    -- if Daneel.Utilities.GlobalExists("DaneelConfig") and DaneelConfig().modules ~= nil then
+    --     config.modules = table.deepmerge(config.modules, DaneelConfig().modules)
+    -- end
 
     for i, module in ipairs(config.modules) do
-        local functionName = "DaneelModule"..module.."Config"
+        local functionName = "DaneelConfigModule"..module
         if Daneel.Utilities.GlobalExists(functionName) then
             config = table.deepmerge(config, _G[functionName]())
         end
@@ -1060,8 +1062,8 @@ function Daneel.Load()
     end
 
     -- Load modules 
-    for i, module in ipairs(config.modules) do
-        local functionName = "DaneelModule"..module.."Load"
+    for i, module in ipairs(config.loadedModules) do
+        local functionName = "DaneelLoadModule"..module
         if Daneel.Utilities.GlobalExists(functionName) then
             _G[functionName]()
         end
@@ -1083,7 +1085,7 @@ function Daneel.Awake()
 
     -- Awake modules 
     for i, module in ipairs(config.modules) do
-        local functionName = "DaneelModule"..module.."Awake"
+        local functionName = "DaneelAwakeModule"..module
         if Daneel.Utilities.GlobalExists(functionName) then
             _G[functionName]()
         end
@@ -1179,7 +1181,7 @@ function Daneel.Update()
 
     -- Update modules 
     for i, module in ipairs(config.modules) do
-        local functionName = "DaneelModule"..module.."Update"
+        local functionName = "DaneelUpdateModule"..module
         if Daneel.Utilities.GlobalExists(functionName) then
             _G[functionName]()
         end
