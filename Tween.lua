@@ -13,7 +13,7 @@ end
 
 ----------------------------------------------------------------------------------
 
-function DaneelModuleTweenConfig()
+function DaneelConfigModuleTween()
     return {
         tween = {
             defaultTweenerParams = {
