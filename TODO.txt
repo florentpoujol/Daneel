@@ -37,9 +37,14 @@ IDEAS
     
     - textRenderer
         - permettre de définir un font et aligment par défaut (pour n'importe quel component)
-        - permettre de facilement sauter des lignes (avec :br:) ou définir un wordWrap ?? > nécessite plusieurs GO et composants
         - permettre de féfinir l'alignement avec simplement "left", "right", "center"
-        
+            - idem pour camera projection mode et tous les autre enums
+        - permettre de facilement sauter des lignes (avec :br:) ou définir un wordWrap ?? > nécessite plusieurs GO et composants
+            > pas possible sans ScriptedBehavior, voir ci dessous
+        - permettre de passer texte traduit via la scène : "daneellang:langkey"
+            > TextRenderer.Settext n'est pas utilisée lorsque les textes sont écrits dans la scène
+            mais voir à créer un ScriptedBehavior qui irait remplacer le texte
+
     
     -----
     GUI
