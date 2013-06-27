@@ -56,7 +56,7 @@ function DaneelDefaultConfig()
             -- Value returned when a language key is not found
             keyNotFound = "langkeynotfound",
 
-            -- Tell wether Daneel.Lang.GetLine() search a line key in the default language 
+            -- Tell wether Daneel.Lang.Get() search a line key in the default language 
             -- when it is not found in the current language before returning the value of keyNotFound
             searchInDefault = true,
         },
@@ -839,8 +839,8 @@ Daneel.Lang = { lines = {} }
 -- @param replacements [optional] (table) The placeholders and their replacements.
 -- @return (string) The line.
 function Daneel.Lang.Get(key, replacements)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Lang.GetLine", key, replacements)
-    local errorHead = "Daneel.Lang.GetLine(key[, replacements]) : "
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Lang.Get", key, replacements)
+    local errorHead = "Daneel.Lang.Get(key[, replacements]) : "
     Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
     local currentLanguage = config.language.current
     local defaultLanguage = config.language.default
@@ -849,10 +849,10 @@ function Daneel.Lang.Get(key, replacements)
     local keys = key:split(".")
     local language = currentLanguage
     if keys[1]:isoneof(config.language.languageNames) then
-        language = table.remove(keys)
+        language = table.remove(keys, 1)
     end
     
-    local noLangKey = table.concat(keys, ".") -- the key, but without the language
+    local noLangKey = table.concat(keys, ".") -- rebuilt the key, but without the language
 
     local lines = Daneel.Lang.lines[language]
     if lines == nil then
@@ -868,9 +868,9 @@ function Daneel.Lang.Get(key, replacements)
 
             -- search for it in the default language
             if language ~= defaultLanguage and searchInDefault == true then  
-                lines = Daneel.Lang.GetLine(defaultLanguage.."."..noLangKey, replacements)
+                lines = Daneel.Lang.Get(defaultLanguage.."."..noLangKey, replacements)
             else -- already default language or don't want to search in
-                lines =  config.language.keyNotFound
+                lines = config.language.keyNotFound
             end
 
             break
