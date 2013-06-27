@@ -33,7 +33,10 @@ IDEAS
         > cette fonction enregistre la stacktrace
         et fait appeler Debug.Check.. en fonction des valeurs trouvées
 
-    
+    - GameObject : permettre de chainer des GameObject.Get() et GameObject.GetChild() en séparents plusieurs nom de GO par un point
+    ie : GameObject.Get("Menu.Lang.French")
+    > permet d'obtenir facilement des GO dont le nom n'est pas unique
+
     
     -----
     GUI
@@ -93,6 +96,8 @@ A tester
 
     - arg data de OnNewComponent is nil when component is scriptedBehavior (ou au moins checkbox)
 
+    - créer Behavior depuis un Awake de Behavior
+
 
 ==========
 A modifier/ajouter dans la doc :
@@ -106,8 +111,15 @@ BUGS
     - parfois, une ligne de la stacktrace n'est pas complète : #04 GameObject.Ge)
         > quadn argument attendus est nil ?
 
-    - when a GameObject event is catched by a userdata like CS.Exit, it does not work and throw an error relatd to SendMessage()
-    l'erreur arrivait avant que l'event OnClick ne soit lancé
+
+OLD
+
+    - utiliser Awake au lieu de start dans CheckBox, et créer une checkBox via le ScriptedBehavior envoie un exception
+
+    > créer le scriptedBehavior de la checkBox depuis CheckBox.New() lorsqu'il existait déjà renvoie cette exception
+
+    Exception non gérée : System.InvalidOperationException: La collection a été modifiée ; l'opération d'énumération peut ne pas s'exécuter.
+
 
 =========
 

@@ -4,14 +4,18 @@
 -- Public properties :
 -- isChecked (boolean) [default=false]
 -- text (string) [default=""]
+-- group (string) [default=""]
 
-function Behavior:Start()
+function Behavior:Awake()
 	if self.gameObject.checkBox == nil then
 		local checkBox = self.gameObject:AddComponent("CheckBox", { 
 			isChecked = self.isChecked,
 		})
         if self.text:trim() ~= "" then
             checkBox.text = self.text
+        end
+        if self.group:trim() ~= "" then
+            checkBox.group = self.group
         end
 	end
 end

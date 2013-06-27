@@ -317,7 +317,9 @@ function DaneelGUI.CheckBox.New(gameObject)
     
     gameObject.checkBox = checkBox
     gameObject:AddTag("mouseInteractive")
-    gameObject:AddScriptedBehavior("Daneel/Behaviors/CheckBox")
+    if gameObject["Daneel/Behaviors/CheckBox"] == nil then
+        gameObject:AddScriptedBehavior("Daneel/Behaviors/CheckBox")
+    end
 
     if gameObject.textRenderer ~= nil and gameObject.textRenderer.text ~= nil then
         checkBox.text = gameObject.textRenderer.text
@@ -401,13 +403,15 @@ end
 -- You can get the checkBox's state via checkBox.isChecked.
 -- @param checkBox (CheckBox) The checkBox component.
 -- @param state [optional default=true] (boolean) The new state of the checkBox.
-function DaneelGUI.CheckBox.Check(checkBox, state)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.Check", checkBox, state)
-    local errorHead = "Daneel.GUI.CheckBox.Check(checkBox[, state]) : "
+-- @param forceUpdate [optional default=false] (boolean) Tell wether to force the updating of the state.
+function DaneelGUI.CheckBox.Check(checkBox, state, forceUpdate)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.Check", checkBox, state, forceUpdate)
+    local errorHead = "Daneel.GUI.CheckBox.Check(checkBox[, state, forceUpdate]) : "
     Daneel.Debug.CheckArgType(checkBox, "checkBox", "CheckBox", errorHead)
     state = Daneel.Debug.CheckOptionalArgType(state, "state", "boolean", errorHead, true)
+    forceUpdate = Daneel.Debug.CheckOptionalArgType(forceUpdate, "forceUpdate", "boolean", errorHead, false)
 
-    if checkBox.isChecked ~= state then
+    if forceUpdate or checkBox.isChecked ~= state then
         local text = nil
         if checkBox.gameObject.textRenderer ~= nil then
             text = checkBox.text
@@ -597,7 +601,9 @@ function DaneelGUI.Slider.New(gameObject)
     
     gameObject.slider = slider
     gameObject:AddTag("mouseInteractive")
-    gameObject:AddScriptedBehavior("Daneel/Behaviors/Slider")
+    if gameObject["Daneel/Behaviors/Slider"] == nil then
+        gameObject:AddScriptedBehavior("Daneel/Behaviors/Slider")
+    end
     
     Daneel.Debug.StackTrace.EndFunction()
     return slider
@@ -711,10 +717,10 @@ function DaneelGUI.Input.New( gameObject )
     
     Daneel.Event.Listen( "OnLeftMouseButtonJustPressed", 
         function()
-            if input.gameObject.isMouseOver == nil then
-                input.gameObject.isMouseOver = false
+            if gameObject.isMouseOver == nil then
+                gameObject.isMouseOver = false
             end
-            input.gameObject.input:Focus( input.gameObject.isMouseOver )
+            gameObject.input:Focus( gameObject.isMouseOver )
         end 
     )
 

@@ -10,7 +10,7 @@
 -- layer (string) [default=""]
 -- localLayer (string) [default=""]
 
-function Behavior:Start()
+function Behavior:Awake()
 	if self.gameObject.hud == nil then
 		local params = {}
 		if self.positionX ~= "" and self.positionY ~= "" then

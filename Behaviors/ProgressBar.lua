@@ -9,7 +9,7 @@
 -- height (string) [default="1"]
 -- progress (string) [default="100%"]
 
-function Behavior:Start()
+function Behavior:Awake()
 	if self.gameObject.progressBar == nil then
 		self.gameObject:AddComponent("ProgressBar", { 
 			minValue = self.minValue,

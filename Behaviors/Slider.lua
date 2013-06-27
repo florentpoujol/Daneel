@@ -8,7 +8,7 @@
 -- value (string) [default="0%"]
 -- axis (string) [default="x"]
 
-function Behavior:Start()
+function Behavior:Awake()
 	if self.gameObject.slider == nil then
 		self.gameObject:AddComponent("Slider", { 
 			minValue = self.minValue,
