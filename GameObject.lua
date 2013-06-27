@@ -244,7 +244,7 @@ function GameObject.GetChild(gameObject, name, recursive)
     local errorHead = "GameObject.GetChild(gameObject, name[, recursive]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     Daneel.Debug.CheckOptionalArgType(name, "name", "string", errorHead)
-    Daneel.Debug.CheckOptionalArgType(recursive, "recursive", "boolean", errorHead)
+    recursive = Daneel.Debug.CheckOptionalArgType(recursive, "recursive", "boolean", errorHead, false)
     
     local child = nil
     if name == nil then
