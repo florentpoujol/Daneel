@@ -293,7 +293,7 @@ Daneel.Debug = {}
 -- @param p_errorHead [optional] (string) The beginning of the error message.
 function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes, p_errorHead)
     if DEBUG == false then return end
-    local errorHead = "Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes[, errorHead, errorEnd]) : "
+    local errorHead = "Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes[, p_errorHead]) : "
     
     local argType = type(argumentName)
     if argType ~= "string" then
@@ -332,11 +332,10 @@ end
 -- @param expectedArgumentTypes (string) The expected argument type(s).
 -- @param p_errorHead [optional] (string) The beginning of the error message.
 -- @param defaultValue [optional] (mixed) The default value to return if 'argument' is nil.
--- @return (mixed) The value of 'argument' if it is non-nil, or the value of 'defaultValue'.
+-- @return (mixed) The value of 'argument' if it's non-nil, or the value of 'defaultValue'.
 function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, p_errorHead, defaultValue)
-    if DEBUG == false then return defaultValue end
-    if argument == nil then return defaultValue end
-    local errorHead = "Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, errorHead, errorEnd) : "
+    if DEBUG == false or argument == nil then return defaultValue end
+    local errorHead = "Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes[, p_errorHead, defaultValue]) : "
     
     local argType = type(argumentName)
     if argType ~= "string" then
@@ -501,6 +500,61 @@ function Daneel.Debug.GetNameFromValue(value)
     end
     Daneel.Debug.StackTrace.EndFunction()
     return result
+end
+
+--- Check if the provided argument's value in found in the provided expected value(s).
+-- When that's not the case, return the value of the 'defaultValue' argument, or throws an error when the 'defaultArgument' is nil. 
+-- Arguments of type string are considered case-insensitive. The case will be corrected but no error will be thrown. 
+-- @param argument (mixed) The argument to check.
+-- @param argumentName (string) The argument name.
+-- @param expectedArgumentValues (mixed) The expected argument values(s).
+-- @param p_errorHead [optional] (string) The beginning of the error message.
+-- @param defaultValue [optional] (mixed) The optional default value.
+function Daneel.Debug.CheckArgValue(argument, argumentName, expectedArgumentValues, p_errorHead, defaultValue)
+    if DEBUG == false then return arument end
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckArgValue", argument, argumentName, expectedArgumentValues, p_errorHead)
+    local errorHead = "Daneel.Debug.CheckArgValue(argument, argumentName, expectedArgumentValues[, p_errorHead]) : "
+    Daneel.Debug.CheckArgType(argumentName, "argumentName", "string", errorHead)
+    if expectedArgumentValues == nil then
+        error(errorHead.."Argument 'expectedArgumentValues' is nil.")
+    end
+    Daneel.Debug.CheckOptionalArgType(p_errorHead, "p_errorHead", "string", errorHead)
+ 
+    if type(expectedArgumentValues) ~= "table" then
+        expectedArgumentValues = { expectedArgumentValues }
+    elseif #expectedArgumentValues == 0 then
+        error(errorHead.."Argument 'expectedArgumentValues' is an empty table.")
+    end
+
+    local correctValue = false
+    if type(argument) == "string" then
+        for i, expectedValue in ipairs(expectedArgumentValues) do
+            if argument:lower() == expectedValue:lower() then
+                argument = expectedValue
+                correctValue = true
+                break
+            end
+        end
+    else
+        for i, expectedValue in ipairs(expectedArgumentValues) do
+            if argument == expectedValue then
+                correctValue = true
+                break
+            end
+        end
+    end
+
+    if not correctValue then
+        if defaultValue ~= nil then
+            argument = defaultValue
+        else
+            for i, value in ipairs(expectedArgumentValues) do
+                expectedArgumentValues[i] = tostring(value)
+            end
+            error(p_errorHead.."The value '"..tostring(argument).."' of argument '"..argumentName.."' is not one of '"..table.concat(expectedArgumentValues, "', '").."'.")
+        end
+    end
+    return argument
 end
 
 
@@ -832,7 +886,7 @@ end
 ----------------------------------------------------------------------------------
 -- Lang
 
-Daneel.Lang = { lines = {} }
+Daneel.Lang = { lines = {}, gameObjectsToUpdate = {} }
 
 --- Get the localized line identified by the provided key.
 -- @param key (string) The language key.
@@ -891,6 +945,45 @@ function Daneel.Lang.Get(key, replacements)
 
     Daneel.Debug.StackTrace.EndFunction()
     return line
+end
+
+--- Register a gameObject to update its TextRenderer whenever the language will be updated by Daneel.Lang.Update().
+-- @param gameObject (GameObject) The gameObject.
+-- @param key (string) The language key.
+-- @param replacements [optional] (table) The placeholders and their replacements.
+function Daneel.Lang.RegisterForUpdate(gameObject, key, replacements)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Lang.RegisterForUpdate", gameObject, key, replacements)
+    local errorHead = "Daneel.Lang.RegisterForUpdate(gameObject, key[, replacements]) : "
+    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+    Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
+    Daneel.Debug.CheckOptionalArgType(replacements, "replacements", "table", errorHead)
+
+    Daneel.Lang.gameObjectsToUpdate[gameObject] = {
+        key = key,
+        replacements = replacements,
+    }
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+--- Update the current language and the text of all gameObjects that have registered via Daneel.Lang.RegisterForUpdate()
+-- Fire the OnLangUpdate event.
+-- @param language (string) The new current language.
+function Daneel.Lang.Update(language)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Lang.Update", language)
+    local errorHead = "Daneel.Lang.Update(language) : "
+    Daneel.Debug.CheckArgType(language, "language", "string", errorHead)
+    language = Daneel.Debug.CheckArgValue(language, "language", config.language.languageNames, errorHead)
+    
+    config.language.current = language
+    for gameObject, data in pairs(Daneel.Lang.gameObjectsToUpdate) do
+        if gameObject.textRenderer ~= nil then
+            gameObject.textRenderer.text = Daneel.Lang.Get(data.key, data.replacements)
+        elseif DEBUG then
+            print("WARNING : "..errorHead..tostring(gameObject).." does not have a TextRenderer component.")
+        end
+    end
+    Daneel.Event.Fire("OnLangUpdate")
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
