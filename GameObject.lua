@@ -341,7 +341,9 @@ function GameObject.AddComponent(gameObject, componentType, params, scriptedBeha
     Daneel.Debug.StackTrace.BeginFunction("GameObject.AddComponent", gameObject, componentType, params, scriptedBehaviorParams)
     local errorHead = "GameObject.AddComponent(gameObject, componentType[, params, scriptedBehaviorParams]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    componentType = Daneel.Debug.CheckComponentType(componentType)
+    Daneel.Debug.CheckArgType(componentType, "componentType", "string", errorHead)
+    componentType = Daneel.Debug.CheckArgValue(componentType, "componentType", config.componentTypes, errorHead)
+
     if componentType == "Transform" and DEBUG == true then
         print(errorHead.."Can't add a transform component because gameObjects may only have one transform.")
         Daneel.Debug.StackTrace.EndFunction()
@@ -469,7 +471,8 @@ function GameObject.SetComponent(gameObject, componentType, params, scriptedBeha
     Daneel.Debug.StackTrace.BeginFunction("GameObject.SetComponent", gameObject, componentType, params, scriptedBehaviorParams)
     local errorHead = "GameObject.SetComponent(gameObject, componentType, params[, scriptedBehaviorParams]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    componentType = Daneel.Debug.CheckComponentType(componentType)
+    Daneel.Debug.CheckArgType(componentType, "componentType", "string", errorHead)
+    componentType = Daneel.Debug.CheckArgValue(componentType, "componentType", config.componentTypes, errorHead)
     
     local component = nil
 
@@ -524,7 +527,8 @@ function GameObject.GetComponent(gameObject, componentType, scriptNameOrAsset)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.GetComponent", gameObject, componentType, scriptNameOrAsset)
     local errorHead = "GameObject.GetComponent(gameObject, componentType[, scriptNameOrAsset]) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    componentType = Daneel.Debug.CheckComponentType(componentType)
+    Daneel.Debug.CheckArgType(componentType, "componentType", "string", errorHead)
+    componentType = Daneel.Debug.CheckArgValue(componentType, "componentType", config.componentTypes, errorHead)
     
     local component = nil
     if componentType == "ScriptedBehavior" then

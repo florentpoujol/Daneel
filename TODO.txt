@@ -4,10 +4,7 @@ IDEAS
     -----
     MISC
 
-
-    - DEBUG
-        - introduire un CheckArgValue, CheckOptionalArgValue > remplace CheckAssetType(), CheckComponentType()
-  
+ 
     - modelRenderer:SetDimension(Vector3) ou idem avec Vector2
 
     - revoir l'utilisation de error(), print() et de la stacktrace
@@ -45,6 +42,7 @@ IDEAS
             > TextRenderer.Settext n'est pas utilisée lorsque les textes sont écrits dans la scène
             mais voir à créer un ScriptedBehavior qui irait remplacer le texte
 
+        - TextAreaRenderer : afficher un texte multi-ligne, avec <br>, wordWrap, alignment top bottom, middle
     
     -----
     GUI

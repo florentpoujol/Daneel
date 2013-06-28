@@ -431,38 +431,6 @@ function Daneel.Debug.Disable(info)
     DEBUG = false
 end
 
---- Check the value of 'componentType', correct its case and throw error if it is not one of the valid component types.
--- @param componentType (string) The component type as a string.
--- @return (string) The correct component type.
-function Daneel.Debug.CheckComponentType(componentType)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckComponentType", componentType)
-    local errorHead = "Daneel.Debug.CheckComponentType(componentType) : "
-    Daneel.Debug.CheckArgType(componentType, "componentType", "string", errorHead)
-    local componentTypes = config.componentTypes
-    componentType = Daneel.Utilities.CaseProof(componentType, componentTypes)
-    if not componentType:isoneof(componentTypes) then
-        error(errorHead.."Argument 'componentType' with value '"..componentType.."' is not one of the valid component types : "..table.concat(componentTypes, ", "))
-    end
-    Daneel.Debug.StackTrace.EndFunction("Daneel.Debug.CheckComponentType", componentType)
-    return componentType
-end
-
---- Check the value of 'assetType', correct its case and throw error if it is not one of the valid asset types.
--- @param assetType (string) The asset type as a string.
--- @return (string) The correct asset type.
-function Daneel.Debug.CheckAssetType(assetType)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckAssetType", assetType)
-    local errorHead = "Daneel.Debug.CheckAssetType(assetType) : "
-    Daneel.Debug.CheckArgType(assetType, "assetType", "string", errorHead)
-
-    assetType = Daneel.Utilities.CaseProof(assetType, config.assetTypes)
-    if not assetType:isoneof(config.assetTypes) then
-        error(errorHead.."Argument 'assetType' with value '"..assetType.."' is not one of the valid asset types : "..table.concat(config.assetTypes, ", "))
-    end
-    Daneel.Debug.StackTrace.EndFunction("Daneel.Debug.CheckAssetType", assetType)
-    return assetType
-end
-
 --- Bypass the __tostring() function that may exists on the data's metatable.
 -- @param data (mixed) The data to be converted to string.
 -- @return (string) The string.

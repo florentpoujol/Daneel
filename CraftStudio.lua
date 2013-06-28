@@ -22,7 +22,8 @@ function Asset.Get(assetName, assetType, errorIfAssetNotFound)
     end
     Daneel.Debug.CheckArgType(assetName, "assetName", "string", errorHead)
     if assetType ~= nil then
-        assetType = Daneel.Debug.CheckAssetType(assetType)
+        Daneel.Debug.CheckArgType(assetType, "assetType", "string", errorHead)
+        assetType = Daneel.Debug.CheckArgValue(assetType, "assetType", config.assetTypes, errorHead)
     end
     Daneel.Debug.CheckOptionalArgType(errorIfAssetNotFound, "errorIfAssetNotFound", "boolean", errorHead)
 
