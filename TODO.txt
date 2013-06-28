@@ -39,6 +39,11 @@ IDEAS
     - tweener
         permettre de tweener en même temps plusieurs valeur/propriétés
 
+    - tweener spécialisé "timer"  / duration oncomplete durationtype onloopcomplete, loops
+    Timer(duration, OnComplete, params)
+    Timer(duration, OnLoopComplete, true, params)
+
+
     - Timeline
         table de tweeners. clés = temps, valeur = tweeners
         fait débuter les tweeners en fonction du temps
