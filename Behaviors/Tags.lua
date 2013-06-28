@@ -4,7 +4,7 @@
 -- Public property :
 -- tags (string) [default=""]
 
-function Behavior:Start()
+function Behavior:Awake()
 	if self.tags ~= "" then
 		local tags = self.tags:split(",", true)
 		self.gameObject:AddTag(tags)

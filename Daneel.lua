@@ -329,7 +329,7 @@ end
 --- If the provided argument is not nil, check the provided argument's type against the provided type(s) and display error if they don't match.
 -- @param argument (mixed) The argument to check.
 -- @param argumentName (string) The argument name.
--- @param expectedArgumentTypes (string) The expected argument type(s).
+-- @param expectedArgumentTypes (string or table) The expected argument type(s).
 -- @param p_errorHead [optional] (string) The beginning of the error message.
 -- @param defaultValue [optional] (mixed) The default value to return if 'argument' is nil.
 -- @return (mixed) The value of 'argument' if it's non-nil, or the value of 'defaultValue'.
@@ -472,7 +472,8 @@ end
 
 --- Check if the provided argument's value in found in the provided expected value(s).
 -- When that's not the case, return the value of the 'defaultValue' argument, or throws an error when the 'defaultArgument' is nil. 
--- Arguments of type string are considered case-insensitive. The case will be corrected but no error will be thrown. 
+-- Arguments of type string are considered case-insensitive. The case will be corrected but no error will be thrown.
+-- When 'expectedArgumentValues' is of type table, it is always considered as a table of several expected values.
 -- @param argument (mixed) The argument to check.
 -- @param argumentName (string) The argument name.
 -- @param expectedArgumentValues (mixed) The expected argument values(s).

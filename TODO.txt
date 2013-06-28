@@ -4,29 +4,7 @@ IDEAS
     -----
     MISC
 
- 
     - modelRenderer:SetDimension(Vector3) ou idem avec Vector2
-
-    - revoir l'utilisation de error(), print() et de la stacktrace
-        lorsque debug activé, la localisation des erreurs se trouve toujours dans dans Daneel
-
-        il faut que error() utiliser dans n'importe quel fichier puisse afficher la stacktrace > pas possible sans la réécrire
-
-        CheckArgType() va toujours retourner l'erreur depuis Daneel.lua, mais on a le nom de la fonction impliquée
-
-        Debug.Beginfunction("function name", {
-            {
-                name = "argumentName",
-                value = argValue,
-                expectedType = Type, > appel CheckArgType
-                expectedValue = Values, > appel auto CheckValue ou checkDefault Value
-                defaultValue = "machin" > si expectedType or Value sont définits, fait appeler la version "optional" des fonctions
-            },
-
-            minimun info = argValue
-        })
-        > cette fonction enregistre la stacktrace
-        et fait appeler Debug.Check.. en fonction des valeurs trouvées
 
     - GameObject : permettre de chainer des GameObject.Get() et GameObject.GetChild() en séparents plusieurs nom de GO par un point
     ie : GameObject.Get("Menu.Lang.French")     gameObject:GetChild("Lang.French")
