@@ -402,8 +402,8 @@ function CraftStudio.LoadScene(sceneNameOrAsset)
     Daneel.Event.fireAtRealTime = {}
     Daneel.Event.fireAtFrame = {}
 
-    OriginalLoadScene(scene)
     Daneel.Debug.StackTrace.EndFunction()
+    OriginalLoadScene(scene)
 end
 
 --- Alias of CraftStudio.AppendScene().
