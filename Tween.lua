@@ -84,7 +84,7 @@ end
 
 function DaneelTween.Update()
     for id, tweener in pairs(Daneel.Tween.Tweener.tweeners) do
-        if  tweener.isEnabled == true and tweener.isPaused == false and tweener.isCompleted == false and tweener.duration > 0 then
+        if tweener.isEnabled == true and tweener.isPaused == false and tweener.isCompleted == false and tweener.duration > 0 then
 
             local deltaDuration = Daneel.Time.deltaTime
             if tweener.durationType == "realTime" then
@@ -327,12 +327,12 @@ end
 --- Destroy the tweener.
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
 function DaneelTween.Tweener.Destroy(tweener)
-    if tweener.isEnabled == false then return end
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.Destroy", tweener)
     local errorHead = "Daneel.Tween.Tweener.Destroy(tweener) : "
     Daneel.Debug.CheckArgType(tweener, "tweener", "Daneel.Tween.Tweener", errorHead)
 
     tweener.isEnabled = false
+    table.removevalue(Daneel.Tween.Tweener.tweeners, tweener)
     Daneel.Tween.Tweener.tweeners[tweener.id] = nil
     Daneel.Debug.StackTrace.EndFunction()
 end
