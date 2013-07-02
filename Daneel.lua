@@ -1169,6 +1169,16 @@ function Daneel.Load()
         print("~~~~~ Daneel is loaded ~~~~~")
     end
 
+    -- check for module update function
+    -- do this now so that I don't have to call Daneel.Utilities.GlobalExists() every frame for every modules below
+    config.moduleUpdateFunctions = {}
+    for i, module in ipairs(config.modules) do
+        local functionName = "DaneelUpdateModule"..module
+        if Daneel.Utilities.GlobalExists(functionName) and type(_G[functionName]) == "function" then
+            table.insert(config.moduleUpdateFunctions, _G[functionName])
+        end
+    end
+
     Daneel.Debug.StackTrace.EndFunction()
 end -- end Daneel.Load()
 
@@ -1176,6 +1186,7 @@ end -- end Daneel.Load()
 -- called from DaneelBehavior Behavior:Awake()
 function Daneel.Awake()
     Daneel.Load()
+    Daneel.Debug.StackTrace.messages = {}
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Awake")
 
 
@@ -1197,7 +1208,6 @@ function Daneel.Awake()
         print("~~~~~ Daneel is awake ~~~~~")
     end
 
-    Daneel.Event.Fire("DaneelModuleAwake")
     Daneel.Debug.StackTrace.EndFunction()
 end 
 
@@ -1283,10 +1293,7 @@ function Daneel.Update()
     end
 
     -- Update modules 
-    for i, module in ipairs(config.modules) do
-        local functionName = "DaneelUpdateModule"..module
-        if Daneel.Utilities.GlobalExists(functionName) then
-            _G[functionName]()
-        end
+    for i, _function in ipairs(config.moduleUpdateFunctions) do
+        _function()
     end
 end
