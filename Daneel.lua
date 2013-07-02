@@ -1178,6 +1178,12 @@ function Daneel.Awake()
     Daneel.Load()
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Awake")
 
+
+    Daneel.Event.Listen("OnSceneLoad", function()
+        GameObject.tags = {}
+    end)
+
+
     -- Awake modules 
     for i, module in ipairs(config.modules) do
         local functionName = "DaneelAwakeModule"..module

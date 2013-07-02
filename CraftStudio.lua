@@ -394,20 +394,14 @@ function CraftStudio.LoadScene(sceneNameOrAsset)
     local errorHead = "CraftStudio.LoadScene(sceneNameOrAsset) : "
     Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
 
-    -- sanitize some lists
-    GameObject.tags = {}
+    local scene = Asset.Get(sceneNameOrAsset, "Scene", true)
+    
+    Daneel.Event.Fire("OnSceneLoad", scene)
     Daneel.Event.events = {}
     Daneel.Event.fireAtTime = {}
     Daneel.Event.fireAtRealTime = {}
     Daneel.Event.fireAtFrame = {}
-    if Daneel.Tween ~= nil then
-        for id, tweener in pairs(Daneel.Tween.Tweeners.tweeners) do
-            tweener:Destroy()
-        end
-        Daneel.Tween.Tweeners.tweeners = {}
-    end
-    
-    local scene = Asset.Get(sceneNameOrAsset, "Scene", true)
+
     OriginalLoadScene(scene)
     Daneel.Debug.StackTrace.EndFunction()
 end
