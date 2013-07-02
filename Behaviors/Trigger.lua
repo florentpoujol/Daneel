@@ -5,7 +5,7 @@
 -- isStatic (boolean) [default=false]
 
 
-function Behavior:Start()
+function Behavior:Awake()
     self.gameObjectsInRange = table.new() -- the gameObjects that touches this trigger
     if self.layers == "" then
         self.layers = {}
@@ -16,7 +16,7 @@ end
 
 
 function Behavior:Update()
-    if self.range == 0 or self.isStatic == true or #self.layers == 0 then
+    if self.range <= 0 or self.isStatic == true or #self.layers == 0 then
         return
     end
     local triggerPosition = self.gameObject.transform.position
@@ -66,6 +66,9 @@ function Behavior:GetGameObjectsInRange(tags)
     local gameObjectsInRange = table.new()
     if tags == nil then
         if self.isStatic == false then
+            if self.gameObjectsInRange == nil then -- happens when called before Awake is called
+                self.gameObjectsInRange = {}
+            end
             return self.gameObjectsInRange
         end
         tags = self.layers
