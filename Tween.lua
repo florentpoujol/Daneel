@@ -345,6 +345,7 @@ function DaneelTween.Tweener.Destroy(tweener)
     tweener.duration = 0
     table.removevalue(Daneel.Tween.Tweener.tweeners, tweener)
     Daneel.Tween.Tweener.tweeners[tweener.id] = nil
+    CraftStudio.Destroy(tweener)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -442,6 +443,55 @@ function DaneelTween.Timer.New(duration, callback, isInfiniteLoop, params)
 
     Daneel.Tween.Tweener.tweeners[tweener.id] = tweener
     Daneel.Debug.EndFunction()
+    return tweener
+end
+
+
+----------------------------------------------------------------------------------
+-- Timer
+
+DaneelTween.Timer = {}
+DaneelTween.Timer.__index = DaneelTween.Tweener
+setmetatable(DaneelTween.Timer, { __call = function(Object, ...) return Object.New(...) end })
+
+--- Creates a new timer (a regular Tweener) via one of the two allowed constructors : <br>
+-- Timer.New(duration, OnLoopCompleteCallback, true[, params]) <br>
+-- Timer.New(duration, OnCompleteCallback[, params]) <br>
+-- @param duration (number) The time or frame it should take for the timer or one loop to complete.
+-- @param callback (function or userdata) The function that gets called when the OnComplete or OnLoopComplete event are fired.
+-- @param isInfiniteLoop [optional default=false] (boolean) Tell wether the timer loops indefinitely.
+-- @param params [optional] (table) A table of parameters.
+-- @return (Tweener) The Timer.
+function DaneelTween.Timer.New(duration, callback, isInfiniteLoop, params)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Timer.New", duration, callback, isInfiniteLoop, params)
+    local errorHead = "Daneel.Tween.Timer.New(duration, callback[, isInfiniteLoop, params]) : "
+    if type(isInfiniteLoop) == "table" then
+        params = isInfiniteLoop
+        errorHead = "Daneel.Tween.Timer.New(duration, callback[, params]) : "
+    end
+    Daneel.Debug.CheckArgType(duration, "duration", "number", errorHead)
+    Daneel.Debug.CheckArgType(callback, "callback", {"function", "userdata"}, errorHead)
+    Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
+
+    local tweener = table.copy(config.tween.defaultTweenerParams)
+    setmetatable(tweener, Daneel.Tween.Tweener)
+    tweenerId = tweenerId + 1
+    tweener.id = "Timer"..tweenerId
+    tweener.startValue = 0
+    tweener.endValue = 0
+    tweener.duration = duration
+    if isInfiniteLoop == true then
+        tweener.loops = -1
+        tweener.OnLoopComplete = callback
+    else
+        tweener.OnComplete = callback
+    end
+    if params ~= nil then
+        tweener:Set(params)
+    end
+    
+    Daneel.Tween.Tweener.tweeners[tweener.id] = tweener
+    Daneel.Debug.StackTrace.EndFunction()
     return tweener
 end
 
