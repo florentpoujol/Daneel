@@ -17,16 +17,18 @@ function Behavior:Awake()
     if GameObject.tags == nil then
         error("MouseInputs:Awake() : Variable 'GameObject.tags' does not exists because the GameObject file is probably missing.")
     end
+    
     if GameObject.tags.mouseInteractive == nil then
+        -- this is just in case no gameObject already registered to the mouseInteractive tag.
         GameObject.tags.mouseInteractive = {}
     end
     interactiveGameObjects = GameObject.tags.mouseInteractive
 
     if self.gameObject.camera == nil then
-        CS.Destroy(self)
+        CraftStudio.Destroy(self)
         error("MouseInputs:Awake() : GameObject with name '"..self.gameObject:GetName().."' has no camera component attached.")
-    end
-    
+    end  
+
     Daneel.Debug.StackTrace.EndFunction()
 end
 

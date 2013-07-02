@@ -22,6 +22,7 @@ IDEAS
 
         - TextAreaRenderer : afficher un texte multi-ligne, avec <br>, wordWrap, alignment top bottom, middle
        
+    - Asset.Get() cache les assets lorsque demandé par nom
 
     -----
     GUI

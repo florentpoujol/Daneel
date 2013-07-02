@@ -721,8 +721,11 @@ function Daneel.Event.Fire(object, eventName,  ...)
             local mt = getmetatable(listener)
             local isGameObjectOrComponent = ( mt == GameObject or table.containsvalue(config.componentObjects, mt) )
             if 
-                mt == nil or not isGameObjectOrComponent or
-                ( isGameObjectOrComponent and listener.inner ~= nil )
+                listener.isDestroyed ~= true and
+                (not isGameObjectOrComponent or listener.inner ~= nil)
+                -- OK if
+                -- not destroyed and (gameObject or component) and inner exists
+                -- not destroyed and any object
             then
                 local message = eventName
 
@@ -1192,6 +1195,7 @@ function Daneel.Awake()
 
     Daneel.Event.Listen("OnSceneLoad", function()
         GameObject.tags = {}
+        Daneel.Lang.gameObjectsToUpdate = {}
     end)
 
 
