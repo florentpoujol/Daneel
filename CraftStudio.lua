@@ -476,7 +476,7 @@ local OriginalDestroy = CraftStudio.Destroy
 
 --- Removes the specified game object (and all of its descendants) or the specified component from its game object.
 -- You can also optionally specify a dynamically loaded asset for unloading (See Map.LoadFromPackage ).
--- Fire the OnDestroy event on the object.
+-- Sets the 'isDestroyed' property to 'true' and fires the OnDestroy event on the object.
 -- @param object (GameObject, a component or a dynamically loaded asset) The gameObject, component or a dynamically loaded asset (like a map loaded with Map.LoadFromPackage).
 function CraftStudio.Destroy(object)
     Daneel.Debug.StackTrace.BeginFunction("CraftStudio.Destroy", object)
@@ -509,6 +509,7 @@ function CraftStudio.Destroy(object)
     Daneel.Event.Clean(object)
   
     --setmetatable(object, nil)
+    object.isDestroyed = true
     Daneel.Event.Fire(object, "OnDestroy")
     OriginalDestroy(object)
     Daneel.Debug.StackTrace.EndFunction()
