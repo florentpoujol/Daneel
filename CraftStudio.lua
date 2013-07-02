@@ -394,15 +394,15 @@ function CraftStudio.LoadScene(sceneNameOrAsset)
     local errorHead = "CraftStudio.LoadScene(sceneNameOrAsset) : "
     Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
 
-    -- sanitize some lists of gameObjects
+    -- sanitize some lists
     GameObject.tags = {}
     Daneel.Event.events = {}
     Daneel.Event.fireAtTime = {}
     Daneel.Event.fireAtRealTime = {}
     Daneel.Event.fireAtFrame = {}
     if Daneel.Tween ~= nil then
-        for i, tweener in ipairs(Daneel.Tween.Tweeners.tweeners) do
-            tweener.isEnabled = true
+        for id, tweener in pairs(Daneel.Tween.Tweeners.tweeners) do
+            tweener:Destroy()
         end
         Daneel.Tween.Tweeners.tweeners = {}
     end
@@ -486,8 +486,10 @@ local OriginalDestroy = CraftStudio.Destroy
 -- @param object (GameObject, a component or a dynamically loaded asset) The gameObject, component or a dynamically loaded asset (like a map loaded with Map.LoadFromPackage).
 function CraftStudio.Destroy(object)
     Daneel.Debug.StackTrace.BeginFunction("CraftStudio.Destroy", object)
-    if object == nil then
-        error("CraftStudio.Destroy(object) : provided object is nil")
+    if object == nil and DEBUG then
+        Daneel.Debug.StackTrace.Print()
+        print("CraftStudio.Destroy(object) : provided object is nil")
+        return
     end
     local Type = Daneel.Debug.GetType(object)
 
@@ -496,19 +498,22 @@ function CraftStudio.Destroy(object)
 
     elseif Type:isoneof(config.componentTypes) then
         if Type:isoneof(config.daneelComponentTypes) then 
-            object.inner = nil -- object.inner is needed by CS.Destroy() to actually removes the CS component
+            object.inner = nil 
+            -- do this here because object.inner is needed by CS.Destroy() to actually removes the CS component
             
             -- if a Daneel component, must ensure that the corresponding Behavior is also removed
             local behavior = object.gameObject:GetScriptedBehavior("Daneel/Behaviors/"..Type)
             if behavior ~= nil then
+                table.removevalue(object.gameObject, behavior)
                 CraftStudio.Destroy(behavior)
             end
+            table.removevalue(object.gameObject, object)
         end
-        
-        table.removevalue(object.gameObject, object)
-        --object.gameObject = nil
     end
 
+    -- for all objects, remove from listener list
+    Daneel.Event.Clean(object)
+  
     --setmetatable(object, nil)
     Daneel.Event.Fire(object, "OnDestroy")
     OriginalDestroy(object)

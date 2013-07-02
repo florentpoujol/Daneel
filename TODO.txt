@@ -22,6 +22,19 @@ IDEAS
 
         - TextAreaRenderer : afficher un texte multi-ligne, avec <br>, wordWrap, alignment top bottom, middle
     
+
+    - lors de la destruction d'un object
+        - l'enlever des listener d'event, y compris les event programmés 
+            > utiliser StopListen()
+        + vérifier lors du lancement d'un event
+
+        - si gameObject : elever les tags, supprimer les composants GUI
+
+    - event OnSceneLoad lorsque la scène VA être chargée.
+    à utiliser par Daneel pour suprimer les tweeners et les events, au lieu d'écrire cela dans CS.LoadScene() (event à lancer dans CS.LoadScene())
+    
+    - limiter la taille de la StackTrace à 100 items
+
     -----
     GUI
 
