@@ -341,6 +341,8 @@ function DaneelTween.Tweener.Destroy(tweener)
     Daneel.Debug.CheckArgType(tweener, "tweener", "Daneel.Tween.Tweener", errorHead)
 
     tweener.isEnabled = false
+    tweener.target = nil
+    tweener.duration = 0
     table.removevalue(Daneel.Tween.Tweener.tweeners, tweener)
     Daneel.Tween.Tweener.tweeners[tweener.id] = nil
     Daneel.Debug.StackTrace.EndFunction()
