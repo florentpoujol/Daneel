@@ -17,6 +17,9 @@ function Behavior:Awake()
     if GameObject.tags == nil then
         error("MouseInputs:Awake() : Variable 'GameObject.tags' does not exists because the GameObject file is probably missing.")
     end
+    if GameObject.tags.mouseInteractive == nil then
+        GameObject.tags.mouseInteractive = {}
+    end
     interactiveGameObjects = GameObject.tags.mouseInteractive
 
     if self.gameObject.camera == nil then
