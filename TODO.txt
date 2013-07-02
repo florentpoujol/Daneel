@@ -22,7 +22,9 @@ IDEAS
 
         - TextAreaRenderer : afficher un texte multi-ligne, avec <br>, wordWrap, alignment top bottom, middle
        
-    - Asset.Get() cache les assets lorsque demandé par nom
+    - possibilité de enable/disable un gameObject ou un component
+        > empèhe les composants de GUI d'être mis à jour
+        > voir plutôt avec Elisée pour autoriser ça sur les gameObjects
 
     -----
     GUI

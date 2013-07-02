@@ -15,21 +15,26 @@ Asset.__index = Asset
 function Asset.Get(assetName, assetType, errorIfAssetNotFound)
     Daneel.Debug.StackTrace.BeginFunction("Asset.Get", assetName, assetType, errorIfAssetNotFound)
     local errorHead = "Asset.Get(assetName[, assetType, errorIfAssetNotFound]) : "
+    
     -- just return the asset if assetName is already an object
     if type(assetName) == "table" and Daneel.Debug.GetType(assetName):isoneof(config.assetTypes) then
         Daneel.Debug.StackTrace.EndFunction()
         return assetName
     end
     Daneel.Debug.CheckArgType(assetName, "assetName", "string", errorHead)
+    
+    -- check asset type
     if assetType ~= nil then
         Daneel.Debug.CheckArgType(assetType, "assetType", "string", errorHead)
         assetType = Daneel.Debug.CheckArgValue(assetType, "assetType", config.assetTypes, errorHead)
     end
     Daneel.Debug.CheckOptionalArgType(errorIfAssetNotFound, "errorIfAssetNotFound", "boolean", errorHead)
 
+    -- check if assetName is a script alias
     if assetType == "Script" and config.scriptPaths[assetName] ~= nil then
         assetName = config.scriptPaths[assetName]
     end
+
     local asset = CraftStudio.FindAsset(assetName, assetType)
     if asset == nil and errorIfAssetNotFound == true then
         if assetType == nil then
@@ -37,6 +42,7 @@ function Asset.Get(assetName, assetType, errorIfAssetNotFound)
         end
         error(errorHead.."Argument 'assetName' : "..assetType.." with name '"..assetName.."' was not found.")
     end
+
     Daneel.Debug.StackTrace.EndFunction()
     return asset
 end
