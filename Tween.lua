@@ -45,10 +45,10 @@ end
 function DaneelAwakeModuleTween()
     -- destroy and sanitize the tweeners when the scene loads
     Daneel.Event.Listen("OnSceneLoad", function()
-        for id, tweener in pairs(Daneel.Tween.Tweeners.tweeners) do
+        for id, tweener in pairs(Daneel.Tween.Tweener.tweeners) do
             tweener:Destroy()
         end
-        Daneel.Tween.Tweeners.tweeners = {}
+        Daneel.Tween.Tweener.tweeners = {}
     end)
 end
 
