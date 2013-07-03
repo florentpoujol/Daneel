@@ -606,6 +606,7 @@ function Daneel.Event.Listen(eventName, functionOrObject)
     local errorHead = "Daneel.Event.Listen(eventName, functionOrObject) : "
     Daneel.Debug.CheckArgType(eventName, "eventName", {"string", "table"}, errorHead)
     Daneel.Debug.CheckArgType(functionOrObject, "functionOrObject", {"table", "function", "userdata"}, errorHead)
+    
     local eventNames = eventName
     if type(eventName) == "string" then
         eventNames = { eventName }
@@ -629,45 +630,53 @@ function Daneel.Event.StopListen(eventName, functionOrObject)
     local errorHead = "Daneel.Event.StopListen(eventName, functionOrObject) : "
     Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
     Daneel.Debug.CheckArgType(functionOrObject, "functionOrObject", {"table", "function"}, errorHead)
+    
     local eventNames = eventName
     if type(eventName) == "string" then
         eventNames = { eventName }
     end
     for i, eventName in ipairs(eventNames) do
-        local objects = Daneel.Event.events[eventName]
-        if objects ~= nil and table.containsvalue(objects, functionOrObject) then
-            table.removevalue(objects, functionOrObject)
+        local listeners = Daneel.Event.events[eventName]
+        if listeners ~= nil then
+            table.removevalue(listeners, functionOrObject)
         end
     end
-    Daneel.Debug.StackTrace.EndFunction("Daneel.Event.StopListen")
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
-function Daneel.Event.Clean(object)
+--- Remove the provided function or object from the listeners and scheduled events lists.
+-- @param functionOrObject (function, userdata or table)
+function Daneel.Event.Clean(functionOrObject)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Clean", functionOrObject)
+    local errorHead = "Daneel.Event.Clean(functionOrObject) : "
+    Daneel.Debug.CheckArgType(functionOrObject, "functionOrObject", {"table", "function", "userdata"}, errorHead)
 
     for eventName, listeners in pairs(Daneel.Event.events) do
-        table.removevalue(listeners, object)
+        table.removevalue(listeners, functionOrObject)
     end
+    -- scheduled events
     for time, events in pairs(Daneel.Event.fireAtRealTime) do
         for i = #events, 1, -1 do
-            if events[i].object == object then
+            if events[i].object == functionOrObject then
                 table.remove(events, i)
             end
         end
     end
     for time, events in pairs(Daneel.Event.fireAtTime) do
         for i = #events, 1, -1 do
-            if events[i].object == object then
+            if events[i].object == functionOrObject then
                 table.remove(events, i)
             end
         end
     end
     for time, events in pairs(Daneel.Event.fireAtFrame) do
         for i = #events, 1, -1 do
-            if events[i].object == object then
+            if events[i].object == functionOrObject then
                 table.remove(events, i)
             end
         end
     end
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Fire the provided event on the provided objects (or the one that listen to it),
