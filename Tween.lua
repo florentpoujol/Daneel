@@ -23,6 +23,8 @@ function DaneelConfigModuleTween()
                 
                 isRelative = false, -- If false, tween the value TO endValue. If true, tween the value BY endValue.
 
+                destroyOnSceneLoad = true, -- tell wether to destroy the tweener (true) or keep it 'alive' (false) when the scene is changing
+
                 ------------
                 -- "read-only" properties or properties the user has no interest to change the value of
 
@@ -46,9 +48,10 @@ function DaneelAwakeModuleTween()
     -- destroy and sanitize the tweeners when the scene loads
     Daneel.Event.Listen("OnSceneLoad", function()
         for id, tweener in pairs(Daneel.Tween.Tweener.tweeners) do
-            tweener:Destroy()
+            if not (tweener.destroyOnSceneLoad == false) then -- wil destroy the tweener even when the property is nil
+                tweener:Destroy()
+            end
         end
-        Daneel.Tween.Tweener.tweeners = {}
     end)
 end
 
