@@ -36,6 +36,7 @@ IDEAS
     lorsque élément pas utilisé, il a opacity, scale etc au choix dans la config, donc
       out et in state  
 
+      - progress bar : faire fonction UpdateProgresss  "lite" sans checks qui n'update que si la valeur change
     
     -----
     TWEEN
@@ -97,7 +98,7 @@ A tester
 A modifier/ajouter dans la doc :
 
     - Example project : minimalist encounter
-
+    - progressbar updateprogress()
 
 =========
 BUGS

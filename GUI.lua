@@ -505,6 +505,7 @@ function DaneelGUI.ProgressBar.New(gameObject)
 end
 
 --- Set the progress of the progress bar, adjusting its length.
+-- Fires the 'OnUpdate' event.
 -- @param progressBar (ProgressBar) The progressBar.
 -- @param progress (number or string) The progress as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
 function DaneelGUI.ProgressBar.SetProgress(progressBar, progress)
@@ -516,6 +517,7 @@ function DaneelGUI.ProgressBar.SetProgress(progressBar, progress)
     local minVal = progressBar.minValue
     local maxVal = progressBar.maxValue
     local percentageOfProgress = nil
+
 
     if type(progress) == "string" then
         if progress:endswith("%") then
@@ -536,23 +538,67 @@ function DaneelGUI.ProgressBar.SetProgress(progressBar, progress)
     -- now progress is a number and should be a value between minVal and maxVal
     local oldProgress = progress
     progress = math.clamp(progress, minVal, maxVal)
-    if progress ~= oldProgress and DEBUG == true then
-        print(errorHead.." WARNING : progress with value '"..oldProgress.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
+    local currentProgress = progressBar.progress
+
+    if progress ~= currentProgress then
+        if progress ~= oldProgress and DEBUG == true then
+            print(errorHead.." WARNING : progress with value '"..oldProgress.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
+        end
+        percentageOfProgress = (progress - minVal) / (maxVal - minVal)
+        
+        --
+        progressBar.minLength = tounit(progressBar.minLength)
+        progressBar.maxLength = tounit(progressBar.maxLength)
+        progressBar.height = tounit(progressBar.height)
+
+        local newLength = (progressBar.maxLength - progressBar.minLength) * percentageOfProgress + progressBar.minLength 
+        local currentScale = progressBar.gameObject.transform.localScale
+        progressBar.gameObject.transform.localScale = Vector3:New(newLength, progressBar.height, currentScale.z)
+        -- newLength = scale only because the base size of the model is of one unit at a scale of one
+
+        Daneel.Event.Fire(progressBar, "OnUpdate", progressBar)
     end
-    percentageOfProgress = (progress - minVal) / (maxVal - minVal)
-    
-    --
-    progressBar.minLength = tounit(progressBar.minLength)
-    progressBar.maxLength = tounit(progressBar.maxLength)
-    progressBar.height = tounit(progressBar.height)
-
-    local newLength = (progressBar.maxLength - progressBar.minLength) * percentageOfProgress + progressBar.minLength 
-    local currentScale = progressBar.gameObject.transform.localScale
-    progressBar.gameObject.transform.localScale = Vector3:New(newLength, progressBar.height, currentScale.z)
-    -- newLength = scale only because the base size of the model is of one unit at a scale of one
-
-    Daneel.Event.Fire(progressBar, "OnUpdate", progressBar)
     Daneel.Debug.StackTrace.EndFunction()
+end
+
+--- Set the progress of the progress bar, adjusting its length.
+-- Does the same things as SetProgress() by does it faster. 
+-- Unlike SetProgress(), does not fire the 'OnUpdate' event by default.
+-- Should be used when the progress is updated regularly (ie : from a Behavior:Update() function).
+-- @param progressBar (ProgressBar) The progressBar.
+-- @param progress (number or string) The progress as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
+-- @param fireEvent [optional default=false] (boolean) Tell wether to fire the 'OnUpdate' event (true) or not (false).
+function DaneelGUI.ProgressBar.UpdateProgress( progressBar, progress, fireEvent )
+    if progress == progressBar._progress then return end
+    progressBar._progress = progress
+
+    local minVal = progressBar.minValue
+    local maxVal = progressBar.maxValue
+    local minLength = progressBar.minLength
+    local percentageOfProgress = nil
+
+    if type(progress) == "string" then
+        local _progress = progress
+        progress = tonumber(progress)
+        if progress == nil then
+            percentageOfProgress = tonumber( _progress:sub( 1, #_progress-1 ) ) / 100
+            percentageOfProgress = math.clamp( percentageOfProgress, 0.0, 1.0 )
+            progress = (maxVal - minVal) * percentageOfProgress + minVal
+        end
+    end
+    -- now progress is a number
+    progress = math.clamp( progress, minVal, maxVal )
+
+    if percentageOfProgress == nil then
+        percentageOfProgress = (progress - minVal) / (maxVal - minVal)
+    end
+    local newLength = (progressBar.maxLength - minLength) * percentageOfProgress + minLength 
+    local currentScale = progressBar.gameObject.transform.localScale
+    progressBar.gameObject.transform.localScale = Vector3:New( newLength, progressBar.height, currentScale.z )
+    
+    if fireEvent == true then
+        Daneel.Event.Fire( progressBar, "OnUpdate", progressBar )
+    end
 end
 
 --- Get the current progress of the progress bar.
