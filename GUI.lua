@@ -579,16 +579,15 @@ function DaneelGUI.ProgressBar.UpdateProgress( progressBar, progress, fireEvent 
     if type(progress) == "string" then
         local _progress = progress
         progress = tonumber(progress)
-        if progress == nil then
+        if progress == nil then -- progress in percentage. ie "50%"
             percentageOfProgress = tonumber( _progress:sub( 1, #_progress-1 ) ) / 100
-            percentageOfProgress = math.clamp( percentageOfProgress, 0.0, 1.0 )
         end
     end
 
     if percentageOfProgress == nil then
-        progress = math.clamp( progress, minVal, maxVal )
         percentageOfProgress = (progress - minVal) / (maxVal - minVal)
     end
+    percentageOfProgress = math.clamp( percentageOfProgress, 0.0, 1.0 )
 
     local newLength = (progressBar.maxLength - minLength) * percentageOfProgress + minLength 
     local currentScale = progressBar.gameObject.transform.localScale
