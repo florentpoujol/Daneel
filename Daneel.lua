@@ -1,15 +1,4 @@
 
-local daneel_exists = false
-for key, value in pairs(_G) do
-    if key == "Daneel" then
-        daneel_exists = true
-        break
-    end
-end
-if daneel_exists == false then
-    Daneel = {}
-end
-
 DANEEL_LOADED = false
 DEBUG = false
 config = {}
