@@ -334,7 +334,8 @@ end
 -- @param defaultValue [optional] (mixed) The default value to return if 'argument' is nil.
 -- @return (mixed) The value of 'argument' if it's non-nil, or the value of 'defaultValue'.
 function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, p_errorHead, defaultValue)
-    if DEBUG == false or argument == nil then return defaultValue end
+    if argument == nil then return defaultValue end
+    if DEBUG == false then return argument end
     local errorHead = "Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes[, p_errorHead, defaultValue]) : "
     
     local argType = type(argumentName)

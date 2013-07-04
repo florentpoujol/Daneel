@@ -251,7 +251,7 @@ function GameObject.GetChild(gameObject, name, recursive)
         local children = gameObject:GetChildren()
         child = children[1]
     else
-        child = gameObject:FindChild(name, recursive)
+        child = gameObject:FindChild( name, recursive )
     end
     Daneel.Debug.StackTrace.EndFunction()
     return child
@@ -271,20 +271,20 @@ function GameObject.GetChildren(gameObject, recursive, includeSelf)
     Daneel.Debug.CheckOptionalArgType(recursive, "recursive", "boolean", errorHead)
     Daneel.Debug.CheckOptionalArgType(includeSelf, "includeSelf", "boolean", errorHead)
     
-    local allChildren = table.new()
+    local allChildren = {}
     if includeSelf == true then
-        allChildren:insert(gameObject)
+        table.insert( allChildren, gameObject )
     end
-    local selfChildren = OriginalGetChildren(gameObject)
+    local selfChildren = OriginalGetChildren( gameObject )
     if recursive == true then
         -- get the rest of the children
-        for i, child in ipairs(selfChildren) do
-            allChildren = allChildren:merge(child:GetChildren(true, true))
+        for i, child in ipairs( selfChildren ) do
+            allChildren = table.merge( allChildren, child:GetChildren( true, true ) )
         end
     else
-        allChildren = allChildren:merge(selfChildren)
+        allChildren = table.merge( allChildren, selfChildren )
     end
-    Daneel.Debug.StackTrace.EndFunction("GameObject.GetChildren", allChildren)
+    Daneel.Debug.StackTrace.EndFunction()
     return allChildren
 end
 
