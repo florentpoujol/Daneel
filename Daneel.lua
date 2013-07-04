@@ -480,7 +480,6 @@ end
 -- @param p_errorHead [optional] (string) The beginning of the error message.
 -- @param defaultValue [optional] (mixed) The optional default value.
 function Daneel.Debug.CheckArgValue(argument, argumentName, expectedArgumentValues, p_errorHead, defaultValue)
-    if DEBUG == false then return argument end
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckArgValue", argument, argumentName, expectedArgumentValues, p_errorHead)
     local errorHead = "Daneel.Debug.CheckArgValue(argument, argumentName, expectedArgumentValues[, p_errorHead]) : "
     Daneel.Debug.CheckArgType(argumentName, "argumentName", "string", errorHead)
