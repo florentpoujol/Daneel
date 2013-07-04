@@ -537,6 +537,9 @@ function DaneelGUI.ProgressBar.SetProgress(progressBar, progress)
     -- now progress is a number and should be a value between minVal and maxVal
     local oldProgress = progress
     progress = math.clamp(progress, minVal, maxVal)
+
+    progressBar.minLength = tounit(progressBar.minLength)
+    progressBar.maxLength = tounit(progressBar.maxLength)
     local currentProgress = progressBar.progress
 
     if progress ~= currentProgress then
@@ -545,9 +548,6 @@ function DaneelGUI.ProgressBar.SetProgress(progressBar, progress)
         end
         percentageOfProgress = (progress - minVal) / (maxVal - minVal)
         
-        --
-        progressBar.minLength = tounit(progressBar.minLength)
-        progressBar.maxLength = tounit(progressBar.maxLength)
         progressBar.height = tounit(progressBar.height)
 
         local newLength = (progressBar.maxLength - progressBar.minLength) * percentageOfProgress + progressBar.minLength 
