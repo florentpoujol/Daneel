@@ -79,9 +79,7 @@ IDEAS
 A implémenter
     
     - Trigger : rajouter argument range à GetGameObjectInRange
-
-    - text renderer scale    aligment via text
-
+    - textRenderer:SetSize(pixels)   textRenderer:GetScreenLength([getAsUnit]) > pixels
 
 ==========
 A tester
