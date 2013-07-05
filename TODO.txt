@@ -10,6 +10,7 @@ IDEAS
     ie : GameObject.Get("Menu.Lang.French")     gameObject:GetChild("Lang.French")
     > permet d'obtenir facilement des GO dont le nom n'est pas unique
     
+
     - textRenderer
         - permettre de définir un font et aligment par défaut (pour n'importe quel component)
         - permettre de féfinir l'alignement avec simplement "left", "right", "center"
@@ -25,6 +26,13 @@ IDEAS
     - possibilité de enable/disable un gameObject ou un component
         > empèhe les composants de GUI d'être mis à jour
         > voir plutôt avec Elisée pour autoriser ça sur les gameObjects
+
+
+    - Debug.DrawLine(start, end[, model]) ou (start, direction, length[, model])
+        config.debug.defaultLineModel
+
+    - Trigger : rajouter argument range à GetGameObjectInRange
+
 
     -----
     GUI

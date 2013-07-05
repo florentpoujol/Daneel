@@ -2,6 +2,7 @@
 DANEEL_LOADED = false
 DEBUG = false
 config = {}
+Daneel = {}
 
 function DaneelDefaultConfig()
     return {
