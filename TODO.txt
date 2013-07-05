@@ -31,10 +31,6 @@ IDEAS
     - Debug.DrawLine(start, end[, model]) ou (start, direction, length[, model])
         config.debug.defaultLineModel
 
-    - Trigger : rajouter argument range à GetGameObjectInRange
-
-    - création de scripted behavior : utiliser argument params natif de CrateScriptedBehavior
-    - text renderer scale    aligment via text
 
     -----
     GUI
@@ -46,7 +42,6 @@ IDEAS
     lorsque élément pas utilisé, il a opacity, scale etc au choix dans la config, donc
       out et in state  
 
-      - progress bar : faire fonction UpdateProgresss  "lite" sans checks qui n'update que si la valeur change
     
     -----
     TWEEN
@@ -82,28 +77,22 @@ IDEAS
 
 ==========
 A implémenter
+    
+    - Trigger : rajouter argument range à GetGameObjectInRange
+
+    - text renderer scale    aligment via text
 
 
 ==========
 A tester
 
     - voir pourquoi certains easeType renvoient des erreurs
-
-    - arg data de OnNewComponent is nil when component is scriptedBehavior (ou au moins checkbox)
-
-    - créer Behavior depuis un Awake de Behavior
-    
-    - CreateScriptedBehavior with params argument = nil
-                            with getter and setter
-
     
 
 ==========
 A modifier/ajouter dans la doc :
 
     - Example project : minimalist encounter
-    - progressbar updateprogress()
-    - default components properties
 
 
 =========

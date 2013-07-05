@@ -66,8 +66,8 @@ function DaneelDefaultConfig()
         ----------------------------------------------------------------------------------
 
         -- default components settings
-        components = {}
-        
+        components = {},
+
 
         ----------------------------------------------------------------------------------
         -- Objects (keys = name, value = object)
@@ -287,8 +287,9 @@ Daneel.Debug = {}
 -- @param argumentName (string) The argument name.
 -- @param expectedArgumentTypes (string or table) The expected argument type(s).
 -- @param p_errorHead [optional] (string) The beginning of the error message.
+-- @return (mixed) The argument's type.
 function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes, p_errorHead)
-    if DEBUG == false then return end
+    if DEBUG == false then return Daneel.Debug.GetType(argument) end
     local errorHead = "Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes[, p_errorHead]) : "
     
     local argType = type(argumentName)
@@ -316,7 +317,7 @@ function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes
     local luaArgType = type(argument) -- any object (that are tables) will now pass the test even when Daneel.Debug.GetType(argument) does not return "table" 
     for i, expectedType in ipairs(expectedArgumentTypes) do
         if argType == expectedType or luaArgType == expectedType then
-            return
+            return expectedType
         end
     end
     error(p_errorHead.."Argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'.")
@@ -476,6 +477,7 @@ end
 -- @param expectedArgumentValues (mixed) The expected argument values(s).
 -- @param p_errorHead [optional] (string) The beginning of the error message.
 -- @param defaultValue [optional] (mixed) The optional default value.
+-- @return (mixed) The argument's value (one of the expected argument values or default value)
 function Daneel.Debug.CheckArgValue(argument, argumentName, expectedArgumentValues, p_errorHead, defaultValue)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckArgValue", argument, argumentName, expectedArgumentValues, p_errorHead)
     local errorHead = "Daneel.Debug.CheckArgValue(argument, argumentName, expectedArgumentValues[, p_errorHead]) : "
