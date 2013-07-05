@@ -160,20 +160,42 @@ end
 ----------------------------------------------------------------------------------
 -- Transform
 
+local OriginalSetLocalScale = Transform.SetLocalScale
+
+--- Set the transform's local scale.
+-- @param transform (Transform) The transform component.
+-- @param scale (number or Vector3) The global scale.
+function Transform.SetLocalScale(transform, scale)
+    Daneel.Debug.StackTrace.BeginFunction("Transform.SetLocalScale", transform, scale)
+    local errorHead = "Transform.SetLocalScale(transform, scale) : "
+    Daneel.Debug.CheckArgType(transform, "transform", "Transform", errorHead)
+    local argType = Daneel.Debug.CheckArgType(scale, "scale", {"number", "Vector3"}, errorHead)
+
+    if argType == "number" then
+        scale = Vector3:New(scale)
+    end
+    OriginalSetLocalScale(transform, scale)
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
 --- Set the transform's global scale.
 -- @param transform (Transform) The transform component.
--- @param scale (Vector3) The global scale.
+-- @param scale (number or Vector3) The global scale.
 function Transform.SetScale(transform, scale)
     Daneel.Debug.StackTrace.BeginFunction("Transform.SetScale", transform, scale)
     local errorHead = "Transform.SetScale(transform, scale) : "
     Daneel.Debug.CheckArgType(transform, "transform", "Transform", errorHead)
-    Daneel.Debug.CheckArgType(scale, "scale", "Vector3", errorHead)
+    local argType = Daneel.Debug.CheckArgType(scale, "scale", {"number", "Vector3"}, errorHead)
 
-    local parent = transform.gameObject.parent
-    if parent ~= nil then
-        scale = scale / parent.transform.scale
+    if argType == "number" then
+        scale = Vector3:New(scale)
     end
-    transform.localScale = scale
+
+    local parent = transform.gameObject:GetParent()
+    if parent ~= nil then
+        scale = scale / parent.transform:GetScale()
+    end
+    transform:SetLocalScale( scale )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -185,10 +207,10 @@ function Transform.GetScale(transform)
     local errorHead = "Transform.GetScale(transform) : "
     Daneel.Debug.CheckArgType(transform, "transform", "Transform", errorHead)
 
-    local scale = transform.localScale
-    local parent = transform.gameObject.parent
+    local scale = transform:GetLocalScale()
+    local parent = transform.gameObject:GetParent()
     if parent ~= nil then
-        scale = scale * parent.transform.scale
+        scale = scale * parent.transform:GetScale()
     end
     Daneel.Debug.StackTrace.EndFunction()
     return scale
@@ -301,9 +323,7 @@ function TextRenderer.SetScale(textRenderer, scale)
     Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
     local argType = Daneel.Debug.CheckArgType(scale, "scale", {"number", "Vector2", "Vector3"}, errorHead)
 
-    if argType == "number" then
-        scale = Vector3:New(scale)
-    elseif argType == "Vector2" then
+    if argType == "Vector2" then
         scale = Vector3:New(scale.x, scale.y, 1)
     end
     textRenderer.gameObject.transform:SetScale( scale )
@@ -319,9 +339,7 @@ function TextRenderer.SetLocalScale(textRenderer, scale)
     Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
     local argType = Daneel.Debug.CheckArgType(scale, "scale", {"number", "Vector2", "Vector3"}, errorHead)
 
-    if argType == "number" then
-        scale = Vector3:New(scale)
-    elseif argType == "Vector2" then
+    if argType == "Vector2" then
         scale = Vector3:New(scale.x, scale.y, 1)
     end
     textRenderer.gameObject.transform:SetLocalScale( scale )
