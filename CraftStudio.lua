@@ -309,8 +309,27 @@ function TextRenderer.SetFont(textRenderer, fontNameOrAsset)
     Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
     Daneel.Debug.CheckArgType(fontNameOrAsset, "fontNameOrAsset", {"string", "Font"}, errorHead)
 
-    local font = Asset.Get(fontNameOrAsset, "Font", true)
-    OriginalSetFont(textRenderer, font)
+    local font = Asset.Get( fontNameOrAsset, "Font", true )
+    OriginalSetFont( textRenderer, font )
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+local OriginalSetAlignment = TextRenderer.SetAlignment
+
+--- Set the text's alignment.
+-- @param textRenderer (TextRenderer) The textRenderer.
+-- @param scale (string or TextRenderer.Alignment) The alignment. Values (case-insensitive when of type string) may be "left", "center", "right", TextRenderer.Alignment.Left, TextRenderer.Alignment.Center or TextRenderer.Alignment.Right.
+function TextRenderer.SetAlignment(textRenderer, alignment)
+    Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetAlignment", textRenderer, alignment)
+    local errorHead = "TextRenderer.SetAlignment(textRenderer, alignment) : "
+    Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
+    local argType = Daneel.Debug.CheckArgType(alignment, "alignment", {"string", "userdata"}, errorHead)
+
+    if argType == "string" then
+        alignment = Daneel.Debug.CheckArgValue( alignment, "alignment", {"Left", "Center", "Right"}, errorHead )
+        alignment = TextRenderer.Alignment[ alignment ]
+    end
+    OriginalSetAlignment( textRenderer, alignment )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -324,7 +343,7 @@ function TextRenderer.SetScale(textRenderer, scale)
     local argType = Daneel.Debug.CheckArgType(scale, "scale", {"number", "Vector2", "Vector3"}, errorHead)
 
     if argType == "Vector2" then
-        scale = Vector3:New(scale.x, scale.y, 1)
+        scale = Vector3:New( scale.x, scale.y, 1 )
     end
     textRenderer.gameObject.transform:SetScale( scale )
     Daneel.Debug.StackTrace.EndFunction()
@@ -340,7 +359,7 @@ function TextRenderer.SetLocalScale(textRenderer, scale)
     local argType = Daneel.Debug.CheckArgType(scale, "scale", {"number", "Vector2", "Vector3"}, errorHead)
 
     if argType == "Vector2" then
-        scale = Vector3:New(scale.x, scale.y, 1)
+        scale = Vector3:New( scale.x, scale.y, 1 )
     end
     textRenderer.gameObject.transform:SetLocalScale( scale )
     Daneel.Debug.StackTrace.EndFunction()
