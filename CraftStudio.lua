@@ -158,6 +158,44 @@ end
 
 
 ----------------------------------------------------------------------------------
+-- Transform
+
+--- Set the transform's global scale.
+-- @param transform (Transform) The transform component.
+-- @param scale (Vector3) The global scale.
+function Transform.SetScale(transform, scale)
+    Daneel.Debug.StackTrace.BeginFunction("Transform.SetScale", transform, scale)
+    local errorHead = "Transform.SetScale(transform, scale) : "
+    Daneel.Debug.CheckArgType(transform, "transform", "Transform", errorHead)
+    Daneel.Debug.CheckArgType(scale, "scale", "Vector3", errorHead)
+
+    local parent = transform.gameObject.parent
+    if parent ~= nil then
+        scale = scale / parent.transform.scale
+    end
+    transform.localScale = scale
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+--- Get the transform's global scale.
+-- @param transform (Transform) The transform component.
+-- @return (Vector3) The global scale.
+function Transform.GetScale(transform)
+    Daneel.Debug.StackTrace.BeginFunction("Transform.GetScale", transform)
+    local errorHead = "Transform.GetScale(transform) : "
+    Daneel.Debug.CheckArgType(transform, "transform", "Transform", errorHead)
+
+    local scale = transform.localScale
+    local parent = transform.gameObject.parent
+    if parent ~= nil then
+        scale = scale * parent.transform.scale
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+    return scale
+end
+
+
+----------------------------------------------------------------------------------
 -- ModelRenderer
 
 local OriginalSetModel = ModelRenderer.SetModel
@@ -251,7 +289,43 @@ function TextRenderer.SetFont(textRenderer, fontNameOrAsset)
 
     local font = Asset.Get(fontNameOrAsset, "Font", true)
     OriginalSetFont(textRenderer, font)
-    Daneel.Debug.StackTrace.EndFunction("TextRenderer.SetFont")
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+--- Set the gameObject's scale. Shortcut for transform:SetLocalScale().
+-- @param textRenderer (TextRenderer) The textRenderer.
+-- @param scale (number, Vector2 or Vector3) The text's scale.
+function TextRenderer.SetScale(textRenderer, scale)
+    Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetScale", textRenderer, scale)
+    local errorHead = "TextRenderer.SetScale(textRenderer, scale) : "
+    Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
+    local argType = Daneel.Debug.CheckArgType(scale, "scale", {"number", "Vector2", "Vector3"}, errorHead)
+
+    if argType == "number" then
+        scale = Vector3:New(scale)
+    elseif argType == "Vector2" then
+        scale = Vector3:New(scale.x, scale.y, 1)
+    end
+    textRenderer.gameObject.transform:SetScale( scale )
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+--- Set the gameObject's local scale. Shortcut for transform:SetLocalScale().
+-- @param textRenderer (TextRenderer) The textRenderer.
+-- @param scale (number, Vector2 or Vector3) The text's scale.
+function TextRenderer.SetLocalScale(textRenderer, scale)
+    Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetLocalScale", textRenderer, scale)
+    local errorHead = "TextRenderer.SetLocalScale(textRenderer, scale) : "
+    Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
+    local argType = Daneel.Debug.CheckArgType(scale, "scale", {"number", "Vector2", "Vector3"}, errorHead)
+
+    if argType == "number" then
+        scale = Vector3:New(scale)
+    elseif argType == "Vector2" then
+        scale = Vector3:New(scale.x, scale.y, 1)
+    end
+    textRenderer.gameObject.transform:SetLocalScale( scale )
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
@@ -519,43 +593,6 @@ function CraftStudio.Destroy(object)
     Daneel.Event.Fire(object, "OnDestroy")
     OriginalDestroy(object)
     Daneel.Debug.StackTrace.EndFunction()
-end
-
-
-----------------------------------------------------------------------------------
-
---- Set the transform's global scale.
--- @param transform (Transform) The transform component.
--- @param scale (Vector3) The global scale.
-function Transform.SetScale(transform, scale)
-    Daneel.Debug.StackTrace.BeginFunction("Transform.SetScale", transform, scale)
-    local errorHead = "Transform.SetScale(transform, scale) : "
-    Daneel.Debug.CheckArgType(transform, "transform", "Transform", errorHead)
-    Daneel.Debug.CheckArgType(scale, "scale", "Vector3", errorHead)
-
-    local parent = transform.gameObject.parent
-    if parent ~= nil then
-        scale = scale / parent.transform.scale
-    end
-    transform.localScale = scale
-    Daneel.Debug.StackTrace.EndFunction()
-end
-
---- Get the transform's global scale.
--- @param transform (Transform) The transform component.
--- @return (Vector3) The global scale.
-function Transform.GetScale(transform)
-    Daneel.Debug.StackTrace.BeginFunction("Transform.GetScale", transform)
-    local errorHead = "Transform.GetScale(transform) : "
-    Daneel.Debug.CheckArgType(transform, "transform", "Transform", errorHead)
-
-    local scale = transform.localScale
-    local parent = transform.gameObject.parent
-    if parent ~= nil then
-        scale = scale * parent.transform.scale
-    end
-    Daneel.Debug.StackTrace.EndFunction()
-    return scale
 end
 
 
