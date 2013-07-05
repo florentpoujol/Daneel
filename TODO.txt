@@ -33,6 +33,8 @@ IDEAS
 
     - Trigger : rajouter argument range à GetGameObjectInRange
 
+    - création de scripted behavior : utiliser argument params natif de CrateScriptedBehavior
+    - text renderer scale    aligment via text
 
     -----
     GUI
@@ -81,15 +83,6 @@ IDEAS
 ==========
 A implémenter
 
-    -----
-    DEVELOP   
-
-    -----
-    GUI
-   
-    -----
-    TWEENER
-
 
 ==========
 A tester
@@ -99,14 +92,19 @@ A tester
     - arg data de OnNewComponent is nil when component is scriptedBehavior (ou au moins checkbox)
 
     - créer Behavior depuis un Awake de Behavior
+    
+    - CreateScriptedBehavior with params argument = nil
+                            with getter and setter
 
-
+    
 
 ==========
 A modifier/ajouter dans la doc :
 
     - Example project : minimalist encounter
     - progressbar updateprogress()
+    - default components properties
+
 
 =========
 BUGS

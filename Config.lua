@@ -23,9 +23,6 @@ function DaneelConfig()
 
             -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
             doubleClickDelay = 20,
-
-            --
-            buttonMaps = {}   
         },
 
 
@@ -128,6 +125,20 @@ function DaneelConfig()
             -- Enable/disable the Stack Trace.
             enableStackTrace = true,
         },
+
+
+        ----------------------------------------------------------------------------------
+
+        -- default components settings
+        components = {
+            -- ie :
+            --[[ 
+            textRenderer = {
+                font = "MyFont",
+                alignment = "right",
+            },
+            ]]
+        }
 
 
         ----------------------------------------------------------------------------------

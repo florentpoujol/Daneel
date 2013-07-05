@@ -368,6 +368,11 @@ function GameObject.AddComponent(gameObject, componentType, params, scriptedBeha
             component = Daneel.GUI[componentType].New(gameObject)
         else
             component = gameObject:CreateComponent(componentType)
+
+            local defaultComponentParams = config.components[componentType:lcfirst()]
+            if defaultComponentParams ~= nil then
+                params = table.merge(defaultComponentParams, params)
+            end
         end
     end
 

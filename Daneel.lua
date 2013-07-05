@@ -64,6 +64,12 @@ function DaneelDefaultConfig()
 
 
         ----------------------------------------------------------------------------------
+
+        -- default components settings
+        components = {}
+        
+
+        ----------------------------------------------------------------------------------
         -- Objects (keys = name, value = object)
 
         -- CraftStudio
