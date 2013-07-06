@@ -105,8 +105,8 @@ IDEAS
 ==========
 A implémenter
     
-    - Trigger : rajouter argument range à GetGameObjectInRange
-    - textRenderer:SetSize(pixels)   textRenderer:GetScreenLength([getAsUnit]) > pixels
+    
+    
 
     - utiliser enums avec de simple strings (camera projection mode et tous les autre enums)
 
@@ -127,7 +127,8 @@ A tester
 A modifier/ajouter dans la doc :
 
     - Example project : minimalist encounter
-
+    - Trigger : rajouter argument range à GetGameObjectInRange
+    - textRenderer:SetTextWidth()
 
 =========
 BUGS

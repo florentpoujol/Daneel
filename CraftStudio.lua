@@ -365,6 +365,28 @@ function TextRenderer.SetLocalScale(textRenderer, scale)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
+--- Update the gameObject's scale to make the text appear the provided width.
+-- @param textRenderer (TextRenderer) The textRenderer.
+-- @param width (number or string) The text's width in units or pixels.
+function TextRenderer.SetTextWidth( textRenderer, width )
+    Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetTextWidth", textRenderer, width)
+    local errorHead = "TextRenderer.SetTextWidth(textRenderer, width) : "
+    Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
+    local argType = Daneel.Debug.CheckArgType(width, "width", {"number", "string"}, errorHead)
+
+    if argType == "string" then
+        width = width:sub( 1, #width-2 )
+        if Daneel.GUI == nil then
+            error( errorHead .. "The GUI module is not loaded. Can't convert width in pixels with value '" .. width .. "' to scene units.")
+        end
+        width = width * Daneel.GUI.pixelsToUnits
+    end
+    
+    local widthScaleRation = textRenderer:GetTextWidth() / textRenderer.gameObject.transform:GetScale()
+    textRenderer.gameObject.transform:SetScale( width / widthScaleRation )
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
 
 ----------------------------------------------------------------------------------
 -- Ray
