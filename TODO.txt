@@ -60,10 +60,6 @@ IDEAS
     - permettre dépendances (un module oblige d'autre à se charger aussi)
     - liste des modules chargés + empècher plusieurs chargements du même modules
 
-    - faire de Daneel un module à part entière, ou pas
-    - Behaviors / Core (Daneel, CS, Lua, GameObject) / Config(file) / Modules
-    
-    
 
     -----
     PARTICLE EMITTER
