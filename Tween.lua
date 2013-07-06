@@ -409,13 +409,13 @@ setmetatable(DaneelTween.Timer, { __call = function(Object, ...) return Object.N
 
 
 --- Creates a new tweener via one of the two allowed constructors : <br>
--- Timer.New(duration, OnLoopCompleteCallback, true[, params]) <br>
 -- Timer.New(duration, OnCompleteCallback[, params]) <br>
+-- Timer.New(duration, OnLoopCompleteCallback, true[, params]) <br>
 -- @param duration (number) The time or frame it should take for the timer or one loop to complete.
 -- @param callback (function or userdata) The function that gets called when the OnComplete or OnLoopComplete event are fired.
 -- @param isInfiniteLoop [optional default=false] (boolean) Tell wether the timer loops indefinitely.
 -- @param params [optional] (table) A table of parameters.
--- @return (Tweener) The Timer.
+-- @return (Tweener) The tweener.
 function DaneelTween.Timer.New(duration, callback, isInfiniteLoop, params)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Timer.New", duration, callback, isInfiniteLoop, params)
     local errorHead = "Daneel.Tween.Timer.New(duration, callback[, isInfiniteLoop, params]) : "
@@ -431,7 +431,7 @@ function DaneelTween.Timer.New(duration, callback, isInfiniteLoop, params)
     setmetatable(tweener, Daneel.Tween.Tweener)
     tweenerId = tweenerId + 1
     tweener.id = "Timer"..tweenerId
-    tweener.startValue = 0
+    tweener.startValue = duration
     tweener.endValue = 0
     tweener.duration = duration
     if isInfiniteLoop == true then

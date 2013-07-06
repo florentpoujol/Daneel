@@ -6,23 +6,13 @@ IDEAS
 
     - modelRenderer:SetDimension(Vector3) ou idem avec Vector2
 
-    - GameObject : permettre de chainer des GameObject.Get() et GameObject.GetChild() en séparents plusieurs nom de GO par un point
-    ie : GameObject.Get("Menu.Lang.French")     gameObject:GetChild("Lang.French")
-    > permet d'obtenir facilement des GO dont le nom n'est pas unique
-    
-
+ 
     - textRenderer
-        - permettre de définir un font et aligment par défaut (pour n'importe quel component)
-        - permettre de féfinir l'alignement avec simplement "left", "right", "center"
-            - idem pour camera projection mode et tous les autre enums
-        - permettre de facilement sauter des lignes (avec :br:) ou définir un wordWrap ?? > nécessite plusieurs GO et composants
-            > pas possible sans ScriptedBehavior, voir ci dessous
         - permettre de passer texte traduit via la scène : "daneellang:langkey"
             > TextRenderer.Settext n'est pas utilisée lorsque les textes sont écrits dans la scène
             mais voir à créer un ScriptedBehavior qui irait remplacer le texte
 
-        - TextAreaRenderer : afficher un texte multi-ligne, avec <br>, wordWrap, alignment top bottom, middle
-       
+
     - possibilité de enable/disable un gameObject ou un component
         > empèhe les composants de GUI d'être mis à jour
         > voir plutôt avec Elisée pour autoriser ça sur les gameObjects
@@ -48,10 +38,7 @@ IDEAS
 
     - tweener
         permettre de tweener en même temps plusieurs valeur/propriétés
-
-    - tweener spécialisé "timer"  / duration oncomplete durationtype onloopcomplete, loops
-    Timer(duration, OnComplete, params)
-    Timer(duration, OnLoopComplete, true, params)
+        garder les tweeners agissant sur un GO ou composant sur une propriété gameObject.tweeners
 
 
     - Timeline
@@ -69,10 +56,50 @@ IDEAS
     -----
     MODULE / PLUGIN / EXTENSION
 
-    - voir plus en profondeur comment Composer (php), node.js font pour gérer ça
     - module = un object global, sur lequel existe ou non les fonctions Config, Load, Awake, Start, Update
     - permettre dépendances (un module oblige d'autre à se charger aussi)
     - liste des modules chargés + empècher plusieurs chargements du même modules
+
+    - faire de Daneel un module à part entière, ou pas
+    - Behaviors / Core (Daneel, CS, Lua, GameObject) / Config(file) / Modules
+    
+
+    -----
+    PARTICLE EMITTER
+    > gameObject composant
+
+    "similaire" au tweeners, dépend des tweener
+
+    propriétés
+    - isPaused, isEnabled, hasStarted, isCompleted
+    - loops, completedLoops 
+    - delay
+    - elapsed, fullElapsed
+    
+    - duration 
+    - durationType
+    - emitionRate (nb particle per durationType) > calcule maxParticleCount si nil
+    - maxParticleCount (nb of particles emitted over the duration) > calcule emitionRate si nil
+    
+    - createParticleFromScene > 
+        set the state of the emitted particles
+        gameObject émits peuvent être issue d'une scène et/ou sont modifié par paramètres :
+    
+    - particleStartParams
+        - Lifetime > nil or < 1 for infinite life (in durationType unit)
+        - any component property
+
+
+    Events :
+    - OnStart, OnPause, OnPlay, OnComplete, OnLoopComplete,
+    - OnNewParticle sur le GO qui emet la particle et sur le gameObject émit
+    - OnParticleDie when lifetime is over
+
+    Function :
+    Pause, Play, Restart, Destroy
+       
+
+
 
 
 ==========
@@ -80,6 +107,15 @@ A implémenter
     
     - Trigger : rajouter argument range à GetGameObjectInRange
     - textRenderer:SetSize(pixels)   textRenderer:GetScreenLength([getAsUnit]) > pixels
+
+    - utiliser enums avec de simple strings (camera projection mode et tous les autre enums)
+
+    - TextAreaRenderer : afficher un texte multi-ligne, avec <br>, wordWrap, alignment top bottom, middle
+            > voir si string.split  permet les délimiter de plusieurs caractères
+
+    - GameObject : permettre de chainer des GameObject.Get() et GameObject.GetChild() en séparents plusieurs nom de GO par un point
+    ie : GameObject.Get("Menu.Lang.French")     gameObject:GetChild("Lang.French")
+    > permet d'obtenir facilement des GO dont le nom n'est pas unique
 
 ==========
 A tester
