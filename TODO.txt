@@ -63,6 +63,7 @@ IDEAS
     - faire de Daneel un module à part entière, ou pas
     - Behaviors / Core (Daneel, CS, Lua, GameObject) / Config(file) / Modules
     
+    
 
     -----
     PARTICLE EMITTER
