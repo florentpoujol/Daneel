@@ -253,18 +253,26 @@ end
 
 --- Return a copy of the provided table.
 -- @param t (table) The table to copy.
+-- @param doNotCopyMetatable [optional default=false] (boolean) Tell wether to copy the provided table's metatable or not.
 -- @return (table) The copied table.
-function table.copy(t)
-    Daneel.Debug.StackTrace.BeginFunction("table.copy", t)
-    Daneel.Debug.CheckArgType(t, "table", "table", "table.copy(table) : ", nil, true)
-    local newTable = table.new()
-    for key, value in pairs(t) do
+function table.copy( t, doNotCopyMetatable )
+    Daneel.Debug.StackTrace.BeginFunction( "table.copy", t, doNotCopyMetatable )
+    local errorHead = "table.copy( table[, doNotCopyMetatable] ) :"
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead )
+    doNotCopyMetatable = Daneel.Debug.CheckOptionalArgType( doNotCopyMetatable, "doNotCopyMetatable", "boolean", errorHead, false )
+    
+    local newTable = {}
+    for key, value in pairs( t ) do
         newTable[key] = value
     end
-    local mt = getmetatable(t)
-    if mt ~= nil then
-        setmetatable(newTable, mt)
+
+    if doNotCopyMetatable ~= true then
+        local mt = getmetatable( t )
+        if mt ~= nil then
+            setmetatable( newTable, mt )
+        end
     end
+
     Daneel.Debug.StackTrace.EndFunction()
     return newTable
 end
