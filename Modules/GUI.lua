@@ -47,6 +47,18 @@ function DaneelConfigModuleGUI()
                 maxLength = 99999,
                 characterRange = nil,
             },
+
+            textArea = {
+                areaWidth = nil,
+                wordWrap = false, -- when a ligne is longer than the area width: cut the ligne when false, put the rest of the ligne in one or several lignes when true
+                EOL = "<br>", -- end of ligne delimiter
+                lineHeight = 0.5, -- in units or pixel as a string
+
+                font = nil,
+                text = "TextArea",
+                alignment = "left",
+                opacity = 1,
+            },
         },
 
         daneelComponentObjects = {
@@ -55,6 +67,7 @@ function DaneelConfigModuleGUI()
             ProgressBar = Daneel.GUI.ProgressBar,
             Slider = Daneel.GUI.Slider,
             Input = Daneel.GUI.Input,
+            TextArea = Daneel.GUI.TextArea,
         },
 
         daneelObjects = {
@@ -796,7 +809,7 @@ end
 -- @param input (Input) The input component.
 -- @param text (string) The text to add to the current text.
 -- @param replaceText [optional default=false] (boolean) Tell wether the provided text should be added (false) or replace (true) the current text.
-function DaneelGUI.Input.Update(input, text, replaceText)
+function DaneelGUI.Input.Update( input, text, replaceText )
     Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Input.Update", input, text)
     local errorHead = "Daneel.GUI.Input.Update(input, text) : "
     Daneel.Debug.CheckArgType(input, "input", "Input", errorHead)
@@ -813,13 +826,88 @@ function DaneelGUI.Input.Update(input, text, replaceText)
         text = oldText .. text
     end
     if #text > input.maxLength then
-        text = text:sub(1, input.maxLength)
+        text = text:sub( 1, input.maxLength )
     end
     if oldText ~= text then
         input.gameObject.textRenderer.text = text
-        Daneel.Event.Fire(input, "OnUpdate", input)
+        Daneel.Event.Fire( input, "OnUpdate", input )
     end
     Daneel.Debug.StackTrace.EndFunction()
+end
+
+
+----------------------------------------------------------------------------------
+-- TextArea
+
+DaneelGUI.TextArea = {}
+
+function DaneelGUI.TextArea.New( gameObject )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.TextArea.New", gameObject )
+    local errorHead = "Daneel.GUI.TextArea.New( gameObject ) : "
+    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
+
+    local textArea = {}
+    textArea.gameObject = gameObject
+    textArea.inner = " : "..math.round( math.randomrange( 100000, 999999 ) )
+    setmetatable( textArea, Daneel.GUI.TextArea )
+
+    if gameObject.textRenderer == nil then
+        gameObject:CreateComponent( "TextRenderer" )
+    end
+    gameObject.textRenderer:Set( config.gui.textArea )
+
+    textArea.EOL = config.gui.textArea.EOL
+    textArea:Set( config.gui.textArea )
+    textArea.lines = { gameObject.textRenderer }
+
+    gameObject.textArea = textArea
+    Daneel.Debug.StackTrace.EndFunction()
+    return textArea
+end
+
+
+function DaneelGUI.TextArea.SetText( textArea, text )
+    
+    local lines = text:split( textArea.EOL )
+    local offset = 0
+    local gameObject = textArea.gameObject
+
+    local params = {
+        font = gameObject.textRenderer:GetFont(),
+        alignment = gameObject.textRenderer:GetAlignment(),
+        opacity = gameObject.textRenderer:GetOpacity(),
+    }
+     
+    for i, line in ipairs( lines ) do
+        params.text = line
+
+        if textArea.lines[i] ~= nil then
+            textArea.lines[i]:SetText( line )
+            textArea.lines[i].gameObject.transform:SetLocalPosition( Vector3:New( 0, offset ,0 ) )
+        else
+
+            local go = GameObject.New( "TextAreaLine"..i, {
+                parent = gameObject,
+                transform = {
+                    localPosition = Vector3:New( 0, offset ,0 )
+                },
+                textRenderer = params
+            })
+
+            table.insert( textArea.lines, go.textRenderer )
+        end
+
+        offset = offset + textArea.lineHeight
+    end
+
+    -- this new text as less line than the previous one
+    if #textArea.lines > #lines then
+        local i = #lines+1
+        for i, #textArea.lines do
+            textArea.lines[i]:SetText( "" )
+        end
+    end
+    
 end
 
 
