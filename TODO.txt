@@ -106,16 +106,13 @@ IDEAS
 A implémenter
     
     
-    
-
-    - utiliser enums avec de simple strings (camera projection mode et tous les autre enums)
-
     - TextAreaRenderer : afficher un texte multi-ligne, avec <br>, wordWrap, alignment top bottom, middle
             > voir si string.split  permet les délimiter de plusieurs caractères
 
     - GameObject : permettre de chainer des GameObject.Get() et GameObject.GetChild() en séparents plusieurs nom de GO par un point
     ie : GameObject.Get("Menu.Lang.French")     gameObject:GetChild("Lang.French")
     > permet d'obtenir facilement des GO dont le nom n'est pas unique
+
 
 ==========
 A tester
