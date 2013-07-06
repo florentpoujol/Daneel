@@ -61,9 +61,17 @@ end
 
 --- Get the gameObjets that are closer than the trigger's range.
 -- @param tags [optional] (string or table) The tags(s) the gameObjects must have. If nil, it uses the trigger's layer(s).
+-- @param range [optional] (number) The range within which to pick the gameObjects. If nil, it uses the trigger's range.
 -- @return (table) The list of the gameObjects in range (empty if none in range).
-function Behavior:GetGameObjectsInRange(tags)
-    local gameObjectsInRange = table.new()
+function Behavior:GetGameObjectsInRange( tags, range )
+    if type( tags ) == "number" then
+        range = tags
+        tags = nil
+    end
+
+    local errorHead = "Trigger:GetGameObjectsInRange( [tags, range] ) : "
+    Daneel.Debug.CheckOptionalArgType( tags, "tags", {"string", "table"}, errorHead)
+
     if tags == nil then
         if self.isStatic == false then
             if self.gameObjectsInRange == nil then -- happens when called before Awake is called
@@ -73,20 +81,25 @@ function Behavior:GetGameObjectsInRange(tags)
         end
         tags = self.layers
     end
-    if type(tags) == "string" then
-        tags = tags:split(",", true)
+    if type( tags ) == "string" then
+        tags = tags:split( ",", true )
     end
+
+    range = Daneel.Debug.CheckOptionalArgType( range, "range", "number", errorHead, self.range)
+    
+    local gameObjectsInRange = table.new()
+
     local triggerPosition = self.gameObject.transform.position
-    for i, layer in ipairs(tags) do
-        local gameObjects = GameObject.tags[layer]
+    for i, layer in ipairs( tags ) do
+        local gameObjects = GameObject.tags[ layer ]
         if gameObjects ~= nil then
-            for i, gameObject in ipairs(gameObjects) do
+            for i, gameObject in ipairs( gameObjects ) do
                 if 
                     gameObject ~= nil and gameObject.inner ~= nil and
                     gameObject ~= self.gameObject and 
-                    Vector3.Distance(gameObject.transform.position, triggerPosition) <= self.range
+                    Vector3.Distance( gameObject.transform.position, triggerPosition ) <= self.range
                 then
-                    table.insert(gameObjectsInRange, gameObject)
+                    table.insert( gameObjectsInRange, gameObject )
                 end
             end
         end
