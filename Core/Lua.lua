@@ -105,7 +105,7 @@ function string.split( s, delimiter, trim )
         local ts = s:totable()
         local i = 1
 
-        while i < #ts do
+        while i <= #ts do
             local char = ts[i]
             if char == delimiter or s:sub( i, i-1 + #delimiter ) == delimiter then
                 if trim == true then
