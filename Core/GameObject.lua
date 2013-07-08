@@ -204,39 +204,29 @@ function GameObject.Get( name, errorIfGameObjectNotFound )
     Daneel.Debug.CheckArgType( name, "name", "string", errorHead )
     Daneel.Debug.CheckOptionalArgType( errorIfGameObjectNotFound, "errorIfGameObjectNotFound", "boolean", errorHead )
     
+    -- can't use name:find(".") because for some reason it always returns 1, 1
     local gameObject = nil
+    local names = name:split( "." )
+    
+    gameObject = CraftStudio.FindGameObject( names[1] )
+    if gameObject == nil and errorIfGameObjectNotFound == true then
+        error( errorHead.."GameObject with name '" .. names[1] .. "' (from '" .. name .. "') was not found." )
+    end
 
-    if name:find( "." ) == nil then
-        gameObject = CraftStudio.FindGameObject( name )
-        if gameObject == nil and errorIfGameObjectNotFound == true then
-            error(errorHead.."GameObject with name '"..name.."' was not found.")
-        end
-
-    else
-        local names = name:split( "." )
-        
-        gameObject = CraftStudio.FindGameObject( names[1] )
-        if gameObject == nil and errorIfGameObjectNotFound == true then
-            error( errorHead.."GameObject with name '" .. names[1] .. "' (from '" .. name .. "') was not found." )
-        end
-
+    if gameObject ~= nil then
         local originalName = name
-        if gameObject ~= nil then
-            local fullName = table.remove( names, 1 )
+        local fullName = table.remove( names, 1 )
 
-            for i, name in ipairs( names ) do
-                local child = gameObject:GetChild( name )
-                fullName = fullName .. "." .. name
-                
-                if child ~= nil then
-                    gameObject = child
-                else
-                    
-                    gameObject = nil
-                    if errorIfGameObjectNotFound == true then
-                        error( errorHead.."GameObject with name '" .. fullName .. "' (from '" .. originalName .. "') was not found." )
-                    end
+        for i, name in ipairs( names ) do
+            gameObject = gameObject:GetChild( name )
+            fullName = fullName .. "." .. name
+
+            if gameObject == nil then
+                if errorIfGameObjectNotFound == true then
+                    error( errorHead.."GameObject with name '" .. fullName .. "' (from '" .. originalName .. "') was not found." )
                 end
+
+                break
             end
         end
     end
@@ -271,7 +261,7 @@ end
 -- Find the first gameObject's child with the provided name.
 -- If the name is not provided, it returns the first child.
 -- @param gameObject (GameObject) The gameObject.
--- @param name [optional] (string) The child name.
+-- @param name [optional] (string) The child name (may be hyerarchy of names separated by dots).
 -- @param recursive [optional default=false] (boolean) Search for the child in all descendants instead of just the first generation.
 -- @return (GameObject) The child or nil if none is found.
 function GameObject.GetChild( gameObject, name, recursive )
@@ -286,7 +276,16 @@ function GameObject.GetChild( gameObject, name, recursive )
         local children = gameObject:GetChildren()
         child = children[1]
     else
-        child = gameObject:FindChild( name, recursive )
+        -- can't use name:Find(".") because for some reason it always returns 1, 1
+        local names = name:split( "." )
+        for i, name in ipairs( names ) do
+            gameObject = gameObject:FindChild( name, recursive )
+
+            if gameObject == nil then
+                break
+            end
+        end
+        child = gameObject
     end
     Daneel.Debug.StackTrace.EndFunction()
     return child
