@@ -6,17 +6,14 @@ IDEAS
 
     - modelRenderer:SetDimension(Vector3) ou idem avec Vector2
 
- 
     - textRenderer
         - permettre de passer texte traduit via la scène : "daneellang:langkey"
             > TextRenderer.Settext n'est pas utilisée lorsque les textes sont écrits dans la scène
             mais voir à créer un ScriptedBehavior qui irait remplacer le texte
 
-
     - possibilité de enable/disable un gameObject ou un component
         > empèhe les composants de GUI d'être mis à jour
         > voir plutôt avec Elisée pour autoriser ça sur les gameObjects
-
 
     - Debug.DrawLine(start, end[, model]) ou (start, direction, length[, model])
         config.debug.defaultLineModel
@@ -24,8 +21,6 @@ IDEAS
 
     -----
     GUI
-
-    - metre les path par default des behaviors dans la config
 
     - Input
         - curseur et tout ce qui va avec
@@ -115,6 +110,7 @@ A implémenter
         EOF = "<br>"
 
 
+    - metre les path par default des behaviors dans la config
 
     - GameObject : permettre de chainer des GameObject.Get() et GameObject.GetChild() en séparents plusieurs nom de GO par un point
     ie : GameObject.Get("Menu.Lang.French")     gameObject:GetChild("Lang.French")

@@ -59,6 +59,14 @@ function DaneelConfigModuleGUI()
                 alignment = "left",
                 opacity = 1,
             },
+
+            behaviorPaths = {
+                checkBox = "Daneel/Behaviors/CheckBox",
+                --progressBar = "Daneel/Behaviors/ProgresBar",
+                slider = "Daneel/Behaviors/Slider",
+                --input = "Daneel/Behaviors/Input",
+                --textArea = "Daneel/Behaviors/textArea",
+            },
         },
 
         daneelComponentObjects = {
@@ -330,8 +338,8 @@ function DaneelGUI.CheckBox.New(gameObject)
     
     gameObject.checkBox = checkBox
     gameObject:AddTag("mouseInteractive")
-    if gameObject["Daneel/Behaviors/CheckBox"] == nil then
-        gameObject:AddScriptedBehavior("Daneel/Behaviors/CheckBox")
+    if gameObject[ config.gui.behaviorPaths.checkBox ] == nil then
+        gameObject:AddScriptedBehavior( config.gui.behaviorPaths.checkBox )
     end
 
     if gameObject.textRenderer ~= nil and gameObject.textRenderer.text ~= nil then
@@ -657,8 +665,8 @@ function DaneelGUI.Slider.New(gameObject)
     
     gameObject.slider = slider
     gameObject:AddTag("mouseInteractive")
-    if gameObject["Daneel/Behaviors/Slider"] == nil then
-        gameObject:AddScriptedBehavior("Daneel/Behaviors/Slider")
+    if gameObject[ config.gui.behaviorPaths.slider ] == nil then
+        gameObject:AddScriptedBehavior( config.gui.behaviorPaths.slider )
     end
     
     Daneel.Debug.StackTrace.EndFunction()
