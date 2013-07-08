@@ -286,7 +286,7 @@ function TextRenderer.SetAlignment(textRenderer, alignment)
     local argType = Daneel.Debug.CheckArgType(alignment, "alignment", {"string", "userdata"}, errorHead)
 
     if argType == "string" then
-        alignment = Daneel.Debug.CheckArgValue( alignment, "alignment", {"Left", "Center", "Right"}, errorHead )
+        alignment = Daneel.Debug.CheckArgValue( alignment, "alignment", {"Left", "Center", "Right"}, errorHead, "Left" )
         alignment = TextRenderer.Alignment[ alignment ]
     end
     OriginalSetAlignment( textRenderer, alignment )

@@ -860,8 +860,9 @@ function DaneelGUI.TextArea.New( gameObject )
     textArea.gameObject = gameObject
     textArea.inner = " : "..math.round( math.randomrange( 100000, 999999 ) )
     textArea.lineRenderers = {}
-
     setmetatable( textArea, Daneel.GUI.TextArea )
+
+    gameObject:AddComponent("TextRenderer") -- only used to mesure the lines length in SetText()
     textArea:Set( config.gui.textArea )
 
     gameObject.textArea = textArea
@@ -871,7 +872,11 @@ end
 
 
 function DaneelGUI.TextArea.SetText( textArea, text )
-    
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.TextArea.SetText", textArea, text )
+    local errorHead = "Daneel.GUI.TextArea.SetText( textArea, text ) : "
+    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( text, "text", "string", errorHead )
+
     textArea.Text = text
 
     local lines = { text }
@@ -889,17 +894,14 @@ function DaneelGUI.TextArea.SetText( textArea, text )
         for i = 1, #tempLines do
             local line = tempLines[i]
             
-            textArea.gameObject.textRenderer.text = line
-            if textArea.gameObject.textRenderer:GetTextWidth() > areaWidth then
+            if textArea.gameObject.textRenderer:GetTextWidth( line ) > areaWidth then
                 line = line:totable()
                 local newLine = {}
                 
                 for j, char in ipairs( line ) do
                     table.insert( newLine, char )
 
-                    textArea.gameObject.textRenderer.text = table.concat( newLine )
-                    if textArea.gameObject.textRenderer:GetTextWidth() > areaWidth then  
-                        
+                    if textArea.gameObject.textRenderer:GetTextWidth( table.concat( newLine ) ) > areaWidth then  
                         table.remove( newLine )
                         table.insert( lines, table.concat( newLine ) )
                         newLine = { char }
@@ -917,8 +919,7 @@ function DaneelGUI.TextArea.SetText( textArea, text )
             else
                 table.insert( lines, line )
             end
-
-        end
+        end -- end loop on lines
     end
     
     local linesCount = #lines
@@ -926,13 +927,13 @@ function DaneelGUI.TextArea.SetText( textArea, text )
     local lineRenderersCount = #lineRenderers
     local lineHeight = textArea.LineHeight
     local gameObject = textArea.gameObject
-
     local textRendererParams = {
         font = textArea.Font,
         alignment = textArea.Alignment,
         opacity = textArea.Opacity,
     }
 
+    -- calculate position offset based on vertical alignment and number of lines
     local offset = -lineHeight / 2 -- verticalAlignment = "top"
     if textArea.VerticalAlignment == "middle" then
         offset = lineHeight * linesCount / 2 - lineHeight / 2
@@ -968,117 +969,184 @@ function DaneelGUI.TextArea.SetText( textArea, text )
         end
     end
     
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
-function DaneelGUI.TextArea.GetText(textArea)
+function DaneelGUI.TextArea.GetText( textArea )
+    local errorHead = "Daneel.GUI.TextArea.GetText( textArea ) : "
+    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     return textArea.Text
 end
 
 
-function DaneelGUI.TextArea.SetAreaWidth( textArea, AreaWidth )
-    textArea.AreaWidth = tounit( AreaWidth )
+function DaneelGUI.TextArea.SetAreaWidth( textArea, areaWidth )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.TextArea.SetAreaWidth", textArea, areaWidth )
+    local errorHead = "Daneel.GUI.TextArea.SetAreaWidth( textArea, areaWidth ) : "
+    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( areaWidth, "areaWidth", {"string", "number"}, errorHead )
+
+    textArea.AreaWidth = tounit( areaWidth )
 
     if #textArea.lineRenderers > 0 then
         textArea:SetText( textArea.Text )
     end
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 function DaneelGUI.TextArea.GetAreaWidth( textArea )
+    local errorHead = "Daneel.GUI.TextArea.GetAreaWidth( textArea ) : "
+    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     return textArea.AreaWidth
 end
 
 
 function DaneelGUI.TextArea.SetWordWrap( textArea, wordWrap )
-    textArea.WordWrap = wordWrap
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.TextArea.SetWordWrap", textArea, wordWrap )
+    local errorHead = "Daneel.GUI.TextArea.SetWordWrap( textArea, wordWrap ) : "
+    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( wordWrap, "wordWrap", "boolean", errorHead )
 
+    textArea.WordWrap = wordWrap
     if #textArea.lineRenderers > 0 then
         textArea:SetText( textArea.Text )
     end
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 function DaneelGUI.TextArea.GetWordWrap( textArea )
+    local errorHead = "Daneel.GUI.TextArea.GetWordWrap( textArea ) : "
+    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     return textArea.WordWrap
 end
 
 
 function DaneelGUI.TextArea.SetNewLine( textArea, newLine )
-    textArea.NewLine = newLine
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.TextArea.SetNewLine", textArea, newLine )
+    local errorHead = "Daneel.GUI.TextArea.SetNewLine( textArea, newLine ) : "
+    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( newLine, "newLine", "string", errorHead )
 
+    textArea.NewLine = newLine
     if #textArea.lineRenderers > 0 then
         textArea:SetText( textArea.Text )
     end
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 function DaneelGUI.TextArea.GetNewLine( textArea )
+    local errorHead = "Daneel.GUI.TextArea.GetNewLine( textArea ) : "
+    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     return textArea.NewLine
 end
 
 
 function DaneelGUI.TextArea.SetLineHeight( textArea, lineHeight )
-    lineHeight = tounit( lineHeight )
-    textArea.LineHeight = lineHeight
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.TextArea.SetLineHeight", textArea, lineHeight )
+    local errorHead = "Daneel.GUI.TextArea.SetLineHeight( textArea, lineHeight ) : "
+    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( lineHeight, "lineHeight", {"string", "number"}, errorHead )
 
+    textArea.LineHeight = tounit( lineHeight )
     if #textArea.lineRenderers > 0 then
         textArea:SetText( textArea.Text )
     end
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 function DaneelGUI.TextArea.GetLineHeight( textArea )
+    local errorHead = "Daneel.GUI.TextArea.GetLineHeight( textArea ) : "
+    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     return textArea.LineHeight
 end
 
 
 function DaneelGUI.TextArea.SetVerticalAlignment( textArea, verticalAlignment )
-    textArea.VerticalAlignment = verticalAlignment:lower():trim()
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.TextArea.SetVerticalAlignment", textArea, verticalAlignment )
+    local errorHead = "Daneel.GUI.TextArea.SetVerticalAlignment( textArea, verticalAlignment ) : "
+    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( verticalAlignment, "verticalAlignment", "string", errorHead )
+    verticalAlignment = Daneel.Debug.CheckArgValue( verticalAlignment, "verticalAlignment", {"top", "middle", "bottom"}, errorHead, "top" )
 
+    textArea.VerticalAlignment = verticalAlignment:lower():trim()
     if #textArea.lineRenderers > 0 then
         textArea:SetText( textArea.Text )
     end
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 function DaneelGUI.TextArea.GetVerticalAlignment( textArea )
+    local errorHead = "Daneel.GUI.TextArea.GetVerticalAlignment( textArea ) : "
+    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     return textArea.VerticalAlignment
 end
 
 
 function DaneelGUI.TextArea.SetFont( textArea, font )
-    textArea.Font = font
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.TextArea.SetFont", textArea, font )
+    local errorHead = "Daneel.GUI.TextArea.SetFont( textArea, font ) : "
+    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( font, "font", {"string", "Font"}, errorHead )
+
+    textArea.gameObject.textRenderer:SetFont( font )
+    textArea.Font = textArea.gameObject.textRenderer:GetFont()
+
     if #textArea.lineRenderers > 0 then
         for i, textRenderer in ipairs( textArea.lineRenderers )do
-            textRenderer:SetFont( font )
+            textRenderer:SetFont( textArea.Font )
         end
     end
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 function DaneelGUI.TextArea.GetFont( textArea )
+    local errorHead = "Daneel.GUI.TextArea.GetFont( textArea ) : "
+    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     return textArea.Font
 end
 
 
 function DaneelGUI.TextArea.SetAlignment( textArea, alignment )
-    textArea.Alignment = alignment
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.TextArea.SetAlignment", textArea, alignment )
+    local errorHead = "Daneel.GUI.TextArea.SetAlignment( textArea, alignment ) : "
+    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( alignment, "alignment", {"string", "userdata"}, errorHead )
+
+    textArea.gameObject.textRenderer:SetAlignment( font )
+    textArea.Alignment = textArea.gameObject.textRenderer:GetAlignment()
+
     if #textArea.lineRenderers > 0 then
         for i, textRenderer in ipairs( textArea.lineRenderers ) do
-            textRenderer:SetAlignment( alignment )
+            textRenderer:SetAlignment( textArea.Alignment )
         end
     end
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 function DaneelGUI.TextArea.GetAlignment( textArea )
+    local errorHead = "Daneel.GUI.TextArea.GetAlignment( textArea ) : "
+    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     return textArea.Alignment
 end
 
 
-function DaneelGUI.TextArea.SetOpacity( textArea, opacity)
+function DaneelGUI.TextArea.SetOpacity( textArea, opacity )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.TextArea.SetOpacity", textArea, opacity )
+    local errorHead = "Daneel.GUI.TextArea.SetOpacity( textArea, opacity ) : "
+    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( opacity, "opacity", "number", errorHead )
+
     textArea.Opacity = opacity
     if #textArea.lineRenderers > 0 then
         for i, textRenderer in ipairs( textArea.lineRenderers ) do
             textRenderer:SetOpacity( opacity )
         end
     end
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 function DaneelGUI.TextArea.GetOpacity( textArea )
+    local errorHead = "Daneel.GUI.TextArea.GetOpacity( textArea ) : "
+    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     return textArea.Opacity
 end
 
