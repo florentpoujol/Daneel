@@ -1105,20 +1105,6 @@ function Daneel.Load()
 
     -- Components
     for componentType, componentObject in pairs(config.componentObjects) do
-        -- GameObject.AddComponent helpers
-        -- ie : gameObject:AddModelRenderer()
-        if componentType ~= "Transform" and componentType ~= "ScriptedBehavior" then 
-            GameObject["Add"..componentType] = function(gameObject, params)
-                Daneel.Debug.StackTrace.BeginFunction("GameObject.Add"..componentType, gameObject, params)
-                local errorHead = "GameObject.Add"..componentType.."(gameObject[, params]) : "
-                Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-
-                local component = gameObject:AddComponent(componentType, params)
-                Daneel.Debug.StackTrace.EndFunction("GameObject.Add"..componentType, component)
-                return component
-            end
-        end
-
         -- Components getters-setter-tostring
         Daneel.Utilities.AllowDynamicGettersAndSetters(componentObject, { Component })
 
