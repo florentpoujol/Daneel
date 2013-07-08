@@ -121,9 +121,12 @@ function DaneelDefaultConfig()
         -- assetTypes
         -- allObjects : a merge of all *Objects tables
 
+
+        ----------------------------------------------------------------------------------
+
         modules = {
+            "GUI",
             "Tween",
-            "GUI"
         }
     }
 end

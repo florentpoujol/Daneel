@@ -335,52 +335,44 @@ end
 -- @param gameObject (GameObject) The gameObject.
 -- @param componentType (string) The component type.
 -- @param params [optional] (string, Script or table) A table of parameters to initialize the new component with or, if componentType is 'ScriptedBehavior', the mandatory script name or asset.
--- @param scriptedBehaviorParams [optional] (table) A table of parameters to initialize the new ScriptedBehavior with.
--- @return (ScriptedBehavior, ModelRenderer, MapRenderer, Camera or Physics) The component.
-function GameObject.AddComponent(gameObject, componentType, params, scriptedBehaviorParams)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.AddComponent", gameObject, componentType, params, scriptedBehaviorParams)
-    local errorHead = "GameObject.AddComponent(gameObject, componentType[, params, scriptedBehaviorParams]) : "
+-- @return (One of the component type, except ScriptedBehavior) The component.
+function GameObject.AddComponent( gameObject, componentType, params )
+    Daneel.Debug.StackTrace.BeginFunction("GameObject.AddComponent", gameObject, componentType, params)
+    local errorHead = "GameObject.AddComponent( gameObject, componentType[, params] ) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     Daneel.Debug.CheckArgType(componentType, "componentType", "string", errorHead)
     componentType = Daneel.Debug.CheckArgValue(componentType, "componentType", config.componentTypes, errorHead)
+    Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
     if componentType == "Transform" and DEBUG == true then
-        print(errorHead.."Can't add a transform component because gameObjects may only have one transform.")
+        print( errorHead.."Can't add a transform component because gameObjects may only have one transform." )
+        Daneel.Debug.StackTrace.EndFunction()
+        return
+    end
+    if componentType == "ScriptedBehavior" and DEBUG == true then
+        print( errorHead.."Can't add a ScriptedBehavior via 'GameObject.AddComponent()'. Use 'GameObject.AddScriptedBehavior()' instead." )
         Daneel.Debug.StackTrace.EndFunction()
         return
     end
 
     local component = nil
 
-    -- ScriptedBehavior
-    if componentType == "ScriptedBehavior" then
-        Daneel.Debug.CheckArgType(params, "params", {"string", "Script"}, errorHead)
-        local script = Asset.Get(params, "Script", true)
-        Daneel.Debug.CheckOptionalArgType(scriptedBehaviorParams, "scriptedBehaviorParams", "table", errorHead)
-        params = scriptedBehaviorParams
-        component = gameObject:CreateScriptedBehavior(script)
-        
-    -- other componentTypes
+    if componentType:isoneof( config.daneelComponentTypes ) then
+        component = Daneel.GUI[componentType].New( gameObject )
     else
-        Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
+        component = gameObject:CreateComponent( componentType )
 
-        if componentType:isoneof(config.daneelComponentTypes) then
-            component = Daneel.GUI[componentType].New(gameObject)
-        else
-            component = gameObject:CreateComponent(componentType)
-
-            local defaultComponentParams = config.components[componentType:lcfirst()]
-            if defaultComponentParams ~= nil then
-                params = table.merge(defaultComponentParams, params)
-            end
+        local defaultComponentParams = config.components[ componentType:lcfirst() ]
+        if defaultComponentParams ~= nil then
+            params = table.merge( defaultComponentParams, params )
         end
     end
 
     if params ~= nil then
-        component:Set(params)
+        component:Set( params )
     end
 
-    Daneel.Event.Fire(gameObject, "OnNewComponent", component)
+    Daneel.Event.Fire( gameObject, "OnNewComponent", component )
     Daneel.Debug.StackTrace.EndFunction()
     return component
 end
@@ -390,78 +382,24 @@ end
 -- @param scriptNameOrAsset (string or Script) The script name or asset.
 -- @param params [optional] (table) A table of parameters to initialize the new component with.
 -- @return (ScriptedBehavior) The component.
-function GameObject.AddScriptedBehavior(gameObject, scriptNameOrAsset, params) 
+function GameObject.AddScriptedBehavior( gameObject, scriptNameOrAsset, params ) 
     Daneel.Debug.StackTrace.BeginFunction("GameObject.AddScriptedBehavior", gameObject, scriptNameOrAsset, params)
-    local errorHead = "GameObject.AddScriptedBehavior(gameObject, scriptNameOrAsset[, params]) : "
+    local errorHead = "GameObject.AddScriptedBehavior( gameObject, scriptNameOrAsset[, params] ) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+    Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Script"}, errorHead)
+    Daneel.Debug.CheckArgType(params, "params", {"string", "Script"}, errorHead)
+
+    local script = Asset.Get( sceneNameOrAsset, "Script", true )
+    local component = gameObject:CreateScriptedBehavior( script )
     
-    local component = gameObject:AddComponent("ScriptedBehavior", scriptNameOrAsset, params)
-    Daneel.Debug.StackTrace.EndFunction("GameObject.AddScriptedBehavior", component)
+    if params ~= nil then
+        component:Set( params )
+    end
+
+    Daneel.Event.Fire( gameObject, "OnNewComponent", component )
+    Daneel.Debug.StackTrace.EndFunction()
     return component
 end
-
---- Add a ModelRenderer to the gameObject and optionally initialize it.
--- @param gameObject (GameObject) The gameObject.
--- @param params [optional] (table) A table of parameters to initialize the new component with.
--- @return (ModelRenderer) The component.
-function GameObject.AddModelRenderer(gameObject, params) end
-
---- Add a MapRenderer to the gameObject and optionally initialize it.
--- @param gameObject (GameObject) The gameObject.
--- @param params [optional] (table) A table of parameters to initialize the new component with.
--- @return (MapRenderer) The component.
-function GameObject.AddMapRenderer(gameObject, params) end
-
---- Add a Camera to the gameObject and optionally initialize it.
--- @param gameObject (GameObject) The gameObject.
--- @param params [optional] (table) A table of parameters to initialize the new component with.
--- @return (Camera) The component.
-function GameObject.AddCamera(gameObject, params) end
-
---- Add a Physics component to the gameObject and optionally initialize it.
--- @param gameObject (GameObject) The gameObject.
--- @param params [optional] (table) A table of parameters to initialize the new component with.
--- @return (Physics) The component.
-function GameObject.AddPhysics(gameObject, params) end
-
---- Add a TextRenderer component to the gameObject and optionally initialize it.
--- @param gameObject (GameObject) The gameObject.
--- @param params [optional] (table) A table of parameters to initialize the new component with.
--- @return (TextRenderer) The component.
-function GameObject.AddTextRenderer(gameObject, params) end
-
---- Add a NetworkSync component to the gameObject and optionally initialize it.
--- @param gameObject (GameObject) The gameObject.
--- @param params [optional] (table) A table of parameters to initialize the new component with.
--- @return (NetworkSync) The component.
-function GameObject.AddNetworkSync(gameObject, params) end
-
---- Add a Hud component to the gameObject and optionally initialize it.
--- @param gameObject (GameObject) The gameObject.
--- @param params [optional] (table) A table of parameters to initialize the new component with.
--- @return (Daneel.GUI.Hud) The component.
-function GameObject.AddHud(gameObject, params) end
-
---- Add a CheckBox component to the gameObject and optionally initialize it.
--- @param gameObject (GameObject) The gameObject.
--- @param params [optional] (table) A table of parameters to initialize the new component with.
--- @return (Daneel.GUI.CheckBox) The component.
-function GameObject.AddCheckBox(gameObject, params) end
-
---- Add a ProgressBar component to the gameObject and optionally initialize it.
--- @param gameObject (GameObject) The gameObject.
--- @param params [optional] (table) A table of parameters to initialize the new component with.
--- @return (Daneel.GUI.ProgressBar) The component.
-function GameObject.AddProgressBar(gameObject, params) end
-
---- Add a Slider component to the gameObject and optionally initialize it.
--- @param gameObject (GameObject) The gameObject.
--- @param params [optional] (table) A table of parameters to initialize the new component with.
--- @return (Daneel.GUI.Slider) The component.
-function GameObject.AddSlider(gameObject, params) end
-
--- The actual code of the helpers is generated at runtime in Daneel.Awake()
--- The declaration are written here to shows up in the documentation generated by LuaDoc
 
 
 ----------------------------------------------------------------------------------
