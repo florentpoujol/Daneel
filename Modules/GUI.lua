@@ -873,10 +873,52 @@ end
 function DaneelGUI.TextArea.SetText( textArea, text )
     
     textArea.Text = text
+
     local lines = { text }
     if textArea.newLine ~= nil then
         lines = text:split( textArea.NewLine )
     end
+
+    -- areaWidth is the max length in units of each line
+    local areaWidth = textArea.AreaWidth
+    if areaWidth ~= nil then
+        -- cut the lines based on their length
+        local tempLines = table.copy( lines )
+        lines = {}
+
+        for i = 1, #tempLines do
+            local line = tempLines[i]
+            
+            textArea.gameObject.textRenderer.text = line
+            if textArea.gameObject.textRenderer:GetTextWidth() > areaWidth then
+                line = line:totable()
+                local newLine = {}
+                
+                for j, char in ipairs( line ) do
+                    table.insert( newLine, char )
+
+                    textArea.gameObject.textRenderer.text = table.concat( newLine )
+                    if textArea.gameObject.textRenderer:GetTextWidth() > areaWidth then  
+                        
+                        table.remove( newLine )
+                        table.insert( lines, table.concat( newLine ) )
+                        newLine = { char }
+                                 
+                        if not textArea.WordWrap then
+                            newLine = nil
+                            break
+                        end
+                    end
+                end
+                
+                if newLine ~= nil then
+                    table.insert( lines, table.concat( newLine ) )
+                end
+            end
+            
+        end
+    end
+    
     local linesCount = #lines
     local lineRenderers = textArea.lineRenderers
     local lineRenderersCount = #lineRenderers
@@ -932,7 +974,7 @@ end
 
 
 function DaneelGUI.TextArea.SetAreaWidth( textArea, AreaWidth )
-    textArea.AreaWidth = AreaWidth
+    textArea.AreaWidth = tounit( AreaWidth )
 
     if #textArea.lineRenderers > 0 then
         textArea:SetText( textArea.Text )
