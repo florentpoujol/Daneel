@@ -1119,16 +1119,6 @@ function Daneel.Load()
 
     -- Assets
     for assetType, assetObject in pairs(config.assetObjects) do
-        -- Get helpers : GetModelRenderer() ...
-        Asset["Get"..assetType] = function(assetName)
-            Daneel.Debug.StackTrace.BeginFunction("Asset.Get"..assetType, assetName)
-            local errorHead = "Asset.Get"..assetType.."(assetName) : "
-            Daneel.Debug.CheckArgType(assetName, "assetName", "string", errorHead)
-            local asset = Asset.Get(assetName, assetType)
-            Daneel.Debug.StackTrace.EndFunction("Asset.Get"..assetType, asset)
-            return asset
-        end
-
         Daneel.Utilities.AllowDynamicGettersAndSetters(assetObject)
 
         assetObject["__tostring"] = function(asset)

@@ -5,87 +5,47 @@
 Asset = {}
 Asset.__index = Asset
 
---- Alias of CraftStudio.FindAsset(assetName[, assetType]).
+--- Alias of CraftStudio.FindAsset( assetName[, assetType] ).
 -- Get the asset of the specified name and type.
 -- The first argument may be an asset object, so that you can check if a variable was an asset object or name (and get the corresponding object).
--- @param assetName (string or one of the asset types) The fully-qualified asset name or asset object.
--- @param assetType [optional] (string) The asset type as a case-insensitive string or the asset object.
+-- @param assetName (string or one of the asset type) The fully-qualified asset name or asset object.
+-- @param assetType [optional] (string) The asset type as a case-insensitive string.
 -- @param errorIfAssetNotFound [optional default=false] Throw an error if the asset was not found (instead of returning nil).
--- @return (Script, Model, ModelAnimation, Map, TileSet, Scene, Sound or Font) The asset, or nil if none is found.
-function Asset.Get(assetName, assetType, errorIfAssetNotFound)
-    Daneel.Debug.StackTrace.BeginFunction("Asset.Get", assetName, assetType, errorIfAssetNotFound)
-    local errorHead = "Asset.Get(assetName[, assetType, errorIfAssetNotFound]) : "
+-- @return (One of the asset type) The asset, or nil if none is found.
+function Asset.Get( assetName, assetType, errorIfAssetNotFound )
+    Daneel.Debug.StackTrace.BeginFunction( "Asset.Get", assetName, assetType, errorIfAssetNotFound )
+    local errorHead = "Asset.Get( assetName[, assetType, errorIfAssetNotFound] ) : "
     
     -- just return the asset if assetName is already an object
-    if type(assetName) == "table" and Daneel.Debug.GetType(assetName):isoneof(config.assetTypes) then
+    if type( assetName ) == "table" and Daneel.Debug.GetType( assetName ):isoneof( config.assetTypes ) then
         Daneel.Debug.StackTrace.EndFunction()
         return assetName
     end
-    Daneel.Debug.CheckArgType(assetName, "assetName", "string", errorHead)
+    Daneel.Debug.CheckArgType( assetName, "assetName", "string", errorHead )
     
     -- check asset type
     if assetType ~= nil then
-        Daneel.Debug.CheckArgType(assetType, "assetType", "string", errorHead)
-        assetType = Daneel.Debug.CheckArgValue(assetType, "assetType", config.assetTypes, errorHead)
+        Daneel.Debug.CheckArgType( assetType, "assetType", "string", errorHead )
+        assetType = Daneel.Debug.CheckArgValue( assetType, "assetType", config.assetTypes, errorHead )
     end
-    Daneel.Debug.CheckOptionalArgType(errorIfAssetNotFound, "errorIfAssetNotFound", "boolean", errorHead)
+    Daneel.Debug.CheckOptionalArgType( errorIfAssetNotFound, "errorIfAssetNotFound", "boolean", errorHead )
 
     -- check if assetName is a script alias
-    if assetType == "Script" and config.scriptPaths[assetName] ~= nil then
-        assetName = config.scriptPaths[assetName]
+    if assetType == "Script" and config.scriptPaths[ assetName ] ~= nil then
+        assetName = config.scriptPaths[ assetName ]
     end
 
-    local asset = CraftStudio.FindAsset(assetName, assetType)
+    local asset = CraftStudio.FindAsset( assetName, assetType )
     if asset == nil and errorIfAssetNotFound == true then
         if assetType == nil then
             assetType = "asset"
         end
-        error(errorHead.."Argument 'assetName' : "..assetType.." with name '"..assetName.."' was not found.")
+        error( errorHead.."Argument 'assetName' : "..assetType.." with name '"..assetName.."' was not found." )
     end
 
     Daneel.Debug.StackTrace.EndFunction()
     return asset
 end
-
---- Get the Script asset with the specified name.
--- @param assetName (string) The fully-qualified asset name.
--- @return (Script) The asset, or nil if none is found.
-function Asset.GetScript(assetName) end
-
---- Get the Model asset with the specified name.
--- @param assetName (string) The fully-qualified asset name.
--- @return (Model) The asset, or nil if none is found.
-function Asset.GetModel(assetName) end
-
---- Get the ModelAnimation asset with the specified name.
--- @param assetName (string) The fully-qualified asset name.
--- @return (ModelAnimation) The asset, or nil if none is found.
-function Asset.GetModelAnimation(assetName) end
-
---- Get the Map asset with the specified name
--- @param assetName (string) The fully-qualified asset name.
--- @return (Map) The asset, or nil if none is found.
-function Asset.GetMap(assetName) end
-
---- Get the TileSet asset with the specified name
--- @param assetName (string) The fully-qualified asset name.
--- @return (TileSet) The asset, or nil if none is found.
-function Asset.GetTileSet(assetName) end
-
---- Get the Scene asset with the specified name.
--- @param assetName (string) The fully-qualified asset name.
--- @return (Scene) The asset, or nil if none is found.
-function Asset.GetScene(assetName) end
-
---- Get the Sound asset with the specified name.
--- @param assetName (string) The fully-qualified asset name.
--- @return (Sound) The asset, or nil if none is found.
-function Asset.GetSound(assetName) end
-
---- Get the Font asset with the specified name.
--- @param assetName (string) The fully-qualified asset name.
--- @return (Font) The asset, or nil if none is found.
-function Asset.GetFont(assetName) end
 
 
 ----------------------------------------------------------------------------------

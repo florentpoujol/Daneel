@@ -333,9 +333,9 @@ end
 
 --- Add a component to the gameObject and optionally initialize it.
 -- @param gameObject (GameObject) The gameObject.
--- @param componentType (string) The component type.
+-- @param componentType (string) The component type (can't be Transform or ScriptedBehavior).
 -- @param params [optional] (string, Script or table) A table of parameters to initialize the new component with or, if componentType is 'ScriptedBehavior', the mandatory script name or asset.
--- @return (One of the component type, except ScriptedBehavior) The component.
+-- @return (One of the component types) The component.
 function GameObject.AddComponent( gameObject, componentType, params )
     Daneel.Debug.StackTrace.BeginFunction("GameObject.AddComponent", gameObject, componentType, params)
     local errorHead = "GameObject.AddComponent( gameObject, componentType[, params] ) : "
