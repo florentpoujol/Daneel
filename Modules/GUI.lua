@@ -875,7 +875,7 @@ function DaneelGUI.TextArea.SetText( textArea, text )
     textArea.Text = text
 
     local lines = { text }
-    if textArea.newLine ~= nil then
+    if textArea.newLine ~= nil and textArea.newLine ~= "" then
         lines = text:split( textArea.NewLine )
     end
 
@@ -914,8 +914,10 @@ function DaneelGUI.TextArea.SetText( textArea, text )
                 if newLine ~= nil then
                     table.insert( lines, table.concat( newLine ) )
                 end
+            else
+                table.insert( lines, line )
             end
-            
+
         end
     end
     
@@ -932,7 +934,7 @@ function DaneelGUI.TextArea.SetText( textArea, text )
     }
 
     local offset = -lineHeight / 2 -- verticalAlignment = "top"
-    if textArea.VerticalAlignment == "center" then
+    if textArea.VerticalAlignment == "middle" then
         offset = lineHeight * linesCount / 2 - lineHeight / 2
     elseif textArea.VerticalAlignment == "bottom" then
         offset = lineHeight * linesCount
@@ -1027,7 +1029,7 @@ end
 
 
 function DaneelGUI.TextArea.SetVerticalAlignment( textArea, verticalAlignment )
-    textArea.VerticalAlignment = verticalAlignment
+    textArea.VerticalAlignment = verticalAlignment:lower():trim()
 
     if #textArea.lineRenderers > 0 then
         textArea:SetText( textArea.Text )
