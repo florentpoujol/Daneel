@@ -417,13 +417,13 @@ end
 -- @param params [optional] (table) A table of parameters to initialize the new component with.
 -- @return (ScriptedBehavior) The component.
 function GameObject.AddScriptedBehavior( gameObject, scriptNameOrAsset, params ) 
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.AddScriptedBehavior", gameObject, scriptNameOrAsset, params)
+    Daneel.Debug.StackTrace.BeginFunction( "GameObject.AddScriptedBehavior", gameObject, scriptNameOrAsset, params )
     local errorHead = "GameObject.AddScriptedBehavior( gameObject, scriptNameOrAsset[, params] ) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Script"}, errorHead)
-    Daneel.Debug.CheckArgType(params, "params", {"string", "Script"}, errorHead)
+    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
+    Daneel.Debug.CheckArgType( scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead )
+    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
 
-    local script = Asset.Get( sceneNameOrAsset, "Script", true )
+    local script = Asset.Get( scriptNameOrAsset, "Script", true )
     local component = gameObject:CreateScriptedBehavior( script )
     
     if params ~= nil then

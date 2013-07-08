@@ -51,11 +51,12 @@ function DaneelConfigModuleGUI()
             textArea = {
                 areaWidth = nil,
                 wordWrap = false, -- when a ligne is longer than the area width: cut the ligne when false, put the rest of the ligne in one or several lignes when true
-                EOL = "<br>", -- end of ligne delimiter
-                lineHeight = 0.5, -- in units or pixel as a string
+                newLine = "<br>", -- end of ligne delimiter
+                lineHeight = 1, -- in units or pixel as a string
+                verticalAlignment = "top",
 
                 font = nil,
-                text = "TextArea",
+                text = "Text<br>Area",
                 alignment = "left",
                 opacity = 1,
             },
@@ -118,7 +119,8 @@ end
 
 DaneelGUI = { pixelsToUnits = 0 }
 
--- used in ProgresBar.SetProgress()
+-- convert a string value (maybe in pixels)
+-- into a number of units
 local function tounit(value)
     if type(value) == "string" then
         local length = #value
@@ -857,16 +859,10 @@ function DaneelGUI.TextArea.New( gameObject )
     local textArea = {}
     textArea.gameObject = gameObject
     textArea.inner = " : "..math.round( math.randomrange( 100000, 999999 ) )
+    textArea.lineRenderers = {}
+
     setmetatable( textArea, Daneel.GUI.TextArea )
-
-    if gameObject.textRenderer == nil then
-        gameObject:CreateComponent( "TextRenderer" )
-    end
-    gameObject.textRenderer:Set( config.gui.textArea )
-
-    textArea.EOL = config.gui.textArea.EOL
     textArea:Set( config.gui.textArea )
-    textArea.lines = { gameObject.textRenderer }
 
     gameObject.textArea = textArea
     Daneel.Debug.StackTrace.EndFunction()
@@ -876,46 +872,170 @@ end
 
 function DaneelGUI.TextArea.SetText( textArea, text )
     
-    local lines = text:split( textArea.EOL )
-    local offset = 0
+    textArea.Text = text
+    local lines = { text }
+    if textArea.newLine ~= nil then
+        lines = text:split( textArea.NewLine )
+    end
+    local linesCount = #lines
+    local lineRenderers = textArea.lineRenderers
+    local lineRenderersCount = #lineRenderers
+    local lineHeight = textArea.LineHeight
     local gameObject = textArea.gameObject
 
-    local params = {
-        font = gameObject.textRenderer:GetFont(),
-        alignment = gameObject.textRenderer:GetAlignment(),
-        opacity = gameObject.textRenderer:GetOpacity(),
+    local textRendererParams = {
+        font = textArea.Font,
+        alignment = textArea.Alignment,
+        opacity = textArea.Opacity,
     }
-     
-    for i, line in ipairs( lines ) do
-        params.text = line
 
-        if textArea.lines[i] ~= nil then
-            textArea.lines[i]:SetText( line )
-            textArea.lines[i].gameObject.transform:SetLocalPosition( Vector3:New( 0, offset ,0 ) )
-        else
-
-            local go = GameObject.New( "TextAreaLine"..i, {
-                parent = gameObject,
-                transform = {
-                    localPosition = Vector3:New( 0, offset ,0 )
-                },
-                textRenderer = params
-            })
-
-            table.insert( textArea.lines, go.textRenderer )
-        end
-
-        offset = offset + textArea.lineHeight
+    local offset = -lineHeight / 2 -- verticalAlignment = "top"
+    if textArea.VerticalAlignment == "center" then
+        offset = lineHeight * linesCount / 2 - lineHeight / 2
+    elseif textArea.VerticalAlignment == "bottom" then
+        offset = lineHeight * linesCount
     end
 
-    -- this new text as less line than the previous one
-    if #textArea.lines > #lines then
-        local i = #lines+1
-        for i, #textArea.lines do
-            textArea.lines[i]:SetText( "" )
+    for i, line in ipairs( lines ) do
+        textRendererParams.text = line
+
+        if lineRenderers[i] ~= nil then
+            lineRenderers[i].gameObject.transform:SetLocalPosition( Vector3:New( 0, offset, 0 ) )
+            lineRenderers[i]:SetText( line )
+        else
+            local newLineGO = GameObject.New( "TextAreaLine-" .. textArea.inner .. "-" .. i, {
+                parent = gameObject,
+                transform = {
+                    localPosition = Vector3:New( 0, offset, 0 )
+                },
+                textRenderer = textRendererParams
+            })
+
+            table.insert( lineRenderers, newLineGO.textRenderer )
+        end
+
+        offset = offset - textArea.lineHeight
+    end
+
+    -- this new text as less lines than the previous one
+    if lineRenderersCount > linesCount then
+        for i = linesCount + 1, lineRenderersCount do
+            lineRenderers[i]:SetText( "" )
         end
     end
     
+end
+
+function DaneelGUI.TextArea.GetText(textArea)
+    return textArea.Text
+end
+
+
+function DaneelGUI.TextArea.SetAreaWidth( textArea, AreaWidth )
+    textArea.AreaWidth = AreaWidth
+
+    if #textArea.lineRenderers > 0 then
+        textArea:SetText( textArea.Text )
+    end
+end
+
+function DaneelGUI.TextArea.GetAreaWidth( textArea )
+    return textArea.AreaWidth
+end
+
+
+function DaneelGUI.TextArea.SetWordWrap( textArea, wordWrap )
+    textArea.WordWrap = wordWrap
+
+    if #textArea.lineRenderers > 0 then
+        textArea:SetText( textArea.Text )
+    end
+end
+
+function DaneelGUI.TextArea.GetWordWrap( textArea )
+    return textArea.WordWrap
+end
+
+
+function DaneelGUI.TextArea.SetNewLine( textArea, newLine )
+    textArea.NewLine = newLine
+
+    if #textArea.lineRenderers > 0 then
+        textArea:SetText( textArea.Text )
+    end
+end
+
+function DaneelGUI.TextArea.GetNewLine( textArea )
+    return textArea.NewLine
+end
+
+
+function DaneelGUI.TextArea.SetLineHeight( textArea, lineHeight )
+    lineHeight = tounit( lineHeight )
+    textArea.LineHeight = lineHeight
+
+    if #textArea.lineRenderers > 0 then
+        textArea:SetText( textArea.Text )
+    end
+end
+
+function DaneelGUI.TextArea.GetLineHeight( textArea )
+    return textArea.LineHeight
+end
+
+
+function DaneelGUI.TextArea.SetVerticalAlignment( textArea, verticalAlignment )
+    textArea.VerticalAlignment = verticalAlignment
+
+    if #textArea.lineRenderers > 0 then
+        textArea:SetText( textArea.Text )
+    end
+end
+
+function DaneelGUI.TextArea.GetVerticalAlignment( textArea )
+    return textArea.VerticalAlignment
+end
+
+
+function DaneelGUI.TextArea.SetFont( textArea, font )
+    textArea.Font = font
+    if #textArea.lineRenderers > 0 then
+        for i, textRenderer in ipairs( textArea.lineRenderers )do
+            textRenderer:SetFont( font )
+        end
+    end
+end
+
+function DaneelGUI.TextArea.GetFont( textArea )
+    return textArea.Font
+end
+
+
+function DaneelGUI.TextArea.SetAlignment( textArea, alignment )
+    textArea.Alignment = alignment
+    if #textArea.lineRenderers > 0 then
+        for i, textRenderer in ipairs( textArea.lineRenderers ) do
+            textRenderer:SetAlignment( alignment )
+        end
+    end
+end
+
+function DaneelGUI.TextArea.GetAlignment( textArea )
+    return textArea.Alignment
+end
+
+
+function DaneelGUI.TextArea.SetOpacity( textArea, opacity)
+    textArea.Opacity = opacity
+    if #textArea.lineRenderers > 0 then
+        for i, textRenderer in ipairs( textArea.lineRenderers ) do
+            textRenderer:SetOpacity( opacity )
+        end
+    end
+end
+
+function DaneelGUI.TextArea.GetOpacity( textArea )
+    return textArea.Opacity
 end
 
 
