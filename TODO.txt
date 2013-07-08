@@ -110,13 +110,6 @@ A implémenter
         EOF = "<br>"
 
 
-    - metre les path par default des behaviors dans la config
-
-    - GameObject : permettre de chainer des GameObject.Get() et GameObject.GetChild() en séparents plusieurs nom de GO par un point
-    ie : GameObject.Get("Menu.Lang.French")     gameObject:GetChild("Lang.French")
-    > permet d'obtenir facilement des GO dont le nom n'est pas unique
-
-
 ==========
 A tester
 
@@ -129,6 +122,7 @@ A modifier/ajouter dans la doc :
     - Example project : minimalist encounter
     - Trigger : rajouter argument range à GetGameObjectInRange
     - textRenderer:SetTextWidth()
+    - chainer une recharche de GO avec Get() or GetChild()
 
 =========
 BUGS

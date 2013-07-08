@@ -192,20 +192,55 @@ end
 -- @param name (string) The gameObject name.
 -- @param errorIfGameObjectNotFound [optional default=false] (boolean) Throw an error if the gameObject was not found (instead of returning nil).
 -- @return (GameObject) The gameObject or nil if none is found.
-function GameObject.Get(name, errorIfGameObjectNotFound)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.Get", name, errorIfGameObjectNotFound)
+function GameObject.Get( name, errorIfGameObjectNotFound )
+    Daneel.Debug.StackTrace.BeginFunction( "GameObject.Get", name, errorIfGameObjectNotFound )
+    
     if getmetatable(name) == GameObject then
         Daneel.Debug.StackTrace.EndFunction()
         return name
     end
-    local errorHead = "GameObject.Get(name[, errorIfGameObjectNotFound]) : "
-    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
-    Daneel.Debug.CheckOptionalArgType(errorIfGameObjectNotFound, "errorIfGameObjectNotFound", "boolean", errorHead)
+
+    local errorHead = "GameObject.Get( name[, errorIfGameObjectNotFound] ) : "
+    Daneel.Debug.CheckArgType( name, "name", "string", errorHead )
+    Daneel.Debug.CheckOptionalArgType( errorIfGameObjectNotFound, "errorIfGameObjectNotFound", "boolean", errorHead )
     
-    local gameObject = CraftStudio.FindGameObject(name)
-    if gameObject == nil and errorIfGameObjectNotFound == true then
-        error(errorHead.."GameObject with name '"..name.."' was not found.")
+    local gameObject = nil
+
+    if name:find( "." ) == nil then
+        gameObject = CraftStudio.FindGameObject( name )
+        if gameObject == nil and errorIfGameObjectNotFound == true then
+            error(errorHead.."GameObject with name '"..name.."' was not found.")
+        end
+
+    else
+        local names = name:split( "." )
+        
+        gameObject = CraftStudio.FindGameObject( names[1] )
+        if gameObject == nil and errorIfGameObjectNotFound == true then
+            error( errorHead.."GameObject with name '" .. names[1] .. "' (from '" .. name .. "') was not found." )
+        end
+
+        local originalName = name
+        if gameObject ~= nil then
+            local fullName = table.remove( names, 1 )
+
+            for i, name in ipairs( names ) do
+                local child = gameObject:GetChild( name )
+                fullName = fullName .. "." .. name
+                
+                if child ~= nil then
+                    gameObject = child
+                else
+                    
+                    gameObject = nil
+                    if errorIfGameObjectNotFound == true then
+                        error( errorHead.."GameObject with name '" .. fullName .. "' (from '" .. originalName .. "') was not found." )
+                    end
+                end
+            end
+        end
     end
+
     Daneel.Debug.StackTrace.EndFunction()
     return gameObject
 end
@@ -239,12 +274,12 @@ end
 -- @param name [optional] (string) The child name.
 -- @param recursive [optional default=false] (boolean) Search for the child in all descendants instead of just the first generation.
 -- @return (GameObject) The child or nil if none is found.
-function GameObject.GetChild(gameObject, name, recursive)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.GetChild", gameObject, name, recursive)
-    local errorHead = "GameObject.GetChild(gameObject, name[, recursive]) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckOptionalArgType(name, "name", "string", errorHead)
-    recursive = Daneel.Debug.CheckOptionalArgType(recursive, "recursive", "boolean", errorHead, false)
+function GameObject.GetChild( gameObject, name, recursive )
+    Daneel.Debug.StackTrace.BeginFunction( "GameObject.GetChild", gameObject, name, recursive )
+    local errorHead = "GameObject.GetChild( gameObject, name[, recursive] ) : "
+    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
+    Daneel.Debug.CheckOptionalArgType( name, "name", "string", errorHead )
+    recursive = Daneel.Debug.CheckOptionalArgType( recursive, "recursive", "boolean", errorHead, false )
     
     local child = nil
     if name == nil then
