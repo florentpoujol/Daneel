@@ -181,32 +181,60 @@ end
 -- Optionaly allow to search in a ancestry of objects.
 -- @param Object (mixed) The object.
 -- @param ancestors [optional] (mixed) One or several (as a table) objects the Object "inherits" from.
-function Daneel.Utilities.AllowDynamicGettersAndSetters(Object, ancestors)
-    function Object.__index(instance, key)
-        local funcName = "Get"..key:ucfirst()
-        if Object[funcName] ~= nil then
-            return Object[funcName](instance)
-        elseif Object[key] ~= nil then
-            return Object[key]
-        end
-        if ancestors ~= nil then
-            for i, Ancestor in ipairs(ancestors) do
-                if Ancestor[funcName] ~= nil then
-                    return Ancestor[funcName](instance)
-                elseif Ancestor[key] ~= nil then
-                    return Ancestor[key]
+function Daneel.Utilities.AllowDynamicGettersAndSetters( Object, ancestors )
+    function Object.__index( instance, key )
+
+        local uckey = key:ucfirst()
+        if key == uckey then 
+            -- first letter was already uppercase
+            -- it may be a function or a property
+            if Object[ key ] ~= nil then
+                return Object[ key ]
+            end
+
+            if ancestors ~= nil then
+                for i, Ancestor in ipairs( ancestors ) do
+                    if Ancestor[ key ] ~= nil then
+                        return Ancestor[ key ]
+                    end
+                end
+            end
+
+        else
+            -- first letter lowercase, search for the corresponding getter
+
+            local funcName = "Get"..uckey
+
+            if Object[ funcName ] ~= nil then
+                return Object[ funcName ]( instance )
+            elseif Object[ key ] ~= nil then
+                return Object[ key ]
+            end
+
+            if ancestors ~= nil then
+                for i, Ancestor in ipairs( ancestors ) do
+                    if Ancestor[ funcName ] ~= nil then
+                        return Ancestor[ funcName ]( instance )
+                    elseif Ancestor[ key ] ~= nil then
+                        return Ancestor[ key ]
+                    end
                 end
             end
         end
+
         return nil
     end
 
     function Object.__newindex(instance, key, value)
-        local funcName = "Set"..key:ucfirst()
-        if Object[funcName] ~= nil then
-            return Object[funcName](instance, value)
+        local uckey = key:ucfirst()
+        if key ~= uckey then -- first letter lowercase
+            local funcName = "Set"..uckey
+            if Object[ funcName ] ~= nil then
+                return Object[ funcName ]( instance, value )
+            end
         end
-        return rawset(instance, key, value)
+        -- first letter was already uppercase
+        return rawset( instance, key, value )
     end
 end
 
@@ -545,7 +573,7 @@ function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
     end
     local errorHead = "Daneel.Debug.StackTrace.BeginFunction(functionName[, ...]) : "
     Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
-    local msg = functionName.."("
+    local msg = functionName.."( "
     if #arg > 0 then
         for i, argument in ipairs(arg) do
             if type(argument) == "string" then
@@ -557,7 +585,7 @@ function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
 
         msg = msg:sub(1, #msg-2) -- removes the last coma+space
     end
-    msg = msg..")"
+    msg = msg.." )"
     table.insert(Daneel.Debug.StackTrace.messages, msg)
 end
 
