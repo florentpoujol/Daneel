@@ -342,8 +342,8 @@ function TextRenderer.SetTextWidth( textRenderer, width )
         width = width * Daneel.GUI.pixelsToUnits
     end
     
-    local widthScaleRation = textRenderer:GetTextWidth() / textRenderer.gameObject.transform:GetScale()
-    textRenderer.gameObject.transform:SetScale( width / widthScaleRation )
+    local widthScaleRatio = textRenderer:GetTextWidth() / textRenderer.gameObject.transform:GetScale()
+    textRenderer.gameObject.transform:SetScale( width / widthScaleRatio )
     Daneel.Debug.StackTrace.EndFunction()
 end
 

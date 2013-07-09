@@ -49,10 +49,10 @@ function DaneelConfigModuleGUI()
             },
 
             textArea = {
-                areaWidth = nil,
+                areaWidth = 0, -- max line length, in units or pixel as a string (0 = no max length)
                 wordWrap = false, -- when a ligne is longer than the area width: cut the ligne when false, put the rest of the ligne in one or several lignes when true
-                newLine = "<br>", -- end of ligne delimiter
-                lineHeight = 1, -- in units or pixel as a string
+                newLine = "\n", -- end of ligne delimiter
+                lineHeight = 1, -- in units or pixels as a string
                 verticalAlignment = "top",
 
                 font = nil,
@@ -891,7 +891,7 @@ function DaneelGUI.TextArea.SetText( textArea, text )
 
     -- areaWidth is the max length in units of each line
     local areaWidth = textArea.AreaWidth
-    if areaWidth ~= nil then
+    if areaWidth ~= nil and areaWidth > 0 then
         -- cut the lines based on their length
         local tempLines = table.copy( lines )
         lines = {}
@@ -986,16 +986,21 @@ function DaneelGUI.TextArea.GetText( textArea )
     return textArea.Text
 end
 
---- Set the component's area width.
+--- Set the component's area width (maximum line length).
+-- Must be strictly positive to have an effect.
+-- Set as a negative value, 0 or nil to remove the limitation.
 -- @param textArea (TextArea) The textArea component.
 -- @param areaWidth (number or string) The area width in scene units or in pixels as a string suffixed with "px".
 function DaneelGUI.TextArea.SetAreaWidth( textArea, areaWidth )
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.TextArea.SetAreaWidth", textArea, areaWidth )
     local errorHead = "Daneel.GUI.TextArea.SetAreaWidth( textArea, areaWidth ) : "
     Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
-    Daneel.Debug.CheckArgType( areaWidth, "areaWidth", {"string", "number"}, errorHead )
+    Daneel.Debug.CheckOptionalArgType( areaWidth, "areaWidth", {"string", "number"}, errorHead )
 
-    textArea.AreaWidth = tounit( areaWidth )
+    if areaWidth ~= nil then
+        areaWidth = math.clamp( tounit( areaWidth ), 0, 999999 )
+    end
+    textArea.AreaWidth = areaWidth
 
     if #textArea.lineRenderers > 0 then
         textArea:SetText( textArea.Text )

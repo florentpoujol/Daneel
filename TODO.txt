@@ -100,16 +100,6 @@ IDEAS
 A implémenter
     
     
-    - TextAreaRenderer : afficher un texte multi-ligne, avec <br>, wordWrap, alignment top bottom, middle
-            > voir si string.split  permet les délimiter de plusieurs caractères
-
-        definir width de la zone avec comportement : ammène à la ligne ou coupe
-        
-        areaWidth = number(pixels ou units)
-        wordWrap = true or false
-        EOF = "<br>"
-
-
 ==========
 A tester
 
