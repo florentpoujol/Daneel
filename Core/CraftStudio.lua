@@ -293,38 +293,6 @@ function TextRenderer.SetAlignment(textRenderer, alignment)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Set the gameObject's scale. Shortcut for transform:SetLocalScale().
--- @param textRenderer (TextRenderer) The textRenderer.
--- @param scale (number, Vector2 or Vector3) The text's scale.
-function TextRenderer.SetScale(textRenderer, scale)
-    Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetScale", textRenderer, scale)
-    local errorHead = "TextRenderer.SetScale(textRenderer, scale) : "
-    Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
-    local argType = Daneel.Debug.CheckArgType(scale, "scale", {"number", "Vector2", "Vector3"}, errorHead)
-
-    if argType == "Vector2" then
-        scale = Vector3:New( scale.x, scale.y, 1 )
-    end
-    textRenderer.gameObject.transform:SetScale( scale )
-    Daneel.Debug.StackTrace.EndFunction()
-end
-
---- Set the gameObject's local scale. Shortcut for transform:SetLocalScale().
--- @param textRenderer (TextRenderer) The textRenderer.
--- @param scale (number, Vector2 or Vector3) The text's scale.
-function TextRenderer.SetLocalScale(textRenderer, scale)
-    Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetLocalScale", textRenderer, scale)
-    local errorHead = "TextRenderer.SetLocalScale(textRenderer, scale) : "
-    Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
-    local argType = Daneel.Debug.CheckArgType(scale, "scale", {"number", "Vector2", "Vector3"}, errorHead)
-
-    if argType == "Vector2" then
-        scale = Vector3:New( scale.x, scale.y, 1 )
-    end
-    textRenderer.gameObject.transform:SetLocalScale( scale )
-    Daneel.Debug.StackTrace.EndFunction()
-end
-
 --- Update the gameObject's scale to make the text appear the provided width.
 -- @param textRenderer (TextRenderer) The textRenderer.
 -- @param width (number or string) The text's width in units or pixels.
