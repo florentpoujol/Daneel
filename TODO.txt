@@ -29,6 +29,11 @@ IDEAS
     lorsque élément pas utilisé, il a opacity, scale etc au choix dans la config, donc
       out et in state  
 
+    - scrollable windows : n'affiche que ce qui est dans une certaine zone
+        déplacement via slider (assenseur) ou molette souris
+        introduit object Rect( x, y, width, height )
+        scale à 0 les objects en dehors de la fenètre
+
     
     -----
     TWEEN
@@ -53,8 +58,9 @@ IDEAS
     -----
     MODULE / PLUGIN / EXTENSION
 
-    - module = un object global, sur lequel existe ou non les fonctions Config, Load, Awake, Start, Update
+    - module = notion abstraite (n'est pas limitée à un object ou un fichier), qui possède ou non les fonctions DaneelModule[Module]Config(), DaneelModule[Module]Load, ..Awake, ..Start, ..Update
     - permettre dépendances (un module oblige d'autre à se charger aussi)
+        > module étent la config et ajoute les modules dont il dépend qui sont ajoutés avant lui dans la table des modules à charger
     - liste des modules chargés + empècher plusieurs chargements du même modules
 
 
@@ -87,14 +93,11 @@ IDEAS
     Events :
     - OnStart, OnPause, OnPlay, OnComplete, OnLoopComplete,
     - OnNewParticle sur le GO qui emet la particle et sur le gameObject émit
-    - OnParticleDie when lifetime is over
+    - OnParticleDie when lifetime is over > pourquoi pas utiliser OnDestroy ?
 
     Function :
     Pause, Play, Restart, Destroy
        
-
-
-
 
 ==========
 A implémenter
@@ -110,8 +113,6 @@ A tester
 A modifier/ajouter dans la doc :
 
     - Example project : minimalist encounter
-    - Trigger : rajouter argument range à GetGameObjectInRange
-    - textRenderer:SetTextWidth()
     - chainer une recharche de GO avec Get() or GetChild()
 
 =========
@@ -137,3 +138,14 @@ ordre chargement des fichiers :
 - dernier script modifié sans faire de révision depuis le dernier export est chargé en premier
 
 
+=========
+Overview video script
+
+#1
+- dynamic getter/setter
+- mass setting gameObject:Set() component:Set() params argument
+
+- gameObjects tags
+
+- GUI
+- Tweeers

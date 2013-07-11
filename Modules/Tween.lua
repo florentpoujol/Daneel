@@ -4,7 +4,7 @@ function DaneelConfigModuleTween()
 
     return {
         tween = {
-            defaultTweenerParams = {
+            tweener = {
                 id = 0, -- can be anything, not restricted to numbers
                 isEnabled = true, -- a disabled tweener won't update but the function like Play(), Pause(), Complete(), Destroy() will have no effect
                 isPaused = false,
@@ -198,7 +198,7 @@ function DaneelTween.Tweener.New(target, property, endValue, duration, params)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.New", target, property, endValue, duration, params)
     local errorHead = "Daneel.Tween.Tweener.New(target, property, endValue, duration[, params]) : "
     
-    local tweener = table.copy(config.tween.defaultTweenerParams)
+    local tweener = table.copy(config.tween.tweener)
     setmetatable(tweener, Daneel.Tween.Tweener)
     tweenerId = tweenerId + 1
     tweener.id = tweenerId
@@ -366,9 +366,9 @@ function DaneelTween.Tweener.Update(tweener, deltaDuration) -- the deltaDuration
 
     if Daneel.Tween.Ease[tweener.easeType] == nil then
         if DEBUG == true then
-            print("Daneel.Tween.Tweener.Update() : Easing '"..tostring(tweener.easeType).."' for tweener ID '"..tween.id.."' does not exists. Setting it back for the default easing '"..config.tween.defaultTweenerParams.."'.")
+            print("Daneel.Tween.Tweener.Update() : Easing '"..tostring(tweener.easeType).."' for tweener ID '"..tween.id.."' does not exists. Setting it back for the default easing '"..config.tween.tweener.easeType.."'.")
         end
-        tweener.easeType = config.tween.defaultTweenerParams.easeType
+        tweener.easeType = config.tween.tweener.easeType
     end
 
     if deltaDuration ~= nil then
@@ -427,7 +427,7 @@ function DaneelTween.Timer.New(duration, callback, isInfiniteLoop, params)
     Daneel.Debug.CheckArgType(callback, "callback", {"function", "userdata"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
-    local tweener = table.copy(config.tween.defaultTweenerParams)
+    local tweener = table.copy(config.tween.tweener)
     setmetatable(tweener, Daneel.Tween.Tweener)
     tweenerId = tweenerId + 1
     tweener.id = "Timer"..tweenerId
@@ -476,7 +476,7 @@ function DaneelTween.Timer.New(duration, callback, isInfiniteLoop, params)
     Daneel.Debug.CheckArgType(callback, "callback", {"function", "userdata"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
-    local tweener = table.copy(config.tween.defaultTweenerParams)
+    local tweener = table.copy(config.tween.tweener)
     setmetatable(tweener, Daneel.Tween.Tweener)
     tweenerId = tweenerId + 1
     tweener.id = "Timer"..tweenerId
