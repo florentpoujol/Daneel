@@ -51,15 +51,16 @@ function GameObject.__index(gameObject, key)
 end
 
 -- Dynamic setters
-function GameObject.__newindex(gameObject, key, value)
-    local funcName = "Set"..key:ucfirst()
+function GameObject.__newindex( gameObject, key, value )
+    local ucKey = key:ucfirst()
+    local funcName = "Set" .. ucKey
     -- ie: variable "name" call "SetName"
     if GameObject[funcName] ~= nil then
         if key ~= "transform" then -- needed because CraftStudio.CreateGameObject() set the transfom variable on new gameObjects
-            return GameObject[funcName](gameObject, value)
+            return GameObject[funcName]( gameObject, value )
         end
     end
-    rawset(gameObject, key, value)
+    rawset( gameObject, key, value )
 end
 
 
@@ -125,59 +126,71 @@ end
 --- Apply the content of the params argument to the provided gameObject.
 -- @param gameObject (GameObject) The gameObject.
 -- @param params (table) A table of parameters to set the gameObject with.
-function GameObject.Set(gameObject, params)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.Set", gameObject, params)
-    local errorHead = "GameObject.Set(gameObject, params) : "
-    Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
+function GameObject.Set( gameObject, params )
+    Daneel.Debug.StackTrace.BeginFunction( "GameObject.Set", gameObject, params )
+    local errorHead = "GameObject.Set( gameObject, params ) : "
+    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
     local argType = nil
     
     if params.parent ~= nil then
         -- do that first so that setting a local position works
-        gameObject:SetParent(params.parent)
+        gameObject:SetParent( params.parent )
         params.parent = nil
     end
     
     -- components
     local component = nil
-    local componentTypes = table.copy(config.componentTypes)
-    table.removevalue(componentTypes, "ScriptedBehavior")
-    for i, type in ipairs(componentTypes) do
+    local componentTypes = table.copy( config.componentTypes )
+    table.removevalue( componentTypes, "ScriptedBehavior" )
+    for i, type in ipairs( componentTypes ) do
         componentTypes[i] = type:lcfirst()
     end
 
-    for i, componentType in ipairs(componentTypes) do
+    for i, componentType in ipairs( componentTypes ) do
         if params[componentType] ~= nil then
-            Daneel.Debug.CheckArgType(params[componentType], "params."..componentType, "table", errorHead)
+            Daneel.Debug.CheckArgType( params[componentType], "params."..componentType, "table", errorHead )
 
-            component = gameObject:GetComponent(componentType)
+            component = gameObject:GetComponent( componentType )
             if component == nil then
-                component = gameObject:AddComponent(componentType, params[componentType])
+                component = gameObject:AddComponent( componentType, params[componentType] )
             else
-                component:Set(params[componentType])
+                component:Set( params[componentType] )
             end
             params[componentType] = nil
         end
     end
 
     -- all other keys/values
-    for key, value in pairs(params) do
-        -- if key is a script path or alias
-        if config.scriptPaths[key] ~= nil or table.containsvalue(config.scriptPaths, key) then
+    for key, value in pairs( params ) do
+
+        -- if key is a script path in config.scriptPath or a script alias
+        if config.scriptPaths[key] ~= nil or table.containsvalue( config.scriptPaths, key ) then
             local scriptPath = key
             if config.scriptPaths[key] ~= nil then
                 scriptPath = config.scriptPaths[key]
             end
-            local component = gameObject:GetScriptedBehavior(scriptPath)
+            local component = gameObject:GetScriptedBehavior( scriptPath )
             if component == nil then
-                component = gameObject:AddScriptedBehavior(scriptPath, value)
+                component = gameObject:AddScriptedBehavior( scriptPath, value )
             else
                 component:Set(value)
             end
+
         elseif key == "tags"  then
             gameObject:RemoveTag()
-            gameObject:AddTag(value)
+            gameObject:AddTag( value )
+
         else
-            gameObject[key] = value
+            -- check if the key is a script path
+            local script = CS.FindAsset( key, "Script" )
+            if script ~= nil then
+                local behavior = gameObject:GetScriptedBehavior( script )
+                if behavior ~= nil then
+                    Component.Set( behavior, value )
+                end
+            else
+                gameObject[key] = value
+            end
         end
     end
     Daneel.Debug.StackTrace.EndFunction()

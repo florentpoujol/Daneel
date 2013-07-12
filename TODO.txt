@@ -9,14 +9,15 @@ IDEAS
     - textRenderer
         - permettre de passer texte traduit via la scène : "daneellang:langkey"
             > TextRenderer.Settext n'est pas utilisée lorsque les textes sont écrits dans la scène
-            mais voir à créer un ScriptedBehavior qui irait remplacer le texte
+            mais voir à créer un ScriptedBehavior qui irait remplacer le texte "Lang" behavior
 
     - possibilité de enable/disable un gameObject ou un component
         > empèhe les composants de GUI d'être mis à jour
-        > voir plutôt avec Elisée pour autoriser ça sur les gameObjects
+        > ideallement devrait être géré par CS directement au niveau du game object
 
     - Debug.DrawLine(start, end[, model]) ou (start, direction, length[, model])
         config.debug.defaultLineModel
+        DrawCircle( position, radius, nbofsegment, model )
 
 
     -----
@@ -107,7 +108,13 @@ A implémenter
 A tester
 
     - voir pourquoi certains easeType renvoient des erreurs
-    
+    - set de variable dans scripted behavior via gameObject.New() ne semble pas avoir d'effet
+        à tester avec tous les cas possible 
+            script alias = script name
+            script name
+            script alias
+
+    - getscriptedbehavior avec string qui ne sont pas des scripts
 
 ==========
 A modifier/ajouter dans la doc :
