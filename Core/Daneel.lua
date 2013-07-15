@@ -307,6 +307,37 @@ function Daneel.Utilities.GlobalExists(name)
     return exists
 end
 
+--- A more flexible version of Lua's built-in tonumber() function.
+-- Returns the first continuous series of numbers found in the text version of the provided data een if it is prefixed or suffied by other characters.
+-- @param data (mixed) Usualy string or userdata.
+-- @param (number) The number, or nil.
+function Daneel.Utilities.ToNumber( data )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.ToNumber", data )
+    local errorHead = "Daneel.Utilities.ToNumber( data ) : "
+    if data == nil then
+        error( errorHead .. "Argument 'data' is nil." )
+    end
+
+    local number = tonumber( data )
+    if number == nil then
+        number = ""
+        data = tostring( data ):totable()
+
+        for i, char in ipairs( data ) do
+            if tonumber( char ) ~= nil then
+                number = number .. char
+            elseif number ~= "" then
+                break
+            end
+        end
+
+        number = tonumber( number )
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return number
+end
+
 
 ----------------------------------------------------------------------------------
 -- Debug
