@@ -19,6 +19,7 @@ IDEAS
         config.debug.defaultLineModel
         DrawCircle( position, radius, nbofsegment, model )
 
+    - gameObject:GetId() : retourne la variable inner
 
     -----
     GUI
@@ -103,7 +104,7 @@ IDEAS
 ==========
 A implémenter
     
-    
+        
 ==========
 A tester
 

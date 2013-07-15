@@ -58,9 +58,9 @@ function DaneelConfig()
                 layer = 1,
             },
             
-            checkBox = {
+            toggle = {
                 isChecked = false, -- false = unchecked, true = checked
-                -- ':text' represents the checkBox's text
+                -- ':text' represents the toggle's text
                 checkedMark = "√ :text",
                 uncheckedMark = "X :text",
                 checkedModel = nil,

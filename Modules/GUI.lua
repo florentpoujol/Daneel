@@ -15,10 +15,10 @@ function DaneelConfigModuleGUI()
                 layer = 1,
             },
 
-            checkBox = {
+            toggle = {
                 isChecked = false, -- false = unchecked, true = checked
-                text = "CheckBox",
-                -- ':text' represents the checkBox's text
+                text = "Toggle",
+                -- ':text' represents the toggle's text
                 defaultCheckedMark = "√ :text",
                 defaultUncheckedMark = "X :text",
                 defaultCheckedModel = nil,
@@ -62,7 +62,7 @@ function DaneelConfigModuleGUI()
             },
 
             behaviorPaths = {
-                checkBox = "Daneel/Behaviors/CheckBox",
+                toggle = "Daneel/Behaviors/Toggle",
                 --progressBar = "Daneel/Behaviors/ProgresBar",
                 slider = "Daneel/Behaviors/Slider",
                 --input = "Daneel/Behaviors/Input",
@@ -72,7 +72,7 @@ function DaneelConfigModuleGUI()
 
         daneelComponentObjects = {
             Hud = Daneel.GUI.Hud,
-            CheckBox = Daneel.GUI.CheckBox,
+            Toggle = Daneel.GUI.Toggle,
             ProgressBar = Daneel.GUI.ProgressBar,
             Slider = Daneel.GUI.Slider,
             Input = Daneel.GUI.Input,
@@ -98,7 +98,7 @@ function DaneelAwakeModuleGUI()
 
     if config.gui.cameraGO ~= nil then
         -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
-        -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and 3D world units
+        -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and scene units
         Daneel.GUI.pixelsToUnits = config.gui.cameraGO.camera.orthographicScale / smallSideSize
         --Daneel.GUI.pixelsToUnits = config.gui.cameraGO.camera.orthographicScale / smallSideSize
 
@@ -319,146 +319,146 @@ end
 
 
 ----------------------------------------------------------------------------------
--- CheckBox
+-- Toggle
 
-DaneelGUI.CheckBox = {}
+DaneelGUI.Toggle = {}
 
--- Create a new CheckBox component.
+-- Create a new Toggle component.
 -- @param gameObject (GameObject) The component gameObject.
--- @return (CheckBox) The new component.
-function DaneelGUI.CheckBox.New(gameObject)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.New", gameObject)
-    local errorHead = "Daneel.GUI.CheckBox.New(gameObject) : "
+-- @return (Toggle) The new component.
+function DaneelGUI.Toggle.New(gameObject)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Toggle.New", gameObject)
+    local errorHead = "Daneel.GUI.Toggle.New(gameObject) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
     
-    local checkBox = table.copy(config.gui.checkBox)
-    checkBox.defaultText = checkBox.text
-    checkBox.text = nil
-    checkBox.gameObject = gameObject
-    checkBox.inner = " : "..math.round(math.randomrange(100000, 999999))
-    setmetatable(checkBox, Daneel.GUI.CheckBox)
+    local toggle = table.copy(config.gui.toggle)
+    toggle.defaultText = toggle.text
+    toggle.text = nil
+    toggle.gameObject = gameObject
+    toggle.inner = " : "..math.round(math.randomrange(100000, 999999))
+    setmetatable(toggle, Daneel.GUI.Toggle)
     
-    gameObject.checkBox = checkBox
+    gameObject.toggle = toggle
     gameObject:AddTag("mouseInteractive")
-    if gameObject[ config.gui.behaviorPaths.checkBox ] == nil then
-        gameObject:AddScriptedBehavior( config.gui.behaviorPaths.checkBox )
+    if gameObject[ config.gui.behaviorPaths.toggle ] == nil then
+        gameObject:AddScriptedBehavior( config.gui.behaviorPaths.toggle )
     end
 
     if gameObject.textRenderer ~= nil and gameObject.textRenderer.text ~= nil then
-        checkBox.text = gameObject.textRenderer.text
+        toggle.text = gameObject.textRenderer.text
     end
 
     if gameObject.modelRenderer ~= nil then
-        if checkBox.isChecked then
-            checkBox.gameObject.modelRenderer.model = checkBox.checkedModel
+        if toggle.isChecked then
+            toggle.gameObject.modelRenderer.model = toggle.checkedModel
         else
-            checkBox.gameObject.modelRenderer.model = checkBox.uncheckedModel
+            toggle.gameObject.modelRenderer.model = toggle.uncheckedModel
         end
     end
 
-    checkBox:Check(checkBox.isChecked)
+    toggle:Check(toggle.isChecked)
 
     Daneel.Debug.StackTrace.EndFunction()
-    return checkBox
+    return toggle
 end
 
---- Set the provided checkBox's text.
+--- Set the provided toggle's text.
 -- Actually set the text of the TextRenderer component on the same gameObject,
 -- but add the correct check mark in front of the provided text.
--- @param checkBox (CheckBox) The checkBox component.
+-- @param toggle (Toggle) The toggle component.
 -- @param text (string) The text to display.
-function DaneelGUI.CheckBox.SetText(checkBox, text)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.SetText", checkBox, text)
-    local errorHead = "Daneel.GUI.CheckBox.SetText(checkBox, text) : "
-    Daneel.Debug.CheckArgType(checkBox, "checkBox", "CheckBox", errorHead)
+function DaneelGUI.Toggle.SetText(toggle, text)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Toggle.SetText", toggle, text)
+    local errorHead = "Daneel.GUI.Toggle.SetText(toggle, text) : "
+    Daneel.Debug.CheckArgType(toggle, "toggle", "Toggle", errorHead)
     Daneel.Debug.CheckArgType(text, "text", "string", errorHead)
 
-    if checkBox.gameObject.textRenderer ~= nil then
-        if checkBox.isChecked == true then
-            text = Daneel.Utilities.ReplaceInString(checkBox.checkedMark, { text = text })
+    if toggle.gameObject.textRenderer ~= nil then
+        if toggle.isChecked == true then
+            text = Daneel.Utilities.ReplaceInString(toggle.checkedMark, { text = text })
         else
-            text = Daneel.Utilities.ReplaceInString(checkBox.uncheckedMark, { text = text })
+            text = Daneel.Utilities.ReplaceInString(toggle.uncheckedMark, { text = text })
         end
-        checkBox.gameObject.textRenderer.text = text
+        toggle.gameObject.textRenderer.text = text
 
     else
         if DEBUG then
-            print("WARNING : "..errorHead.."Can't set the checkBox's text because no TextRenderer component has been found on the gameObject '"..tostring(checkBox.gameObject).."'. Waiting for a TextRenderer to be added.")
+            print("WARNING : "..errorHead.."Can't set the toggle's text because no TextRenderer component has been found on the gameObject '"..tostring(toggle.gameObject).."'. Waiting for a TextRenderer to be added.")
         end
-        checkBox.defaultText = text
+        toggle.defaultText = text
     end
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Get the provided checkBox's text.
+--- Get the provided toggle's text.
 -- Actually get the text of the TextRenderer component on the same gameObject but without the check mark.
--- @param checkBox (CheckBox) The checkBox component.
+-- @param toggle (Toggle) The toggle component.
 -- @return (string) The text.
-function DaneelGUI.CheckBox.GetText(checkBox)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.GetText", checkBox)
-    local errorHead = "Daneel.GUI.CheckBox.GetText(checkBox, text) : "
-    Daneel.Debug.CheckArgType(checkBox, "checkBox", "CheckBox", errorHead)
+function DaneelGUI.Toggle.GetText(toggle)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Toggle.GetText", toggle)
+    local errorHead = "Daneel.GUI.Toggle.GetText(toggle, text) : "
+    Daneel.Debug.CheckArgType(toggle, "toggle", "Toggle", errorHead)
 
     local text = nil
-    if checkBox.gameObject.textRenderer ~= nil then
-        local textMark = checkBox.checkedMark
-        if not checkBox.isChecked then
-            textMark = checkBox.uncheckedMark
+    if toggle.gameObject.textRenderer ~= nil then
+        local textMark = toggle.checkedMark
+        if not toggle.isChecked then
+            textMark = toggle.uncheckedMark
         end
         local start, _end = textMark:find(":text")
         local prefix = textMark:sub(1, start-1)
         local suffix = textMark:sub(_end+1)
 
-        text = checkBox.gameObject.textRenderer.text
+        text = toggle.gameObject.textRenderer.text
         if text == nil then
-            text = checkBox.defaultText
+            text = toggle.defaultText
         end
         text = text:gsub(prefix, ""):gsub(suffix, "")
     
     elseif DEBUG then
-        print("WARNING : "..errorHead.."Can't get the checkBox's text because no TextRenderer component has been found on the gameObject '"..tostring(checkBox.gameObject).."'. Returning nil.")
+        print("WARNING : "..errorHead.."Can't get the toggle's text because no TextRenderer component has been found on the gameObject '"..tostring(toggle.gameObject).."'. Returning nil.")
     end
     Daneel.Debug.StackTrace.EndFunction()
     return text
 end 
 
---- Check or uncheck the provided checkBox and fire the OnUpdate event.
--- You can get the checkBox's state via checkBox.isChecked.
--- @param checkBox (CheckBox) The checkBox component.
--- @param state [optional default=true] (boolean) The new state of the checkBox.
+--- Check or uncheck the provided toggle and fire the OnUpdate event.
+-- You can get the toggle's state via toggle.isChecked.
+-- @param toggle (Toggle) The toggle component.
+-- @param state [optional default=true] (boolean) The new state of the toggle.
 -- @param forceUpdate [optional default=false] (boolean) Tell wether to force the updating of the state.
-function DaneelGUI.CheckBox.Check(checkBox, state, forceUpdate)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.Check", checkBox, state, forceUpdate)
-    local errorHead = "Daneel.GUI.CheckBox.Check(checkBox[, state, forceUpdate]) : "
-    Daneel.Debug.CheckArgType(checkBox, "checkBox", "CheckBox", errorHead)
+function DaneelGUI.Toggle.Check(toggle, state, forceUpdate)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Toggle.Check", toggle, state, forceUpdate)
+    local errorHead = "Daneel.GUI.Toggle.Check(toggle[, state, forceUpdate]) : "
+    Daneel.Debug.CheckArgType(toggle, "toggle", "Toggle", errorHead)
     state = Daneel.Debug.CheckOptionalArgType(state, "state", "boolean", errorHead, true)
     forceUpdate = Daneel.Debug.CheckOptionalArgType(forceUpdate, "forceUpdate", "boolean", errorHead, false)
 
-    if forceUpdate or checkBox.isChecked ~= state then
+    if forceUpdate or toggle.isChecked ~= state then
         local text = nil
-        if checkBox.gameObject.textRenderer ~= nil then
-            text = checkBox.text
+        if toggle.gameObject.textRenderer ~= nil then
+            text = toggle.text
         end
         
-        checkBox.isChecked = state
+        toggle.isChecked = state
         
-        if checkBox.gameObject.textRenderer ~= nil then
-            checkBox.text = text -- "reload" the check mark based on the new checked state
-        elseif checkBox.gameObject.modelRenderer ~= nil then
+        if toggle.gameObject.textRenderer ~= nil then
+            toggle.text = text -- "reload" the check mark based on the new checked state
+        elseif toggle.gameObject.modelRenderer ~= nil then
             if state == true then
-                checkBox.gameObject.modelRenderer.model = checkBox.checkedModel
+                toggle.gameObject.modelRenderer.model = toggle.checkedModel
             else
-                checkBox.gameObject.modelRenderer.model = checkBox.uncheckedModel
+                toggle.gameObject.modelRenderer.model = toggle.uncheckedModel
             end
         end
 
-        Daneel.Event.Fire(checkBox, "OnUpdate", checkBox)
+        Daneel.Event.Fire(toggle, "OnUpdate", toggle)
 
-        if checkBox._group ~= nil and state == true then
-            local gameObjects = GameObject.tags[checkBox._group]
+        if toggle._group ~= nil and state == true then
+            local gameObjects = GameObject.tags[toggle._group]
             for i, gameObject in ipairs(gameObjects) do
-                if gameObject ~= checkBox.gameObject then
-                    gameObject.checkBox:Check(false)
+                if gameObject ~= toggle.gameObject then
+                    gameObject.toggle:Check(false)
                 end
             end
         end
@@ -466,38 +466,38 @@ function DaneelGUI.CheckBox.Check(checkBox, state, forceUpdate)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Set the checkBox's group.
--- If the checkBox was already in a group it will be removed from it.
--- @param checkBox (CheckBox) The checkBox component.
+--- Set the toggle's group.
+-- If the toggle was already in a group it will be removed from it.
+-- @param toggle (Toggle) The toggle component.
 -- @param group [optional] (string) The new group, or nil to remove from its group.
-function DaneelGUI.CheckBox.SetGroup(checkBox, group)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.SetGroup", checkBox, group)
-    local errorHead = "Daneel.GUI.CheckBox.SetGroup(checkBox[, group]) : "
-    Daneel.Debug.CheckArgType(checkBox, "checkBox", "CheckBox", errorHead)
+function DaneelGUI.Toggle.SetGroup(toggle, group)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Toggle.SetGroup", toggle, group)
+    local errorHead = "Daneel.GUI.Toggle.SetGroup(toggle[, group]) : "
+    Daneel.Debug.CheckArgType(toggle, "toggle", "Toggle", errorHead)
     Daneel.Debug.CheckOptionalArgType(group, "group", "string", errorHead)
 
-    if group == nil and checkBox._group ~= nil then
-        checkBox.gameObject:RemoveTag(checkBox._group)
+    if group == nil and toggle._group ~= nil then
+        toggle.gameObject:RemoveTag(toggle._group)
     else
-        if checkBox._group ~= nil then
-            checkBox.gameObject:RemoveTag(checkBox._group)
+        if toggle._group ~= nil then
+            toggle.gameObject:RemoveTag(toggle._group)
         end
-        checkBox:Check(false)
-        checkBox._group = group
-        checkBox.gameObject:AddTag(checkBox._group)
+        toggle:Check(false)
+        toggle._group = group
+        toggle.gameObject:AddTag(toggle._group)
     end
     Daneel.Debug.StackTrace.EndFunction()
 end
 
--- Get the checkBox's group.
--- @param checkBox (CheckBox) The checkBox component.
+-- Get the toggle's group.
+-- @param toggle (Toggle) The toggle component.
 -- @return (string) The group, or nil.
-function DaneelGUI.CheckBox.GetGroup(checkBox)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.CheckBox.GetGroup", checkBox)
-    local errorHead = "Daneel.GUI.CheckBox.GetGroup(checkBox) : "
-    Daneel.Debug.CheckArgType(checkBox, "checkBox", "CheckBox", errorHead)
+function DaneelGUI.Toggle.GetGroup(toggle)
+    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Toggle.GetGroup", toggle)
+    local errorHead = "Daneel.GUI.Toggle.GetGroup(toggle) : "
+    Daneel.Debug.CheckArgType(toggle, "toggle", "Toggle", errorHead)
     Daneel.Debug.StackTrace.EndFunction()
-    return checkBox._group
+    return toggle._group
 end
 
 

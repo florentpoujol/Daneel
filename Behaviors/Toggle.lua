@@ -1,5 +1,5 @@
 
--- Behavior for Daneel.GUI.CheckBox component.
+-- Behavior for Daneel.GUI.Toggle component.
 
 -- Public properties :
 -- isChecked (boolean) [default=false]
@@ -7,24 +7,24 @@
 -- group (string) [default=""]
 
 function Behavior:Awake()
-	if self.gameObject.checkBox == nil then
-		local checkBox = self.gameObject:AddComponent("CheckBox", { 
+	if self.gameObject.toggle == nil then
+		local toggle = self.gameObject:AddComponent("Toggle", { 
 			isChecked = self.isChecked,
 		})
         if self.text:trim() ~= "" then
-            checkBox.text = self.text
+            toggle.text = self.text
         end
         if self.group:trim() ~= "" then
-            checkBox.group = self.group
+            toggle.group = self.group
         end
 	end
 end
 
 -- when the gameObject is clicked by the mouse
 function Behavior:OnClick()
-    local checkBox = self.gameObject.checkBox
-    if not (checkBox.group ~= nil and checkBox.isChecked) then
-        checkBox:Check(not checkBox.isChecked)
+    local toggle = self.gameObject.toggle
+    if not (toggle.group ~= nil and toggle.isChecked) then
+        toggle:Check(not toggle.isChecked)
     end
 end
 
@@ -39,15 +39,15 @@ function Behavior:OnNewComponent(data)
     if mt == TextRenderer then
         local text = component.text
         if text == nil then
-            text = self.gameObject.checkBox.defaultText
+            text = self.gameObject.toggle.defaultText
         end
-        self.gameObject.checkBox.text = text
+        self.gameObject.toggle.text = text
 
-    elseif mt == ModelRenderer and checkBox.checkedModel ~= nil then
-        if checkBox.isChecked then
-            checkBox.gameObject.modelRenderer.model = checkBox.checkedModel
+    elseif mt == ModelRenderer and toggle.checkedModel ~= nil then
+        if toggle.isChecked then
+            toggle.gameObject.modelRenderer.model = toggle.checkedModel
         else
-            checkBox.gameObject.modelRenderer.model = checkBox.uncheckedModel
+            toggle.gameObject.modelRenderer.model = toggle.uncheckedModel
         end
     end
 end

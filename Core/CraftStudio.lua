@@ -64,7 +64,7 @@ function Component.Set(component, params)
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
 
     local componentType = Daneel.Debug.GetType(component)
-    if componentType == "CheckBox" then
+    if componentType == "Toggle" then
         local isChecked = params.isChecked
         params.isChecked = nil
         for key, value in pairs(params) do
