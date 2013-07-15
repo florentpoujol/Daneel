@@ -104,7 +104,8 @@ IDEAS
 ==========
 A implémenter
     
-        
+     - remplacer variable inner des composants GUI par ID   
+
 ==========
 A tester
 
@@ -118,6 +119,10 @@ A modifier/ajouter dans la doc :
     - modifs apportée à tostring
     - Utilities.ToNumber()
     - GetID
+
+    - remplacer trigger.layers par tags
+    - ajouter propriété fréquence pour déterminer la fréquence à laquelle le check est réaliser
+    > supprimer notion de trigger static
 
 =========
 BUGS
