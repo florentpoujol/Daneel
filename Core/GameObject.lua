@@ -124,7 +124,7 @@ function GameObject.NewFromScene(sceneNameOrAsset, params)
 end
 
 --- Apply the content of the params argument to the provided gameObject.
--- @param gameObject (GameObject) The gameObject.
+-- @param gameObject (GameObject) The game object.
 -- @param params (table) A table of parameters to set the gameObject with.
 function GameObject.Set( gameObject, params )
     Daneel.Debug.StackTrace.BeginFunction( "GameObject.Set", gameObject, params )
@@ -248,11 +248,34 @@ function GameObject.Get( name, errorIfGameObjectNotFound )
     return gameObject
 end
 
+--- Returns the game object's internal unique identifier.
+-- @param gameObject (GameObject) The game object.
+-- @return (number) The id (-1 if something goes wrong)
+function GameObject.GetId( gameObject )
+    Daneel.Debug.StackTrace.BeginFunction( "GameObject.GetId", gameObject )
+    local errorHead = "GameObject.GetId( gameObject ) : "
+    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
+
+    if gameObject.Id ~= nil then
+        Daneel.Debug.StackTrace.EndFunction()
+        return gameObject.Id
+    end
+
+    local id = -1
+    if gameObject.inner ~= nil then
+        id = Daneel.Utilities.ToNumber( gameObject.inner )
+        rawset( gameObject, "Id", id )
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return id
+end
+
 local OriginalSetParent = GameObject.SetParent
 
 --- Set the gameObject's parent. 
 -- Optionaly carry over the gameObject's local transform instead of the global one.
--- @param gameObject (GameObject) The gameObject.
+-- @param gameObject (GameObject) The game object.
 -- @param parentNameOrInstance [optional] (string or GameObject) The parent name or gameObject (or nil to remove the parent).
 -- @param keepLocalTransform [optional default=false] (boolean) Carry over the game object's local transform instead of the global one.
 function GameObject.SetParent(gameObject, parentNameOrInstance, keepLocalTransform)
@@ -273,7 +296,7 @@ end
 --- Alias of GameObject:FindChild().
 -- Find the first gameObject's child with the provided name.
 -- If the name is not provided, it returns the first child.
--- @param gameObject (GameObject) The gameObject.
+-- @param gameObject (GameObject) The game object.
 -- @param name [optional] (string) The child name (may be hyerarchy of names separated by dots).
 -- @param recursive [optional default=false] (boolean) Search for the child in all descendants instead of just the first generation.
 -- @return (GameObject) The child or nil if none is found.
@@ -307,7 +330,7 @@ end
 local OriginalGetChildren = GameObject.GetChildren
 
 --- Get all descendants of the gameObject.
--- @param gameObject (GameObject) The gameObject.
+-- @param gameObject (GameObject) The game object.
 -- @param recursive [optional default=false] (boolean) Look for all descendants instead of just the first generation.
 -- @param includeSelf [optional default=false] (boolean) Include the gameObject in the children.
 -- @return (table) The children.
@@ -340,7 +363,7 @@ local OriginalSendMessage = GameObject.SendMessage
 --- Tries to call a method with the provided name on all the scriptedBehaviors attached to the gameObject. 
 -- The data argument can be nil or a table you want the method to receive as its first (and only) argument.
 -- If none of the scripteBehaviors attached to the gameObject or its children have a method matching the provided name, nothing happens. 
--- @param gameObject (GameObject) The gameObject.
+-- @param gameObject (GameObject) The game object.
 -- @param functionName (string) The method name.
 -- @param data [optional] (table) The data to pass along the method call.
 function GameObject.SendMessage(gameObject, functionName, data)
@@ -357,7 +380,7 @@ end
 --- Tries to call a method with the provided name on all the scriptedBehaviors attached to the gameObject or any of its descendants. 
 -- The data argument can be nil or a table you want the method to receive as its first (and only) argument.
 -- If none of the scripteBehaviors attached to the gameObject or its children have a method matching the provided name, nothing happens. 
--- @param gameObject (GameObject) The gameObject.
+-- @param gameObject (GameObject) The game object.
 -- @param functionName (string) The method name.
 -- @param data [optional] (table) The data to pass along the method call.
 function GameObject.BroadcastMessage(gameObject, functionName, data)
@@ -379,7 +402,7 @@ end
 -- Add components
 
 --- Add a component to the gameObject and optionally initialize it.
--- @param gameObject (GameObject) The gameObject.
+-- @param gameObject (GameObject) The game object.
 -- @param componentType (string) The component type (can't be Transform or ScriptedBehavior).
 -- @param params [optional] (string, Script or table) A table of parameters to initialize the new component with or, if componentType is 'ScriptedBehavior', the mandatory script name or asset.
 -- @return (One of the component types) The component.
@@ -425,7 +448,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
 end
 
 --- Add a ScriptedBehavior to the gameObject and optionally initialize it.
--- @param gameObject (GameObject) The gameObject.
+-- @param gameObject (GameObject) The game object.
 -- @param scriptNameOrAsset (string or Script) The script name or asset.
 -- @param params [optional] (table) A table of parameters to initialize the new component with.
 -- @return (ScriptedBehavior) The component.
@@ -453,7 +476,7 @@ end
 -- Set Component
 
 --- Set the component of the provided type on the gameObject with the provided parameters.
--- @param gameObject (GameObject) The gameObject.
+-- @param gameObject (GameObject) The game object.
 -- @param componentType (string) The component type.
 -- @param params (string, Script or table) A table of parameters to set the component with or, if componentType is 'ScriptedBehavior', the script name or asset.
 -- @param scriptedBehaviorParams [optional] (table) If componentType is 'ScriptedBehavior', the mandatory table of parameters to set the ScriptedBehavior with.
@@ -490,7 +513,7 @@ function GameObject.SetComponent(gameObject, componentType, params, scriptedBeha
 end
 
 --- Set the ScriptedBehavior component on the gameObject with the provided parameters.
--- @param gameObject (GameObject) The gameObject.
+-- @param gameObject (GameObject) The game object.
 -- @param scriptNameOrAsset (string or Script) The script name or asset.
 -- @param params (table) A table of parameters to set the component with.
 function GameObject.SetScriptedBehavior(gameObject, scriptNameOrAsset, params)
@@ -507,7 +530,7 @@ end
 -- Get components
 
 --- Get the first component of the provided type attached to the gameObject.
--- @param gameObject (GameObject) The gameObject.
+-- @param gameObject (GameObject) The game object.
 -- @param componentType (string) The component type.
 -- @param scriptNameOrAsset [optional] (string or Script) If componentType is "ScriptedBehavior", the mandatory script name or asset.
 -- @return (ScriptedBehavior, ModelRenderer, MapRenderer, Camera, Transform or Physics) The component instance, or nil if none is found.
@@ -532,7 +555,7 @@ end
 local OriginalGetScriptedBehavior = GameObject.GetScriptedBehavior
 
 --- Get the provided ScriptedBehavior instance attached to the gameObject.
--- @param gameObject (GameObject) The gameObject.
+-- @param gameObject (GameObject) The game object.
 -- @param scriptNameOrAsset (string or Script) The script name or asset.
 -- @return (ScriptedBehavior) The ScriptedBehavior instance.
 function GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset, calledFrom__index)
@@ -567,7 +590,7 @@ end
 -- Destroy gameObject
 
 --- Destroy the gameObject at the end of this frame.
--- @param gameObject (GameObject) The gameObject.
+-- @param gameObject (GameObject) The game object.
 function GameObject.Destroy(gameObject)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.Destroy", gameObject)
     local errorHead = "GameObject.Destroy(gameObject) : "
@@ -584,7 +607,7 @@ end
 GameObject.tags = {}
 
 --- Add the provided tag(s) to the provided gameObject.
--- @param gameObject (GameObject) The gameObject.
+-- @param gameObject (GameObject) The game object.
 -- @param tag (string or table) One or several tag(s) (as a string or table of strings).
 function GameObject.AddTag(gameObject, tag)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.AddTag", gameObject, tag)
@@ -614,7 +637,7 @@ end
 
 --- Remove the provided tag(s) from the provided gameObject.
 -- If the 'tag' argument is not provided, all tag of the gameObject will be removed.
--- @param gameObject (GameObject) The gameObject.
+-- @param gameObject (GameObject) The game object.
 -- @param tag [optional] (string or table) One or several tag(s) (as a string or table of strings).
 function GameObject.RemoveTag(gameObject, tag)
     if gameObject.tags == nil then return end
@@ -637,7 +660,7 @@ function GameObject.RemoveTag(gameObject, tag)
 end
 
 --- Tell wether the provided gameObject has all (or at least one of) the provided tag.
--- @param gameObject (GameObject) The gameObject.
+-- @param gameObject (GameObject) The game object.
 -- @param tag (string or table) One or several tag (as a string or table of strings).
 -- @param atLeastOneTag [default=false] (boolean) If true, returns true if the gameObject has AT LEAST one of the tag (instead of ALL the tag).
 -- @return (boolean) True
