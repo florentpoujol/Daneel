@@ -55,7 +55,7 @@ Component = {}
 Component.__index = Component
 
 --- Apply the content of the params argument to the provided component.
--- @param component (Scriptedbehavior, ModelRenderer, MapRenderer, Camera, Transform or Physics) The component.
+-- @param component (any component's type) The component.
 -- @param params (table) A table of parameters to set the component with.
 function Component.Set(component, params)
     Daneel.Debug.StackTrace.BeginFunction("Component.Set", component, params)
@@ -106,7 +106,7 @@ end
 
 --- Destroy the provided component, removing it from the gameObject.
 -- Note that the component is removed only at the end of the current frame.
--- @param component (ScriptedBehavior, ModelRenderer, MapRenderer, Camera, Transform or Physics) The component.
+-- @param component (any component's type) The component.
 function Component.Destroy(component)
     Daneel.Debug.StackTrace.BeginFunction("Component.Destroy", component)
     local errorHead = "Component.Destroy(component) : "
@@ -114,6 +114,27 @@ function Component.Destroy(component)
 
     CraftStudio.Destroy(component)
     Daneel.Debug.StackTrace.EndFunction("Component.Destroy")
+end
+
+--- Returns the component's internal unique identifier.
+-- @param component (any component's type) The component.
+-- @return (number) The id (-1 if something goes wrong)
+function Component.GetId( component )
+    Daneel.Debug.StackTrace.BeginFunction( "Component.GetId", component )
+    local errorHead = "Component.GetId( component ) : "
+    local argType = Daneel.Debug.CheckArgType( component, "component", config.componentTypes, errorHead )
+
+    if component.Id ~= nil then
+        Daneel.Debug.StackTrace.EndFunction()
+        return component.Id
+    end
+
+    local id = -1
+    if component.inner ~= nil then
+        id = Daneel.Utilities.ToNumber( component.inner )
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+    return id
 end
 
 

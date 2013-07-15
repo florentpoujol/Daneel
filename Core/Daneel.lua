@@ -330,7 +330,7 @@ function Daneel.Utilities.ToNumber( data )
                 break
             end
         end
-
+        
         number = tonumber( number )
     end
 
@@ -1171,7 +1171,7 @@ function Daneel.Load()
             componentObject["__tostring"] = function(component)
                 -- returns something like "ModelRenderer: 123456789"
                 -- component.inner is "?: [some ID]"
-                return componentType..tostring(component.inner):sub(2, 20) -- leave 2 as the starting index, only the transform has an extra space
+                return componentType .. ": " .. component:GetId()
             end
         end
     end
