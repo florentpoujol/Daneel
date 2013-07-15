@@ -2,62 +2,57 @@
 setmetatable(GameObject, { __call = function(Object, ...) return Object.New(...) end })
 
 function GameObject.__tostring(gameObject)
-    if gameObject.inner == nil then
-        return "Destroyed gameObject: "..Daneel.Debug.ToRawString(gameObject)
+    if gameObject.isDestroyed == true then
+        return "Destroyed gameObject: " .. Daneel.Debug.ToRawString( gameObject )
         -- the important here was to prevent throwing an error
     end
     -- returns something like "GameObject: 123456789: 'MyName'"
-    local id = tostring(gameObject.inner):sub(3,20)
-    return "GameObject"..id..": '"..gameObject:GetName().."'"
+    return "GameObject: " .. gameObject:GetId() .. ": '" .. gameObject:GetName() .. "'"
 end
 
 -- Dynamic getters
-function GameObject.__index(gameObject, key)
+function GameObject.__index( gameObject, key )
     if key == "tags" then
-        return rawget(gameObject, key)
+        -- this is needed because the GameObject has a property nammed "tags" that would be returned instead of the tags for each instances
+        return rawget( gameObject, key )
     end
 
-    if GameObject[key] ~= nil then
-        return GameObject[key]
+    if GameObject[ key ] ~= nil then
+        return GameObject[ key ]
     end
 
     local ucKey = key:ucfirst()
-    local funcName = "Get"..ucKey
-    if type(GameObject[funcName]) ~= "nil" then
-        return GameObject[funcName](gameObject)
-    end
-
-    -- maybe the key is a Script name used to acces the Behavior instance
-    local behavior = gameObject:GetScriptedBehavior(ucKey, true)
-    if behavior ~= nil then
-        rawset(gameObject, key, behavior)
-        return behavior
-    end
-
-    -- maybe the key is a script alias
-    local aliases = config.scriptPaths
-    if aliases ~= nil and type(aliases) == "table" then
-        local path = aliases[key]
-        if path ~= nil then
-            behavior = gameObject:GetScriptedBehavior(path, true)
-            if behavior ~= nil then
-                rawset(gameObject, key, behavior)
-                return behavior
-            end
+    if key ~= ucKey then
+        local funcName = "Get" .. ucKey
+        if GameObject[ funcName ] ~= nil then
+            return GameObject[ funcName ]( gameObject )
         end
     end
 
+    -- maybe the key is a script alias or path
+    local path = config.scriptPaths[ key ]
+    if path == nil then
+        path = key
+    end
+
+    local behavior = gameObject:GetScriptedBehavior( path, true )
+    if behavior ~= nil then
+        rawset( gameObject, key, behavior )
+        return behavior
+    end
+    
     return nil
 end
 
 -- Dynamic setters
 function GameObject.__newindex( gameObject, key, value )
     local ucKey = key:ucfirst()
-    local funcName = "Set" .. ucKey
-    -- ie: variable "name" call "SetName"
-    if GameObject[funcName] ~= nil then
-        if key ~= "transform" then -- needed because CraftStudio.CreateGameObject() set the transfom variable on new gameObjects
-            return GameObject[funcName]( gameObject, value )
+    if key ~= ucKey and key ~= "transform" then -- first letter lowercase
+        -- check about Transform is needed because CraftStudio.CreateGameObject() set the transfom variable on new gameObjects
+        local funcName = "Set" .. ucKey
+        -- ie: variable "name" call "SetName"
+        if GameObject[ funcName ] ~= nil then
+            return GameObject[ funcName ]( gameObject, value )
         end
     end
     rawset( gameObject, key, value )

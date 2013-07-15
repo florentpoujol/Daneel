@@ -109,19 +109,15 @@ A implémenter
 A tester
 
     - voir pourquoi certains easeType renvoient des erreurs
-    - set de variable dans scripted behavior via gameObject.New() ne semble pas avoir d'effet
-        à tester avec tous les cas possible 
-            script alias = script name
-            script name
-            script alias
-
     - getscriptedbehavior avec string qui ne sont pas des scripts
 
 ==========
 A modifier/ajouter dans la doc :
 
     - Example project : minimalist encounter
-    - chainer une recharche de GO avec Get() or GetChild()
+    - modifs apportée à tostring
+    - Utilities.ToNumber()
+    - GetID
 
 =========
 BUGS
@@ -145,15 +141,3 @@ ordre chargement des fichiers :
 - dans l'ordre de création (id d'asset croissant)
 - dernier script modifié sans faire de révision depuis le dernier export est chargé en premier
 
-
-=========
-Overview video script
-
-#1
-- dynamic getter/setter
-- mass setting gameObject:Set() component:Set() params argument
-
-- gameObjects tags
-
-- GUI
-- Tweeers
