@@ -14,15 +14,15 @@ function Behavior:Awake()
     Daneel.Event.Listen("OnLeftMouseButtonDown", self.gameObject)
     Daneel.Event.Listen("OnRightMouseButtonJustPressed", self.gameObject)
     
-    if GameObject.tags == nil then
-        error("MouseInputs:Awake() : Variable 'GameObject.tags' does not exists because the GameObject file is probably missing.")
+    if GameObject.Tags == nil then
+        error("MouseInputs:Awake() : Variable 'GameObject.Tags' does not exists because the GameObject file is probably missing.")
     end
     
-    if GameObject.tags.mouseInteractive == nil then
+    if GameObject.Tags.mouseInteractive == nil then
         -- this is just in case no gameObject already registered to the mouseInteractive tag.
-        GameObject.tags.mouseInteractive = {}
+        GameObject.Tags.mouseInteractive = {}
     end
-    interactiveGameObjects = GameObject.tags.mouseInteractive
+    interactiveGameObjects = GameObject.Tags.mouseInteractive
 
     if self.gameObject.camera == nil then
         CraftStudio.Destroy(self)

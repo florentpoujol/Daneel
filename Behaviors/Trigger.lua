@@ -32,7 +32,7 @@ function Behavior:Update()
     local triggerPosition = self.gameObject.transform:GetPosition()
     
     for i, layer in ipairs(self.tags) do
-        local gameObjects = GameObject.tags[layer]
+        local gameObjects = GameObject.Tags[layer]
         if gameObjects ~= nil then
             
             for i = #gameObjects, i, -1 do
@@ -97,7 +97,7 @@ function Behavior:GetGameObjectsInRange( tags, range )
     local triggerPosition = self.gameObject.transform:GetPosition()
     
     for i, layer in ipairs( tags ) do
-        local gameObjects = GameObject.tags[ layer ]
+        local gameObjects = GameObject.Tags[ layer ]
         if gameObjects ~= nil then
 
             for i, gameObject in ipairs( gameObjects ) do

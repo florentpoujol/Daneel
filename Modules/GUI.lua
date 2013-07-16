@@ -455,7 +455,7 @@ function DaneelGUI.Toggle.Check(toggle, state, forceUpdate)
         Daneel.Event.Fire(toggle, "OnUpdate", toggle)
 
         if toggle._group ~= nil and state == true then
-            local gameObjects = GameObject.tags[toggle._group]
+            local gameObjects = GameObject.Tags[toggle._group]
             for i, gameObject in ipairs(gameObjects) do
                 if gameObject ~= toggle.gameObject then
                     gameObject.toggle:Check(false)

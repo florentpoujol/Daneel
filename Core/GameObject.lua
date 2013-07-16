@@ -599,7 +599,7 @@ end
 ----------------------------------------------------------------------------------
 -- Tags
 
-GameObject.tags = {}
+GameObject.Tags = {}
 
 --- Add the provided tag(s) to the provided gameObject.
 -- @param gameObject (GameObject) The game object.
@@ -621,10 +621,10 @@ function GameObject.AddTag(gameObject, tag)
         if not table.containsvalue(gameObject.tags, tag) then
             table.insert(gameObject.tags, tag)
         end
-        if GameObject.tags[tag] == nil then
-            GameObject.tags[tag] = { gameObject }
+        if GameObject.Tags[tag] == nil then
+            GameObject.Tags[tag] = { gameObject }
         else
-            table.insert(GameObject.tags[tag], gameObject)
+            table.insert(GameObject.Tags[tag], gameObject)
         end
     end
     Daneel.Debug.StackTrace.EndFunction()
@@ -647,8 +647,8 @@ function GameObject.RemoveTag(gameObject, tag)
     end
     for i, tag in ipairs(tags) do
         table.removevalue(gameObject.tags, tag)
-        if GameObject.tags[tag] ~= nil then
-            table.removevalue(GameObject.tags[tag], gameObject)
+        if GameObject.Tags[tag] ~= nil then
+            table.removevalue(GameObject.Tags[tag], gameObject)
         end
     end
     Daneel.Debug.StackTrace.EndFunction()

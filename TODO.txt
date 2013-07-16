@@ -111,18 +111,14 @@ A tester
 
     - voir pourquoi certains easeType renvoient des erreurs
     - getscriptedbehavior avec string qui ne sont pas des scripts
+    - suppression d'un gameObject mais l'un de ses composant (détruit) avec lui est encore enregistré pour certains events
 
 ==========
 A modifier/ajouter dans la doc :
 
     - Example project : minimalist encounter
-    - modifs apportée à tostring
-    - Utilities.ToNumber()
-    - GetID
-
-    - remplacer trigger.layers par tags
-    - ajouter propriété fréquence pour déterminer la fréquence à laquelle le check est réaliser
-    > supprimer notion de trigger static
+    GameObject.GetWithTag()
+    GameObject.Tags
 
 =========
 BUGS

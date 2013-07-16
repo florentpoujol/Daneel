@@ -1239,7 +1239,7 @@ function Daneel.Awake()
 
 
     Daneel.Event.Listen("OnSceneLoad", function()
-        GameObject.tags = {}
+        GameObject.Tags = {}
         Daneel.Lang.gameObjectsToUpdate = {}
     end)
 
