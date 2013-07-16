@@ -172,7 +172,7 @@ function DaneelGUI.Hud.New(gameObject)
 
     local hud = setmetatable({}, Daneel.GUI.Hud)
     hud.gameObject = gameObject
-    hud.inner = " : "..math.round(math.randomrange(100000, 999999))
+    hud.Id = math.round(math.randomrange(100000, 999999))
     hud.localPosition = config.gui.hud.localPosition
     hud.layer = config.gui.hud.layer
     gameObject.hud = hud
@@ -335,7 +335,7 @@ function DaneelGUI.Toggle.New(gameObject)
     toggle.defaultText = toggle.text
     toggle.text = nil
     toggle.gameObject = gameObject
-    toggle.inner = " : "..math.round(math.randomrange(100000, 999999))
+    toggle.Id = math.round(math.randomrange(100000, 999999))
     setmetatable(toggle, Daneel.GUI.Toggle)
     
     gameObject.toggle = toggle
@@ -516,7 +516,7 @@ function DaneelGUI.ProgressBar.New(gameObject)
 
     local progressBar = table.copy(config.gui.progressBar)
     progressBar.gameObject = gameObject
-    progressBar.inner = " : "..math.round(math.randomrange(100000, 999999))
+    progressBar.Id = math.round(math.randomrange(100000, 999999))
     progressBar.progress = nil -- remove the property to allow to use the dynamic getter/setter
     setmetatable(progressBar, Daneel.GUI.ProgressBar)
     progressBar.progress = config.gui.progressBar.progress
@@ -659,7 +659,7 @@ function DaneelGUI.Slider.New(gameObject)
 
     local slider = table.copy(config.gui.slider)
     slider.gameObject = gameObject
-    slider.inner = " : "..math.round(math.randomrange(100000, 999999))
+    slider.Id = math.round(math.randomrange(100000, 999999))
     slider.startPosition = gameObject.transform.position
     slider.value = nil
     setmetatable(slider, Daneel.GUI.Slider)
@@ -755,7 +755,7 @@ function DaneelGUI.Input.New( gameObject )
 
     local input = table.copy( config.gui.input )
     input.gameObject = gameObject
-    input.inner = " : "..math.round( math.randomrange( 100000, 999999 ) )
+    input.Id = math.round( math.randomrange( 100000, 999999 ) )
     -- adapted from Blast Turtles
     input.OnTextEntered = function( char )
         if not input.isFocused then return end
@@ -861,7 +861,7 @@ function DaneelGUI.TextArea.New( gameObject )
 
     local textArea = {}
     textArea.gameObject = gameObject
-    textArea.inner = " : "..math.round( math.randomrange( 100000, 999999 ) )
+    textArea.Id = math.round( math.randomrange( 100000, 999999 ) )
     textArea.lineRenderers = {}
     setmetatable( textArea, Daneel.GUI.TextArea )
 
