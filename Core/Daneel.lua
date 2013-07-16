@@ -1180,7 +1180,12 @@ function Daneel.Load()
             componentObject["__tostring"] = function(component)
                 -- returns something like "ModelRenderer: 123456789"
                 -- component.inner is "?: [some ID]"
-                return componentType .. ": " .. component:GetId()
+                -- do not use component:GetId() here, it throws a stack overflow when stacktrace is enabled (BeginFunction uses tostring() on the input argument)
+                local id = component.Id
+                if id == nil then
+                    id = Daneel.Utilities.ToNumber( component.inner )
+                end
+                return componentType .. ": " .. id
             end
         end
     end

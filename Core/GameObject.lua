@@ -7,16 +7,16 @@ function GameObject.__tostring(gameObject)
         -- the important here was to prevent throwing an error
     end
     -- returns something like "GameObject: 123456789: 'MyName'"
-    return "GameObject: " .. gameObject:GetId() .. ": '" .. gameObject:GetName() .. "'"
+    -- do not use gameObject:GetID() here, it throws a stack overflow when stacktrace is enabled (BeginFunction uses tostring() on the input argument)
+    local id = gameObject.Id
+    if id == nil then
+        id = Danel.Utilities.ToNumber( gameObject.inner )
+    end
+    return "GameObject: " .. id .. ": '" .. gameObject:GetName() .. "'"
 end
 
 -- Dynamic getters
 function GameObject.__index( gameObject, key )
-    if key == "tags" then
-        -- this is needed because the GameObject has a property nammed "tags" that would be returned instead of the tags for each instances
-        return rawget( gameObject, key )
-    end
-
     if GameObject[ key ] ~= nil then
         return GameObject[ key ]
     end
