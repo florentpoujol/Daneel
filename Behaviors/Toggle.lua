@@ -5,49 +5,55 @@
 -- isChecked (boolean) [default=false]
 -- text (string) [default=""]
 -- group (string) [default=""]
+-- checkedMark (string) [default=""]
+-- uncheckedMark (string) [default=""]
+-- checkedModel (string) [default=""]
+-- uncheckedModel (string) [default=""]
 
 function Behavior:Awake()
 	if self.gameObject.toggle == nil then
-		local toggle = self.gameObject:AddComponent("Toggle", { 
-			isChecked = self.isChecked,
-		})
-        if self.text:trim() ~= "" then
-            toggle.text = self.text
+        local params = {
+            isChecked = self.isChecked,
+        }
+		local props = {"text", "group", "checkedMark", "uncheckedMark", "checkedModel", "uncheckedModel"}
+        for i, prop in ipairs( props ) do
+            if self[ prop ]:trim() ~= "" then
+                params[ prop ] = self[ prop ]
+            end
         end
-        if self.group:trim() ~= "" then
-            toggle.group = self.group
-        end
+        
+        self.gameObject:AddComponent( "Toggle", params )
 	end
 end
 
 -- when the gameObject is clicked by the mouse
 function Behavior:OnClick()
     local toggle = self.gameObject.toggle
-    if not (toggle.group ~= nil and toggle.isChecked) then
-        toggle:Check(not toggle.isChecked)
+    if not (toggle.group ~= nil and toggle.isChecked) then -- true when not in a group or when in group but not checked
+        toggle:Check( not toggle.isChecked )
     end
 end
 
 
 -- "wait" for the TextRenderer or ModelRenderer to be added
 function Behavior:OnNewComponent(data)
-    if data == nil then return end -- FIXME : happens when the component is a scriptedBehavior
+    --if data == nil then return end -- FIXME : happens when the component is a scriptedBehavior
     local component = data[1]
     if component == nil then return end
     local mt = getmetatable(component)
 
     if mt == TextRenderer then
-        local text = component.text
+        local text = component:GetText()
         if text == nil then
             text = self.gameObject.toggle.defaultText
         end
-        self.gameObject.toggle.text = text
+        self.gameObject.toggle:SetText( text )
 
     elseif mt == ModelRenderer and toggle.checkedModel ~= nil then
         if toggle.isChecked then
-            toggle.gameObject.modelRenderer.model = toggle.checkedModel
+            toggle.gameObject.modelRenderer:SetModel( toggle.checkedModel )
         else
-            toggle.gameObject.modelRenderer.model = toggle.uncheckedModel
+            toggle.gameObject.modelRenderer:SetModel( toggle.uncheckedModel )
         end
     end
 end
