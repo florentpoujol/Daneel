@@ -49,8 +49,8 @@ function DaneelDefaultConfig()
         ----------------------------------------------------------------------------------
 
         debug = {
-            enableDebug = true, -- Enable/disable Daneel's global debugging features (error reporting + stacktrace).
-            enableStackTrace = true, -- Enable/disable the Stack Trace.
+            enableDebug = false, -- Enable/disable Daneel's global debugging features (error reporting + stacktrace).
+            enableStackTrace = false, -- Enable/disable the Stack Trace.
         },
 
 
@@ -628,7 +628,7 @@ end
 
 --- Closes a successful function call, removing it from the stacktrace.
 function Daneel.Debug.StackTrace.EndFunction()
-    if DEBUG ~= true or config.debug.enableStackTrace ~= true then return end
+    if DEBUG == false or config.debug.enableStackTrace == false then return end
     -- since 16/05/2013 no arguments is needed anymore, since the StackTrace only keeps open functions calls and never keep returned values
     -- I didn't rewrote all the calls to EndFunction() 
     table.remove( Daneel.Debug.StackTrace.messages )
@@ -636,21 +636,21 @@ end
 
 --- Print the StackTrace.
 function Daneel.Debug.StackTrace.Print()
-    if DEBUG ~= true or config.debug.enableStackTrace ~= true then return end
+    if DEBUG == false or config.debug.enableStackTrace == false then return end
 
     local messages = Daneel.Debug.StackTrace.messages
     Daneel.Debug.StackTrace.messages = {}
 
-    print("~~~~~ Daneel.Debug.StackTrace ~~~~~")
+    print( "~~~~~ Daneel.Debug.StackTrace ~~~~~" )
 
     if #messages <= 0 then
-        print("No message in the StackTrace.")
+        print( "No message in the StackTrace." )
     else
-        for i, msg in ipairs(messages) do
+        for i, msg in ipairs( messages ) do
             if i < 10 then
                 i = "0"..i
             end
-            print("#"..i.." "..msg)
+            print( "#" .. i .. " " .. msg )
         end
     end
 end
@@ -789,22 +789,11 @@ function Daneel.Event.Fire(object, eventName,  ...)
 
     for i, listener in ipairs(listeners) do
         
-        -- ensure that the event is not fired on a dead gameObject or component
-
         local _type = type(listener)
         if _type == "function" or _type == "userdata" then
             listener(unpack(arg))
         else -- an object
-            --if the object is a gameObject or a component, check the inner variable
-            local mt = getmetatable(listener)
-            local isGameObjectOrComponent = ( mt == GameObject or table.containsvalue(config.componentObjects, mt) )
-            if 
-                listener.isDestroyed ~= true and
-                (not isGameObjectOrComponent or listener.inner ~= nil)
-                -- OK if
-                -- not destroyed and (gameObject or component) and inner exists
-                -- not destroyed and any object
-            then
+            if listener.isDestroyed ~= true then -- ensure that the event is not fired on a dead gameObject or component
                 local message = eventName
 
                 -- look for the value of the EventName property on the object
