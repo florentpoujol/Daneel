@@ -102,6 +102,9 @@ IDEAS
 ==========
 A implémenter
     
+    
+    -voir fonctionnement de l'ID chez les tweeners
+    
 
 ==========
 A tester

@@ -5,11 +5,12 @@ function DaneelConfigModuleGUI()
     return {
         gui = {
             screenSize = CraftStudio.Screen.GetSize(),
-            cameraName = "HUDCamera",
+            cameraName = "HUDCamera",  -- Name of the gameObject who has the orthographic camera used to render the HUD
             cameraGO = nil, -- the corresponding GameObject, set at runtime
             originGO = nil, -- "parent" gameObject for global hud positioning, created at runtime in DaneelModuleGUIAwake
             originPosition = Vector3:New(0),
 
+            -- Default GUI components settings
             hud = {
                 localPosition = Vector2.New(0, 0),
                 layer = 1,
@@ -56,9 +57,9 @@ function DaneelConfigModuleGUI()
                 verticalAlignment = "top",
 
                 font = nil,
-                text = "Text<br>Area",
-                alignment = "left",
-                opacity = 1,
+                text = "Text\nArea",
+                alignment = nil,
+                opacity = nil,
             },
 
             behaviorPaths = {
@@ -172,7 +173,7 @@ function DaneelGUI.Hud.New(gameObject)
 
     local hud = setmetatable({}, Daneel.GUI.Hud)
     hud.gameObject = gameObject
-    hud.Id = math.round(math.randomrange(100000, 999999))
+    hud.Id = math.round( math.randomrange( 100000, 999999 ) )
     hud.localPosition = config.gui.hud.localPosition
     hud.layer = config.gui.hud.layer
     gameObject.hud = hud
@@ -326,37 +327,37 @@ DaneelGUI.Toggle = {}
 -- Create a new Toggle component.
 -- @param gameObject (GameObject) The component gameObject.
 -- @return (Toggle) The new component.
-function DaneelGUI.Toggle.New(gameObject)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Toggle.New", gameObject)
+function DaneelGUI.Toggle.New( gameObject )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.Toggle.New", gameObject )
     local errorHead = "Daneel.GUI.Toggle.New(gameObject) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     
-    local toggle = table.copy(config.gui.toggle)
+    local toggle = table.copy( config.gui.toggle )
     toggle.defaultText = toggle.text
     toggle.text = nil
     toggle.gameObject = gameObject
-    toggle.Id = math.round(math.randomrange(100000, 999999))
-    setmetatable(toggle, Daneel.GUI.Toggle)
+    toggle.Id = math.round( math.randomrange( 100000, 999999 ) )
+    setmetatable( toggle, Daneel.GUI.Toggle )
     
     gameObject.toggle = toggle
-    gameObject:AddTag("mouseInteractive")
+    gameObject:AddTag( "mouseInteractive" )
     if gameObject[ config.gui.behaviorPaths.toggle ] == nil then
         gameObject:AddScriptedBehavior( config.gui.behaviorPaths.toggle )
     end
 
-    if gameObject.textRenderer ~= nil and gameObject.textRenderer.text ~= nil then
-        toggle.text = gameObject.textRenderer.text
+    if gameObject.textRenderer ~= nil and gameObject.textRenderer:GetText() ~= nil then
+        toggle:SetText( gameObject.textRenderer:GetText() )
     end
 
     if gameObject.modelRenderer ~= nil then
         if toggle.isChecked then
-            toggle.gameObject.modelRenderer.model = toggle.checkedModel
+            toggle.gameObject.modelRenderer:SetModel( toggle.checkedModel )
         else
-            toggle.gameObject.modelRenderer.model = toggle.uncheckedModel
+            toggle.gameObject.modelRenderer:SetModel( toggle.uncheckedModel )
         end
     end
 
-    toggle:Check(toggle.isChecked)
+    toggle:Check( toggle.isChecked )
 
     Daneel.Debug.StackTrace.EndFunction()
     return toggle
@@ -516,7 +517,7 @@ function DaneelGUI.ProgressBar.New(gameObject)
 
     local progressBar = table.copy(config.gui.progressBar)
     progressBar.gameObject = gameObject
-    progressBar.Id = math.round(math.randomrange(100000, 999999))
+    progressBar.Id = math.round( math.randomrange( 100000, 999999 ) )
     progressBar.progress = nil -- remove the property to allow to use the dynamic getter/setter
     setmetatable(progressBar, Daneel.GUI.ProgressBar)
     progressBar.progress = config.gui.progressBar.progress
@@ -659,7 +660,7 @@ function DaneelGUI.Slider.New(gameObject)
 
     local slider = table.copy(config.gui.slider)
     slider.gameObject = gameObject
-    slider.Id = math.round(math.randomrange(100000, 999999))
+    slider.Id = math.round( math.randomrange( 100000, 999999 ) )
     slider.startPosition = gameObject.transform.position
     slider.value = nil
     setmetatable(slider, Daneel.GUI.Slider)

@@ -14,8 +14,9 @@ function DaneelDefaultConfig()
         --
         -- Setting a script path here allow you to  :
         -- * Use the dynamic getters and setters
-        -- * Use component:Set() (for scripts that are ScriptedBehaviors)
-        -- * If you defined aliases, dynamically access the ScriptedBehavior on the gameObject via its alias
+        -- * Use component:Set() (for scripted behaviors)
+        -- * Use component:GetId() (for scripted behaviors)
+        -- * If you defined aliases, dynamically access the scripted behavior on the game object via its alias
         scriptPaths = {},
 
  
@@ -24,49 +25,47 @@ function DaneelDefaultConfig()
         input = {
             -- Button names as you defined them in the "Administration > Game Controls" tab of your project.
             -- Button whose name is defined here can be used as HotKeys.
-            buttons = {},
+            buttons = {
+                -- Ie: "Fire",
+            },
 
-            -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
-            doubleClickDelay = 20,
+            doubleClickDelay = 20, -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
         },
 
 
         ----------------------------------------------------------------------------------
 
         language = {
-            -- list of the languages supported by the game
-            languageNames = {},
-
-            -- Current language
-            current = nil,
-
-            -- Default language
-            default = nil,
-
-            -- Value returned when a language key is not found
-            keyNotFound = "langkeynotfound",
-
-            -- Tell wether Daneel.Lang.Get() search a line key in the default language 
+            languageNames = {}, -- list of the languages supported by the game
+            
+            current = nil, -- Current language
+            default = nil, -- Default language
+            searchInDefault = true, -- Tell wether Daneel.Lang.Get() search a line key in the default language 
             -- when it is not found in the current language before returning the value of keyNotFound
-            searchInDefault = true,
+            keyNotFound = "langkeynotfound", -- Value returned when a language key is not found
         },
 
 
         ----------------------------------------------------------------------------------
 
         debug = {
-            -- Enable/disable Daneel's global debugging features.
-            enableDebug = true,
-
-            -- Enable/disable the Stack Trace.
-            enableStackTrace = true,
+            enableDebug = true, -- Enable/disable Daneel's global debugging features (error reporting + stacktrace).
+            enableStackTrace = true, -- Enable/disable the Stack Trace.
         },
 
 
         ----------------------------------------------------------------------------------
 
-        -- default components settings
-        components = {},
+        -- Default CraftStudio's components settings (except Transform)
+        -- See 'gui' section above for default GUI component settings
+        components = {
+            --[[ ie :
+            textRenderer = {
+                font = "MyFont",
+                alignment = "right",
+            },
+            ]]
+        },
 
 
         ----------------------------------------------------------------------------------
@@ -111,7 +110,8 @@ function DaneelDefaultConfig()
 
         daneelComponentObjects = {},
 
-        -- custom
+        -- Objects (keys = Type, value = Object)
+        -- For use by Daneel.Debug.GetType() which will return the Type when the Object is the metatable of the provided object
         userObjects = {},
 
         -- other properties created at runtime :
@@ -596,28 +596,34 @@ Daneel.Debug.StackTrace = { messages = {} }
 --- Register a function input in the stack trace.
 -- @param functionName (string) The function name.
 -- @param ... [optional] (mixed) Arguments received by the function.
-function Daneel.Debug.StackTrace.BeginFunction(functionName, ...)
+function Daneel.Debug.StackTrace.BeginFunction( functionName, ... )
     if DEBUG == false or config.debug.enableStackTrace == false then return end
+
     if #Daneel.Debug.StackTrace.messages > 200 then 
-        print("WARNING : your StackTrace is more than 200 items long ! Emptying the StackTrace now. Did you forget to write a 'EndFunction()' somewhere ?")
+        print( "WARNING : your StackTrace is more than 200 items long ! Emptying the StackTrace now. Did you forget to write a 'EndFunction()' somewhere ?" )
         Daneel.Debug.StackTrace.messages = {}
     end
-    local errorHead = "Daneel.Debug.StackTrace.BeginFunction(functionName[, ...]) : "
-    Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
-    local msg = functionName.."( "
+
+    local errorHead = "Daneel.Debug.StackTrace.BeginFunction( functionName[, ...] ) : "
+    Daneel.Debug.CheckArgType( functionName, "functionName", "string", errorHead )
+
+    local msg = functionName .. "( "
+
     if #arg > 0 then
-        for i, argument in ipairs(arg) do
-            if type(argument) == "string" then
-                msg = msg..'"'..tostring(argument)..'", '
+        for i, argument in ipairs( arg ) do
+            if type( argument) == "string" then
+                msg = msg .. '"' .. tostring( argument ) .. '", '
             else
-                msg = msg..tostring(argument)..", "
+                msg = msg .. tostring( argument ) .. ", "
             end
         end
 
-        msg = msg:sub(1, #msg-2) -- removes the last coma+space
+        msg = msg:sub( 1, #msg-2 ) -- removes the last coma+space
     end
-    msg = msg.." )"
-    table.insert(Daneel.Debug.StackTrace.messages, msg)
+
+    msg = msg .. " )"
+
+    table.insert( Daneel.Debug.StackTrace.messages, msg )
 end
 
 --- Closes a successful function call, removing it from the stacktrace.
@@ -625,15 +631,18 @@ function Daneel.Debug.StackTrace.EndFunction()
     if DEBUG ~= true or config.debug.enableStackTrace ~= true then return end
     -- since 16/05/2013 no arguments is needed anymore, since the StackTrace only keeps open functions calls and never keep returned values
     -- I didn't rewrote all the calls to EndFunction() 
-    table.remove(Daneel.Debug.StackTrace.messages)
+    table.remove( Daneel.Debug.StackTrace.messages )
 end
 
 --- Print the StackTrace.
 function Daneel.Debug.StackTrace.Print()
     if DEBUG ~= true or config.debug.enableStackTrace ~= true then return end
+
     local messages = Daneel.Debug.StackTrace.messages
     Daneel.Debug.StackTrace.messages = {}
+
     print("~~~~~ Daneel.Debug.StackTrace ~~~~~")
+
     if #messages <= 0 then
         print("No message in the StackTrace.")
     else
