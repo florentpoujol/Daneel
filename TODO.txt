@@ -19,8 +19,6 @@ IDEAS
         config.debug.defaultLineModel
         DrawCircle( position, radius, nbofsegment, model )
 
-    - gameObject:GetId() : retourne la variable inner
-
     -----
     GUI
 
@@ -104,7 +102,6 @@ IDEAS
 ==========
 A implémenter
     
-     - remplacer variable inner des composants GUI par ID   
 
 ==========
 A tester
@@ -112,6 +109,8 @@ A tester
     - voir pourquoi certains easeType renvoient des erreurs
     - getscriptedbehavior avec string qui ne sont pas des scripts
     - suppression d'un gameObject mais l'un de ses composant (détruit) avec lui est encore enregistré pour certains events
+    - GO.GetwithTag()
+
 
 ==========
 A modifier/ajouter dans la doc :

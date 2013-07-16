@@ -88,7 +88,7 @@ function Behavior:GetGameObjectsInRange( tags, range )
         tags = self.tags
     end
     if type( tags ) == "string" then
-        tags = tags:split( ",", true )
+        tags = { tags }
     end
 
     range = Daneel.Debug.CheckOptionalArgType( range, "range", "number", errorHead, self.range )
