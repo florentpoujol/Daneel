@@ -990,7 +990,7 @@ function Daneel.Lang.Get(key, replacements)
 
     local keys = key:split(".")
     local language = currentLanguage
-    if keys[1]:isoneof(config.language.languageNames) then
+    if table.containsvalue( config.language.languageNames, keys[1] ) then
         language = table.remove(keys, 1)
     end
     
@@ -1098,6 +1098,11 @@ Daneel.Cache = {
     totable = {},
     ucfirst = {},
     lcfirst = {},
+    -- with assets, the key may be :
+    -- the asset object itself, the value is true
+    -- or the asset name, the value is a table with the asset type as keys and asset object as values
+    -- (allows to assets to have the same name)
+    assets = {},
 }
 
 
@@ -1141,6 +1146,7 @@ function Daneel.Load()
         config.daneelComponentObjects
     )
     config.componentTypes = table.getkeys(config.componentObjects)
+    config.craftStudioComponentTypes = table.getkeys( config.craftStudioComponentObjects )
     config.daneelComponentTypes = table.getkeys(config.daneelComponentObjects)
     config.assetTypes = table.getkeys(config.assetObjects)
     
