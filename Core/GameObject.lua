@@ -10,7 +10,7 @@ function GameObject.__tostring(gameObject)
     -- do not use gameObject:GetID() here, it throws a stack overflow when stacktrace is enabled (BeginFunction uses tostring() on the input argument)
     local id = gameObject.Id
     if id == nil then
-        id = tostring( gameObject.inner ):sub( 3, 50 )
+        id = tostring( gameObject.inner ):sub( 5, 50 )
     end
     return "GameObject: " .. id .. ": '" .. gameObject:GetName() .. "'"
 end
@@ -143,7 +143,11 @@ function GameObject.Set( gameObject, params )
         if params[componentType] ~= nil then
             Daneel.Debug.CheckArgType( params[componentType], "params."..componentType, "table", errorHead )
 
-            component = gameObject:GetComponent( componentType )
+            component = gameObject[ componentType ]
+            if component == nil then
+                component = gameObject:GetComponent( componentType )
+            end
+
             if component == nil then
                 component = gameObject:AddComponent( componentType, params[componentType] )
             else
@@ -400,12 +404,12 @@ end
 -- @param params [optional] (string, Script or table) A table of parameters to initialize the new component with or, if componentType is 'ScriptedBehavior', the mandatory script name or asset.
 -- @return (One of the component types) The component.
 function GameObject.AddComponent( gameObject, componentType, params )
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.AddComponent", gameObject, componentType, params)
+    Daneel.Debug.StackTrace.BeginFunction( "GameObject.AddComponent", gameObject, componentType, params )
     local errorHead = "GameObject.AddComponent( gameObject, componentType[, params] ) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckArgType(componentType, "componentType", "string", errorHead)
-    componentType = Daneel.Debug.CheckArgValue(componentType, "componentType", config.componentTypes, errorHead)
-    Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
+    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
+    Daneel.Debug.CheckArgType( componentType, "componentType", "string", errorHead ) 
+    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", config.componentTypes, errorHead )
+    Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead )
 
     if componentType == "Transform" and DEBUG == true then
         print( errorHead.."Can't add a transform component because gameObjects may only have one transform." )
@@ -420,8 +424,8 @@ function GameObject.AddComponent( gameObject, componentType, params )
 
     local component = nil
 
-    if componentType:isoneof( config.daneelComponentTypes ) then
-        component = Daneel.GUI[componentType].New( gameObject )
+    if table.containsvalue( config.daneelComponentTypes, componentType ) then
+        component = Daneel.GUI[ componentType ].New( gameObject )
     else
         component = gameObject:CreateComponent( componentType )
 
