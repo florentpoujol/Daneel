@@ -10,7 +10,7 @@ function GameObject.__tostring(gameObject)
     -- do not use gameObject:GetID() here, it throws a stack overflow when stacktrace is enabled (BeginFunction uses tostring() on the input argument)
     local id = gameObject.Id
     if id == nil then
-        id = Danel.Utilities.ToNumber( gameObject.inner )
+        id = tostring( gameObject.inner ):sub( 3, 50 )
     end
     return "GameObject: " .. id .. ": '" .. gameObject:GetName() .. "'"
 end
@@ -21,6 +21,16 @@ function GameObject.__index( gameObject, key )
         return GameObject[ key ]
     end
 
+    -- maybe the key is a script alias
+    local path = config.scriptPaths[ key ]
+    if path ~= nil then
+        local behavior = gameObject:GetScriptedBehavior( path, true )
+        if behavior ~= nil then
+            rawset( gameObject, key, behavior )
+            return behavior
+        end
+    end
+
     local ucKey = key:ucfirst()
     if key ~= ucKey then
         local funcName = "Get" .. ucKey
@@ -29,18 +39,6 @@ function GameObject.__index( gameObject, key )
         end
     end
 
-    -- maybe the key is a script alias or path
-    local path = config.scriptPaths[ key ]
-    if path == nil then
-        path = key
-    end
-
-    local behavior = gameObject:GetScriptedBehavior( path, true )
-    if behavior ~= nil then
-        rawset( gameObject, key, behavior )
-        return behavior
-    end
-    
     return nil
 end
 

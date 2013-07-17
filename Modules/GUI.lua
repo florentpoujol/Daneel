@@ -341,7 +341,7 @@ function DaneelGUI.Toggle.New( gameObject )
     
     gameObject.toggle = toggle
     gameObject:AddTag( "mouseInteractive" )
-    if gameObject[ config.gui.behaviorPaths.toggle ] == nil then
+    if gameObject:GetScriptedBehavior( config.gui.behaviorPaths.toggle ) == nil then
         gameObject:AddScriptedBehavior( config.gui.behaviorPaths.toggle )
     end
 
@@ -668,7 +668,7 @@ function DaneelGUI.Slider.New(gameObject)
     
     gameObject.slider = slider
     gameObject:AddTag("mouseInteractive")
-    if gameObject[ config.gui.behaviorPaths.slider ] == nil then
+    if gameObject:GetScriptedBehavior( config.gui.behaviorPaths.slider ) == nil then
         gameObject:AddScriptedBehavior( config.gui.behaviorPaths.slider )
     end
     
