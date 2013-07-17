@@ -24,15 +24,14 @@ end
 -- @param s (string) The string.
 -- @return (table) The table.
 function string.totable(s)
-    Daneel.Debug.StackTrace.BeginFunction("string.totable", s)
-    Daneel.Debug.CheckArgType(s, "string", "string", "string.totable(string)")
+    Daneel.Debug.StackTrace.BeginFunction( "string.totable", s )
+    Daneel.Debug.CheckArgType( s, "string", "string", "string.totable( string )" )
 
-    local strLen = s:len()
-    local t = table.new()
-    for i = 1, strLen do
-        table.insert(t, s:sub(i, i))
+    local t = {}
+    for i = 1, #s do
+        table.insert( t, s:sub( i, i ) )
     end 
-    Daneel.Debug.StackTrace.EndFunction("string.totable", t)
+    Daneel.Debug.StackTrace.EndFunction()
     return t
 end
 
@@ -58,14 +57,14 @@ end
 -- @param s (string) The string.
 -- @return (string) The string.
 function string.ucfirst(s)
-    Daneel.Debug.StackTrace.BeginFunction("string.ucfirst", s)
-    local errorHead = "string.ucfirst(string) : "
-    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
+    Daneel.Debug.StackTrace.BeginFunction( "string.ucfirst", s )
+    local errorHead = "string.ucfirst( string ) : "
+    Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
 
     local t = s:totable()
     t[1] = t[1]:upper()
-    s = t:concat()
-    Daneel.Debug.StackTrace.EndFunction("string.ucfirst", s)
+    s = table.concat( t )
+    Daneel.Debug.StackTrace.EndFunction()
     return s
 end
 
@@ -79,7 +78,7 @@ function string.lcfirst(s)
 
     local t = s:totable()
     t[1] = t[1]:lower()
-    s = t:concat()
+    s = table.concat( t )
     Daneel.Debug.StackTrace.EndFunction("string.lcfirst", s)
     return s
 end
