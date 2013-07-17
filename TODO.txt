@@ -103,8 +103,9 @@ IDEAS
 A implémenter
     
     
-    -voir fonctionnement de l'ID chez les tweeners
-    
+    - voir fonctionnement de l'ID chez les tweeners
+    - argument checkInterval sur MouseInput
+
 
 ==========
 A tester
@@ -119,11 +120,12 @@ A tester
 A modifier/ajouter dans la doc :
 
     - Example project : minimalist encounter
-    GameObject.GetWithTag()
-    GameObject.Tags
+
 
 =========
 BUGS
+
+    -- ajouter un TextArea via le scripted behavior renvoie l'exception :
 
     - parfois, une ligne de la stacktrace n'est pas complète : #04 GameObject.Ge)
         > quadn argument attendus est nil ?

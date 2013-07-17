@@ -105,7 +105,6 @@ function DaneelConfig()
 
         tween = {
             tweener = {
-                id = 0, -- can be anything, not restricted to numbers
                 isEnabled = true, -- a disabled tweener won't update but the function like Play(), Pause(), Complete(), Destroy() will have no effect
                 isPaused = false,
 

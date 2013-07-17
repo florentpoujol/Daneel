@@ -5,7 +5,6 @@ function DaneelConfigModuleTween()
     return {
         tween = {
             tweener = {
-                id = 0, -- can be anything, not restricted to numbers
                 isEnabled = true, -- a disabled tweener won't update but the function like Play(), Pause(), Complete(), Destroy() will have no effect
                 isPaused = false,
 
@@ -28,6 +27,7 @@ function DaneelConfigModuleTween()
                 ------------
                 -- "read-only" properties or properties the user has no interest to change the value of
 
+                Id = -1, -- can be anything, not restricted to numbers
                 hasStarted = false,
                 isCompleted = false,
                 elapsed = 0, -- elapsed time or frame (in durationType unit), delay excluded
@@ -179,10 +179,8 @@ DaneelTween.Tweener.__index = DaneelTween.Tweener
 setmetatable(DaneelTween.Tweener, { __call = function(Object, ...) return Object.New(...) end })
 
 function DaneelTween.Tweener.__tostring(tweener)
-    return "Tweener id:'"..tweener.id.."'"
+    return "Tweener: " .. tweener.Id
 end
-
-local tweenerId = 0
 
 --- Creates a new tweener via one of the three allowed constructors : <br>
 -- Tweener.New(target, property, endValue, duration[, params]) <br>
@@ -200,8 +198,7 @@ function DaneelTween.Tweener.New(target, property, endValue, duration, params)
     
     local tweener = table.copy(config.tween.tweener)
     setmetatable(tweener, Daneel.Tween.Tweener)
-    tweenerId = tweenerId + 1
-    tweener.id = tweenerId
+    tweener.Id = math.round( math.randomrange( 100000, 999999 ) )
 
     -- three constructors :
     -- target, property, endValue, duration[, params]
@@ -240,7 +237,7 @@ function DaneelTween.Tweener.New(target, property, endValue, duration, params)
         end
     end
     
-    Daneel.Tween.Tweener.tweeners[tweener.id] = tweener
+    Daneel.Tween.Tweener.tweeners[tweener.Id] = tweener
     Daneel.Debug.StackTrace.EndFunction()
     return tweener
 end
@@ -347,7 +344,7 @@ function DaneelTween.Tweener.Destroy(tweener)
     tweener.target = nil
     tweener.duration = 0
     table.removevalue(Daneel.Tween.Tweener.tweeners, tweener)
-    Daneel.Tween.Tweener.tweeners[tweener.id] = nil
+    Daneel.Tween.Tweener.tweeners[tweener.Id] = nil
     CraftStudio.Destroy(tweener)
     Daneel.Debug.StackTrace.EndFunction()
 end
@@ -430,7 +427,7 @@ function DaneelTween.Timer.New(duration, callback, isInfiniteLoop, params)
     local tweener = table.copy(config.tween.tweener)
     setmetatable(tweener, Daneel.Tween.Tweener)
     tweenerId = tweenerId + 1
-    tweener.id = "Timer"..tweenerId
+    tweener.Id = "Timer"..tweenerId
     tweener.startValue = duration
     tweener.endValue = 0
     tweener.duration = duration
@@ -444,7 +441,7 @@ function DaneelTween.Timer.New(duration, callback, isInfiniteLoop, params)
         tweener:Set(params)
     end
 
-    Daneel.Tween.Tweener.tweeners[tweener.id] = tweener
+    Daneel.Tween.Tweener.tweeners[tweener.Id] = tweener
     Daneel.Debug.EndFunction()
     return tweener
 end
@@ -479,7 +476,7 @@ function DaneelTween.Timer.New(duration, callback, isInfiniteLoop, params)
     local tweener = table.copy(config.tween.tweener)
     setmetatable(tweener, Daneel.Tween.Tweener)
     tweenerId = tweenerId + 1
-    tweener.id = "Timer"..tweenerId
+    tweener.Id = "Timer"..tweenerId
     tweener.startValue = 0
     tweener.endValue = 0
     tweener.duration = duration
@@ -493,7 +490,7 @@ function DaneelTween.Timer.New(duration, callback, isInfiniteLoop, params)
         tweener:Set(params)
     end
     
-    Daneel.Tween.Tweener.tweeners[tweener.id] = tweener
+    Daneel.Tween.Tweener.tweeners[tweener.Id] = tweener
     Daneel.Debug.StackTrace.EndFunction()
     return tweener
 end
