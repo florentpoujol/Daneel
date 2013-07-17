@@ -23,14 +23,20 @@ end
 --- Turn a string into a table, one character per index.
 -- @param s (string) The string.
 -- @return (table) The table.
-function string.totable(s)
+function string.totable( s )
+    if Daneel.Cache.totable[s] ~= nil then
+        return Daneel.Cache.totable[s]
+    end
+
     Daneel.Debug.StackTrace.BeginFunction( "string.totable", s )
     Daneel.Debug.CheckArgType( s, "string", "string", "string.totable( string )" )
 
     local t = {}
     for i = 1, #s do
         table.insert( t, s:sub( i, i ) )
-    end 
+    end
+    Daneel.Cache.totable[s] = t
+
     Daneel.Debug.StackTrace.EndFunction()
     return t
 end
@@ -56,14 +62,20 @@ end
 --- Turn the first letter of the string uppercase.
 -- @param s (string) The string.
 -- @return (string) The string.
-function string.ucfirst(s)
+function string.ucfirst( s )
+    if Daneel.Cache.ucfirst[s] ~= nil then
+        return Daneel.Cache.ucfirst[s]
+    end
+
     Daneel.Debug.StackTrace.BeginFunction( "string.ucfirst", s )
     local errorHead = "string.ucfirst( string ) : "
     Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
 
     local t = s:totable()
     t[1] = t[1]:upper()
-    s = table.concat( t )
+    local ns = table.concat( t ) -- ns = new string
+    Daneel.Cache.ucfirst[s] = ns
+
     Daneel.Debug.StackTrace.EndFunction()
     return s
 end
@@ -71,14 +83,20 @@ end
 --- Turn the first letter of the string lowercase.
 -- @param s (string) The string.
 -- @return (string) The string.
-function string.lcfirst(s)
-    Daneel.Debug.StackTrace.BeginFunction("string.lcfirst", s)
-    local errorHead = "string.lcfirst(string) : "
-    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
+function string.lcfirst( s )
+    if Daneel.Cache.lcfirst[s] ~= nil then
+        return Daneel.Cache.lcfirst[s]
+    end
+
+    Daneel.Debug.StackTrace.BeginFunction( "string.lcfirst", s )
+    local errorHead = "string.lcfirst( string ) : "
+    Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
 
     local t = s:totable()
     t[1] = t[1]:lower()
-    s = table.concat( t )
+    local ns = table.concat( t )
+    Daneel.Cache.lcfirst[s] = ns
+
     Daneel.Debug.StackTrace.EndFunction("string.lcfirst", s)
     return s
 end

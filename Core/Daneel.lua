@@ -972,6 +972,10 @@ end
 
 Daneel.Lang = { lines = {}, gameObjectsToUpdate = {} }
 
+Daneel.Event.Listen( "OnSceneLoad", function()
+    Daneel.Lang.gameObjectsToUpdate = {}
+end )
+
 --- Get the localized line identified by the provided key.
 -- @param key (string) The language key.
 -- @param replacements [optional] (table) The placeholders and their replacements.
@@ -1083,12 +1087,20 @@ Daneel.Time = {
     timeScale = 1.0,
 
     frameCount = 0,
-
-    timedUpdates = {
-        -- scriptedBehavior = { timedDeltaTime, lastTimedUpdate } 
-    },
 }
 -- see below in Daneel.Update()
+
+
+----------------------------------------------------------------------------------
+-- Cache
+
+Daneel.Cache = {
+    totable = {},
+    ucfirst = {},
+    lcfirst = {},
+}
+
+
 
 
 ----------------------------------------------------------------------------------
@@ -1172,7 +1184,8 @@ function Daneel.Load()
                 -- do not use component:GetId() here, it throws a stack overflow when stacktrace is enabled (BeginFunction uses tostring() on the input argument)
                 local id = component.Id
                 if id == nil then
-                    id = Daneel.Utilities.ToNumber( component.inner )
+                    --id = Daneel.Utilities.ToNumber( component.inner )
+                    id = tostring( component.inner ):sub(2, 20)
                 end
                 return componentType .. ": " .. id
             end
@@ -1243,7 +1256,6 @@ function Daneel.Awake()
 
     Daneel.Event.Listen("OnSceneLoad", function()
         GameObject.Tags = {}
-        Daneel.Lang.gameObjectsToUpdate = {}
     end)
 
 
