@@ -466,88 +466,45 @@ end
 
 
 ----------------------------------------------------------------------------------
--- Set Component
-
---- Set the component of the provided type on the gameObject with the provided parameters.
--- @param gameObject (GameObject) The game object.
--- @param componentType (string) The component type.
--- @param params (string, Script or table) A table of parameters to set the component with or, if componentType is 'ScriptedBehavior', the script name or asset.
--- @param scriptedBehaviorParams [optional] (table) If componentType is 'ScriptedBehavior', the mandatory table of parameters to set the ScriptedBehavior with.
-function GameObject.SetComponent(gameObject, componentType, params, scriptedBehaviorParams)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.SetComponent", gameObject, componentType, params, scriptedBehaviorParams)
-    local errorHead = "GameObject.SetComponent(gameObject, componentType, params[, scriptedBehaviorParams]) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckArgType(componentType, "componentType", "string", errorHead)
-    componentType = Daneel.Debug.CheckArgValue(componentType, "componentType", config.componentTypes, errorHead)
-    
-    local component = nil
-
-    -- ScriptedBehavior
-    if componentType == "ScriptedBehavior" then
-        Daneel.Debug.CheckArgType(params, "params", {"string", "Script"}, errorHead)
-        local script = Asset.Get(params, "Script")
-        Daneel.Debug.CheckArgType(scriptedBehaviorParams, "scriptedBehaviorParams", "table", errorHead)
-        params = scriptedBehaviorParams
-        component = gameObject:GetScriptedBehavior(script)
-        
-    -- other componentTypes
-    else
-        Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
-        component = gameObject:GetComponent(componentType)
-    end
-
-    if component == nil then
-        error(errorHead.."Component of type '"..componentType.."' was not found.")
-    else
-        component:Set(params)
-    end
-
-    Daneel.Debug.StackTrace.EndFunction("GameObject.SetComponent")
-end
-
---- Set the ScriptedBehavior component on the gameObject with the provided parameters.
--- @param gameObject (GameObject) The game object.
--- @param scriptNameOrAsset (string or Script) The script name or asset.
--- @param params (table) A table of parameters to set the component with.
-function GameObject.SetScriptedBehavior(gameObject, scriptNameOrAsset, params)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.SetScriptedBehavior", gameObject, scriptNameOrAsset, params)
-    local errorHead = "GameObject.SetScriptedBehavior(gameObject, scriptNameOrAsset, params) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    
-    local component = gameObject:SetComponent("ScriptedBehavior", scriptNameOrAsset, params)
-    Daneel.Debug.StackTrace.EndFunction("GameObject.SetScriptedBehavior")
-end
-
-
-----------------------------------------------------------------------------------
 -- Get components
+
+local OriginalGetComponent = GameObject.GetComponent
 
 --- Get the first component of the provided type attached to the gameObject.
 -- @param gameObject (GameObject) The game object.
 -- @param componentType (string) The component type.
--- @param scriptNameOrAsset [optional] (string or Script) If componentType is "ScriptedBehavior", the mandatory script name or asset.
--- @return (ScriptedBehavior, ModelRenderer, MapRenderer, Camera, Transform or Physics) The component instance, or nil if none is found.
-function GameObject.GetComponent(gameObject, componentType, scriptNameOrAsset)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.GetComponent", gameObject, componentType, scriptNameOrAsset)
-    local errorHead = "GameObject.GetComponent(gameObject, componentType[, scriptNameOrAsset]) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckArgType(componentType, "componentType", "string", errorHead)
-    componentType = Daneel.Debug.CheckArgValue(componentType, "componentType", config.componentTypes, errorHead)
+-- @return (One of the component types) The component instance, or nil if none is found.
+function GameObject.GetComponent( gameObject, componentType )
+    Daneel.Debug.StackTrace.BeginFunction( "GameObject.GetComponent", gameObject, componentType )
+    local errorHead = "GameObject.GetComponent( gameObject, componentType ) : "
+    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
+    Daneel.Debug.CheckArgType( componentType, "componentType", "string", errorHead )
+    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", config.componentTypes, errorHead )
     
-    local component = nil
-    if componentType == "ScriptedBehavior" then
-        Daneel.Debug.CheckArgType(scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead)
-        component = gameObject:GetScriptedBehavior(scriptNameOrAsset)
-    else
-        component = gameObject[componentType:lcfirst()]
+    if componentType == "ScriptedBehavior" and DEBUG == true then
+        print( errorHead.."Can't get a ScriptedBehavior via 'GameObject.GetComponent()'. Use 'GameObject.GetScriptedBehavior()' instead." )
+        Daneel.Debug.StackTrace.EndFunction()
+        return nil
     end
-    Daneel.Debug.StackTrace.EndFunction("GameObject.GetComponent", component)
+
+    local lcComponentType = componentType:lcfirst()
+    local component = gameObject[ lcComponentType ]
+    
+    if component == nil then
+        component = OriginalGetComponent( gameObject, componentType )
+
+        if component ~= nil then
+            gameObject[ lcComponentType ] = component
+        end
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()
     return component
 end
 
 local OriginalGetScriptedBehavior = GameObject.GetScriptedBehavior
 
---- Get the provided ScriptedBehavior instance attached to the gameObject.
+--- Get the provided scripted behavior instance attached to the gameObject.
 -- @param gameObject (GameObject) The game object.
 -- @param scriptNameOrAsset (string or Script) The script name or asset.
 -- @return (ScriptedBehavior) The ScriptedBehavior instance.
