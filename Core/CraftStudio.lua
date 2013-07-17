@@ -144,7 +144,7 @@ end
 function Component.GetId( component )
     Daneel.Debug.StackTrace.BeginFunction( "Component.GetId", component )
     local errorHead = "Component.GetId( component ) : "
-    local argType = Daneel.Debug.CheckArgType( component, "component", config.componentTypes, errorHead )
+    Daneel.Debug.CheckArgType( component, "component", config.componentTypes, errorHead )
 
     if component.Id ~= nil then
         Daneel.Debug.StackTrace.EndFunction()

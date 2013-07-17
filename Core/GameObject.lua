@@ -10,7 +10,8 @@ function GameObject.__tostring(gameObject)
     -- do not use gameObject:GetID() here, it throws a stack overflow when stacktrace is enabled (BeginFunction uses tostring() on the input argument)
     local id = gameObject.Id
     if id == nil then
-        id = tostring( gameObject.inner ):sub( 5, 50 )
+        id = tostring( gameObject.inner ):sub( 5, 20 )
+        gameObject.Id = id
     end
     return "GameObject: " .. id .. ": '" .. gameObject:GetName() .. "'"
 end

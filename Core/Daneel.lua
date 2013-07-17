@@ -1190,8 +1190,8 @@ function Daneel.Load()
                 -- do not use component:GetId() here, it throws a stack overflow when stacktrace is enabled (BeginFunction uses tostring() on the input argument)
                 local id = component.Id
                 if id == nil then
-                    --id = Daneel.Utilities.ToNumber( component.inner )
-                    id = tostring( component.inner ):sub(2, 20)
+                    id = tostring( component.inner ):sub( 5, 20 )
+                    component.Id = id
                 end
                 return componentType .. ": " .. id
             end
