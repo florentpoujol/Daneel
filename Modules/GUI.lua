@@ -867,7 +867,7 @@ function DaneelGUI.TextArea.New( gameObject )
     setmetatable( textArea, Daneel.GUI.TextArea )
 
     gameObject:AddComponent( "TextRenderer" ) -- used to store the TextRenderer properties and mesure the lines length in SetText()
-    textArea:Set( config.gui.textArea )
+    textArea:Set( table.copy( config.gui.textArea ) )
 
     gameObject.textArea = textArea
     Daneel.Debug.StackTrace.EndFunction()
@@ -886,7 +886,7 @@ function DaneelGUI.TextArea.SetText( textArea, text )
     textArea.Text = text
 
     local lines = { text }
-    if textArea.newLine ~= nil and textArea.newLine ~= "" then
+    if textArea.newLine ~= "" then
         lines = text:split( textArea.NewLine )
     end
 
@@ -954,7 +954,7 @@ function DaneelGUI.TextArea.SetText( textArea, text )
             lineRenderers[i].gameObject.transform:SetLocalPosition( Vector3:New( 0, offset, 0 ) )
             lineRenderers[i]:SetText( line )
         else
-            local newLineGO = GameObject.New( "TextAreaLine-" .. textArea.inner .. "-" .. i, {
+            local newLineGO = GameObject.New( "TextAreaLine-" .. textArea.Id .. "-" .. i, {
                 parent = gameObject,
                 transform = {
                     localPosition = Vector3:New( 0, offset, 0 )
@@ -1001,10 +1001,12 @@ function DaneelGUI.TextArea.SetAreaWidth( textArea, areaWidth )
     if areaWidth ~= nil then
         areaWidth = math.clamp( tounit( areaWidth ), 0, 999999 )
     end
-    textArea.AreaWidth = areaWidth
 
-    if #textArea.lineRenderers > 0 then
-        textArea:SetText( textArea.Text )
+    if textArea.AreaWidth ~= areaWidth then
+        textArea.AreaWidth = areaWidth
+        if #textArea.lineRenderers > 0 then
+            textArea:SetText( textArea.Text )
+        end
     end
     Daneel.Debug.StackTrace.EndFunction()
 end
@@ -1133,7 +1135,7 @@ function DaneelGUI.TextArea.SetFont( textArea, font )
     textArea.Font = textArea.gameObject.textRenderer:GetFont()
 
     if #textArea.lineRenderers > 0 then
-        for i, textRenderer in ipairs( textArea.lineRenderers )do
+        for i, textRenderer in ipairs( textArea.lineRenderers ) do
             textRenderer:SetFont( textArea.Font )
         end
     end
@@ -1159,7 +1161,7 @@ function DaneelGUI.TextArea.SetAlignment( textArea, alignment )
     Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     Daneel.Debug.CheckArgType( alignment, "alignment", {"string", "userdata"}, errorHead )
 
-    textArea.gameObject.textRenderer:SetAlignment( font )
+    textArea.gameObject.textRenderer:SetAlignment( alignment )
     textArea.Alignment = textArea.gameObject.textRenderer:GetAlignment()
 
     if #textArea.lineRenderers > 0 then
