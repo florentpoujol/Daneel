@@ -261,7 +261,7 @@ function GameObject.GetId( gameObject )
 
     local id = -1
     if gameObject.inner ~= nil then
-        id = Daneel.Utilities.ToNumber( gameObject.inner )
+        id = tostring( gameObject.inner ):sub( 5, 20 )
         rawset( gameObject, "Id", id )
     end
 

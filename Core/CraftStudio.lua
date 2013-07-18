@@ -153,7 +153,8 @@ function Component.GetId( component )
 
     local id = -1
     if component.inner ~= nil then
-        id = Daneel.Utilities.ToNumber( component.inner )
+        id = tostring( component.inner ):sub( 5, 20 )
+        rawset( component, "Id", id )
     end
     Daneel.Debug.StackTrace.EndFunction()
     return id
