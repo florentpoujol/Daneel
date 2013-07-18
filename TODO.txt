@@ -120,15 +120,27 @@ IDEAS
     OnBecomeVisible( cameraGO )     (OnCameraEnter)
     OnBecomeInvisible( cameraGO )   (OnCameraExit)
 
+    Enable to set a near and far plane
 
+    
     ------
     Occlusion Culling
 
     Create a grid of rays based of the screen size in pixel.
     For each rays, keep the closest gameObject 
     Only render the closest GO
+    Enable to set a near and far plane
 
 
+    ------
+    Squared triggers
+
+    make the trigger create a ray from the checked GO and the trigger
+    if the ray hit, that's because the GO was outside of the trigger's model
+    if the ray don't hit, that's because the GO is inside the trigger's model, so he is in the 
+
+    Enable this on regular triggers when the 'BoxTrigger' property is true (disable the range altogether)
+    Allow to use a map or textRenderer instead of a modelRenderer
 
 
 
