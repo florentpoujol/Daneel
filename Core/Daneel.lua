@@ -1037,14 +1037,14 @@ end
 
 --- Register a gameObject to update its TextRenderer whenever the language will be updated by Daneel.Lang.Update().
 -- @param gameObject (GameObject) The gameObject.
--- @param key (string) The language key.
--- @param replacements [optional] (table) The placeholders and their replacements.
-function Daneel.Lang.RegisterForUpdate(gameObject, key, replacements)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Lang.RegisterForUpdate", gameObject, key, replacements)
-    local errorHead = "Daneel.Lang.RegisterForUpdate(gameObject, key[, replacements]) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
-    Daneel.Debug.CheckOptionalArgType(replacements, "replacements", "table", errorHead)
+-- @param key (string or function) The language key or a function which returns the new text to display.
+-- @param replacements [optional] (table) The placeholders and their replacements (has no effect when the 'key' argument is a function).
+function Daneel.Lang.RegisterForUpdate( gameObject, key, replacements )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Lang.RegisterForUpdate", gameObject, key, replacements )
+    local errorHead = "Daneel.Lang.RegisterForUpdate( gameObject, key[, replacements] ) : "
+    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
+    Daneel.Debug.CheckArgType( key, "key", {"string", "function"}, errorHead)
+    Daneel.Debug.CheckOptionalArgType( replacements, "replacements", "table", errorHead )
 
     Daneel.Lang.gameObjectsToUpdate[gameObject] = {
         key = key,
@@ -1056,21 +1056,30 @@ end
 --- Update the current language and the text of all gameObjects that have registered via Daneel.Lang.RegisterForUpdate()
 -- Fire the OnLangUpdate event.
 -- @param language (string) The new current language.
-function Daneel.Lang.Update(language)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Lang.Update", language)
-    local errorHead = "Daneel.Lang.Update(language) : "
-    Daneel.Debug.CheckArgType(language, "language", "string", errorHead)
-    language = Daneel.Debug.CheckArgValue(language, "language", config.language.languageNames, errorHead)
+function Daneel.Lang.Update( language )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Lang.Update", language )
+    local errorHead = "Daneel.Lang.Update( language ) : "
+    Daneel.Debug.CheckArgType( language, "language", "string", errorHead )
+    language = Daneel.Debug.CheckArgValue( language, "language", config.language.languageNames, errorHead )
     
     config.language.current = language
-    for gameObject, data in pairs(Daneel.Lang.gameObjectsToUpdate) do
-        if gameObject.textRenderer ~= nil then
-            gameObject.textRenderer.text = Daneel.Lang.Get(data.key, data.replacements)
+    for gameObject, data in pairs( Daneel.Lang.gameObjectsToUpdate ) do
+        elseif gameObject.textArea ~= nil then
+            gameObject.textArea:SetText( data.key() )
+
+        elseif gameObject.textRenderer ~= nil then
+            if type( data.key ) == "function" then
+                gameObject.textRenderer:SetText( data.key() )
+            else
+                gameObject.textRenderer:SetText( Daneel.Lang.Get( data.key, data.replacements ) )
+            end
+        
         elseif DEBUG then
-            print("WARNING : "..errorHead..tostring(gameObject).." does not have a TextRenderer component.")
+            print("WARNING : " .. errorHead .. tostring( gameObject ) .. " does not have a TextRenderer or TextArea component.")
         end
     end
-    Daneel.Event.Fire("OnLangUpdate")
+
+    Daneel.Event.Fire( "OnLangUpdate" )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -1104,8 +1113,6 @@ Daneel.Cache = {
     -- (allows to assets to have the same name)
     assets = {},
 }
-
-
 
 
 ----------------------------------------------------------------------------------
