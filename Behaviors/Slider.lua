@@ -5,8 +5,8 @@
 -- minValue (number) [default=0]
 -- maxValue (number) [default=100]
 -- length (string) [default="5"]
--- value (string) [default="0%"]
 -- axis (string) [default="x"]
+-- value (string) [default="0%"]
 
 function Behavior:Awake()
 	if self.gameObject.slider == nil then

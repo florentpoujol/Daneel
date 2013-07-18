@@ -5,7 +5,7 @@
 -- minValue (number) [default=0]
 -- maxValue (number) [default=100]
 -- minLength (string) [default="0"]
--- maxLength (string) [default="10"]
+-- maxLength (string) [default="5"]
 -- height (string) [default="1"]
 -- progress (string) [default="100%"]
 

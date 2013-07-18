@@ -30,11 +30,14 @@ IDEAS
     lorsque élément pas utilisé, il a opacity, scale etc au choix dans la config, donc
       out et in state  
 
-    - scrollable windows : n'affiche que ce qui est dans une certaine zone
+    - scrollable windows : 
+        n'affiche que ce qui est dans une certaine zone
         déplacement via slider (assenseur) ou molette souris
         introduit object Rect( x, y, width, height )
-        scale à 0 les objects en dehors de la fenètre
 
+        scale à 0 les objects en dehors de la fenètre
+        > ou les cache avec un autre model par exemple
+        > ou les fenètres sont rendue par d'autres cameras dont l'object Rect
     
     -----
     TWEEN
@@ -98,7 +101,36 @@ IDEAS
 
     Function :
     Pause, Play, Restart, Destroy
-       
+    
+
+    ------
+    Frustrum Culling
+
+    - For each camera, create a "CullingMask" gameObject with a modelRenderer sized to the camera's viewport
+
+    gamObject:IsVisibleFromCamera( camera GO or component ) returns true or false, or nil if no culling mask is set
+    camera:GetVisibleGameObjects( tags ) returns the list of the gameObjects that are visible from the camera 
+
+    FrustrumCulling scripted behavior
+    public properties :
+    tags
+    cullingInterval 
+
+    Fires the following events when they leave/enter the frustrum
+    OnBecomeVisible( cameraGO )     (OnCameraEnter)
+    OnBecomeInvisible( cameraGO )   (OnCameraExit)
+
+
+    ------
+    Occlusion Culling
+
+    Create a grid of rays based of the screen size in pixel.
+    For each rays, keep the closest gameObject 
+    Only render the closest GO
+
+
+
+
 
 ==========
 A implémenter

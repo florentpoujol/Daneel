@@ -77,7 +77,7 @@ function string.ucfirst( s )
     Daneel.Cache.ucfirst[s] = ns
 
     Daneel.Debug.StackTrace.EndFunction()
-    return s
+    return ns
 end
 
 --- Turn the first letter of the string lowercase.
@@ -98,7 +98,7 @@ function string.lcfirst( s )
     Daneel.Cache.lcfirst[s] = ns
 
     Daneel.Debug.StackTrace.EndFunction("string.lcfirst", s)
-    return s
+    return ns
 end
 
 --- Split the provided string in several chunks, using the provided delimiter.

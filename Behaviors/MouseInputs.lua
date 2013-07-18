@@ -5,8 +5,8 @@
 -- and create the corresponding buttons in your project administration.
 
 -- Public properties :
--- workInterval (number) [default=10] (6 times per second)
 -- tags (string) [default="mouseInteractive"]
+-- workInterval (number) [default=10] (6 times per second)
 
 
 local interactiveGameObjects = {}

@@ -95,22 +95,22 @@ function DaneelAwakeModuleGUI()
         smallSideSize = config.gui.screenSize.x
     end
 
-    config.gui.cameraGO = GameObject.Get(config.gui.cameraName)
+    config.gui.cameraGO = GameObject.Get( config.gui.cameraName )
 
     if config.gui.cameraGO ~= nil then
         -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
         -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and scene units
-        Daneel.GUI.pixelsToUnits = config.gui.cameraGO.camera.orthographicScale / smallSideSize
+        Daneel.GUI.pixelsToUnits = config.gui.cameraGO.camera:GetOrthographicScale() / smallSideSize
         --Daneel.GUI.pixelsToUnits = config.gui.cameraGO.camera.orthographicScale / smallSideSize
 
-        config.gui.originGO = GameObject.New("HUDOrigin", { parent = config.gui.cameraGO })
-        config.gui.originGO.transform.localPosition = Vector3:New(
+        config.gui.originGO = GameObject.New( "HUDOrigin", { parent = config.gui.cameraGO } )
+        config.gui.originGO.transform:SetLocalPosition( Vector3:New(
             -config.gui.screenSize.x * Daneel.GUI.pixelsToUnits / 2, 
             config.gui.screenSize.y * Daneel.GUI.pixelsToUnits / 2,
             0
-        )
+        ) )
         -- the HUDOrigin is now at the top-left corner of the screen
-        config.gui.originPosition = config.gui.originGO.transform.position
+        config.gui.originPosition = config.gui.originGO.transform:GetPosition()
     end
 end
 
@@ -867,7 +867,7 @@ function DaneelGUI.TextArea.New( gameObject )
     setmetatable( textArea, Daneel.GUI.TextArea )
 
     gameObject:AddComponent( "TextRenderer" ) -- used to store the TextRenderer properties and mesure the lines length in SetText()
-    textArea:Set( table.copy( config.gui.textArea ) )
+    textArea:Set( config.gui.textArea )
 
     gameObject.textArea = textArea
     Daneel.Debug.StackTrace.EndFunction()

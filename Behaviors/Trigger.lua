@@ -1,6 +1,6 @@
 
 -- Public properties :
--- range (number) [default= 0]
+-- range (number) [default=0]
 -- tags (string) [default=""]
 -- checkInterval (number) [default=10]
 

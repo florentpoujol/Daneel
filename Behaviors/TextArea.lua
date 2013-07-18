@@ -12,8 +12,8 @@
 -- alignment (string) [default=""]
 -- opacity (number) [default=1.0]
 
-
-function Behavior:Awake()
+-- creating a TextArea from Awake cause an exception (collecion being modified while looping on it)
+function Behavior:Start()
 	if self.gameObject.textArea == nil then
 		local params = {
 			wordWrap = self.wordWrap,
