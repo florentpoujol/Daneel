@@ -69,6 +69,25 @@ function Asset.Get( assetName, assetType, errorIfAssetNotFound )
     return asset
 end
 
+--- Returns the path of the provided asset.
+-- @param asset (One of the asset types) The asset instance.
+-- @return (string) The fully-qualified asset path.
+function Asset.GetPath( asset )
+    if Daneel.Cache.assetPaths[ asset ] ~= nil then
+        return Daneel.Cache.assetPaths[ asset ]
+    end
+
+    Daneel.Debug.StackTrace.BeginFunction( "Asset.GetPath", asset )
+    local errorHead = "Asset.GetPath( asset ) : "
+    Daneel.Debug.CheckArgType( asset, "asset", config.assetTypes, errorHead )
+
+    local path = Map.GetPathInPackage( asset )
+    Daneel.Cache.assetPaths[ asset ] = path
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return path
+end
+
 
 ----------------------------------------------------------------------------------
 -- Components
@@ -601,12 +620,14 @@ function CraftStudio.Destroy( object )
     if Type == "GameObject" then
         object:RemoveTag()
 
-    elseif table.containsvalue( config.daneelComponentTypes, Type ) then            
-        -- if a Daneel component, must ensure that the corresponding Behavior is also removed
-        local behavior = object.gameObject:GetScriptedBehavior( "Daneel/Behaviors/" .. Type )
-        if behavior ~= nil then
-            table.removevalue( object.gameObject, behavior )
-            CraftStudio.Destroy( behavior )
+    elseif table.containsvalue( config.componentTypes, Type ) then
+        if table.containsvalue( config.daneelComponentTypes, Type ) then            
+            -- if a Daneel component, must ensure that the corresponding Behavior is also removed
+            local behavior = object.gameObject:GetScriptedBehavior( "Daneel/Behaviors/" .. Type )
+            if behavior ~= nil then
+                table.removevalue( object.gameObject, behavior )
+                CraftStudio.Destroy( behavior )
+            end
         end
 
         table.removevalue( object.gameObject, object )
@@ -615,7 +636,7 @@ function CraftStudio.Destroy( object )
     -- for all objects, remove from listener list
     Daneel.Event.Clean( object )
   
-    --setmetatable(object, nil)
+    setmetatable(object, nil)
     object.isDestroyed = true
     Daneel.Event.Fire( object, "OnDestroy" )
     OriginalDestroy( object )

@@ -1108,6 +1108,7 @@ Daneel.Cache = {
     -- or the asset name, the value is a table with the asset type as keys and asset object as values
     -- (allows to assets to have the same name)
     assets = {},
+    assetPaths = {},
 }
 
 
