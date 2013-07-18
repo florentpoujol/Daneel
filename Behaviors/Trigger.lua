@@ -21,11 +21,10 @@ end
 function Behavior:Update()
     self.frameCount = self.frameCount + 1
 
-    if self.range <= 0 or self.checkInterval < 1 or #self.tags == 0 then
-        return
-    end
-
-    if self.checkInterval > 1 and self.frameCount % self.checkInterval ~= 0 then
+    if 
+        self.range <= 0 or self.checkInterval < 1 or #self.tags == 0 or
+        ( self.checkInterval > 1 and self.frameCount % self.checkInterval ~= 0 )
+    then
         return
     end
 
