@@ -972,10 +972,6 @@ end
 
 Daneel.Lang = { lines = {}, gameObjectsToUpdate = {} }
 
-Daneel.Event.Listen( "OnSceneLoad", function()
-    Daneel.Lang.gameObjectsToUpdate = {}
-end )
-
 --- Get the localized line identified by the provided key.
 -- @param key (string) The language key.
 -- @param replacements [optional] (table) The placeholders and their replacements.
@@ -1064,7 +1060,7 @@ function Daneel.Lang.Update( language )
     
     config.language.current = language
     for gameObject, data in pairs( Daneel.Lang.gameObjectsToUpdate ) do
-        elseif gameObject.textArea ~= nil then
+        if gameObject.textArea ~= nil then
             gameObject.textArea:SetText( data.key() )
 
         elseif gameObject.textRenderer ~= nil then
@@ -1169,13 +1165,13 @@ function Daneel.Load()
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Load")
 
     -- Scripts
-    for i, path in pairs(config.scriptPaths) do
-        local script = CraftStudio.FindAsset(path, "Script")
+    for i, path in pairs( config.scriptPaths ) do
+        local script = CraftStudio.FindAsset( path, "Script" )
         if script ~= nil then
-            Daneel.Utilities.AllowDynamicGettersAndSetters(script, { Script, Component })
+            Daneel.Utilities.AllowDynamicGettersAndSetters( script, { Script, Component } )
 
-            script['__tostring'] = function(scriptedBehavior)
-                return "ScriptedBehavior"..tostring(scriptedBehavior.inner):sub(2, 20)
+            script["__tostring"] = function( scriptedBehavior )
+                return "ScriptedBehavior: " .. tostring( scriptedBehavior.inner ):sub( 2, 20 ) .. ": '" .. path .. "'"
             end
         else
             config.scriptPaths[i] = nil
@@ -1200,7 +1196,52 @@ function Daneel.Load()
                     id = tostring( component.inner ):sub( 5, 20 )
                     component.Id = id
                 end
-                return componentType .. ": " .. id
+                
+                local text = componentType .. ": " .. id
+                
+                local path = "[no asset]"
+                local pathStart = ": '"
+                local pathEnd = "'"
+                local asset = nil
+
+                if componentType == "ModelRenderer" then
+                    asset = component:GetModel()
+                    if asset ~=  nil then
+                        path = Map.GetPathInPackage( asset )
+                    else
+                        path = "[no Map]"
+                    end
+                    text = text .. pathStart .. path .. pathEnd
+
+                elseif componentType == "MapRenderer" then
+                    asset = component:GetMap()
+                    if asset ~= nil then
+                        path = Map.GetPathInPackage( asset )
+                    else
+                        path = "[no Map]"
+                    end
+                    text = text .. pathStart .. path .. pathEnd
+
+                    asset = component:GetTileSet()
+                    if asset ~= nil then
+                        path = Map.GetPathInPackage( asset )
+                    else
+                        path = "[no TileSet]"
+                    end
+                    text = text .. pathStart .. path .. pathEnd
+
+                elseif componentType == "TextRenderer" then
+                    asset = component:GetFont()
+                    if asset ~= nil then
+                        path = Map.GetPathInPackage( asset )
+                    else
+                        path = "[no Font]"
+                    end
+                    text = text .. pathStart .. path .. pathEnd
+
+                end
+
+                return text
             end
         end
     end
@@ -1213,7 +1254,7 @@ function Daneel.Load()
             -- print something like : "Model: 123456789"
             -- asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
             -- CraftStudioCommon.ProjectData. is 30 characters long
-            return tostring(asset.inner):sub(31, 60)
+            return tostring(asset.inner):sub(31, 60) .. ": '" .. Map.GetPathInPackage( asset ) .. "'"
         end
     end
 
@@ -1269,6 +1310,7 @@ function Daneel.Awake()
 
     Daneel.Event.Listen("OnSceneLoad", function()
         GameObject.Tags = {}
+        Daneel.Lang.gameObjectsToUpdate = {}
     end)
 
 

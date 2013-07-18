@@ -19,6 +19,7 @@ IDEAS
         config.debug.defaultLineModel
         DrawCircle( position, radius, nbofsegment, model )
 
+
     -----
     GUI
 
@@ -103,7 +104,6 @@ IDEAS
 A implémenter
     
     
-    - voir fonctionnement de l'ID chez les tweeners
     - argument checkInterval sur MouseInput
 
 
