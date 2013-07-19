@@ -23,7 +23,7 @@ function GameObject.__index( gameObject, key )
     end
 
     -- maybe the key is a script alias
-    local path = config.scriptPaths[ key ]
+    local path = Daneel.Config.scriptPaths[ key ]
     if path ~= nil then
         local behavior = gameObject:GetScriptedBehavior( path, true )
         if behavior ~= nil then
@@ -134,7 +134,7 @@ function GameObject.Set( gameObject, params )
     
     -- components
     local component = nil
-    local componentTypes = table.copy( config.componentTypes )
+    local componentTypes = table.copy( Daneel.Config.componentTypes )
     table.removevalue( componentTypes, "ScriptedBehavior" )
     for i, type in ipairs( componentTypes ) do
         componentTypes[i] = type:lcfirst()
@@ -161,11 +161,11 @@ function GameObject.Set( gameObject, params )
     -- all other keys/values
     for key, value in pairs( params ) do
 
-        -- if key is a script path in config.scriptPath or a script alias
-        if config.scriptPaths[key] ~= nil or table.containsvalue( config.scriptPaths, key ) then
+        -- if key is a script path in Daneel.Config.scriptPath or a script alias
+        if Daneel.Config.scriptPaths[key] ~= nil or table.containsvalue( Daneel.Config.scriptPaths, key ) then
             local scriptPath = key
-            if config.scriptPaths[key] ~= nil then
-                scriptPath = config.scriptPaths[key]
+            if Daneel.Config.scriptPaths[key] ~= nil then
+                scriptPath = Daneel.Config.scriptPaths[key]
             end
             local component = gameObject:GetScriptedBehavior( scriptPath )
             if component == nil then
@@ -409,7 +409,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
     local errorHead = "GameObject.AddComponent( gameObject, componentType[, params] ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     Daneel.Debug.CheckArgType( componentType, "componentType", "string", errorHead ) 
-    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", config.componentTypes, errorHead )
+    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead )
     Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead )
 
     if componentType == "Transform" and DEBUG == true then
@@ -425,12 +425,12 @@ function GameObject.AddComponent( gameObject, componentType, params )
 
     local component = nil
 
-    if table.containsvalue( config.daneelComponentTypes, componentType ) then
+    if table.containsvalue( Daneel.Config.daneelComponentTypes, componentType ) then
         component = Daneel.GUI[ componentType ].New( gameObject )
     else
         component = gameObject:CreateComponent( componentType )
 
-        local defaultComponentParams = config.components[ componentType:lcfirst() ]
+        local defaultComponentParams = Daneel.Config.components[ componentType:lcfirst() ]
         if defaultComponentParams ~= nil then
             params = table.merge( defaultComponentParams, params )
         end
@@ -484,7 +484,7 @@ function GameObject.GetComponent( gameObject, componentType )
     local errorHead = "GameObject.GetComponent( gameObject, componentType ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     Daneel.Debug.CheckArgType( componentType, "componentType", "string", errorHead )
-    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", config.componentTypes, errorHead )
+    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead )
     
     if componentType == "ScriptedBehavior" and DEBUG == true then
         print( errorHead.."Can't get a ScriptedBehavior via 'GameObject.GetComponent()'. Use 'GameObject.GetScriptedBehavior()' instead." )

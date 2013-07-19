@@ -196,7 +196,7 @@ function DaneelTween.Tweener.New(target, property, endValue, duration, params)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.New", target, property, endValue, duration, params)
     local errorHead = "Daneel.Tween.Tweener.New(target, property, endValue, duration[, params]) : "
     
-    local tweener = table.copy(config.tween.tweener)
+    local tweener = table.copy(Daneel.Config.tween.tweener)
     setmetatable(tweener, Daneel.Tween.Tweener)
     tweener.Id = math.round( math.randomrange( 100000, 999999 ) )
 
@@ -363,9 +363,9 @@ function DaneelTween.Tweener.Update(tweener, deltaDuration) -- the deltaDuration
 
     if Daneel.Tween.Ease[tweener.easeType] == nil then
         if DEBUG == true then
-            print("Daneel.Tween.Tweener.Update() : Easing '"..tostring(tweener.easeType).."' for tweener ID '"..tween.id.."' does not exists. Setting it back for the default easing '"..config.tween.tweener.easeType.."'.")
+            print("Daneel.Tween.Tweener.Update() : Easing '"..tostring(tweener.easeType).."' for tweener ID '"..tween.id.."' does not exists. Setting it back for the default easing '"..Daneel.Config.tween.tweener.easeType.."'.")
         end
-        tweener.easeType = config.tween.tweener.easeType
+        tweener.easeType = Daneel.Config.tween.tweener.easeType
     end
 
     if deltaDuration ~= nil then
@@ -424,7 +424,7 @@ function DaneelTween.Timer.New(duration, callback, isInfiniteLoop, params)
     Daneel.Debug.CheckArgType(callback, "callback", {"function", "userdata"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
-    local tweener = table.copy(config.tween.tweener)
+    local tweener = table.copy(Daneel.Config.tween.tweener)
     setmetatable(tweener, Daneel.Tween.Tweener)
     tweenerId = tweenerId + 1
     tweener.Id = "Timer"..tweenerId
@@ -473,7 +473,7 @@ function DaneelTween.Timer.New(duration, callback, isInfiniteLoop, params)
     Daneel.Debug.CheckArgType(callback, "callback", {"function", "userdata"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
-    local tweener = table.copy(config.tween.tweener)
+    local tweener = table.copy(Daneel.Config.tween.tweener)
     setmetatable(tweener, Daneel.Tween.Tweener)
     tweenerId = tweenerId + 1
     tweener.Id = "Timer"..tweenerId

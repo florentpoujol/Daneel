@@ -28,7 +28,7 @@ function Asset.Get( assetName, assetType, errorIfAssetNotFound )
     local errorHead = "Asset.Get( assetName[, assetType, errorIfAssetNotFound] ) : "
     
     -- just return the asset if assetName is already an object
-    if type( assetName ) == "table" and table.containsvalue( config.assetTypes, Daneel.Debug.GetType( assetName ) ) then
+    if type( assetName ) == "table" and table.containsvalue( Daneel.Config.assetTypes, Daneel.Debug.GetType( assetName ) ) then
         -- using type() in the first part of the condition just prevent GetType() and containsvalue() to be called every times
         Daneel.Cache.assets[ assetName ] = true
         Daneel.Debug.StackTrace.EndFunction()
@@ -39,14 +39,14 @@ function Asset.Get( assetName, assetType, errorIfAssetNotFound )
     -- check asset type
     if assetType ~= nil then
         Daneel.Debug.CheckArgType( assetType, "assetType", "string", errorHead )
-        assetType = Daneel.Debug.CheckArgValue( assetType, "assetType", config.assetTypes, errorHead )
+        assetType = Daneel.Debug.CheckArgValue( assetType, "assetType", Daneel.Config.assetTypes, errorHead )
     end
     Daneel.Debug.CheckOptionalArgType( errorIfAssetNotFound, "errorIfAssetNotFound", "boolean", errorHead )
 
     -- check if assetName is a script alias
     local assetNameOrScriptAlias = assetName
-    if assetType == "Script" and config.scriptPaths[ assetName ] ~= nil then
-        assetName = config.scriptPaths[ assetName ]
+    if assetType == "Script" and Daneel.Config.scriptPaths[ assetName ] ~= nil then
+        assetName = Daneel.Config.scriptPaths[ assetName ]
     end
 
     -- get asset
@@ -79,7 +79,7 @@ function Asset.GetPath( asset )
 
     Daneel.Debug.StackTrace.BeginFunction( "Asset.GetPath", asset )
     local errorHead = "Asset.GetPath( asset ) : "
-    Daneel.Debug.CheckArgType( asset, "asset", config.assetTypes, errorHead )
+    Daneel.Debug.CheckArgType( asset, "asset", Daneel.Config.assetTypes, errorHead )
 
     local path = Map.GetPathInPackage( asset )
     Daneel.Cache.assetPaths[ asset ] = path
@@ -101,7 +101,7 @@ Component.__index = Component
 function Component.Set(component, params)
     Daneel.Debug.StackTrace.BeginFunction("Component.Set", component, params)
     local errorHead = "Component.Set(component, params) : "
-    Daneel.Debug.CheckArgType(component, "component", config.componentTypes, errorHead)
+    Daneel.Debug.CheckArgType(component, "component", Daneel.Config.componentTypes, errorHead)
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
 
     local componentType = Daneel.Debug.GetType(component)
@@ -151,7 +151,7 @@ end
 function Component.Destroy(component)
     Daneel.Debug.StackTrace.BeginFunction("Component.Destroy", component)
     local errorHead = "Component.Destroy(component) : "
-    Daneel.Debug.CheckArgType(component, "component", config.componentTypes, errorHead)
+    Daneel.Debug.CheckArgType(component, "component", Daneel.Config.componentTypes, errorHead)
 
     CraftStudio.Destroy(component)
     Daneel.Debug.StackTrace.EndFunction("Component.Destroy")
@@ -163,7 +163,7 @@ end
 function Component.GetId( component )
     Daneel.Debug.StackTrace.BeginFunction( "Component.GetId", component )
     local errorHead = "Component.GetId( component ) : "
-    Daneel.Debug.CheckArgType( component, "component", config.componentTypes, errorHead )
+    Daneel.Debug.CheckArgType( component, "component", Daneel.Config.componentTypes, errorHead )
 
     if component.Id ~= nil then
         Daneel.Debug.StackTrace.EndFunction()
@@ -620,8 +620,8 @@ function CraftStudio.Destroy( object )
     if Type == "GameObject" then
         object:RemoveTag()
 
-    elseif table.containsvalue( config.componentTypes, Type ) then
-        if table.containsvalue( config.daneelComponentTypes, Type ) then            
+    elseif table.containsvalue( Daneel.Config.componentTypes, Type ) then
+        if table.containsvalue( Daneel.Config.daneelComponentTypes, Type ) then            
             -- if a Daneel component, must ensure that the corresponding Behavior is also removed
             local behavior = object.gameObject:GetScriptedBehavior( "Daneel/Behaviors/" .. Type )
             if behavior ~= nil then

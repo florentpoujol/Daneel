@@ -1,7 +1,7 @@
 
 -- Add this script as ScriptedBehavior on your camera to enable mouse interactions
 -- If it is not already done, you also need to 
--- add "LeftMouse" and/or "RightMouse" in the 'config.input.buttons' table 
+-- add "LeftMouse" and/or "RightMouse" in the 'Daneel.Config.input.buttons' table 
 -- and create the corresponding buttons in your project administration.
 
 -- Public properties :
@@ -51,7 +51,7 @@ function Behavior:OnLeftMouseButtonJustPressed()
                     
                     if 
                         gameObject.lastLeftClickFrame ~= nil and 
-                        Daneel.Time.frameCount <= gameObject.lastLeftClickFrame + config.input.doubleClickDelay
+                        Daneel.Time.frameCount <= gameObject.lastLeftClickFrame + Daneel.Config.input.doubleClickDelay
                     then
                         Daneel.Event.Fire( gameObject, "OnDoubleClick", gameObject )
                     end

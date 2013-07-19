@@ -1,8 +1,11 @@
 
 DANEEL_LOADED = false
 DEBUG = false
-config = {}
 Daneel = {}
+
+----------------------------------------------------------------------------------
+
+Daneel.Config = {}
 
 function DaneelDefaultConfig()
     return {
@@ -452,8 +455,8 @@ function Daneel.Debug.GetType(object, OnlyReturnLuaType)
                 return "ScriptedBehavior"
             end
             -- other types
-            if config.allObjects ~= nil then
-                for type, object in pairs(config.allObjects) do
+            if Daneel.Config.allObjects ~= nil then
+                for type, object in pairs(Daneel.Config.allObjects) do
                     if mt == object then
                         return type
                     end
@@ -514,7 +517,7 @@ end
 --- Returns the name as a string of the global variable (including nested tables) whose value is provided.
 -- This only works if the value of the variable is a table or a function.
 -- When the variable is nested in one or several tables (like Daneel.GUI.Hud), it must have been set in the 'userObject' table in the config if not already part of CraftStudio or Daneel.
--- @param value (table or function) Any global variable, any object from CraftStudio or Daneel or objects whose name is set in 'userObjects' in the config.
+-- @param value (table or function) Any global variable, any object from CraftStudio or Daneel or objects whose name is set in 'userObjects' in the Daneel.Config.
 -- @return (string) The name, or nil.
 function Daneel.Debug.GetNameFromValue(value)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.GetNameFromValue", value)
@@ -522,7 +525,7 @@ function Daneel.Debug.GetNameFromValue(value)
     if value == nil then
         error(errorHead.." Argument 'value' is nil.")
     end
-    local result = table.getkey(config.allObjects, value)
+    local result = table.getkey(Daneel.Config.allObjects, value)
     if result == nil then
         result = table.getkey(_G, value)
     end
@@ -597,7 +600,7 @@ Daneel.Debug.StackTrace = { messages = {} }
 -- @param functionName (string) The function name.
 -- @param ... [optional] (mixed) Arguments received by the function.
 function Daneel.Debug.StackTrace.BeginFunction( functionName, ... )
-    if DEBUG == false or config.debug.enableStackTrace == false then return end
+    if DEBUG == false or Daneel.Config.debug.enableStackTrace == false then return end
 
     if #Daneel.Debug.StackTrace.messages > 200 then 
         print( "WARNING : your StackTrace is more than 200 items long ! Emptying the StackTrace now. Did you forget to write a 'EndFunction()' somewhere ?" )
@@ -628,7 +631,7 @@ end
 
 --- Closes a successful function call, removing it from the stacktrace.
 function Daneel.Debug.StackTrace.EndFunction()
-    if DEBUG == false or config.debug.enableStackTrace == false then return end
+    if DEBUG == false or Daneel.Config.debug.enableStackTrace == false then return end
     -- since 16/05/2013 no arguments is needed anymore, since the StackTrace only keeps open functions calls and never keep returned values
     -- I didn't rewrote all the calls to EndFunction() 
     table.remove( Daneel.Debug.StackTrace.messages )
@@ -636,7 +639,7 @@ end
 
 --- Print the StackTrace.
 function Daneel.Debug.StackTrace.Print()
-    if DEBUG == false or config.debug.enableStackTrace == false then return end
+    if DEBUG == false or Daneel.Config.debug.enableStackTrace == false then return end
 
     local messages = Daneel.Debug.StackTrace.messages
     Daneel.Debug.StackTrace.messages = {}
@@ -980,13 +983,13 @@ function Daneel.Lang.Get(key, replacements)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Lang.Get", key, replacements)
     local errorHead = "Daneel.Lang.Get(key[, replacements]) : "
     Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
-    local currentLanguage = config.language.current
-    local defaultLanguage = config.language.default
-    local searchInDefault = config.language.searchInDefault
+    local currentLanguage = Daneel.Config.language.current
+    local defaultLanguage = Daneel.Config.language.default
+    local searchInDefault = Daneel.Config.language.searchInDefault
 
     local keys = key:split(".")
     local language = currentLanguage
-    if table.containsvalue( config.language.languageNames, keys[1] ) then
+    if table.containsvalue( Daneel.Config.language.languageNames, keys[1] ) then
         language = table.remove(keys, 1)
     end
     
@@ -1008,7 +1011,7 @@ function Daneel.Lang.Get(key, replacements)
             if language ~= defaultLanguage and searchInDefault == true then  
                 lines = Daneel.Lang.Get(defaultLanguage.."."..noLangKey, replacements)
             else -- already default language or don't want to search in
-                lines = config.language.keyNotFound
+                lines = Daneel.Config.language.keyNotFound
             end
 
             break
@@ -1056,9 +1059,9 @@ function Daneel.Lang.Update( language )
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Lang.Update", language )
     local errorHead = "Daneel.Lang.Update( language ) : "
     Daneel.Debug.CheckArgType( language, "language", "string", errorHead )
-    language = Daneel.Debug.CheckArgValue( language, "language", config.language.languageNames, errorHead )
+    language = Daneel.Debug.CheckArgValue( language, "language", Daneel.Config.language.languageNames, errorHead )
     
-    config.language.current = language
+    Daneel.Config.language.current = language
     for gameObject, data in pairs( Daneel.Lang.gameObjectsToUpdate ) do
         if gameObject.textArea ~= nil then
             gameObject.textArea:SetText( data.key() )
@@ -1121,13 +1124,13 @@ function Daneel.Load()
     if DANEEL_LOADED == true then return end
 
     -- load default config, modules config, then user config
-    config = DaneelDefaultConfig()
+    Daneel.Config = DaneelDefaultConfig()
     -- do this once here to get the user list of modules
     -- if Daneel.Utilities.GlobalExists("DaneelConfig") and DaneelConfig().modules ~= nil then
-    --     config.modules = table.deepmerge(config.modules, DaneelConfig().modules)
+    --     Daneel.Config.modules = table.deepmerge(Daneel.Config.modules, DaneelConfig().modules)
     -- end
 
-    for i, module in ipairs(config.modules) do
+    for i, module in ipairs(Daneel.Config.modules) do
         local functionName = "DaneelConfigModule"..module
         if Daneel.Utilities.GlobalExists(functionName) then
             config = table.deepmerge(config, _G[functionName]())
@@ -1139,34 +1142,34 @@ function Daneel.Load()
     end
 
     
-    DEBUG = config.debug.enableDebug
-    if DEBUG == true and config.debug.enableStackTrace == true then
+    DEBUG = Daneel.Config.debug.enableDebug
+    if DEBUG == true and Daneel.Config.debug.enableStackTrace == true then
         SetNewError()
     end
 
     -- Objects
-    config.componentObjects = table.merge(
-        config.craftStudioComponentObjects,
-        config.daneelComponentObjects
+    Daneel.Config.componentObjects = table.merge(
+        Daneel.Config.craftStudioComponentObjects,
+        Daneel.Config.daneelComponentObjects
     )
-    config.componentTypes = table.getkeys(config.componentObjects)
-    config.craftStudioComponentTypes = table.getkeys( config.craftStudioComponentObjects )
-    config.daneelComponentTypes = table.getkeys(config.daneelComponentObjects)
-    config.assetTypes = table.getkeys(config.assetObjects)
+    Daneel.Config.componentTypes = table.getkeys(Daneel.Config.componentObjects)
+    Daneel.Config.craftStudioComponentTypes = table.getkeys( Daneel.Config.craftStudioComponentObjects )
+    Daneel.Config.daneelComponentTypes = table.getkeys(Daneel.Config.daneelComponentObjects)
+    Daneel.Config.assetTypes = table.getkeys(Daneel.Config.assetObjects)
     
     -- all objects (for use in GetType())
-    config.allObjects = table.merge(
-        config.craftStudioObjects,
-        config.assetObjects,
-        config.daneelObjects,
-        config.componentObjects,
-        config.userObjects
+    Daneel.Config.allObjects = table.merge(
+        Daneel.Config.craftStudioObjects,
+        Daneel.Config.assetObjects,
+        Daneel.Config.daneelObjects,
+        Daneel.Config.componentObjects,
+        Daneel.Config.userObjects
     )
 
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Load")
 
     -- Scripts
-    for i, path in pairs( config.scriptPaths ) do
+    for i, path in pairs( Daneel.Config.scriptPaths ) do
         local script = CraftStudio.FindAsset( path, "Script" )
         if script ~= nil then
             Daneel.Utilities.AllowDynamicGettersAndSetters( script, { Script, Component } )
@@ -1175,15 +1178,15 @@ function Daneel.Load()
                 return "ScriptedBehavior: " .. tostring( scriptedBehavior.inner ):sub( 2, 20 ) .. ": '" .. path .. "'"
             end
         else
-            config.scriptPaths[i] = nil
+            Daneel.Config.scriptPaths[i] = nil
             if DEBUG == true then
-                print("WARNING : item with key '"..i.."' and value '"..path.."' in 'config.scriptPaths' is not a valid script path.")
+                print("WARNING : item with key '"..i.."' and value '"..path.."' in 'Daneel.Config.scriptPaths' is not a valid script path.")
             end
         end
     end
 
     -- Components
-    for componentType, componentObject in pairs(config.componentObjects) do
+    for componentType, componentObject in pairs(Daneel.Config.componentObjects) do
         -- Components getters-setter-tostring
         Daneel.Utilities.AllowDynamicGettersAndSetters(componentObject, { Component })
 
@@ -1248,7 +1251,7 @@ function Daneel.Load()
     end
 
     -- Assets
-    for assetType, assetObject in pairs(config.assetObjects) do
+    for assetType, assetObject in pairs(Daneel.Config.assetObjects) do
         Daneel.Utilities.AllowDynamicGettersAndSetters(assetObject)
 
         assetObject["__tostring"] = function(asset)
@@ -1260,7 +1263,7 @@ function Daneel.Load()
     end
 
     -- Languages
-    for i, language in ipairs(config.language.languageNames) do
+    for i, language in ipairs(Daneel.Config.language.languageNames) do
         local functionName = "DaneelLanguage"..language:ucfirst()
         if Daneel.Utilities.GlobalExists(functionName) == true then
             Daneel.Lang.lines[language] = _G[functionName]()
@@ -1268,15 +1271,15 @@ function Daneel.Load()
             print("WARNING : Can't load the language '"..language.."' because the global function "..functionName.."() does not exists.")
         end
     end
-    if config.language.default == nil then
-        config.language.default = config.language.languageNames[1]
+    if Daneel.Config.language.default == nil then
+        Daneel.Config.language.default = Daneel.Config.language.languageNames[1]
     end
-    if config.language.current == nil then
-        config.language.current = config.language.default
+    if Daneel.Config.language.current == nil then
+        Daneel.Config.language.current = Daneel.Config.language.default
     end
 
     -- Load modules 
-    for i, module in ipairs(config.modules) do
+    for i, module in ipairs(Daneel.Config.modules) do
         local functionName = "DaneelLoadModule"..module
         if Daneel.Utilities.GlobalExists(functionName) then
             _G[functionName]()
@@ -1290,11 +1293,11 @@ function Daneel.Load()
 
     -- check for module update function
     -- do this now so that I don't have to call Daneel.Utilities.GlobalExists() every frame for every modules below
-    config.moduleUpdateFunctions = {}
-    for i, module in ipairs(config.modules) do
+    Daneel.Config.moduleUpdateFunctions = {}
+    for i, module in ipairs(Daneel.Config.modules) do
         local functionName = "DaneelUpdateModule"..module
         if Daneel.Utilities.GlobalExists(functionName) and type(_G[functionName]) == "function" then
-            table.insert(config.moduleUpdateFunctions, _G[functionName])
+            table.insert(Daneel.Config.moduleUpdateFunctions, _G[functionName])
         end
     end
 
@@ -1316,7 +1319,7 @@ function Daneel.Awake()
 
 
     -- Awake modules 
-    for i, module in ipairs(config.modules) do
+    for i, module in ipairs(Daneel.Config.modules) do
         local functionName = "DaneelAwakeModule"..module
         if Daneel.Utilities.GlobalExists(functionName) then
             _G[functionName]()
@@ -1396,7 +1399,7 @@ function Daneel.Update()
 
     -- HotKeys
     -- fire an event whenever a registered button is pressed
-    for i, buttonName in ipairs(config.input.buttons) do
+    for i, buttonName in ipairs(Daneel.Config.input.buttons) do
         local ButtonName = buttonName:ucfirst()
 
         if CraftStudio.Input.WasButtonJustPressed(buttonName) then
@@ -1413,7 +1416,7 @@ function Daneel.Update()
     end
 
     -- Update modules 
-    for i, _function in ipairs(config.moduleUpdateFunctions) do
+    for i, _function in ipairs(Daneel.Config.moduleUpdateFunctions) do
         _function()
     end
 end
