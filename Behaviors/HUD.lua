@@ -1,3 +1,6 @@
+-- Last modified for :
+-- version 1.2.0
+-- released 29th July 2013
 
 -- Behavior for Daneel.GUI.Hud component.
 -- Only add to a gameObject while in the scene editor.

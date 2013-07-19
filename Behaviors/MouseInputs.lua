@@ -1,3 +1,6 @@
+-- Last modified for :
+-- version 1.2.0
+-- released 29th July 2013
 
 -- Add this script as ScriptedBehavior on your camera to enable mouse interactions
 -- If it is not already done, you also need to 
