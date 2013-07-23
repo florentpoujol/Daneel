@@ -4,12 +4,13 @@
 
 -- Add this Script to a gameObject to add tags while still in the scene editor
 
--- Public property :
--- tags (string) [default=""]
+--[[PublicProperties
+tags string ""
+/PublicProperties]]
 
 function Behavior:Awake()
-	if self.tags ~= "" then
-		local tags = self.tags:split(",", true)
-		self.gameObject:AddTag(tags)
-	end
+    if self.tags ~= "" then
+        local tags = self.tags:split(",", true)
+        self.gameObject:AddTag(tags)
+    end
 end

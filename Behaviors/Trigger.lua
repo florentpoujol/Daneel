@@ -2,11 +2,11 @@
 -- version 1.2.0
 -- released 29th July 2013
 
--- Public properties :
--- range (number) [default=0]
--- tags (string) [default=""]
--- checkInterval (number) [default=10]
-
+--[[PublicProperties
+range number 0
+tags string ""
+checkInterval number 10
+/PublicProperties]]
 
 function Behavior:Awake()
     self.GameObjectsInRange = {} -- the gameObjects that touches this trigger

@@ -7,9 +7,10 @@
 -- add "LeftMouse" and/or "RightMouse" in the 'Daneel.Config.input.buttons' table 
 -- and create the corresponding buttons in your project administration.
 
--- Public properties :
--- tags (string) [default="mouseInteractive"]
--- workInterval (number) [default=10] (6 times per second)
+--[[PublicProperties
+tags string "mouseInteractive"
+workInterval number 10
+/PublicProperties]]
 
 
 local interactiveGameObjects = {}

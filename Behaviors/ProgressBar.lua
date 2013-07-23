@@ -4,23 +4,24 @@
 
 -- Behavior for Daneel.GUI.ProgressBar component.
 
--- Public properties :
--- minValue (number) [default=0]
--- maxValue (number) [default=100]
--- minLength (string) [default="0"]
--- maxLength (string) [default="5"]
--- height (string) [default="1"]
--- progress (string) [default="100%"]
+--[[PublicProperties
+minValue number 0
+maxValue number 100
+minLength string "0"
+maxLength string "5"
+height string "1"
+progress string "100%"
+/PublicProperties]]
 
 function Behavior:Awake()
-	if self.gameObject.progressBar == nil then
-		self.gameObject:AddComponent("ProgressBar", { 
-			minValue = self.minValue,
-			maxValue = self.maxValue,
-			minLength = self.minLength,
-			maxLength = self.maxLength,
-			height = self.height,
-			progress = self.progress,
-		})
-	end
+    if self.gameObject.progressBar == nil then
+        self.gameObject:AddComponent("ProgressBar", { 
+            minValue = self.minValue,
+            maxValue = self.maxValue,
+            minLength = self.minLength,
+            maxLength = self.maxLength,
+            height = self.height,
+            progress = self.progress,
+        })
+    end
 end

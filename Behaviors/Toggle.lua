@@ -4,21 +4,22 @@
 
 -- Behavior for Daneel.GUI.Toggle component.
 
--- Public properties :
--- isChecked (boolean) [default=false]
--- text (string) [default=""]
--- group (string) [default=""]
--- checkedMark (string) [default=""]
--- uncheckedMark (string) [default=""]
--- checkedModel (string) [default=""]
--- uncheckedModel (string) [default=""]
+--[[PublicProperties
+isChecked boolean false
+text string ""
+group string ""
+checkedMark string ""
+uncheckedMark string ""
+checkedModel string ""
+uncheckedModel string ""
+/PublicProperties]]
 
 function Behavior:Awake()
-	if self.gameObject.toggle == nil then
+    if self.gameObject.toggle == nil then
         local params = {
             isChecked = self.isChecked,
         }
-		local props = {"text", "group", "checkedMark", "uncheckedMark", "checkedModel", "uncheckedModel"}
+        local props = {"text", "group", "checkedMark", "uncheckedMark", "checkedModel", "uncheckedModel"}
         for i, prop in ipairs( props ) do
             if self[ prop ]:trim() ~= "" then
                 params[ prop ] = self[ prop ]
@@ -26,7 +27,7 @@ function Behavior:Awake()
         end
         
         self.gameObject:AddComponent( "Toggle", params )
-	end
+    end
 end
 
 -- when the gameObject is clicked by the mouse
