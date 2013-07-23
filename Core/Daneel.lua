@@ -1039,13 +1039,13 @@ end
 
 --- Register a gameObject to update its TextRenderer whenever the language will be updated by Daneel.Lang.Update().
 -- @param gameObject (GameObject) The gameObject.
--- @param key (string or function) The language key or a function which returns the new text to display.
+-- @param key (string) The language key.
 -- @param replacements [optional] (table) The placeholders and their replacements (has no effect when the 'key' argument is a function).
 function Daneel.Lang.RegisterForUpdate( gameObject, key, replacements )
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Lang.RegisterForUpdate", gameObject, key, replacements )
     local errorHead = "Daneel.Lang.RegisterForUpdate( gameObject, key[, replacements] ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-    Daneel.Debug.CheckArgType( key, "key", {"string", "function"}, errorHead)
+    Daneel.Debug.CheckArgType( key, "key", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType( replacements, "replacements", "table", errorHead )
 
     Daneel.Lang.gameObjectsToUpdate[gameObject] = {
@@ -1055,7 +1055,8 @@ function Daneel.Lang.RegisterForUpdate( gameObject, key, replacements )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Update the current language and the text of all gameObjects that have registered via Daneel.Lang.RegisterForUpdate()
+--- Update the current language and the text of all gameObjects that have registered via Daneel.Lang.RegisterForUpdate().
+-- Updates the TextRenderer or GUI.TextArea component.
 -- Fire the OnLangUpdate event.
 -- @param language (string) The new current language.
 function Daneel.Lang.Update( language )
@@ -1066,18 +1067,15 @@ function Daneel.Lang.Update( language )
     
     Daneel.Config.language.current = language
     for gameObject, data in pairs( Daneel.Lang.gameObjectsToUpdate ) do
+        local text = Daneel.Lang.Get( data.key, data.replacements )
+        
         if gameObject.textArea ~= nil then
-            gameObject.textArea:SetText( data.key() )
-
+            gameObject.textArea:SetText( text )
         elseif gameObject.textRenderer ~= nil then
-            if type( data.key ) == "function" then
-                gameObject.textRenderer:SetText( data.key() )
-            else
-                gameObject.textRenderer:SetText( Daneel.Lang.Get( data.key, data.replacements ) )
-            end
+            gameObject.textRenderer:SetText( text )
         
         elseif DEBUG then
-            print("WARNING : " .. errorHead .. tostring( gameObject ) .. " does not have a TextRenderer or TextArea component.")
+            print( "WARNING : " .. errorHead .. tostring( gameObject ) .. " does not have a TextRenderer or TextArea component." )
         end
     end
 
@@ -1136,12 +1134,12 @@ function Daneel.Load()
     for i, module in ipairs(Daneel.Config.modules) do
         local functionName = "DaneelConfigModule"..module
         if Daneel.Utilities.GlobalExists(functionName) then
-            config = table.deepmerge(config, _G[functionName]())
+            Daneel.Config = table.deepmerge( Daneel.Config, _G[functionName]() )
         end
     end
     
     if Daneel.Utilities.GlobalExists("DaneelConfig") then
-        config = table.deepmerge(config, DaneelConfig())
+        Daneel.Config = table.deepmerge( Daneel.Config, DaneelConfig())
     end
 
     

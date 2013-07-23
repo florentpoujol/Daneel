@@ -19,6 +19,7 @@ IDEAS
         Daneel.Config.debug.defaultLineModel
         DrawCircle( position, radius, nbofsegment, model )
 
+    - Cache for Lang.Get()
 
     -----
     GUI
