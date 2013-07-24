@@ -478,8 +478,7 @@ function DaneelTween.Timer.New(duration, callback, isInfiniteLoop, params)
 
     local tweener = table.copy(Daneel.Config.tween.tweener)
     setmetatable(tweener, Daneel.Tween.Tweener)
-    tweenerId = tweenerId + 1
-    tweener.Id = "Timer"..tweenerId
+    tweener.Id = "Timer" .. math.round( math.randomrange( 100000, 999999 ) )
     tweener.startValue = 0
     tweener.endValue = 0
     tweener.duration = duration
