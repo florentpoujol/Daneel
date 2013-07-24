@@ -1,5 +1,9 @@
 
-function DaneelConfig()
+-- This file is an example of every configuration key/value pairs that you might be interested to tweak
+-- As this file may be overwritten in future versions, do not modify it
+-- Instead, copy it to another script and remove "_Example" in the function name
+
+function DaneelConfig_Example()
     return {
         -- List of the Scripts paths as values and optionally the script alias as the keys.
         -- Ie :
