@@ -1203,7 +1203,8 @@ function Daneel.Load()
                 end
                 
                 local text = componentType .. ": " .. id
-                
+                --[[
+                -- uncomment when the getter won't return error when the asset is not set yet
                 local path = "[no asset]"
                 local pathStart = ": '"
                 local pathEnd = "'"
@@ -1245,6 +1246,7 @@ function Daneel.Load()
                     text = text .. pathStart .. path .. pathEnd
 
                 end
+                ]]
 
                 return text
             end
