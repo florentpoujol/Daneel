@@ -489,7 +489,7 @@ function GameObject.GetComponent( gameObject, componentType )
     Daneel.Debug.CheckArgType( componentType, "componentType", "string", errorHead )
     componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead )
     
-    if componentType == "ScriptedBehavior" and DEBUG == true then
+    if componentType == "ScriptedBehavior" then
         print( errorHead.."Can't get a ScriptedBehavior via 'GameObject.GetComponent()'. Use 'GameObject.GetScriptedBehavior()' instead." )
         Daneel.Debug.StackTrace.EndFunction()
         return nil
@@ -498,7 +498,7 @@ function GameObject.GetComponent( gameObject, componentType )
     local lcComponentType = componentType:lcfirst()
     local component = gameObject[ lcComponentType ]
     
-    if component == nil then
+    if component == nil and not table.containsvalue( Daneel.Config.daneelComponentTypes, componentType ) then
         component = OriginalGetComponent( gameObject, componentType )
 
         if component ~= nil then
