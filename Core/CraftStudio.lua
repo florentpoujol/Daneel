@@ -636,12 +636,11 @@ function CraftStudio.Destroy( object )
         table.removevalue( object.gameObject, object )
     end
 
-    -- for all objects, remove from listener list
-    Daneel.Event.Clean( object )
-  
-    setmetatable(object, nil)
-    object.isDestroyed = true
     Daneel.Event.Fire( object, "OnDestroy" )
+    Daneel.Event.Clean( object ) -- remove from listener list
+    object.isDestroyed = true
+    setmetatable(object, nil)
+
     OriginalDestroy( object )
     Daneel.Debug.StackTrace.EndFunction()
 end
