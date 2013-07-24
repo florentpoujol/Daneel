@@ -997,6 +997,11 @@ function Daneel.Lang.Get(key, replacements)
     end
     
     local noLangKey = table.concat(keys, ".") -- rebuilt the key, but without the language
+    local fullKey = language .. "." .. noLangKey 
+    if replacements == nil and Daneel.Cache.lang[ fullKey ] ~= nil then
+        Daneel.Debug.StackTrace.EndFunction()
+        return Daneel.Cache.lang[ fullKey ]
+    end
 
     local lines = Daneel.Lang.lines[language]
     if lines == nil then
@@ -1031,6 +1036,8 @@ function Daneel.Lang.Get(key, replacements)
     -- process replacements
     if replacements ~= nil then
         line = Daneel.Utilities.ReplaceInString(line, replacements)
+    else
+        Daneel.Cache.lang[ fullKey ] = line
     end
 
     Daneel.Debug.StackTrace.EndFunction()
@@ -1113,6 +1120,7 @@ Daneel.Cache = {
     -- (allows to assets to have the same name)
     assets = {},
     assetPaths = {},
+    lang = {},
 }
 
 
