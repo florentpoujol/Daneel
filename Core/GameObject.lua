@@ -28,7 +28,7 @@ function GameObject.__index( gameObject, key )
     -- maybe the key is a script alias
     local path = Daneel.Config.scriptPaths[ key ]
     if path ~= nil then
-        local behavior = gameObject:GetScriptedBehavior( path, true )
+        local behavior = gameObject:GetScriptedBehavior( path )
         if behavior ~= nil then
             rawset( gameObject, key, behavior )
             return behavior
@@ -458,7 +458,7 @@ function GameObject.AddScriptedBehavior( gameObject, scriptNameOrAsset, params )
     local errorHead = "GameObject.AddScriptedBehavior( gameObject, scriptNameOrAsset[, params] ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     Daneel.Debug.CheckArgType( scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead )
-    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
+    Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead )
 
     local script = Asset.Get( scriptNameOrAsset, "Script", true )
     local component = gameObject:CreateScriptedBehavior( script )
@@ -516,30 +516,18 @@ local OriginalGetScriptedBehavior = GameObject.GetScriptedBehavior
 -- @param gameObject (GameObject) The game object.
 -- @param scriptNameOrAsset (string or Script) The script name or asset.
 -- @return (ScriptedBehavior) The ScriptedBehavior instance.
-function GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset, calledFrom__index)
-    -- why do I check if the call comes from __index ?
-    if calledFrom__index ~= true then
-        Daneel.Debug.StackTrace.BeginFunction("GameObject.GetScriptedBehavior", gameObject, scriptNameOrAsset)
-        local errorHead = "GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset) : "
-        Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-        Daneel.Debug.CheckArgType(scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead)
-    end
+function GameObject.GetScriptedBehavior( gameObject, scriptNameOrAsset )
+    Daneel.Debug.StackTrace.BeginFunction( "GameObject.GetScriptedBehavior", gameObject, scriptNameOrAsset )
+    local errorHead = "GameObject.GetScriptedBehavior( gameObject, scriptNameOrAsset ) : "
+    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
+    Daneel.Debug.CheckArgType( scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead )
 
     local script = scriptNameOrAsset
-    if type(scriptNameOrAsset) == "string" then
-        script = Asset.Get(scriptNameOrAsset, "Script")
-        if script == nil then
-            if calledFrom__index == true then
-                return nil
-            else
-                error(errorHead.."Argument 'scriptNameOrAsset' : Script asset with name '"..scriptNameOrAsset.."' was not found.")
-            end 
-        end
+    if type( scriptNameOrAsset ) == "string" then
+        script = Asset.Get( scriptNameOrAsset, "Script", true )
     end
-    local component = OriginalGetScriptedBehavior(gameObject, script)
-    if calledFrom__index ~= true then
-        Daneel.Debug.StackTrace.EndFunction("GameObject.GetScriptedBehavior", component)
-    end
+    local component = OriginalGetScriptedBehavior( gameObject, script )
+    Daneel.Debug.StackTrace.EndFunction()
     return component
 end
 
