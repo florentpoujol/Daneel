@@ -623,6 +623,14 @@ function CraftStudio.Destroy( object )
     if Type == "GameObject" then
         object:RemoveTag()
 
+        for key, value in pairs( object ) do
+            if key == "transform" then
+                Daneel.Event.Clean( value )
+            elseif type( value ) == "table" and type( value.Destroy ) == "function" then
+                value:Destroy()
+            end
+        end
+
     elseif table.containsvalue( Daneel.Config.componentTypes, Type ) then
         if table.containsvalue( Daneel.Config.daneelComponentTypes, Type ) then            
             -- if a Daneel component, must ensure that the corresponding Behavior is also removed

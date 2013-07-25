@@ -156,8 +156,6 @@ A implémenter
 A tester
 
     - voir pourquoi certains easeType renvoient des erreurs
-    - getscriptedbehavior avec string qui ne sont pas des scripts
-    - suppression d'un gameObject mais l'un de ses composant (détruit) avec lui est encore enregistré pour certains events
     - GO.GetwithTag()
 
 
@@ -168,10 +166,7 @@ A modifier/ajouter dans la doc :
 =========
 BUGS
 
-    -- ajouter un TextArea via le scripted behavior renvoie l'exception :
-
-    - parfois, une ligne de la stacktrace n'est pas complète : #04 GameObject.Ge)
-        > quadn argument attendus est nil ?
+    - ajouter un TextArea via le scripted behavior renvoie l'exception :
 
 
 OLD
@@ -181,11 +176,4 @@ OLD
     > créer le scriptedBehavior de la checkBox depuis CheckBox.New() lorsqu'il existait déjà renvoie cette exception
 
     Exception non gérée : System.InvalidOperationException: La collection a été modifiée ; l'opération d'énumération peut ne pas s'exécuter.
-
-
-=========
-
-ordre chargement des fichiers :
-- dans l'ordre de création (id d'asset croissant)
-- dernier script modifié sans faire de révision depuis le dernier export est chargé en premier
 
