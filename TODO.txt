@@ -24,6 +24,9 @@ IDEAS
     -----
     GUI
 
+    - MouseInput
+        passer la camera en argument des events, en plus du gameObject
+
     - Input
         - curseur et tout ce qui va avec
     
@@ -148,9 +151,6 @@ IDEAS
 ==========
 A implémenter
     
-    
-    - argument checkInterval sur MouseInput
-
 
 ==========
 A tester
@@ -163,8 +163,6 @@ A tester
 
 ==========
 A modifier/ajouter dans la doc :
-
-    - Example project : minimalist encounter
 
 
 =========

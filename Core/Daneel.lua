@@ -982,62 +982,68 @@ Daneel.Lang = { lines = {}, gameObjectsToUpdate = {} }
 -- @param key (string) The language key.
 -- @param replacements [optional] (table) The placeholders and their replacements.
 -- @return (string) The line.
-function Daneel.Lang.Get(key, replacements)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Lang.Get", key, replacements)
-    local errorHead = "Daneel.Lang.Get(key[, replacements]) : "
-    Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
+function Daneel.Lang.Get( key, replacements )
+    if replacements == nil and Daneel.Cache.lang[ key ] ~= nil then
+        Daneel.Debug.StackTrace.EndFunction()
+        return Daneel.Cache.lang[ key ]
+    end
+
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Lang.Get", key, replacements )
+    local errorHead = "Daneel.Lang.Get( key[, replacements] ) : "
+    Daneel.Debug.CheckArgType( key, "key", "string", errorHead )
     local currentLanguage = Daneel.Config.language.current
     local defaultLanguage = Daneel.Config.language.default
     local searchInDefault = Daneel.Config.language.searchInDefault
 
-    local keys = key:split(".")
+    local keys = key:split( "." )
     local language = currentLanguage
     if table.containsvalue( Daneel.Config.language.languageNames, keys[1] ) then
-        language = table.remove(keys, 1)
+        language = table.remove( keys, 1 )
     end
     
-    local noLangKey = table.concat(keys, ".") -- rebuilt the key, but without the language
+    local noLangKey = table.concat( keys, "." ) -- rebuilt the key, but without the language
     local fullKey = language .. "." .. noLangKey 
     if replacements == nil and Daneel.Cache.lang[ fullKey ] ~= nil then
         Daneel.Debug.StackTrace.EndFunction()
         return Daneel.Cache.lang[ fullKey ]
     end
 
-    local lines = Daneel.Lang.lines[language]
+    local lines = Daneel.Lang.lines[ language ]
     if lines == nil then
-        error(errorHead.."Language '"..language.."' does not exists")
+        error( errorHead.."Language '"..language.."' does not exists" )
     end
 
     for i, _key in ipairs(keys) do
         if lines[_key] == nil then
             -- key was not found
             if DEBUG == true then
-                print(errorHead.."Localization key '"..key.."' was not found in '"..language.."' language .")
+                print( errorHead.."Localization key '"..key.."' was not found in '"..language.."' language ." )
             end
 
             -- search for it in the default language
             if language ~= defaultLanguage and searchInDefault == true then  
-                lines = Daneel.Lang.Get(defaultLanguage.."."..noLangKey, replacements)
+                lines = Daneel.Lang.Get( defaultLanguage.."."..noLangKey, replacements )
             else -- already default language or don't want to search in
                 lines = Daneel.Config.language.keyNotFound
             end
 
             break
         end
-        lines = lines[_key]
+        lines = lines[ _key ]
     end
 
-    -- line should be the searched string by now
+    -- lines should be the searched string by now
     local line = lines
-    if type(line) ~= "string" then
-        error(errorHead.."Localization key '"..key.."' does not lead to a string but to : '"..tostring(line).."'.")
+    if type( line ) ~= "string" then
+        error( errorHead.."Localization key '"..key.."' does not lead to a string but to : '"..tostring(line).."'." )
     end
 
     -- process replacements
     if replacements ~= nil then
-        line = Daneel.Utilities.ReplaceInString(line, replacements)
+        line = Daneel.Utilities.ReplaceInString( line, replacements )
     else
-        Daneel.Cache.lang[ fullKey ] = line
+        Daneel.Cache.lang[ key ] = line -- ie: "greetings.welcome"
+        Daneel.Cache.lang[ fullKey ] = line -- ie: "english.greetings.welcome"
     end
 
     Daneel.Debug.StackTrace.EndFunction()
@@ -1072,6 +1078,7 @@ function Daneel.Lang.Update( language )
     Daneel.Debug.CheckArgType( language, "language", "string", errorHead )
     language = Daneel.Debug.CheckArgValue( language, "language", Daneel.Config.language.languageNames, errorHead )
     
+    Daneel.Cache.lang = {} -- ideally only the items that do not begins by a language name should be deleted
     Daneel.Config.language.current = language
     for gameObject, data in pairs( Daneel.Lang.gameObjectsToUpdate ) do
         local text = Daneel.Lang.Get( data.key, data.replacements )
