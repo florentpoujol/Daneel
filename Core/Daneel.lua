@@ -1121,12 +1121,13 @@ Daneel.Cache = {
     totable = {},
     ucfirst = {},
     lcfirst = {},
+
     -- with assets, the key may be :
     -- the asset object itself, the value is true
     -- or the asset name, the value is a table with the asset type as keys and asset object as values
-    -- (allows to assets to have the same name)
-    assets = {},
-    assetPaths = {},
+    -- (allows two assets to have the same name)
+    assets = { ["ScriptAliases"] = {} }, -- Asset.Get()
+    assetPaths = {}, -- Asset.GetPath()
     lang = {},
 }
 

@@ -8,36 +8,40 @@
 Asset = {}
 Asset.__index = Asset
 
---- Alias of CraftStudio.FindAsset( assetName[, assetType] ).
+--- Alias of CraftStudio.FindAsset( assetPath[, assetType] ).
 -- Get the asset of the specified name and type.
 -- The first argument may be an asset object, so that you can check if a variable was an asset object or name (and get the corresponding object).
--- @param assetName (string or one of the asset type) The fully-qualified asset name or asset object.
+-- @param assetPath (string or one of the asset type) The fully-qualified asset name or asset object.
 -- @param assetType [optional] (string) The asset type as a case-insensitive string.
 -- @param errorIfAssetNotFound [optional default=false] Throw an error if the asset was not found (instead of returning nil).
 -- @return (One of the asset type) The asset, or nil if none is found.
-function Asset.Get( assetName, assetType, errorIfAssetNotFound )
-    -- the key in the cache may be the assetName or the asset Object
-    local assetCache = Daneel.Cache.assets[ assetName ]
+function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
+    -- the key in the cache may be the assetPath, the asset Object, or "ScriptAliases"
+    local assetCache = Daneel.Cache.assets[ assetPath ]
     if assetCache ~= nil then
         if type( assetCache ) == "boolean" then -- assetname is an asset  -  can't check if assetCache == true because it is otherwise a table and also returns true            
-            return assetName
+            return assetPath
         
         elseif assetType ~= nil and assetCache[ assetType ] ~= nil then
             return assetCache[ assetType ]
         end
     end
 
-    Daneel.Debug.StackTrace.BeginFunction( "Asset.Get", assetName, assetType, errorIfAssetNotFound )
-    local errorHead = "Asset.Get( assetName[, assetType, errorIfAssetNotFound] ) : "
-    
-    -- just return the asset if assetName is already an object
-    if type( assetName ) == "table" and table.containsvalue( Daneel.Config.assetTypes, Daneel.Debug.GetType( assetName ) ) then
-        -- using type() in the first part of the condition just prevent GetType() and containsvalue() to be called every times
-        Daneel.Cache.assets[ assetName ] = true
-        Daneel.Debug.StackTrace.EndFunction()
-        return assetName
+    if Daneel.Cache.assets[ "ScriptAliases" ][ assetPath ] ~= nil then
+        return Daneel.Cache.assets[ "ScriptAliases" ][ assetPath ]
     end
-    Daneel.Debug.CheckArgType( assetName, "assetName", "string", errorHead )
+
+    Daneel.Debug.StackTrace.BeginFunction( "Asset.Get", assetPath, assetType, errorIfAssetNotFound )
+    local errorHead = "Asset.Get( assetPath[, assetType, errorIfAssetNotFound] ) : "
+    
+    -- just return the asset if assetPath is already an object
+    if type( assetPath ) == "table" and table.containsvalue( Daneel.Config.assetTypes, Daneel.Debug.GetType( assetPath ) ) then
+        -- using type() in the first part of the condition just prevent GetType() and containsvalue() to be called every times
+        Daneel.Cache.assets[ assetPath ] = true
+        Daneel.Debug.StackTrace.EndFunction()
+        return assetPath
+    end
+    Daneel.Debug.CheckArgType( assetPath, "assetPath", "string", errorHead )
     
     -- check asset type
     if assetType ~= nil then
@@ -46,26 +50,37 @@ function Asset.Get( assetName, assetType, errorIfAssetNotFound )
     end
     Daneel.Debug.CheckOptionalArgType( errorIfAssetNotFound, "errorIfAssetNotFound", "boolean", errorHead )
 
-    -- check if assetName is a script alias
-    local assetNameOrScriptAlias = assetName
-    if assetType == "Script" and Daneel.Config.scriptPaths[ assetName ] ~= nil then
-        assetName = Daneel.Config.scriptPaths[ assetName ]
+    -- check if assetPath is a script alias
+    local scriptAlias = assetPath
+    if Daneel.Config.scriptPaths[ scriptAlias ] ~= nil then 
+        assetPath = Daneel.Config.scriptPaths[ scriptAlias ]
+        assetType = "Script"
     end
 
     -- get asset
-    local asset = CraftStudio.FindAsset( assetName, assetType )
+    local asset = CraftStudio.FindAsset( assetPath, assetType )
+
     if asset == nil then
         if errorIfAssetNotFound == true then
             if assetType == nil then
                 assetType = "asset"
             end
-            error( errorHead.."Argument 'assetName' : "..assetType.." with name '"..assetName.."' was not found." )
+            error( errorHead.."Argument 'assetPath' : "..assetType.." with name '"..assetPath.."' was not found." )
         end
     else
-        if Daneel.Cache.assets[ assetNameOrScriptAlias ] == nil then
-            Daneel.Cache.assets[ assetNameOrScriptAlias ] = {}
+        -- cache asset
+        if assetType == nil then
+            assetType = Daneel.Debug.GetType( asset )
         end
-        Daneel.Cache.assets[ assetNameOrScriptAlias ][ assetType ] = asset
+
+        if Daneel.Cache.assets[ assetPath ] == nil then
+            Daneel.Cache.assets[ assetPath ] = {}
+        end
+        Daneel.Cache.assets[ assetPath ][ assetType ] = asset
+
+        if scriptAlias ~= assetPath then -- scriptAlias is indeed a script alias
+            Daneel.Cache.assets[ "ScriptAliases" ][ scriptAlias ] = asset
+        end
     end
 
     Daneel.Debug.StackTrace.EndFunction()
