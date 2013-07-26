@@ -25,6 +25,7 @@ function DaneelConfigModuleTween()
                 
                 isRelative = false, -- If false, tween the value TO endValue. If true, tween the value BY endValue.
 
+                destroyOnComplete = true, -- tell wether to destroy the tweener (true) when it completes
                 destroyOnSceneLoad = true, -- tell wether to destroy the tweener (true) or keep it 'alive' (false) when the scene is changing
 
                 ------------
@@ -163,7 +164,9 @@ function DaneelTween.Update()
 
                     else
                         Daneel.Event.Fire(tweener, "OnComplete", tweener)
-                        tweener:Destroy()
+                        if tweener.destroyOnComplete then
+                            tweener:Destroy()
+                        end
                     end
                 end
             end -- end if deltaDuration > 0
@@ -312,11 +315,11 @@ end
 
 --- Complete the tweener fire the OnComple event.
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
-function DaneelTween.Tweener.Complete(tweener)
+function DaneelTween.Tweener.Complete( tweener )
     if tweener.isEnabled == false or tweener.loops == -1 then return end
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.Complete", tweener)
-    local errorHead = "Daneel.Tween.Tweener.Complete(tweener) : "
-    Daneel.Debug.CheckArgType(tweener, "tweener", "Daneel.Tween.Tweener", errorHead)
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Tween.Tweener.Complete", tweener )
+    local errorHead = "Daneel.Tween.Tweener.Complete( tweener ) : "
+    Daneel.Debug.CheckArgType( tweener, "tweener", "Daneel.Tween.Tweener", errorHead )
 
     tweener.isCompleted = true
     local endValue = tweener.endValue
@@ -329,26 +332,34 @@ function DaneelTween.Tweener.Complete(tweener)
         end
     end
     if tweener.target ~= nil then
-        SetTweenerProperty(tweener, endValue)
+        SetTweenerProperty( tweener, endValue )
     end
     tweener.value = endValue
-    Daneel.Event.Fire(tweener, "OnComplete", tweener)
+    
+    Daneel.Event.Fire( tweener, "OnComplete", tweener )
+    if tweener.destroyOnComplete then
+        tweener:Destroy()
+    end
+
     Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Destroy the tweener.
 -- @param tweener (Daneel.Tween.Tweener) The tweener.
-function DaneelTween.Tweener.Destroy(tweener)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Tweener.Destroy", tweener)
-    local errorHead = "Daneel.Tween.Tweener.Destroy(tweener) : "
-    Daneel.Debug.CheckArgType(tweener, "tweener", "Daneel.Tween.Tweener", errorHead)
+function DaneelTween.Tweener.Destroy( tweener )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Tween.Tweener.Destroy", tweener )
+    local errorHead = "Daneel.Tween.Tweener.Destroy( tweener ) : "
+    Daneel.Debug.CheckArgType( tweener, "tweener", "Daneel.Tween.Tweener", errorHead )
 
     tweener.isEnabled = false
+    tweener.isPaused = true
     tweener.target = nil
     tweener.duration = 0
-    table.removevalue(Daneel.Tween.Tweener.tweeners, tweener)
-    Daneel.Tween.Tweener.tweeners[tweener.Id] = nil
-    CraftStudio.Destroy(tweener)
+
+    table.removevalue( Daneel.Tween.Tweener.tweeners, tweener )
+    Daneel.Tween.Tweener.tweeners[ tweener.Id ] = nil
+    
+    CraftStudio.Destroy( tweener )
     Daneel.Debug.StackTrace.EndFunction()
 end
 

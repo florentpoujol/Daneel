@@ -126,6 +126,7 @@ function DaneelConfig_Example()
                 
                 isRelative = false, -- If false, tween the value TO endValue. If true, tween the value BY endValue.
 
+                destroyOnComplete = true, -- tell wether to destroy the tweener (true) when it completes
                 destroyOnSceneLoad = true, -- tell wether to destroy the tweener (true) or keep it 'alive' (false) when the scene is changing
             },
         },
