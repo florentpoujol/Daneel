@@ -359,7 +359,7 @@ local OriginalSetAlignment = TextRenderer.SetAlignment
 
 --- Set the text's alignment.
 -- @param textRenderer (TextRenderer) The textRenderer.
--- @param scale (string or TextRenderer.Alignment) The alignment. Values (case-insensitive when of type string) may be "left", "center", "right", TextRenderer.Alignment.Left, TextRenderer.Alignment.Center or TextRenderer.Alignment.Right.
+-- @param alignment (string or TextRenderer.Alignment) The alignment. Values (case-insensitive when of type string) may be "left", "center", "right", TextRenderer.Alignment.Left, TextRenderer.Alignment.Center or TextRenderer.Alignment.Right.
 function TextRenderer.SetAlignment(textRenderer, alignment)
     Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetAlignment", textRenderer, alignment)
     local errorHead = "TextRenderer.SetAlignment(textRenderer, alignment) : "

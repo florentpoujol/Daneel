@@ -314,9 +314,9 @@ function Daneel.Utilities.GlobalExists(name)
 end
 
 --- A more flexible version of Lua's built-in tonumber() function.
--- Returns the first continuous series of numbers found in the text version of the provided data een if it is prefixed or suffied by other characters.
--- @param data (mixed) Usualy string or userdata.
--- @param (number) The number, or nil.
+-- Returns the first continuous series of numbers found in the text version of the provided data even if it is prefixed or suffied by other characters.
+-- @param data (mixed) Usually string or userdata.
+-- @return (number) The number, or nil.
 function Daneel.Utilities.ToNumber( data )
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.ToNumber", data )
     local errorHead = "Daneel.Utilities.ToNumber( data ) : "
