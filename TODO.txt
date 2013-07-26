@@ -156,8 +156,6 @@ A implémenter
 A tester
 
     - voir pourquoi certains easeType renvoient des erreurs
-    - GO.GetwithTag()
-
 
 ==========
 A modifier/ajouter dans la doc :

@@ -8,7 +8,7 @@
 -- and create the corresponding buttons in your project administration.
 
 --[[PublicProperties
-tags string "mouseInteractive"
+tags string "guiComponent"
 workInterval number 10
 /PublicProperties]]
 
@@ -22,11 +22,11 @@ function Behavior:Awake()
     Daneel.Event.Listen( "OnLeftMouseButtonDown", self.gameObject )
     Daneel.Event.Listen( "OnRightMouseButtonJustPressed", self.gameObject )
     
-    -- if GameObject.Tags.mouseInteractive == nil then
-    --     -- this is just in case no gameObject already registered to the mouseInteractive tag.
-    --     GameObject.Tags.mouseInteractive = {}
+    -- if GameObject.Tags.guiComponent == nil then
+    --     -- this is just in case no gameObject already registered to the guiComponent tag.
+    --     GameObject.Tags.guiComponent = {}
     -- end
-    -- interactiveGameObjects = GameObject.Tags.mouseInteractive
+    -- interactiveGameObjects = GameObject.Tags.guiComponent
 
     if self.tags:trim() == "" then
         self.tags = {}

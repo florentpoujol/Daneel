@@ -343,7 +343,7 @@ function DaneelGUI.Toggle.New( gameObject )
     setmetatable( toggle, Daneel.GUI.Toggle )
     
     gameObject.toggle = toggle
-    gameObject:AddTag( "mouseInteractive" )
+    gameObject:AddTag( "guiComponent" )
     if gameObject:GetScriptedBehavior( Daneel.Config.gui.behaviorPaths.toggle ) == nil then
         gameObject:AddScriptedBehavior( Daneel.Config.gui.behaviorPaths.toggle )
     end
@@ -670,7 +670,7 @@ function DaneelGUI.Slider.New(gameObject)
     slider.value = Daneel.Config.gui.slider.value
     
     gameObject.slider = slider
-    gameObject:AddTag("mouseInteractive")
+    gameObject:AddTag("guiComponent")
     if gameObject:GetScriptedBehavior( Daneel.Config.gui.behaviorPaths.slider ) == nil then
         gameObject:AddScriptedBehavior( Daneel.Config.gui.behaviorPaths.slider )
     end
@@ -783,7 +783,7 @@ function DaneelGUI.Input.New( gameObject )
     setmetatable( input, Daneel.GUI.Input )
 
     gameObject.input = input
-    gameObject:AddTag( "mouseInteractive" )
+    gameObject:AddTag( "guiComponent" )
     
     Daneel.Event.Listen( "OnLeftMouseButtonJustPressed", 
         function()
