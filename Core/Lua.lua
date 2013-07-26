@@ -118,7 +118,7 @@ function string.split( s, delimiter, trim )
     Daneel.Debug.CheckOptionalArgType( trim, "trim", "boolean", errorHead )
 
     local chunks = {}
-    if s:find( delimiter ) == nil then
+    if s:find( delimiter, 1, true ) == nil then -- the 1 and true arguments are to enable the "plain text" search, so that dot is not considered as "all characters" like in regexes
         chunks = {s}
     else
         local chunk = ""

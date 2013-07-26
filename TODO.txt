@@ -19,7 +19,6 @@ IDEAS
         Daneel.Config.debug.defaultLineModel
         DrawCircle( position, radius, nbofsegment, model )
 
-    - Cache for Lang.Get()
 
     -----
     GUI
@@ -42,7 +41,8 @@ IDEAS
         scale à 0 les objects en dehors de la fenètre
         > ou les cache avec un autre model par exemple
         > ou les fenètres sont rendue par d'autres cameras dont l'object Rect
-    
+
+
     -----
     TWEEN
 
