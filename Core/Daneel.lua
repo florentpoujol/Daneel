@@ -764,49 +764,56 @@ end
 -- @param object [optional] (table, function or userdata) The object to which fire the event at. If nil or abscent, will send the event to its listeners.
 -- @param eventName (string) The event name.
 -- @param ... [optional] Some arguments to pass along.
-function Daneel.Event.Fire(object, eventName,  ...)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Fire", object, eventName, unpack(arg))
-    local errorHead = "Daneel.Event.Fire([object, ]eventName[, ...]) : "
+function Daneel.Event.Fire( object, eventName,  ... )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Event.Fire", object, eventName, unpack( arg ) )
+    local errorHead = "Daneel.Event.Fire( [object, ]eventName[, ...] ) : "
     
-    local argType = type(object)
+    local argType = type( object )
     if argType == "string" or argType == "nil" then
         -- no object provided, fire on the listeners
         if eventName ~= nil then
-            table.insert(arg, 1, eventName)
+            table.insert( arg, 1, eventName )
         end
         eventName = object
         object = nil
+
     elseif argType == "function" or argType == "userdata" then
         if eventName ~= nil then
-            table.insert(arg, 1, eventName)
+            table.insert( arg, 1, eventName )
         end
-        object(unpack(arg))
+        object( unpack( arg ) )
         Daneel.Debug.StackTrace.EndFunction()
         return
     end
 
-    Daneel.Debug.CheckOptionalArgType(object, "object", "table", errorHead)
-    Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
+    Daneel.Debug.CheckOptionalArgType( object, "object", "table", errorHead )
+    Daneel.Debug.CheckArgType( eventName, "eventName", "string", errorHead )
     
     local listeners = { object }
-    if object == nil and Daneel.Event.events[eventName] ~= nil then
-        listeners = Daneel.Event.events[eventName]
+    if object == nil and Daneel.Event.events[ eventName ] ~= nil then
+        listeners = Daneel.Event.events[ eventName ]
     end
 
-    for i, listener in ipairs(listeners) do
+    for i, listener in ipairs( listeners ) do
         
-        local _type = type(listener)
+        local _type = type( listener )
         if _type == "function" or _type == "userdata" then
-            listener(unpack(arg))
+            listener( unpack( arg ) )
+
         else -- an object
             if listener.isDestroyed ~= true then -- ensure that the event is not fired on a dead gameObject or component
                 local message = eventName
 
                 -- look for the value of the EventName property on the object
-                local funcOrMessage = listener[eventName]
-                _type = type(funcOrMessage)
+                local funcOrMessage = listener[ eventName ]
+
+                _type = type( funcOrMessage )
                 if _type == "function" or _type == "userdata" then
-                    funcOrMessage(unpack(arg))
+                    -- prevent a 'Behavior function' to be called as a regular function when the listener is a ScriptedBehavior
+                    if rawget( listener, eventName ) == funcOrMessage then
+                        funcOrMessage( unpack( arg ) )
+                    end
+
                 elseif _type == "string" then
                     message = funcOrMessage
                 end
@@ -815,28 +822,29 @@ function Daneel.Event.Fire(object, eventName,  ...)
                 local sendMessage = true
                 local gameObject = listener
                 
-                if getmetatable(gameObject) ~= GameObject then
+                if getmetatable( gameObject ) ~= GameObject then
                     gameObject = listener.gameObject
                     
-                    if getmetatable(gameObject) ~= GameObject then
+                    if getmetatable( gameObject ) ~= GameObject then
                         sendMessage = false
                         
-                        if type(listener[eventName]) == "string" and DEBUG == true then
+                        if _type == "string" and DEBUG == true then
                             -- the user obviously wanted to send a message but the object is not a gameObject and has no gameObject property
 
                             -- only prints the debug when the user setted up the event property because otherwise
                             -- it would print it every time an event has not been set up (which is OK) on an non-gameObject object like a tweener
-                            print(errorHead.."Can't fire event '"..eventName.."' by sending message '"..message.."' on object '"..tostring(listener).."'  because it not a gameObject and has no 'gameObject' property.")                      
+                            print( errorHead .. "Can't fire event '" .. eventName .. "' by sending message '" .. message .. "' on object '" .. tostring( listener ) .. "'  because it not a gameObject and has no 'gameObject' property." )
                         end
                     end
                 end
+
                 if sendMessage then
-                    gameObject:SendMessage(message, arg)
+                    gameObject:SendMessage( message, arg )
                 end
             end
         end
 
-    end
+    end -- end for
     Daneel.Debug.StackTrace.EndFunction()
 end
 
