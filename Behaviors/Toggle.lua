@@ -40,24 +40,24 @@ end
 
 
 -- "wait" for the TextRenderer or ModelRenderer to be added
-function Behavior:OnNewComponent(data)
-    --if data == nil then return end -- FIXME : happens when the component is a scriptedBehavior
+function Behavior:OnNewComponent( data )
     local component = data[1]
     if component == nil then return end
     local mt = getmetatable(component)
+    local toggle = self.gameObject.toggle
 
     if mt == TextRenderer then
         local text = component:GetText()
         if text == nil then
-            text = self.gameObject.toggle.defaultText
+            text = toggle.defaultText
         end
-        self.gameObject.toggle:SetText( text )
+        toggle:SetText( text )
 
     elseif mt == ModelRenderer and toggle.checkedModel ~= nil then
-        if toggle.isChecked then
-            toggle.gameObject.modelRenderer:SetModel( toggle.checkedModel )
-        else
-            toggle.gameObject.modelRenderer:SetModel( toggle.uncheckedModel )
+        if toggle.isChecked and toggle.checkedModel ~= nil then
+            self.gameObject.modelRenderer:SetModel( toggle.checkedModel )
+        elseif not toggle.isChecked and toggle.uncheckedModel ~= nil then
+            self.gameObject.modelRenderer:SetModel( toggle.uncheckedModel )
         end
     end
 end

@@ -353,9 +353,9 @@ function DaneelGUI.Toggle.New( gameObject )
     end
 
     if gameObject.modelRenderer ~= nil then
-        if toggle.isChecked then
+        if toggle.isChecked and toggle.checkedModel ~= nil then
             toggle.gameObject.modelRenderer:SetModel( toggle.checkedModel )
-        else
+        elseif not toggle.isChecked and toggle.uncheckedModel ~= nil then
             toggle.gameObject.modelRenderer:SetModel( toggle.uncheckedModel )
         end
     end
@@ -431,42 +431,44 @@ end
 -- @param toggle (Toggle) The toggle component.
 -- @param state [optional default=true] (boolean) The new state of the toggle.
 -- @param forceUpdate [optional default=false] (boolean) Tell wether to force the updating of the state.
-function DaneelGUI.Toggle.Check(toggle, state, forceUpdate)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Toggle.Check", toggle, state, forceUpdate)
-    local errorHead = "Daneel.GUI.Toggle.Check(toggle[, state, forceUpdate]) : "
-    Daneel.Debug.CheckArgType(toggle, "toggle", "Toggle", errorHead)
-    state = Daneel.Debug.CheckOptionalArgType(state, "state", "boolean", errorHead, true)
-    forceUpdate = Daneel.Debug.CheckOptionalArgType(forceUpdate, "forceUpdate", "boolean", errorHead, false)
+function DaneelGUI.Toggle.Check( toggle, state, forceUpdate )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.Toggle.Check", toggle, state, forceUpdate )
+    local errorHead = "Daneel.GUI.Toggle.Check( toggle[, state, forceUpdate] ) : "
+    Daneel.Debug.CheckArgType( toggle, "toggle", "Toggle", errorHead )
+    state = Daneel.Debug.CheckOptionalArgType( state, "state", "boolean", errorHead, true )
+    forceUpdate = Daneel.Debug.CheckOptionalArgType( forceUpdate, "forceUpdate", "boolean", errorHead, false ) 
 
     if forceUpdate or toggle.isChecked ~= state then
         local text = nil
         if toggle.gameObject.textRenderer ~= nil then
-            text = toggle.text
+            text = toggle:GetText()
         end
         
         toggle.isChecked = state
         
         if toggle.gameObject.textRenderer ~= nil then
-            toggle.text = text -- "reload" the check mark based on the new checked state
+            toggle:SetText( text ) -- "reload" the check mark based on the new checked state
+
         elseif toggle.gameObject.modelRenderer ~= nil then
-            if state == true then
-                toggle.gameObject.modelRenderer.model = toggle.checkedModel
-            else
-                toggle.gameObject.modelRenderer.model = toggle.uncheckedModel
+            if state == true and toggle.checkedModel ~= nil then
+                toggle.gameObject.modelRenderer:SetModel( toggle.checkedModel )
+            elseif state == false and toggle.uncheckedModel ~= nil then
+                toggle.gameObject.modelRenderer:SetModel( toggle.uncheckedModel )
             end
         end
 
-        Daneel.Event.Fire(toggle, "OnUpdate", toggle)
+        Daneel.Event.Fire( toggle, "OnUpdate", toggle )
 
         if toggle._group ~= nil and state == true then
-            local gameObjects = GameObject.Tags[toggle._group]
-            for i, gameObject in ipairs(gameObjects) do
+            local gameObjects = GameObject.Tags[ toggle._group ]
+            for i, gameObject in ipairs( gameObjects ) do
                 if gameObject ~= toggle.gameObject then
-                    gameObject.toggle:Check(false)
+                    gameObject.toggle:Check( false )
                 end
             end
         end
     end
+    
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -977,6 +979,8 @@ function DaneelGUI.TextArea.SetText( textArea, text )
             lineRenderers[i]:SetText( "" )
         end
     end
+
+    Daneel.Event.Fire( textArea, "OnUpdate", textArea)
     
     Daneel.Debug.StackTrace.EndFunction()
 end
