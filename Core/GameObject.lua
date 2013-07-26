@@ -553,7 +553,7 @@ end
 GameObject.Tags = {}
 
 --- Returns the game object(s) that have all the provided tag(s).
--- @param tag (string or table)
+-- @param tag (string or table) One or several tags.
 -- @return (table) The game object(s) (empty if none is found)
 function GameObject.GetWithTag( tag )
     Daneel.Debug.StackTrace.BeginFunction( "GameObject.GetWithTag", tag )
@@ -571,7 +571,7 @@ function GameObject.GetWithTag( tag )
         local gameObjects = GameObject.Tags[ tag ]
         if gameObjects ~= nil then
             for i, gameObject in ipairs( gameObjects ) do
-                if gameObject:HasTag( tags ) and not table.containsvalue( gameObjectsWithTag ) then
+                if gameObject:HasTag( tags ) and not table.containsvalue( gameObjectsWithTag, gameObject ) then
                     table.insert( gameObjectsWithTag, gameObject )
                 end
             end
