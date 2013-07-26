@@ -522,21 +522,22 @@ local OriginalLoadScene = CraftStudio.LoadScene
 -- When the new scene is loaded, all of the current scene's game objects will be removed.
 -- Calling this function doesn't immediately stops the calling function. As such, you might want to add a return statement afterwards. 
 -- @param sceneNameOrAsset (string or Scene) The scene name or asset.
-function CraftStudio.LoadScene(sceneNameOrAsset)
-    Daneel.Debug.StackTrace.BeginFunction("CraftStudio.LoadScene", sceneNameOrAsset)
-    local errorHead = "CraftStudio.LoadScene(sceneNameOrAsset) : "
-    Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
+function CraftStudio.LoadScene( sceneNameOrAsset )
+    Daneel.Debug.StackTrace.BeginFunction( "CraftStudio.LoadScene", sceneNameOrAsset )
+    local errorHead = "CraftStudio.LoadScene( sceneNameOrAsset) : "
+    Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead )
 
-    local scene = Asset.Get(sceneNameOrAsset, "Scene", true)
+    local scene = Asset.Get( sceneNameOrAsset, "Scene", true )
     
-    Daneel.Event.Fire("OnSceneLoad", scene)
-    Daneel.Event.events = {}
+    Daneel.Event.Fire( "OnSceneLoad", scene )
+
+    Daneel.Event.events = {} -- do this here to make sure that any events that might be fired from OnSceneLoad-catching function are indeed fired
     Daneel.Event.fireAtTime = {}
     Daneel.Event.fireAtRealTime = {}
     Daneel.Event.fireAtFrame = {}
 
     Daneel.Debug.StackTrace.EndFunction()
-    OriginalLoadScene(scene)
+    OriginalLoadScene( scene )
 end
 
 --- Alias of CraftStudio.AppendScene().
@@ -544,17 +545,21 @@ end
 -- You can optionally specify a parent game object which will be used as a root for adding all game objects. 
 -- Returns the gameObject appended if there was only one root game object in the provided scene.
 -- @param sceneNameOrAsset (string or Scene) The scene name or asset.
--- @param parentNameOrInstance [optional] (string or GameObject) The parent gameObject name or instance.
+-- @param parentNameOrInstance [optional] (string or GameObject) The parent game object name or instance.
 -- @return (GameObject) The appended gameObject, or nil.
-function Scene.Append(sceneNameOrAsset, parentNameOrInstance)
-    Daneel.Debug.StackTrace.BeginFunction("Scene.Append", sceneNameOrAsset, parentNameOrInstance)
-    local errorHead = "Scene.Append(sceneNameOrAsset[, parentNameOrInstance]) : "
-    Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
-    Daneel.Debug.CheckOptionalArgType(parentNameOrInstance, "parentNameOrInstance", {"string", "GameObject"}, errorHead)
+function Scene.Append( sceneNameOrAsset, parentNameOrInstance )
+    Daneel.Debug.StackTrace.BeginFunction( "Scene.Append", sceneNameOrAsset, parentNameOrInstance )
+    local errorHead = "Scene.Append( sceneNameOrAsset[, parentNameOrInstance] ) : "
+    Daneel.Debug.CheckArgType( sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead )
+    Daneel.Debug.CheckOptionalArgType( parentNameOrInstance, "parentNameOrInstance", {"string", "GameObject"}, errorHead )
 
-    local scene = Asset.Get(sceneNameOrAsset, "Scene", true)
-    local parent = GameObject.Get(parentNameOrInstance, true)
-    local gameObject = CraftStudio.AppendScene(scene, parent)
+    local scene = Asset.Get( sceneNameOrAsset, "Scene", true )
+    local parent = nil
+    if parentNameOrInstance ~= nil then
+        local parent = GameObject.Get( parentNameOrInstance, true )
+    end
+    local gameObject = CraftStudio.AppendScene( scene, parent )
+
     Daneel.Debug.StackTrace.EndFunction()
     return gameObject
 end
