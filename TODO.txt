@@ -15,10 +15,13 @@ IDEAS
         > empèhe les composants de GUI d'être mis à jour
         > ideallement devrait être géré par CS directement au niveau du game object
 
-    - Debug.DrawLine(start, end[, model]) ou (start, direction, length[, model])
+    - Utilities.DrawLine(start, end[, model]) ou (start, direction, length[, model])
         Daneel.Config.debug.defaultLineModel
         DrawCircle( position, radius, nbofsegment, model )
 
+    - OnButtonJustPressed( buttonName ) / OnButtonDown( buttonName ) / OnButtonJustReleased( buttonName ) 
+    Daneel.Input.WasButtonJustPressed/Released( buttonName ) / IsButtonDown()  other fail gracefully when the button is not declared in the input.button
+    
 
     -----
     GUI

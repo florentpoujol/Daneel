@@ -28,8 +28,10 @@ end
 -- @return (table) The table.
 function string.totable( s )
     if Daneel.Cache.totable[s] ~= nil then
-        return Daneel.Cache.totable[s]
+        return table.copy( Daneel.Cache.totable[s] )
+        -- table.copy() is necessary to prevent string.ucfirst(), lcfirst() or any other function that uses the table returned by totable() to modify the table stored in the cache
     end
+
 
     Daneel.Debug.StackTrace.BeginFunction( "string.totable", s )
     Daneel.Debug.CheckArgType( s, "string", "string", "string.totable( string )" )
@@ -38,7 +40,7 @@ function string.totable( s )
     for i = 1, #s do
         table.insert( t, s:sub( i, i ) )
     end
-    Daneel.Cache.totable[s] = t
+    Daneel.Cache.totable[s] = table.copy( t )
 
     Daneel.Debug.StackTrace.EndFunction()
     return t
