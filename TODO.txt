@@ -22,6 +22,10 @@ IDEAS
     - OnButtonJustPressed( buttonName ) / OnButtonDown( buttonName ) / OnButtonJustReleased( buttonName ) 
     Daneel.Input.WasButtonJustPressed/Released( buttonName ) / IsButtonDown()  other fail gracefully when the button is not declared in the input.button
     
+    list des boutton pressés   buttonsJustPressed, buttonsJustReleased, buttonsDown
+    If Daneel.Input.buttonsDown[ 'buttonName' ] then
+    > pas des masses d'avantage par rapport à    if CS.Input.IsButtonsDown( 'buttonName' ) then   ? 
+
 
     -----
     GUI
@@ -45,6 +49,8 @@ IDEAS
         > ou les cache avec un autre model par exemple
         > ou les fenètres sont rendue par d'autres cameras dont l'object Rect
 
+    - button scripted behavior avec property "onclick"
+
 
     -----
     TWEEN
@@ -64,6 +70,8 @@ IDEAS
         propriété current qui point vers le tweenr courant
 
     - commaun au stack et tweeners : 
+
+    - propriété "workInterval" pour ne pas update les tweener chaque frame
 
 
     -----

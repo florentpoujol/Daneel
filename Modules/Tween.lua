@@ -99,7 +99,7 @@ end
 
 
 function DaneelTween.Update()
-    for id, tweener in pairs(Daneel.Tween.Tweener.tweeners) do
+    for id, tweener in pairs( Daneel.Tween.Tweener.tweeners ) do
         if tweener.isEnabled == true and tweener.isPaused == false and tweener.isCompleted == false and tweener.duration > 0 then
 
             local deltaDuration = Daneel.Time.deltaTime
@@ -118,13 +118,13 @@ function DaneelTween.Update()
                         
                         if tweener.startValue == nil then
                             if tweener.target ~= nil then
-                                tweener.startValue = GetTweenerProperty(tweener)
+                                tweener.startValue = GetTweenerProperty( tweener )
                             else
-                                error("ERROR : startValue is nil but no target is set")
+                                error( "Daneel.Tween.Update() : startValue is nil but no target is set for tweener with Id '" .. tweener.Id .. "'" )
                             end
                         elseif tweener.target ~= nil then
                             -- when start value and a target are set move the target to startValue before updating the tweener
-                            SetTweenerProperty(tweener, tweener.startValue)
+                            SetTweenerProperty( tweener, tweener.startValue )
                         end
                         tweener.value = tweener.startValue
 
@@ -134,11 +134,11 @@ function DaneelTween.Update()
                             tweener.diffValue = tweener.endValue - tweener.startValue
                         end
 
-                        Daneel.Event.Fire(tweener, "OnStart", tweener)
+                        Daneel.Event.Fire( tweener, "OnStart", tweener )
                     end
                     
                     -- update the tweener
-                    tweener:Update(deltaDuration)
+                    tweener:Update( deltaDuration )
                 else
                     tweener.delay = tweener.delay - deltaDuration
                 end -- end if tweener.delay <= 0
@@ -152,18 +152,26 @@ function DaneelTween.Update()
 
                         if tweener.loopType:lower() == "yoyo" then
                             local startValue = tweener.startValue
-                            tweener.startValue = tweener.endValue
-                            tweener.endValue = startValue
-                            tweener.diffValue = -tweener.diffValue
+                            
+                            if tweener.isRelative then
+                                tweener.startValue = tweener.value
+                                tweener.endValue = -tweener.endValue
+                                tweener.diffValue = tweener.endValue
+                            else
+                                tweener.startValue = tweener.endValue
+                                tweener.endValue = startValue
+                                tweener.diffValue = -tweener.diffValue
+                            end
+
                         elseif tweener.target ~= nil then
-                            SetTweenerProperty(tweener, tweener.startValue)
+                            SetTweenerProperty( tweener, tweener.startValue )
                         end
 
                         tweener.value = tweener.startValue
-                        Daneel.Event.Fire(tweener, "OnLoopComplete", tweener)
+                        Daneel.Event.Fire( tweener, "OnLoopComplete", tweener )
 
                     else
-                        Daneel.Event.Fire(tweener, "OnComplete", tweener)
+                        Daneel.Event.Fire( tweener, "OnComplete", tweener )
                         if tweener.destroyOnComplete then
                             tweener:Destroy()
                         end
@@ -502,7 +510,7 @@ function DaneelTween.Timer.New(duration, callback, isInfiniteLoop, params)
     if params ~= nil then
         tweener:Set(params)
     end
-    
+
     Daneel.Tween.Tweener.tweeners[tweener.Id] = tweener
     Daneel.Debug.StackTrace.EndFunction()
     return tweener
