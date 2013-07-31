@@ -471,9 +471,7 @@ end
 
 ----------------------------------------------------------------------------------
 -- Easing equations
--- From :
--- https://github.com/EmmanuelOga/easing
--- http://www.robertpenner.com/easing/
+-- From Emmanuel Oga's easing equations : https://github.com/EmmanuelOga/easing
 
 --
 -- Adapted from
@@ -865,7 +863,7 @@ local function outInBounce(t, b, c, d)
   end
 end
 
--- Modifications for Daneel : replaced 'return' by 'DaneelTween.Ease ='
+-- Modifications for Daneel : replaced 'return {' by 'DaneelTween.Ease = {'
 DaneelTween.Ease = {
   linear = linear,
   inQuad = inQuad,
