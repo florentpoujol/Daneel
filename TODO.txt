@@ -27,6 +27,11 @@ IDEAS
     > pas des masses d'avantage par rapport à    if CS.Input.IsButtonsDown( 'buttonName' ) then   ? 
 
 
+    -- un moyen de pacer un gameobject dans un variable via la scène
+        un scripted behavior qui prend un string comme argument
+
+    - table.inverse > inserve clés/valeurs
+
     -----
     GUI
 

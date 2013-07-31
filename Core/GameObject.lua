@@ -219,6 +219,7 @@ function GameObject.Get( name, errorIfGameObjectNotFound )
     Daneel.Debug.CheckOptionalArgType( errorIfGameObjectNotFound, "errorIfGameObjectNotFound", "boolean", errorHead )
     
     -- can't use name:find(".") because for some reason it always returns 1, 1
+    -- 31/07/2013 see in Core/Lua string.split() for reason
     local gameObject = nil
     local names = name:split( "." )
     
