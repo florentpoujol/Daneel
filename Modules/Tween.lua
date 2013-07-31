@@ -435,23 +435,24 @@ setmetatable(DaneelTween.Timer, { __call = function(Object, ...) return Object.N
 -- @param isInfiniteLoop [optional default=false] (boolean) Tell wether the timer loops indefinitely.
 -- @param params [optional] (table) A table of parameters.
 -- @return (Tweener) The tweener.
-function DaneelTween.Timer.New(duration, callback, isInfiniteLoop, params)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Tween.Timer.New", duration, callback, isInfiniteLoop, params)
-    local errorHead = "Daneel.Tween.Timer.New(duration, callback[, isInfiniteLoop, params]) : "
-    if type(isInfiniteLoop) == "table" then
+function DaneelTween.Timer.New( duration, callback, isInfiniteLoop, params )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Tween.Timer.New", duration, callback, isInfiniteLoop, params )
+    local errorHead = "Daneel.Tween.Timer.New( duration, callback[, isInfiniteLoop, params] ) : "
+    if type( isInfiniteLoop ) == "table" then
         params = isInfiniteLoop
-        errorHead = "Daneel.Tween.Timer.New(duration, callback[, params]) : "
+        errorHead = "Daneel.Tween.Timer.New( duration, callback[, params] ) : "
     end
-    Daneel.Debug.CheckArgType(duration, "duration", "number", errorHead)
-    Daneel.Debug.CheckArgType(callback, "callback", {"function", "userdata"}, errorHead)
-    Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
+    Daneel.Debug.CheckArgType( duration, "duration", "number", errorHead )
+    Daneel.Debug.CheckArgType( callback, "callback", {"function", "userdata"}, errorHead )
+    Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead )
 
-    local tweener = table.copy(Daneel.Config.tween.tweener)
-    setmetatable(tweener, Daneel.Tween.Tweener)
+    local tweener = table.copy( Daneel.Config.tween.tweener )
+    setmetatable( tweener, Daneel.Tween.Tweener )
     tweener.Id = "Timer" .. math.round( math.randomrange( 100000, 999999 ) )
     tweener.startValue = duration
     tweener.endValue = 0
     tweener.duration = duration
+
     if isInfiniteLoop == true then
         tweener.loops = -1
         tweener.OnLoopComplete = callback
@@ -459,11 +460,11 @@ function DaneelTween.Timer.New(duration, callback, isInfiniteLoop, params)
         tweener.OnComplete = callback
     end
     if params ~= nil then
-        tweener:Set(params)
+        tweener:Set( params )
     end
 
-    Daneel.Tween.Tweener.tweeners[tweener.Id] = tweener
-    Daneel.Debug.EndFunction()
+    Daneel.Tween.Tweener.tweeners[ tweener.Id ] = tweener
+    Daneel.Debug.StackTrace.EndFunction()
     return tweener
 end
 
