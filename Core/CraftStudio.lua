@@ -645,7 +645,7 @@ function CraftStudio.Destroy( object )
 
         for key, value in pairs( object ) do
             if key == "transform" then
-                Daneel.Event.Clean( value )
+                Daneel.Event.Clear( value )
             elseif type( value ) == "table" and type( value.Destroy ) == "function" then
                 value:Destroy()
             end
@@ -665,7 +665,7 @@ function CraftStudio.Destroy( object )
     end
 
     Daneel.Event.Fire( object, "OnDestroy" )
-    Daneel.Event.Clean( object ) -- remove from listener list
+    Daneel.Event.Clear( object ) -- remove from listener list
     object.isDestroyed = true
     setmetatable(object, nil)
 

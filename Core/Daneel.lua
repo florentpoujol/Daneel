@@ -721,9 +721,9 @@ end
 
 --- Remove the provided function or object from the listeners and scheduled events lists.
 -- @param functionOrObject (function, userdata or table)
-function Daneel.Event.Clean(functionOrObject)
+function Daneel.Event.Clear(functionOrObject)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Clean", functionOrObject)
-    local errorHead = "Daneel.Event.Clean(functionOrObject) : "
+    local errorHead = "Daneel.Event.Clear(functionOrObject) : "
     Daneel.Debug.CheckArgType(functionOrObject, "functionOrObject", {"table", "function", "userdata"}, errorHead)
 
     for eventName, listeners in pairs(Daneel.Event.events) do
