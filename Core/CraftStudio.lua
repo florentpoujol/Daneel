@@ -1,6 +1,8 @@
--- Last modified for :
--- version 1.2.0
--- released 29th July 2013
+-- CraftStudio.lua
+-- Contains most of the objects and functions extending CraftStudio's base API
+--
+-- Last modified for v1.2.0
+-- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
 ----------------------------------------------------------------------------------
 -- Assets

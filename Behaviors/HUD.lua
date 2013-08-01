@@ -1,9 +1,10 @@
--- Last modified for :
--- version 1.2.0
--- released 29th July 2013
+-- Hud.lua
+-- Scripted behavior for Daneel.GUI.Hud component.
+--
+-- Last modified for v1.2.0
+-- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
--- Behavior for Daneel.GUI.Hud component.
--- Only add to a gameObject while in the scene editor.
+
 
 --[[PublicProperties
 positionX string ""

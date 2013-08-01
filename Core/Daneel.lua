@@ -1,6 +1,8 @@
--- Last modified for :
--- version 1.2.0
--- released 29th July 2013
+-- Daneel.lua
+-- Contains most of Daneel's core fonctionnalities.
+--
+-- Last modified for v1.2.0
+-- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
 DANEEL_LOADED = false
 DEBUG = false

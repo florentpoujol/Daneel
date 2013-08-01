@@ -1,17 +1,13 @@
--- Last modified for :
--- version 1.2.0
--- released 29th July 2013
-
--- Add this script as ScriptedBehavior on your camera to enable mouse interactions
--- If it is not already done, you also need to 
--- add "LeftMouse" and/or "RightMouse" in the 'Daneel.Config.input.buttons' table 
--- and create the corresponding buttons in your project administration.
+-- MouseInputs.lua
+-- Enable mouse interactions with game objects when added to a game object with a camera component.
+--
+-- Last modified for v1.2.0
+-- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
 --[[PublicProperties
 tags string "guiComponent"
 workInterval number 10
 /PublicProperties]]
-
 
 local interactiveGameObjects = {}
 

@@ -1,6 +1,8 @@
--- Last modified for :
--- version 1.2.0
--- released 29th July 2013
+-- GameObject.lua
+-- Extends the GameObject object.
+--
+-- Last modified for v1.2.0
+-- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
 setmetatable(GameObject, { __call = function(Object, ...) return Object.New(...) end })
 

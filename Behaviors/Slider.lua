@@ -1,8 +1,8 @@
--- Last modified for :
--- version 1.2.0
--- released 29th July 2013
-
--- Behavior for Daneel.GUI.Slider component.
+-- Slider.lua
+-- Scripted behavior for Daneel.GUI.Slider component.
+--
+-- Last modified for v1.2.0
+-- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
 --[[PublicProperties
 minValue number 0
@@ -29,7 +29,7 @@ function Behavior:OnDrag()
     if self.gameObject.hud == nil then
         self.gameObject:AddComponent( "Hud" ) -- adding the hud component now cause the handle to be put at the end of the slider
     end
-    
+
     local slider = self.gameObject.slider
     local mousePosition = CraftStudio.Input.GetMousePosition()
     local newPosition = Vector2( mousePosition.x, self.gameObject.hud.position.y ) 

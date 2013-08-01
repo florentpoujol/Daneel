@@ -1,8 +1,8 @@
--- Last modified for :
--- version 1.2.0
--- released 29th July 2013
-
--- Behavior for Daneel.GUI.TextArea component.
+-- TextArea.lua
+-- Scripted behavior for Daneel.GUI.TextArea component.
+--
+-- Last modified for v1.2.0
+-- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
 --[[PublicProperties
 areaWidth string ""

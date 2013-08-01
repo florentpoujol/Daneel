@@ -1,6 +1,8 @@
--- Last modified for :
--- version 1.2.0
--- released 29th July 2013
+-- GUI.lua
+-- Module adding the GUI components and Vector2 object
+--
+-- Last modified for v1.2.0
+-- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
 function DaneelConfigModuleGUI()
     Daneel.GUI = DaneelGUI
@@ -689,11 +691,11 @@ function DaneelGUI.Slider.SetValue( slider, value )
     local errorHead = "Daneel.GUI.Slider.SetValue( slider, value ) : "
     Daneel.Debug.CheckArgType( slider, "slider", "Slider", errorHead )
     Daneel.Debug.CheckArgType( value, "value", {"string", "number"}, errorHead )
-    
+
     local maxVal = slider.maxValue
     local minVal = slider.minValue
     local percentage = nil
-    
+
     if type( value ) == "string" then
         if value:endswith( "%" ) then
             percentage = tonumber( value:sub( 1, #value-1 ) ) / 100
@@ -702,7 +704,7 @@ function DaneelGUI.Slider.SetValue( slider, value )
             value = tonumber( value )
         end
     end
-    
+
     -- now value is a number and should be a value between minVal and maxVal
     local oldValue = value
     value = math.clamp( value, minVal, maxVal )
@@ -710,9 +712,9 @@ function DaneelGUI.Slider.SetValue( slider, value )
         print( errorHead .. "WARNING : Argument 'value' with value '" .. oldValue .. "' is out of its boundaries : min='" .. minVal .. "', max='" .. maxVal .. "'" )
     end
     percentage = (value - minVal) / (maxVal - minVal)
-    
+
     slider.length = tounit( slider.length )
-    
+
     local direction = -Vector3:Left()
     if slider.axis == "y" then
         direction = Vector3:Up()
@@ -720,7 +722,7 @@ function DaneelGUI.Slider.SetValue( slider, value )
     local orientation = Vector3.Transform( direction, slider.gameObject.transform.orientation )
     local newPosition = slider.startPosition + orientation * slider.length * percentage
     slider.gameObject.transform.position = newPosition
-    
+
     Daneel.Event.Fire( slider, "OnUpdate", slider )
     Daneel.Debug.StackTrace.EndFunction()
 end

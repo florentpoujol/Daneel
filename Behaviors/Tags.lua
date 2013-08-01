@@ -1,8 +1,8 @@
--- Last modified for :
--- version 1.2.0
--- released 29th July 2013
-
--- Add this Script to a gameObject to add tags while still in the scene editor
+-- Tags.lua
+-- Scripted behavior to add tags to game objects while in the scene editor.
+--
+-- Last modified for v1.2.0
+-- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
 --[[PublicProperties
 tags string ""
