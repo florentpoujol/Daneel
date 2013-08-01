@@ -20,12 +20,13 @@ IDEAS
         DrawCircle( position, radius, nbofsegment, model )
 
     - OnButtonJustPressed( buttonName ) / OnButtonDown( buttonName ) / OnButtonJustReleased( buttonName ) 
-    Daneel.Input.WasButtonJustPressed/Released( buttonName ) / IsButtonDown()  other fail gracefully when the button is not declared in the input.button
-    
-    list des boutton pressés   buttonsJustPressed, buttonsJustReleased, buttonsDown
-    If Daneel.Input.buttonsDown[ 'buttonName' ] then
-    > pas des masses d'avantage par rapport à    if CS.Input.IsButtonsDown( 'buttonName' ) then   ? 
 
+
+    - plane:GetHitLocationFromCamera( camera )
+    camera:GetMousePositionOnPlane( plane )
+    et/ou
+    rayCastHit = ray:IntersectsPlane( plane )
+    rayCastHit avec distance, normal, hitLocation
 
     -----
     GUI
