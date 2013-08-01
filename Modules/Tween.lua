@@ -172,7 +172,9 @@ function DaneelTween.Update()
 
                     else
                         Daneel.Event.Fire( tweener, "OnComplete", tweener )
-                        if tweener.destroyOnComplete then
+                        if tweener.destroyOnComplete and tweener.Destroy ~= nil then
+                            -- tweener.Destroy may be nil if a new scene is loaded from the OnComplete callback
+                            -- the tweener will have been destroyed already an its metatable stripped
                             tweener:Destroy()
                         end
                     end

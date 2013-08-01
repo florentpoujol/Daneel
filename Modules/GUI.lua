@@ -23,10 +23,10 @@ function DaneelConfigModuleGUI()
                 isChecked = false, -- false = unchecked, true = checked
                 text = "Toggle",
                 -- ':text' represents the toggle's text
-                defaultCheckedMark = "√ :text",
-                defaultUncheckedMark = "X :text",
-                defaultCheckedModel = nil,
-                defaultUncheckedModel = nil,
+                checkedMark = ":text",
+                uncheckedMark = ":text",
+                checkedModel = nil,
+                uncheckedModel = nil,
             },
 
             progressBar = {
@@ -371,23 +371,23 @@ end
 -- but add the correct check mark in front of the provided text.
 -- @param toggle (Toggle) The toggle component.
 -- @param text (string) The text to display.
-function DaneelGUI.Toggle.SetText(toggle, text)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Toggle.SetText", toggle, text)
-    local errorHead = "Daneel.GUI.Toggle.SetText(toggle, text) : "
-    Daneel.Debug.CheckArgType(toggle, "toggle", "Toggle", errorHead)
-    Daneel.Debug.CheckArgType(text, "text", "string", errorHead)
+function DaneelGUI.Toggle.SetText( toggle, text )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.Toggle.SetText", toggle, text )
+    local errorHead = "Daneel.GUI.Toggle.SetText( toggle, text ) : "
+    Daneel.Debug.CheckArgType( toggle, "toggle", "Toggle", errorHead )
+    Daneel.Debug.CheckArgType( text, "text", "string", errorHead )
 
     if toggle.gameObject.textRenderer ~= nil then
         if toggle.isChecked == true then
-            text = Daneel.Utilities.ReplaceInString(toggle.checkedMark, { text = text })
+            text = Daneel.Utilities.ReplaceInString( toggle.checkedMark, { text = text } )
         else
-            text = Daneel.Utilities.ReplaceInString(toggle.uncheckedMark, { text = text })
+            text = Daneel.Utilities.ReplaceInString( toggle.uncheckedMark, { text = text } )
         end
         toggle.gameObject.textRenderer.text = text
 
     else
         if DEBUG then
-            print("WARNING : "..errorHead.."Can't set the toggle's text because no TextRenderer component has been found on the gameObject '"..tostring(toggle.gameObject).."'. Waiting for a TextRenderer to be added.")
+            print( "WARNING : "..errorHead.."Can't set the toggle's text because no TextRenderer component has been found on the gameObject '"..tostring( toggle.gameObject ).."'. Waiting for a TextRenderer to be added." )
         end
         toggle.defaultText = text
     end

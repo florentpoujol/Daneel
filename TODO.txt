@@ -21,12 +21,17 @@ IDEAS
 
     - OnButtonJustPressed( buttonName ) / OnButtonDown( buttonName ) / OnButtonJustReleased( buttonName ) 
 
+    - un moyen de pacer un gameobject dans un variable via la scène
+        un scripted behavior qui prend un string comme argument
+
+    - table.inverse > inserve clés/valeurs
 
     - plane:GetHitLocationFromCamera( camera )
     camera:GetMousePositionOnPlane( plane )
     et/ou
     rayCastHit = ray:IntersectsPlane( plane )
     rayCastHit avec distance, normal, hitLocation
+
 
     -----
     GUI

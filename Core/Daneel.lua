@@ -254,7 +254,7 @@ function Daneel.Utilities.GetValueFromName(name)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     
     local value = nil
-    if name:find(".") == nil then
+    if name:find( ".", 1, true ) == nil then
         if Daneel.Utilities.GlobalExists(name) == true then
             value = _G[name]
         end
