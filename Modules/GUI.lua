@@ -659,20 +659,20 @@ DaneelGUI.Slider = {}
 -- @param gameObject (GameObject) The component gameObject.
 -- @return (Slider) The new component.
 function DaneelGUI.Slider.New(gameObject)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.New", gameObject)
-    local errorHead = "Daneel.GUI.Slider.New(gameObject) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.Slider.New", gameObject )
+    local errorHead = "Daneel.GUI.Slider.New( gameObject ) : "
+    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
 
-    local slider = table.copy(Daneel.Config.gui.slider)
+    local slider = table.copy( Daneel.Config.gui.slider )
     slider.gameObject = gameObject
     slider.Id = math.round( math.randomrange( 100000, 999999 ) )
     slider.startPosition = gameObject.transform.position
     slider.value = nil
-    setmetatable(slider, Daneel.GUI.Slider)
+    setmetatable( slider, Daneel.GUI.Slider )
     slider.value = Daneel.Config.gui.slider.value
     
     gameObject.slider = slider
-    gameObject:AddTag("guiComponent")
+    gameObject:AddTag( "guiComponent" )
     if gameObject:GetScriptedBehavior( Daneel.Config.gui.behaviorPaths.slider ) == nil then
         gameObject:AddScriptedBehavior( Daneel.Config.gui.behaviorPaths.slider )
     end
@@ -684,35 +684,35 @@ end
 --- Set the value of the slider, adjusting its position.
 -- @param slider (Slider) The slider.
 -- @param value (number or string) The value as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
-function DaneelGUI.Slider.SetValue(slider, value)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.SetValue", slider, value)
-    local errorHead = "Daneel.GUI.Slider.SetValue(slider, value) : "
-    Daneel.Debug.CheckArgType(slider, "slider", "Slider", errorHead)
-    Daneel.Debug.CheckArgType(value, "value", {"string", "number"}, errorHead)
-
+function DaneelGUI.Slider.SetValue( slider, value )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.Slider.SetValue", slider, value )
+    local errorHead = "Daneel.GUI.Slider.SetValue( slider, value ) : "
+    Daneel.Debug.CheckArgType( slider, "slider", "Slider", errorHead )
+    Daneel.Debug.CheckArgType( value, "value", {"string", "number"}, errorHead )
+    
     local maxVal = slider.maxValue
     local minVal = slider.minValue
     local percentage = nil
-
-    if type(value) == "string" then
-        if value:endswith("%") then
-            percentage = tonumber(value:sub(1, #value-1)) / 100
+    
+    if type( value ) == "string" then
+        if value:endswith( "%" ) then
+            percentage = tonumber( value:sub( 1, #value-1 ) ) / 100
             value = (maxVal - minVal) * percentage + minVal
         else
-            value = tonumber(value)
+            value = tonumber( value )
         end
     end
-
+    
     -- now value is a number and should be a value between minVal and maxVal
     local oldValue = value
-    value = math.clamp(value, minVal, maxVal)
+    value = math.clamp( value, minVal, maxVal )
     if value ~= oldValue and DEBUG == true then
-        print(errorHead.." WARNING : Argument 'value' with value '"..oldValue.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
+        print( errorHead .. "WARNING : Argument 'value' with value '" .. oldValue .. "' is out of its boundaries : min='" .. minVal .. "', max='" .. maxVal .. "'" )
     end
     percentage = (value - minVal) / (maxVal - minVal)
-
-    slider.length = tounit(slider.length)
-
+    
+    slider.length = tounit( slider.length )
+    
     local direction = -Vector3:Left()
     if slider.axis == "y" then
         direction = Vector3:Up()
@@ -720,8 +720,8 @@ function DaneelGUI.Slider.SetValue(slider, value)
     local orientation = Vector3.Transform( direction, slider.gameObject.transform.orientation )
     local newPosition = slider.startPosition + orientation * slider.length * percentage
     slider.gameObject.transform.position = newPosition
-
-    Daneel.Event.Fire(slider, "OnUpdate", slider)
+    
+    Daneel.Event.Fire( slider, "OnUpdate", slider )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -740,7 +740,7 @@ function DaneelGUI.Slider.GetValue(slider, getAsPercentage)
     if getAsPercentage ~= true then
         value = (slider.maxValue - slider.minValue) * percentage + slider.minValue
     end
-    value = math.round(value)
+    value = math.round(value) -- ??
     Daneel.Debug.StackTrace.EndFunction()
     return value
 end

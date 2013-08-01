@@ -32,6 +32,8 @@ IDEAS
     rayCastHit = ray:IntersectsPlane( plane )
     rayCastHit avec distance, normal, hitLocation
 
+    - Scene.GetName() > get the path of the current scene asset, cached by Scene.Load()
+
 
     -----
     GUI
