@@ -26,25 +26,24 @@ end
 
 -- when the handle is dragged
 function Behavior:OnDrag()
-    if self.gameObject.hud == nil then
-        self.gameObject:AddComponent( "Hud" ) -- adding the hud component now cause the handle to be put at the end of the slider
-    end
-
     local slider = self.gameObject.slider
-    local mousePosition = CraftStudio.Input.GetMousePosition()
-    local newPosition = Vector2( mousePosition.x, self.gameObject.hud.position.y ) 
-    if slider.axis == "y" then
-        newPosition = Vector2( self.gameObject.hud.position.x, mousePosition.y )
-    end
 
-    self.gameObject.hud.position = newPosition
+    local mouseDelta = CraftStudio.Input.GetMouseDelta()
+    local positionDelta = Vector3( mouseDelta.x, 0, 0 )
+    if slider.axis == "y" then
+        positionDelta = Vector3( 0, -mouseDelta.y, 0, 0 )
+    end  
+    
+    self.gameObject.transform:Move( positionDelta * Daneel.GUI.pixelsToUnits )
     
     if 
         (slider.axis == "x" and self.gameObject.transform.position.x < slider.startPosition.x) or
         (slider.axis == "y" and self.gameObject.transform.position.y < slider.startPosition.y)
     then
         slider.value = slider.minValue
+    elseif slider.value > slider.maxValue then
+        slider.value = slider.maxValue
     else
-        slider.value = math.clamp( slider.value, slider.minValue, slider.maxValue )
+        Daneel.Event.Fire( slider, "OnUpdate", slider )
     end
 end
