@@ -4,35 +4,12 @@ IDEAS
     -----
     MISC
 
-    - modelRenderer:SetDimension(Vector3) ou idem avec Vector2
-
-    - textRenderer
-        - permettre de passer texte traduit via la scène : "daneellang:langkey"
-            > TextRenderer.Settext n'est pas utilisée lorsque les textes sont écrits dans la scène
-            mais voir à créer un ScriptedBehavior qui irait remplacer le texte "Lang" behavior
-
-    - possibilité de enable/disable un gameObject ou un component
-        > empèhe les composants de GUI d'être mis à jour
-        > ideallement devrait être géré par CS directement au niveau du game object
-
-    - Utilities.DrawLine(start, end[, model]) ou (start, direction, length[, model])
-        Daneel.Config.debug.defaultLineModel
-        DrawCircle( position, radius, nbofsegment, model )
-
     - OnButtonJustPressed( buttonName ) / OnButtonDown( buttonName ) / OnButtonJustReleased( buttonName ) 
 
     - un moyen de pacer un gameobject dans un variable via la scène
         un scripted behavior qui prend un string comme argument
 
-    - table.inverse > inserve clés/valeurs
 
-    - plane:GetHitLocationFromCamera( camera )
-    camera:GetMousePositionOnPlane( plane )
-    et/ou
-    rayCastHit = ray:IntersectsPlane( plane )
-    rayCastHit avec distance, normal, hitLocation
-
-    - Scene.GetName() > get the path of the current scene asset, cached by Scene.Load()
 
 
     -----
@@ -40,10 +17,7 @@ IDEAS
 
     - MouseInput
         passer la camera en argument des events, en plus du gameObject
-
-    - Input
-        - curseur et tout ce qui va avec
-    
+   
     - "progress bar" mais avec plusieurs éléments
     lorsque élément pas utilisé, il a opacity, scale etc au choix dans la config, donc
       out et in state  
@@ -64,9 +38,7 @@ IDEAS
     TWEEN
 
     - tweener
-        permettre de tweener en même temps plusieurs valeur/propriétés
         garder les tweeners agissant sur un GO ou composant sur une propriété gameObject.tweeners
-
 
     - Timeline
         table de tweeners. clés = temps, valeur = tweeners
@@ -76,10 +48,6 @@ IDEAS
     - stack de tweeners qui débutent les uns après les autres
         réécrire la fonction OnComplete pour lancer le prochain tweener (timeline:StartNext())
         propriété current qui point vers le tweenr courant
-
-    - commaun au stack et tweeners : 
-
-    - propriété "workInterval" pour ne pas update les tweener chaque frame
 
 
     -----
@@ -103,7 +71,7 @@ IDEAS
     - delay
     - elapsed, fullElapsed
     
-    - duration 
+    - duration > est calculé en fonction de emitionRate et maxParticleCount si nil
     - durationType
     - emitionRate (nb particle per durationType) > calcule maxParticleCount si nil
     - maxParticleCount (nb of particles emitted over the duration) > calcule emitionRate si nil
@@ -138,12 +106,12 @@ IDEAS
     public properties :
     tags
     cullingInterval 
+    near plane
+    far plane
 
-    Fires the following events when they leave/enter the frustrum
-    OnBecomeVisible( cameraGO )     (OnCameraEnter)
-    OnBecomeInvisible( cameraGO )   (OnCameraExit)
-
-    Enable to set a near and far plane
+    Fires the following events at game bjects when they leave/enter the frustrum
+    OnBecomeVisible( cameraGO )   ou bien  OnCameraEnter( cameraGO )
+    OnBecomeInvisible( cameraGO )   OnCameraExit( cameraGO )
 
     
     ------
@@ -153,17 +121,7 @@ IDEAS
     For each rays, keep the closest gameObject 
     Only render the closest GO
     Enable to set a near and far plane
-
-
-    ------
-    Squared triggers
-
-    make the trigger create a ray from the checked GO and the trigger
-    if the ray hit, that's because the GO was outside of the trigger's model
-    if the ray don't hit, that's because the GO is inside the trigger's model, so he is in the 
-
-    Enable this on regular triggers when the 'BoxTrigger' property is true (disable the range altogether)
-    Allow to use a map or textRenderer instead of a modelRenderer
+    (When a game object is "selected" for render, removeit from the list of game objects to check)
 
 
 ==========
@@ -171,14 +129,60 @@ A implémenter
     
     v1.2.x
 
-    - remove use of Vector3.Distance (trigger and slider)
-    - make the ids incremental instead of random
     
+    - remove use of Vector3.Distance (trigger and slider)
+    - standardiser propriété "updateInterval"
+    
+    - add a Lang scripted behavior which replace the text of the textrenderer or textArea
+    
+    - Intersects[Component]( component, returnRaycastHit )
+    - Daneel.Utilities.Circle pseudo object (like Plane) with position, radius, normal
+        > rayCastHit = ray:IntersectsCircle( circle, true )
+    - Rectangle pseudo object with position, normal, width, height > allow pixels
+        > raycashit = ray:IntersectRectangle( rectangle, true )
+    
+    - get rid of hotkey events when possible
+
+    - add squared triggers
+        make the trigger create a ray from the checked GO and the trigger
+        if the ray hit, that's because the GO was outside of the trigger's model
+        if the ray don't hit, that's because the GO is inside the trigger's model, so he is in the 
+
+        Enable this on regular triggers when the range tags is negative
+        Allow to use a map or textRenderer instead of a modelRenderer
+
+    - make the ids incremental instead of random
+
+    - allow asset setter to accept nil as argument
+
+    - add setter for all GUI properties
+
+    - propriété update interval for tweeners
+
+    - GUI.Input permettre de définir un curseur model optionnel
+    
+    - Daneel.Draw object
+        lineRenderer = gameObject:AddComponent("LineRenderer")
+        lineRenderer:SetStartPosition() / GetStartPosition() > autorise en vector2 + layer
+        lineRenderer:SetLength() / GetLength() > autorise en pixel
+        lineRenderer:SetWidth() / GetWidth() > autorise en pixel
+        lineRenderer:SetEndPosition() /
+        lineRenderer:SetModel() / GetModel()
+
+        circleRenderer = gameObject:AddComponent("CircleRenderer")
+        circleRenderer:SetRadius() / GetRadius() > autorise en pixels
+        circleRenderer:SetNormal() / GetNormal() > default {0, 0, 1}
+        circleRenderer:SetSegmentCount() / GetSegmentCount()
+        circleRenderer:SetModel() / GetModel()
+        circleRenderer:SetLineWidth() > autorise en pixel
+
 
 ==========
 A tester
 
     - voir pourquoi certains easeType renvoient des erreurs
+    - Scene.current = current scene asset loaded
+    
 
 ==========
 A modifier/ajouter dans la doc :
