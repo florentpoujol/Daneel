@@ -524,12 +524,12 @@ end
 -- When the new scene is loaded, all of the current scene's game objects will be removed.
 -- Calling this function doesn't immediately stops the calling function. As such, you might want to add a return statement afterwards. 
 -- @param sceneNameOrAsset (string or Scene) The scene name or asset.
-function Scene.Load(sceneNameOrAsset)
-    Daneel.Debug.StackTrace.BeginFunction("Scene.Load", sceneNameOrAsset)
-    local errorHead = "Scene.Load(sceneNameOrAsset) : "
-    Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
+function Scene.Load( sceneNameOrAsset )
+    Daneel.Debug.StackTrace.BeginFunction( "Scene.Load", sceneNameOrAsset )
+    local errorHead = "Scene.Load( sceneNameOrAsset ) : "
+    Daneel.Debug.CheckArgType( sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead )
 
-    CraftStudio.LoadScene(sceneNameOrAsset)
+    CraftStudio.LoadScene( sceneNameOrAsset )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -541,8 +541,8 @@ local OriginalLoadScene = CraftStudio.LoadScene
 -- @param sceneNameOrAsset (string or Scene) The scene name or asset.
 function CraftStudio.LoadScene( sceneNameOrAsset )
     Daneel.Debug.StackTrace.BeginFunction( "CraftStudio.LoadScene", sceneNameOrAsset )
-    local errorHead = "CraftStudio.LoadScene( sceneNameOrAsset) : "
-    Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead )
+    local errorHead = "CraftStudio.LoadScene( sceneNameOrAsset ) : "
+    Daneel.Debug.CheckArgType( sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead )
 
     local scene = Asset.Get( sceneNameOrAsset, "Scene", true )
     
@@ -552,6 +552,8 @@ function CraftStudio.LoadScene( sceneNameOrAsset )
     Daneel.Event.fireAtTime = {}
     Daneel.Event.fireAtRealTime = {}
     Daneel.Event.fireAtFrame = {}
+
+    Scene.current = scene
 
     Daneel.Debug.StackTrace.EndFunction()
     OriginalLoadScene( scene )

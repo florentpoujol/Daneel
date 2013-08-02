@@ -181,12 +181,14 @@ A implémenter
 A tester
 
     - voir pourquoi certains easeType renvoient des erreurs
-    - Scene.current = current scene asset loaded
     
+
 
 ==========
 A modifier/ajouter dans la doc :
 
+    - Scene.current = currently loaded scene asset
+    
 
 =========
 BUGS
