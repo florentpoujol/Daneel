@@ -1,3 +1,8 @@
+-- Lua.lua
+-- Extends Lua's standard librairies.
+--
+-- Last modified for v1.2.0
+-- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
 ----------------------------------------------------------------------------------
 -- math
@@ -25,8 +30,10 @@ end
 -- @return (table) The table.
 function string.totable( s )
     if Daneel.Cache.totable[s] ~= nil then
-        return Daneel.Cache.totable[s]
+        return table.copy( Daneel.Cache.totable[s] )
+        -- table.copy() is necessary to prevent string.ucfirst(), lcfirst() or any other function that uses the table returned by totable() to modify the table stored in the cache
     end
+
 
     Daneel.Debug.StackTrace.BeginFunction( "string.totable", s )
     Daneel.Debug.CheckArgType( s, "string", "string", "string.totable( string )" )
@@ -35,7 +42,7 @@ function string.totable( s )
     for i = 1, #s do
         table.insert( t, s:sub( i, i ) )
     end
-    Daneel.Cache.totable[s] = t
+    Daneel.Cache.totable[s] = table.copy( t )
 
     Daneel.Debug.StackTrace.EndFunction()
     return t
@@ -115,7 +122,7 @@ function string.split( s, delimiter, trim )
     Daneel.Debug.CheckOptionalArgType( trim, "trim", "boolean", errorHead )
 
     local chunks = {}
-    if s:find( delimiter ) == nil then
+    if s:find( delimiter, 1, true ) == nil then -- the 1 and true arguments are to enable the "plain text" search, so that dot is not considered as "all characters" like in regexes
         chunks = {s}
     else
         local chunk = ""
@@ -604,9 +611,9 @@ function table.getkey(t, value)
     return key
 end
 
---- Sort a list of table using by one of the tables property as criteria.
+--- Sort a list of table using one of the tables property as criteria.
 -- @param t (table) The table.
--- @param property (string) The property used as criteriato sort the table.
+-- @param property (string) The property used as criteria to sort the table.
 -- @param orderBy [optional default="asc"] (string) How the sort should be made. Can be "asc" or "desc". Asc means small values first.
 -- @return (table) The ordered table.
 function table.sortby(t, property, orderBy)
@@ -618,7 +625,7 @@ function table.sortby(t, property, orderBy)
     if orderBy == nil or not orderBy:isoneof({"asc", "desc"}) then
         orderBy = "asc"
     end
-
+    
     local propertyValues = {}
     local itemsByPropertyValue = {} -- propertyValue = _table (values in the t table)
     for i, _table in ipairs(t) do
@@ -629,20 +636,20 @@ function table.sortby(t, property, orderBy)
         end
         table.insert(itemsByPropertyValue[propertyValue], _table)
     end
-
+    
     if orderBy == "desc" then
         table.sort(propertyValues, function(a,b) return a>b end)
     else
         table.sort(propertyValues)
     end
-
+    
     t = table.new()
     for i, propertyValue in ipairs(propertyValues) do
         for j, _table in pairs(itemsByPropertyValue[propertyValue]) do
             table.insert(t, _table)
         end
     end
-
+    
     Daneel.Debug.StackTrace.EndFunction()
     return t
 end

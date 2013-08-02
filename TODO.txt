@@ -15,13 +15,31 @@ IDEAS
         > empèhe les composants de GUI d'être mis à jour
         > ideallement devrait être géré par CS directement au niveau du game object
 
-    - Debug.DrawLine(start, end[, model]) ou (start, direction, length[, model])
-        config.debug.defaultLineModel
+    - Utilities.DrawLine(start, end[, model]) ou (start, direction, length[, model])
+        Daneel.Config.debug.defaultLineModel
         DrawCircle( position, radius, nbofsegment, model )
+
+    - OnButtonJustPressed( buttonName ) / OnButtonDown( buttonName ) / OnButtonJustReleased( buttonName ) 
+
+    - un moyen de pacer un gameobject dans un variable via la scène
+        un scripted behavior qui prend un string comme argument
+
+    - table.inverse > inserve clés/valeurs
+
+    - plane:GetHitLocationFromCamera( camera )
+    camera:GetMousePositionOnPlane( plane )
+    et/ou
+    rayCastHit = ray:IntersectsPlane( plane )
+    rayCastHit avec distance, normal, hitLocation
+
+    - Scene.GetName() > get the path of the current scene asset, cached by Scene.Load()
 
 
     -----
     GUI
+
+    - MouseInput
+        passer la camera en argument des events, en plus du gameObject
 
     - Input
         - curseur et tout ce qui va avec
@@ -38,7 +56,10 @@ IDEAS
         scale à 0 les objects en dehors de la fenètre
         > ou les cache avec un autre model par exemple
         > ou les fenètres sont rendue par d'autres cameras dont l'object Rect
-    
+
+    - button scripted behavior avec property "onclick"
+
+
     -----
     TWEEN
 
@@ -57,6 +78,8 @@ IDEAS
         propriété current qui point vers le tweenr courant
 
     - commaun au stack et tweeners : 
+
+    - propriété "workInterval" pour ne pas update les tweener chaque frame
 
 
     -----
@@ -143,36 +166,28 @@ IDEAS
     Allow to use a map or textRenderer instead of a modelRenderer
 
 
-
 ==========
 A implémenter
     
-    
-    - argument checkInterval sur MouseInput
+    v1.2.x
 
+    - remove use of Vector3.Distance (trigger and slider)
+    - make the ids incremental instead of random
+    
 
 ==========
 A tester
 
     - voir pourquoi certains easeType renvoient des erreurs
-    - getscriptedbehavior avec string qui ne sont pas des scripts
-    - suppression d'un gameObject mais l'un de ses composant (détruit) avec lui est encore enregistré pour certains events
-    - GO.GetwithTag()
-
 
 ==========
 A modifier/ajouter dans la doc :
-
-    - Example project : minimalist encounter
 
 
 =========
 BUGS
 
-    -- ajouter un TextArea via le scripted behavior renvoie l'exception :
-
-    - parfois, une ligne de la stacktrace n'est pas complète : #04 GameObject.Ge)
-        > quadn argument attendus est nil ?
+    - ajouter un TextArea via le scripted behavior renvoie l'exception :
 
 
 OLD
@@ -182,11 +197,4 @@ OLD
     > créer le scriptedBehavior de la checkBox depuis CheckBox.New() lorsqu'il existait déjà renvoie cette exception
 
     Exception non gérée : System.InvalidOperationException: La collection a été modifiée ; l'opération d'énumération peut ne pas s'exécuter.
-
-
-=========
-
-ordre chargement des fichiers :
-- dans l'ordre de création (id d'asset croissant)
-- dernier script modifié sans faire de révision depuis le dernier export est chargé en premier
 

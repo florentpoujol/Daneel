@@ -1,9 +1,14 @@
+-- Trigger.lua
+-- Scripted behavior for triggers.
+--
+-- Last modified for v1.2.0
+-- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
--- Public properties :
--- range (number) [default=0]
--- tags (string) [default=""]
--- checkInterval (number) [default=10]
-
+--[[PublicProperties
+range number 0
+tags string ""
+checkInterval number 10
+/PublicProperties]]
 
 function Behavior:Awake()
     self.GameObjectsInRange = {} -- the gameObjects that touches this trigger

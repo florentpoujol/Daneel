@@ -1,45 +1,49 @@
+-- Slider.lua
+-- Scripted behavior for Daneel.GUI.Slider component.
+--
+-- Last modified for v1.2.0
+-- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
--- Behavior for Daneel.GUI.Slider component.
-
--- Public properties :
--- minValue (number) [default=0]
--- maxValue (number) [default=100]
--- length (string) [default="5"]
--- axis (string) [default="x"]
--- value (string) [default="0%"]
+--[[PublicProperties
+minValue number 0
+maxValue number 100
+length string "5"
+axis string "x"
+value string "0%"
+/PublicProperties]]
 
 function Behavior:Awake()
-	if self.gameObject.slider == nil then
-		self.gameObject:AddComponent("Slider", { 
-			minValue = self.minValue,
-			maxValue = self.maxValue,
-			length = self.length,
-			axis = self.axis,
-			value = self.value,
-		})
-	end
+    if self.gameObject.slider == nil then
+        self.gameObject:AddComponent( "Slider", { 
+            minValue = self.minValue,
+            maxValue = self.maxValue,
+            length = self.length,
+            axis = self.axis,
+            value = self.value,
+        } )
+    end
 end
 
 -- when the handle is dragged
 function Behavior:OnDrag()
-	local slider = self.gameObject.slider
-	local mousePosition = CraftStudio.Input.GetMousePosition()
-	local newPosition = Vector2(mousePosition.x, self.gameObject.hud.position.y) 
-	if slider.axis == "y" then
-		newPosition = Vector2(self.gameObject.hud.position.x, mousePosition.y)
-	end
-    self.gameObject.hud.position = newPosition
-    slider.value = math.clamp(slider.value, slider.minValue, slider.maxValue)
-end
+    local slider = self.gameObject.slider
 
-
-function Behavior:OnNewComponent(data)
-    if data == nil then return end -- FIXME : happens when the component is a scriptedBehavior
-    local component = data[1]
-    if component == nil then return end
-    local mt = getmetatable(component)
-
-    if mt == Daneel.GUI.Hud then
-        self.gameObject.slider.startPosition = self.gameObject.transform.position
+    local mouseDelta = CraftStudio.Input.GetMouseDelta()
+    local positionDelta = Vector3( mouseDelta.x, 0, 0 )
+    if slider.axis == "y" then
+        positionDelta = Vector3( 0, -mouseDelta.y, 0, 0 )
+    end  
+    
+    self.gameObject.transform:Move( positionDelta * Daneel.GUI.pixelsToUnits )
+    
+    if 
+        (slider.axis == "x" and self.gameObject.transform.position.x < slider.startPosition.x) or
+        (slider.axis == "y" and self.gameObject.transform.position.y < slider.startPosition.y)
+    then
+        slider.value = slider.minValue
+    elseif slider.value > slider.maxValue then
+        slider.value = slider.maxValue
+    else
+        Daneel.Event.Fire( slider, "OnUpdate", slider )
     end
 end

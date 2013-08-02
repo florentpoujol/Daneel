@@ -1,8 +1,16 @@
+-- Daneel.lua
+-- Contains most of Daneel's core fonctionnalities.
+--
+-- Last modified for v1.2.0
+-- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
 DANEEL_LOADED = false
 DEBUG = false
-config = {}
 Daneel = {}
+
+----------------------------------------------------------------------------------
+
+Daneel.Config = {}
 
 function DaneelDefaultConfig()
     return {
@@ -248,7 +256,7 @@ function Daneel.Utilities.GetValueFromName(name)
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     
     local value = nil
-    if name:find(".") == nil then
+    if name:find( ".", 1, true ) == nil then
         if Daneel.Utilities.GlobalExists(name) == true then
             value = _G[name]
         end
@@ -308,9 +316,9 @@ function Daneel.Utilities.GlobalExists(name)
 end
 
 --- A more flexible version of Lua's built-in tonumber() function.
--- Returns the first continuous series of numbers found in the text version of the provided data een if it is prefixed or suffied by other characters.
--- @param data (mixed) Usualy string or userdata.
--- @param (number) The number, or nil.
+-- Returns the first continuous series of numbers found in the text version of the provided data even if it is prefixed or suffied by other characters.
+-- @param data (mixed) Usually string or userdata.
+-- @return (number) The number, or nil.
 function Daneel.Utilities.ToNumber( data )
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.ToNumber", data )
     local errorHead = "Daneel.Utilities.ToNumber( data ) : "
@@ -452,8 +460,8 @@ function Daneel.Debug.GetType(object, OnlyReturnLuaType)
                 return "ScriptedBehavior"
             end
             -- other types
-            if config.allObjects ~= nil then
-                for type, object in pairs(config.allObjects) do
+            if Daneel.Config.allObjects ~= nil then
+                for type, object in pairs(Daneel.Config.allObjects) do
                     if mt == object then
                         return type
                     end
@@ -514,7 +522,7 @@ end
 --- Returns the name as a string of the global variable (including nested tables) whose value is provided.
 -- This only works if the value of the variable is a table or a function.
 -- When the variable is nested in one or several tables (like Daneel.GUI.Hud), it must have been set in the 'userObject' table in the config if not already part of CraftStudio or Daneel.
--- @param value (table or function) Any global variable, any object from CraftStudio or Daneel or objects whose name is set in 'userObjects' in the config.
+-- @param value (table or function) Any global variable, any object from CraftStudio or Daneel or objects whose name is set in 'userObjects' in the Daneel.Config.
 -- @return (string) The name, or nil.
 function Daneel.Debug.GetNameFromValue(value)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.GetNameFromValue", value)
@@ -522,7 +530,7 @@ function Daneel.Debug.GetNameFromValue(value)
     if value == nil then
         error(errorHead.." Argument 'value' is nil.")
     end
-    local result = table.getkey(config.allObjects, value)
+    local result = table.getkey(Daneel.Config.allObjects, value)
     if result == nil then
         result = table.getkey(_G, value)
     end
@@ -597,7 +605,7 @@ Daneel.Debug.StackTrace = { messages = {} }
 -- @param functionName (string) The function name.
 -- @param ... [optional] (mixed) Arguments received by the function.
 function Daneel.Debug.StackTrace.BeginFunction( functionName, ... )
-    if DEBUG == false or config.debug.enableStackTrace == false then return end
+    if DEBUG == false or Daneel.Config.debug.enableStackTrace == false then return end
 
     if #Daneel.Debug.StackTrace.messages > 200 then 
         print( "WARNING : your StackTrace is more than 200 items long ! Emptying the StackTrace now. Did you forget to write a 'EndFunction()' somewhere ?" )
@@ -628,7 +636,7 @@ end
 
 --- Closes a successful function call, removing it from the stacktrace.
 function Daneel.Debug.StackTrace.EndFunction()
-    if DEBUG == false or config.debug.enableStackTrace == false then return end
+    if DEBUG == false or Daneel.Config.debug.enableStackTrace == false then return end
     -- since 16/05/2013 no arguments is needed anymore, since the StackTrace only keeps open functions calls and never keep returned values
     -- I didn't rewrote all the calls to EndFunction() 
     table.remove( Daneel.Debug.StackTrace.messages )
@@ -636,7 +644,7 @@ end
 
 --- Print the StackTrace.
 function Daneel.Debug.StackTrace.Print()
-    if DEBUG == false or config.debug.enableStackTrace == false then return end
+    if DEBUG == false or Daneel.Config.debug.enableStackTrace == false then return end
 
     local messages = Daneel.Debug.StackTrace.messages
     Daneel.Debug.StackTrace.messages = {}
@@ -715,9 +723,9 @@ end
 
 --- Remove the provided function or object from the listeners and scheduled events lists.
 -- @param functionOrObject (function, userdata or table)
-function Daneel.Event.Clean(functionOrObject)
+function Daneel.Event.Clear(functionOrObject)
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Clean", functionOrObject)
-    local errorHead = "Daneel.Event.Clean(functionOrObject) : "
+    local errorHead = "Daneel.Event.Clear(functionOrObject) : "
     Daneel.Debug.CheckArgType(functionOrObject, "functionOrObject", {"table", "function", "userdata"}, errorHead)
 
     for eventName, listeners in pairs(Daneel.Event.events) do
@@ -758,49 +766,56 @@ end
 -- @param object [optional] (table, function or userdata) The object to which fire the event at. If nil or abscent, will send the event to its listeners.
 -- @param eventName (string) The event name.
 -- @param ... [optional] Some arguments to pass along.
-function Daneel.Event.Fire(object, eventName,  ...)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Fire", object, eventName, unpack(arg))
-    local errorHead = "Daneel.Event.Fire([object, ]eventName[, ...]) : "
+function Daneel.Event.Fire( object, eventName,  ... )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Event.Fire", object, eventName, unpack( arg ) )
+    local errorHead = "Daneel.Event.Fire( [object, ]eventName[, ...] ) : "
     
-    local argType = type(object)
+    local argType = type( object )
     if argType == "string" or argType == "nil" then
         -- no object provided, fire on the listeners
         if eventName ~= nil then
-            table.insert(arg, 1, eventName)
+            table.insert( arg, 1, eventName )
         end
         eventName = object
         object = nil
+
     elseif argType == "function" or argType == "userdata" then
         if eventName ~= nil then
-            table.insert(arg, 1, eventName)
+            table.insert( arg, 1, eventName )
         end
-        object(unpack(arg))
+        object( unpack( arg ) )
         Daneel.Debug.StackTrace.EndFunction()
         return
     end
 
-    Daneel.Debug.CheckOptionalArgType(object, "object", "table", errorHead)
-    Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
+    Daneel.Debug.CheckOptionalArgType( object, "object", "table", errorHead )
+    Daneel.Debug.CheckArgType( eventName, "eventName", "string", errorHead )
     
     local listeners = { object }
-    if object == nil and Daneel.Event.events[eventName] ~= nil then
-        listeners = Daneel.Event.events[eventName]
+    if object == nil and Daneel.Event.events[ eventName ] ~= nil then
+        listeners = Daneel.Event.events[ eventName ]
     end
 
-    for i, listener in ipairs(listeners) do
+    for i, listener in ipairs( listeners ) do
         
-        local _type = type(listener)
+        local _type = type( listener )
         if _type == "function" or _type == "userdata" then
-            listener(unpack(arg))
+            listener( unpack( arg ) )
+
         else -- an object
             if listener.isDestroyed ~= true then -- ensure that the event is not fired on a dead gameObject or component
                 local message = eventName
 
                 -- look for the value of the EventName property on the object
-                local funcOrMessage = listener[eventName]
-                _type = type(funcOrMessage)
+                local funcOrMessage = listener[ eventName ]
+
+                _type = type( funcOrMessage )
                 if _type == "function" or _type == "userdata" then
-                    funcOrMessage(unpack(arg))
+                    -- prevent a 'Behavior function' to be called as a regular function when the listener is a ScriptedBehavior
+                    if rawget( listener, eventName ) == funcOrMessage then
+                        funcOrMessage( unpack( arg ) )
+                    end
+
                 elseif _type == "string" then
                     message = funcOrMessage
                 end
@@ -809,28 +824,29 @@ function Daneel.Event.Fire(object, eventName,  ...)
                 local sendMessage = true
                 local gameObject = listener
                 
-                if getmetatable(gameObject) ~= GameObject then
+                if getmetatable( gameObject ) ~= GameObject then
                     gameObject = listener.gameObject
                     
-                    if getmetatable(gameObject) ~= GameObject then
+                    if getmetatable( gameObject ) ~= GameObject then
                         sendMessage = false
                         
-                        if type(listener[eventName]) == "string" and DEBUG == true then
+                        if _type == "string" and DEBUG == true then
                             -- the user obviously wanted to send a message but the object is not a gameObject and has no gameObject property
 
                             -- only prints the debug when the user setted up the event property because otherwise
                             -- it would print it every time an event has not been set up (which is OK) on an non-gameObject object like a tweener
-                            print(errorHead.."Can't fire event '"..eventName.."' by sending message '"..message.."' on object '"..tostring(listener).."'  because it not a gameObject and has no 'gameObject' property.")                      
+                            print( errorHead .. "Can't fire event '" .. eventName .. "' by sending message '" .. message .. "' on object '" .. tostring( listener ) .. "'  because it not a gameObject and has no 'gameObject' property." )
                         end
                     end
                 end
+
                 if sendMessage then
-                    gameObject:SendMessage(message, arg)
+                    gameObject:SendMessage( message, arg )
                 end
             end
         end
 
-    end
+    end -- end for
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -976,55 +992,68 @@ Daneel.Lang = { lines = {}, gameObjectsToUpdate = {} }
 -- @param key (string) The language key.
 -- @param replacements [optional] (table) The placeholders and their replacements.
 -- @return (string) The line.
-function Daneel.Lang.Get(key, replacements)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Lang.Get", key, replacements)
-    local errorHead = "Daneel.Lang.Get(key[, replacements]) : "
-    Daneel.Debug.CheckArgType(key, "key", "string", errorHead)
-    local currentLanguage = config.language.current
-    local defaultLanguage = config.language.default
-    local searchInDefault = config.language.searchInDefault
+function Daneel.Lang.Get( key, replacements )
+    if replacements == nil and Daneel.Cache.lang[ key ] ~= nil then
+        Daneel.Debug.StackTrace.EndFunction()
+        return Daneel.Cache.lang[ key ]
+    end
 
-    local keys = key:split(".")
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Lang.Get", key, replacements )
+    local errorHead = "Daneel.Lang.Get( key[, replacements] ) : "
+    Daneel.Debug.CheckArgType( key, "key", "string", errorHead )
+    local currentLanguage = Daneel.Config.language.current
+    local defaultLanguage = Daneel.Config.language.default
+    local searchInDefault = Daneel.Config.language.searchInDefault
+
+    local keys = key:split( "." )
     local language = currentLanguage
-    if table.containsvalue( config.language.languageNames, keys[1] ) then
-        language = table.remove(keys, 1)
+    if table.containsvalue( Daneel.Config.language.languageNames, keys[1] ) then
+        language = table.remove( keys, 1 )
     end
     
-    local noLangKey = table.concat(keys, ".") -- rebuilt the key, but without the language
+    local noLangKey = table.concat( keys, "." ) -- rebuilt the key, but without the language
+    local fullKey = language .. "." .. noLangKey 
+    if replacements == nil and Daneel.Cache.lang[ fullKey ] ~= nil then
+        Daneel.Debug.StackTrace.EndFunction()
+        return Daneel.Cache.lang[ fullKey ]
+    end
 
-    local lines = Daneel.Lang.lines[language]
+    local lines = Daneel.Lang.lines[ language ]
     if lines == nil then
-        error(errorHead.."Language '"..language.."' does not exists")
+        error( errorHead.."Language '"..language.."' does not exists" )
     end
 
     for i, _key in ipairs(keys) do
         if lines[_key] == nil then
             -- key was not found
             if DEBUG == true then
-                print(errorHead.."Localization key '"..key.."' was not found in '"..language.."' language .")
+                print( errorHead.."Localization key '"..key.."' was not found in '"..language.."' language ." )
             end
 
             -- search for it in the default language
             if language ~= defaultLanguage and searchInDefault == true then  
-                lines = Daneel.Lang.Get(defaultLanguage.."."..noLangKey, replacements)
+                lines = Daneel.Lang.Get( defaultLanguage.."."..noLangKey, replacements )
             else -- already default language or don't want to search in
-                lines = config.language.keyNotFound
+                lines = Daneel.Config.language.keyNotFound
             end
 
             break
         end
-        lines = lines[_key]
+        lines = lines[ _key ]
     end
 
-    -- line should be the searched string by now
+    -- lines should be the searched string by now
     local line = lines
-    if type(line) ~= "string" then
-        error(errorHead.."Localization key '"..key.."' does not lead to a string but to : '"..tostring(line).."'.")
+    if type( line ) ~= "string" then
+        error( errorHead.."Localization key '"..key.."' does not lead to a string but to : '"..tostring(line).."'." )
     end
 
     -- process replacements
     if replacements ~= nil then
-        line = Daneel.Utilities.ReplaceInString(line, replacements)
+        line = Daneel.Utilities.ReplaceInString( line, replacements )
+    else
+        Daneel.Cache.lang[ key ] = line -- ie: "greetings.welcome"
+        Daneel.Cache.lang[ fullKey ] = line -- ie: "english.greetings.welcome"
     end
 
     Daneel.Debug.StackTrace.EndFunction()
@@ -1033,13 +1062,13 @@ end
 
 --- Register a gameObject to update its TextRenderer whenever the language will be updated by Daneel.Lang.Update().
 -- @param gameObject (GameObject) The gameObject.
--- @param key (string or function) The language key or a function which returns the new text to display.
+-- @param key (string) The language key.
 -- @param replacements [optional] (table) The placeholders and their replacements (has no effect when the 'key' argument is a function).
 function Daneel.Lang.RegisterForUpdate( gameObject, key, replacements )
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Lang.RegisterForUpdate", gameObject, key, replacements )
     local errorHead = "Daneel.Lang.RegisterForUpdate( gameObject, key[, replacements] ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-    Daneel.Debug.CheckArgType( key, "key", {"string", "function"}, errorHead)
+    Daneel.Debug.CheckArgType( key, "key", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType( replacements, "replacements", "table", errorHead )
 
     Daneel.Lang.gameObjectsToUpdate[gameObject] = {
@@ -1049,29 +1078,28 @@ function Daneel.Lang.RegisterForUpdate( gameObject, key, replacements )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Update the current language and the text of all gameObjects that have registered via Daneel.Lang.RegisterForUpdate()
+--- Update the current language and the text of all gameObjects that have registered via Daneel.Lang.RegisterForUpdate().
+-- Updates the TextRenderer or GUI.TextArea component.
 -- Fire the OnLangUpdate event.
 -- @param language (string) The new current language.
 function Daneel.Lang.Update( language )
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Lang.Update", language )
     local errorHead = "Daneel.Lang.Update( language ) : "
     Daneel.Debug.CheckArgType( language, "language", "string", errorHead )
-    language = Daneel.Debug.CheckArgValue( language, "language", config.language.languageNames, errorHead )
+    language = Daneel.Debug.CheckArgValue( language, "language", Daneel.Config.language.languageNames, errorHead )
     
-    config.language.current = language
+    Daneel.Cache.lang = {} -- ideally only the items that do not begins by a language name should be deleted
+    Daneel.Config.language.current = language
     for gameObject, data in pairs( Daneel.Lang.gameObjectsToUpdate ) do
+        local text = Daneel.Lang.Get( data.key, data.replacements )
+        
         if gameObject.textArea ~= nil then
-            gameObject.textArea:SetText( data.key() )
-
+            gameObject.textArea:SetText( text )
         elseif gameObject.textRenderer ~= nil then
-            if type( data.key ) == "function" then
-                gameObject.textRenderer:SetText( data.key() )
-            else
-                gameObject.textRenderer:SetText( Daneel.Lang.Get( data.key, data.replacements ) )
-            end
+            gameObject.textRenderer:SetText( text )
         
         elseif DEBUG then
-            print("WARNING : " .. errorHead .. tostring( gameObject ) .. " does not have a TextRenderer or TextArea component.")
+            print( "WARNING : " .. errorHead .. tostring( gameObject ) .. " does not have a TextRenderer or TextArea component." )
         end
     end
 
@@ -1103,12 +1131,14 @@ Daneel.Cache = {
     totable = {},
     ucfirst = {},
     lcfirst = {},
+
     -- with assets, the key may be :
     -- the asset object itself, the value is true
     -- or the asset name, the value is a table with the asset type as keys and asset object as values
-    -- (allows to assets to have the same name)
-    assets = {},
-    assetPaths = {},
+    -- (allows two assets to have the same name)
+    assets = { ["ScriptAliases"] = {} }, -- Asset.Get()
+    assetPaths = {}, -- Asset.GetPath()
+    lang = {},
 }
 
 
@@ -1121,52 +1151,52 @@ function Daneel.Load()
     if DANEEL_LOADED == true then return end
 
     -- load default config, modules config, then user config
-    config = DaneelDefaultConfig()
+    Daneel.Config = DaneelDefaultConfig()
     -- do this once here to get the user list of modules
     -- if Daneel.Utilities.GlobalExists("DaneelConfig") and DaneelConfig().modules ~= nil then
-    --     config.modules = table.deepmerge(config.modules, DaneelConfig().modules)
+    --     Daneel.Config.modules = table.deepmerge(Daneel.Config.modules, DaneelConfig().modules)
     -- end
 
-    for i, module in ipairs(config.modules) do
+    for i, module in ipairs(Daneel.Config.modules) do
         local functionName = "DaneelConfigModule"..module
         if Daneel.Utilities.GlobalExists(functionName) then
-            config = table.deepmerge(config, _G[functionName]())
+            Daneel.Config = table.deepmerge( Daneel.Config, _G[functionName]() )
         end
     end
     
     if Daneel.Utilities.GlobalExists("DaneelConfig") then
-        config = table.deepmerge(config, DaneelConfig())
+        Daneel.Config = table.deepmerge( Daneel.Config, DaneelConfig())
     end
 
     
-    DEBUG = config.debug.enableDebug
-    if DEBUG == true and config.debug.enableStackTrace == true then
+    DEBUG = Daneel.Config.debug.enableDebug
+    if DEBUG == true and Daneel.Config.debug.enableStackTrace == true then
         SetNewError()
     end
 
     -- Objects
-    config.componentObjects = table.merge(
-        config.craftStudioComponentObjects,
-        config.daneelComponentObjects
+    Daneel.Config.componentObjects = table.merge(
+        Daneel.Config.craftStudioComponentObjects,
+        Daneel.Config.daneelComponentObjects
     )
-    config.componentTypes = table.getkeys(config.componentObjects)
-    config.craftStudioComponentTypes = table.getkeys( config.craftStudioComponentObjects )
-    config.daneelComponentTypes = table.getkeys(config.daneelComponentObjects)
-    config.assetTypes = table.getkeys(config.assetObjects)
+    Daneel.Config.componentTypes = table.getkeys(Daneel.Config.componentObjects)
+    Daneel.Config.craftStudioComponentTypes = table.getkeys( Daneel.Config.craftStudioComponentObjects )
+    Daneel.Config.daneelComponentTypes = table.getkeys(Daneel.Config.daneelComponentObjects)
+    Daneel.Config.assetTypes = table.getkeys(Daneel.Config.assetObjects)
     
     -- all objects (for use in GetType())
-    config.allObjects = table.merge(
-        config.craftStudioObjects,
-        config.assetObjects,
-        config.daneelObjects,
-        config.componentObjects,
-        config.userObjects
+    Daneel.Config.allObjects = table.merge(
+        Daneel.Config.craftStudioObjects,
+        Daneel.Config.assetObjects,
+        Daneel.Config.daneelObjects,
+        Daneel.Config.componentObjects,
+        Daneel.Config.userObjects
     )
 
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Load")
 
     -- Scripts
-    for i, path in pairs( config.scriptPaths ) do
+    for i, path in pairs( Daneel.Config.scriptPaths ) do
         local script = CraftStudio.FindAsset( path, "Script" )
         if script ~= nil then
             Daneel.Utilities.AllowDynamicGettersAndSetters( script, { Script, Component } )
@@ -1175,15 +1205,15 @@ function Daneel.Load()
                 return "ScriptedBehavior: " .. tostring( scriptedBehavior.inner ):sub( 2, 20 ) .. ": '" .. path .. "'"
             end
         else
-            config.scriptPaths[i] = nil
+            Daneel.Config.scriptPaths[i] = nil
             if DEBUG == true then
-                print("WARNING : item with key '"..i.."' and value '"..path.."' in 'config.scriptPaths' is not a valid script path.")
+                print("WARNING : item with key '"..i.."' and value '"..path.."' in 'Daneel.Config.scriptPaths' is not a valid script path.")
             end
         end
     end
 
     -- Components
-    for componentType, componentObject in pairs(config.componentObjects) do
+    for componentType, componentObject in pairs(Daneel.Config.componentObjects) do
         -- Components getters-setter-tostring
         Daneel.Utilities.AllowDynamicGettersAndSetters(componentObject, { Component })
 
@@ -1199,7 +1229,8 @@ function Daneel.Load()
                 end
                 
                 local text = componentType .. ": " .. id
-                
+                --[[
+                -- uncomment when the getter won't return error when the asset is not set yet
                 local path = "[no asset]"
                 local pathStart = ": '"
                 local pathEnd = "'"
@@ -1241,6 +1272,7 @@ function Daneel.Load()
                     text = text .. pathStart .. path .. pathEnd
 
                 end
+                ]]
 
                 return text
             end
@@ -1248,7 +1280,7 @@ function Daneel.Load()
     end
 
     -- Assets
-    for assetType, assetObject in pairs(config.assetObjects) do
+    for assetType, assetObject in pairs(Daneel.Config.assetObjects) do
         Daneel.Utilities.AllowDynamicGettersAndSetters(assetObject)
 
         assetObject["__tostring"] = function(asset)
@@ -1260,7 +1292,7 @@ function Daneel.Load()
     end
 
     -- Languages
-    for i, language in ipairs(config.language.languageNames) do
+    for i, language in ipairs(Daneel.Config.language.languageNames) do
         local functionName = "DaneelLanguage"..language:ucfirst()
         if Daneel.Utilities.GlobalExists(functionName) == true then
             Daneel.Lang.lines[language] = _G[functionName]()
@@ -1268,15 +1300,15 @@ function Daneel.Load()
             print("WARNING : Can't load the language '"..language.."' because the global function "..functionName.."() does not exists.")
         end
     end
-    if config.language.default == nil then
-        config.language.default = config.language.languageNames[1]
+    if Daneel.Config.language.default == nil then
+        Daneel.Config.language.default = Daneel.Config.language.languageNames[1]
     end
-    if config.language.current == nil then
-        config.language.current = config.language.default
+    if Daneel.Config.language.current == nil then
+        Daneel.Config.language.current = Daneel.Config.language.default
     end
 
     -- Load modules 
-    for i, module in ipairs(config.modules) do
+    for i, module in ipairs(Daneel.Config.modules) do
         local functionName = "DaneelLoadModule"..module
         if Daneel.Utilities.GlobalExists(functionName) then
             _G[functionName]()
@@ -1290,11 +1322,11 @@ function Daneel.Load()
 
     -- check for module update function
     -- do this now so that I don't have to call Daneel.Utilities.GlobalExists() every frame for every modules below
-    config.moduleUpdateFunctions = {}
-    for i, module in ipairs(config.modules) do
+    Daneel.Config.moduleUpdateFunctions = {}
+    for i, module in ipairs(Daneel.Config.modules) do
         local functionName = "DaneelUpdateModule"..module
         if Daneel.Utilities.GlobalExists(functionName) and type(_G[functionName]) == "function" then
-            table.insert(config.moduleUpdateFunctions, _G[functionName])
+            table.insert(Daneel.Config.moduleUpdateFunctions, _G[functionName])
         end
     end
 
@@ -1316,7 +1348,7 @@ function Daneel.Awake()
 
 
     -- Awake modules 
-    for i, module in ipairs(config.modules) do
+    for i, module in ipairs(Daneel.Config.modules) do
         local functionName = "DaneelAwakeModule"..module
         if Daneel.Utilities.GlobalExists(functionName) then
             _G[functionName]()
@@ -1396,7 +1428,7 @@ function Daneel.Update()
 
     -- HotKeys
     -- fire an event whenever a registered button is pressed
-    for i, buttonName in ipairs(config.input.buttons) do
+    for i, buttonName in ipairs(Daneel.Config.input.buttons) do
         local ButtonName = buttonName:ucfirst()
 
         if CraftStudio.Input.WasButtonJustPressed(buttonName) then
@@ -1413,7 +1445,7 @@ function Daneel.Update()
     end
 
     -- Update modules 
-    for i, _function in ipairs(config.moduleUpdateFunctions) do
+    for i, _function in ipairs(Daneel.Config.moduleUpdateFunctions) do
         _function()
     end
 end

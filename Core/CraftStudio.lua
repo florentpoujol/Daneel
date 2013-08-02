@@ -1,3 +1,8 @@
+-- CraftStudio.lua
+-- Contains most of the objects and functions extending CraftStudio's base API
+--
+-- Last modified for v1.2.0
+-- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
 ----------------------------------------------------------------------------------
 -- Assets
@@ -5,64 +10,79 @@
 Asset = {}
 Asset.__index = Asset
 
---- Alias of CraftStudio.FindAsset( assetName[, assetType] ).
+--- Alias of CraftStudio.FindAsset( assetPath[, assetType] ).
 -- Get the asset of the specified name and type.
 -- The first argument may be an asset object, so that you can check if a variable was an asset object or name (and get the corresponding object).
--- @param assetName (string or one of the asset type) The fully-qualified asset name or asset object.
+-- @param assetPath (string or one of the asset type) The fully-qualified asset name or asset object.
 -- @param assetType [optional] (string) The asset type as a case-insensitive string.
 -- @param errorIfAssetNotFound [optional default=false] Throw an error if the asset was not found (instead of returning nil).
 -- @return (One of the asset type) The asset, or nil if none is found.
-function Asset.Get( assetName, assetType, errorIfAssetNotFound )
-    -- the key in the cache may be the assetName or the asset Object
-    local assetCache = Daneel.Cache.assets[ assetName ]
+function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
+    -- the key in the cache may be the assetPath, the asset Object, or "ScriptAliases"
+    local assetCache = Daneel.Cache.assets[ assetPath ]
     if assetCache ~= nil then
         if type( assetCache ) == "boolean" then -- assetname is an asset  -  can't check if assetCache == true because it is otherwise a table and also returns true            
-            return assetName
+            return assetPath
         
         elseif assetType ~= nil and assetCache[ assetType ] ~= nil then
             return assetCache[ assetType ]
         end
     end
 
-    Daneel.Debug.StackTrace.BeginFunction( "Asset.Get", assetName, assetType, errorIfAssetNotFound )
-    local errorHead = "Asset.Get( assetName[, assetType, errorIfAssetNotFound] ) : "
-    
-    -- just return the asset if assetName is already an object
-    if type( assetName ) == "table" and table.containsvalue( config.assetTypes, Daneel.Debug.GetType( assetName ) ) then
-        -- using type() in the first part of the condition just prevent GetType() and containsvalue() to be called every times
-        Daneel.Cache.assets[ assetName ] = true
-        Daneel.Debug.StackTrace.EndFunction()
-        return assetName
+    if Daneel.Cache.assets[ "ScriptAliases" ][ assetPath ] ~= nil then
+        return Daneel.Cache.assets[ "ScriptAliases" ][ assetPath ]
     end
-    Daneel.Debug.CheckArgType( assetName, "assetName", "string", errorHead )
+
+    Daneel.Debug.StackTrace.BeginFunction( "Asset.Get", assetPath, assetType, errorIfAssetNotFound )
+    local errorHead = "Asset.Get( assetPath[, assetType, errorIfAssetNotFound] ) : "
+    
+    -- just return the asset if assetPath is already an object
+    if type( assetPath ) == "table" and table.containsvalue( Daneel.Config.assetTypes, Daneel.Debug.GetType( assetPath ) ) then
+        -- using type() in the first part of the condition just prevent GetType() and containsvalue() to be called every times
+        Daneel.Cache.assets[ assetPath ] = true
+        Daneel.Debug.StackTrace.EndFunction()
+        return assetPath
+    end
+    Daneel.Debug.CheckArgType( assetPath, "assetPath", "string", errorHead )
     
     -- check asset type
     if assetType ~= nil then
         Daneel.Debug.CheckArgType( assetType, "assetType", "string", errorHead )
-        assetType = Daneel.Debug.CheckArgValue( assetType, "assetType", config.assetTypes, errorHead )
+        assetType = Daneel.Debug.CheckArgValue( assetType, "assetType", Daneel.Config.assetTypes, errorHead )
     end
     Daneel.Debug.CheckOptionalArgType( errorIfAssetNotFound, "errorIfAssetNotFound", "boolean", errorHead )
 
-    -- check if assetName is a script alias
-    local assetNameOrScriptAlias = assetName
-    if assetType == "Script" and config.scriptPaths[ assetName ] ~= nil then
-        assetName = config.scriptPaths[ assetName ]
+    -- check if assetPath is a script alias
+    local scriptAlias = assetPath
+    if Daneel.Config.scriptPaths[ scriptAlias ] ~= nil then 
+        assetPath = Daneel.Config.scriptPaths[ scriptAlias ]
+        assetType = "Script"
     end
 
     -- get asset
-    local asset = CraftStudio.FindAsset( assetName, assetType )
+    local asset = CraftStudio.FindAsset( assetPath, assetType )
+
     if asset == nil then
         if errorIfAssetNotFound == true then
             if assetType == nil then
                 assetType = "asset"
             end
-            error( errorHead.."Argument 'assetName' : "..assetType.." with name '"..assetName.."' was not found." )
+            error( errorHead.."Argument 'assetPath' : "..assetType.." with name '"..assetPath.."' was not found." )
         end
     else
-        if Daneel.Cache.assets[ assetNameOrScriptAlias ] == nil then
-            Daneel.Cache.assets[ assetNameOrScriptAlias ] = {}
+        -- cache asset
+        if assetType == nil then
+            assetType = Daneel.Debug.GetType( asset )
         end
-        Daneel.Cache.assets[ assetNameOrScriptAlias ][ assetType ] = asset
+
+        if Daneel.Cache.assets[ assetPath ] == nil then
+            Daneel.Cache.assets[ assetPath ] = {}
+        end
+        Daneel.Cache.assets[ assetPath ][ assetType ] = asset
+
+        if scriptAlias ~= assetPath then -- scriptAlias is indeed a script alias
+            Daneel.Cache.assets[ "ScriptAliases" ][ scriptAlias ] = asset
+        end
     end
 
     Daneel.Debug.StackTrace.EndFunction()
@@ -79,7 +99,7 @@ function Asset.GetPath( asset )
 
     Daneel.Debug.StackTrace.BeginFunction( "Asset.GetPath", asset )
     local errorHead = "Asset.GetPath( asset ) : "
-    Daneel.Debug.CheckArgType( asset, "asset", config.assetTypes, errorHead )
+    Daneel.Debug.CheckArgType( asset, "asset", Daneel.Config.assetTypes, errorHead )
 
     local path = Map.GetPathInPackage( asset )
     Daneel.Cache.assetPaths[ asset ] = path
@@ -101,7 +121,7 @@ Component.__index = Component
 function Component.Set(component, params)
     Daneel.Debug.StackTrace.BeginFunction("Component.Set", component, params)
     local errorHead = "Component.Set(component, params) : "
-    Daneel.Debug.CheckArgType(component, "component", config.componentTypes, errorHead)
+    Daneel.Debug.CheckArgType(component, "component", Daneel.Config.componentTypes, errorHead)
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
 
     local componentType = Daneel.Debug.GetType(component)
@@ -151,7 +171,7 @@ end
 function Component.Destroy(component)
     Daneel.Debug.StackTrace.BeginFunction("Component.Destroy", component)
     local errorHead = "Component.Destroy(component) : "
-    Daneel.Debug.CheckArgType(component, "component", config.componentTypes, errorHead)
+    Daneel.Debug.CheckArgType(component, "component", Daneel.Config.componentTypes, errorHead)
 
     CraftStudio.Destroy(component)
     Daneel.Debug.StackTrace.EndFunction("Component.Destroy")
@@ -163,7 +183,7 @@ end
 function Component.GetId( component )
     Daneel.Debug.StackTrace.BeginFunction( "Component.GetId", component )
     local errorHead = "Component.GetId( component ) : "
-    Daneel.Debug.CheckArgType( component, "component", config.componentTypes, errorHead )
+    Daneel.Debug.CheckArgType( component, "component", Daneel.Config.componentTypes, errorHead )
 
     if component.Id ~= nil then
         Daneel.Debug.StackTrace.EndFunction()
@@ -341,7 +361,7 @@ local OriginalSetAlignment = TextRenderer.SetAlignment
 
 --- Set the text's alignment.
 -- @param textRenderer (TextRenderer) The textRenderer.
--- @param scale (string or TextRenderer.Alignment) The alignment. Values (case-insensitive when of type string) may be "left", "center", "right", TextRenderer.Alignment.Left, TextRenderer.Alignment.Center or TextRenderer.Alignment.Right.
+-- @param alignment (string or TextRenderer.Alignment) The alignment. Values (case-insensitive when of type string) may be "left", "center", "right", TextRenderer.Alignment.Left, TextRenderer.Alignment.Center or TextRenderer.Alignment.Right.
 function TextRenderer.SetAlignment(textRenderer, alignment)
     Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetAlignment", textRenderer, alignment)
     local errorHead = "TextRenderer.SetAlignment(textRenderer, alignment) : "
@@ -519,21 +539,22 @@ local OriginalLoadScene = CraftStudio.LoadScene
 -- When the new scene is loaded, all of the current scene's game objects will be removed.
 -- Calling this function doesn't immediately stops the calling function. As such, you might want to add a return statement afterwards. 
 -- @param sceneNameOrAsset (string or Scene) The scene name or asset.
-function CraftStudio.LoadScene(sceneNameOrAsset)
-    Daneel.Debug.StackTrace.BeginFunction("CraftStudio.LoadScene", sceneNameOrAsset)
-    local errorHead = "CraftStudio.LoadScene(sceneNameOrAsset) : "
-    Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
+function CraftStudio.LoadScene( sceneNameOrAsset )
+    Daneel.Debug.StackTrace.BeginFunction( "CraftStudio.LoadScene", sceneNameOrAsset )
+    local errorHead = "CraftStudio.LoadScene( sceneNameOrAsset) : "
+    Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead )
 
-    local scene = Asset.Get(sceneNameOrAsset, "Scene", true)
+    local scene = Asset.Get( sceneNameOrAsset, "Scene", true )
     
-    Daneel.Event.Fire("OnSceneLoad", scene)
-    Daneel.Event.events = {}
+    Daneel.Event.Fire( "OnSceneLoad", scene )
+
+    Daneel.Event.events = {} -- do this here to make sure that any events that might be fired from OnSceneLoad-catching function are indeed fired
     Daneel.Event.fireAtTime = {}
     Daneel.Event.fireAtRealTime = {}
     Daneel.Event.fireAtFrame = {}
 
     Daneel.Debug.StackTrace.EndFunction()
-    OriginalLoadScene(scene)
+    OriginalLoadScene( scene )
 end
 
 --- Alias of CraftStudio.AppendScene().
@@ -541,17 +562,21 @@ end
 -- You can optionally specify a parent game object which will be used as a root for adding all game objects. 
 -- Returns the gameObject appended if there was only one root game object in the provided scene.
 -- @param sceneNameOrAsset (string or Scene) The scene name or asset.
--- @param parentNameOrInstance [optional] (string or GameObject) The parent gameObject name or instance.
+-- @param parentNameOrInstance [optional] (string or GameObject) The parent game object name or instance.
 -- @return (GameObject) The appended gameObject, or nil.
-function Scene.Append(sceneNameOrAsset, parentNameOrInstance)
-    Daneel.Debug.StackTrace.BeginFunction("Scene.Append", sceneNameOrAsset, parentNameOrInstance)
-    local errorHead = "Scene.Append(sceneNameOrAsset[, parentNameOrInstance]) : "
-    Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
-    Daneel.Debug.CheckOptionalArgType(parentNameOrInstance, "parentNameOrInstance", {"string", "GameObject"}, errorHead)
+function Scene.Append( sceneNameOrAsset, parentNameOrInstance )
+    Daneel.Debug.StackTrace.BeginFunction( "Scene.Append", sceneNameOrAsset, parentNameOrInstance )
+    local errorHead = "Scene.Append( sceneNameOrAsset[, parentNameOrInstance] ) : "
+    Daneel.Debug.CheckArgType( sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead )
+    Daneel.Debug.CheckOptionalArgType( parentNameOrInstance, "parentNameOrInstance", {"string", "GameObject"}, errorHead )
 
-    local scene = Asset.Get(sceneNameOrAsset, "Scene", true)
-    local parent = GameObject.Get(parentNameOrInstance, true)
-    local gameObject = CraftStudio.AppendScene(scene, parent)
+    local scene = Asset.Get( sceneNameOrAsset, "Scene", true )
+    local parent = nil
+    if parentNameOrInstance ~= nil then
+        local parent = GameObject.Get( parentNameOrInstance, true )
+    end
+    local gameObject = CraftStudio.AppendScene( scene, parent )
+
     Daneel.Debug.StackTrace.EndFunction()
     return gameObject
 end
@@ -620,8 +645,16 @@ function CraftStudio.Destroy( object )
     if Type == "GameObject" then
         object:RemoveTag()
 
-    elseif table.containsvalue( config.componentTypes, Type ) then
-        if table.containsvalue( config.daneelComponentTypes, Type ) then            
+        for key, value in pairs( object ) do
+            if key == "transform" then
+                Daneel.Event.Clear( value )
+            elseif type( value ) == "table" and type( value.Destroy ) == "function" then
+                value:Destroy()
+            end
+        end
+
+    elseif table.containsvalue( Daneel.Config.componentTypes, Type ) then
+        if table.containsvalue( Daneel.Config.daneelComponentTypes, Type ) then            
             -- if a Daneel component, must ensure that the corresponding Behavior is also removed
             local behavior = object.gameObject:GetScriptedBehavior( "Daneel/Behaviors/" .. Type )
             if behavior ~= nil then
@@ -633,12 +666,11 @@ function CraftStudio.Destroy( object )
         table.removevalue( object.gameObject, object )
     end
 
-    -- for all objects, remove from listener list
-    Daneel.Event.Clean( object )
-  
-    setmetatable(object, nil)
-    object.isDestroyed = true
     Daneel.Event.Fire( object, "OnDestroy" )
+    Daneel.Event.Clear( object ) -- remove from listener list
+    object.isDestroyed = true
+    setmetatable(object, nil)
+
     OriginalDestroy( object )
     Daneel.Debug.StackTrace.EndFunction()
 end

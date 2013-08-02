@@ -1,5 +1,12 @@
+-- DaneelConfig (Example).lua
+-- This file is an example of every configuration key/value pairs that you might be interested to tweak
+-- As this file may be overwritten in future versions, do not modify it
+-- Instead, copy it to another script and remove "_Example" from the function name
+--
+-- Last modified for v1.2.0
+-- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
-function DaneelConfig()
+function DaneelConfig_Example()
     return {
         -- List of the Scripts paths as values and optionally the script alias as the keys.
         -- Ie :
@@ -122,6 +129,7 @@ function DaneelConfig()
                 
                 isRelative = false, -- If false, tween the value TO endValue. If true, tween the value BY endValue.
 
+                destroyOnComplete = true, -- tell wether to destroy the tweener (true) when it completes
                 destroyOnSceneLoad = true, -- tell wether to destroy the tweener (true) or keep it 'alive' (false) when the scene is changing
             },
         },

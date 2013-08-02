@@ -1,3 +1,8 @@
+-- GameObject.lua
+-- Extends the GameObject object.
+--
+-- Last modified for v1.2.0
+-- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
 setmetatable(GameObject, { __call = function(Object, ...) return Object.New(...) end })
 
@@ -23,9 +28,9 @@ function GameObject.__index( gameObject, key )
     end
 
     -- maybe the key is a script alias
-    local path = config.scriptPaths[ key ]
+    local path = Daneel.Config.scriptPaths[ key ]
     if path ~= nil then
-        local behavior = gameObject:GetScriptedBehavior( path, true )
+        local behavior = gameObject:GetScriptedBehavior( path )
         if behavior ~= nil then
             rawset( gameObject, key, behavior )
             return behavior
@@ -134,7 +139,7 @@ function GameObject.Set( gameObject, params )
     
     -- components
     local component = nil
-    local componentTypes = table.copy( config.componentTypes )
+    local componentTypes = table.copy( Daneel.Config.componentTypes )
     table.removevalue( componentTypes, "ScriptedBehavior" )
     for i, type in ipairs( componentTypes ) do
         componentTypes[i] = type:lcfirst()
@@ -161,11 +166,11 @@ function GameObject.Set( gameObject, params )
     -- all other keys/values
     for key, value in pairs( params ) do
 
-        -- if key is a script path in config.scriptPath or a script alias
-        if config.scriptPaths[key] ~= nil or table.containsvalue( config.scriptPaths, key ) then
+        -- if key is a script path in Daneel.Config.scriptPath or a script alias
+        if Daneel.Config.scriptPaths[key] ~= nil or table.containsvalue( Daneel.Config.scriptPaths, key ) then
             local scriptPath = key
-            if config.scriptPaths[key] ~= nil then
-                scriptPath = config.scriptPaths[key]
+            if Daneel.Config.scriptPaths[key] ~= nil then
+                scriptPath = Daneel.Config.scriptPaths[key]
             end
             local component = gameObject:GetScriptedBehavior( scriptPath )
             if component == nil then
@@ -216,6 +221,7 @@ function GameObject.Get( name, errorIfGameObjectNotFound )
     Daneel.Debug.CheckOptionalArgType( errorIfGameObjectNotFound, "errorIfGameObjectNotFound", "boolean", errorHead )
     
     -- can't use name:find(".") because for some reason it always returns 1, 1
+    -- 31/07/2013 see in Core/Lua string.split() for reason
     local gameObject = nil
     local names = name:split( "." )
     
@@ -409,7 +415,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
     local errorHead = "GameObject.AddComponent( gameObject, componentType[, params] ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     Daneel.Debug.CheckArgType( componentType, "componentType", "string", errorHead ) 
-    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", config.componentTypes, errorHead )
+    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead )
     Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead )
 
     if componentType == "Transform" and DEBUG == true then
@@ -425,12 +431,12 @@ function GameObject.AddComponent( gameObject, componentType, params )
 
     local component = nil
 
-    if table.containsvalue( config.daneelComponentTypes, componentType ) then
+    if table.containsvalue( Daneel.Config.daneelComponentTypes, componentType ) then
         component = Daneel.GUI[ componentType ].New( gameObject )
     else
         component = gameObject:CreateComponent( componentType )
 
-        local defaultComponentParams = config.components[ componentType:lcfirst() ]
+        local defaultComponentParams = Daneel.Config.components[ componentType:lcfirst() ]
         if defaultComponentParams ~= nil then
             params = table.merge( defaultComponentParams, params )
         end
@@ -455,7 +461,7 @@ function GameObject.AddScriptedBehavior( gameObject, scriptNameOrAsset, params )
     local errorHead = "GameObject.AddScriptedBehavior( gameObject, scriptNameOrAsset[, params] ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     Daneel.Debug.CheckArgType( scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead )
-    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
+    Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead )
 
     local script = Asset.Get( scriptNameOrAsset, "Script", true )
     local component = gameObject:CreateScriptedBehavior( script )
@@ -484,9 +490,9 @@ function GameObject.GetComponent( gameObject, componentType )
     local errorHead = "GameObject.GetComponent( gameObject, componentType ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     Daneel.Debug.CheckArgType( componentType, "componentType", "string", errorHead )
-    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", config.componentTypes, errorHead )
+    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead )
     
-    if componentType == "ScriptedBehavior" and DEBUG == true then
+    if componentType == "ScriptedBehavior" then
         print( errorHead.."Can't get a ScriptedBehavior via 'GameObject.GetComponent()'. Use 'GameObject.GetScriptedBehavior()' instead." )
         Daneel.Debug.StackTrace.EndFunction()
         return nil
@@ -495,7 +501,7 @@ function GameObject.GetComponent( gameObject, componentType )
     local lcComponentType = componentType:lcfirst()
     local component = gameObject[ lcComponentType ]
     
-    if component == nil then
+    if component == nil and not table.containsvalue( Daneel.Config.daneelComponentTypes, componentType ) then
         component = OriginalGetComponent( gameObject, componentType )
 
         if component ~= nil then
@@ -513,30 +519,18 @@ local OriginalGetScriptedBehavior = GameObject.GetScriptedBehavior
 -- @param gameObject (GameObject) The game object.
 -- @param scriptNameOrAsset (string or Script) The script name or asset.
 -- @return (ScriptedBehavior) The ScriptedBehavior instance.
-function GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset, calledFrom__index)
-    -- why do I check if the call comes from __index ?
-    if calledFrom__index ~= true then
-        Daneel.Debug.StackTrace.BeginFunction("GameObject.GetScriptedBehavior", gameObject, scriptNameOrAsset)
-        local errorHead = "GameObject.GetScriptedBehavior(gameObject, scriptNameOrAsset) : "
-        Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-        Daneel.Debug.CheckArgType(scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead)
-    end
+function GameObject.GetScriptedBehavior( gameObject, scriptNameOrAsset )
+    Daneel.Debug.StackTrace.BeginFunction( "GameObject.GetScriptedBehavior", gameObject, scriptNameOrAsset )
+    local errorHead = "GameObject.GetScriptedBehavior( gameObject, scriptNameOrAsset ) : "
+    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
+    Daneel.Debug.CheckArgType( scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead )
 
     local script = scriptNameOrAsset
-    if type(scriptNameOrAsset) == "string" then
-        script = Asset.Get(scriptNameOrAsset, "Script")
-        if script == nil then
-            if calledFrom__index == true then
-                return nil
-            else
-                error(errorHead.."Argument 'scriptNameOrAsset' : Script asset with name '"..scriptNameOrAsset.."' was not found.")
-            end 
-        end
+    if type( scriptNameOrAsset ) == "string" then
+        script = Asset.Get( scriptNameOrAsset, "Script", true )
     end
-    local component = OriginalGetScriptedBehavior(gameObject, script)
-    if calledFrom__index ~= true then
-        Daneel.Debug.StackTrace.EndFunction("GameObject.GetScriptedBehavior", component)
-    end
+    local component = OriginalGetScriptedBehavior( gameObject, script )
+    Daneel.Debug.StackTrace.EndFunction()
     return component
 end
 
@@ -562,7 +556,7 @@ end
 GameObject.Tags = {}
 
 --- Returns the game object(s) that have all the provided tag(s).
--- @param tag (string or table)
+-- @param tag (string or table) One or several tags.
 -- @return (table) The game object(s) (empty if none is found)
 function GameObject.GetWithTag( tag )
     Daneel.Debug.StackTrace.BeginFunction( "GameObject.GetWithTag", tag )
@@ -580,7 +574,7 @@ function GameObject.GetWithTag( tag )
         local gameObjects = GameObject.Tags[ tag ]
         if gameObjects ~= nil then
             for i, gameObject in ipairs( gameObjects ) do
-                if gameObject:HasTag( tags ) and not table.containsvalue( gameObjectsWithTag ) then
+                if gameObject:HasTag( tags ) and not table.containsvalue( gameObjectsWithTag, gameObject ) then
                     table.insert( gameObjectsWithTag, gameObject )
                 end
             end

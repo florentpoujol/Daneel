@@ -1,13 +1,13 @@
+-- MouseInputs.lua
+-- Enable mouse interactions with game objects when added to a game object with a camera component.
+--
+-- Last modified for v1.2.0
+-- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
--- Add this script as ScriptedBehavior on your camera to enable mouse interactions
--- If it is not already done, you also need to 
--- add "LeftMouse" and/or "RightMouse" in the 'config.input.buttons' table 
--- and create the corresponding buttons in your project administration.
-
--- Public properties :
--- tags (string) [default="mouseInteractive"]
--- workInterval (number) [default=10] (6 times per second)
-
+--[[PublicProperties
+tags string "guiComponent"
+workInterval number 10
+/PublicProperties]]
 
 local interactiveGameObjects = {}
 
@@ -18,11 +18,11 @@ function Behavior:Awake()
     Daneel.Event.Listen( "OnLeftMouseButtonDown", self.gameObject )
     Daneel.Event.Listen( "OnRightMouseButtonJustPressed", self.gameObject )
     
-    -- if GameObject.Tags.mouseInteractive == nil then
-    --     -- this is just in case no gameObject already registered to the mouseInteractive tag.
-    --     GameObject.Tags.mouseInteractive = {}
+    -- if GameObject.Tags.guiComponent == nil then
+    --     -- this is just in case no gameObject already registered to the guiComponent tag.
+    --     GameObject.Tags.guiComponent = {}
     -- end
-    -- interactiveGameObjects = GameObject.Tags.mouseInteractive
+    -- interactiveGameObjects = GameObject.Tags.guiComponent
 
     if self.tags:trim() == "" then
         self.tags = {}
@@ -51,7 +51,7 @@ function Behavior:OnLeftMouseButtonJustPressed()
                     
                     if 
                         gameObject.lastLeftClickFrame ~= nil and 
-                        Daneel.Time.frameCount <= gameObject.lastLeftClickFrame + config.input.doubleClickDelay
+                        Daneel.Time.frameCount <= gameObject.lastLeftClickFrame + Daneel.Config.input.doubleClickDelay
                     then
                         Daneel.Event.Fire( gameObject, "OnDoubleClick", gameObject )
                     end
