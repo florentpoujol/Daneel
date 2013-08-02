@@ -128,10 +128,6 @@ IDEAS
 A implémenter
     
     v1.2.x
-
-    
-    
-    - add a Lang scripted behavior which replace the text of the textrenderer or textArea
     
     - Intersects[Component]( component, returnRaycastHit )
     - Daneel.Utilities.Circle pseudo object (like Plane) with position, radius, normal
@@ -155,7 +151,8 @@ A implémenter
 
     - add setter for all GUI properties
 
-    - propriété update interval for tweeners
+    - propriété updateInterval for tweeners
+    - Tweener scripted behavior with most common properties, tweener ajouté à propriété 'tweener' sur game object
 
     - GUI.Input permettre de définir un curseur model optionnel
     
@@ -188,7 +185,7 @@ A modifier/ajouter dans la doc :
     - Scene.current = currently loaded scene asset
     - workInterval dans mouseInput et checkInterval dans trigger devins "updateInterval"
     - placer paragraph sur les mouse interaction au dehors de la page GUI
-    
+    - add a Lang scripted behavior which replace the text of the textrenderer or textArea
 
 =========
 BUGS
