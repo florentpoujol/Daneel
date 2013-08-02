@@ -170,6 +170,11 @@ IDEAS
 ==========
 A implémenter
     
+    v1.2.x
+
+    - remove use of Vector3.Distance (trigger and slider)
+    - make the ids incremental instead of random
+    
 
 ==========
 A tester

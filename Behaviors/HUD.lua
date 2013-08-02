@@ -4,8 +4,6 @@
 -- Last modified for v1.2.0
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
-
-
 --[[PublicProperties
 positionX string ""
 positionY string ""

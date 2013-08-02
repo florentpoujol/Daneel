@@ -1,4 +1,38 @@
-Copyright (C) 2013-2014 Florent Poujol <forent.poujol@gmail.com>.
+Daneel framework for CraftStudio (http://craftstud.io)
+
+Version 1.2.0
+Released 02nd August 2013
+
+
+-----
+INSTALLATION
+
+Import the provided "Daneel_v1.2.0.cspack" in your CraftStudio project.
+The file in the "Daneel/Core" folder are mandatory.
+
+
+-----
+DOCUMENTATION
+
+Check the online doc at : http://daneel.florentpoujol.fr
+
+
+-----
+SUPPORT
+
+If you have got any trouble or question, contact me via : 
+Email   : florent.poujol@gmail.com
+Twitter : @FlorentPoujol
+
+Or leave a support topic in CraftStudio's community forums : 
+(english) http://www.craftstudioforums.net/index.php?forums/help-with-scripting.30/
+(french)  http://www.craftstudio.fr/forum/viewforum.php?f=4
+
+
+-----
+MIT LICENCE
+
+Copyright © 2013-2014 Florent Poujol <forent.poujol@gmail.com>.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
