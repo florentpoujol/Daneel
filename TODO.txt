@@ -129,8 +129,6 @@ A implémenter
     
     v1.2.x
 
-    
-    - remove use of Vector3.Distance (trigger and slider)
     - standardiser propriété "updateInterval"
     
     - add a Lang scripted behavior which replace the text of the textrenderer or textArea
@@ -181,14 +179,14 @@ A implémenter
 A tester
 
     - voir pourquoi certains easeType renvoient des erreurs
-    
+    - remove use of Vector3.Distance with trigger
 
 
 ==========
 A modifier/ajouter dans la doc :
 
     - Scene.current = currently loaded scene asset
-    
+
 
 =========
 BUGS

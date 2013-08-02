@@ -45,7 +45,7 @@ function Behavior:Update()
 
                     if 
                         gameObject ~= self.gameObject and 
-                        Vector3.Distance( gameObject.transform:GetPosition(), triggerPosition ) < self.range 
+                        (gameObject.transform:GetPosition() - triggerPosition):SqrLength() < self.range^2
                     then
                         if not table.containsvalue( self.GameObjectsInRange, gameObject ) then
                             -- just entered the trigger
@@ -108,7 +108,7 @@ function Behavior:GetGameObjectsInRange( tags, range )
                 if 
                     gameObject ~= nil and gameObject.isDestroyed ~= true and
                     gameObject ~= self.gameObject and 
-                    Vector3.Distance( gameObject.transform:GetPosition(), triggerPosition ) <= self.range
+                    (gameObject.transform:GetPosition() - triggerPosition):SqrLength() <= self.range^2
                 then
                     table.insert( gameObjectsInRange, gameObject )
                 end

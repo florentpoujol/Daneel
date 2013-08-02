@@ -731,18 +731,18 @@ end
 -- @param slider (Slider) The slider.
 -- @param getAsPercentage [optional default=false] (boolean) Get the value as a percentage (between 0 and 100) instead of an absolute value.
 -- @return (number) The value.
-function DaneelGUI.Slider.GetValue(slider, getAsPercentage)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.GUI.Slider.GetValue", slider, getAsPercentage)
-    local errorHead = "Daneel.GUI.Slider.GetValue(slider, value) : "
+function DaneelGUI.Slider.GetValue( slider, getAsPercentage )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.GUI.Slider.GetValue", slider, getAsPercentage )
+    local errorHead = "Daneel.GUI.Slider.GetValue( slider, value ) : "
     Daneel.Debug.CheckArgType(slider, "slider", "Slider", errorHead)
-    Daneel.Debug.CheckOptionalArgType(getAsPercentage, "getAsPercentage", "boolean", errorHead)
+    Daneel.Debug.CheckOptionalArgType( getAsPercentage, "getAsPercentage", "boolean", errorHead )
    
-    local percentage = Vector3.Distance(slider.startPosition, slider.gameObject.transform.position) / slider.length
+    local percentage = Vector3.Distance( slider.startPosition, slider.gameObject.transform.position ) / slider.length
     local value = percentage * 100
     if getAsPercentage ~= true then
         value = (slider.maxValue - slider.minValue) * percentage + slider.minValue
     end
-    value = math.round(value) -- ??
+    
     Daneel.Debug.StackTrace.EndFunction()
     return value
 end
