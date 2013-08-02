@@ -7,7 +7,7 @@
 --[[PublicProperties
 range number 0
 tags string ""
-checkInterval number 10
+updateInterval number 10
 /PublicProperties]]
 
 function Behavior:Awake()
@@ -27,8 +27,8 @@ function Behavior:Update()
     self.frameCount = self.frameCount + 1
 
     if 
-        self.range <= 0 or self.checkInterval < 1 or #self.tags == 0 or
-        ( self.checkInterval > 1 and self.frameCount % self.checkInterval ~= 0 )
+        self.range <= 0 or self.updateInterval < 1 or #self.tags == 0 or
+        ( self.updateInterval > 1 and self.frameCount % self.updateInterval ~= 0 )
     then
         return
     end

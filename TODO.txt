@@ -129,7 +129,7 @@ A implémenter
     
     v1.2.x
 
-    - standardiser propriété "updateInterval"
+    
     
     - add a Lang scripted behavior which replace the text of the textrenderer or textArea
     
@@ -186,7 +186,9 @@ A tester
 A modifier/ajouter dans la doc :
 
     - Scene.current = currently loaded scene asset
-
+    - workInterval dans mouseInput et checkInterval dans trigger devins "updateInterval"
+    - placer paragraph sur les mouse interaction au dehors de la page GUI
+    
 
 =========
 BUGS

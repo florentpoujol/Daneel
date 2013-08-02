@@ -6,7 +6,7 @@
 
 --[[PublicProperties
 tags string "guiComponent"
-workInterval number 10
+updateInterval number 10
 /PublicProperties]]
 
 local interactiveGameObjects = {}
@@ -106,8 +106,8 @@ function Behavior:Update()
     self.frameCount = self.frameCount + 1
     
     if 
-        self.tags == 0 or self.workInterval < 1 or 
-        ( self.workInterval > 1 and self.frameCount % self.workInterval ~= 0 )
+        self.tags == 0 or self.updateInterval < 1 or 
+        ( self.updateInterval > 1 and self.frameCount % self.updateInterval ~= 0 )
     then
         return
     end
