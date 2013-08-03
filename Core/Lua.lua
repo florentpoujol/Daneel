@@ -21,6 +21,79 @@ function math.isinteger(number)
     return isinteger
 end
 
+--- Returns the value resulting of the linear interpolation between value a and b by the specified factor.
+-- @param a (number)
+-- @param b (number)
+-- @param factor (number) Should be between 0.0 and 1.0.
+-- @param easing (string) [optional] The easing of the factor, can be "smooth", "smooth in", "smooth out".
+-- @return (number) The interpolated value.
+function math.lerp( a, b, factor, easing )
+    Daneel.Debug.StackTrace.BeginFunction( "math.lerp", a, b, factor, easing )
+    local errorHead = "math.lerp( a, b, factor, easing ) : "
+    Daneel.Debug.CheckArgType( a, "a", "number", errorHead )
+    Daneel.Debug.CheckArgType( b, "b", "number", errorHead )
+    Daneel.Debug.CheckArgType( factor, "factor", "number", errorHead )
+    Daneel.Debug.CheckOptionalArgType( easing, "easing", "string", errorHead )
+
+    if easing == "smooth" then
+        factor = factor * 2
+        if factor < 1 then
+            factor = 0.5 * factor * factor * factor
+        else
+            factor = factor - 2
+            factor = 0.5 * ( factor * factor * factor + 2 )
+        end
+
+    elseif easing == "smooth in" then
+        factor = factor * factor * factor
+
+    elseif easing == "smooth out" then
+        factor = factor - 1
+        factor = factor * factor * factor + 1
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return a + (b - a) * factor
+end
+
+--- Wrap the provided angle between -180 and 180.
+-- @param angle (number) The angle.
+-- @return (number) The angle.
+function math.warpAngle( angle )
+    Daneel.Debug.StackTrace.BeginFunction( "math.wrapAngle", angle )
+    local errorHead = "math.wrapAngle( angle ) : "
+    Daneel.Debug.CheckArgType( angle, "angle", "number", errorHead )
+
+    if angle > 180 then
+        angle = angle - 360
+    elseif angle < -180 then
+        angle = angle + 360
+    end
+    
+    Daneel.Debug.StackTrace.EndFunction()
+    return angle
+end
+
+--- Return the value rounded to the closest integer or decimal.
+-- @param value (number) The value.
+-- @param decimal (number) [optional default=0] The decimal at which to round the value.
+-- @return (number) The new value.
+function math.round( value, decimal )
+    Daneel.Debug.StackTrace.BeginFunction( "math.round", value, decimal )
+    local errorHead = "math.round( value[, decimal] ) : "
+    Daneel.Debug.CheckArgType( value, "value", "number", errorHead )
+    Daneel.Debug.CheckOptionalArgType( decimal, "decimal", "number", errorHead )
+
+    if decimal ~= nil then
+        value = math.floor( (value * 10^decimal) + 0.5) / (10^decimal)
+    else
+        value = math.floor( value + 0.5 )
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return value
+end
+
 
 ----------------------------------------------------------------------------------
 -- string
