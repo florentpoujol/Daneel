@@ -442,42 +442,39 @@ end
 --- Check if the ray intersect the specified gameObject.
 -- @param ray (Ray) The ray.
 -- @param gameObjectNameOrInstance (string or GameObject) The gameObject instance or name.
--- @return (RaycastHit) A raycastHit if there was a collision, or nil.
-function Ray.IntersectsGameObject(ray, gameObjectNameOrInstance)
-    Daneel.Debug.StackTrace.BeginFunction("Ray.IntersectsGameObject", ray, gameObjectNameOrInstance)
-    local errorHead = "Ray.IntersectsGameObject(ray, gameObjectNameOrInstance) : "
-    Daneel.Debug.CheckArgType(ray, "ray", "Ray", errorHead)
-    Daneel.Debug.CheckArgType(gameObjectNameOrInstance, "gameObjectNameOrInstance", {"string", "GameObject"}, errorHead)
+-- @return (RaycastHit) A raycastHit with the if there was a collision, or nil.
+function Ray.IntersectsGameObject( ray, gameObjectNameOrInstance )
+    Daneel.Debug.StackTrace.BeginFunction( "Ray.IntersectsGameObject", ray, gameObjectNameOrInstance )
+    local errorHead = "Ray.IntersectsGameObject( ray, gameObjectNameOrInstance ) : "
+    Daneel.Debug.CheckArgType( ray, "ray", "Ray", errorHead )
+    Daneel.Debug.CheckArgType( gameObjectNameOrInstance, "gameObjectNameOrInstance", {"string", "GameObject"}, errorHead )
     
-    local gameObject = GameObject.Get(gameObjectNameOrInstance, true)
-    local distance = nil
-    local normal = nil
-    local hitBlockLocation = nil
-    local adjacentBlockLocation = nil
-    
+    local gameObject = GameObject.Get( gameObjectNameOrInstance, true )
+    local raycastHit = nil
+
     local component = gameObject.modelRenderer
     if component ~= nil then
-        distance, normal = ray:IntersectsModelRenderer(component)
+        raycastHit = ray:IntersectsModelRenderer( component, true )
     end
-    if distance == nil then
+
+    if raycastHit == nil then
         component = gameObject.mapRenderer
         if component ~= nil then
-            distance, normal, hitBlockLocation, adjacentBlockLocation = ray:IntersectsMapRenderer(component)
+            raycastHit = ray:IntersectsMapRenderer( component, true )
         end
     end
-    if distance == nil then
+
+    if raycastHit == nil then
         component = gameObject.textRenderer
         if component ~= nil then
-            distance, normal, hitBlockLocation, adjacentBlockLocation = ray:IntersectsTextRenderer(component)
+            raycastHit = ray:IntersectsTextRenderer( component, true )
         end
     end
 
-    if distance == nil then
-        Daneel.Debug.StackTrace.EndFunction()
-        return nil
+    if raycastHit ~= nil then
+        raycastHit.gameObject = gameObject
     end
 
-    local raycastHit = RaycastHit.New(distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject)
     Daneel.Debug.StackTrace.EndFunction()
     return raycastHit
 end
@@ -487,7 +484,7 @@ local OriginalIntersectsPlane = Ray.IntersectsPlane
 -- Check if the ray intersects the provided plane and returns the distance of intersection or a raycastHit.
 -- @param ray (Ray) The ray.
 -- @param plane (Plane) The plane.
--- @param returnRaycastHit (boolean) [optional default=false] Return the result as a raycastHit instace or just the distance.
+-- @param returnRaycastHit (boolean) [optional default=false] Tell if the hit infos must be returned as a raycastHit.
 -- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance' and 'hitLocation' properties (if any).
 function Ray.IntersectsPlane( ray, plane, returnRaycastHit )
     Daneel.Debug.StackTrace.BeginFunction( "Ray.IntersectsPlane", ray, plane, returnRaycastHit )
@@ -497,18 +494,112 @@ function Ray.IntersectsPlane( ray, plane, returnRaycastHit )
     returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
 
     local distance = OriginalIntersectsPlane( ray, plane )
-    if returnRaycastHit then
+    if returnRaycastHit and distance ~= nil then
         local raycastHit = RaycastHit.New()
-        if distance ~= nil then
-            raycastHit.distance = distance
-            raycastHit.hitLocation = ray.position + ray.direction * distance
-        end
+        raycastHit.distance = distance
+        raycastHit.hitLocation = ray.position + ray.direction * distance
+        distance = raycastHit
     end
 
     Daneel.Debug.StackTrace.EndFunction()
     return distance
 end
 
+local OriginalIntersectsModelRenderer = Ray.IntersectsModelRenderer
+
+-- Check if the ray intersects the provided modelRenderer.
+-- @param ray (Ray) The ray.
+-- @param modelRenderer (ModelRenderer) The modelRenderer.
+-- @param returnRaycastHit (boolean) [optional default=false] Tell if the hit infos must be returned as a raycastHit.
+-- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance', 'normal' and 'hitLocation' properties (if any).
+-- @return (Vector3) If 'returnRaycastHit' argument is false : the normal of the hit face, or nil
+function Ray.IntersectsModelRenderer( ray, modelRenderer, returnRaycastHit )
+    Daneel.Debug.StackTrace.BeginFunction( "Ray.IntersectsModelRenderer", ray, modelRenderer, returnRaycastHit )
+    local errorHead = "Ray.IntersectsModelRenderer( ray, modelRenderer[, returnRaycastHit] )"
+    Daneel.Debug.CheckArgType( ray, "ray", "Ray", errorHead )
+    Daneel.Debug.CheckArgType( modelRenderer, "modelRenderer", "ModelRenderer", errorHead )
+    returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
+
+    local distance, normal = OriginalIntersectsModelRenderer( ray, modelRenderer )
+    if returnRaycastHit and distance ~= nil then
+        local raycastHit = RaycastHit.New()
+        raycastHit.distance = distance
+        raycastHit.normal = normal
+        raycastHit.hitLocation = ray.position + ray.direction * distance
+
+        distance = raycastHit
+        normal = nil
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return distance, normal
+end
+
+local OriginalIntersectsMapRenderer = Ray.IntersectsMapRenderer
+
+-- Check if the ray intersects the provided mapRenderer.
+-- @param ray (Ray) The ray.
+-- @param mapRenderer (MapRenderer) The mapRenderer.
+-- @param returnRaycastHit (boolean) [optional default=false] Tell if the hit infos must be returned as a raycastHit.
+-- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance', 'normal', 'hitBlockLocation', 'adjacentBlockLocation' and 'hitLocation' properties (if any).
+-- @return (Vector3) If 'returnRaycastHit' argument is false : the normal of the hit face, or nil
+-- @return (Vector3) If 'returnRaycastHit' argument is false : the location of the block hit, or nil
+-- @return (Vector3) If 'returnRaycastHit' argument is false : the location of the adjacent block, or nil
+function Ray.IntersectsMapRenderer( ray, mapRenderer, returnRaycastHit )
+    Daneel.Debug.StackTrace.BeginFunction( "Ray.IntersectsMapRenderer", ray, mapRenderer, returnRaycastHit )
+    local errorHead = "Ray.IntersectsMapRenderer( ray, mapRenderer[, returnRaycastHit] )"
+    Daneel.Debug.CheckArgType( ray, "ray", "Ray", errorHead )
+    Daneel.Debug.CheckArgType( mapRenderer, "mapRenderer", "MapRenderer", errorHead )
+    returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
+
+    local distance, normal, hitBlockLocation, adjacentBlockLocation  = OriginalIntersectsMapRenderer( ray, mapRenderer )
+    if returnRaycastHit and distance ~= nil then
+        local raycastHit = RaycastHit.New()
+        raycastHit.distance = distance
+        raycastHit.normal = normal
+        raycastHit.hitBlockLocation = hitBlockLocation
+        raycastHit.adjacentBlockLocation = adjacentBlockLocation
+        raycastHit.hitLocation = ray.position + ray.direction * distance
+
+        distance = raycastHit
+        normal = nil
+        hitBlockLocation = nil
+        adjacentBlockLocation = nil
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return distance, normal, hitBlockLocation, adjacentBlockLocation
+end
+
+local OriginalIntersectsTextRenderer = Ray.IntersectsTextRenderer
+
+-- Check if the ray intersects the provided textRenderer.
+-- @param ray (Ray) The ray.
+-- @param textRenderer (TextRenderer) The textRenderer.
+-- @param returnRaycastHit (boolean) [optional default=false] Tell if the hit infos must be returned as a raycastHit.
+-- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance', 'normal' and 'hitLocation' properties (if any).
+-- @return (Vector3) If 'returnRaycastHit' argument is false : the normal of the hit face, or nil
+function Ray.IntersectsTextRenderer( ray, textRenderer, returnRaycastHit )
+    Daneel.Debug.StackTrace.BeginFunction( "Ray.IntersectsTextRenderer", ray, textRenderer, returnRaycastHit )
+    local errorHead = "Ray.IntersectsTextRenderer( ray, textRenderer[, returnRaycastHit] )"
+    Daneel.Debug.CheckArgType( ray, "ray", "Ray", errorHead )
+    Daneel.Debug.CheckArgType( textRenderer, "textRenderer", "TextRenderer", errorHead )
+    returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
+
+    local distance, normal, hitBlockLocation, adjacentBlockLocation  = OriginalIntersectsTextRenderer( ray, textRenderer )
+    if returnRaycastHit and distance ~= nil then
+        local raycastHit = RaycastHit.New()
+        raycastHit.distance = distance
+        raycastHit.normal = normal
+        raycastHit.hitLocation = ray.position + ray.direction * distance
+
+        distance = raycastHit
+        normal = nil
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return distance, normal
+end
 
 ----------------------------------------------------------------------------------
 -- RaycastHit
