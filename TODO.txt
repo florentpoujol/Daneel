@@ -136,11 +136,10 @@ A implémenter
     
     - Daneel.Draw object
         lineRenderer = gameObject:AddComponent("LineRenderer")
-        lineRenderer:SetStartPosition() / GetStartPosition() > autorise en vector2 + layer
         lineRenderer:SetLength() / GetLength() > autorise en pixel
+        lineRenderer:SetDirection() / GetDirection()
         lineRenderer:SetWidth() / GetWidth() > autorise en pixel
         lineRenderer:SetEndPosition() /
-        lineRenderer:SetModel() / GetModel()
 
         circleRenderer = gameObject:AddComponent("CircleRenderer")
         circleRenderer:SetRadius() / GetRadius() > autorise en pixels
