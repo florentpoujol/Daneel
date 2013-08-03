@@ -131,10 +131,7 @@ IDEAS
 A implémenter
     
     - add setter for all GUI properties
-
     - propriété updateInterval for tweeners
-    - Tweener scripted behavior with most common properties, tweener ajouté à propriété 'tweener' sur game object
-
     - GUI.Input permettre de définir un curseur model optionnel
     
     - Daneel.Draw object
@@ -161,6 +158,7 @@ A tester
     - allow asset setter to accept nil as argument
     - Intersects[Component]( ray, component, returnRaycastHit )
     - squared triggers
+    - Tweener scripted behavior with most common properties, tweener ajouté à propriété 'tweener' sur game object (idem pour timer)
 
 
 ==========
