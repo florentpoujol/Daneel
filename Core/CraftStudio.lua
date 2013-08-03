@@ -482,6 +482,33 @@ function Ray.IntersectsGameObject(ray, gameObjectNameOrInstance)
     return raycastHit
 end
 
+local OriginalIntersectsPlane = Ray.IntersectsPlane
+
+-- Check if the ray intersects the provided plane and returns the distance of intersection or a raycastHit.
+-- @param ray (Ray) The ray.
+-- @param plane (Plane) The plane.
+-- @param returnRaycastHit (boolean) [optional default=false] Return the result as a raycastHit instace or just the distance.
+-- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance' and 'hitLocation' properties (if any).
+function Ray.IntersectsPlane( ray, plane, returnRaycastHit )
+    Daneel.Debug.StackTrace.BeginFunction( "Ray.IntersectsPlane", ray, plane, returnRaycastHit )
+    local errorHead = "Ray.IntersectsPlane( ray, plane[, returnRaycastHit] )"
+    Daneel.Debug.CheckArgType( ray, "ray", "Ray", errorHead )
+    Daneel.Debug.CheckArgType( plane, "plane", "Plane", errorHead )
+    returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
+
+    local distance = OriginalIntersectsPlane( ray, plane )
+    if returnRaycastHit then
+        local raycastHit = RaycastHit.New()
+        if distance ~= nil then
+            raycastHit.distance = distance
+            raycastHit.hitLocation = ray.position + ray.direction * distance
+        end
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return distance
+end
+
 
 ----------------------------------------------------------------------------------
 -- RaycastHit
@@ -495,30 +522,13 @@ function RaycastHit.__tostring()
 end
 
 --- Create a new RaycastHit
--- @param distance (number) The distance between the ray's position and the hit.
--- @param normal (Vector3) The normal of the surface hit.
--- @param hitBlockLocation [optional] (Vector3) The position of the block that has been hit (only if a mapRenderer has been hit).
--- @param adjacentBlockLocation [optional] (Vector3) The position of the adjacent block.
--- @param gameObject (GameObject) The gameObject that has been hit.
 -- @return (RaycastHit) The raycastHit.
-function RaycastHit.New(distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject)
-    Daneel.Debug.StackTrace.BeginFunction("RaycastHit.New", distance, normal, hitBlockLocation, adjacentBlockLocation, gameObject)
-    local errorHead = "RaycastHit.New(distance, normal[, hitBlockLocation, adjacentBlockLocation, gameObject]) : "
-    Daneel.Debug.CheckArgType(distance, "distance", "number", errorHead)
-    Daneel.Debug.CheckArgType(normal, "normal", "Vector3", errorHead)
-    local raycastHit = {
-        distance = distance,
-        normal = normal,
-        hitBlockLocation = hitBlockLocation,
-        adjacentBlockLocation = adjacentBlockLocation,
-        gameObject = gameObject,
-    }
-    setmetatable(raycastHit, RaycastHit)
-    if raycastHit.hitBlockLocation ~= nil then
-        raycastHit.component = "MapRenderer"
-    else
-        raycastHit.component = "ModelRenderer"
-    end
+function RaycastHit.New( data )
+    Daneel.Debug.StackTrace.BeginFunction( "RaycastHit.New" )
+    local errorHead = "RaycastHit.New( [data] ) : "
+    data = Daneel.Debug.CheckOptionalArgType( data, "data", "table", errorHead, {} )
+
+    local raycastHit = setmetatable( data, RaycastHit )
     Daneel.Debug.StackTrace.EndFunction()
     return raycastHit
 end
