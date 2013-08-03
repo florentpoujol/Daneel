@@ -130,19 +130,6 @@ IDEAS
 ==========
 A implémenter
     
-    v1.2.x
-    
-    
-    
-        make the trigger create a ray from the checked GO and the trigger
-        if the ray hit, that's because the GO was outside of the trigger's model
-        if the ray don't hit, that's because the GO is inside the trigger's model, so he is in the 
-
-        Enable this on regular triggers when the range tags is negative
-        Allow to use a map or textRenderer instead of a modelRenderer
-
-    - make the ids incremental instead of random
-
     - add setter for all GUI properties
 
     - propriété updateInterval for tweeners

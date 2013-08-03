@@ -1131,6 +1131,7 @@ Daneel.Cache = {
     totable = {},
     ucfirst = {},
     lcfirst = {},
+    lang = {},
 
     -- with assets, the key may be :
     -- the asset object itself, the value is true
@@ -1138,7 +1139,12 @@ Daneel.Cache = {
     -- (allows two assets to have the same name)
     assets = { ["ScriptAliases"] = {} }, -- Asset.Get()
     assetPaths = {}, -- Asset.GetPath()
-    lang = {},
+
+    id = 0,
+    GetId = function()
+        Daneel.Cache.id = Daneel.Cache.id + 1
+        return Daneel.Cache.id
+    end,
 }
 
 

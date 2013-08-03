@@ -178,7 +178,7 @@ function DaneelGUI.Hud.New(gameObject)
 
     local hud = setmetatable({}, Daneel.GUI.Hud)
     hud.gameObject = gameObject
-    hud.Id = math.round( math.randomrange( 100000, 999999 ) )
+    hud.Id = Daneel.Cache.GetId()
     hud.localPosition = Daneel.Config.gui.hud.localPosition
     hud.layer = Daneel.Config.gui.hud.layer
     gameObject.hud = hud
@@ -341,7 +341,7 @@ function DaneelGUI.Toggle.New( gameObject )
     toggle.defaultText = toggle.text
     toggle.text = nil
     toggle.gameObject = gameObject
-    toggle.Id = math.round( math.randomrange( 100000, 999999 ) )
+    toggle.Id = Daneel.Cache.GetId()
     setmetatable( toggle, Daneel.GUI.Toggle )
     
     gameObject.toggle = toggle
@@ -524,7 +524,7 @@ function DaneelGUI.ProgressBar.New(gameObject)
 
     local progressBar = table.copy(Daneel.Config.gui.progressBar)
     progressBar.gameObject = gameObject
-    progressBar.Id = math.round( math.randomrange( 100000, 999999 ) )
+    progressBar.Id = Daneel.Cache.GetId()
     progressBar.progress = nil -- remove the property to allow to use the dynamic getter/setter
     setmetatable(progressBar, Daneel.GUI.ProgressBar)
     progressBar.progress = Daneel.Config.gui.progressBar.progress
@@ -667,7 +667,7 @@ function DaneelGUI.Slider.New(gameObject)
 
     local slider = table.copy( Daneel.Config.gui.slider )
     slider.gameObject = gameObject
-    slider.Id = math.round( math.randomrange( 100000, 999999 ) )
+    slider.Id = Daneel.Cache.GetId()
     slider.startPosition = gameObject.transform.position
     slider.value = nil
     setmetatable( slider, Daneel.GUI.Slider )
@@ -763,7 +763,7 @@ function DaneelGUI.Input.New( gameObject )
 
     local input = table.copy( Daneel.Config.gui.input )
     input.gameObject = gameObject
-    input.Id = math.round( math.randomrange( 100000, 999999 ) )
+    input.Id = Daneel.Cache.GetId()
     -- adapted from Blast Turtles
     input.OnTextEntered = function( char )
         if not input.isFocused then return end
@@ -869,7 +869,7 @@ function DaneelGUI.TextArea.New( gameObject )
 
     local textArea = {}
     textArea.gameObject = gameObject
-    textArea.Id = math.round( math.randomrange( 100000, 999999 ) )
+    textArea.Id = Daneel.Cache.GetId()
     textArea.lineRenderers = {}
     setmetatable( textArea, Daneel.GUI.TextArea )
 

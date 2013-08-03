@@ -216,7 +216,7 @@ function DaneelTween.Tweener.New(target, property, endValue, duration, params)
     
     local tweener = table.copy(Daneel.Config.tween.tweener)
     setmetatable(tweener, Daneel.Tween.Tweener)
-    tweener.Id = math.round( math.randomrange( 100000, 999999 ) )
+    tweener.Id = Daneel.Cache.GetId()
 
     -- three constructors :
     -- target, property, endValue, duration[, params]
@@ -452,7 +452,7 @@ function DaneelTween.Timer.New( duration, callback, isInfiniteLoop, params )
 
     local tweener = table.copy( Daneel.Config.tween.tweener )
     setmetatable( tweener, Daneel.Tween.Tweener )
-    tweener.Id = "Timer" .. math.round( math.randomrange( 100000, 999999 ) )
+    tweener.Id = Daneel.Cache.GetId()
     tweener.startValue = duration
     tweener.endValue = 0
     tweener.duration = duration
