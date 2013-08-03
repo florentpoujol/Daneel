@@ -133,7 +133,7 @@ A implémenter
     v1.2.x
     
     
-    - add squared triggers
+    
         make the trigger create a ray from the checked GO and the trigger
         if the ray hit, that's because the GO was outside of the trigger's model
         if the ray don't hit, that's because the GO is inside the trigger's model, so he is in the 
@@ -173,6 +173,7 @@ A tester
     - remove use of Vector3.Distance with trigger
     - allow asset setter to accept nil as argument
     - Intersects[Component]( ray, component, returnRaycastHit )
+    - squared triggers
 
 
 ==========

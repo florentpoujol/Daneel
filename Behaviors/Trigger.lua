@@ -1,7 +1,7 @@
 -- Trigger.lua
 -- Scripted behavior for triggers.
 --
--- Last modified for v1.2.0
+-- Last modified for v1.2.1
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
 --[[PublicProperties
@@ -20,6 +20,13 @@ function Behavior:Awake()
     end
 
     self.frameCount = 0
+
+    if self.gameObject.modelRenderer ~= nil then
+        self.gameObject.modelRenderer:SetOpacity( 0 )
+    end
+    if self.gameObject.mapRenderer ~= nil then
+        self.gameObject.mapRenderer:SetOpacity( 0 )
+    end
 end
 
 
@@ -27,7 +34,7 @@ function Behavior:Update()
     self.frameCount = self.frameCount + 1
 
     if 
-        self.range <= 0 or self.updateInterval < 1 or #self.tags == 0 or
+        self.updateInterval < 1 or #self.tags == 0 or
         ( self.updateInterval > 1 and self.frameCount % self.updateInterval ~= 0 )
     then
         return
@@ -35,18 +42,42 @@ function Behavior:Update()
 
     local triggerPosition = self.gameObject.transform:GetPosition()
     
-    for i, layer in ipairs(self.tags) do
-        local gameObjects = GameObject.Tags[layer]
+    for i, layer in ipairs( self.tags ) do
+        local gameObjects = GameObject.Tags[ layer ]
         if gameObjects ~= nil then
             
             for i = #gameObjects, i, -1 do
-                local gameObject = gameObjects[i]
-                if gameObject ~= nil and gameObject.isDestroyed ~= true then
+                local gameObject = gameObjects[ i ]
+                if gameObject ~= nil and gameObject.isDestroyed ~= true and gameObject ~= self.gameObject then
 
-                    if 
-                        gameObject ~= self.gameObject and 
-                        (gameObject.transform:GetPosition() - triggerPosition):SqrLength() < self.range^2
-                    then
+                    local gameObjectIsInTrigger = false
+                    local gameObjectPosition = gameObject.transform:GetPosition()
+                    local directionToTrigger = triggerPosition - gameObjectPosition
+                    local distanceToTriggerSquared = directionToTrigger:SqrLength()
+
+                    if self.range > 0 and distanceToTriggerSquared < self.range^2 then
+                        gameObjectIsInTrigger = true
+
+                    elseif self.range <= 0 then
+                        local ray = Ray:New( gameObjectPosition, directionToTrigger ) -- ray from the gameObject to the trigger
+                        local distance = nil
+
+                        if gameObject.modelRenderer ~= nil then
+                            distance = ray:IntersectsModelRenderer( gameObject.modelRenderer )
+                        elseif gameObject.mapRenderer ~= nil then
+                            distance = ray:IntersectsMapRenderer( gameObject.mapRenderer )
+                        end
+
+                        if distance ~= nil and distance^2 > distanceToTriggerSquared then
+                            -- distance from the GO to the model or map is superior to the distance to the trigger
+                            -- that means the GO is inside of the mode/map
+                            -- the ray goes throught the GO origin before intersecting the map 
+                            gameObjectIsInTrigger = true
+                        end
+                    end
+
+
+                    if gameObjectIsInTrigger then
                         if not table.containsvalue( self.GameObjectsInRange, gameObject ) then
                             -- just entered the trigger
                             table.insert( self.GameObjectsInRange, gameObject )
@@ -105,12 +136,38 @@ function Behavior:GetGameObjectsInRange( tags, range )
         if gameObjects ~= nil then
 
             for i, gameObject in ipairs( gameObjects ) do
-                if 
-                    gameObject ~= nil and gameObject.isDestroyed ~= true and
-                    gameObject ~= self.gameObject and 
-                    (gameObject.transform:GetPosition() - triggerPosition):SqrLength() <= self.range^2
-                then
-                    table.insert( gameObjectsInRange, gameObject )
+                if gameObject ~= nil and gameObject.isDestroyed ~= true and gameObject ~= self.gameObject then 
+                    
+                    local gameObjectIsInTrigger = false
+                    local gameObjectPosition = gameObject.transform:GetPosition()
+                    local directionToTrigger = triggerPosition - gameObjectPosition
+                    local distanceToTriggerSquared = directionToTrigger:SqrLength()
+
+                    if self.range > 0 and distanceToTriggerSquared < self.range^2 then
+                        gameObjectIsInTrigger = true
+
+                    elseif self.range <= 0 then
+                        local ray = Ray:New( gameObjectPosition, directionToTrigger ) -- ray from the gameObject to the trigger
+                        local distance = nil
+
+                        if gameObject.modelRenderer ~= nil then
+                            distance = ray:IntersectsModelRenderer( gameObject.modelRenderer )
+                        elseif gameObject.mapRenderer ~= nil then
+                            distance = ray:IntersectsMapRenderer( gameObject.mapRenderer )
+                        end
+
+                        if distance ~= nil and distance^2 > distanceToTriggerSquared then
+                            -- distance from the GO to the model or map is superior to the distance to the trigger
+                            -- that means the GO is inside of the mode/map
+                            -- the ray goes throught the GO origin before intersecting the map 
+                            gameObjectIsInTrigger = true
+                        end
+                    end
+
+                    if gameObjectIsInTrigger then
+                        table.insert( gameObjectsInRange, gameObject )
+                    end
+
                 end
             end
 
