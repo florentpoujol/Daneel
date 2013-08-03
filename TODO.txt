@@ -135,8 +135,6 @@ A implémenter
     - Rectangle pseudo object with position, normal, width, height > allow pixels
         > raycashit = ray:IntersectRectangle( rectangle, true )
     
-    - get rid of hotkey events when possible
-
     - add squared triggers
         make the trigger create a ray from the checked GO and the trigger
         if the ray hit, that's because the GO was outside of the trigger's model
@@ -147,7 +145,7 @@ A implémenter
 
     - make the ids incremental instead of random
 
-    - allow asset setter to accept nil as argument
+    
 
     - add setter for all GUI properties
 
@@ -177,7 +175,8 @@ A tester
 
     - voir pourquoi certains easeType renvoient des erreurs
     - remove use of Vector3.Distance with trigger
-
+    - allow asset setter to accept nil as argument
+    
 
 ==========
 A modifier/ajouter dans la doc :

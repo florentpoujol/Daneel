@@ -267,32 +267,38 @@ local OriginalSetModel = ModelRenderer.SetModel
 
 --- Attach the provided model to the provided modelRenderer.
 -- @param modelRenderer (ModelRenderer) The modelRenderer.
--- @param modelNameOrAsset (string or Model) The model name or asset.
-function ModelRenderer.SetModel(modelRenderer, modelNameOrAsset)
-    Daneel.Debug.StackTrace.BeginFunction("ModelRenderer.SetModel", modelRenderer, modelNameOrAsset)
-    local errorHead = "ModelRenderer.SetModel(modelRenderer, modelNameOrAsset) : "
-    Daneel.Debug.CheckArgType(modelRenderer, "modelRenderer", "ModelRenderer", errorHead)
-    Daneel.Debug.CheckArgType(modelNameOrAsset, "modelNameOrAsset", {"string", "Model"}, errorHead)
+-- @param modelNameOrAsset (string or Model) The model name or asset, or nil.
+function ModelRenderer.SetModel( modelRenderer, modelNameOrAsset )
+    Daneel.Debug.StackTrace.BeginFunction( "ModelRenderer.SetModel", modelRenderer, modelNameOrAsset )
+    local errorHead = "ModelRenderer.SetModel( modelRenderer, modelNameOrAsset ) : "
+    Daneel.Debug.CheckArgType( modelRenderer, "modelRenderer", "ModelRenderer", errorHead )
+    Daneel.Debug.CheckOptionalArgType( modelNameOrAsset, "modelNameOrAsset", {"string", "Model"}, errorHead )
 
-    local model = Asset.Get(modelNameOrAsset, "Model", true)
-    OriginalSetModel(modelRenderer, model)
-    Daneel.Debug.StackTrace.EndFunction("ModelRenderer.SetModel")
+    local model = nil
+    if modelNameOrAsset ~= nil then
+        model = Asset.Get( modelNameOrAsset, "Model", true )
+    end
+    OriginalSetModel( modelRenderer, model )
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 local OriginalSetAnimation = ModelRenderer.SetAnimation
 
 --- Set the specified animation for the modelRenderer's current model.
 -- @param modelRenderer (ModelRenderer) The modelRenderer.
--- @param animationNameOrAsset (string or ModelAnimation) The animation name or asset.
-function ModelRenderer.SetAnimation(modelRenderer, animationNameOrAsset)
-    Daneel.Debug.StackTrace.BeginFunction("ModelRenderer.SetModelAnimation", modelRenderer, animationNameOrAsset)
-    local errorHead = "ModelRenderer.SetModelAnimation(modelRenderer, animationNameOrAsset) : "
-    Daneel.Debug.CheckArgType(modelRenderer, "modelRenderer", "ModelRenderer", errorHead)
-    Daneel.Debug.CheckArgType(animationNameOrAsset, "animationNameOrAsset", {"string", "ModelAnimation"}, errorHead)
+-- @param animationNameOrAsset (string or ModelAnimation) The animation name or asset, or nil.
+function ModelRenderer.SetAnimation( modelRenderer, animationNameOrAsset )
+    Daneel.Debug.StackTrace.BeginFunction( "ModelRenderer.SetModelAnimation", modelRenderer, animationNameOrAsset )
+    local errorHead = "ModelRenderer.SetModelAnimation( modelRenderer, animationNameOrAsset ) : "
+    Daneel.Debug.CheckArgType( modelRenderer, "modelRenderer", "ModelRenderer", errorHead)
+    Daneel.Debug.CheckOptionalArgType( animationNameOrAsset, "animationNameOrAsset", {"string", "ModelAnimation"}, errorHead )
 
-    local animation = Asset.Get(animationNameOrAsset, "ModelAnimation", true)
-    OriginalSetAnimation(modelRenderer, animation)
-    Daneel.Debug.StackTrace.EndFunction("ModelRenderer.SetModelAnimation")
+    local animation = nil 
+    if animationNameOrAsset ~= nil then
+        animation = Asset.Get( animationNameOrAsset, "ModelAnimation", true )
+    end
+    OriginalSetAnimation( modelRenderer, animation )
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
@@ -305,20 +311,19 @@ local OriginalSetMap = MapRenderer.SetMap
 -- @param mapRenderer (MapRenderer) The mapRenderer.
 -- @param mapNameOrAsset (string or Map) The map name or asset.
 -- @param keepTileSet [optional default=false] (boolean) Keep the current TileSet.
-function MapRenderer.SetMap(mapRenderer, mapNameOrAsset, keepTileSet)
-    Daneel.Debug.StackTrace.BeginFunction("MapRenderer.SetMap", mapRenderer, mapNameOrAsset)
-    local errorHead = "MapRenderer.SetMap(mapRenderer, mapNameOrAsset) : "
-    Daneel.Debug.CheckArgType(mapRenderer, "mapRenderer", "MapRenderer", errorHead)
-    Daneel.Debug.CheckArgType(mapNameOrAsset, "mapNameOrAsset", {"string", "Map"}, errorHead)
-    Daneel.Debug.CheckOptionalArgType(keepTileSet, "keepTileSet", "boolean", errorHead)
+function MapRenderer.SetMap( mapRenderer, mapNameOrAsset, keepTileSet )
+    Daneel.Debug.StackTrace.BeginFunction( "MapRenderer.SetMap", mapRenderer, mapNameOrAsset )
+    local errorHead = "MapRenderer.SetMap( mapRenderer, mapNameOrAsset) : "
+    Daneel.Debug.CheckArgType( mapRenderer, "mapRenderer", "MapRenderer", errorHead )
+    Daneel.Debug.CheckOptionalArgType( mapNameOrAsset, "mapNameOrAsset", {"string", "Map"}, errorHead )
+    keepTileSet = Daneel.Debug.CheckOptionalArgType( keepTileSet, "keepTileSet", "boolean", errorHead, false )
 
-    local map = Asset.Get(mapNameOrAsset, "Map", true)
-    if keepTileSet == true then
-        OriginalSetMap(mapRenderer, map, true)
-    else
-        OriginalSetMap(mapRenderer, map)
+    local map = nil
+    if mapNameOrAsset ~= nil then
+        map = Asset.Get( mapNameOrAsset, "Map", true )
     end
-    Daneel.Debug.StackTrace.EndFunction("MapRenderer.SetMap")
+    OriginalSetMap( mapRenderer, map, keepTileSet )
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 local OriginalSetTileSet = MapRenderer.SetTileSet
@@ -346,13 +351,16 @@ local OriginalSetFont = TextRenderer.SetFont
 --- Set the specified font for the textRenderer.
 -- @param textRenderer (TextRenderer) The textRenderer.
 -- @param fontNameOrAsset (string or Font) The font name or asset
-function TextRenderer.SetFont(textRenderer, fontNameOrAsset)
-    Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetFont", textRenderer, fontNameOrAsset)
-    local errorHead = "TextRenderer.SetFont(textRenderer, fontNameOrAsset) : "
-    Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
-    Daneel.Debug.CheckArgType(fontNameOrAsset, "fontNameOrAsset", {"string", "Font"}, errorHead)
+function TextRenderer.SetFont( textRenderer, fontNameOrAsset )
+    Daneel.Debug.StackTrace.BeginFunction( "TextRenderer.SetFont", textRenderer, fontNameOrAsset )
+    local errorHead = "TextRenderer.SetFont( textRenderer, fontNameOrAsset ) : "
+    Daneel.Debug.CheckArgType( textRenderer, "textRenderer", "TextRenderer", errorHead )
+    Daneel.Debug.CheckOptionalArgType( fontNameOrAsset, "fontNameOrAsset", {"string", "Font"}, errorHead )
 
-    local font = Asset.Get( fontNameOrAsset, "Font", true )
+    local font = nil
+    if fontNameOrAsset ~= nil then
+        font = Asset.Get( fontNameOrAsset, "Font", true )
+    end
     OriginalSetFont( textRenderer, font )
     Daneel.Debug.StackTrace.EndFunction()
 end
@@ -386,10 +394,10 @@ function TextRenderer.SetTextWidth( textRenderer, width )
     local argType = Daneel.Debug.CheckArgType(width, "width", {"number", "string"}, errorHead)
 
     if argType == "string" then
-        width = width:sub( 1, #width-2 )
         if Daneel.GUI == nil then
             error( errorHead .. "The GUI module is not loaded. Can't convert width in pixels with value '" .. width .. "' to scene units.")
         end
+        width = width:sub( 1, #width-2 )
         width = width * Daneel.GUI.pixelsToUnits
     end
     
