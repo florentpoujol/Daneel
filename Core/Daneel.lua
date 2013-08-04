@@ -4,126 +4,119 @@
 -- Last modified for v1.2.0
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
-DEBUG = false
+if CS.DaneelModules == nil then
+    CS.DaneelModules = {}
+end
+
 Daneel = { isLoaded = false }
 
 ----------------------------------------------------------------------------------
+-- Config
 
-Daneel.Config = {}
+Daneel.Config = {
+    -- List of the Scripts paths as values and optionally the script alias as the keys.
+    -- Ie :
+    -- "fully-qualified Script path"
+    -- or
+    -- alias = "fully-qualified Script path"
+    --
+    -- Setting a script path here allow you to  :
+    -- * Use the dynamic getters and setters
+    -- * Use component:Set() (for scripted behaviors)
+    -- * Use component:GetId() (for scripted behaviors)
+    -- * If you defined aliases, dynamically access the scripted behavior on the game object via its alias
+    scriptPaths = {},
 
-function DaneelDefaultConfig()
-    return {
-        -- List of the Scripts paths as values and optionally the script alias as the keys.
-        -- Ie :
-        -- "fully-qualified Script path"
-        -- or
-        -- alias = "fully-qualified Script path"
-        --
-        -- Setting a script path here allow you to  :
-        -- * Use the dynamic getters and setters
-        -- * Use component:Set() (for scripted behaviors)
-        -- * Use component:GetId() (for scripted behaviors)
-        -- * If you defined aliases, dynamically access the scripted behavior on the game object via its alias
-        scriptPaths = {},
 
- 
-        ----------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------
 
-        input = {
-            -- Button names as you defined them in the "Administration > Game Controls" tab of your project.
-            -- Button whose name is defined here can be used as HotKeys.
-            buttons = {
-                -- Ie: "Fire",
-            },
-
-            doubleClickDelay = 20, -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
+    input = {
+        -- Button names as you defined them in the "Administration > Game Controls" tab of your project.
+        -- Button whose name is defined here can be used as HotKeys.
+        buttons = {
+            -- Ie: "Fire",
         },
 
+        doubleClickDelay = 20, -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
+    },
 
-        ----------------------------------------------------------------------------------
 
-        debug = {
-            enableDebug = false, -- Enable/disable Daneel's global debugging features (error reporting + stacktrace).
-            enableStackTrace = false, -- Enable/disable the Stack Trace.
+    ----------------------------------------------------------------------------------
+
+    debug = {
+        enableDebug = false, -- Enable/disable Daneel's global debugging features (error reporting + stacktrace).
+        enableStackTrace = false, -- Enable/disable the Stack Trace.
+    },
+
+
+    ----------------------------------------------------------------------------------
+
+    -- Default CraftStudio's components settings (except Transform)
+    -- See 'gui' section above for default GUI component settings
+    components = {
+        --[[ ie :
+        textRenderer = {
+            font = "MyFont",
+            alignment = "right",
         },
+        ]]
+    },
 
 
-        ----------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------
+    -- Objects (keys = name, value = object)
 
-        -- Default CraftStudio's components settings (except Transform)
-        -- See 'gui' section above for default GUI component settings
-        components = {
-            --[[ ie :
-            textRenderer = {
-                font = "MyFont",
-                alignment = "right",
-            },
-            ]]
-        },
+    -- CraftStudio
+    craftStudioObjects = {
+        GameObject = GameObject,
+        Vector3 = Vector3,
+        Quaternion = Quaternion,
+        Plane = Plane,
+        Ray = Ray,
+    },
 
+    craftStudioComponentObjects = {
+        ScriptedBehavior = ScriptedBehavior,
+        ModelRenderer = ModelRenderer,
+        MapRenderer = MapRenderer,
+        Camera = Camera,
+        Transform = Transform,
+        Physics = Physics,
+        TextRenderer = TextRenderer,
+        NetworkSync = NetworkSync,
+    },
 
-        ----------------------------------------------------------------------------------
-        -- Objects (keys = name, value = object)
+    assetObjects = {
+        Script = Script,
+        Model = Model,
+        ModelAnimation = ModelAnimation,
+        Map = Map,
+        TileSet = TileSet,
+        Sound = Sound,
+        Scene = Scene,
+        --Document = Document,
+        Font = Font,
+    },
+    
+    -- Daneel
+    daneelObjects = {
+        RaycastHit = RaycastHit,
+    },
 
-        -- CraftStudio
-        craftStudioObjects = {
-            GameObject = GameObject,
-            Vector3 = Vector3,
-            Quaternion = Quaternion,
-            Plane = Plane,
-            Ray = Ray,
-        },
+    componentObjects = {},
+    componentTypes = {},
 
-        craftStudioComponentObjects = {
-            ScriptedBehavior = ScriptedBehavior,
-            ModelRenderer = ModelRenderer,
-            MapRenderer = MapRenderer,
-            Camera = Camera,
-            Transform = Transform,
-            Physics = Physics,
-            TextRenderer = TextRenderer,
-            NetworkSync = NetworkSync,
-        },
+    -- Objects (keys = Type, value = Object)
+    -- For use by Daneel.Debug.GetType() which will return the Type when the Object is the metatable of the provided object
+    userObjects = {},
 
-        assetObjects = {
-            Script = Script,
-            Model = Model,
-            ModelAnimation = ModelAnimation,
-            Map = Map,
-            TileSet = TileSet,
-            Sound = Sound,
-            Scene = Scene,
-            --Document = Document,
-            Font = Font,
-        },
-        
-        -- Daneel
-        daneelObjects = {
-            RaycastHit = RaycastHit,
-        },
-
-        daneelComponentObjects = {},
-
-        -- Objects (keys = Type, value = Object)
-        -- For use by Daneel.Debug.GetType() which will return the Type when the Object is the metatable of the provided object
-        userObjects = {},
-
-        -- other properties created at runtime :
-        -- componentObjects : a merge of craftStudioComponentObjects and daneelComponentObjects
-        -- componentTypes : the list of the component types (the keys of componentObjects)
-        -- daneelComponentTypes
-        -- assetTypes
-        -- allObjects : a merge of all *Objects tables
-
-
-        ----------------------------------------------------------------------------------
-
-        modules = {
-            "GUI",
-            "Tween",
-        }
-    }
-end
+    -- other properties created at runtime :
+    -- componentObjects : a merge of craftStudioComponentObjects and daneelComponentObjects
+    -- componentTypes : the list of the component types (the keys of componentObjects)
+    -- daneelComponentTypes
+    -- assetTypes
+    -- allObjects : a merge of all *Objects tables
+}
 
 
 ----------------------------------------------------------------------------------
@@ -992,7 +985,6 @@ Daneel.Cache = {
     totable = {},
     ucfirst = {},
     lcfirst = {},
-    lang = {},
 
     -- with assets, the key may be :
     -- the asset object itself, the value is true
@@ -1010,32 +1002,34 @@ Daneel.Cache = {
 
 
 ----------------------------------------------------------------------------------
+-- Load
+
+local moduleUpdateFunctions = {} -- see end of Daneel.Load() and end of Daneel.update()
 
 -- load Daneel at the start of the game
 function Daneel.Load()
     if Daneel.isLoaded then return end
 
-    -- load default config, modules config, then user config
-    Daneel.Config = DaneelDefaultConfig()
-    -- do this once here to get the user list of modules
-    -- if Daneel.Utilities.GlobalExists("DaneelConfig") and DaneelConfig().modules ~= nil then
-    --     Daneel.Config.modules = table.deepmerge(Daneel.Config.modules, DaneelConfig().modules)
-    -- end
+    -- load modules config
+    local configLoaded = {}
+    for i, moduleObject in pairs( CS.DaneelModules ) do
+        if configLoaded[ moduleObject ] == nil then
+            configLoaded[ moduleObject ] = true
 
-    for i, module in ipairs(Daneel.Config.modules) do
-        local functionName = "DaneelConfigModule"..module
-        if Daneel.Utilities.GlobalExists(functionName) then
-            Daneel.Config = table.deepmerge( Daneel.Config, _G[functionName]() )
+            local config = moduleObject.Config
+            if type( config ) == "function" then
+                config = config()
+            end
+            Daneel.Config = table.deepmerge( Daneel.Config, config )
         end
     end
     
-    if Daneel.Utilities.GlobalExists("DaneelConfig") then
-        Daneel.Config = table.deepmerge( Daneel.Config, DaneelConfig())
+    -- load user config
+    if Daneel.Utilities.GlobalExists( "DaneelConfig" ) then
+        Daneel.Config = table.deepmerge( Daneel.Config, DaneelConfig() )
     end
 
-    
-    DEBUG = Daneel.Config.debug.enableDebug
-    if Daneel.Config.debug.enableDebug == true and Daneel.Config.debug.enableStackTrace == true then
+    if Daneel.Config.debug.enableDebug and Daneel.Config.debug.enableStackTrace then
         SetNewError()
     end
 
@@ -1044,10 +1038,10 @@ function Daneel.Load()
         Daneel.Config.craftStudioComponentObjects,
         Daneel.Config.daneelComponentObjects
     )
-    Daneel.Config.componentTypes = table.getkeys(Daneel.Config.componentObjects)
+    Daneel.Config.componentTypes            = table.getkeys( Daneel.Config.componentObjects )
     Daneel.Config.craftStudioComponentTypes = table.getkeys( Daneel.Config.craftStudioComponentObjects )
-    Daneel.Config.daneelComponentTypes = table.getkeys(Daneel.Config.daneelComponentObjects)
-    Daneel.Config.assetTypes = table.getkeys(Daneel.Config.assetObjects)
+    Daneel.Config.daneelComponentTypes      = table.getkeys( Daneel.Config.daneelComponentObjects )
+    Daneel.Config.assetTypes                = table.getkeys( Daneel.Config.assetObjects )
     
     -- all objects (for use in GetType())
     Daneel.Config.allObjects = table.merge(
@@ -1058,7 +1052,7 @@ function Daneel.Load()
         Daneel.Config.userObjects
     )
 
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Load")
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Load" )
 
     -- Scripts
     for i, path in pairs( Daneel.Config.scriptPaths ) do
@@ -1072,21 +1066,20 @@ function Daneel.Load()
         else
             Daneel.Config.scriptPaths[i] = nil
             if Daneel.Config.debug.enableDebug == true then
-                print("WARNING : item with key '"..i.."' and value '"..path.."' in 'Daneel.Config.scriptPaths' is not a valid script path.")
+                print( "Daneel.Load() : WARNING : item with key '" .. i .. "' and value '" .. path .. "' in 'Daneel.Config.scriptPaths' is not a valid script path." )
             end
         end
     end
 
     -- Components
-    for componentType, componentObject in pairs(Daneel.Config.componentObjects) do
+    for componentType, componentObject in pairs( Daneel.Config.componentObjects ) do
         -- Components getters-setter-tostring
-        Daneel.Utilities.AllowDynamicGettersAndSetters(componentObject, { Component })
+        Daneel.Utilities.AllowDynamicGettersAndSetters( componentObject, { Component } )
 
         if componentType ~= "ScriptedBehavior" then
-            componentObject["__tostring"] = function(component)
-                -- returns something like "ModelRenderer: 123456789"
-                -- component.inner is "?: [some ID]"
-                -- do not use component:GetId() here, it throws a stack overflow when stacktrace is enabled (BeginFunction uses tostring() on the input argument)
+            componentObject["__tostring"] = function( component )
+                -- returns something like "ModelRenderer: 123456789"    component.inner is "?: [some ID]"
+                -- do not use component:GetId() here, it throws a stack overflow when stacktrace is enabled because ST.BeginFunction() uses tostring() on the provided argument(s)
                 local id = component.Id
                 if id == nil then
                     id = tostring( component.inner ):sub( 5, 20 )
@@ -1145,64 +1138,67 @@ function Daneel.Load()
     end
 
     -- Assets
-    for assetType, assetObject in pairs(Daneel.Config.assetObjects) do
-        Daneel.Utilities.AllowDynamicGettersAndSetters(assetObject)
+    for assetType, assetObject in pairs( Daneel.Config.assetObjects ) do
+        Daneel.Utilities.AllowDynamicGettersAndSetters( assetObject )
 
-        assetObject["__tostring"] = function(asset)
-            -- print something like : "Model: 123456789"
-            -- asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
-            -- CraftStudioCommon.ProjectData. is 30 characters long
-            return tostring(asset.inner):sub(31, 60) .. ": '" .. Map.GetPathInPackage( asset ) .. "'"
+        assetObject["__tostring"] = function( asset )
+            -- print something like : "Model: 123456789"    asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
+            return tostring( asset.inner ):sub( 31, 50 ) .. ": '" .. Map.GetPathInPackage( asset ) .. "'"
         end
     end
 
     -- Load modules 
-    for i, module in ipairs(Daneel.Config.modules) do
-        local functionName = "DaneelLoadModule"..module
-        if Daneel.Utilities.GlobalExists(functionName) then
-            _G[functionName]()
+    local moduleLoaded = {}
+    for i, moduleObject in pairs( CS.DaneelModules ) do
+        if moduleLoaded[ moduleObject ] == nil then
+            moduleLoaded[ moduleObject ] = true
+            if type( moduleObject.Load ) == "function" then
+                moduleObject.Load()
+            end
         end
     end
 
     Daneel.isLoaded = true
     if Daneel.Config.debug.enableDebug == true then
-        print("~~~~~ Daneel is loaded ~~~~~")
+        print( "~~~~~ Daneel is loaded ~~~~~" )
     end
 
     -- check for module update function
     -- do this now so that I don't have to call Daneel.Utilities.GlobalExists() every frame for every modules below
-    Daneel.Config.moduleUpdateFunctions = {}
-    for i, module in ipairs(Daneel.Config.modules) do
-        local functionName = "DaneelUpdateModule"..module
-        if Daneel.Utilities.GlobalExists(functionName) and type(_G[functionName]) == "function" then
-            table.insert(Daneel.Config.moduleUpdateFunctions, _G[functionName])
+    moduleLoaded = {}
+    for i, moduleObject in ipairs( CS.DaneelModules ) do
+        if moduleLoaded[ moduleObject ] == nil then
+            moduleLoaded[ moduleObject ] = true
+            if type( moduleObject.Update ) == "function" then
+                table.insert( moduleUpdateFunctions, moduleObject.Update )
+            end
         end
     end
 
     Daneel.Debug.StackTrace.EndFunction()
 end -- end Daneel.Load()
 
+
 ----------------------------------------------------------------------------------
 -- Runtime
-local luaDocStop = ""
 
 function Behavior:Awake()
     Daneel.Load()
     Daneel.Debug.StackTrace.messages = {}
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Awake")
-
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Awake" )
 
     Daneel.Event.Listen("OnSceneLoad", function()
         GameObject.Tags = {}
-        Daneel.Lang.gameObjectsToUpdate = {}
     end)
 
-
     -- Awake modules 
-    for i, module in ipairs(Daneel.Config.modules) do
-        local functionName = "DaneelAwakeModule"..module
-        if Daneel.Utilities.GlobalExists(functionName) then
-            _G[functionName]()
+    local moduleLoaded = {}
+    for i, moduleObject in pairs( CS.DaneelModules ) do
+        if moduleLoaded[ moduleObject ] == nil then
+            moduleLoaded[ moduleObject ] = true
+            if type( moduleObject.Awake ) == "function" then
+                moduleObject.Awake()
+            end
         end
     end
 
@@ -1278,24 +1274,24 @@ function Behavior:Update()
 
     -- HotKeys
     -- fire an event whenever a registered button is pressed
-    for i, buttonName in ipairs(Daneel.Config.input.buttons) do
+    for i, buttonName in ipairs( Daneel.Config.input.buttons ) do
         local ButtonName = buttonName:ucfirst()
 
-        if CraftStudio.Input.WasButtonJustPressed(buttonName) then
-            Daneel.Event.Fire("On"..ButtonName.."ButtonJustPressed")
+        if CraftStudio.Input.WasButtonJustPressed( buttonName ) then
+            Daneel.Event.Fire( "On"..ButtonName.."ButtonJustPressed" )
         end
 
-        if CraftStudio.Input.IsButtonDown(buttonName) then
-            Daneel.Event.Fire("On"..ButtonName.."ButtonDown")
+        if CraftStudio.Input.IsButtonDown( buttonName ) then
+            Daneel.Event.Fire( "On"..ButtonName.."ButtonDown" )
         end
 
-        if CraftStudio.Input.WasButtonJustReleased(buttonName) then
-            Daneel.Event.Fire("On"..ButtonName.."ButtonJustReleased")
+        if CraftStudio.Input.WasButtonJustReleased( buttonName ) then
+            Daneel.Event.Fire( "On"..ButtonName.."ButtonJustReleased" )
         end
     end
 
     -- Update modules 
-    for i, _function in ipairs(Daneel.Config.moduleUpdateFunctions) do
-        _function()
+    for i, func in ipairs( moduleUpdateFunctions ) do
+        func()
     end
 end
