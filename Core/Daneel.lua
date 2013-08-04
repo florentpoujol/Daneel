@@ -1187,7 +1187,7 @@ end -- end Daneel.Load()
 
 
 -- called from DaneelBehavior Behavior:Awake()
-function Daneel.Awake()
+function Behavior:Awake()
     Daneel.Load()
     Daneel.Debug.StackTrace.messages = {}
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Awake")
@@ -1216,7 +1216,7 @@ function Daneel.Awake()
 end 
 
 -- called from DaneelBehavior Behavior:Update()
-function Daneel.Update()
+function Behavior:Update()
     -- Time
     local currentTime = os.clock()
     Daneel.Time.realDeltaTime = currentTime - Daneel.Time.realTime
