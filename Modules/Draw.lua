@@ -1,9 +1,12 @@
 
-DaneelDraw = {}
+Draw = {}
 
-function DaneelConfigModuleDraw()
-    Daneel.Draw = DaneelDraw
+if CS.DaneelModules == nil then
+    CS.DaneelModules = {}
+end
+table.insert( CS.DaneelModules, Draw )
 
+function Draw.Config()
     return {
         draw = {
             line = {
@@ -13,7 +16,12 @@ function DaneelConfigModuleDraw()
                 endPosition = nil
             },
 
+            circle = {
+
+            },
         },
+
+
 
         daneelComponentObjects = {
             LineRenderer = Daneel.Draw.LineRenderer,
@@ -23,10 +31,11 @@ function DaneelConfigModuleDraw()
 end
 
 ----------------------------------------------------------------------------------
+-- LineRenderer
 
-DaneelDraw.LineRenderer = {}
+Draw.LineRenderer = {}
 
-function DaneelDraw.LineRenderer.New( gameObject )
+function Draw.LineRenderer.New( gameObject )
 
     local line = {
         origin = gameObject.transform:GetPosition(),
@@ -46,33 +55,33 @@ function DaneelDraw.LineRenderer.New( gameObject )
     return line
 end
 
-function DaneelDraw.LineRenderer.Draw( line )
+function Draw.LineRenderer.Draw( line )
 
     line.gameObject.transform:LookAt( line.EndPosition )
     line.gameObject.transform:SetLocalScale( Vector3:New( line.Width, line.Width, line.Length ) )
     Daneel.Event.Fire( line, "OnDraw", line )
 end
 
-function DaneelDraw.LineRenderer.SetEndPosition( line, endPosition )
+function Draw.LineRenderer.SetEndPosition( line, endPosition )
     line.EndPosition = endPosition
     line.Direction = (line.EndPosition - line.origin)
     line.Length = line.Direction:Length()
     line:Draw()
 end
 
-function DaneelDraw.LineRenderer.SetLength( line, length )
+function Draw.LineRenderer.SetLength( line, length )
     line.Length = length
     line.EndPosition = line.origin + line.Direction * length
     line:Draw()
 end
 
-function DaneelDraw.LineRenderer.SetDirection( line, direction )
+function Draw.LineRenderer.SetDirection( line, direction )
     line.Direction = direction
     line.EndPosition = line.origin + line.Direction * length
     line:Draw()
 end
 
-function DaneelDraw.LineRenderer.SetWidth( line, width )
+function Draw.LineRenderer.SetWidth( line, width )
     line.Width = width
     line:Draw()
 end

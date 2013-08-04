@@ -18,5 +18,5 @@ function Behavior:Awake()
         self.callback = nil
     end
 
-    self.gameObject.timer = Daneel.Tween.Timer.New( self.duration, self.callback, self.isInfiniteLoop )
+    self.gameObject.timer = Tween.Timer.New( self.duration, self.callback, self.isInfiniteLoop )
 end

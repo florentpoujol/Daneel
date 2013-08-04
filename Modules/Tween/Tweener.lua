@@ -64,7 +64,7 @@ function Behavior:Awake()
         self.OnLoopComplete = nil
     end
 
-    self.gameObject.tweener = Daneel.Tween.Tweener.New( table.copy( self, true ) )
+    self.gameObject.tweener = Tween.Tweener.New( table.copy( self, true ) )
     self.OnComplete = nil
     self.OnLoopComplete = nil
 end

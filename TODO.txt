@@ -61,6 +61,16 @@ IDEAS
         > module étent la config et ajoute les modules dont il dépend qui sont ajoutés avant lui dans la table des modules à charger
     - liste des modules chargés + empècher plusieurs chargements du même modules
 
+    lorsque CS permettra de 
+
+    function CS.DaneelModules( object, dependance )
+
+    if CS.DaneelModules == nil then
+        CS.DaneelModules = {}
+    end
+    table.insert( CS.DaneelModules, { modulename = {} } )
+
+
 
     -----
     PARTICLE EMITTER
