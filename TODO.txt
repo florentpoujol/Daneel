@@ -184,3 +184,33 @@ OLD
 
     Exception non gérée : System.InvalidOperationException: La collection a été modifiée ; l'opération d'énumération peut ne pas s'exécuter.
 
+
+
+
+=========
+V2
+
+Core :
+Daneel
+    Event
+    Debug
+    Utilities
+    Cache
+    Time
+    Hotkeys
+CraftStudio
+GameObject
+Lua
+
+Individual behaviors :
+
+
+
+Modules :
+GUI
+Tween
+Draw
+Lang
+MouseInputs
+Triggersd
+Ray ?

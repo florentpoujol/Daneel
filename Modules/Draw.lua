@@ -1,6 +1,4 @@
 
-
-
 DaneelDraw = {}
 
 function DaneelConfigModuleDraw()

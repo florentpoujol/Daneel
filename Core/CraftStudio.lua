@@ -695,49 +695,6 @@ end
 
 ----------------------------------------------------------------------------------
 
-local OriginalGetMousePosition = CraftStudio.Input.GetMousePosition
-
---- Return the mouse position on screen coordinates {x, y}
--- @return (Vector2) The on-screen mouse position.
-function CraftStudio.Input.GetMousePosition()
-    Daneel.Debug.StackTrace.BeginFunction("CraftStudio.Input.GetMousePosition")
-    local vector = OriginalGetMousePosition()
-    if Daneel.Utilities.GlobalExists("Vector2") then
-        setmetatable(vector, Vector2)
-    end
-    Daneel.Debug.StackTrace.EndFunction()
-    return vector
-end
-
-local OriginalGetMouseDelta = CraftStudio.Input.GetMouseDelta
-
---- Return the mouse delta (the variation of position) since the last frame.
--- Positive x is right, positive y is bottom. 
--- @return (Vector2) The position's delta.
-function CraftStudio.Input.GetMouseDelta()
-    Daneel.Debug.StackTrace.BeginFunction("CraftStudio.Input.GetMouseDelta")
-    local vector = OriginalGetMouseDelta()
-    if Daneel.Utilities.GlobalExists("Vector2") then
-        setmetatable(vector, Vector2)
-    end
-    Daneel.Debug.StackTrace.EndFunction()
-    return vector
-end
-
-local OriginalGetSize = CraftStudio.Screen.GetSize
-
---- Return the size of the screen, in pixels.
--- @return (Vector2) The screen's size.
-function CraftStudio.Screen.GetSize()
-    Daneel.Debug.StackTrace.BeginFunction("CraftStudio.Screen.GetSize")
-    local vector = OriginalGetSize()
-    if Daneel.Utilities.GlobalExists("Vector2") then
-        setmetatable(vector, Vector2)
-    end
-    Daneel.Debug.StackTrace.EndFunction()
-    return vector
-end
-
 local OriginalDestroy = CraftStudio.Destroy
 
 --- Removes the specified game object (and all of its descendants) or the specified component from its game object.
