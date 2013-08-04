@@ -44,9 +44,15 @@ function Lang.Load()
     if Daneel.Config.language.current == nil then
         Daneel.Config.language.current = Daneel.Config.language.default
     end
+
+    Lang.Update2 = Lang.Update
+    Lang.Update = nil
 end
 
 function Lang.Awake()
+    Lang.Update = Lang.Update2
+    Lang.Update2 = nil
+    
     Daneel.Event.listen( "OnSceneLoad", function() 
         Lang.gameObjectsToUpdate = {}
     end )
