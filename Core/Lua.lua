@@ -494,7 +494,7 @@ function table.merge(...)
                     fullTable[key] = value
                 end
             end
-        elseif DEBUG == true then
+        elseif Daneel.Config.debug.enableDebug == true then
             print("WARNING : table.merge(...) : Argument n°"..i.." is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'. The argument as been ignored.")
         end
     end
@@ -536,7 +536,7 @@ function table.deepmerge(...)
                 end
             end
 
-        elseif DEBUG == true then
+        elseif Daneel.Config.debug.enableDebug == true then
             print("WARNING : table.deepmerge(...) : Argument n°"..i.." is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'. The argument as been ignored.")
         end
     end
@@ -584,7 +584,7 @@ function table.combine(keys, values, returnFalseIfNotSameLength)
     Daneel.Debug.CheckArgType(values, "values", "table", errorHead)
     Daneel.Debug.CheckOptionalArgType(returnFalseIfNotSameLength, "returnFalseIfNotSameLength", "boolean", errorHead)
     if table.length(keys) ~= table.length(values) then
-        if DEBUG == true then
+        if Daneel.Config.debug.enableDebug == true then
             print(errorHead.."WARNING : Arguments 'keys' and 'values' have different length.")
         end
         if returnFalseIfNotSameLength == true then
@@ -611,7 +611,7 @@ function table.removevalue(t, value, singleRemove)
     local errorHead = "table.removevalue(table, value[, singleRemove]) : "
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
     Daneel.Debug.CheckOptionalArgType(singleRemove, "singleRemove", "boolean", errorHead)
-    if value == nil and DEBUG == true then
+    if value == nil and Daneel.Config.debug.enableDebug == true then
         print("WARNING : "..errorHead.."Argument 'value' is nil. Provided table is '"..tostring(t).."'")
     end
     local hasRemovedAValue = false

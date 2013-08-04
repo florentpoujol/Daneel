@@ -4,9 +4,8 @@
 -- Last modified for v1.2.0
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
-DANEEL_LOADED = false
 DEBUG = false
-Daneel = {}
+Daneel = { isLoaded = false }
 
 ----------------------------------------------------------------------------------
 
@@ -258,7 +257,7 @@ function Daneel.Utilities.GetValueFromName(name)
         end
         
         if value == nil then
-            if DEBUG == true then
+            if Daneel.Config.debug.enableDebug == true then
                 print("WARNING : "..errorHead.." : variable '"..varName.."' (from provided name '"..name.."' ) does not exists. Returning nil.")
             end
             Daneel.Debug.StackTrace.EndFunction()
@@ -268,7 +267,7 @@ function Daneel.Utilities.GetValueFromName(name)
         for i, _key in ipairs(subNames) do
             varName = varName..".".._key
             if value[_key] == nil then
-                if DEBUG == true then
+                if Daneel.Config.debug.enableDebug == true then
                     print("WARNING : "..errorHead.." : variable '"..varName.."' (from provided name '"..name.."' ) does not exists. Returning nil.")
                 end
                 Daneel.Debug.StackTrace.EndFunction()
@@ -346,7 +345,7 @@ Daneel.Debug = {}
 -- @param p_errorHead [optional] (string) The beginning of the error message.
 -- @return (mixed) The argument's type.
 function Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes, p_errorHead)
-    if DEBUG == false then return Daneel.Debug.GetType(argument) end
+    if Daneel.Config.debug.enableDebug == false then return Daneel.Debug.GetType(argument) end
     local errorHead = "Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes[, p_errorHead]) : "
     
     local argType = type(argumentName)
@@ -389,7 +388,7 @@ end
 -- @return (mixed) The value of 'argument' if it's non-nil, or the value of 'defaultValue'.
 function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes, p_errorHead, defaultValue)
     if argument == nil then return defaultValue end
-    if DEBUG == false then return argument end
+    if Daneel.Config.debug.enableDebug == false then return argument end
     local errorHead = "Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes[, p_errorHead, defaultValue]) : "
     
     local argType = type(argumentName)
@@ -468,7 +467,7 @@ local function SetNewError()
     -- @param message (string) The error message.
     -- @param doNotPrintStacktrace [optional default=false] (boolean) Set to true to prevent the stacktrace to be printed before the error message.
     function error(message, doNotPrintStacktrace)
-        if DEBUG == true and doNotPrintStacktrace ~= true then
+        if Daneel.Config.debug.enableDebug == true and doNotPrintStacktrace ~= true then
             Daneel.Debug.StackTrace.Print()
         end
         OriginalError(message)
@@ -483,7 +482,7 @@ function Daneel.Debug.Disable(info)
     end
     print("Daneel.Debug.Disable()"..info)
     error = OriginalError
-    DEBUG = false
+    Daneel.Config.debug.enableDebug = false
 end
 
 --- Bypass the __tostring() function that may exists on the data's metatable.
@@ -592,7 +591,7 @@ Daneel.Debug.StackTrace = { messages = {} }
 -- @param functionName (string) The function name.
 -- @param ... [optional] (mixed) Arguments received by the function.
 function Daneel.Debug.StackTrace.BeginFunction( functionName, ... )
-    if DEBUG == false or Daneel.Config.debug.enableStackTrace == false then return end
+    if Daneel.Config.debug.enableDebug == false or Daneel.Config.debug.enableStackTrace == false then return end
 
     if #Daneel.Debug.StackTrace.messages > 200 then 
         print( "WARNING : your StackTrace is more than 200 items long ! Emptying the StackTrace now. Did you forget to write a 'EndFunction()' somewhere ?" )
@@ -623,7 +622,7 @@ end
 
 --- Closes a successful function call, removing it from the stacktrace.
 function Daneel.Debug.StackTrace.EndFunction()
-    if DEBUG == false or Daneel.Config.debug.enableStackTrace == false then return end
+    if Daneel.Config.debug.enableDebug == false or Daneel.Config.debug.enableStackTrace == false then return end
     -- since 16/05/2013 no arguments is needed anymore, since the StackTrace only keeps open functions calls and never keep returned values
     -- I didn't rewrote all the calls to EndFunction() 
     table.remove( Daneel.Debug.StackTrace.messages )
@@ -631,7 +630,7 @@ end
 
 --- Print the StackTrace.
 function Daneel.Debug.StackTrace.Print()
-    if DEBUG == false or Daneel.Config.debug.enableStackTrace == false then return end
+    if Daneel.Config.debug.enableDebug == false or Daneel.Config.debug.enableStackTrace == false then return end
 
     local messages = Daneel.Debug.StackTrace.messages
     Daneel.Debug.StackTrace.messages = {}
@@ -817,7 +816,7 @@ function Daneel.Event.Fire( object, eventName,  ... )
                     if getmetatable( gameObject ) ~= GameObject then
                         sendMessage = false
                         
-                        if _type == "string" and DEBUG == true then
+                        if _type == "string" and Daneel.Config.debug.enableDebug == true then
                             -- the user obviously wanted to send a message but the object is not a gameObject and has no gameObject property
 
                             -- only prints the debug when the user setted up the event property because otherwise
@@ -1011,12 +1010,10 @@ Daneel.Cache = {
 
 
 ----------------------------------------------------------------------------------
--- Runtime
-local luaDocStop = ""
 
 -- load Daneel at the start of the game
 function Daneel.Load()
-    if DANEEL_LOADED == true then return end
+    if Daneel.isLoaded then return end
 
     -- load default config, modules config, then user config
     Daneel.Config = DaneelDefaultConfig()
@@ -1038,7 +1035,7 @@ function Daneel.Load()
 
     
     DEBUG = Daneel.Config.debug.enableDebug
-    if DEBUG == true and Daneel.Config.debug.enableStackTrace == true then
+    if Daneel.Config.debug.enableDebug == true and Daneel.Config.debug.enableStackTrace == true then
         SetNewError()
     end
 
@@ -1074,7 +1071,7 @@ function Daneel.Load()
             end
         else
             Daneel.Config.scriptPaths[i] = nil
-            if DEBUG == true then
+            if Daneel.Config.debug.enableDebug == true then
                 print("WARNING : item with key '"..i.."' and value '"..path.."' in 'Daneel.Config.scriptPaths' is not a valid script path.")
             end
         end
@@ -1167,8 +1164,8 @@ function Daneel.Load()
         end
     end
 
-    DANEEL_LOADED = true
-    if DEBUG == true then
+    Daneel.isLoaded = true
+    if Daneel.Config.debug.enableDebug == true then
         print("~~~~~ Daneel is loaded ~~~~~")
     end
 
@@ -1185,8 +1182,10 @@ function Daneel.Load()
     Daneel.Debug.StackTrace.EndFunction()
 end -- end Daneel.Load()
 
+----------------------------------------------------------------------------------
+-- Runtime
+local luaDocStop = ""
 
--- called from DaneelBehavior Behavior:Awake()
 function Behavior:Awake()
     Daneel.Load()
     Daneel.Debug.StackTrace.messages = {}
@@ -1208,14 +1207,13 @@ function Behavior:Awake()
     end
 
     -- Awakening is over
-    if DEBUG == true then
+    if Daneel.Config.debug.enableDebug == true then
         print("~~~~~ Daneel is awake ~~~~~")
     end
 
     Daneel.Debug.StackTrace.EndFunction()
 end 
 
--- called from DaneelBehavior Behavior:Update()
 function Behavior:Update()
     -- Time
     local currentTime = os.clock()

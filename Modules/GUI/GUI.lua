@@ -388,7 +388,7 @@ function DaneelGUI.Toggle.SetText( toggle, text )
         toggle.gameObject.textRenderer.text = text
 
     else
-        if DEBUG then
+        if Daneel.Config.debug.enableDebug then
             print( "WARNING : "..errorHead.."Can't set the toggle's text because no TextRenderer component has been found on the gameObject '"..tostring( toggle.gameObject ).."'. Waiting for a TextRenderer to be added." )
         end
         toggle.defaultText = text
@@ -421,7 +421,7 @@ function DaneelGUI.Toggle.GetText(toggle)
         end
         text = text:gsub(prefix, ""):gsub(suffix, "")
     
-    elseif DEBUG then
+    elseif Daneel.Config.debug.enableDebug then
         print("WARNING : "..errorHead.."Can't get the toggle's text because no TextRenderer component has been found on the gameObject '"..tostring(toggle.gameObject).."'. Returning nil.")
     end
     Daneel.Debug.StackTrace.EndFunction()
@@ -555,7 +555,7 @@ function DaneelGUI.ProgressBar.SetProgress(progressBar, progress)
 
             local oldPercentage = percentageOfProgress
             percentageOfProgress = math.clamp(percentageOfProgress, 0.0, 1.0)
-            if percentageOfProgress ~= oldPercentage and DEBUG == true then
+            if percentageOfProgress ~= oldPercentage and Daneel.Config.debug.enableDebug == true then
                 print(errorHead.."WARNING : progress in percentage with value '"..progress.."' is below 0% or above 100%.")
             end
 
@@ -574,7 +574,7 @@ function DaneelGUI.ProgressBar.SetProgress(progressBar, progress)
     local currentProgress = progressBar.progress
 
     if progress ~= currentProgress then
-        if progress ~= oldProgress and DEBUG == true then
+        if progress ~= oldProgress and Daneel.Config.debug.enableDebug == true then
             print(errorHead.." WARNING : progress with value '"..oldProgress.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
         end
         percentageOfProgress = (progress - minVal) / (maxVal - minVal)
@@ -708,7 +708,7 @@ function DaneelGUI.Slider.SetValue( slider, value )
     -- now value is a number and should be a value between minVal and maxVal
     local oldValue = value
     value = math.clamp( value, minVal, maxVal )
-    if value ~= oldValue and DEBUG == true then
+    if value ~= oldValue and Daneel.Config.debug.enableDebug == true then
         print( errorHead .. "WARNING : Argument 'value' with value '" .. oldValue .. "' is out of its boundaries : min='" .. minVal .. "', max='" .. maxVal .. "'" )
     end
     percentage = (value - minVal) / (maxVal - minVal)

@@ -418,12 +418,12 @@ function GameObject.AddComponent( gameObject, componentType, params )
     componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead )
     Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead )
 
-    if componentType == "Transform" and DEBUG == true then
+    if componentType == "Transform" and Daneel.Config.debug.enableDebug == true then
         print( errorHead.."Can't add a transform component because gameObjects may only have one transform." )
         Daneel.Debug.StackTrace.EndFunction()
         return
     end
-    if componentType == "ScriptedBehavior" and DEBUG == true then
+    if componentType == "ScriptedBehavior" and Daneel.Config.debug.enableDebug == true then
         print( errorHead.."Can't add a ScriptedBehavior via 'GameObject.AddComponent()'. Use 'GameObject.AddScriptedBehavior()' instead." )
         Daneel.Debug.StackTrace.EndFunction()
         return

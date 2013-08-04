@@ -84,7 +84,7 @@ function DaneelLang.Get( key, replacements )
     for i, _key in ipairs(keys) do
         if lines[_key] == nil then
             -- key was not found
-            if DEBUG == true then
+            if Daneel.Config.debug.enableDebug == true then
                 print( errorHead.."Localization key '"..key.."' was not found in '"..language.."' language ." )
             end
 
@@ -156,7 +156,7 @@ function DaneelLang.Update( language )
         elseif gameObject.textRenderer ~= nil then
             gameObject.textRenderer:SetText( text )
         
-        elseif DEBUG then
+        elseif Daneel.Config.debug.enableDebug then
             print( "WARNING : " .. errorHead .. tostring( gameObject ) .. " does not have a TextRenderer or TextArea component." )
         end
     end
