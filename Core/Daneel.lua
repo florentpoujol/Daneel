@@ -98,17 +98,12 @@ Daneel.Config = {
         Font = Font,
     },
     
-    -- Daneel
-    daneelObjects = {
-        RaycastHit = RaycastHit,
-    },
-
     componentObjects = {},
     componentTypes = {},
 
     -- Objects (keys = Type, value = Object)
     -- For use by Daneel.Debug.GetType() which will return the Type when the Object is the metatable of the provided object
-    userObjects = {},
+
 
     -- other properties created at runtime :
     -- componentObjects : a merge of craftStudioComponentObjects and daneelComponentObjects
@@ -1186,10 +1181,6 @@ function Behavior:Awake()
     Daneel.Load()
     Daneel.Debug.StackTrace.messages = {}
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Awake" )
-
-    Daneel.Event.Listen("OnSceneLoad", function()
-        GameObject.Tags = {}
-    end)
 
     -- Awake modules 
     local moduleLoaded = {}

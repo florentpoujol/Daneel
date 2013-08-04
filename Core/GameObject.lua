@@ -4,6 +4,20 @@
 -- Last modified for v1.2.0
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
+if CS.DaneelModules == nil then
+    CS.DaneelModules = {}
+end
+table.insert( CS.DaneelModules, GameObject )
+
+function GameObject.Awake()
+    Daneel.Event.Listen( "OnSceneLoad", function()
+        GameObject.Tags = {}
+    end )
+end
+
+
+----------------------------------------------------------------------------------
+
 setmetatable(GameObject, { __call = function(Object, ...) return Object.New(...) end })
 
 function GameObject.__tostring(gameObject)

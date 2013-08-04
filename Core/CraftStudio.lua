@@ -606,7 +606,20 @@ end
 
 RaycastHit = {}
 RaycastHit.__index = RaycastHit
-setmetatable(RaycastHit, { __call = function(Object, ...) return Object.New(...) end })
+setmetatable( RaycastHit, { __call = function(Object, ...) return Object.New(...) end } )
+
+if CS.DaneelModules == nil then
+    CS.DaneelModules = {}
+end
+table.insert( CS.DaneelModules, RayCastHit )
+
+function RayCastHit.Config()
+    return {
+        objects = {
+            RaycastHit = RaycastHit,
+        }
+    }
+end
 
 function RaycastHit.__tostring() 
     return "RaycastHit"
