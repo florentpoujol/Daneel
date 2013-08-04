@@ -86,7 +86,7 @@ function Tween.Config()
             },
         },
 
-        daneelObjects = {
+        objects = {
             ["Tween.Tweener"] = Tween.Tweener,
         },
     }

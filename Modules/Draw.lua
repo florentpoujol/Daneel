@@ -21,14 +21,13 @@ function Draw.Config()
             },
         },
 
-
-
-        daneelComponentObjects = {
-            LineRenderer = Daneel.Draw.LineRenderer,
-            CircleRenderer = Daneel.Draw.CircleRenderer,
+        drawComponentObjects = {
+            LineRenderer = Draw.LineRenderer,
+            CircleRenderer = Draw.CircleRenderer,
         },
     }
 end
+
 
 ----------------------------------------------------------------------------------
 -- LineRenderer
@@ -45,7 +44,7 @@ function Draw.LineRenderer.New( gameObject )
         gameObject = gameObject
     }
     line.EndPosition = line.origin
-    setmetatable( line, Daneel.Draw.LineRenderer )
+    setmetatable( line, Draw.LineRenderer )
     gameObject.lineRenderer = line
 
     for key, value in pairs( Daneel.Config.draw.lineRenderer ) do

@@ -67,7 +67,7 @@ Daneel.Config = {
     -- Objects (keys = name, value = object)
 
     -- CraftStudio
-    craftStudioObjects = {
+    objects = {
         GameObject = GameObject,
         Vector3 = Vector3,
         Quaternion = Quaternion,
@@ -103,7 +103,7 @@ Daneel.Config = {
 
     -- Objects (keys = Type, value = Object)
     -- For use by Daneel.Debug.GetType() which will return the Type when the Object is the metatable of the provided object
-
+    
 
     -- other properties created at runtime :
     -- componentObjects : a merge of craftStudioComponentObjects and daneelComponentObjects
@@ -1035,16 +1035,13 @@ function Daneel.Load()
     )
     Daneel.Config.componentTypes            = table.getkeys( Daneel.Config.componentObjects )
     Daneel.Config.craftStudioComponentTypes = table.getkeys( Daneel.Config.craftStudioComponentObjects )
-    Daneel.Config.daneelComponentTypes      = table.getkeys( Daneel.Config.daneelComponentObjects )
     Daneel.Config.assetTypes                = table.getkeys( Daneel.Config.assetObjects )
     
     -- all objects (for use in GetType())
     Daneel.Config.allObjects = table.merge(
-        Daneel.Config.craftStudioObjects,
+        Daneel.Config.objects,
         Daneel.Config.assetObjects,
-        Daneel.Config.daneelObjects,
         Daneel.Config.componentObjects,
-        Daneel.Config.userObjects
     )
 
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Load" )

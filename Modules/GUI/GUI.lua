@@ -112,7 +112,7 @@ function GUI.Config()
             TextArea = GUI.TextArea,
         },
 
-        guiObjects = {
+        objects = {
             Vector2 = Vector2,
         },
     }
