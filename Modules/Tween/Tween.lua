@@ -255,6 +255,10 @@ function Tween.Tweener.New(target, property, endValue, duration, params)
             tweener:Set(params)
         end
     end
+
+    if tweener.startValue == nil then
+        tweener.startValue = GetTweenerProperty( tweener )
+    end
     
     Tween.Tweener.tweeners[tweener.Id] = tweener
     Daneel.Debug.StackTrace.EndFunction()
