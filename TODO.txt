@@ -158,6 +158,10 @@ A implémenter
         circleRenderer:SetModel() / GetModel()
         circleRenderer:SetLineWidth() > autorise en pixel
 
+    - ne pas réécrire des fonction de CS si Daneel n'est pas chargé
+    > les wrapper autour de Module.Load()
+
+
 
 ==========
 A tester

@@ -28,7 +28,7 @@ end
 
 function Lang.Load()
     for i, language in ipairs( Daneel.Config.language.languageNames ) do
-        local functionName = "Language"..language:ucfirst()
+        local functionName = "Lang" .. language:ucfirst()
 
         if Daneel.Utilities.GlobalExists( functionName ) then
             Lang.lines[language] = _G[ functionName ]()
@@ -58,6 +58,7 @@ function Lang.Awake()
     end )
 end
 
+-- Lang.Start runs before every other Behavior:Start() function of the scene
 function Lang.Start()
     Lang.Update( Daneel.Config.language.current, true )
 end
