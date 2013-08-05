@@ -602,29 +602,31 @@ end
 --- Add the provided tag(s) to the provided gameObject.
 -- @param gameObject (GameObject) The game object.
 -- @param tag (string or table) One or several tag(s) (as a string or table of strings).
-function GameObject.AddTag(gameObject, tag)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.AddTag", gameObject, tag)
-    local errorHead = "GameObject.AddTag(gameObject, tag) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckArgType(tag, "tag", {"string", "table"}, errorHead)
+function GameObject.AddTag( gameObject, tag )
+    Daneel.Debug.StackTrace.BeginFunction( "GameObject.AddTag", gameObject, tag )
+    local errorHead = "GameObject.AddTag( gameObject, tag ) : "
+    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
+    Daneel.Debug.CheckArgType( tag, "tag", {"string", "table"}, errorHead )
     
     local tags = tag
-    if type(tags) == "string" then
+    if type( tags ) == "string" then
         tags = { tags }
     end
     if gameObject.tags == nil then
         gameObject.tags = {}
     end
-    for i, tag in ipairs(tags) do
-        if not table.containsvalue(gameObject.tags, tag) then
-            table.insert(gameObject.tags, tag)
+
+    for i, tag in ipairs( tags ) do
+        if not table.containsvalue( gameObject.tags, tag ) then
+            table.insert( gameObject.tags, tag )
         end
-        if GameObject.Tags[tag] == nil then
-            GameObject.Tags[tag] = { gameObject }
-        else
-            table.insert(GameObject.Tags[tag], gameObject)
+        if GameObject.Tags[ tag ] == nil then
+            GameObject.Tags[ tag ] = { gameObject }
+        elseif not table.containsvalue( GameObject.Tags[tag], gameObject ) then
+            table.insert( GameObject.Tags[ tag ], gameObject )
         end
     end
+
     Daneel.Debug.StackTrace.EndFunction()
 end
 
