@@ -4,6 +4,71 @@
 -- Last modified for v1.2.0
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
+
+if CS.DaneelModules == nil then
+    CS.DaneelModules = {}
+end
+table.insert( CS.DaneelModules, CraftStudio )
+
+function CraftStudio.Config()
+    local config = {
+        craftStudio = {
+            -- Default CraftStudio's components settings (except Transform)
+            --[[ ie :
+            textRenderer = {
+                font = "MyFont",
+                alignment = "right",
+            },
+            ]]
+
+            objects = {
+                GameObject = GameObject,
+                Vector3 = Vector3,
+                Quaternion = Quaternion,
+                Plane = Plane,
+                Ray = Ray,
+            },
+
+            componentObjects = {
+                ScriptedBehavior = ScriptedBehavior,
+                ModelRenderer = ModelRenderer,
+                MapRenderer = MapRenderer,
+                Camera = Camera,
+                Transform = Transform,
+                Physics = Physics,
+                TextRenderer = TextRenderer,
+                NetworkSync = NetworkSync,
+            },
+
+            assetObjects = {
+                Script = Script,
+                Model = Model,
+                ModelAnimation = ModelAnimation,
+                Map = Map,
+                TileSet = TileSet,
+                Sound = Sound,
+                Scene = Scene,
+                --Document = Document,
+                Font = Font,
+            },
+        },
+    }
+
+    config.craftStudio.componentTypes       = table.getkeys( config.craftStudio.componentObjects )
+    config.craftStudio.assetTypes           = table.getkeys( config.craftStudio.assetObjects )
+
+    Daneel.Config.allComponentObjects       = table.merge( Daneel.Config.allComponentObjects, config.craftStudio.componentObjects )
+    Daneel.Config.allComponentTypes         = table.merge( Daneel.Config.allComponentTypes, config.craftStudio.componentObjects )
+    
+    Daneel.Config.allObjects = table.merge(
+        Daneel.Config.allObjects,
+        Daneel.Config.craftStudio.objects,
+        Daneel.Config.craftStudio.componentObjects,
+        Daneel.Config.craftStudio.assetObjects,
+    )
+end
+
+
 ----------------------------------------------------------------------------------
 -- Assets
 

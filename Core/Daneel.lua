@@ -50,67 +50,10 @@ Daneel.Config = {
 
 
     ----------------------------------------------------------------------------------
-
-    -- Default CraftStudio's components settings (except Transform)
-    -- See 'gui' section above for default GUI component settings
-    components = {
-        --[[ ie :
-        textRenderer = {
-            font = "MyFont",
-            alignment = "right",
-        },
-        ]]
-    },
-
-
-    ----------------------------------------------------------------------------------
-    -- Objects (keys = name, value = object)
-
-    -- CraftStudio
-    objects = {
-        GameObject = GameObject,
-        Vector3 = Vector3,
-        Quaternion = Quaternion,
-        Plane = Plane,
-        Ray = Ray,
-    },
-
-    craftStudioComponentObjects = {
-        ScriptedBehavior = ScriptedBehavior,
-        ModelRenderer = ModelRenderer,
-        MapRenderer = MapRenderer,
-        Camera = Camera,
-        Transform = Transform,
-        Physics = Physics,
-        TextRenderer = TextRenderer,
-        NetworkSync = NetworkSync,
-    },
-
-    assetObjects = {
-        Script = Script,
-        Model = Model,
-        ModelAnimation = ModelAnimation,
-        Map = Map,
-        TileSet = TileSet,
-        Sound = Sound,
-        Scene = Scene,
-        --Document = Document,
-        Font = Font,
-    },
-    
-    componentObjects = {},
-    componentTypes = {},
-
-    -- Objects (keys = Type, value = Object)
-    -- For use by Daneel.Debug.GetType() which will return the Type when the Object is the metatable of the provided object
-    
-
-    -- other properties created at runtime :
-    -- componentObjects : a merge of craftStudioComponentObjects and daneelComponentObjects
-    -- componentTypes : the list of the component types (the keys of componentObjects)
-    -- daneelComponentTypes
-    -- assetTypes
-    -- allObjects : a merge of all *Objects tables
+  
+    allComponentObjects = {},
+    allComponentTypes = {},
+    allObjects = {},
 }
 
 
@@ -1029,20 +972,14 @@ function Daneel.Load()
     end
 
     -- Objects
-    Daneel.Config.componentObjects = table.merge(
-        Daneel.Config.craftStudioComponentObjects,
-        Daneel.Config.daneelComponentObjects
-    )
-    Daneel.Config.componentTypes            = table.getkeys( Daneel.Config.componentObjects )
-    Daneel.Config.craftStudioComponentTypes = table.getkeys( Daneel.Config.craftStudioComponentObjects )
-    Daneel.Config.daneelComponentTypes      = table.getkeys( Daneel.Config.daneelComponentObjects )
-    Daneel.Config.assetTypes                = table.getkeys( Daneel.Config.assetObjects )
+    Daneel.Config.allComponentObjects       = table.merge( Daneel.Config.allComponentObjects, Daneel.Config.craftStudio.componentObjects )
+    Daneel.Config.allComponentTypes         = table.merge( Daneel.Config.allComponentObjectstable.getkeys( Daneel.Config.allComponentObjects )
+    Daneel.Config.craftStudio.assetTypes                = table.getkeys( Daneel.Config.craftStudio.assetObjects )
     
-    -- all objects (for use in GetType())
     Daneel.Config.allObjects = table.merge(
-        Daneel.Config.objects,
-        Daneel.Config.assetObjects,
-        Daneel.Config.componentObjects,
+        Daneel.Config.craftStudio.objects,
+        Daneel.Config.craftStudio.componentObjects,
+        Daneel.Config.craftStudio.assetObjects,
     )
 
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Load" )
@@ -1065,7 +1002,7 @@ function Daneel.Load()
     end
 
     -- Components
-    for componentType, componentObject in pairs( Daneel.Config.componentObjects ) do
+    for componentType, componentObject in pairs( Daneel.Config.allComponentObjects ) do
         -- Components getters-setter-tostring
         Daneel.Utilities.AllowDynamicGettersAndSetters( componentObject, { Component } )
 
