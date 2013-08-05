@@ -1035,6 +1035,7 @@ function Daneel.Load()
     )
     Daneel.Config.componentTypes            = table.getkeys( Daneel.Config.componentObjects )
     Daneel.Config.craftStudioComponentTypes = table.getkeys( Daneel.Config.craftStudioComponentObjects )
+    Daneel.Config.daneelComponentTypes      = table.getkeys( Daneel.Config.daneelComponentObjects )
     Daneel.Config.assetTypes                = table.getkeys( Daneel.Config.assetObjects )
     
     -- all objects (for use in GetType())
@@ -1152,7 +1153,7 @@ function Daneel.Load()
 
     Daneel.isLoaded = true
     if Daneel.Config.debug.enableDebug == true then
-        print( "~~~~~ Daneel is loaded ~~~~~" )
+        print( "~~~~~ Daneel loaded ~~~~~" )
     end
 
     -- check for module update function
@@ -1190,9 +1191,29 @@ function Behavior:Awake()
         end
     end
 
-    -- Awakening is over
     if Daneel.Config.debug.enableDebug == true then
-        print("~~~~~ Daneel is awake ~~~~~")
+        print("~~~~~ Daneel awake ~~~~~")
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()
+end 
+
+function Behavior:Awake()
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Start" )
+
+    -- Start modules 
+    local moduleLoaded = {}
+    for i, moduleObject in pairs( CS.DaneelModules ) do
+        if moduleLoaded[ moduleObject ] == nil then
+            moduleLoaded[ moduleObject ] = true
+            if type( moduleObject.Start ) == "function" then
+                moduleObject.Start()
+            end
+        end
+    end
+
+    if Daneel.Config.debug.enableDebug == true then
+        print("~~~~~ Daneel started ~~~~~")
     end
 
     Daneel.Debug.StackTrace.EndFunction()
