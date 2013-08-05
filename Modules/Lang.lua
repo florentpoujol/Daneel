@@ -58,6 +58,10 @@ function Lang.Awake()
     end )
 end
 
+function Lang.Start()
+    Lang.Update( Daneel.Config.language.current, true )
+end
+
 
 ----------------------------------------------------------------------------------
 
