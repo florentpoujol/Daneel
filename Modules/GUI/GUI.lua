@@ -32,9 +32,7 @@ end
 table.insert( CS.DaneelModules, GUI )
 
 function GUI.Config()
-    GUI = GUI
-
-    return {
+    local config = {
         gui = {
             screenSize = CraftStudio.Screen.GetSize(),
             cameraName = "HUDCamera",  -- Name of the gameObject who has the orthographic camera used to render the HUD
@@ -101,22 +99,32 @@ function GUI.Config()
                 --input = "Daneel/Behaviors/Input",
                 --textArea = "Daneel/Behaviors/textArea",
             },
-        },
+        
 
-        guiComponentObjects = {
-            Hud = GUI.Hud,
-            Toggle = GUI.Toggle,
-            ProgressBar = GUI.ProgressBar,
-            Slider = GUI.Slider,
-            Input = GUI.Input,
-            TextArea = GUI.TextArea,
-        },
+            componentObjects = {
+                Hud = GUI.Hud,
+                Toggle = GUI.Toggle,
+                ProgressBar = GUI.ProgressBar,
+                Slider = GUI.Slider,
+                Input = GUI.Input,
+                TextArea = GUI.TextArea,
+            },
 
-        objects = {
-            Vector2 = Vector2,
+            objects = {
+                Vector2 = Vector2,
+            },
         },
     }
+
+    config.gui.componentTypes = table.getkeys( config.gui.componentObjects )
+
+    Daneel.Config.allComponentObjects   = table.merge( Daneel.Config.allComponentObjects, config.gui.componentObjects )
+    Daneel.Config.allComponentTypes     = table.merge( Daneel.Config.allComponentTypes, config.gui.componentTypes )
+    Daneel.Config.allObjects            = table.merge( Daneel.Config.allObjects, config.gui.componentObjects, config.gui.objects )
+
+    return config
 end
+
 
 function GUI.Awake()
     -- setting pixelToUnits  

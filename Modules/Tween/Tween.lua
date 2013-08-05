@@ -49,7 +49,7 @@ end
 table.insert( CS.DaneelModules, Tween )
 
 function Tween.Config()
-    return {
+    local config {
         tween = {
             tweener = {
                 isEnabled = true, -- a disabled tweener won't update but the function like Play(), Pause(), Complete(), Destroy() will have no effect
@@ -84,13 +84,18 @@ function Tween.Config()
                 diffValue = 0.0, -- endValue - startValue
                 value = 0.0, -- current value (between startValue and endValue)
             },
-        },
-
-        objects = {
-            ["Tween.Tweener"] = Tween.Tweener,
+        
+            objects = {
+                ["Tween.Tweener"] = Tween.Tweener,
+            },
         },
     }
+
+    Daneel.Config.allObjects = table.merge( Daneel.Config.allObjects, config.tween.objects )
+
+    return config
 end
+
 
 function Tween.Awake()
     -- destroy and sanitize the tweeners when the scene loads

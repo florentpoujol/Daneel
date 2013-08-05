@@ -7,7 +7,7 @@ end
 table.insert( CS.DaneelModules, Draw )
 
 function Draw.Config()
-    return {
+    local config = {
         draw = {
             line = {
                 direction = Vector3:Left(),
@@ -19,13 +19,21 @@ function Draw.Config()
             circle = {
 
             },
-        },
-
-        drawComponentObjects = {
-            LineRenderer = Draw.LineRenderer,
-            CircleRenderer = Draw.CircleRenderer,
+            
+            componentObjects = {
+                LineRenderer = Draw.LineRenderer,
+                CircleRenderer = Draw.CircleRenderer,
+            },
         },
     }
+
+    config.draw.componentTypes = table.getkeys( config.draw.componentObjects )
+
+    Daneel.Config.allComponentObjects   = table.merge( Daneel.Config.allComponentObjects, config.draw.componentObjects )
+    Daneel.Config.allComponentTypes     = table.merge( Daneel.Config.allComponentTypes, config.draw.componentTypes )
+    Daneel.Config.allObjects            = table.merge( Daneel.Config.allObjects, config.draw.componentObjects )
+
+    return config
 end
 
 
