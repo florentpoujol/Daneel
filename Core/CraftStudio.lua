@@ -108,7 +108,7 @@ function CraftStudio.Load()
     -- Components
     for componentType, componentObject in pairs( Daneel.Config.allComponentObjects ) do
         Daneel.Utilities.AllowDynamicGettersAndSetters( componentObject, { Component } )
-        
+
         if componentType ~= "ScriptedBehavior" then
             componentObject["__tostring"] = function( component )
                 -- returns something like "ModelRenderer: 123456789"    component.inner is "?: [some ID]"
@@ -179,7 +179,7 @@ function CraftStudio.Load()
             return tostring( asset.inner ):sub( 31, 50 ) .. ": '" .. Map.GetPathInPackage( asset ) .. "'"
         end
     end
-end
+end -- end of CrafStudio.Load()
 
 
 ----------------------------------------------------------------------------------
@@ -740,7 +740,7 @@ function Ray.IntersectsMapRenderer( ray, mapRenderer, returnRaycastHit )
     Daneel.Debug.CheckArgType( mapRenderer, "mapRenderer", "MapRenderer", errorHead )
     returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
 
-    local distance, normal, hitBlockLocation, adjacentBlockLocation  = OriginalIntersectsMapRenderer( ray, mapRenderer )
+    local distance, normal, hitBlockLocation, adjacentBlockLocation = OriginalIntersectsMapRenderer( ray, mapRenderer )
     if returnRaycastHit and distance ~= nil then
         local raycastHit = RaycastHit.New()
         raycastHit.distance = distance
@@ -789,6 +789,7 @@ function Ray.IntersectsTextRenderer( ray, textRenderer, returnRaycastHit )
     return distance, normal
 end
 
+
 ----------------------------------------------------------------------------------
 -- RaycastHit
 
@@ -802,11 +803,7 @@ end
 table.insert( CS.DaneelModules, RayCastHit )
 
 function RayCastHit.Config()
-    return {
-        objects = {
-            RaycastHit = RaycastHit,
-        }
-    }
+    Daneel.Config.allObjects.RaycastHit = RaycastHit
 end
 
 function RaycastHit.__tostring() 
@@ -885,7 +882,7 @@ function Scene.Append( sceneNameOrAsset, parentNameOrInstance )
     local scene = Asset.Get( sceneNameOrAsset, "Scene", true )
     local parent = nil
     if parentNameOrInstance ~= nil then
-        local parent = GameObject.Get( parentNameOrInstance, true )
+        parent = GameObject.Get( parentNameOrInstance, true )
     end
     local gameObject = CraftStudio.AppendScene( scene, parent )
 
@@ -905,13 +902,12 @@ local OriginalDestroy = CraftStudio.Destroy
 function CraftStudio.Destroy( object )
     Daneel.Debug.StackTrace.BeginFunction( "CraftStudio.Destroy", object )
     if object == nil and Daneel.Config.debug.enableDebug then
-        Daneel.Debug.StackTrace.Print()
         print( "CraftStudio.Destroy( object ) : provided object is nil" )
         return
     end
 
     if type( object ) == "table" then
-        Daneel.Event.Fire( object, "OnDestroy" )
+        Daneel.Event.Fire( object, "OnDestroy", object )
         Daneel.Event.Clear( object ) -- remove from listener list
         object.isDestroyed = true
         setmetatable( object, nil )

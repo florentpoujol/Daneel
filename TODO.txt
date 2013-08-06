@@ -159,12 +159,11 @@ A implémenter
         circleRenderer:SetLineWidth() > autorise en pixel
 
     - ne pas réécrire des fonction de CS si Daneel n'est pas chargé
-    > les wrapper autour de Module.Load()
+        > les wrapper autour de Module.Load()
 
-    
-    - mettre tout e qui est dépendant de Daneel lorsqu'il est chargé dans Module.Load()
-    > rendre le plus possible de choses indépendantes
-    
+    - mettre tout ce qui est dépendant de Daneel lorsqu'il est chargé dans Module.Load()
+        > rendre le plus possible de choses indépendantes
+
     - make GUI behavior always optionnal
 
 
