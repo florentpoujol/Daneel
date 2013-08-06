@@ -21,17 +21,18 @@ function Draw.Config()
             },
             
             componentObjects = {
-                LineRenderer = Draw.LineRenderer,
-                CircleRenderer = Draw.CircleRenderer,
+                ["Draw.LineRenderer"] = Draw.LineRenderer,
+                ["Draw.CircleRenderer"] = Draw.CircleRenderer,
             },
         },
     }
+    Draw.Config = config.draw
+    
+    Draw.Config.componentTypes = table.getkeys( Draw.Config.componentObjects )
 
-    config.draw.componentTypes = table.getkeys( config.draw.componentObjects )
-
-    Daneel.Config.allComponentObjects   = table.merge( Daneel.Config.allComponentObjects, config.draw.componentObjects )
-    Daneel.Config.allComponentTypes     = table.merge( Daneel.Config.allComponentTypes, config.draw.componentTypes )
-    Daneel.Config.allObjects            = table.merge( Daneel.Config.allObjects, config.draw.componentObjects )
+    Daneel.Config.allComponentObjects   = table.merge( Daneel.Config.allComponentObjects, Draw.Config.componentObjects )
+    Daneel.Config.allComponentTypes     = table.merge( Daneel.Config.allComponentTypes, Draw.Config.componentTypes )
+    Daneel.Config.allObjects            = table.merge( Daneel.Config.allObjects, Draw.Config.componentObjects )
 
     return config
 end
@@ -42,7 +43,7 @@ end
 
 Draw.LineRenderer = {}
 
-function Draw.LineRenderer.New( gameObject )
+function Draw.LineRenderer.New( gameObject, params )
 
     local line = {
         origin = gameObject.transform:GetPosition(),
@@ -55,9 +56,7 @@ function Draw.LineRenderer.New( gameObject )
     setmetatable( line, Draw.LineRenderer )
     gameObject.lineRenderer = line
 
-    for key, value in pairs( Daneel.Config.draw.lineRenderer ) do
-        line[key] = value
-    end
+    line:Set( table.merge( Daneel.Config.draw.lineRenderer, params ) )
 
     return line
 end
