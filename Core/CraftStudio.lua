@@ -140,13 +140,13 @@ function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
             assetType = Daneel.Debug.GetType( asset )
         end
 
-        if Daneel.Cache.assets[ assetPath ] == nil then
-            Daneel.Cache.assets[ assetPath ] = {}
+        if Asset.cache[ assetPath ] == nil then
+            Asset.cache[ assetPath ] = {}
         end
-        Daneel.Cache.assets[ assetPath ][ assetType ] = asset
+        Asset.cache[ assetPath ][ assetType ] = asset
 
         if scriptAlias ~= assetPath then -- scriptAlias is indeed a script alias
-            Daneel.Cache.assets[ "ScriptAliases" ][ scriptAlias ] = asset
+            Asset.cache[ "ScriptAliases" ][ scriptAlias ] = asset
         end
     end
 
@@ -158,16 +158,16 @@ end
 -- @param asset (One of the asset types) The asset instance.
 -- @return (string) The fully-qualified asset path.
 function Asset.GetPath( asset )
-    if Daneel.Cache.assetPaths[ asset ] ~= nil then
-        return Daneel.Cache.assetPaths[ asset ]
+    if Asset.pathsCache[ asset ] ~= nil then
+        return Asset.pathsCache[ asset ]
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "Asset.GetPath", asset )
     local errorHead = "Asset.GetPath( asset ) : "
-    Daneel.Debug.CheckArgType( asset, "asset", Daneel.Config.assetTypes, errorHead )
+    Daneel.Debug.CheckArgType( asset, "asset", CS.Config.assetTypes, errorHead )
 
     local path = Map.GetPathInPackage( asset )
-    Daneel.Cache.assetPaths[ asset ] = path
+    Asset.pathsCache[ asset ] = path
 
     Daneel.Debug.StackTrace.EndFunction()
     return path
