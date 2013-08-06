@@ -19,6 +19,7 @@ opacity number 1.0
 -- creating a TextArea from Awake cause an exception (collecion being modified while looping on it)
 -- (04/08/2013) That's because a TextArea add a TextRenderer component from New() and that is not permitted by CraftStudio
 -- you can't dynamically add built-in components on gameObjects that are created in the scene
+-- see : http://www.craftstudioforums.net/index.php?threads/creating-physics-component-crashes-the-game.1398/
 function Behavior:Start()
     if self.gameObject.textArea == nil then
         local params = {
@@ -32,6 +33,6 @@ function Behavior:Start()
             end
         end
 
-        self.gameObject:AddComponent( "TextArea", params )
+        GUI.TextArea.New( self.gameObject, params )
     end
 end

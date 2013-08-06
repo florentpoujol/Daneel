@@ -15,7 +15,7 @@ progress string "100%"
 
 function Behavior:Awake()
     if self.gameObject.progressBar == nil then
-        self.gameObject:AddComponent("ProgressBar", { 
+        GUI.ProgressBar.New( self.gameObject, { 
             minValue = self.minValue,
             maxValue = self.maxValue,
             minLength = self.minLength,

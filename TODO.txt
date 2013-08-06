@@ -164,8 +164,7 @@ A implémenter
     - mettre tout ce qui est dépendant de Daneel lorsqu'il est chargé dans Module.Load()
         > rendre le plus possible de choses indépendantes
 
-    - make GUI behavior always optionnal
-
+    - pouvoir accéder au enfant d'un gameObject en écrivant sont nom, comme les component
 
 
 ==========

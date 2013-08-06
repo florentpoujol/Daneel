@@ -14,7 +14,7 @@ value string "0%"
 
 function Behavior:Awake()
     if self.gameObject.slider == nil then
-        self.gameObject:AddComponent( "Slider", { 
+        GUI.Slider.New( self.gameObject, { 
             minValue = self.minValue,
             maxValue = self.maxValue,
             length = self.length,

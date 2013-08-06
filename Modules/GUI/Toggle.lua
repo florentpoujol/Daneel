@@ -26,7 +26,7 @@ function Behavior:Awake()
             end
         end
         
-        self.gameObject:AddComponent( "Toggle", params )
+        GUI.Toggle.New( self.gameObject, params )
     end
 end
 

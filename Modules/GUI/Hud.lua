@@ -38,6 +38,6 @@ function Behavior:Awake()
             params.layer = layer
         end
 
-        self.gameObject:AddComponent("Hud", params)
+        GUI.Hud.New( self.gameObject, params )
     end
 end

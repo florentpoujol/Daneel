@@ -330,7 +330,6 @@ function GameObject.GetChild( gameObject, name, recursive )
         local children = gameObject:GetChildren()
         child = children[1]
     else
-        -- can't use name:Find(".") because for some reason it always returns 1, 1
         local names = name:split( "." )
         for i, name in ipairs( names ) do
             gameObject = gameObject:FindChild( name, recursive )
@@ -423,7 +422,7 @@ end
 -- @param gameObject (GameObject) The game object.
 -- @param componentType (string) The component type (can't be Transform or ScriptedBehavior).
 -- @param params [optional] (string, Script or table) A table of parameters to initialize the new component with or, if componentType is 'ScriptedBehavior', the mandatory script name or asset.
--- @return (One of the component types) The component.
+-- @return (One of the CraftStudio's component types) The component.
 function GameObject.AddComponent( gameObject, componentType, params )
     Daneel.Debug.StackTrace.BeginFunction( "GameObject.AddComponent", gameObject, componentType, params )
     local errorHead = "GameObject.AddComponent( gameObject, componentType[, params] ) : "

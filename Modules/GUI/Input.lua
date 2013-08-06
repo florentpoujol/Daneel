@@ -20,6 +20,6 @@ function Behavior:Awake()
             params.characterRange = self.characterRange
         end
 
-        self.gameObject:AddComponent( "Input", params )
+        GUI.Input.New( self.gameObject, params )
     end
 end
