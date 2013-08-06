@@ -20,7 +20,7 @@ destroyOnComplete boolean true
 isPaused boolean false
 OnComplete string ""
 OnLoopComplete string ""
-PublicProperties]]
+/PublicProperties]]
 
 function Behavior:Awake()
     if self.target:trim() ~= "" then

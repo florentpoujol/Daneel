@@ -9,7 +9,7 @@
 duration number 0
 callback string ""
 isInfiniteLoop boolean false
-PublicProperties]]
+/PublicProperties]]
 
 function Behavior:Awake()
     if self.callback:trim() ~= "" then
