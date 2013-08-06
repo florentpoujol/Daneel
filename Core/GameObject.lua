@@ -548,12 +548,22 @@ end
 
 --- Destroy the gameObject at the end of this frame.
 -- @param gameObject (GameObject) The game object.
-function GameObject.Destroy(gameObject)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.Destroy", gameObject)
-    local errorHead = "GameObject.Destroy(gameObject) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
+function GameObject.Destroy( gameObject )
+    Daneel.Debug.StackTrace.BeginFunction( "GameObject.Destroy", gameObject )
+    local errorHead = "GameObject.Destroy( gameObject ) : "
+    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
 
-    CraftStudio.Destroy(gameObject)
+    gameObject:RemoveTag()
+
+    for key, value in pairs( gameObject ) do
+        if key == "transform" then
+            Daneel.Event.Clear( value )
+        elseif type( value ) == "table" and type( value.Destroy ) == "function" then
+            value:Destroy()
+        end
+    end
+
+    CraftStudio.Destroy( gameObject )
     Daneel.Debug.StackTrace.EndFunction()
 end
 

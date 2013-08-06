@@ -233,13 +233,14 @@ end
 --- Destroy the provided component, removing it from the gameObject.
 -- Note that the component is removed only at the end of the current frame.
 -- @param component (any component's type) The component.
-function Component.Destroy(component)
-    Daneel.Debug.StackTrace.BeginFunction("Component.Destroy", component)
-    local errorHead = "Component.Destroy(component) : "
-    Daneel.Debug.CheckArgType(component, "component", Daneel.Config.allComponentTypes, errorHead)
+function Component.Destroy( component )
+    Daneel.Debug.StackTrace.BeginFunction( "Component.Destroy", component )
+    local errorHead = "Component.Destroy( component ) : "
+    Daneel.Debug.CheckArgType( component, "component", Daneel.Config.allComponentTypes, errorHead )
 
-    CraftStudio.Destroy(component)
-    Daneel.Debug.StackTrace.EndFunction("Component.Destroy")
+    table.removevalue( component.gameObject, component )
+    CraftStudio.Destroy( component )
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Returns the component's internal unique identifier.
@@ -783,41 +784,17 @@ function CraftStudio.Destroy( object )
     Daneel.Debug.StackTrace.BeginFunction( "CraftStudio.Destroy", object )
     if object == nil and Daneel.Config.debug.enableDebug then
         Daneel.Debug.StackTrace.Print()
-        print( "CraftStudio.Destroy(object) : provided object is nil" )
+        print( "CraftStudio.Destroy( object ) : provided object is nil" )
         return
     end
-    local Type = Daneel.Debug.GetType( object )
 
-    if Type == "GameObject" then
-        object:RemoveTag()
-
-        for key, value in pairs( object ) do
-            if key == "transform" then
-                Daneel.Event.Clear( value )
-            elseif type( value ) == "table" and type( value.Destroy ) == "function" then
-                value:Destroy()
-            end
-        end
-
-    elseif table.containsvalue( Daneel.Config.allComponentTypes, Type ) then
-        if table.containsvalue( Daneel.Config.gui.componentTypes, Type ) then            
-            -- if a Daneel component, must ensure that the corresponding Behavior is also removed
-            local behavior = object.gameObject:GetScriptedBehavior( "Daneel/Behaviors/" .. Type )
-            if behavior ~= nil then
-                table.removevalue( object.gameObject, behavior )
-                CraftStudio.Destroy( behavior )
-            end
-        end
-
-        table.removevalue( object.gameObject, object )
+    if type( object ) == "table" then
+        Daneel.Event.Fire( object, "OnDestroy" )
+        Daneel.Event.Clear( object ) -- remove from listener list
+        object.isDestroyed = true
+        setmetatable( object, nil )
+        OriginalDestroy( object )
     end
-
-    Daneel.Event.Fire( object, "OnDestroy" )
-    Daneel.Event.Clear( object ) -- remove from listener list
-    object.isDestroyed = true
-    setmetatable(object, nil)
-
-    OriginalDestroy( object )
     Daneel.Debug.StackTrace.EndFunction()
 end
 

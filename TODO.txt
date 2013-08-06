@@ -161,10 +161,9 @@ A implémenter
     - ne pas réécrire des fonction de CS si Daneel n'est pas chargé
     > les wrapper autour de Module.Load()
 
-    - defautl CS components settings
-    - move code from CS.Destroy() to 
-    - need a way to register component to be added by GO.AddComponent()
-        > 
+    
+
+    - make GUI behavior always optionnal
 
 
 ==========
@@ -187,6 +186,7 @@ A modifier/ajouter dans la doc :
     - add a Lang scripted behavior which replace the text of the textrenderer or textArea
     - math.lerp, wrapangle, round
     - GO.AddComponent() ne fonction plus qu'avec les composants de CS
+    - defautl CS components settings in config.craftStudio au lieu de config.components
 
 
 =========
