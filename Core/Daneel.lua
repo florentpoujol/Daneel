@@ -456,7 +456,7 @@ function Daneel.Debug.GetNameFromValue(value)
 end
 
 --- Check if the provided argument's value in found in the provided expected value(s).
--- When that's not the case, return the value of the 'defaultValue' argument, or throws an error when the 'defaultArgument' is nil. 
+-- When that's not the case, return the value of the 'defaultValue' argument, or throws an error when it is nil. 
 -- Arguments of type string are considered case-insensitive. The case will be corrected but no error will be thrown.
 -- When 'expectedArgumentValues' is of type table, it is always considered as a table of several expected values.
 -- @param argument (mixed) The argument to check.
@@ -466,6 +466,13 @@ end
 -- @param defaultValue [optional] (mixed) The optional default value.
 -- @return (mixed) The argument's value (one of the expected argument values or default value)
 function Daneel.Debug.CheckArgValue(argument, argumentName, expectedArgumentValues, p_errorHead, defaultValue)
+    if not Daneel.isLoaded then 
+        if argument == nil and defaultValue ~= nil then
+            return defaultValue
+        end
+        return argument
+    end
+
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckArgValue", argument, argumentName, expectedArgumentValues, p_errorHead)
     local errorHead = "Daneel.Debug.CheckArgValue(argument, argumentName, expectedArgumentValues[, p_errorHead]) : "
     Daneel.Debug.CheckArgType(argumentName, "argumentName", "string", errorHead)
