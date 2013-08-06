@@ -124,6 +124,29 @@ function GUI.Config()
 end
 
 
+function GUI.Load()
+
+    --- Update the gameObject's scale to make the text appear the provided width.
+    -- @param textRenderer (TextRenderer) The textRenderer.
+    -- @param width (number or string) The text's width in units or pixels.
+    function TextRenderer.SetTextWidth( textRenderer, width )
+        Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetTextWidth", textRenderer, width)
+        local errorHead = "TextRenderer.SetTextWidth(textRenderer, width) : "
+        Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
+        local argType = Daneel.Debug.CheckArgType(width, "width", {"number", "string"}, errorHead)
+
+        if argType == "string" then
+            width = tounit( width )
+        end
+        
+        local widthScaleRatio = textRenderer:GetTextWidth() / textRenderer.gameObject.transform:GetScale()
+        textRenderer.gameObject.transform:SetScale( width / widthScaleRatio )
+        Daneel.Debug.StackTrace.EndFunction()
+    end
+
+end
+
+
 function GUI.Awake()
     -- setting pixelToUnits  
 
@@ -207,7 +230,7 @@ end
 function GUI.Hud.SetPosition(hud, position)
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.SetPosition", hud, position)
     local errorHead = "GUI.Hud.SetPosition(hud, position) : "
-    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
+    Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
     Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
 
     local newPosition = Daneel.Config.gui.originPosition + 
@@ -227,7 +250,7 @@ end
 function GUI.Hud.GetPosition(hud)
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.GetPosition", hud)
     local errorHead = "GUI.Hud.GetPosition(hud) : "
-    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
+    Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
     
     local position = hud.gameObject.transform.position - Daneel.Config.gui.originPosition
     position = position / GUI.pixelsToUnits
@@ -242,7 +265,7 @@ end
 function GUI.Hud.SetLocalPosition(hud, position)
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.SetLocalPosition", hud, position)
     local errorHead = "GUI.Hud.SetLocalPosition(hud, position) : "
-    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
+    Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
     Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
 
     local parent = hud.gameObject.parent
@@ -264,7 +287,7 @@ end
 function GUI.Hud.GetLocalPosition(hud)
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.GetLocalPosition", hud)
     local errorHead = "GUI.Hud.GetLocalPosition(hud) : "
-    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
+    Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
     
     local parent = hud.gameObject.parent
     if parent == nil then parent = Daneel.Config.gui.originGO end
@@ -281,7 +304,7 @@ end
 function GUI.Hud.SetLayer(hud, layer)
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.SetLayer", hud)
     local errorHead = "GUI.Hud.SetLayer(hud, layer) : "
-    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
+    Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
     Daneel.Debug.CheckArgType(layer, "layer", "number", errorHead)
 
     local originLayer = Daneel.Config.gui.originPosition.z
@@ -296,7 +319,7 @@ end
 function GUI.Hud.GetLayer(hud)
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.GetLayer", hud)
     local errorHead = "GUI.Hud.GetLyer(hud) : "
-    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
+    Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
 
     local originLayer = Daneel.Config.gui.originPosition.z
     local layer = originLayer - hud.gameObject.transform.position.z 
@@ -310,7 +333,7 @@ end
 function GUI.Hud.SetLocalLayer(hud, layer)
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.SetLayer", hud)
     local errorHead = "GUI.Hud.SetLayer(hud, layer) : "
-    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
+    Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
     Daneel.Debug.CheckArgType(layer, "layer", "number", errorHead)
 
     local parent = hud.gameObject.parent
@@ -327,7 +350,7 @@ end
 function GUI.Hud.GetLocalLayer(hud)
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.GetLayer", hud)
     local errorHead = "GUI.Hud.GetLyer(hud) : "
-    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
+    Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
 
     local parent = hud.gameObject.parent
     if parent == nil then parent = Daneel.Config.gui.originGO end
@@ -347,7 +370,7 @@ GUI.Toggle = {}
 -- @param gameObject (GameObject) The component gameObject.
 -- @param params (table) A table of parameters.
 -- @return (GUI.Toggle) The new component.
-function GUI.Toggle.New( gameObject )
+function GUI.Toggle.New( gameObject, params )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Toggle.New", gameObject, params )
     local errorHead = "GUI.Toggle.New( gameObject, params ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
@@ -392,7 +415,7 @@ end
 function GUI.Toggle.SetText( toggle, text )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Toggle.SetText", toggle, text )
     local errorHead = "GUI.Toggle.SetText( toggle, text ) : "
-    Daneel.Debug.CheckArgType( toggle, "toggle", "Toggle", errorHead )
+    Daneel.Debug.CheckArgType( toggle, "toggle", "GUI.Toggle", errorHead )
     Daneel.Debug.CheckArgType( text, "text", "string", errorHead )
 
     if toggle.gameObject.textRenderer ~= nil then
@@ -419,7 +442,7 @@ end
 function GUI.Toggle.GetText(toggle)
     Daneel.Debug.StackTrace.BeginFunction("GUI.Toggle.GetText", toggle)
     local errorHead = "GUI.Toggle.GetText(toggle, text) : "
-    Daneel.Debug.CheckArgType(toggle, "toggle", "Toggle", errorHead)
+    Daneel.Debug.CheckArgType(toggle, "toggle", "GUI.Toggle", errorHead)
 
     local text = nil
     if toggle.gameObject.textRenderer ~= nil then
@@ -452,7 +475,7 @@ end
 function GUI.Toggle.Check( toggle, state, forceUpdate )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Toggle.Check", toggle, state, forceUpdate )
     local errorHead = "GUI.Toggle.Check( toggle[, state, forceUpdate] ) : "
-    Daneel.Debug.CheckArgType( toggle, "toggle", "Toggle", errorHead )
+    Daneel.Debug.CheckArgType( toggle, "toggle", "GUI.Toggle", errorHead )
     state = Daneel.Debug.CheckOptionalArgType( state, "state", "boolean", errorHead, true )
     forceUpdate = Daneel.Debug.CheckOptionalArgType( forceUpdate, "forceUpdate", "boolean", errorHead, false ) 
 
@@ -497,7 +520,7 @@ end
 function GUI.Toggle.SetGroup(toggle, group)
     Daneel.Debug.StackTrace.BeginFunction("GUI.Toggle.SetGroup", toggle, group)
     local errorHead = "GUI.Toggle.SetGroup(toggle[, group]) : "
-    Daneel.Debug.CheckArgType(toggle, "toggle", "Toggle", errorHead)
+    Daneel.Debug.CheckArgType(toggle, "toggle", "GUI.Toggle", errorHead)
     Daneel.Debug.CheckOptionalArgType(group, "group", "string", errorHead)
 
     if group == nil and toggle._group ~= nil then
@@ -519,7 +542,7 @@ end
 function GUI.Toggle.GetGroup(toggle)
     Daneel.Debug.StackTrace.BeginFunction("GUI.Toggle.GetGroup", toggle)
     local errorHead = "GUI.Toggle.GetGroup(toggle) : "
-    Daneel.Debug.CheckArgType(toggle, "toggle", "Toggle", errorHead)
+    Daneel.Debug.CheckArgType(toggle, "toggle", "GUI.Toggle", errorHead)
     Daneel.Debug.StackTrace.EndFunction()
     return toggle._group
 end
@@ -560,7 +583,7 @@ end
 function GUI.ProgressBar.SetProgress(progressBar, progress)
     Daneel.Debug.StackTrace.BeginFunction("GUI.ProgressBar.SetProgress", progressBar, progress)
     local errorHead = "GUI.ProgressBar.SetProgress(progressBar, progress) : "
-    Daneel.Debug.CheckArgType(progressBar, "progressBar", "ProgressBar", errorHead)
+    Daneel.Debug.CheckArgType(progressBar, "progressBar", "GUI.ProgressBar", errorHead)
     Daneel.Debug.CheckArgType(progress, "progress", {"string", "number"}, errorHead)
 
     local minVal = progressBar.minValue
@@ -654,7 +677,7 @@ end
 function GUI.ProgressBar.GetProgress(progressBar, getAsPercentage)
     Daneel.Debug.StackTrace.BeginFunction("GUI.ProgressBar.GetProgress", progressBar, getAsPercentage)
     local errorHead = "GUI.ProgressBar.GetProgress(progressBar[, getAsPercentage]) : "
-    Daneel.Debug.CheckArgType(progressBar, "progressBar", "ProgressBar", errorHead)
+    Daneel.Debug.CheckArgType(progressBar, "progressBar", "GUI.ProgressBar", errorHead)
     Daneel.Debug.CheckOptionalArgType(getAsPercentage, "getAsPercentage", "boolean", errorHead)
 
     local scale = progressBar.gameObject.transform.localScale.x
@@ -679,7 +702,7 @@ GUI.Slider = {}
 -- @param gameObject (GameObject) The component gameObject.
 -- @param params (table) A table of parameters.
 -- @return (GUI.Slider) The new component.
-function GUI.Slider.New(gameObject)
+function GUI.Slider.New( gameObject, params )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Slider.New", gameObject, params )
     local errorHead = "GUI.Slider.New( gameObject, params ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
@@ -709,7 +732,7 @@ end
 function GUI.Slider.SetValue( slider, value )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Slider.SetValue", slider, value )
     local errorHead = "GUI.Slider.SetValue( slider, value ) : "
-    Daneel.Debug.CheckArgType( slider, "slider", "Slider", errorHead )
+    Daneel.Debug.CheckArgType( slider, "slider", "GUI.Slider", errorHead )
     Daneel.Debug.CheckArgType( value, "value", {"string", "number"}, errorHead )
 
     local maxVal = slider.maxValue
@@ -754,7 +777,7 @@ end
 function GUI.Slider.GetValue( slider, getAsPercentage )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Slider.GetValue", slider, getAsPercentage )
     local errorHead = "GUI.Slider.GetValue( slider, value ) : "
-    Daneel.Debug.CheckArgType(slider, "slider", "Slider", errorHead)
+    Daneel.Debug.CheckArgType(slider, "slider", "GUI.Slider", errorHead)
     Daneel.Debug.CheckOptionalArgType( getAsPercentage, "getAsPercentage", "boolean", errorHead )
    
     local percentage = Vector3.Distance( slider.startPosition, slider.gameObject.transform.position ) / slider.length
@@ -830,7 +853,7 @@ end
 function GUI.Input.Focus( input, state )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Input.Focus", input, state )
     local errorHead = "GUI.Input.Focus(input[, state]) : "
-    Daneel.Debug.CheckArgType( input, "input", "Input", errorHead )
+    Daneel.Debug.CheckArgType( input, "input", "GUI.Input", errorHead )
     state = Daneel.Debug.CheckOptionalArgType( state, "state", "boolean", errorHead, true )
     
     if input.isFocused ~= state then
@@ -852,7 +875,7 @@ end
 function GUI.Input.Update( input, text, replaceText )
     Daneel.Debug.StackTrace.BeginFunction("GUI.Input.Update", input, text)
     local errorHead = "GUI.Input.Update(input, text) : "
-    Daneel.Debug.CheckArgType(input, "input", "Input", errorHead)
+    Daneel.Debug.CheckArgType(input, "input", "GUI.Input", errorHead)
     Daneel.Debug.CheckArgType(text, "text", "string", errorHead)
     replaceText = Daneel.Debug.CheckOptionalArgType(replaceText, "replaceText", "boolean", errorHead, false)
 
@@ -911,7 +934,7 @@ end
 function GUI.TextArea.SetText( textArea, text )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.SetText", textArea, text )
     local errorHead = "GUI.TextArea.SetText( textArea, text ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     Daneel.Debug.CheckArgType( text, "text", "string", errorHead )
 
     textArea.Text = text
@@ -1016,7 +1039,7 @@ end
 -- @return (string) The component's text.
 function GUI.TextArea.GetText( textArea )
     local errorHead = "GUI.TextArea.GetText( textArea ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     return textArea.Text
 end
 
@@ -1028,7 +1051,7 @@ end
 function GUI.TextArea.SetAreaWidth( textArea, areaWidth )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.SetAreaWidth", textArea, areaWidth )
     local errorHead = "GUI.TextArea.SetAreaWidth( textArea, areaWidth ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     Daneel.Debug.CheckOptionalArgType( areaWidth, "areaWidth", {"string", "number"}, errorHead )
 
     if areaWidth ~= nil then
@@ -1049,7 +1072,7 @@ end
 -- @return (number) The area width in scene units.
 function GUI.TextArea.GetAreaWidth( textArea )
     local errorHead = "GUI.TextArea.GetAreaWidth( textArea ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     return textArea.AreaWidth
 end
 
@@ -1060,7 +1083,7 @@ end
 function GUI.TextArea.SetWordWrap( textArea, wordWrap )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.SetWordWrap", textArea, wordWrap )
     local errorHead = "GUI.TextArea.SetWordWrap( textArea, wordWrap ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     Daneel.Debug.CheckArgType( wordWrap, "wordWrap", "boolean", errorHead )
 
     textArea.WordWrap = wordWrap
@@ -1075,7 +1098,7 @@ end
 -- @return (boolean) True or false.
 function GUI.TextArea.GetWordWrap( textArea )
     local errorHead = "GUI.TextArea.GetWordWrap( textArea ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     return textArea.WordWrap
 end
 
@@ -1085,7 +1108,7 @@ end
 function GUI.TextArea.SetNewLine( textArea, newLine )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.SetNewLine", textArea, newLine )
     local errorHead = "GUI.TextArea.SetNewLine( textArea, newLine ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     Daneel.Debug.CheckArgType( newLine, "newLine", "string", errorHead )
 
     textArea.NewLine = newLine
@@ -1100,7 +1123,7 @@ end
 -- @return (string) The newLine string.
 function GUI.TextArea.GetNewLine( textArea )
     local errorHead = "GUI.TextArea.GetNewLine( textArea ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     return textArea.NewLine
 end
 
@@ -1110,7 +1133,7 @@ end
 function GUI.TextArea.SetLineHeight( textArea, lineHeight )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.SetLineHeight", textArea, lineHeight )
     local errorHead = "GUI.TextArea.SetLineHeight( textArea, lineHeight ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     Daneel.Debug.CheckArgType( lineHeight, "lineHeight", {"string", "number"}, errorHead )
 
     textArea.LineHeight = tounit( lineHeight )
@@ -1125,7 +1148,7 @@ end
 -- @return (number) The line height in scene units.
 function GUI.TextArea.GetLineHeight( textArea )
     local errorHead = "GUI.TextArea.GetLineHeight( textArea ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     return textArea.LineHeight
 end
 
@@ -1135,7 +1158,7 @@ end
 function GUI.TextArea.SetVerticalAlignment( textArea, verticalAlignment )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.SetVerticalAlignment", textArea, verticalAlignment )
     local errorHead = "GUI.TextArea.SetVerticalAlignment( textArea, verticalAlignment ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     Daneel.Debug.CheckArgType( verticalAlignment, "verticalAlignment", "string", errorHead )
     verticalAlignment = Daneel.Debug.CheckArgValue( verticalAlignment, "verticalAlignment", {"top", "middle", "bottom"}, errorHead, "top" )
 
@@ -1151,7 +1174,7 @@ end
 -- @return (string) The vertical alignment.
 function GUI.TextArea.GetVerticalAlignment( textArea )
     local errorHead = "GUI.TextArea.GetVerticalAlignment( textArea ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     return textArea.VerticalAlignment
 end
 
@@ -1161,7 +1184,7 @@ end
 function GUI.TextArea.SetFont( textArea, font )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.SetFont", textArea, font )
     local errorHead = "GUI.TextArea.SetFont( textArea, font ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     Daneel.Debug.CheckArgType( font, "font", {"string", "Font"}, errorHead )
 
     textArea.gameObject.textRenderer:SetFont( font )
@@ -1180,7 +1203,7 @@ end
 -- @return (Font) The font.
 function GUI.TextArea.GetFont( textArea )
     local errorHead = "GUI.TextArea.GetFont( textArea ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     return textArea.Font
 end
 
@@ -1191,7 +1214,7 @@ end
 function GUI.TextArea.SetAlignment( textArea, alignment )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.SetAlignment", textArea, alignment )
     local errorHead = "GUI.TextArea.SetAlignment( textArea, alignment ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     Daneel.Debug.CheckArgType( alignment, "alignment", {"string", "userdata"}, errorHead )
 
     textArea.gameObject.textRenderer:SetAlignment( alignment )
@@ -1210,7 +1233,7 @@ end
 -- @return (TextRenderer.Alignment) The alignment.
 function GUI.TextArea.GetAlignment( textArea )
     local errorHead = "GUI.TextArea.GetAlignment( textArea ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     return textArea.Alignment
 end
 
@@ -1220,7 +1243,7 @@ end
 function GUI.TextArea.SetOpacity( textArea, opacity )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.SetOpacity", textArea, opacity )
     local errorHead = "GUI.TextArea.SetOpacity( textArea, opacity ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     Daneel.Debug.CheckArgType( opacity, "opacity", "number", errorHead )
 
     textArea.Opacity = opacity
@@ -1237,7 +1260,7 @@ end
 -- @return (number) The opacity between 0.0 and 1.0.
 function GUI.TextArea.GetOpacity( textArea )
     local errorHead = "GUI.TextArea.GetOpacity( textArea ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     return textArea.Opacity
 end
 
