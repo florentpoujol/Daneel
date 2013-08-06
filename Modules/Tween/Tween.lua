@@ -398,7 +398,7 @@ function Tween.Tweener.Update(tweener, deltaDuration) -- the deltaDuration argum
     Daneel.Debug.CheckArgType(deltaDuration, "deltaDuration", "number", errorHead)
 
     if Tween.Ease[tweener.easeType] == nil then
-        if Daneel.Config.debug.enableDebug == true then
+        if Daneel.Config.debug.enableDebug then
             print("Tween.Tweener.Update() : Easing '"..tostring(tweener.easeType).."' for tweener ID '"..tween.id.."' does not exists. Setting it back for the default easing '"..Daneel.Config.tween.tweener.easeType.."'.")
         end
         tweener.easeType = Daneel.Config.tween.tweener.easeType

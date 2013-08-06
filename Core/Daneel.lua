@@ -188,7 +188,7 @@ function Daneel.Utilities.GetValueFromName(name)
         end
         
         if value == nil then
-            if Daneel.Config.debug.enableDebug == true then
+            if Daneel.Config.debug.enableDebug then
                 print("WARNING : "..errorHead.." : variable '"..varName.."' (from provided name '"..name.."' ) does not exists. Returning nil.")
             end
             Daneel.Debug.StackTrace.EndFunction()
@@ -198,7 +198,7 @@ function Daneel.Utilities.GetValueFromName(name)
         for i, _key in ipairs(subNames) do
             varName = varName..".".._key
             if value[_key] == nil then
-                if Daneel.Config.debug.enableDebug == true then
+                if Daneel.Config.debug.enableDebug then
                     print("WARNING : "..errorHead.." : variable '"..varName.."' (from provided name '"..name.."' ) does not exists. Returning nil.")
                 end
                 Daneel.Debug.StackTrace.EndFunction()
@@ -398,7 +398,7 @@ local function SetNewError()
     -- @param message (string) The error message.
     -- @param doNotPrintStacktrace [optional default=false] (boolean) Set to true to prevent the stacktrace to be printed before the error message.
     function error(message, doNotPrintStacktrace)
-        if Daneel.Config.debug.enableDebug == true and doNotPrintStacktrace ~= true then
+        if Daneel.Config.debug.enableDebug and doNotPrintStacktrace ~= true then
             Daneel.Debug.StackTrace.Print()
         end
         OriginalError(message)
@@ -747,7 +747,7 @@ function Daneel.Event.Fire( object, eventName,  ... )
                     if getmetatable( gameObject ) ~= GameObject then
                         sendMessage = false
                         
-                        if _type == "string" and Daneel.Config.debug.enableDebug == true then
+                        if _type == "string" and Daneel.Config.debug.enableDebug then
                             -- the user obviously wanted to send a message but the object is not a gameObject and has no gameObject property
 
                             -- only prints the debug when the user setted up the event property because otherwise
@@ -984,7 +984,7 @@ function Daneel.Load()
             end
         else
             Daneel.Config.scriptPaths[i] = nil
-            if Daneel.Config.debug.enableDebug == true then
+            if Daneel.Config.debug.enableDebug then
                 print( "Daneel.Load() : WARNING : item with key '" .. i .. "' and value '" .. path .. "' in 'Daneel.Config.scriptPaths' is not a valid script path." )
             end
         end
@@ -1078,7 +1078,7 @@ function Daneel.Load()
     end
 
     Daneel.isLoaded = true
-    if Daneel.Config.debug.enableDebug == true then
+    if Daneel.Config.debug.enableDebug then
         print( "~~~~~ Daneel loaded ~~~~~" )
     end
 
@@ -1117,7 +1117,7 @@ function Behavior:Awake()
         end
     end
 
-    if Daneel.Config.debug.enableDebug == true then
+    if Daneel.Config.debug.enableDebug then
         print("~~~~~ Daneel awake ~~~~~")
     end
 
@@ -1138,7 +1138,7 @@ function Behavior:Awake()
         end
     end
 
-    if Daneel.Config.debug.enableDebug == true then
+    if Daneel.Config.debug.enableDebug then
         print("~~~~~ Daneel started ~~~~~")
     end
 

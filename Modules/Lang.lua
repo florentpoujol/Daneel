@@ -32,7 +32,7 @@ function Lang.Load()
 
         if Daneel.Utilities.GlobalExists( functionName ) then
             Lang.lines[language] = _G[ functionName ]()
-        elseif Daneel.Config.debug.enableDebug == true then
+        elseif Daneel.Config.debug.enableDebug then
             print( "lang.Load() : WARNING : Can't load the language '"..language.."' because the global function "..functionName.."() does not exists." )
         end
     end
@@ -104,7 +104,7 @@ function Lang.Get( key, replacements )
     for i, _key in ipairs(keys) do
         if lines[_key] == nil then
             -- key was not found
-            if Daneel.Config.debug.enableDebug == true then
+            if Daneel.Config.debug.enableDebug then
                 print( errorHead.."Localization key '"..key.."' was not found in '"..language.."' language ." )
             end
 

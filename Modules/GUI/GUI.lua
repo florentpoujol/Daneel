@@ -568,7 +568,7 @@ function GUI.ProgressBar.SetProgress(progressBar, progress)
 
             local oldPercentage = percentageOfProgress
             percentageOfProgress = math.clamp(percentageOfProgress, 0.0, 1.0)
-            if percentageOfProgress ~= oldPercentage and Daneel.Config.debug.enableDebug == true then
+            if percentageOfProgress ~= oldPercentage and Daneel.Config.debug.enableDebug then
                 print(errorHead.."WARNING : progress in percentage with value '"..progress.."' is below 0% or above 100%.")
             end
 
@@ -587,7 +587,7 @@ function GUI.ProgressBar.SetProgress(progressBar, progress)
     local currentProgress = progressBar.progress
 
     if progress ~= currentProgress then
-        if progress ~= oldProgress and Daneel.Config.debug.enableDebug == true then
+        if progress ~= oldProgress and Daneel.Config.debug.enableDebug then
             print(errorHead.." WARNING : progress with value '"..oldProgress.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
         end
         percentageOfProgress = (progress - minVal) / (maxVal - minVal)
@@ -721,7 +721,7 @@ function GUI.Slider.SetValue( slider, value )
     -- now value is a number and should be a value between minVal and maxVal
     local oldValue = value
     value = math.clamp( value, minVal, maxVal )
-    if value ~= oldValue and Daneel.Config.debug.enableDebug == true then
+    if value ~= oldValue and Daneel.Config.debug.enableDebug then
         print( errorHead .. "WARNING : Argument 'value' with value '" .. oldValue .. "' is out of its boundaries : min='" .. minVal .. "', max='" .. maxVal .. "'" )
     end
     percentage = (value - minVal) / (maxVal - minVal)
