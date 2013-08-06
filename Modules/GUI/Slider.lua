@@ -34,7 +34,7 @@ function Behavior:OnDrag()
         positionDelta = Vector3( 0, -mouseDelta.y, 0, 0 )
     end  
     
-    self.gameObject.transform:Move( positionDelta * Daneel.GUI.pixelsToUnits )
+    self.gameObject.transform:Move( positionDelta * GUI.pixelsToUnits )
     
     if 
         (slider.axis == "x" and self.gameObject.transform.position.x < slider.startPosition.x) or

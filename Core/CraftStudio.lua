@@ -79,7 +79,7 @@ function CraftStudio.Config()
         Daneel.Config.allObjects,
         CS.Config.objects,
         CS.Config.componentObjects,
-        CS.Config.assetObjects,
+        CS.Config.assetObjects
     )
 
     return config
@@ -574,21 +574,13 @@ end
 
 --- Update the gameObject's scale to make the text appear the provided width.
 -- @param textRenderer (TextRenderer) The textRenderer.
--- @param width (number or string) The text's width in units or pixels.
+-- @param width (number) The text's width in units.
 function TextRenderer.SetTextWidth( textRenderer, width )
     Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetTextWidth", textRenderer, width)
     local errorHead = "TextRenderer.SetTextWidth(textRenderer, width) : "
     Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
-    local argType = Daneel.Debug.CheckArgType(width, "width", {"number", "string"}, errorHead)
+    local argType = Daneel.Debug.CheckArgType(width, "width", "number", errorHead)
 
-    if argType == "string" then
-        if Daneel.GUI == nil then
-            error( errorHead .. "The GUI module is not loaded. Can't convert width in pixels with value '" .. width .. "' to scene units.")
-        end
-        width = width:sub( 1, #width-2 )
-        width = width * Daneel.GUI.pixelsToUnits
-    end
-    
     local widthScaleRatio = textRenderer:GetTextWidth() / textRenderer.gameObject.transform:GetScale()
     textRenderer.gameObject.transform:SetScale( width / widthScaleRatio )
     Daneel.Debug.StackTrace.EndFunction()
@@ -800,9 +792,9 @@ setmetatable( RaycastHit, { __call = function(Object, ...) return Object.New(...
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
 end
-table.insert( CS.DaneelModules, RayCastHit )
+table.insert( CS.DaneelModules, RaycastHit )
 
-function RayCastHit.Config()
+function RaycastHit.Config()
     Daneel.Config.allObjects.RaycastHit = RaycastHit
 end
 

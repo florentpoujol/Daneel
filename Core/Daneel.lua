@@ -14,22 +14,18 @@ Daneel = { isLoaded = false }
 -- Config
 
 Daneel.Config = {
-    input = {
+    daneel = {
         -- Button names as you defined them in the "Administration > Game Controls" tab of your project.
         -- Button whose name is defined here can be used as HotKeys.
-        buttons = {
+        buttonNames = {
             -- Ie: "Fire",
         },
+    
+        debug = {
+            enableDebug = false, -- Enable/disable Daneel's global debugging features (error reporting + stacktrace).
+            enableStackTrace = false, -- Enable/disable the Stack Trace.
+        },
     },
-
-
-    ----------------------------------------------------------------------------------
-
-    debug = {
-        enableDebug = false, -- Enable/disable Daneel's global debugging features (error reporting + stacktrace).
-        enableStackTrace = false, -- Enable/disable the Stack Trace.
-    },
-
 
     ----------------------------------------------------------------------------------
   
@@ -940,7 +936,7 @@ function Daneel.Load()
             if type( config ) == "function" then
                 config = config()
             end
-            Daneel.Config = table.deepmerge( Daneel.Config, config )
+            Daneel.Config = table.merge( Daneel.Config, config )
         end
     end
     

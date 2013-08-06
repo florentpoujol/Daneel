@@ -49,7 +49,7 @@ end
 table.insert( CS.DaneelModules, Tween )
 
 function Tween.Config()
-    local config {
+    local config = {
         tween = {
             tweener = {
                 isEnabled = true, -- a disabled tweener won't update but the function like Play(), Pause(), Complete(), Destroy() will have no effect
