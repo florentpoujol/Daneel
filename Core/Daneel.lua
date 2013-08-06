@@ -14,22 +14,6 @@ Daneel = { isLoaded = false }
 -- Config
 
 Daneel.Config = {
-    -- List of the Scripts paths as values and optionally the script alias as the keys.
-    -- Ie :
-    -- "fully-qualified Script path"
-    -- or
-    -- alias = "fully-qualified Script path"
-    --
-    -- Setting a script path here allow you to  :
-    -- * Use the dynamic getters and setters
-    -- * Use component:Set() (for scripted behaviors)
-    -- * Use component:GetId() (for scripted behaviors)
-    -- * If you defined aliases, dynamically access the scripted behavior on the game object via its alias
-    scriptPaths = {},
-
-
-    ----------------------------------------------------------------------------------
-
     input = {
         -- Button names as you defined them in the "Administration > Game Controls" tab of your project.
         -- Button whose name is defined here can be used as HotKeys.
@@ -964,7 +948,11 @@ function Daneel.Load()
     
     -- load user config
     if Daneel.Utilities.GlobalExists( "DaneelConfig" ) then
-        Daneel.Config = table.deepmerge( Daneel.Config, DaneelConfig() )
+        local config = DaneelConfig
+        if type( config ) == "function" then
+            config = config()
+        end
+        Daneel.Config = table.deepmerge( Daneel.Config, config )
     end
 
     if Daneel.Config.debug.enableDebug and Daneel.Config.debug.enableStackTrace then
@@ -972,99 +960,6 @@ function Daneel.Load()
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Load" )
-
-    -- Scripts
-    for i, path in pairs( Daneel.Config.scriptPaths ) do
-        local script = CraftStudio.FindAsset( path, "Script" )
-        if script ~= nil then
-            Daneel.Utilities.AllowDynamicGettersAndSetters( script, { Script, Component } )
-
-            script["__tostring"] = function( scriptedBehavior )
-                return "ScriptedBehavior: " .. tostring( scriptedBehavior.inner ):sub( 2, 20 ) .. ": '" .. path .. "'"
-            end
-        else
-            Daneel.Config.scriptPaths[i] = nil
-            if Daneel.Config.debug.enableDebug then
-                print( "Daneel.Load() : WARNING : item with key '" .. i .. "' and value '" .. path .. "' in 'Daneel.Config.scriptPaths' is not a valid script path." )
-            end
-        end
-    end
-
-    -- Components
-    for componentType, componentObject in pairs( Daneel.Config.allComponentObjects ) do
-        -- Components getters-setter-tostring
-        Daneel.Utilities.AllowDynamicGettersAndSetters( componentObject, { Component } )
-
-        if componentType ~= "ScriptedBehavior" then
-            componentObject["__tostring"] = function( component )
-                -- returns something like "ModelRenderer: 123456789"    component.inner is "?: [some ID]"
-                -- do not use component:GetId() here, it throws a stack overflow when stacktrace is enabled because ST.BeginFunction() uses tostring() on the provided argument(s)
-                local id = component.Id
-                if id == nil then
-                    id = tostring( component.inner ):sub( 5, 20 )
-                    component.Id = id
-                end
-                
-                local text = componentType .. ": " .. id
-                --[[
-                -- uncomment when the getter won't return error when the asset is not set yet
-                local path = "[no asset]"
-                local pathStart = ": '"
-                local pathEnd = "'"
-                local asset = nil
-
-                if componentType == "ModelRenderer" then
-                    asset = component:GetModel()
-                    if asset ~=  nil then
-                        path = Map.GetPathInPackage( asset )
-                    else
-                        path = "[no Map]"
-                    end
-                    text = text .. pathStart .. path .. pathEnd
-
-                elseif componentType == "MapRenderer" then
-                    asset = component:GetMap()
-                    if asset ~= nil then
-                        path = Map.GetPathInPackage( asset )
-                    else
-                        path = "[no Map]"
-                    end
-                    text = text .. pathStart .. path .. pathEnd
-
-                    asset = component:GetTileSet()
-                    if asset ~= nil then
-                        path = Map.GetPathInPackage( asset )
-                    else
-                        path = "[no TileSet]"
-                    end
-                    text = text .. pathStart .. path .. pathEnd
-
-                elseif componentType == "TextRenderer" then
-                    asset = component:GetFont()
-                    if asset ~= nil then
-                        path = Map.GetPathInPackage( asset )
-                    else
-                        path = "[no Font]"
-                    end
-                    text = text .. pathStart .. path .. pathEnd
-
-                end
-                ]]
-
-                return text
-            end
-        end
-    end
-
-    -- Assets
-    for assetType, assetObject in pairs( Daneel.Config.assetObjects ) do
-        Daneel.Utilities.AllowDynamicGettersAndSetters( assetObject )
-
-        assetObject["__tostring"] = function( asset )
-            -- print something like : "Model: 123456789"    asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
-            return tostring( asset.inner ):sub( 31, 50 ) .. ": '" .. Map.GetPathInPackage( asset ) .. "'"
-        end
-    end
 
     -- Load modules 
     local moduleLoaded = {}
@@ -1082,8 +977,8 @@ function Daneel.Load()
         print( "~~~~~ Daneel loaded ~~~~~" )
     end
 
-    -- check for module update function
-    -- do this now so that I don't have to call Daneel.Utilities.GlobalExists() every frame for every modules below
+    -- check for module update functions
+    -- do this now so that I don't have to call Daneel.Utilities.GlobalExists() every frame for every modules below in Behavior:Update()
     moduleLoaded = {}
     for i, moduleObject in ipairs( CS.DaneelModules ) do
         if moduleLoaded[ moduleObject ] == nil then
@@ -1124,7 +1019,7 @@ function Behavior:Awake()
     Daneel.Debug.StackTrace.EndFunction()
 end 
 
-function Behavior:Awake()
+function Behavior:Start()
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Start" )
 
     -- Start modules 

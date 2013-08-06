@@ -162,8 +162,10 @@ A implémenter
     > les wrapper autour de Module.Load()
 
     
-
+    - mettre tout e qui est dépendant de Daneel lorsqu'il est chargé dans Module.Load()
+    > rendre le plus possible de choses indépendantes
     - make GUI behavior always optionnal
+    - passer config.scriptPaths dans config.craftStudio
 
 
 ==========

@@ -42,7 +42,7 @@ function GameObject.__index( gameObject, key )
     end
 
     -- maybe the key is a script alias
-    local path = Daneel.Config.scriptPaths[ key ]
+    local path = Daneel.Config.craftStudio.scriptPaths[ key ]
     if path ~= nil then
         local behavior = gameObject:GetScriptedBehavior( path )
         if behavior ~= nil then
@@ -181,10 +181,10 @@ function GameObject.Set( gameObject, params )
     for key, value in pairs( params ) do
 
         -- if key is a script path in Daneel.Config.scriptPath or a script alias
-        if Daneel.Config.scriptPaths[key] ~= nil or table.containsvalue( Daneel.Config.scriptPaths, key ) then
+        if Daneel.Config.craftStudio.scriptPaths[key] ~= nil or table.containsvalue( Daneel.Config.craftStudio.scriptPaths, key ) then
             local scriptPath = key
-            if Daneel.Config.scriptPaths[key] ~= nil then
-                scriptPath = Daneel.Config.scriptPaths[key]
+            if Daneel.Config.craftStudio.scriptPaths[key] ~= nil then
+                scriptPath = Daneel.Config.craftStudio.scriptPaths[key]
             end
             local component = gameObject:GetScriptedBehavior( scriptPath )
             if component == nil then

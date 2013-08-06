@@ -13,6 +13,19 @@ table.insert( CS.DaneelModules, CraftStudio )
 function CraftStudio.Config()
     local config = {
         craftStudio = {
+            -- List of the Scripts paths as values and optionally the script alias as the keys.
+            -- Ie :
+            -- "fully-qualified Script path"
+            -- or
+            -- alias = "fully-qualified Script path"
+            --
+            -- Setting a script path here allow you to  :
+            -- * Use the dynamic getters and setters
+            -- * Use component:Set() (for scripted behaviors)
+            -- * Use component:GetId() (for scripted behaviors)
+            -- * If you defined aliases, dynamically access the scripted behavior on the game object via its alias
+            scriptPaths = {},
+
             -- Default CraftStudio's components settings (except Transform)
             --[[ ie :
             textRenderer = {
@@ -54,25 +67,133 @@ function CraftStudio.Config()
         },
     }
 
-    config.craftStudio.componentTypes       = table.getkeys( config.craftStudio.componentObjects )
-    config.craftStudio.assetTypes           = table.getkeys( config.craftStudio.assetObjects )
+    CS.Config = config.craftStudio
 
-    Daneel.Config.allComponentObjects       = table.merge( Daneel.Config.allComponentObjects, config.craftStudio.componentObjects )
-    Daneel.Config.allComponentTypes         = table.merge( Daneel.Config.allComponentTypes, config.craftStudio.componentObjects )
+    CS.Config.componentTypes       = table.getkeys( CS.Config.componentObjects )
+    CS.Config.assetTypes           = table.getkeys( CS.Config.assetObjects )
+
+    Daneel.Config.allComponentObjects       = table.merge( Daneel.Config.allComponentObjects, CS.Config.componentObjects )
+    Daneel.Config.allComponentTypes         = table.merge( Daneel.Config.allComponentTypes, CS.Config.componentObjects )
     
     Daneel.Config.allObjects = table.merge(
         Daneel.Config.allObjects,
-        Daneel.Config.craftStudio.objects,
-        Daneel.Config.craftStudio.componentObjects,
-        Daneel.Config.craftStudio.assetObjects,
+        CS.Config.objects,
+        CS.Config.componentObjects,
+        CS.Config.assetObjects,
     )
+
+    return config
+end
+
+
+function CraftStudio.Load()
+    -- ScriptAlias
+    for alias, path in pairs( CS.Config.scriptPaths ) do
+        local script = CraftStudio.FindAsset( path, "Script" )
+
+        if script ~= nil then
+            Daneel.Utilities.AllowDynamicGettersAndSetters( script, { Script, Component } )
+
+            script["__tostring"] = function( scriptedBehavior )
+                return "ScriptedBehavior: " .. tostring( scriptedBehavior.inner ):sub( 2, 20 ) .. ": '" .. path .. "'"
+            end
+        else
+            CS.Config.scriptPaths[ alias ] = nil
+            if Daneel.Config.debug.enableDebug then
+                print( "Daneel.Load() : WARNING : item with key '" .. alias .. "' and value '" .. path .. "' in 'Daneel.Config.craftStudio.scriptPaths' is not a valid script path." )
+            end
+        end
+    end
+
+    -- Components
+    for componentType, componentObject in pairs( Daneel.Config.allComponentObjects ) do
+        Daneel.Utilities.AllowDynamicGettersAndSetters( componentObject, { Component } )
+        
+        if componentType ~= "ScriptedBehavior" then
+            componentObject["__tostring"] = function( component )
+                -- returns something like "ModelRenderer: 123456789"    component.inner is "?: [some ID]"
+                -- do not use component:GetId() here, it throws a stack overflow when stacktrace is enabled because ST.BeginFunction() uses tostring() on the provided argument(s)
+                local id = component.Id
+                if id == nil then
+                    id = tostring( component.inner ):sub( 5, 20 )
+                    component.Id = id
+                end
+                
+                local text = componentType .. ": " .. id
+                --[[
+                -- uncomment when the getter won't return error when the asset is not set yet
+                local path = "[no asset]"
+                local pathStart = ": '"
+                local pathEnd = "'"
+                local asset = nil
+
+                if componentType == "ModelRenderer" then
+                    asset = component:GetModel()
+                    if asset ~=  nil then
+                        path = Map.GetPathInPackage( asset )
+                    else
+                        path = "[no Map]"
+                    end
+                    text = text .. pathStart .. path .. pathEnd
+
+                elseif componentType == "MapRenderer" then
+                    asset = component:GetMap()
+                    if asset ~= nil then
+                        path = Map.GetPathInPackage( asset )
+                    else
+                        path = "[no Map]"
+                    end
+                    text = text .. pathStart .. path .. pathEnd
+
+                    asset = component:GetTileSet()
+                    if asset ~= nil then
+                        path = Map.GetPathInPackage( asset )
+                    else
+                        path = "[no TileSet]"
+                    end
+                    text = text .. pathStart .. path .. pathEnd
+
+                elseif componentType == "TextRenderer" then
+                    asset = component:GetFont()
+                    if asset ~= nil then
+                        path = Map.GetPathInPackage( asset )
+                    else
+                        path = "[no Font]"
+                    end
+                    text = text .. pathStart .. path .. pathEnd
+
+                end
+                ]]
+
+                return text
+            end
+        end
+    end
+
+    -- Assets
+    for assetType, assetObject in pairs( CS.Config.assetObjects ) do
+        Daneel.Utilities.AllowDynamicGettersAndSetters( assetObject )
+
+        assetObject["__tostring"] = function( asset )
+            -- print something like : "Model: 123456789"    asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
+            return tostring( asset.inner ):sub( 31, 50 ) .. ": '" .. Map.GetPathInPackage( asset ) .. "'"
+        end
+    end
 end
 
 
 ----------------------------------------------------------------------------------
 -- Assets
 
-Asset = {}
+Asset = { 
+    -- the key may be :
+    -- the asset object itself, the value is true
+    -- or the asset name, the value is a table with the asset type as keys and asset object as values
+    -- (allows two assets to have the same name)
+    cache = { ["ScriptAliases"] = {} },
+
+    pathsCache = {},
+}
 Asset.__index = Asset
 
 --- Alias of CraftStudio.FindAsset( assetPath[, assetType] ).
@@ -83,28 +204,29 @@ Asset.__index = Asset
 -- @param errorIfAssetNotFound [optional default=false] Throw an error if the asset was not found (instead of returning nil).
 -- @return (One of the asset type) The asset, or nil if none is found.
 function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
-    -- the key in the cache may be the assetPath, the asset Object, or "ScriptAliases"
-    local assetCache = Daneel.Cache.assets[ assetPath ]
-    if assetCache ~= nil then
-        if type( assetCache ) == "boolean" then -- assetname is an asset  -  can't check if assetCache == true because it is otherwise a table and also returns true            
+    -- the key in the cache may be the asset path, the asset Object, or "ScriptAliases"
+    local assetByType = Asset.cache[ assetPath ]
+    
+    if assetByType ~= nil then
+        if type( assetByType ) == "boolean" then -- assetPath is an asset  -  can't check if assetByType == true because it is otherwise a table and also returns true            
             return assetPath
         
-        elseif assetType ~= nil and assetCache[ assetType ] ~= nil then
-            return assetCache[ assetType ]
+        elseif assetType ~= nil and assetByType[ assetType ] ~= nil then
+            return assetByType[ assetType ]
         end
     end
 
-    if Daneel.Cache.assets[ "ScriptAliases" ][ assetPath ] ~= nil then
-        return Daneel.Cache.assets[ "ScriptAliases" ][ assetPath ]
+    if Asset.cache[ "ScriptAliases" ][ assetPath ] ~= nil then
+        return Asset.cache[ "ScriptAliases" ][ assetPath ]
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "Asset.Get", assetPath, assetType, errorIfAssetNotFound )
     local errorHead = "Asset.Get( assetPath[, assetType, errorIfAssetNotFound] ) : "
     
     -- just return the asset if assetPath is already an object
-    if type( assetPath ) == "table" and table.containsvalue( Daneel.Config.assetTypes, Daneel.Debug.GetType( assetPath ) ) then
+    if type( assetPath ) == "table" and CS.Config.assetObjects[ Daneel.Debug.GetType( assetPath ) ] then
         -- using type() in the first part of the condition just prevent GetType() and containsvalue() to be called every times
-        Daneel.Cache.assets[ assetPath ] = true
+        Asset.cache[ assetPath ] = true
         Daneel.Debug.StackTrace.EndFunction()
         return assetPath
     end
@@ -113,14 +235,14 @@ function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
     -- check asset type
     if assetType ~= nil then
         Daneel.Debug.CheckArgType( assetType, "assetType", "string", errorHead )
-        assetType = Daneel.Debug.CheckArgValue( assetType, "assetType", Daneel.Config.assetTypes, errorHead )
+        assetType = Daneel.Debug.CheckArgValue( assetType, "assetType", CS.Config.assetTypes, errorHead )
     end
     Daneel.Debug.CheckOptionalArgType( errorIfAssetNotFound, "errorIfAssetNotFound", "boolean", errorHead )
 
     -- check if assetPath is a script alias
     local scriptAlias = assetPath
-    if Daneel.Config.scriptPaths[ scriptAlias ] ~= nil then 
-        assetPath = Daneel.Config.scriptPaths[ scriptAlias ]
+    if CS.Config.scriptPaths[ scriptAlias ] ~= nil then 
+        assetPath = CS.Config.scriptPaths[ scriptAlias ]
         assetType = "Script"
     end
 
@@ -132,7 +254,7 @@ function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
             if assetType == nil then
                 assetType = "asset"
             end
-            error( errorHead.."Argument 'assetPath' : "..assetType.." with name '"..assetPath.."' was not found." )
+            error( errorHead .. "Argument 'assetPath' : " .. assetType .. " with name '" .. assetPath .. "' was not found." )
         end
     else
         -- cache asset
