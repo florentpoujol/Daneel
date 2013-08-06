@@ -16,13 +16,15 @@ table.insert( CS.DaneelModules, Lang )
 
 function Lang.Config()
     return {
-        languageNames = {}, -- list of the languages supported by the game
-        
-        current = nil, -- Current language
-        default = nil, -- Default language
-        searchInDefault = true, -- Tell wether Lang.Get() search a line key in the default language 
-        -- when it is not found in the current language before returning the value of keyNotFound
-        keyNotFound = "langkeynotfound", -- Value returned when a language key is not found
+        language = {
+            languageNames = {}, -- list of the languages supported by the game
+            
+            current = nil, -- Current language
+            default = nil, -- Default language
+            searchInDefault = true, -- Tell wether Lang.Get() search a line key in the default language 
+            -- when it is not found in the current language before returning the value of keyNotFound
+            keyNotFound = "langkeynotfound", -- Value returned when a language key is not found
+        },
     }
 end
 
@@ -53,14 +55,16 @@ function Lang.Awake()
     Lang.Update = Lang.Update2
     Lang.Update2 = nil
     
-    Daneel.Event.listen( "OnSceneLoad", function() 
+    Daneel.Event.Listen( "OnSceneLoad", function() 
         Lang.gameObjectsToUpdate = {}
     end )
 end
 
 -- Lang.Start runs before every other Behavior:Start() function of the scene
 function Lang.Start()
-    Lang.Update( Daneel.Config.language.current, true )
+    if Daneel.Config.language.current ~= nil then
+        Lang.Update( Daneel.Config.language.current, true )
+    end
 end
 
 
