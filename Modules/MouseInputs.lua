@@ -4,18 +4,6 @@
 -- Last modified for v1.2.0
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
-if CS.DaneelModules == nil then
-    CS.DaneelModules = {}
-end
-table.insert( CS.DaneelModules, Behavior )
-
-Behavior.Config = {
-    input = {
-        doubleClickDelay = 20, -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
-    }
-}
-
-
 --[[PublicProperties
 tags string "guiComponent"
 updateInterval number 10
@@ -38,6 +26,11 @@ function Behavior:Awake()
         CraftStudio.Destroy( self )
         error( "MouseInputs:Awake() : GameObject with name '" .. self.gameObject:GetName() .. "' has no camera component attached." )
     end  
+
+    if Daneel.Config.input.doubleClickDelay == nil then
+        -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
+        Daneel.Config.input.doubleClickDelay = 20
+    end
 
     self.frameCount = 0
     Daneel.Debug.StackTrace.EndFunction()
