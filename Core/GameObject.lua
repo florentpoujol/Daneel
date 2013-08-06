@@ -443,19 +443,13 @@ function GameObject.AddComponent( gameObject, componentType, params )
         return
     end
 
-    local component = nil
+    local component = gameObject:CreateComponent( componentType )
 
-    if table.containsvalue( Daneel.Config.daneelComponentTypes, componentType ) then
-        component = Daneel.GUI[ componentType ].New( gameObject )
-    else
-        component = gameObject:CreateComponent( componentType )
-
-        local defaultComponentParams = Daneel.Config.components[ componentType:lcfirst() ]
-        if defaultComponentParams ~= nil then
-            params = table.merge( defaultComponentParams, params )
-        end
+    local defaultComponentParams = Daneel.Config.craftStudio[ componentType:lcfirst() ]
+    if defaultComponentParams ~= nil then
+        params = table.merge( defaultComponentParams, params )
     end
-
+    
     if params ~= nil then
         component:Set( params )
     end
