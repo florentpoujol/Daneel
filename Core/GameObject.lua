@@ -153,7 +153,7 @@ function GameObject.Set( gameObject, params )
     
     -- components
     local component = nil
-    local componentTypes = table.copy( Daneel.Config.componentTypes )
+    local componentTypes = table.copy( Daneel.Config.allComponentTypes )
     table.removevalue( componentTypes, "ScriptedBehavior" )
     for i, type in ipairs( componentTypes ) do
         componentTypes[i] = type:lcfirst()
@@ -429,7 +429,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
     local errorHead = "GameObject.AddComponent( gameObject, componentType[, params] ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     Daneel.Debug.CheckArgType( componentType, "componentType", "string", errorHead ) 
-    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead )
+    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.craftStudioComponentTypes, errorHead )
     Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead )
 
     if componentType == "Transform" and Daneel.Config.debug.enableDebug == true then
@@ -504,7 +504,7 @@ function GameObject.GetComponent( gameObject, componentType )
     local errorHead = "GameObject.GetComponent( gameObject, componentType ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     Daneel.Debug.CheckArgType( componentType, "componentType", "string", errorHead )
-    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead )
+    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.allComponentTypes, errorHead )
     
     if componentType == "ScriptedBehavior" then
         print( errorHead.."Can't get a ScriptedBehavior via 'GameObject.GetComponent()'. Use 'GameObject.GetScriptedBehavior()' instead." )
@@ -515,7 +515,7 @@ function GameObject.GetComponent( gameObject, componentType )
     local lcComponentType = componentType:lcfirst()
     local component = gameObject[ lcComponentType ]
     
-    if component == nil and not table.containsvalue( Daneel.Config.daneelComponentTypes, componentType ) then
+    if component == nil and table.containsvalue( Daneel.Config.craftStudio.componentTypes, componentType ) then
         component = OriginalGetComponent( gameObject, componentType )
 
         if component ~= nil then

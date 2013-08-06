@@ -186,7 +186,7 @@ Component.__index = Component
 function Component.Set(component, params)
     Daneel.Debug.StackTrace.BeginFunction("Component.Set", component, params)
     local errorHead = "Component.Set(component, params) : "
-    Daneel.Debug.CheckArgType(component, "component", Daneel.Config.componentTypes, errorHead)
+    Daneel.Debug.CheckArgType(component, "component", Daneel.Config.allComponentTypes, errorHead)
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
 
     local componentType = Daneel.Debug.GetType(component)
@@ -236,7 +236,7 @@ end
 function Component.Destroy(component)
     Daneel.Debug.StackTrace.BeginFunction("Component.Destroy", component)
     local errorHead = "Component.Destroy(component) : "
-    Daneel.Debug.CheckArgType(component, "component", Daneel.Config.componentTypes, errorHead)
+    Daneel.Debug.CheckArgType(component, "component", Daneel.Config.allComponentTypes, errorHead)
 
     CraftStudio.Destroy(component)
     Daneel.Debug.StackTrace.EndFunction("Component.Destroy")
@@ -248,7 +248,7 @@ end
 function Component.GetId( component )
     Daneel.Debug.StackTrace.BeginFunction( "Component.GetId", component )
     local errorHead = "Component.GetId( component ) : "
-    Daneel.Debug.CheckArgType( component, "component", Daneel.Config.componentTypes, errorHead )
+    Daneel.Debug.CheckArgType( component, "component", Daneel.Config.allComponentTypes, errorHead )
 
     if component.Id ~= nil then
         Daneel.Debug.StackTrace.EndFunction()
@@ -799,8 +799,8 @@ function CraftStudio.Destroy( object )
             end
         end
 
-    elseif table.containsvalue( Daneel.Config.componentTypes, Type ) then
-        if table.containsvalue( Daneel.Config.daneelComponentTypes, Type ) then            
+    elseif table.containsvalue( Daneel.Config.allComponentTypes, Type ) then
+        if table.containsvalue( Daneel.Config.gui.componentTypes, Type ) then            
             -- if a Daneel component, must ensure that the corresponding Behavior is also removed
             local behavior = object.gameObject:GetScriptedBehavior( "Daneel/Behaviors/" .. Type )
             if behavior ~= nil then

@@ -971,17 +971,6 @@ function Daneel.Load()
         SetNewError()
     end
 
-    -- Objects
-    Daneel.Config.allComponentObjects       = table.merge( Daneel.Config.allComponentObjects, Daneel.Config.craftStudio.componentObjects )
-    Daneel.Config.allComponentTypes         = table.merge( Daneel.Config.allComponentObjectstable.getkeys( Daneel.Config.allComponentObjects )
-    Daneel.Config.craftStudio.assetTypes                = table.getkeys( Daneel.Config.craftStudio.assetObjects )
-    
-    Daneel.Config.allObjects = table.merge(
-        Daneel.Config.craftStudio.objects,
-        Daneel.Config.craftStudio.componentObjects,
-        Daneel.Config.craftStudio.assetObjects,
-    )
-
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Load" )
 
     -- Scripts
