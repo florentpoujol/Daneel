@@ -20,8 +20,6 @@ Daneel.Config = {
         buttons = {
             -- Ie: "Fire",
         },
-
-        doubleClickDelay = 20, -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
     },
 
 

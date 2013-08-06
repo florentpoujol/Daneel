@@ -4,12 +4,22 @@
 -- Last modified for v1.2.0
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
+if CS.DaneelModules == nil then
+    CS.DaneelModules = {}
+end
+table.insert( CS.DaneelModules, Behavior )
+
+Behavior.Config = {
+    input = {
+        doubleClickDelay = 20, -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
+    }
+}
+
+
 --[[PublicProperties
 tags string "guiComponent"
 updateInterval number 10
 /PublicProperties]]
-
-local interactiveGameObjects = {}
 
 function Behavior:Awake()
     Daneel.Debug.StackTrace.BeginFunction( "MouseInputs:Awake" )
@@ -18,12 +28,6 @@ function Behavior:Awake()
     Daneel.Event.Listen( "OnLeftMouseButtonDown", self.gameObject )
     Daneel.Event.Listen( "OnRightMouseButtonJustPressed", self.gameObject )
     
-    -- if GameObject.Tags.guiComponent == nil then
-    --     -- this is just in case no gameObject already registered to the guiComponent tag.
-    --     GameObject.Tags.guiComponent = {}
-    -- end
-    -- interactiveGameObjects = GameObject.Tags.guiComponent
-
     if self.tags:trim() == "" then
         self.tags = {}
     else
