@@ -53,6 +53,8 @@ function GUI.Config()
             uncheckedMark = ":text",
             checkedModel = nil,
             uncheckedModel = nil,
+
+            behaviorPath = "Daneel/Modules/GUI/Toggle",
         },
 
         progressBar = {
@@ -70,6 +72,7 @@ function GUI.Config()
             length = 5, -- 5 units
             axis = "x",
             value = "0%",
+            behaviorPath = "Daneel/Modules/GUI/Slider",
         },
 
         input = {
@@ -90,12 +93,7 @@ function GUI.Config()
             alignment = nil,
             opacity = nil,
         },
-
-        behaviorPaths = {
-            toggle = "Daneel/Modules/GUI/Toggle",
-            slider = "Daneel/Modules/GUI/Slider",
-        },
-    
+   
         componentObjects = {
             ["GUI.Hud"] = GUI.Hud,
             ["GUI.Toggle"] = GUI.Toggle,
@@ -372,17 +370,19 @@ function GUI.Toggle.New( gameObject, params )
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
     
-    local toggle = table.merge( GUI.Config.toggle, params )
+    local toggle = GUI.Config.toggle
     toggle.defaultText = toggle.text
     toggle.text = nil
     toggle.gameObject = gameObject
     toggle.Id = Daneel.Cache.GetId()
     setmetatable( toggle, GUI.Toggle )
+
+    toggle:Set( params )    
     
     gameObject.toggle = toggle
     gameObject:AddTag( "guiComponent" )
-    if gameObject:GetScriptedBehavior( GUI.Config.behaviorPaths.toggle ) == nil then
-        gameObject:AddScriptedBehavior( GUI.Config.behaviorPaths.toggle )
+    if gameObject:GetScriptedBehavior( GUI.Config.toggle.behaviorPath ) == nil then
+        gameObject:AddScriptedBehavior( GUI.Config.toggle.behaviorPath )
     end
 
     if gameObject.textRenderer ~= nil and gameObject.textRenderer:GetText() ~= nil then
@@ -485,8 +485,9 @@ function GUI.Toggle.Check( toggle, state, forceUpdate )
         
         if toggle.gameObject.textRenderer ~= nil then
             toggle:SetText( text ) -- "reload" the check mark based on the new checked state
-
-        elseif toggle.gameObject.modelRenderer ~= nil then
+        end
+        
+        if toggle.gameObject.modelRenderer ~= nil then
             if state == true and toggle.checkedModel ~= nil then
                 toggle.gameObject.modelRenderer:SetModel( toggle.checkedModel )
             elseif state == false and toggle.uncheckedModel ~= nil then
@@ -714,8 +715,8 @@ function GUI.Slider.New( gameObject, params )
     
     gameObject.slider = slider
     gameObject:AddTag( "guiComponent" )
-    if gameObject:GetScriptedBehavior( GUI.Config.behaviorPaths.slider ) == nil then
-        gameObject:AddScriptedBehavior( GUI.Config.behaviorPaths.slider )
+    if gameObject:GetScriptedBehavior( GUI.Config.slider.behaviorPath ) == nil then
+        gameObject:AddScriptedBehavior( GUI.Config.slider.behaviorPath )
     end
     
     Daneel.Debug.StackTrace.EndFunction()
