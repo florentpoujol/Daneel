@@ -1,5 +1,5 @@
 -- Hud.lua
--- Scripted behavior for Daneel.GUI.Hud component.
+-- Scripted behavior for GUI.Hud component.
 --
 -- Last modified for v1.2.0
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
@@ -30,7 +30,7 @@ function Behavior:Awake()
         end
 
         -- allow the gameObject to stay at the same position than defined in the scene
-        local position, layer = Daneel.GUI.Hud.ToHudPosition(self.gameObject.transform.position)
+        local position, layer = GUI.Hud.ToHudPosition(self.gameObject.transform.position)
         if params.position == nil and params.localPosition == nil then
             params.position = position
         end

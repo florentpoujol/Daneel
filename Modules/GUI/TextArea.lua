@@ -1,5 +1,5 @@
 -- TextArea.lua
--- Scripted behavior for Daneel.GUI.TextArea component.
+-- Scripted behavior for GUI.TextArea component.
 --
 -- Last modified for v1.2.0
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.

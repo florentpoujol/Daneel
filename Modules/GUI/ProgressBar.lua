@@ -1,5 +1,5 @@
 -- ProgressBar.lua
--- Scripted behavior for Daneel.GUI.PogressBar component.
+-- Scripted behavior for GUI.PogressBar component.
 --
 -- Last modified for v1.2.0
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.

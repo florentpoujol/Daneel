@@ -142,7 +142,7 @@ function Daneel.Utilities.AllowDynamicGettersAndSetters( Object, ancestors )
 end
 
 --- Returns the value of any global variable (including nested tables) from its name as a string.
--- When the variable is nested in one or several tables (like Daneel.GUI.Hud), put a dot between the names.
+-- When the variable is nested in one or several tables (like GUI.Hud), put a dot between the names.
 -- @param name (string) The variable name.
 -- @return (mixed) The variable value, or nil.
 function Daneel.Utilities.GetValueFromName(name)
@@ -416,7 +416,7 @@ end
 
 --- Returns the name as a string of the global variable (including nested tables) whose value is provided.
 -- This only works if the value of the variable is a table or a function.
--- When the variable is nested in one or several tables (like Daneel.GUI.Hud), it must have been set in the 'userObject' table in the config if not already part of CraftStudio or Daneel.
+-- When the variable is nested in one or several tables (like GUI.Hud), it must have been set in the 'userObject' table in the config if not already part of CraftStudio or Daneel.
 -- @param value (table or function) Any global variable, any object from CraftStudio or Daneel or objects whose name is set in 'userObjects' in the Daneel.Config.
 -- @return (string) The name, or nil.
 function Daneel.Debug.GetNameFromValue(value)
@@ -970,7 +970,7 @@ function Daneel.Load()
             end
 
             local userConfig = {}
-            local functionName = Daneel.Debug.GetNameFromvalue( moduleObject ) .. "Config"
+            local functionName = Daneel.Debug.GetNameFromValue( moduleObject ) .. "Config"
             if Daneel.Utilities.GlobalExists( functionName ) then
                 userConfig = _G[ functionName ]
                 if type( userConfig ) == "function" then

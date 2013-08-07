@@ -1,5 +1,5 @@
 -- Slider.lua
--- Scripted behavior for Daneel.GUI.Slider component.
+-- Scripted behavior for GUI.Slider component.
 --
 -- Last modified for v1.2.0
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.

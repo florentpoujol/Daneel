@@ -1,5 +1,5 @@
 -- Toggle.lua
--- Scripted behavior for Daneel.GUI.Toggle component.
+-- Scripted behavior for GUI.Toggle component.
 --
 -- Last modified for v1.2.0
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
