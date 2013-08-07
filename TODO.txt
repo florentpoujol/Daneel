@@ -23,6 +23,8 @@ IDEAS
 
     charger unmodule = l'ajouter en tant que scripted behavior
 
+    - pouvoir accéder au enfant d'un gameObject en écrivant sont nom, comme les component
+
     -----
     GUI
 
@@ -172,7 +174,7 @@ A implémenter
     - mettre tout ce qui est dépendant de Daneel lorsqu'il est chargé dans Module.Load()
         > rendre le plus possible de choses indépendantes
 
-    - pouvoir accéder au enfant d'un gameObject en écrivant sont nom, comme les component
+    - corriger erreur dans GUI, voir comme dans toggle (faire comp:Set( params ) après la metatable)
 
 
 ==========

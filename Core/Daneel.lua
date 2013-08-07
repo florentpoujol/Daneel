@@ -978,7 +978,7 @@ function Daneel.Load()
                 end
             end
             
-            moduleObject.Config = table.merge( moduleObject.Config, userConfig )
+            moduleObject.Config = table.deepmerge( moduleObject.Config, userConfig )
         end
     end
 
@@ -989,7 +989,7 @@ function Daneel.Load()
             userConfig = userConfig()
         end
     end
-    Daneel.Config = table.merge( Daneel.Config, userConfig )
+    Daneel.Config = table.deepmerge( Daneel.Config, userConfig )
     
     if Daneel.Config.debug.enableDebug and Daneel.Config.debug.enableStackTrace then
         SetNewError()
