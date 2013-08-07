@@ -27,8 +27,6 @@ function Lang.Config()
 end
 
 function Lang.Load()
-    Daneel.Config.lang = Lang.Config
-
     for i, language in ipairs( Lang.Config.languageNames ) do
         local functionName = "Lang" .. language:ucfirst()
 
@@ -52,8 +50,9 @@ function Lang.Load()
 end
 
 function Lang.Awake()
-    Lang.Update = Lang.Update2
-    Lang.Update2 = nil
+    if Lang.Update == nil and Lang.Update2 ~= nil then
+        Lang.Update = Lang.Update2
+    end
     
     Daneel.Event.Listen( "OnSceneLoad", function() 
         Lang.gameObjectsToUpdate = {}

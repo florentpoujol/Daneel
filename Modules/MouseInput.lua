@@ -1,4 +1,4 @@
--- MouseInputs.lua
+-- MouseInput.lua
 -- Enable mouse interactions with game objects when added to a game object with a camera component.
 --
 -- Last modified for v1.2.0
@@ -26,7 +26,7 @@ updateInterval number 10
 /PublicProperties]]
 
 function Behavior:Awake()
-    Daneel.Debug.StackTrace.BeginFunction( "MouseInputs:Awake" )
+    Daneel.Debug.StackTrace.BeginFunction( "MouseInput:Awake" )
 
     Daneel.Event.Listen( "OnLeftMouseButtonJustPressed", self.gameObject )
     Daneel.Event.Listen( "OnLeftMouseButtonDown", self.gameObject )
@@ -40,7 +40,7 @@ function Behavior:Awake()
 
     if self.gameObject.camera == nil then
         CraftStudio.Destroy( self )
-        error( "MouseInputs:Awake() : GameObject with name '" .. self.gameObject:GetName() .. "' has no camera component attached." )
+        error( "MouseInput:Awake() : GameObject with name '" .. self.gameObject:GetName() .. "' has no camera component attached." )
     end  
 
     self.frameCount = 0
@@ -59,7 +59,7 @@ function Behavior:OnLeftMouseButtonJustPressed()
                     
                     if 
                         gameObject.lastLeftClickFrame ~= nil and 
-                        Daneel.Time.frameCount <= gameObject.lastLeftClickFrame + Daneel.Config.input.doubleClickDelay
+                        Daneel.Time.frameCount <= gameObject.lastLeftClickFrame + MouseInput.Config.doubleClickDelay
                     then
                         Daneel.Event.Fire( gameObject, "OnDoubleClick", gameObject )
                     end

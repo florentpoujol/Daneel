@@ -180,7 +180,7 @@ function GameObject.Set( gameObject, params )
     -- all other keys/values
     for key, value in pairs( params ) do
 
-        -- if key is a script path in Daneel.Config.scriptPath or a script alias
+        -- if key is a script path in CS.Config.scriptPath or a script alias
         if CS.Config.scriptPaths[key] ~= nil or table.containsvalue( CS.Config.scriptPaths, key ) then
             local scriptPath = key
             if CS.Config.scriptPaths[key] ~= nil then
@@ -444,7 +444,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
 
     local component = gameObject:CreateComponent( componentType )
 
-    local defaultComponentParams = Daneel.Config.craftStudio[ componentType:lcfirst() ]
+    local defaultComponentParams = CS.Config[ componentType:lcfirst() ]
     if defaultComponentParams ~= nil then
         params = table.merge( defaultComponentParams, params )
     end

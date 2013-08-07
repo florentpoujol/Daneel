@@ -8,37 +8,34 @@ CS.DaneelModules[ "Draw" ] = {}
 
 function Draw.Config()
     local config = {
-        
-            line = {
-                direction = Vector3:Left(),
-                length = 2,
-                width = 0.1,
-                endPosition = nil
-            },
+        lineRenderer = {
+            direction = Vector3:Left(),
+            length = 2,
+            width = 0.1,
+            endPosition = nil
+        },
 
-            circle = {
+        circleRenderer = {
 
-            },
-            
-            componentObjects = {
-                ["Draw.LineRenderer"] = Draw.LineRenderer,
-                ["Draw.CircleRenderer"] = Draw.CircleRenderer,
-            },
+        },
+
+        trailRenderer = {
+
+        },
         
+        componentObjects = {
+            ["Draw.LineRenderer"] = Draw.LineRenderer,
+            ["Draw.CircleRenderer"] = Draw.CircleRenderer,
+        },
     }
-    Draw.Config = config.draw
-    
-    Draw.Config.componentTypes = table.getkeys( Draw.Config.componentObjects )
 
-    Daneel.Config.allComponentObjects   = table.merge( Daneel.Config.allComponentObjects, Draw.Config.componentObjects )
-    Daneel.Config.allComponentTypes     = table.merge( Daneel.Config.allComponentTypes, Draw.Config.componentTypes )
-    Daneel.Config.allObjects            = table.merge( Daneel.Config.allObjects, Draw.Config.componentObjects )
+    config.componentTypes = table.getkeys( config.componentObjects )
+
+    Daneel.Config.allComponentObjects   = table.merge( Daneel.Config.allComponentObjects, config.componentObjects )
+    Daneel.Config.allComponentTypes     = table.merge( Daneel.Config.allComponentTypes, config.componentTypes )
+    Daneel.Config.allObjects            = table.merge( Daneel.Config.allObjects, config.componentObjects )
 
     return config
-end
-
-function Draw.Load()
-    Daneel.Config.draw = Draw.Config
 end
 
 
@@ -60,7 +57,7 @@ function Draw.LineRenderer.New( gameObject, params )
     setmetatable( line, Draw.LineRenderer )
     gameObject.lineRenderer = line
 
-    line:Set( table.merge( Daneel.Config.draw.lineRenderer, params ) )
+    line:Set( table.merge( Draw.Config.lineRenderer, params ) )
 
     return line
 end

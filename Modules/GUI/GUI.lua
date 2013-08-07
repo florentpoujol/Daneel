@@ -33,100 +33,95 @@ CS.DaneelModules[ "GUI" ] = {}
 
 function GUI.Config()
     local config = {
-        
-            screenSize = CraftStudio.Screen.GetSize(),
-            cameraName = "HUDCamera",  -- Name of the gameObject who has the orthographic camera used to render the HUD
-            cameraGO = nil, -- the corresponding GameObject, set at runtime
-            originGO = nil, -- "parent" gameObject for global hud positioning, created at runtime in DaneelModuleGUIAwake
-            originPosition = Vector3:New(0),
+        screenSize = CraftStudio.Screen.GetSize(),
+        cameraName = "HUDCamera",  -- Name of the gameObject who has the orthographic camera used to render the HUD
+        cameraGO = nil, -- the corresponding GameObject, set at runtime
+        originGO = nil, -- "parent" gameObject for global hud positioning, created at runtime in DaneelModuleGUIAwake
+        originPosition = Vector3:New(0),
 
-            -- Default GUI components settings
-            hud = {
-                localPosition = Vector2.New(0, 0),
-                layer = 1,
-            },
+        -- Default GUI components settings
+        hud = {
+            localPosition = Vector2.New(0, 0),
+            layer = 1,
+        },
 
-            toggle = {
-                isChecked = false, -- false = unchecked, true = checked
-                text = "Toggle",
-                -- ':text' represents the toggle's text
-                checkedMark = ":text",
-                uncheckedMark = ":text",
-                checkedModel = nil,
-                uncheckedModel = nil,
-            },
+        toggle = {
+            isChecked = false, -- false = unchecked, true = checked
+            text = "Toggle",
+            -- ':text' represents the toggle's text
+            checkedMark = ":text",
+            uncheckedMark = ":text",
+            checkedModel = nil,
+            uncheckedModel = nil,
+        },
 
-            progressBar = {
-                height = 1,
-                minValue = 0,
-                maxValue = 100,
-                minLength = 0,
-                maxLength = 5, -- in units
-                progress = "100%",
-            },
+        progressBar = {
+            height = 1,
+            minValue = 0,
+            maxValue = 100,
+            minLength = 0,
+            maxLength = 5, -- in units
+            progress = "100%",
+        },
 
-            slider = {
-                minValue = 0,
-                maxValue = 100,
-                length = 5, -- 5 units
-                axis = "x",
-                value = "0%",
-            },
+        slider = {
+            minValue = 0,
+            maxValue = 100,
+            length = 5, -- 5 units
+            axis = "x",
+            value = "0%",
+        },
 
-            input = {
-                isFocused = false,
-                maxLength = 99999,
-                characterRange = nil,
-            },
+        input = {
+            isFocused = false,
+            maxLength = 99999,
+            characterRange = nil,
+        },
 
-            textArea = {
-                areaWidth = 0, -- max line length, in units or pixel as a string (0 = no max length)
-                wordWrap = false, -- when a ligne is longer than the area width: cut the ligne when false, put the rest of the ligne in one or several lignes when true
-                newLine = "\n", -- end of ligne delimiter
-                lineHeight = 1, -- in units or pixels as a string
-                verticalAlignment = "top",
+        textArea = {
+            areaWidth = 0, -- max line length, in units or pixel as a string (0 = no max length)
+            wordWrap = false, -- when a ligne is longer than the area width: cut the ligne when false, put the rest of the ligne in one or several lignes when true
+            newLine = "\n", -- end of ligne delimiter
+            lineHeight = 1, -- in units or pixels as a string
+            verticalAlignment = "top",
 
-                font = nil,
-                text = "Text\nArea",
-                alignment = nil,
-                opacity = nil,
-            },
+            font = nil,
+            text = "Text\nArea",
+            alignment = nil,
+            opacity = nil,
+        },
 
-            behaviorPaths = {
-                toggle = "Daneel/Modules/GUI/Toggle",
-                slider = "Daneel/Modules/GUI/Slider",
-            },
-        
-            componentObjects = {
-                ["GUI.Hud"] = GUI.Hud,
-                ["GUI.Toggle"] = GUI.Toggle,
-                ["GUI.ProgressBar"] = GUI.ProgressBar,
-                ["GUI.Slider"] = GUI.Slider,
-                ["GUI.Input"] = GUI.Input,
-                ["GUI.TextArea"] = GUI.TextArea,
-            },
+        behaviorPaths = {
+            toggle = "Daneel/Modules/GUI/Toggle",
+            slider = "Daneel/Modules/GUI/Slider",
+        },
+    
+        componentObjects = {
+            ["GUI.Hud"] = GUI.Hud,
+            ["GUI.Toggle"] = GUI.Toggle,
+            ["GUI.ProgressBar"] = GUI.ProgressBar,
+            ["GUI.Slider"] = GUI.Slider,
+            ["GUI.Input"] = GUI.Input,
+            ["GUI.TextArea"] = GUI.TextArea,
+        },
 
-            objects = {
-                Vector2 = Vector2,
-            },
-        
+        objects = {
+            Vector2 = Vector2,
+        },
     }
 
-    GUI.Config = config
+    config.componentTypes = table.getkeys( config.componentObjects )
 
-    GUI.Config.componentTypes = table.getkeys( GUI.Config.componentObjects )
-
-    Daneel.Config.allComponentObjects   = table.merge( Daneel.Config.allComponentObjects, GUI.Config.componentObjects )
-    Daneel.Config.allComponentTypes     = table.merge( Daneel.Config.allComponentTypes, GUI.Config.componentTypes )
-    Daneel.Config.allObjects            = table.merge( Daneel.Config.allObjects, GUI.Config.componentObjects, GUI.Config.objects )
+    Daneel.Config.allComponentObjects   = table.merge( Daneel.Config.allComponentObjects, config.componentObjects )
+    Daneel.Config.allComponentTypes     = table.merge( Daneel.Config.allComponentTypes, config.componentTypes )
+    Daneel.Config.allObjects            = table.merge( Daneel.Config.allObjects, config.componentObjects, config.objects )
 
     return config
 end
 
 
 function GUI.Load()
-    Daneel.Config.gui = GUI.Config
-    
+
     --- Update the gameObject's scale to make the text appear the provided width.
     -- @param textRenderer (TextRenderer) The textRenderer.
     -- @param width (number or string) The text's width in units or pixels.
@@ -158,7 +153,7 @@ function GUI.Awake()
         smallSideSize = screenSize.x
     end
 
-    GUI.Config.cameraGO = GameObject.Get( Daneel.Config.gui.cameraName )
+    GUI.Config.cameraGO = GameObject.Get( GUI.Config.cameraName )
 
     if GUI.Config.cameraGO ~= nil then
         -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
@@ -172,7 +167,7 @@ function GUI.Awake()
             0
         ) )
         -- the HUDOrigin is now at the top-left corner of the screen
-        Daneel.Config.gui.originPosition = Daneel.Config.gui.originGO.transform:GetPosition()
+        GUI.Config.originPosition = GUI.Config.originGO.transform:GetPosition()
     end
 end
 
@@ -191,8 +186,8 @@ function GUI.Hud.ToHudPosition(position)
     local errorHead = "GUI.Hud.ToHudPosition(hud, position) : "
     Daneel.Debug.CheckArgType(position, "position", "Vector3", errorHead)
 
-    local layer = Daneel.Config.gui.originPosition.z - position.z
-    position = position - Daneel.Config.gui.originPosition
+    local layer = GUI.Config.originPosition.z - position.z
+    position = position - GUI.Config.originPosition
     position = Vector2(
         position.x / GUI.pixelsToUnits,
         -position.y / GUI.pixelsToUnits
@@ -208,7 +203,7 @@ end
 function GUI.Hud.New( gameObject, params )
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.New", gameObject, params )
     if GUI.Config.cameraGO == nil then
-        error("GUI was not set up or the HUD Camera gameObject with name '"..Daneel.Config.gui.cameraName.."' (value of 'gui.cameraName') was not found. Be sure that you call Daneel.Awake() early on from your scene and check your Daneel.Config.")
+        error("GUI was not set up or the HUD Camera gameObject with name '"..GUI.Config.cameraName.."' (value of 'cameraName' in the config) was not found.")
     end
     local errorHead = "GUI.Hud.New( gameObject, params ) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead )
@@ -219,7 +214,7 @@ function GUI.Hud.New( gameObject, params )
     hud.Id = Daneel.Cache.GetId()
     gameObject.hud = hud
 
-    hud:Set( table.merge( Daneel.Config.gui.hud, params ) )
+    hud:Set( table.merge( GUI.Config.hud, params ) )
     Daneel.Debug.StackTrace.EndFunction()
     return hud
 end
@@ -234,7 +229,7 @@ function GUI.Hud.SetPosition(hud, position)
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
     Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
 
-    local newPosition = Daneel.Config.gui.originPosition + 
+    local newPosition = GUI.Config.originPosition + 
     Vector3:New(
         position.x * GUI.pixelsToUnits,
         -position.y * GUI.pixelsToUnits,
@@ -253,7 +248,7 @@ function GUI.Hud.GetPosition(hud)
     local errorHead = "GUI.Hud.GetPosition(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
     
-    local position = hud.gameObject.transform.position - Daneel.Config.gui.originPosition
+    local position = hud.gameObject.transform.position - GUI.Config.originPosition
     position = position / GUI.pixelsToUnits
     position = Vector2.New(math.round(position.x), math.round(-position.y))
     Daneel.Debug.StackTrace.EndFunction()
@@ -270,7 +265,7 @@ function GUI.Hud.SetLocalPosition(hud, position)
     Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
 
     local parent = hud.gameObject.parent
-    if parent == nil then parent = Daneel.Config.gui.originGO end
+    if parent == nil then parent = GUI.Config.originGO end
     local newPosition = parent.transform.position + 
     Vector3:New(
         position.x * GUI.pixelsToUnits,
@@ -291,7 +286,7 @@ function GUI.Hud.GetLocalPosition(hud)
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
     
     local parent = hud.gameObject.parent
-    if parent == nil then parent = Daneel.Config.gui.originGO end
+    if parent == nil then parent = GUI.Config.originGO end
     local position = hud.gameObject.transform.position - parent.transform.position
     position = position / GUI.pixelsToUnits
     position = Vector2.New(math.round(position.x), math.round(-position.y))
@@ -308,7 +303,7 @@ function GUI.Hud.SetLayer(hud, layer)
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
     Daneel.Debug.CheckArgType(layer, "layer", "number", errorHead)
 
-    local originLayer = Daneel.Config.gui.originPosition.z
+    local originLayer = GUI.Config.originPosition.z
     local currentPosition = hud.gameObject.transform.position
     hud.gameObject.transform.position = Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer)
     Daneel.Debug.StackTrace.EndFunction()
@@ -322,7 +317,7 @@ function GUI.Hud.GetLayer(hud)
     local errorHead = "GUI.Hud.GetLyer(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
 
-    local originLayer = Daneel.Config.gui.originPosition.z
+    local originLayer = GUI.Config.originPosition.z
     local layer = originLayer - hud.gameObject.transform.position.z 
     Daneel.Debug.StackTrace.EndFunction()
     return layer
@@ -338,7 +333,7 @@ function GUI.Hud.SetLocalLayer(hud, layer)
     Daneel.Debug.CheckArgType(layer, "layer", "number", errorHead)
 
     local parent = hud.gameObject.parent
-    if parent == nil then parent = Daneel.Config.gui.originGO end
+    if parent == nil then parent = GUI.Config.originGO end
     local originLayer = parent.transform.position.z
     local currentPosition = hud.gameObject.transform.position
     hud.gameObject.transform.position = Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer)
@@ -354,7 +349,7 @@ function GUI.Hud.GetLocalLayer(hud)
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
 
     local parent = hud.gameObject.parent
-    if parent == nil then parent = Daneel.Config.gui.originGO end
+    if parent == nil then parent = GUI.Config.originGO end
     local originLayer = parent.transform.position.z
     local layer = originLayer - hud.gameObject.transform.position.z 
     Daneel.Debug.StackTrace.EndFunction()
@@ -377,7 +372,7 @@ function GUI.Toggle.New( gameObject, params )
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
     
-    local toggle = table.merge( Daneel.Config.gui.toggle, params )
+    local toggle = table.merge( GUI.Config.toggle, params )
     toggle.defaultText = toggle.text
     toggle.text = nil
     toggle.gameObject = gameObject
@@ -386,8 +381,8 @@ function GUI.Toggle.New( gameObject, params )
     
     gameObject.toggle = toggle
     gameObject:AddTag( "guiComponent" )
-    if gameObject:GetScriptedBehavior( Daneel.Config.gui.behaviorPaths.toggle ) == nil then
-        gameObject:AddScriptedBehavior( Daneel.Config.gui.behaviorPaths.toggle )
+    if gameObject:GetScriptedBehavior( GUI.Config.behaviorPaths.toggle ) == nil then
+        gameObject:AddScriptedBehavior( GUI.Config.behaviorPaths.toggle )
     end
 
     if gameObject.textRenderer ~= nil and gameObject.textRenderer:GetText() ~= nil then
@@ -564,12 +559,12 @@ function GUI.ProgressBar.New( gameObject, params )
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
 
-    local progressBar = table.merge( Daneel.Config.gui.progressBar, params )
+    local progressBar = table.merge( GUI.Config.progressBar, params )
     progressBar.gameObject = gameObject
     progressBar.Id = Daneel.Cache.GetId()
     progressBar.progress = nil -- remove the property to allow to use the dynamic getter/setter
     setmetatable( progressBar, GUI.ProgressBar )
-    progressBar.progress = Daneel.Config.gui.progressBar.progress
+    progressBar.progress = GUI.Config.progressBar.progress
     
     gameObject.progressBar = progressBar
 
@@ -709,18 +704,18 @@ function GUI.Slider.New( gameObject, params )
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
 
-    local slider = table.merge( Daneel.Config.gui.slider, params )
+    local slider = table.merge( GUI.Config.slider, params )
     slider.gameObject = gameObject
     slider.Id = Daneel.Cache.GetId()
     slider.startPosition = gameObject.transform.position
     slider.value = nil
     setmetatable( slider, GUI.Slider )
-    slider.value = Daneel.Config.gui.slider.value
+    slider.value = GUI.Config.slider.value
     
     gameObject.slider = slider
     gameObject:AddTag( "guiComponent" )
-    if gameObject:GetScriptedBehavior( Daneel.Config.gui.behaviorPaths.slider ) == nil then
-        gameObject:AddScriptedBehavior( Daneel.Config.gui.behaviorPaths.slider )
+    if gameObject:GetScriptedBehavior( GUI.Config.behaviorPaths.slider ) == nil then
+        gameObject:AddScriptedBehavior( GUI.Config.behaviorPaths.slider )
     end
     
     Daneel.Debug.StackTrace.EndFunction()
@@ -807,7 +802,7 @@ function GUI.Input.New( gameObject, params )
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
 
-    local input = table.merge( Daneel.Config.gui.input, params )
+    local input = table.merge( GUI.Config.input, params )
     input.gameObject = gameObject
     input.Id = Daneel.Cache.GetId()
     -- adapted from Blast Turtles
@@ -922,7 +917,7 @@ function GUI.TextArea.New( gameObject, params )
     setmetatable( textArea, GUI.TextArea )
 
     gameObject:AddComponent( "TextRenderer" ) -- used to store the TextRenderer properties and mesure the lines length in SetText()
-    textArea:Set( table.merge( Daneel.Config.gui.textArea, params ) )
+    textArea:Set( table.merge( GUI.Config.textArea, params ) )
 
     gameObject.textArea = textArea
     Daneel.Debug.StackTrace.EndFunction()
