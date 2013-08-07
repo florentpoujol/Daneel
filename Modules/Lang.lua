@@ -16,7 +16,7 @@ table.insert( CS.DaneelModules, Lang )
 
 function Lang.Config()
     return {
-        language = {
+        lang = {
             languageNames = {}, -- list of the languages supported by the game
             
             current = nil, -- Current language
@@ -29,7 +29,7 @@ function Lang.Config()
 end
 
 function Lang.Load()
-    for i, language in ipairs( Daneel.Config.language.languageNames ) do
+    for i, language in ipairs( Daneel.Config.lang.languageNames ) do
         local functionName = "Lang" .. language:ucfirst()
 
         if Daneel.Utilities.GlobalExists( functionName ) then
@@ -39,12 +39,12 @@ function Lang.Load()
         end
     end
 
-    if Daneel.Config.language.default == nil then
-        Daneel.Config.language.default = Daneel.Config.language.languageNames[1]
+    if Daneel.Config.lang.default == nil then
+        Daneel.Config.lang.default = Daneel.Config.lang.languageNames[1]
     end
 
-    if Daneel.Config.language.current == nil then
-        Daneel.Config.language.current = Daneel.Config.language.default
+    if Daneel.Config.lang.current == nil then
+        Daneel.Config.lang.current = Daneel.Config.lang.default
     end
 
     Lang.Update2 = Lang.Update
@@ -62,8 +62,8 @@ end
 
 -- Lang.Start runs before every other Behavior:Start() function of the scene
 function Lang.Start()
-    if Daneel.Config.language.current ~= nil then
-        Lang.Update( Daneel.Config.language.current, true )
+    if Daneel.Config.lang.current ~= nil then
+        Lang.Update( Daneel.Config.lang.current, true )
     end
 end
 
@@ -83,13 +83,13 @@ function Lang.Get( key, replacements )
     Daneel.Debug.StackTrace.BeginFunction( "Lang.Get", key, replacements )
     local errorHead = "Lang.Get( key[, replacements] ) : "
     Daneel.Debug.CheckArgType( key, "key", "string", errorHead )
-    local currentLanguage = Daneel.Config.language.current
-    local defaultLanguage = Daneel.Config.language.default
-    local searchInDefault = Daneel.Config.language.searchInDefault
+    local currentLanguage = Daneel.Config.lang.current
+    local defaultLanguage = Daneel.Config.lang.default
+    local searchInDefault = Daneel.Config.lang.searchInDefault
 
     local keys = key:split( "." )
     local language = currentLanguage
-    if table.containsvalue( Daneel.Config.language.languageNames, keys[1] ) then
+    if table.containsvalue( Daneel.Config.lang.languageNames, keys[1] ) then
         language = table.remove( keys, 1 )
     end
     
@@ -116,7 +116,7 @@ function Lang.Get( key, replacements )
             if language ~= defaultLanguage and searchInDefault == true then  
                 lines = Lang.Get( defaultLanguage.."."..noLangKey, replacements )
             else -- already default language or don't want to search in
-                lines = Daneel.Config.language.keyNotFound
+                lines = Daneel.Config.lang.keyNotFound
             end
 
             break
@@ -168,10 +168,10 @@ function Lang.Update( language )
     Daneel.Debug.StackTrace.BeginFunction( "Lang.Update", language )
     local errorHead = "Lang.Update( language ) : "
     Daneel.Debug.CheckArgType( language, "language", "string", errorHead )
-    language = Daneel.Debug.CheckArgValue( language, "language", Daneel.Config.language.languageNames, errorHead )
+    language = Daneel.Debug.CheckArgValue( language, "language", Daneel.Config.lang.languageNames, errorHead )
     
     Lang.cache = {} -- ideally only the items that do not begins by a language name should be deleted
-    Daneel.Config.language.current = language
+    Daneel.Config.lang.current = language
     for gameObject, data in pairs( Lang.gameObjectsToUpdate ) do
         local text = Lang.Get( data.key, data.replacements )
         
