@@ -1098,7 +1098,7 @@ function Behavior:Update()
 
     -- HotKeys
     -- fire an event whenever a registered button is pressed
-    for i, buttonName in ipairs( Daneel.Config.input.buttons ) do
+    for i, buttonName in ipairs( Daneel.Config.daneel.buttonNames ) do
         local ButtonName = buttonName:ucfirst()
 
         if CraftStudio.Input.WasButtonJustPressed( buttonName ) then

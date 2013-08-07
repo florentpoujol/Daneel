@@ -73,7 +73,7 @@ function CraftStudio.Config()
     CS.Config.assetTypes           = table.getkeys( CS.Config.assetObjects )
 
     Daneel.Config.allComponentObjects       = table.merge( Daneel.Config.allComponentObjects, CS.Config.componentObjects )
-    Daneel.Config.allComponentTypes         = table.merge( Daneel.Config.allComponentTypes, CS.Config.componentObjects )
+    Daneel.Config.allComponentTypes         = table.merge( Daneel.Config.allComponentTypes, CS.Config.componentTypes )
     
     Daneel.Config.allObjects = table.merge(
         Daneel.Config.allObjects,
@@ -88,7 +88,7 @@ end
 
 function CraftStudio.Load()
     -- ScriptAlias
-    for alias, path in pairs( CS.Config.scriptPaths ) do
+    for alias, path in pairs( Daneel.Config.craftStudio.scriptPaths ) do
         local script = CraftStudio.FindAsset( path, "Script" )
 
         if script ~= nil then
@@ -98,7 +98,7 @@ function CraftStudio.Load()
                 return "ScriptedBehavior: " .. tostring( scriptedBehavior.inner ):sub( 2, 20 ) .. ": '" .. path .. "'"
             end
         else
-            CS.Config.scriptPaths[ alias ] = nil
+            Daneel.Config.craftStudio.scriptPaths[ alias ] = nil
             if Daneel.Config.debug.enableDebug then
                 print( "Daneel.Load() : WARNING : item with key '" .. alias .. "' and value '" .. path .. "' in 'Daneel.Config.craftStudio.scriptPaths' is not a valid script path." )
             end
@@ -241,8 +241,8 @@ function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
 
     -- check if assetPath is a script alias
     local scriptAlias = assetPath
-    if CS.Config.scriptPaths[ scriptAlias ] ~= nil then 
-        assetPath = CS.Config.scriptPaths[ scriptAlias ]
+    if Daneel.Config.craftStudio.scriptPaths[ scriptAlias ] ~= nil then 
+        assetPath = Daneel.Config.craftStudio.scriptPaths[ scriptAlias ]
         assetType = "Script"
     end
 
@@ -668,7 +668,7 @@ local OriginalIntersectsPlane = Ray.IntersectsPlane
 -- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance' and 'hitLocation' properties (if any).
 function Ray.IntersectsPlane( ray, plane, returnRaycastHit )
     Daneel.Debug.StackTrace.BeginFunction( "Ray.IntersectsPlane", ray, plane, returnRaycastHit )
-    local errorHead = "Ray.IntersectsPlane( ray, plane[, returnRaycastHit] )"
+    local errorHead = "Ray.IntersectsPlane( ray, plane[, returnRaycastHit] ) : "
     Daneel.Debug.CheckArgType( ray, "ray", "Ray", errorHead )
     Daneel.Debug.CheckArgType( plane, "plane", "Plane", errorHead )
     returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
@@ -695,7 +695,7 @@ local OriginalIntersectsModelRenderer = Ray.IntersectsModelRenderer
 -- @return (Vector3) If 'returnRaycastHit' argument is false : the normal of the hit face, or nil
 function Ray.IntersectsModelRenderer( ray, modelRenderer, returnRaycastHit )
     Daneel.Debug.StackTrace.BeginFunction( "Ray.IntersectsModelRenderer", ray, modelRenderer, returnRaycastHit )
-    local errorHead = "Ray.IntersectsModelRenderer( ray, modelRenderer[, returnRaycastHit] )"
+    local errorHead = "Ray.IntersectsModelRenderer( ray, modelRenderer[, returnRaycastHit] ) : "
     Daneel.Debug.CheckArgType( ray, "ray", "Ray", errorHead )
     Daneel.Debug.CheckArgType( modelRenderer, "modelRenderer", "ModelRenderer", errorHead )
     returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
@@ -727,7 +727,7 @@ local OriginalIntersectsMapRenderer = Ray.IntersectsMapRenderer
 -- @return (Vector3) If 'returnRaycastHit' argument is false : the location of the adjacent block, or nil
 function Ray.IntersectsMapRenderer( ray, mapRenderer, returnRaycastHit )
     Daneel.Debug.StackTrace.BeginFunction( "Ray.IntersectsMapRenderer", ray, mapRenderer, returnRaycastHit )
-    local errorHead = "Ray.IntersectsMapRenderer( ray, mapRenderer[, returnRaycastHit] )"
+    local errorHead = "Ray.IntersectsMapRenderer( ray, mapRenderer[, returnRaycastHit] ) : "
     Daneel.Debug.CheckArgType( ray, "ray", "Ray", errorHead )
     Daneel.Debug.CheckArgType( mapRenderer, "mapRenderer", "MapRenderer", errorHead )
     returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
@@ -761,7 +761,7 @@ local OriginalIntersectsTextRenderer = Ray.IntersectsTextRenderer
 -- @return (Vector3) If 'returnRaycastHit' argument is false : the normal of the hit face, or nil
 function Ray.IntersectsTextRenderer( ray, textRenderer, returnRaycastHit )
     Daneel.Debug.StackTrace.BeginFunction( "Ray.IntersectsTextRenderer", ray, textRenderer, returnRaycastHit )
-    local errorHead = "Ray.IntersectsTextRenderer( ray, textRenderer[, returnRaycastHit] )"
+    local errorHead = "Ray.IntersectsTextRenderer( ray, textRenderer[, returnRaycastHit] ) : "
     Daneel.Debug.CheckArgType( ray, "ray", "Ray", errorHead )
     Daneel.Debug.CheckArgType( textRenderer, "textRenderer", "TextRenderer", errorHead )
     returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
