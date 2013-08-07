@@ -175,6 +175,7 @@ A implémenter
         > rendre le plus possible de choses indépendantes
 
     - corriger erreur dans GUI, voir comme dans toggle (faire comp:Set( params ) après la metatable)
+    - passer le code dans component:Set() relatif aux composant de GUI dans le fichier GUI
 
 
 ==========
