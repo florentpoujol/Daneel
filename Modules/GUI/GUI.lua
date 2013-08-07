@@ -29,11 +29,11 @@ end
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
 end
-table.insert( CS.DaneelModules, GUI )
+CS.DaneelModules[ "GUI" ] = {}
 
 function GUI.Config()
     local config = {
-        gui = {
+        
             screenSize = CraftStudio.Screen.GetSize(),
             cameraName = "HUDCamera",  -- Name of the gameObject who has the orthographic camera used to render the HUD
             cameraGO = nil, -- the corresponding GameObject, set at runtime
@@ -109,10 +109,10 @@ function GUI.Config()
             objects = {
                 Vector2 = Vector2,
             },
-        },
+        
     }
 
-    GUI.Config = config.gui
+    GUI.Config = config
 
     GUI.Config.componentTypes = table.getkeys( GUI.Config.componentObjects )
 
@@ -125,7 +125,8 @@ end
 
 
 function GUI.Load()
-
+    Daneel.Config.gui = GUI.Config
+    
     --- Update the gameObject's scale to make the text appear the provided width.
     -- @param textRenderer (TextRenderer) The textRenderer.
     -- @param width (number or string) The text's width in units or pixels.

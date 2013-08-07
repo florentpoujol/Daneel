@@ -4,11 +4,11 @@ Draw = {}
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
 end
-table.insert( CS.DaneelModules, Draw )
+CS.DaneelModules[ "Draw" ] = {}
 
 function Draw.Config()
     local config = {
-        draw = {
+        
             line = {
                 direction = Vector3:Left(),
                 length = 2,
@@ -24,7 +24,7 @@ function Draw.Config()
                 ["Draw.LineRenderer"] = Draw.LineRenderer,
                 ["Draw.CircleRenderer"] = Draw.CircleRenderer,
             },
-        },
+        
     }
     Draw.Config = config.draw
     
@@ -35,6 +35,10 @@ function Draw.Config()
     Daneel.Config.allObjects            = table.merge( Daneel.Config.allObjects, Draw.Config.componentObjects )
 
     return config
+end
+
+function Draw.Load()
+    Daneel.Config.draw = Draw.Config
 end
 
 

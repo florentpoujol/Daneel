@@ -8,78 +8,74 @@
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
 end
-table.insert( CS.DaneelModules, CraftStudio )
+CS.DaneelModules[ "CraftStudio" ] = { "GameObject" }
 
 function CraftStudio.Config()
     local config = {
-        craftStudio = {
-            -- List of the Scripts paths as values and optionally the script alias as the keys.
-            -- Ie :
-            -- "fully-qualified Script path"
-            -- or
-            -- alias = "fully-qualified Script path"
-            --
-            -- Setting a script path here allow you to  :
-            -- * Use the dynamic getters and setters
-            -- * Use component:Set() (for scripted behaviors)
-            -- * Use component:GetId() (for scripted behaviors)
-            -- * If you defined aliases, dynamically access the scripted behavior on the game object via its alias
-            scriptPaths = {},
+        -- List of the Scripts paths as values and optionally the script alias as the keys.
+        -- Ie :
+        -- "fully-qualified Script path"
+        -- or
+        -- alias = "fully-qualified Script path"
+        --
+        -- Setting a script path here allow you to  :
+        -- * Use the dynamic getters and setters
+        -- * Use component:Set() (for scripted behaviors)
+        -- * Use component:GetId() (for scripted behaviors)
+        -- * If you defined aliases, dynamically access the scripted behavior on the game object via its alias
+        scriptPaths = {},
 
-            -- Default CraftStudio's components settings (except Transform)
-            --[[ ie :
-            textRenderer = {
-                font = "MyFont",
-                alignment = "right",
-            },
-            ]]
+        -- Default CraftStudio's components settings (except Transform)
+        --[[ ie :
+        textRenderer = {
+            font = "MyFont",
+            alignment = "right",
+        },
+        ]]
 
-            objects = {
-                GameObject = GameObject,
-                Vector3 = Vector3,
-                Quaternion = Quaternion,
-                Plane = Plane,
-                Ray = Ray,
-            },
+        objects = {
+            GameObject = GameObject,
+            Vector3 = Vector3,
+            Quaternion = Quaternion,
+            Plane = Plane,
+            Ray = Ray,
+        },
 
-            componentObjects = {
-                ScriptedBehavior = ScriptedBehavior,
-                ModelRenderer = ModelRenderer,
-                MapRenderer = MapRenderer,
-                Camera = Camera,
-                Transform = Transform,
-                Physics = Physics,
-                TextRenderer = TextRenderer,
-                NetworkSync = NetworkSync,
-            },
+        componentObjects = {
+            ScriptedBehavior = ScriptedBehavior,
+            ModelRenderer = ModelRenderer,
+            MapRenderer = MapRenderer,
+            Camera = Camera,
+            Transform = Transform,
+            Physics = Physics,
+            TextRenderer = TextRenderer,
+            NetworkSync = NetworkSync,
+        },
 
-            assetObjects = {
-                Script = Script,
-                Model = Model,
-                ModelAnimation = ModelAnimation,
-                Map = Map,
-                TileSet = TileSet,
-                Sound = Sound,
-                Scene = Scene,
-                --Document = Document,
-                Font = Font,
-            },
+        assetObjects = {
+            Script = Script,
+            Model = Model,
+            ModelAnimation = ModelAnimation,
+            Map = Map,
+            TileSet = TileSet,
+            Sound = Sound,
+            Scene = Scene,
+            --Document = Document,
+            Font = Font,
         },
     }
 
-    CS.Config = config.craftStudio
+    config.componentTypes       = table.getkeys( config.componentObjects )
+    config.assetTypes           = table.getkeys( config.assetObjects )
 
-    CS.Config.componentTypes       = table.getkeys( CS.Config.componentObjects )
-    CS.Config.assetTypes           = table.getkeys( CS.Config.assetObjects )
-
-    Daneel.Config.allComponentObjects       = table.merge( Daneel.Config.allComponentObjects, CS.Config.componentObjects )
-    Daneel.Config.allComponentTypes         = table.merge( Daneel.Config.allComponentTypes, CS.Config.componentTypes )
+    Daneel.Config.allComponentObjects       = table.merge( Daneel.Config.allComponentObjects, config.componentObjects )
+    Daneel.Config.allComponentTypes         = table.merge( Daneel.Config.allComponentTypes, config.componentTypes )
     
     Daneel.Config.allObjects = table.merge(
         Daneel.Config.allObjects,
-        CS.Config.objects,
-        CS.Config.componentObjects,
-        CS.Config.assetObjects
+        config.objects,
+        config.componentObjects,
+        config.assetObjects
     )
 
     return config
@@ -88,7 +84,7 @@ end
 
 function CraftStudio.Load()
     -- ScriptAlias
-    for alias, path in pairs( Daneel.Config.craftStudio.scriptPaths ) do
+    for alias, path in pairs( CS.Config.scriptPaths ) do
         local script = CraftStudio.FindAsset( path, "Script" )
 
         if script ~= nil then
@@ -98,9 +94,9 @@ function CraftStudio.Load()
                 return "ScriptedBehavior: " .. tostring( scriptedBehavior.inner ):sub( 2, 20 ) .. ": '" .. path .. "'"
             end
         else
-            Daneel.Config.craftStudio.scriptPaths[ alias ] = nil
+            CS.Config.scriptPaths[ alias ] = nil
             if Daneel.Config.debug.enableDebug then
-                print( "Daneel.Load() : WARNING : item with key '" .. alias .. "' and value '" .. path .. "' in 'Daneel.Config.craftStudio.scriptPaths' is not a valid script path." )
+                print( "Daneel.Load() : WARNING : item with key '" .. alias .. "' and value '" .. path .. "' in 'CS.Config.scriptPaths' is not a valid script path." )
             end
         end
     end
@@ -241,8 +237,8 @@ function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
 
     -- check if assetPath is a script alias
     local scriptAlias = assetPath
-    if Daneel.Config.craftStudio.scriptPaths[ scriptAlias ] ~= nil then 
-        assetPath = Daneel.Config.craftStudio.scriptPaths[ scriptAlias ]
+    if CS.Config.scriptPaths[ scriptAlias ] ~= nil then 
+        assetPath = CS.Config.scriptPaths[ scriptAlias ]
         assetType = "Script"
     end
 
@@ -792,7 +788,7 @@ setmetatable( RaycastHit, { __call = function(Object, ...) return Object.New(...
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
 end
-table.insert( CS.DaneelModules, RaycastHit )
+CS.DaneelModules[ "RaycastHit" ] = {}
 
 function RaycastHit.Config()
     Daneel.Config.allObjects.RaycastHit = RaycastHit

@@ -15,6 +15,14 @@ IDEAS
         > raycashit = ray:IntersectRectangle( rectangle, true )
 
 
+    - Avoir un config indépendante pour chaque module
+    permettre à l'utilisateur de ddéfinir Module.Config() qui update Module.DefaultConfig
+
+    - register dans DaneelModules[ module ] = { dependencies }
+    checker que les dépendances existent dans DaneelModules
+
+    charger unmodule = l'ajouter en tant que scripted behavior
+
     -----
     GUI
 

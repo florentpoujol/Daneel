@@ -14,7 +14,7 @@ Daneel = { isLoaded = false }
 -- Config
 
 Daneel.Config = {
-    daneel = {
+    
         -- Button names as you defined them in the "Administration > Game Controls" tab of your project.
         -- Button whose name is defined here can be used as HotKeys.
         buttonNames = {
@@ -25,7 +25,7 @@ Daneel.Config = {
             enableDebug = false, -- Enable/disable Daneel's global debugging features (error reporting + stacktrace).
             enableStackTrace = false, -- Enable/disable the Stack Trace.
         },
-    },
+    
 
     ----------------------------------------------------------------------------------
   
@@ -922,33 +922,75 @@ Daneel.Cache = {
 
 local moduleUpdateFunctions = {} -- see end of Daneel.Load() and end of Daneel.update()
 
+local modulesToLoad = {}
+function checkModule( name, deps )
+
+    for i, dep in ipairs( deps ) do
+        if modulesToLoad[ dep ] == nil then
+            -- problem - a dependency is missing
+            print( "Daneel.Load() : WARNING : module '" .. dep .. "' is required to work with module '" .. name .. "' but is missing." )
+        else
+            if table.containsvalue( modulesToLoad[ dep ], name ) then
+                --print( "Daneel.Load() : WARNING : modules '" .. dep .. "' and '" .. name .. "' have a circular dependency." )
+                -- it's ok
+            else
+                checkModule( dep, modulesToLoad[ dep ] )
+            end
+        end
+    end
+
+    local object = Daneel.Utilities.GetValueFromName( name )
+    if object ~= nil and not table.containsvalue( CS.DaneelModules, object ) then
+        table.insert( CS.DaneelModules, object )
+    end
+end
+
+
 -- load Daneel at the start of the game
 function Daneel.Load()
     if Daneel.isLoaded then return end
 
+    -- check for dependencies
+    modulesToLoad = table.copy( CS.DaneelModules )
+    CS.DaneelModules = {}
+    for moduleName, dependencies in pairs( modulesToLoad ) do
+        checkModule( moduleName, dependencies )
+    end
+
     -- load modules config
     local configLoaded = {}
     for i, moduleObject in pairs( CS.DaneelModules ) do
-        if configLoaded[ moduleObject ] == nil then
+        if moduleObject ~= nil and configLoaded[ moduleObject ] == nil then
             configLoaded[ moduleObject ] = true
 
-            local config = moduleObject.Config
-            if type( config ) == "function" then
-                config = config()
+            if moduleObject.Config == nil then
+                moduleObject.Config = {}
+            elseif type( moduleObject.Config ) == "function" then
+                moduleObject.Config = moduleObject.Config()
             end
-            Daneel.Config = table.merge( Daneel.Config, config )
+
+            local userConfig = {}
+            local functionName = Daneel.Debug.GetNameFromvalue( moduleObject ) .. "Config"
+            if Daneel.Utilities.GlobalExists( functionName ) then
+                userConfig = _G[ functionName ]
+                if type( userConfig ) == "function" then
+                    userConfig = userConfig()
+                end
+            end
+            
+            moduleObject.Config = table.merge( moduleObject.Config, userConfig )
         end
-    end
-    
-    -- load user config
-    if Daneel.Utilities.GlobalExists( "DaneelConfig" ) then
-        local config = DaneelConfig
-        if type( config ) == "function" then
-            config = config()
-        end
-        Daneel.Config = table.deepmerge( Daneel.Config, config )
     end
 
+    local userConfig = {}
+    if Daneel.Utilities.GlobalExists( "DaneelConfig" ) then
+        userConfig = DaneelConfig
+        if type( userConfig ) == "function" then
+            userConfig = userConfig()
+        end
+    end
+    Daneel.Config = table.merge( Daneel.Config, userConfig )
+    
     if Daneel.Config.debug.enableDebug and Daneel.Config.debug.enableStackTrace then
         SetNewError()
     end
@@ -1098,7 +1140,7 @@ function Behavior:Update()
 
     -- HotKeys
     -- fire an event whenever a registered button is pressed
-    for i, buttonName in ipairs( Daneel.Config.daneel.buttonNames ) do
+    for i, buttonName in ipairs( Daneel.Config.buttonNames ) do
         local ButtonName = buttonName:ucfirst()
 
         if CraftStudio.Input.WasButtonJustPressed( buttonName ) then

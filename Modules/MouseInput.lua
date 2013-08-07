@@ -9,7 +9,7 @@ MouseInput = {}
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
 end
-table.insert( CS.DaneelModules, MouseInput )
+CS.DaneelModules[ "MouseInput" ] = {}
 
 MouseInput.Config = {
     mouseInput = {

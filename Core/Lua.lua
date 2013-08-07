@@ -4,6 +4,13 @@
 -- Last modified for v1.2.0
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
+Lua = {}
+
+if CS.DaneelModules == nil then
+    CS.DaneelModules = {}
+end
+CS.DaneelModules[ "Lua" ] = {}
+
 ----------------------------------------------------------------------------------
 -- math
 

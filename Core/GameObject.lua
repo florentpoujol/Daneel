@@ -7,7 +7,7 @@
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
 end
-table.insert( CS.DaneelModules, GameObject )
+CS.DaneelModules[ "GameObject" ] = { "CraftStudio" }
 
 function GameObject.Awake()
     Daneel.Event.Listen( "OnSceneLoad", function()
@@ -42,7 +42,7 @@ function GameObject.__index( gameObject, key )
     end
 
     -- maybe the key is a script alias
-    local path = Daneel.Config.craftStudio.scriptPaths[ key ]
+    local path = CS.Config.scriptPaths[ key ]
     if path ~= nil then
         local behavior = gameObject:GetScriptedBehavior( path )
         if behavior ~= nil then
@@ -181,10 +181,10 @@ function GameObject.Set( gameObject, params )
     for key, value in pairs( params ) do
 
         -- if key is a script path in Daneel.Config.scriptPath or a script alias
-        if Daneel.Config.craftStudio.scriptPaths[key] ~= nil or table.containsvalue( Daneel.Config.craftStudio.scriptPaths, key ) then
+        if CS.Config.scriptPaths[key] ~= nil or table.containsvalue( CS.Config.scriptPaths, key ) then
             local scriptPath = key
-            if Daneel.Config.craftStudio.scriptPaths[key] ~= nil then
-                scriptPath = Daneel.Config.craftStudio.scriptPaths[key]
+            if CS.Config.scriptPaths[key] ~= nil then
+                scriptPath = CS.Config.scriptPaths[key]
             end
             local component = gameObject:GetScriptedBehavior( scriptPath )
             if component == nil then
@@ -428,7 +428,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
     local errorHead = "GameObject.AddComponent( gameObject, componentType[, params] ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     Daneel.Debug.CheckArgType( componentType, "componentType", "string", errorHead ) 
-    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.craftStudio.componentTypes, errorHead )
+    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", CS.Config.componentTypes, errorHead )
     Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead )
 
     if componentType == "Transform" and Daneel.Config.debug.enableDebug then
@@ -508,7 +508,7 @@ function GameObject.GetComponent( gameObject, componentType )
     local lcComponentType = componentType:lcfirst()
     local component = gameObject[ lcComponentType ]
     
-    if component == nil and table.containsvalue( Daneel.Config.craftStudio.componentTypes, componentType ) then
+    if component == nil and table.containsvalue( CS.Config.componentTypes, componentType ) then
         component = OriginalGetComponent( gameObject, componentType )
 
         if component ~= nil then
