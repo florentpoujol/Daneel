@@ -164,15 +164,6 @@ A implémenter
         circleRenderer:SetModel() / GetModel()
         circleRenderer:SetLineWidth() > autorise en pixel
 
-    - ne pas réécrire des fonction de CS si Daneel n'est pas chargé
-        > les wrapper autour de Module.Load()
-
-    - mettre tout ce qui est dépendant de Daneel lorsqu'il est chargé dans Module.Load()
-        > rendre le plus possible de choses indépendantes
-
-    - corriger erreur dans GUI, voir comme dans toggle (faire comp:Set( params ) après la metatable)
-    - passer le code dans component:Set() relatif aux composant de GUI dans le fichier GUI
-
     - tester si on peut mettre un object intermédiaire entre un gui component et Component afin qu'ils partagent tous une fonction (Destroy).
     ( afin d'enlever le tag "guiComponent")
 

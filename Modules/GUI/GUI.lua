@@ -117,10 +117,10 @@ function GUI.Config()
     return config
 end
 
-
 function GUI.Load()
 
     --- Update the gameObject's scale to make the text appear the provided width.
+    -- Overwrite TextRenderer.SetTextWith() from the CraftStudio module.
     -- @param textRenderer (TextRenderer) The textRenderer.
     -- @param width (number or string) The text's width in units or pixels.
     function TextRenderer.SetTextWidth( textRenderer, width )
@@ -139,7 +139,6 @@ function GUI.Load()
     end
 
 end
-
 
 function GUI.Awake()
     -- setting pixelToUnits  
@@ -370,7 +369,7 @@ function GUI.Toggle.New( gameObject, params )
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
     
-    local toggle = GUI.Config.toggle
+    local toggle = table.copy( GUI.Config.toggle )
     toggle.defaultText = toggle.text
     toggle.text = nil
     toggle.gameObject = gameObject
@@ -597,15 +596,18 @@ function GUI.ProgressBar.New( gameObject, params )
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
 
-    local progressBar = table.merge( GUI.Config.progressBar, params )
+    local progressBar = table.copy( GUI.Config.progressBar )
     progressBar.gameObject = gameObject
     progressBar.Id = Daneel.Cache.GetId()
     progressBar.progress = nil -- remove the property to allow to use the dynamic getter/setter
     setmetatable( progressBar, GUI.ProgressBar )
-    progressBar.progress = GUI.Config.progressBar.progress
-    
-    gameObject.progressBar = progressBar
 
+    if params.progress == nil then
+        params.progress = GUI.Config.progressBar.progress
+    end
+    progressBar:Set( params )
+
+    gameObject.progressBar = progressBar
     Daneel.Debug.StackTrace.EndFunction()
     return progressBar
 end
@@ -765,19 +767,23 @@ function GUI.Slider.New( gameObject, params )
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
 
-    local slider = table.merge( GUI.Config.slider, params )
+    local slider = table.copy( GUI.Config.slider )
     slider.gameObject = gameObject
     slider.Id = Daneel.Cache.GetId()
     slider.startPosition = gameObject.transform.position
     slider.value = nil
     setmetatable( slider, GUI.Slider )
-    slider.value = GUI.Config.slider.value
     
     gameObject.slider = slider
     gameObject:AddTag( "guiComponent" )
     if gameObject:GetScriptedBehavior( GUI.Config.slider.behaviorPath ) == nil then
         gameObject:AddScriptedBehavior( GUI.Config.slider.behaviorPath )
     end
+
+    if params.value == nil then
+        params.value = GUI.Config.slider.value
+    end
+    slider:Set( params )
     
     Daneel.Debug.StackTrace.EndFunction()
     return slider
@@ -899,30 +905,36 @@ function GUI.Input.New( gameObject, params )
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
 
-    local input = table.merge( GUI.Config.input, params )
+    local input = table.copy( GUI.Config.input, params )
     input.gameObject = gameObject
     input.Id = Daneel.Cache.GetId()
     -- adapted from Blast Turtles
-    input.OnTextEntered = function( char )
-        if not input.isFocused then return end
-        local charNumber = string.byte( char )
-        
-        if charNumber == 8 then -- Backspace
-            local text = gameObject.textRenderer.text
-            input:Update( text:sub( 1, #text - 1 ), true )
-        
-        elseif charNumber == 13 then -- Enter
-            Daneel.Event.Fire( input, "OnValidate", input )
-        
-        -- Any character between 32 and 127 is regular printable ASCII
-        elseif charNumber >= 32 and charNumber <= 127 then
-            if input.characterRange ~= nil and input.characterRange:find( char, 1, true ) == nil then
-                return
+    if input.OnTextEntered == nil then
+        input.OnTextEntered = function( char )
+            if not input.isFocused then return end
+            local charNumber = string.byte( char )
+            
+            if charNumber == 8 then -- Backspace
+                local text = gameObject.textRenderer.text
+                input:Update( text:sub( 1, #text - 1 ), true )
+            
+            elseif charNumber == 13 then -- Enter
+                Daneel.Event.Fire( input, "OnValidate", input )
+            
+            -- Any character between 32 and 127 is regular printable ASCII
+            elseif charNumber >= 32 and charNumber <= 127 then
+                if input.characterRange ~= nil and input.characterRange:find( char, 1, true ) == nil then
+                    return
+                end
+                input:Update( char )
             end
-            input:Update( char )
         end
     end
     setmetatable( input, GUI.Input )
+    
+    local isFocused = input.isFocused
+    input.isFocused = nil
+    input:Focus( isFocused )
 
     gameObject.input = input
     gameObject:AddTag( "guiComponent" )

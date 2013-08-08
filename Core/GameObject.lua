@@ -552,10 +552,13 @@ function GameObject.Destroy( gameObject )
     gameObject:RemoveTag()
 
     for key, value in pairs( gameObject ) do
-        if key == "transform" then
+        if table.containsvalue( CS.Config.componentTypes, key:ucfirst() ) then
             Daneel.Event.Clear( value )
+
+        -- other components / objects (like tweeners)
         elseif type( value ) == "table" and type( value.Destroy ) == "function" then
             value:Destroy()
+            gameObject[ key ] = nil
         end
     end
 
