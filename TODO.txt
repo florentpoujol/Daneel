@@ -164,9 +164,6 @@ A implémenter
         circleRenderer:SetModel() / GetModel()
         circleRenderer:SetLineWidth() > autorise en pixel
 
-    - tester si on peut mettre un object intermédiaire entre un gui component et Component afin qu'ils partagent tous une fonction (Destroy).
-    ( afin d'enlever le tag "guiComponent")
-
 
 ==========
 A tester

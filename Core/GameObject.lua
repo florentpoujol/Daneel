@@ -7,7 +7,7 @@
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
 end
-CS.DaneelModules[ "GameObject" ] = {  "Lua", "CraftStudio" }
+CS.DaneelModules[ "GameObject" ] = {}
 
 function GameObject.Awake()
     Daneel.Event.Listen( "OnSceneLoad", function()

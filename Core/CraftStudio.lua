@@ -8,7 +8,7 @@
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
 end
-CS.DaneelModules[ "CraftStudio" ] = { "Lua", "GameObject" }
+CS.DaneelModules[ "CraftStudio" ] = {}
 
 function CraftStudio.Config()
     local config = {
