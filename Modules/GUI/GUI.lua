@@ -95,12 +95,12 @@ function GUI.Config()
         },
    
         componentObjects = {
-            Hud = GUI.Hud,
-            Toggle = GUI.Toggle,
-            ProgressBar = GUI.ProgressBar,
-            Slider = GUI.Slider,
-            Input = GUI.Input,
-            TextArea = GUI.TextArea,
+            ["GUI.Hud"] = GUI.Hud,
+            ["GUI.Toggle"] = GUI.Toggle,
+            ["GUI.ProgressBar"] = GUI.ProgressBar,
+            ["GUI.Slider"] = GUI.Slider,
+            ["GUI.Input"] = GUI.Input,
+            ["GUI.TextArea"] = GUI.TextArea,
         },
 
         objects = {
@@ -550,7 +550,7 @@ end
 function GUI.Toggle.Set( toggle, params )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Toggle.Set", toggle, params )
     local errorHead = "GUI.Toggle.Set( toggle, params ) : "
-    Daneel.Debug.CheckArgType( toggle, "toggle", "Toggle", errorHead )
+    Daneel.Debug.CheckArgType( toggle, "toggle", "GUI.Toggle", errorHead )
     Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
 
     local isChecked = params.isChecked
@@ -573,7 +573,7 @@ end
 function GUI.Toggle.Destroy( toggle )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Toggle.Destroy", toggle )
     local errorHead = "GUI.Toggle.Destroy( toggle ) : "
-    Daneel.Debug.CheckArgType( toggle, "toggle", "Toggle", errorHead )
+    Daneel.Debug.CheckArgType( toggle, "toggle", "GUI.Toggle", errorHead )
 
     CraftStudio.Destroy( toggle.gameObject:GetScriptedBehavior( GUI.Config.toggle.behaviorPath ) )
     Component.Destroy( toggle )
@@ -735,7 +735,7 @@ end
 function GUI.ProgressBar.Set( progressBar, params )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.ProgressBar.Set", progressBar, params )
     local errorHead = "GUI.ProgressBar.Set( progressBar, params ) : "
-    Daneel.Debug.CheckArgType( progressBar, "progressBar", "ProgressBar", errorHead )
+    Daneel.Debug.CheckArgType( progressBar, "progressBar", "GUI.ProgressBar", errorHead )
     Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
 
     local progress = params.progress
@@ -860,7 +860,7 @@ end
 function GUI.Slider.Set( slider, params )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Slider.Set", slider, params )
     local errorHead = "GUI.Slider.Set( slider, params ) : "
-    Daneel.Debug.CheckArgType( slider, "slider", "Slider", errorHead )
+    Daneel.Debug.CheckArgType( slider, "slider", "GUI.Slider", errorHead )
     Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
 
     local value = params.value
@@ -882,7 +882,7 @@ end
 function GUI.Slider.Destroy( slider )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Slider.Destroy", slider )
     local errorHead = "GUI.Slider.Destroy( slider ) : "
-    Daneel.Debug.CheckArgType( slider, "slider", "Slider", errorHead )
+    Daneel.Debug.CheckArgType( slider, "slider", "GUI.Slider", errorHead )
 
     CraftStudio.Destroy( slider.gameObject:GetScriptedBehavior( GUI.Config.slider.behaviorPath ) )
     Component.Destroy( slider )

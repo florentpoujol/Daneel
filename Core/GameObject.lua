@@ -155,24 +155,31 @@ function GameObject.Set( gameObject, params )
     local component = nil
 
     for i, componentType in ipairs( Daneel.Config.allComponentTypes ) do
-        componentType = componentType:lcfirst()
-
-        if params[ componentType ] ~= nil and componentType ~= "ScriptedBehavior" then
-            Daneel.Debug.CheckArgType( params[ componentType ], "params."..componentType, "table", errorHead )
-
-            component = gameObject[ componentType ]
-            if component == nil then
-                component = gameObject:GetComponent( componentType )
-            end
-
-            if component == nil then
-                if table.containsvalue( CS.Config.componentTypes, componentType ) then
-                    component = gameObject:AddComponent( componentType, params[componentType] )
+        if componentType ~= "ScriptedBehavior" then
+            if params[ componentType ] == nil then
+                componentType = componentType:lcfirst()
+                if params[ componentType ] == nil then
+                    componentType = nil
                 end
-            else
-                component:Set( params[componentType] )
             end
-            params[componentType] = nil
+                
+            if componentType ~= nil then
+                Daneel.Debug.CheckArgType( params[ componentType ], "params."..componentType, "table", errorHead )
+
+                component = gameObject[ componentType ]
+                if component == nil then
+                    component = gameObject:GetComponent( componentType )
+                end
+
+                if component == nil then
+                    if table.containsvalue( CS.Config.componentTypes, componentType ) then
+                        component = gameObject:AddComponent( componentType, params[componentType] )
+                    end
+                else
+                    component:Set( params[componentType] )
+                end
+                params[componentType] = nil
+            end
         end
     end
 

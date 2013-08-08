@@ -164,6 +164,8 @@ A implémenter
         circleRenderer:SetModel() / GetModel()
         circleRenderer:SetLineWidth() > autorise en pixel
 
+        TextRenderer:SetColor( newColor )
+        dans la config : textRenderer.colorPattern = ":font :color"
 
 ==========
 A tester
