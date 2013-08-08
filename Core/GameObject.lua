@@ -7,7 +7,7 @@
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
 end
-CS.DaneelModules[ "GameObject" ] = { "CraftStudio" }
+CS.DaneelModules[ "GameObject" ] = { "CraftStudio", "Lua" }
 
 function GameObject.Awake()
     Daneel.Event.Listen( "OnSceneLoad", function()
@@ -21,7 +21,7 @@ end
 setmetatable(GameObject, { __call = function(Object, ...) return Object.New(...) end })
 
 function GameObject.__tostring(gameObject)
-    if gameObject.isDestroyed == true then
+    if gameObject.isDestroyed == true then -- should not happend anymore since the metatble is removed byCS.Destroy() in CraftStudio module
         return "Destroyed gameObject: " .. Daneel.Debug.ToRawString( gameObject )
         -- the important here was to prevent throwing an error
     end
@@ -153,15 +153,12 @@ function GameObject.Set( gameObject, params )
     
     -- components
     local component = nil
-    local componentTypes = table.copy( Daneel.Config.allComponentTypes )
-    table.removevalue( componentTypes, "ScriptedBehavior" )
-    for i, type in ipairs( componentTypes ) do
-        componentTypes[i] = type:lcfirst()
-    end
 
-    for i, componentType in ipairs( componentTypes ) do
-        if params[componentType] ~= nil then
-            Daneel.Debug.CheckArgType( params[componentType], "params."..componentType, "table", errorHead )
+    for i, componentType in ipairs( Daneel.Config.allComponentTypes ) do
+        componentType = componentType:lcfirst()
+
+        if params[ componentType ] ~= nil and componentType ~= "ScriptedBehavior" then
+            Daneel.Debug.CheckArgType( params[ componentType ], "params."..componentType, "table", errorHead )
 
             component = gameObject[ componentType ]
             if component == nil then
@@ -169,7 +166,9 @@ function GameObject.Set( gameObject, params )
             end
 
             if component == nil then
-                component = gameObject:AddComponent( componentType, params[componentType] )
+                if table.containsvalue( CS.Config.componentTypes, componentType ) then
+                    component = gameObject:AddComponent( componentType, params[componentType] )
+                end
             else
                 component:Set( params[componentType] )
             end
@@ -198,16 +197,7 @@ function GameObject.Set( gameObject, params )
             gameObject:AddTag( value )
 
         else
-            -- check if the key is a script path
-            local script = CS.FindAsset( key, "Script" )
-            if script ~= nil then
-                local behavior = gameObject:GetScriptedBehavior( script )
-                if behavior ~= nil then
-                    Component.Set( behavior, value )
-                end
-            else
-                gameObject[key] = value
-            end
+            gameObject[key] = value
         end
     end
     Daneel.Debug.StackTrace.EndFunction()
@@ -222,14 +212,12 @@ end
 -- @param name (string) The gameObject name.
 -- @param errorIfGameObjectNotFound [optional default=false] (boolean) Throw an error if the gameObject was not found (instead of returning nil).
 -- @return (GameObject) The gameObject or nil if none is found.
-function GameObject.Get( name, errorIfGameObjectNotFound )
-    Daneel.Debug.StackTrace.BeginFunction( "GameObject.Get", name, errorIfGameObjectNotFound )
-    
+function GameObject.Get( name, errorIfGameObjectNotFound ) 
     if getmetatable(name) == GameObject then
-        Daneel.Debug.StackTrace.EndFunction()
         return name
     end
 
+    Daneel.Debug.StackTrace.BeginFunction( "GameObject.Get", name, errorIfGameObjectNotFound )
     local errorHead = "GameObject.Get( name[, errorIfGameObjectNotFound] ) : "
     Daneel.Debug.CheckArgType( name, "name", "string", errorHead )
     Daneel.Debug.CheckOptionalArgType( errorIfGameObjectNotFound, "errorIfGameObjectNotFound", "boolean", errorHead )

@@ -95,12 +95,12 @@ function GUI.Config()
         },
    
         componentObjects = {
-            ["GUI.Hud"] = GUI.Hud,
-            ["GUI.Toggle"] = GUI.Toggle,
-            ["GUI.ProgressBar"] = GUI.ProgressBar,
-            ["GUI.Slider"] = GUI.Slider,
-            ["GUI.Input"] = GUI.Input,
-            ["GUI.TextArea"] = GUI.TextArea,
+            Hud = GUI.Hud,
+            Toggle = GUI.Toggle,
+            ProgressBar = GUI.ProgressBar,
+            Slider = GUI.Slider,
+            Input = GUI.Input,
+            TextArea = GUI.TextArea,
         },
 
         objects = {
