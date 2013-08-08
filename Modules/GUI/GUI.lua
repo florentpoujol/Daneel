@@ -544,6 +544,43 @@ function GUI.Toggle.GetGroup(toggle)
     return toggle._group
 end
 
+--- Apply the content of the params argument to the provided toggle.
+-- Overwrite Component.Set() from CraftStudio module.
+-- @param toggle (Toggle) The toggle component.
+-- @param params (table) A table of parameters to set the component with.
+function GUI.Toggle.Set( toggle, params )
+    Daneel.Debug.StackTrace.BeginFunction( "GUI.Toggle.Set", toggle, params )
+    local errorHead = "GUI.Toggle.Set( toggle, params ) : "
+    Daneel.Debug.CheckArgType( toggle, "toggle", "Toggle", errorHead )
+    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
+
+    local isChecked = params.isChecked
+    params.isChecked = nil
+
+    for key, value in pairs( params ) do
+        toggle[key] = value
+    end
+
+    if isChecked ~= nil then
+        toggle:Check(isChecked)
+    end        
+    
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+-- Destroy the provided toggle component, removing it from the gameObject.
+-- Overwrite Component.Destroy() from CraftStudio module.
+-- @param toggle (Toggle) The toggle component.
+function GUI.Toggle.Destroy( toggle )
+    Daneel.Debug.StackTrace.BeginFunction( "GUI.Toggle.Destroy", toggle )
+    local errorHead = "GUI.Toggle.Destroy( toggle ) : "
+    Daneel.Debug.CheckArgType( toggle, "toggle", "Toggle", errorHead )
+
+    CraftStudio.Destroy( toggle.gameObject:GetScriptedBehavior( GUI.Config.toggle.behaviorPath ) )
+    Component.Destroy( toggle )
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
 
 ----------------------------------------------------------------------------------
 -- ProgressBar
@@ -689,6 +726,29 @@ function GUI.ProgressBar.GetProgress(progressBar, getAsPercentage)
     return progress
 end
 
+--- Apply the content of the params argument to the provided progressBar.
+-- Overwrite Component.Set() from CraftStudio module.
+-- @param progressBar (ProgressBar) The progressBar.
+-- @param params (table) A table of parameters to set the component with.
+function GUI.ProgressBar.Set( progressBar, params )
+    Daneel.Debug.StackTrace.BeginFunction( "GUI.ProgressBar.Set", progressBar, params )
+    local errorHead = "GUI.ProgressBar.Set( progressBar, params ) : "
+    Daneel.Debug.CheckArgType( progressBar, "progressBar", "ProgressBar", errorHead )
+    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
+
+    local progress = params.progress
+    params.progress = nil
+    if progress == nil then
+        progress = progressBar:GetProgress()
+    end
+    for key, value in pairs(params) do
+        progressBar[key] = value
+    end
+    progressBar:SetProgress( progress )
+    
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
 
 ----------------------------------------------------------------------------------
 -- Slider
@@ -787,6 +847,42 @@ function GUI.Slider.GetValue( slider, getAsPercentage )
     return value
 end
 
+--- Apply the content of the params argument to the provided slider.
+-- Overwrite Component.Set() from CraftStudio module.
+-- @param slider (Slider) The slider.
+-- @param params (table) A table of parameters to set the component with.
+function GUI.Slider.Set( slider, params )
+    Daneel.Debug.StackTrace.BeginFunction( "GUI.Slider.Set", slider, params )
+    local errorHead = "GUI.Slider.Set( slider, params ) : "
+    Daneel.Debug.CheckArgType( slider, "slider", "Slider", errorHead )
+    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
+
+    local value = params.value
+    params.value = nil
+    if value == nil then
+        value = slider:GetValue()
+    end
+    for key, value in pairs(params) do
+        slider[key] = value
+    end
+    slider:SetValue( value )
+    
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+-- Destroy the provided slider component, removing it from the gameObject.
+-- Overwrite Component.Destroy() from CraftStudio module.
+-- @param slider (Slider) The slider component.
+function GUI.Slider.Destroy( slider )
+    Daneel.Debug.StackTrace.BeginFunction( "GUI.Slider.Destroy", slider )
+    local errorHead = "GUI.Slider.Destroy( slider ) : "
+    Daneel.Debug.CheckArgType( slider, "slider", "Slider", errorHead )
+
+    CraftStudio.Destroy( slider.gameObject:GetScriptedBehavior( GUI.Config.slider.behaviorPath ) )
+    Component.Destroy( slider )
+    Daneel.Debug.StackTrace.EndFunction()
+end
+        
 
 ----------------------------------------------------------------------------------
 -- Input

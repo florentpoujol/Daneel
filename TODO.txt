@@ -16,14 +16,10 @@ IDEAS
 
 
     - Avoir un config indépendante pour chaque module
-    permettre à l'utilisateur de ddéfinir Module.Config() qui update Module.DefaultConfig
-
-    - register dans DaneelModules[ module ] = { dependencies }
-    checker que les dépendances existent dans DaneelModules
-
-    charger unmodule = l'ajouter en tant que scripted behavior
+    permettre à l'utilisateur de définir Module.Config() qui update Module.DefaultConfig
 
     - pouvoir accéder au enfant d'un gameObject en écrivant sont nom, comme les component
+
 
     -----
     GUI
@@ -176,6 +172,9 @@ A implémenter
 
     - corriger erreur dans GUI, voir comme dans toggle (faire comp:Set( params ) après la metatable)
     - passer le code dans component:Set() relatif aux composant de GUI dans le fichier GUI
+
+    - tester si on peut mettre un object intermédiaire entre un gui component et Component afin qu'ils partagent tous une fonction (Destroy).
+    ( afin d'enlever le tag "guiComponent")
 
 
 ==========

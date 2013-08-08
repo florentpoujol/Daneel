@@ -8,7 +8,7 @@
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
 end
-CS.DaneelModules[ "CraftStudio" ] = { "GameObject" }
+CS.DaneelModules[ "CraftStudio" ] = { "Lua", "GameObject" }
 
 function CraftStudio.Config()
     local config = {
@@ -96,7 +96,7 @@ function CraftStudio.Load()
         else
             CS.Config.scriptPaths[ alias ] = nil
             if Daneel.Config.debug.enableDebug then
-                print( "Daneel.Load() : WARNING : item with key '" .. alias .. "' and value '" .. path .. "' in 'CS.Config.scriptPaths' is not a valid script path." )
+                print( "CraftStudio.Load() : WARNING : item with key '" .. alias .. "' and value '" .. path .. "' in 'CS.Config.scriptPaths' is not a valid script path." )
             end
         end
     end
@@ -307,43 +307,8 @@ function Component.Set(component, params)
     Daneel.Debug.CheckArgType(component, "component", Daneel.Config.allComponentTypes, errorHead)
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
 
-    local componentType = Daneel.Debug.GetType(component)
-    if componentType == "Toggle" then
-        local isChecked = params.isChecked
-        params.isChecked = nil
-        for key, value in pairs(params) do
-            component[key] = value
-        end
-        if isChecked ~= nil then
-            component:Check(isChecked)
-        end        
-        
-    elseif componentType == "ProgressBar" then
-        local progress = params.progress
-        params.progress = nil
-        if progress == nil then
-            progress = component.progress
-        end
-        for key, value in pairs(params) do
-            component[key] = value
-        end
-        component.progress = progress
-
-    elseif componentType == "Slider" then
-        local value = params.value
-        params.value = nil
-        if value == nil then
-            value = component.value
-        end
-        for key, value in pairs(params) do
-            component[key] = value
-        end
-        component.value = value
-        
-    else
-        for key, value in pairs(params) do
-            component[key] = value
-        end
+    for key, value in pairs(params) do
+        component[key] = value
     end
     Daneel.Debug.StackTrace.EndFunction()
 end

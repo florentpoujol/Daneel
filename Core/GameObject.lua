@@ -7,7 +7,7 @@
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
 end
-CS.DaneelModules[ "GameObject" ] = { "CraftStudio", "Lua" }
+CS.DaneelModules[ "GameObject" ] = {  "Lua", "CraftStudio" }
 
 function GameObject.Awake()
     Daneel.Event.Listen( "OnSceneLoad", function()
@@ -416,7 +416,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
     local errorHead = "GameObject.AddComponent( gameObject, componentType[, params] ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     Daneel.Debug.CheckArgType( componentType, "componentType", "string", errorHead ) 
-    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", CS.Config.componentTypes, errorHead )
+    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.allComponentTypes, errorHead )
     Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead )
 
     if componentType == "Transform" and Daneel.Config.debug.enableDebug then
@@ -430,11 +430,20 @@ function GameObject.AddComponent( gameObject, componentType, params )
         return
     end
 
-    local component = gameObject:CreateComponent( componentType )
+    local component = nil
+    if table.containsvalue( CS.Config.componentTypes, componentType ) then
+        component = gameObject:CreateComponent( componentType )
 
-    local defaultComponentParams = CS.Config[ componentType:lcfirst() ]
-    if defaultComponentParams ~= nil then
-        params = table.merge( defaultComponentParams, params )
+        local defaultComponentParams = CS.Config[ componentType:lcfirst() ]
+        if defaultComponentParams ~= nil then
+            params = table.merge( defaultComponentParams, params )
+        end
+
+    elseif Daneel.Utilities.GlobalExists( "GUI") and table.containsvalue( GUI.Config.componentTypes, componentType ) then
+        component = GUI[ componentType ].New( gameObject )
+
+    elseif Daneel.Utilities.GlobalExists( "Draw") and table.containsvalue( Draw.Config.componentTypes, componentType ) then
+        component = Draw[ componentType ].New( gameObject )
     end
     
     if params ~= nil then
