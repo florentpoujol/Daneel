@@ -630,10 +630,12 @@ local OriginalIntersectsPlane = Ray.IntersectsPlane
 -- @param returnRaycastHit (boolean) [optional default=false] Tell if the hit infos must be returned as a raycastHit.
 -- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance' and 'hitLocation' properties (if any).
 function Ray.IntersectsPlane( ray, plane, returnRaycastHit )
-    Daneel.Debug.StackTrace.BeginFunction( "Ray.IntersectsPlane", ray, plane, returnRaycastHit )
+    -- 08/08/13 removed reference to plane in BeginFunction and CheckArgType
+    -- because Plane.__tostring is wrong, causes 'var self is not declared'
+    Daneel.Debug.StackTrace.BeginFunction( "Ray.IntersectsPlane", ray, nil, returnRaycastHit )
     local errorHead = "Ray.IntersectsPlane( ray, plane[, returnRaycastHit] ) : "
     Daneel.Debug.CheckArgType( ray, "ray", "Ray", errorHead )
-    Daneel.Debug.CheckArgType( plane, "plane", "Plane", errorHead )
+    --Daneel.Debug.CheckArgType( plane, "plane", "Plane", errorHead )
     returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
 
     local distance = OriginalIntersectsPlane( ray, plane )
