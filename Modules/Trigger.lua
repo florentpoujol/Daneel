@@ -27,6 +27,8 @@ function Behavior:Awake()
     if self.gameObject.mapRenderer ~= nil then
         self.gameObject.mapRenderer:SetOpacity( 0 )
     end
+
+    self.ray = Ray:New()
 end
 
 
@@ -54,18 +56,20 @@ function Behavior:Update()
                     local gameObjectPosition = gameObject.transform:GetPosition()
                     local directionToTrigger = triggerPosition - gameObjectPosition
                     local distanceToTriggerSquared = directionToTrigger:SqrLength()
+                    length = directionToTrigger:length()
 
                     if self.range > 0 and distanceToTriggerSquared < self.range^2 then
                         gameObjectIsInTrigger = true
 
                     elseif self.range <= 0 then
-                        local ray = Ray:New( gameObjectPosition, directionToTrigger ) -- ray from the gameObject to the trigger
+                        self.ray.position = gameObjectPosition
+                        self.ray.direction = directionToTrigger:Normalized() -- ray from the gameObject to the trigger
                         local distance = nil
 
-                        if gameObject.modelRenderer ~= nil then
-                            distance = ray:IntersectsModelRenderer( gameObject.modelRenderer )
-                        elseif gameObject.mapRenderer ~= nil then
-                            distance = ray:IntersectsMapRenderer( gameObject.mapRenderer )
+                        if self.gameObject.modelRenderer ~= nil then
+                            distance = ray:IntersectsModelRenderer( self.gameObject.modelRenderer )
+                        elseif self.gameObject.mapRenderer ~= nil then
+                            distance = ray:IntersectsMapRenderer( self.gameObject.mapRenderer )
                         end
 
                         if distance ~= nil and distance^2 > distanceToTriggerSquared then
