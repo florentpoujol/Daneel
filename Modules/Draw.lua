@@ -133,13 +133,14 @@ end
 
 
 function Draw.CircleRenderer.Draw( circle )
-    -- coordinate of a point on a circle
+    -- coordinatex of a point on a circle
     -- x = center.x + radius * cos( angleInRadian )
     -- y = center.y + radius * sin( angleInRadian )
 
     local offset = (2*math.pi) / circle.SegmentCount
     local angle = - offset
-    -- create and scale the gameObjects
+    
+    -- create and position the segments
     for i=1, circle.SegmentCount do
         angle = angle + offset
         local lineStartLocalPosition = Vector3(
@@ -148,38 +149,33 @@ function Draw.CircleRenderer.Draw( circle )
             0
         )
 
-        if circle.lines[ i ] == nil then
-            local newLine = GameObject( "Circle", {
-                parent = circle.gameObject,
-                transform = {
-                    localPosition = lineStartLocalPosition,
-                },
-                modelRenderer = {
-                    model = circle.Model
-                }
-            } )
-
-            table.insert( circle.lines, newLine )
-        else
-            circle.lines[ i ].transform:SetLocalPosition( lineStartLocalPosition )
+        if circle.segments[ i ] == nil then
+            local newSegment = CS.CreateGameObject( "Circle", circle.gameObject )
+            newSegment:CreateComponent( "ModelRenderer" )
+            if circle.Model ~= nil then
+                newSegment.modelRenderer:SetModel( circle.Model )
+            end
+            table.insert( circle.segments[ i ], newSegment )
         end
+
+        circle.segments[ i ].transform:SetLocalPosition( lineStartLocalPosition )
     end
 
+    -- destroy unused gameObjects
+    while #circle.segments > circle.SegmentCount do
+        table.remove( circle.segments ):Destroy()
+    end
     
-    while #circle.lines > circle.SegmentCount do
-        local line = table.remove( circle.lines )
-        line:Destroy()
-    end
-
-    circle.SegmentLength = Vector3.Distance( circle.lines[1].transform.position, circle.lines[2].transform.position )
-
-    for i, line in ipairs( circle.lines ) do
-        if circle.lines[ i+1 ] ~= nil then
-            line.transform:LookAt( circle.lines[ i+1 ].transform.position )
+    circle.SegmentLength = Vector3.Distance( circle.segments[1].transform.position, circle.segments[2].transform.position )
+    
+    -- scale the segments, setting their width and length
+    for i, segment in ipairs( circle.segments ) do
+        if circle.segments[ i+1 ] ~= nil then
+            segment.transform:LookAt( circle.segments[ i+1 ].transform.position )
         else
-            line.gameObject.transform:LookAt( circle.lines[ 1 ] )
+            segment.transform:LookAt( circle.segments[1].transform.position )
         end
-        line.transform:SetLocalScale( Vector3:New( circle.Width, circle.Width, circle.SegmentLength ) )
+        segment.transform:SetLocalScale( Vector3:New( circle.Width, circle.Width, circle.SegmentLength ) )
     end
     
     Daneel.Event.Fire( circle, "OnDraw", circle )
@@ -199,18 +195,17 @@ end
 
 function Draw.CircleRenderer.SetWidth( circle, width )
     circle.Width = width
-    if #circle.lines > 0 then
-        local newScale = Vector3:New( circle.Width, circle.Width, circle.lines[1].transform:GetLocalScale().z )
-        for i, line in ipairs( circle.lines ) do
+    if #circle.segments > 0 then
+        local newScale = Vector3:New( circle.Width, circle.Width, circle.segments[1].transform:GetLocalScale().z )
+        for i, line in ipairs( circle.segments ) do
             line.transform:SetLocalScale( newScale )
         end
     end
-    circle:Draw()
 end
 
 function Draw.CircleRenderer.SetModel( circle, model )
     circle.Model = model
-    for i, line in ipairs( circle.lines ) do
+    for i, line in ipairs( circle.segments ) do
         line.modelRenderer:SetModel( circle.Model )
     end
 end
