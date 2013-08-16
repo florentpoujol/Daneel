@@ -172,7 +172,7 @@ function GameObject.Set( gameObject, params )
                 end
 
                 if component == nil then
-                    if table.containsvalue( CS.Config.componentTypes, componentType ) then
+                    if table.containsvalue( CS.Config.componentTypes, componentType:ucfirst() ) then
                         component = gameObject:AddComponent( componentType, params[componentType] )
                     end
                 else
