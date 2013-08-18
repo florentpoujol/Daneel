@@ -770,8 +770,8 @@ function GUI.Slider.New( gameObject, params )
     local slider = table.copy( GUI.Config.slider )
     slider.gameObject = gameObject
     slider.Id = Daneel.Cache.GetId()
-    slider.startPosition = gameObject.transform.position
     slider.value = nil
+    slider.parent = slider.gameObject.parent
     setmetatable( slider, GUI.Slider )
     
     gameObject.slider = slider
@@ -826,7 +826,7 @@ function GUI.Slider.SetValue( slider, value )
         direction = Vector3:Up()
     end
     local orientation = Vector3.Transform( direction, slider.gameObject.transform.orientation )
-    local newPosition = slider.startPosition + orientation * slider.length * percentage
+    local newPosition = slider.parent.transform.position + orientation * slider.length * percentage
     slider.gameObject.transform.position = newPosition
 
     Daneel.Event.Fire( slider, "OnUpdate", slider )
@@ -843,7 +843,7 @@ function GUI.Slider.GetValue( slider, getAsPercentage )
     Daneel.Debug.CheckArgType(slider, "slider", "GUI.Slider", errorHead)
     Daneel.Debug.CheckOptionalArgType( getAsPercentage, "getAsPercentage", "boolean", errorHead )
    
-    local percentage = Vector3.Distance( slider.startPosition, slider.gameObject.transform.position ) / slider.length
+    local percentage = Vector3.Distance( slider.parent.transform.position, slider.gameObject.transform.position ) / slider.length
     local value = percentage * 100
     if getAsPercentage ~= true then
         value = (slider.maxValue - slider.minValue) * percentage + slider.minValue

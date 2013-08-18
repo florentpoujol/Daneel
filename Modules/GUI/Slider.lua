@@ -37,8 +37,8 @@ function Behavior:OnDrag()
     self.gameObject.transform:Move( positionDelta * GUI.pixelsToUnits )
     
     if 
-        (slider.axis == "x" and self.gameObject.transform.position.x < slider.startPosition.x) or
-        (slider.axis == "y" and self.gameObject.transform.position.y < slider.startPosition.y)
+        (slider.axis == "x" and self.gameObject.transform.position.x < slider.parent.transform.position.x) or
+        (slider.axis == "y" and self.gameObject.transform.position.y < slider.parent.transform.position.y)
     then
         slider.value = slider.minValue
     elseif slider.value > slider.maxValue then
