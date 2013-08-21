@@ -905,7 +905,7 @@ function GUI.Input.New( gameObject, params )
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
 
-    local input = table.copy( GUI.Config.input, params )
+    local input = table.merge( GUI.Config.input, params )
     input.gameObject = gameObject
     input.Id = Daneel.Cache.GetId()
     -- adapted from Blast Turtles
