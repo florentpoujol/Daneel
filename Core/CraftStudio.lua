@@ -555,7 +555,7 @@ end
 
 setmetatable(Ray, { __call = function(Object, ...) return Object:New(...) end })
 
---- Check the collision of the ray against the provided set of gameObject or if it is nil, against all castable gameObjects.
+--- Check the collision of the ray against the provided set of gameObject.
 -- @param ray (Ray) The ray.
 -- @param gameObjects (table) The set of gameObjects to cast the ray against.
 -- @param sortByDistance [optional default=false] (boolean) Sort the raycastHit by increasing distance in the returned table.

@@ -149,6 +149,7 @@ A implémenter
     - add setter for all GUI properties
     - propriété updateInterval for tweeners
     - GUI.Input permettre de définir un curseur model optionnel
+    - GUI.ProgressBar remplacer SetProgress() par SetValue(), comme slider
     
     - Daneel.Draw object
         lineRenderer = gameObject:AddComponent("LineRenderer")
