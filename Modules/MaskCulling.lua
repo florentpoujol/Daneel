@@ -1,3 +1,10 @@
+-- MaskCulling.lua
+-- Scripted behavior that enable the culling of game objects based on a mask in front of the game object.
+-- Typically used to implements some frustrum culling.
+--
+-- Last modified for v1.3
+-- Copyright © 2013 Florent POUJOL, published under the MIT licence.
+
 --[[PublicProperties
 mask string ""
 tags string ""
@@ -42,6 +49,8 @@ function Behavior:Awake()
     else
         self.tags = self.tags:split( ",", true )
     end
+
+    self.frameCount = 0
 end
 
 
@@ -86,9 +95,10 @@ function Behavior:Update()
 end -- end of Update() function
 
 
-
+--- Return the list of the game objects that are visible through the mask from this game object.
+-- @param mask (GameObject) [optional] The mask. If nil use, the component's mask.
+-- @param tags (string or table) [optional] The tags(s) the gameObjects must have. If nil, it uses the trigger's tags(s).
 function Behavior:GetVisibleGameObjects( mask, tags )
-
     local errorHead = "MaskCulling:GetVisibleGameObjects( [mask, tags] ) : "
     Daneel.Debug.CheckOptionalArgType( mask, "mask", "GameObject", errorHead )
     Daneel.Debug.CheckOptionalArgType( tags, "tags", {"string", "table"}, errorHead )
@@ -106,7 +116,7 @@ function Behavior:GetVisibleGameObjects( mask, tags )
 
     local visibleGameObjects = {}
     local cameraPosition = self.gameObject.transform:GetPosition()
-        
+    
     for i, tag in pairs( tags ) do
         local gameObjects = GameObject.Tags[ tag ]
         if gameObjects ~= nil then
@@ -129,11 +139,11 @@ function Behavior:GetVisibleGameObjects( mask, tags )
 end
 
 
---- Tell wether the provided game object is visible from the provided camera through the provided mask.
+--- Tell wether the provided game object is visible throught the provided mask and from the game object.
 -- @param gameObject (GameObject) The game object.
 -- @param mask (GameObject) [optional] The mask.
 -- @return (boolean)
-function Behavior:IsGameObjectVisible( gameObject,  mask )
+function Behavior:IsGameObjectVisible( gameObject, mask )
     if mask ~= nil and gameObject == nil then
         gameObject = mask
         mask = nil
@@ -146,7 +156,7 @@ function Behavior:IsGameObjectVisible( gameObject,  mask )
     local isVisible = false
     local cameraPosition = self.gameObject.transform:GetPosition()
     local ray = Ray:New( cameraPosition, gameObject.transform:GetPosition() - cameraPosition )
-    local distance = ray:IntersectsGameObject( mask.modelRenderer )
+    local distance = ray:IntersectsGameObject( mask )
     if distance ~= nil then 
         isVisible = true
     end
