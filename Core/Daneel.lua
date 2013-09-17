@@ -634,13 +634,12 @@ function Daneel.Event.Clear(functionOrObject)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Fire the provided event on the provided objects (or the one that listen to it),
--- or call the provided function,
+--- Fire the provided event at the provided object or the one that listen to it,
 -- transmitting along all subsequent arguments if some exists. <br>
 -- Allowed set of arguments are : <br>
 -- (eventName[, ...]) <br>
 -- (object, eventName[, ...]) <br>
--- @param object [optional] (table, function or userdata) The object to which fire the event at. If nil or abscent, will send the event to its listeners.
+-- @param object [optional] (table) The object to which fire the event at. If nil or abscent, will send the event to its listeners.
 -- @param eventName (string) The event name.
 -- @param ... [optional] Some arguments to pass along.
 function Daneel.Event.Fire( object, eventName,  ... )
@@ -694,26 +693,8 @@ function Daneel.Event.Fire( object, eventName,  ... )
                 end
 
                 -- always try to send the message, even when funcOrMessage was a function
-                local sendMessage = true
-                local gameObject = listener
-                
-                if getmetatable( gameObject ) ~= GameObject then
-                    gameObject = listener.gameObject
-                    
-                    if getmetatable( gameObject ) ~= GameObject then
-                        sendMessage = false
-                        
-                        if _type == "string" and Daneel.Config.debug.enableDebug then
-                            -- the user obviously wanted to send a message but the object is not a gameObject and has no gameObject property
-                            -- only prints the debug when the user setted up the event property because otherwise
-                            -- it would print it every time an event has not been set up (which is OK) on an non-gameObject object like a tweener
-                            print( errorHead .. "Can't fire event '" .. eventName .. "' by sending message '" .. message .. "' on object '" .. tostring( listener ) .. "'  because it is not a gameObject and has no 'gameObject' property." )
-                        end
-                    end
-                end
-
-                if sendMessage then
-                    gameObject:SendMessage( message, arg )
+                if getmetatable( listener ) == GameObject then
+                    listener:SendMessage( message, arg )
                 end
             end
         end
