@@ -609,6 +609,7 @@ end
 
 --- Remove the provided value from the provided table.
 -- If the index of the value is an integer, the value is nicely removed with table.remove().
+-- Do not use this function on tables which have integer keys but that are not arrays (whose keys are not contiguous).
 -- @param t (table) The table.
 -- @param value (mixed) The value to remove.
 -- @param singleRemove [optional default=false] (boolean) Tell whether to remove all occurences of the value or just the first one.

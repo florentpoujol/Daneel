@@ -79,6 +79,7 @@ function Tween.Config()
             isCompleted = false,
             elapsed = 0, -- elapsed time or frame (in durationType unit), delay excluded
             fullElapsed = 0, -- elapsed time, including loops, excluding delay
+            elapsedDelay = 0,
             completedLoops = 0,
             diffValue = 0.0, -- endValue - startValue
             value = 0.0, -- current value (between startValue and endValue)
@@ -106,8 +107,12 @@ function Tween.Awake()
     end )
 end
 
+
 function Tween.Update()
     for id, tweener in pairs( Tween.Tweener.tweeners ) do
+        if tweener:IsTargetDestroyed() then
+            tweener:Destroy()
+        end
         if tweener.isEnabled == true and tweener.isPaused == false and tweener.isCompleted == false and tweener.duration > 0 then
 
             local deltaDuration = Daneel.Time.deltaTime
@@ -118,7 +123,7 @@ function Tween.Update()
             end
 
             if deltaDuration > 0 then
-                if tweener.delay <= 0 then
+                if tweener.elapsedDelay >= tweener.delay then
                     -- no more delay before starting the tweener, update the tweener
                     if tweener.hasStarted == false then
                         -- firt loop for this tweener
@@ -148,7 +153,7 @@ function Tween.Update()
                     -- update the tweener
                     tweener:Update( deltaDuration )
                 else
-                    tweener.delay = tweener.delay - deltaDuration
+                    tweener.elapsedDelay = tweener.elapsedDelay + deltaDuration
                 end -- end if tweener.delay <= 0
 
 
@@ -262,6 +267,10 @@ function Tween.Tweener.New(target, property, endValue, duration, params)
     if tweener.startValue == nil then
         tweener.startValue = GetTweenerProperty( tweener )
     end
+
+    if tweener.target ~= nil then
+        tweener.gameObject = tweener.target.gameObject
+    end
     
     Tween.Tweener.tweeners[tweener.Id] = tweener
     Daneel.Debug.StackTrace.EndFunction()
@@ -319,6 +328,7 @@ function Tween.Tweener.Restart(tweener)
 
     tweener.elapsed = 0
     tweener.fullElapsed = 0
+    tweener.elapsedDelay = 0
     tweener.completedLoops = 0
     tweener.isCompleted = false
     tweener.hasStarted = false
@@ -364,6 +374,25 @@ function Tween.Tweener.Complete( tweener )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
+
+function Tween.Tweener.IsTargetDestroyed( tweener )
+    if tweener.target ~= nil then
+        if tweener.target.isDestroyed then
+            return true
+        end
+
+        if tweener.target.gameObject ~= nil and tweener.target.gameObject.isDestroyed then
+            return true
+        end
+    end
+
+    if tweener.gameObject ~= nil and tweener.gameObject.isDestroyed then
+        return true
+    end
+
+    return false
+end
+
 --- Destroy the tweener.
 -- @param tweener (Tween.Tweener) The tweener.
 function Tween.Tweener.Destroy( tweener )
@@ -376,9 +405,7 @@ function Tween.Tweener.Destroy( tweener )
     tweener.target = nil
     tweener.duration = 0
 
-    table.removevalue( Tween.Tweener.tweeners, tweener )
     Tween.Tweener.tweeners[ tweener.Id ] = nil
-    
     CraftStudio.Destroy( tweener )
     Daneel.Debug.StackTrace.EndFunction()
 end

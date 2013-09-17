@@ -113,26 +113,17 @@ IDEAS
     Pause, Play, Restart, Destroy
     
 
-    ------
-    Frustrum Culling
+    duration  sec
+    maxSpawnCount
 
-    - For each camera, create a "CullingMask" gameObject with a modelRenderer sized to the camera's viewport
-
-    gamObject:IsVisibleFromCamera( camera GO or component ) returns true or false, or nil if no culling mask is set
-    camera:GetVisibleGameObjects( tags ) returns the list of the gameObjects that are visible from the camera 
-
-    FrustrumCulling scripted behavior
-    public properties :
-    tags
-    cullingInterval 
-    near plane
-    far plane
-
-    Fires the following events at game bjects when they leave/enter the frustrum
-    OnBecomeVisible( cameraGO )   ou bien  OnCameraEnter( cameraGO )
-    OnBecomeInvisible( cameraGO )   OnCameraExit( cameraGO )
-
+    spawnRate   /sec
     
+    lifetime
+    maxAliveParticle
+    
+
+
+   
     ------
     Occlusion Culling
 
@@ -151,22 +142,6 @@ A implémenter
     - GUI.Input permettre de définir un curseur model optionnel
     - GUI.ProgressBar remplacer SetProgress() par SetValue(), comme slider
     
-    - Daneel.Draw object
-        lineRenderer = gameObject:AddComponent("LineRenderer")
-        lineRenderer:SetLength() / GetLength() > autorise en pixel
-        lineRenderer:SetDirection() / GetDirection()
-        lineRenderer:SetWidth() / GetWidth() > autorise en pixel
-        lineRenderer:SetEndPosition() /
-
-        circleRenderer = gameObject:AddComponent("CircleRenderer")
-        circleRenderer:SetRadius() / GetRadius() > autorise en pixels
-        circleRenderer:SetNormal() / GetNormal() > default {0, 0, 1}
-        circleRenderer:SetSegmentCount() / GetSegmentCount()
-        circleRenderer:SetModel() / GetModel()
-        circleRenderer:SetLineWidth() > autorise en pixel
-
-        TextRenderer:SetColor( newColor )
-        dans la config : textRenderer.colorPattern = ":font :color"
 
 ==========
 A tester
@@ -189,7 +164,8 @@ A modifier/ajouter dans la doc :
     - math.lerp, wrapangle, round
     - GO.AddComponent() ne fonction plus qu'avec les composants de CS
     - defautl CS components settings in config.craftStudio au lieu de config.components
-
+    - mask culling
+    - draw object
 
 =========
 BUGS
