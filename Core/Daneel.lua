@@ -571,9 +571,6 @@ end
 
 Daneel.Event = { 
     events = {},
-    fireAtRealTime = {},
-    fireAtTime = {},
-    fireAtFrame = {},
 }
 
 --- Make the provided function or object listen to the provided event(s).
@@ -633,28 +630,7 @@ function Daneel.Event.Clear(functionOrObject)
     for eventName, listeners in pairs(Daneel.Event.events) do
         table.removevalue(listeners, functionOrObject)
     end
-    -- scheduled events
-    for time, events in pairs(Daneel.Event.fireAtRealTime) do
-        for i = #events, 1, -1 do
-            if events[i].object == functionOrObject then
-                table.remove(events, i)
-            end
-        end
-    end
-    for time, events in pairs(Daneel.Event.fireAtTime) do
-        for i = #events, 1, -1 do
-            if events[i].object == functionOrObject then
-                table.remove(events, i)
-            end
-        end
-    end
-    for time, events in pairs(Daneel.Event.fireAtFrame) do
-        for i = #events, 1, -1 do
-            if events[i].object == functionOrObject then
-                table.remove(events, i)
-            end
-        end
-    end
+    
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -664,7 +640,6 @@ end
 -- Allowed set of arguments are : <br>
 -- (eventName[, ...]) <br>
 -- (object, eventName[, ...]) <br>
--- (function[, ...])
 -- @param object [optional] (table, function or userdata) The object to which fire the event at. If nil or abscent, will send the event to its listeners.
 -- @param eventName (string) The event name.
 -- @param ... [optional] Some arguments to pass along.
@@ -673,7 +648,7 @@ function Daneel.Event.Fire( object, eventName,  ... )
     local errorHead = "Daneel.Event.Fire( [object, ]eventName[, ...] ) : "
     
     local argType = type( object )
-    if argType == "string" or argType == "nil" then
+    if argType == "string" or argType == "nil" then -- 17/09/13 why checking for nil ?
         -- no object provided, fire on the listeners
         if eventName ~= nil then
             table.insert( arg, 1, eventName )
@@ -681,17 +656,11 @@ function Daneel.Event.Fire( object, eventName,  ... )
         eventName = object
         object = nil
 
-    elseif argType == "function" or argType == "userdata" then
-        if eventName ~= nil then
-            table.insert( arg, 1, eventName )
-        end
-        object( unpack( arg ) )
-        Daneel.Debug.StackTrace.EndFunction()
-        return
+    else
+        Daneel.Debug.CheckArgType( object, "object", "table", errorHead )
+        Daneel.Debug.CheckArgType( eventName, "eventName", "string", errorHead )
     end
 
-    Daneel.Debug.CheckOptionalArgType( object, "object", "table", errorHead )
-    Daneel.Debug.CheckArgType( eventName, "eventName", "string", errorHead )
     
     local listeners = { object }
     if object == nil and Daneel.Event.events[ eventName ] ~= nil then
@@ -700,8 +669,8 @@ function Daneel.Event.Fire( object, eventName,  ... )
 
     for i, listener in ipairs( listeners ) do
         
-        local _type = type( listener )
-        if _type == "function" or _type == "userdata" then
+        local listenerType = type( listener )
+        if listenerType == "function" or listenerType == "userdata" then
             listener( unpack( arg ) )
 
         else -- an object
@@ -711,9 +680,11 @@ function Daneel.Event.Fire( object, eventName,  ... )
                 -- look for the value of the EventName property on the object
                 local funcOrMessage = listener[ eventName ]
 
-                _type = type( funcOrMessage )
+                local _type = type( funcOrMessage )
                 if _type == "function" or _type == "userdata" then
                     -- prevent a 'Behavior function' to be called as a regular function when the listener is a ScriptedBehavior
+                    -- because the functin exist on the Script object and not on the ScriptedBehavior (the listener),
+                    -- in which case rawget() returns nil
                     if rawget( listener, eventName ) == funcOrMessage then
                         funcOrMessage( unpack( arg ) )
                     end
@@ -734,10 +705,9 @@ function Daneel.Event.Fire( object, eventName,  ... )
                         
                         if _type == "string" and Daneel.Config.debug.enableDebug then
                             -- the user obviously wanted to send a message but the object is not a gameObject and has no gameObject property
-
                             -- only prints the debug when the user setted up the event property because otherwise
                             -- it would print it every time an event has not been set up (which is OK) on an non-gameObject object like a tweener
-                            print( errorHead .. "Can't fire event '" .. eventName .. "' by sending message '" .. message .. "' on object '" .. tostring( listener ) .. "'  because it not a gameObject and has no 'gameObject' property." )
+                            print( errorHead .. "Can't fire event '" .. eventName .. "' by sending message '" .. message .. "' on object '" .. tostring( listener ) .. "'  because it is not a gameObject and has no 'gameObject' property." )
                         end
                     end
                 end
@@ -748,7 +718,7 @@ function Daneel.Event.Fire( object, eventName,  ... )
             end
         end
 
-    end -- end for
+    end -- end for listeners
     Daneel.Debug.StackTrace.EndFunction()
 end
 

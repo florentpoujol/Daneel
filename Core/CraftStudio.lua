@@ -811,12 +811,7 @@ function CraftStudio.LoadScene( sceneNameOrAsset )
     local scene = Asset.Get( sceneNameOrAsset, "Scene", true )
     
     Daneel.Event.Fire( "OnSceneLoad", scene )
-
     Daneel.Event.events = {} -- do this here to make sure that any events that might be fired from OnSceneLoad-catching function are indeed fired
-    Daneel.Event.fireAtTime = {}
-    Daneel.Event.fireAtRealTime = {}
-    Daneel.Event.fireAtFrame = {}
-
     Scene.current = scene
 
     Daneel.Debug.StackTrace.EndFunction()
