@@ -557,18 +557,12 @@ function GameObject.Destroy( gameObject )
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
 
     gameObject:RemoveTag()
-
+    gameObject:SendMessage( gameObject, "Destroy" ) -- call Destroy() on all the scipted behaviors
     for key, value in pairs( gameObject ) do
-        if table.containsvalue( CS.Config.componentTypes, key:ucfirst() ) then
-            Daneel.Event.Clear( value )
-
-        -- other components / objects (like tweeners)
-        elseif type( value ) == "table" and type( value.Destroy ) == "function" then
-            value:Destroy()
-            gameObject[ key ] = nil
+        if type( value ) == "table" then
+            Daneel.Event.Fire( value, "OnDestroy", value )
         end
     end
-
     CraftStudio.Destroy( gameObject )
     Daneel.Debug.StackTrace.EndFunction()
 end

@@ -853,16 +853,11 @@ local OriginalDestroy = CraftStudio.Destroy
 -- @param object (GameObject, a component or a dynamically loaded asset) The gameObject, component or a dynamically loaded asset (like a map loaded with Map.LoadFromPackage).
 function CraftStudio.Destroy( object )
     Daneel.Debug.StackTrace.BeginFunction( "CraftStudio.Destroy", object )
-    -- if object == nil and Daneel.Config.debug.enableDebug then
-    --     print( "CraftStudio.Destroy( object ) : provided object is nil" )
-    --     return
-    -- end
 
     if type( object ) == "table" then
         Daneel.Event.Fire( object, "OnDestroy", object )
         Daneel.Event.Clear( object ) -- remove from listener list
         object.isDestroyed = true
-        setmetatable( object, nil )
         OriginalDestroy( object )
     end
     Daneel.Debug.StackTrace.EndFunction()
