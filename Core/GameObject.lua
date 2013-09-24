@@ -557,7 +557,6 @@ function GameObject.Destroy( gameObject )
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
 
     gameObject:RemoveTag()
-    gameObject:SendMessage( gameObject, "Destroy" ) -- call Destroy() on all the scipted behaviors
     for key, value in pairs( gameObject ) do
         if type( value ) == "table" then
             Daneel.Event.Fire( value, "OnDestroy", value )
