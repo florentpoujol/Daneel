@@ -113,8 +113,6 @@ function string.totable( s )
         return table.copy( Daneel.Cache.totable[s] )
         -- table.copy() is necessary to prevent string.ucfirst(), lcfirst() or any other function that uses the table returned by totable() to modify the table stored in the cache
     end
-
-
     Daneel.Debug.StackTrace.BeginFunction( "string.totable", s )
     Daneel.Debug.CheckArgType( s, "string", "string", "string.totable( string )" )
 
@@ -134,15 +132,15 @@ end
 -- @param t (table) The table containing the values to check against the string
 -- @param ignoreCase [optional default=false] (boolean) Ignore the case.
 -- @return (boolean) True if the string is found in the table, false otherwise.
-function string.isoneof(s, t, ignoreCase)
-    Daneel.Debug.StackTrace.BeginFunction("string.isoneof", s, t, ignoreCase)
-    local errorHead = "string.isoneof(string, table[, ignoreCase]) : "
-    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
-    Daneel.Debug.CheckOptionalArgType(ignoreCase, "ignoreCase", "boolean", errorHead)
+function string.isoneof( s, t, ignoreCase )
+    Daneel.Debug.StackTrace.BeginFunction("string.isoneof", s, t, ignoreCase )
+    local errorHead = "string.isoneof( string, table[, ignoreCase] ) : "
+    Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
+    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
+    Daneel.Debug.CheckOptionalArgType( ignoreCase, "ignoreCase", "boolean", errorHead )
 
     local isOneOf = table.containsvalue(t, s, ignoreCase)
-    Daneel.Debug.StackTrace.EndFunction("string.isoneof", isOneOf)
+    Daneel.Debug.StackTrace.EndFunction()
     return isOneOf
 end
 
@@ -158,9 +156,7 @@ function string.ucfirst( s )
     local errorHead = "string.ucfirst( string ) : "
     Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
 
-    local t = s:totable()
-    t[1] = t[1]:upper()
-    local ns = table.concat( t ) -- ns = new string
+    local ns = ( s:gsub( "^%l", string.upper ) )
     Daneel.Cache.ucfirst[s] = ns
 
     Daneel.Debug.StackTrace.EndFunction()
@@ -179,12 +175,10 @@ function string.lcfirst( s )
     local errorHead = "string.lcfirst( string ) : "
     Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
 
-    local t = s:totable()
-    t[1] = t[1]:lower()
-    local ns = table.concat( t )
+    local ns = ( s:gsub( "^%u", string.lower ) )
     Daneel.Cache.lcfirst[s] = ns
 
-    Daneel.Debug.StackTrace.EndFunction("string.lcfirst", s)
+    Daneel.Debug.StackTrace.EndFunction()
     return ns
 end
 
@@ -201,34 +195,13 @@ function string.split( s, delimiter, trim )
     Daneel.Debug.CheckArgType( delimiter, "delimiter", "string", errorHead )
     Daneel.Debug.CheckOptionalArgType( trim, "trim", "boolean", errorHead )
 
-    local chunks = {}
-    if s:find( delimiter, 1, true ) == nil then -- the 1 and true arguments are to enable the "plain text" search, so that dot is not considered as "all characters" like in regexes
-        chunks = {s}
-    else
-        local chunk = ""
-        local ts = s:totable()
-        local i = 1
-
-        while i <= #ts do
-            local char = ts[i]
-            if char == delimiter or s:sub( i, i-1 + #delimiter ) == delimiter then
-                if trim == true then
-                    chunk = chunk:trim()
-                end
-                table.insert( chunks, chunk )
-                chunk = ""
-                i = i + #delimiter
-            else
-                chunk = chunk..char
-                i = i + 1
-            end
-        end
-
-        if #chunk > 0 then
-            if trim == true then
-                chunk = chunk:trim()
-            end
-            table.insert( chunks, chunk )
+    s = s .. delimier
+    local fields = { s:match( 
+        (s:gsub( "([^"..delimiter.."]*)"..delimiter, "(%1)"..delimiter ))
+    ) }
+    if trim then
+        for i, s in pairs( fields ) do
+            fields[ i ] = s:gsub( "^%s+", "" ):gsub( "%s+$", "" )
         end
     end
     Daneel.Debug.StackTrace.EndFunction()
@@ -239,17 +212,13 @@ end
 -- @param s (string) The string.
 -- @param chunk (string) The searched chunk.
 -- @return (boolean) True or false.
-function string.startswith(s, chunk)
-    Daneel.Debug.StackTrace.BeginFunction("string.startswith", s, chunk)
-    local errorHead = "string.startswith(string, chunk) : "
-    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
-    Daneel.Debug.CheckArgType(chunk, "chunk", "string", errorHead)
+function string.startswith( s, chunk )
+    Daneel.Debug.StackTrace.BeginFunction( "string.startswith", s, chunk )
+    local errorHead = "string.startswith( string, chunk ) : "
+    Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
+    Daneel.Debug.CheckArgType( chunk, "chunk", "string", errorHead )
 
-    local sChunk = s:sub(1, #chunk)
-    local startsWith = false
-    if sChunk == chunk then 
-        startsWith = true
-    end
+    local startsWith = ( s:sub( 1, #chunk ) == chunk )
     Daneel.Debug.StackTrace.EndFunction()
     return startsWith
 end
@@ -258,40 +227,34 @@ end
 -- @param s (string) The string.
 -- @param chunk (string) The searched chunk.
 -- @return (boolean) True or false.
-function string.endswith(s, chunk)
-    Daneel.Debug.StackTrace.BeginFunction("string.endswith", s, chunk)
-    local errorHead = "string.endswith(string, chunk) : "
-    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
-    Daneel.Debug.CheckArgType(chunk, "chunk", "string", errorHead)
+function string.endswith( s, chunk )
+    Daneel.Debug.StackTrace.BeginFunction( "string.endswith", s, chunk )
+    local errorHead = "string.endswith( string, chunk ) : "
+    Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
+    Daneel.Debug.CheckArgType( chunk, "chunk", "string", errorHead )
 
-    local length = #s
-    local sChunk = s:sub(length-#chunk+1, length)
-    local endsWith = false
-    if sChunk == chunk then 
-        endsWith = true
-    end
+    local endsWith = ( s:sub( #s - #chunk + 1, #s ) == chunk )
     Daneel.Debug.StackTrace.EndFunction()
     return endsWith
+end
+
+--- Tell wether the provided string contains the provided chunk or not.
+-- @param s (string) The string.
+-- @param chunk (string) The searched chunk.
+-- @return (boolean) True or false.
+function string.contains( s, chunk )
+    return ( s:find( chunk, 1, true ) ~= nil )
 end
 
 --- Removes the white spaces at the beginning of the provided string.
 -- @param s (string) The string.
 -- @return (string) The trimmed string.
-function string.trimstart(s)
-    Daneel.Debug.StackTrace.BeginFunction("string.trimstart", s)
-    local errorHead = "string.trimstart(string) : "
-    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
-
-    local start = 0
-    local ts = s:totable()
-    for i, char in ipairs(ts) do
-        if char == " " then
-            start = i+1
-        else
-            break
-        end
-    end
-    local ns = s:sub(start)
+function string.trimstart( s )
+    Daneel.Debug.StackTrace.BeginFunction( "string.trimstart", s )
+    local errorHead = "string.trimstart( string ) : "
+    Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
+ 
+    local ns = ( s:gsub( "^%s+", "" ) )
     Daneel.Debug.StackTrace.EndFunction()
     return ns
 end
@@ -299,21 +262,12 @@ end
 --- Removes the white spaces at the end of the provided string.
 -- @param s (string) The string.
 -- @return (string) The trimmed string.
-function string.trimend(s)
-    Daneel.Debug.StackTrace.BeginFunction("string.trimend", s)
-    local errorHead = "string.trimend(string) : "
-    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
+function string.trimend( s )
+    Daneel.Debug.StackTrace.BeginFunction( "string.trimend", s )
+    local errorHead = "string.trimend( string ) : "
+    Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
 
-    local ts = s:totable()
-    local _end = #ts
-    for i = #ts, 1, -1 do
-        if ts[i] == " " then
-            _end = i-1
-        else
-            break
-        end
-    end
-    local ns = s:sub(1, _end)
+    local ns = ( s:gsub( "%s+$", "" ) )
     Daneel.Debug.StackTrace.EndFunction()
     return ns
 end
@@ -326,7 +280,7 @@ function string.trim(s)
     local errorHead = "string.trim(string) : "
     Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
 
-    local ns = s:trimstart():trimend()
+    local ns = ( s:gsub( "^%s+", "" ):gsub( "%s+$", "" ) )
     Daneel.Debug.StackTrace.EndFunction()
     return ns
 end
@@ -334,26 +288,6 @@ end
 
 ----------------------------------------------------------------------------------
 -- table
-
-table.__index = table
-setmetatable(table, { __call = function(Object, ...) return Object.new(...) end })
-
---- Constructor for dynamic tables that allow to use the functions in the table library on the table copies (like what you can do with the strings).
--- @param t [optional] (table) A table.
--- @return (table) The new table.
-function table.new(t)
-    Daneel.Debug.StackTrace.BeginFunction("table.new", t)
-    local newTable = t
-    if newTable == nil then
-        newTable = {}
-    else
-        Daneel.Debug.CheckArgType(t, "table", "table", "table.new([table]) : ")
-    end
-
-    newTable = setmetatable(newTable, table)
-    Daneel.Debug.StackTrace.EndFunction("table.new", newTable)
-    return newTable
-end
 
 --- Return a copy of the provided table.
 -- @param t (table) The table to copy.
@@ -367,7 +301,7 @@ function table.copy( t, doNotCopyMetatable )
     
     local newTable = {}
     for key, value in pairs( t ) do
-        newTable[key] = value
+        newTable[ key ] = value
     end
 
     if doNotCopyMetatable ~= true then
@@ -376,7 +310,6 @@ function table.copy( t, doNotCopyMetatable )
             setmetatable( newTable, mt )
         end
     end
-
     Daneel.Debug.StackTrace.EndFunction()
     return newTable
 end
@@ -426,23 +359,28 @@ end
 -- @param t (table) The table.
 -- @param keyType [optional] (string) Any Lua or CraftStudio type ('string', 'GameObject', ...).
 -- @return (number) The table length.
-function table.length(t, keyType)
-    Daneel.Debug.StackTrace.BeginFunction("table.length", t, keyType)
-    local errorHead = "table.length(table, keyType) : "
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
+function table.getlength( t, keyType )
+    Daneel.Debug.StackTrace.BeginFunction( "table.getlength", t, keyType )
+    local errorHead = "table.length( table[, keyType] ) : "
+    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
     
     local length = 0
-    
-    for key, value in pairs(t) do
+    if keyType ~= nil then
+        keyType:lower()
+    end
+    for key, value in pairs( t ) do
         if keyType == nil then
             length = length + 1
-        elseif Daneel.Debug.GetType(key) == keyType then
+        elseif Daneel.Debug.GetType( key ) == keyType then
             length = length + 1
         end
     end
 
-    Daneel.Debug.StackTrace.EndFunction("table.length", length)
+    Daneel.Debug.StackTrace.EndFunction()
     return length
+end
+function table.length(t, keyType)
+    return table.getlength( t, keyType )
 end
 
 --- Print all key/value pairs within the provided table.
@@ -555,27 +493,26 @@ end
 -- @param table1 (table) The first table to compare.
 -- @param table2 (table) The second table to compare to the first table.
 -- @return (boolean) True if the two tables have the exact same content.
-function table.compare(table1, table2)
-    Daneel.Debug.StackTrace.BeginFunction("table.compare", table1, table2)
-    local errorHead = "table.compare(table1, table2) : "
-    Daneel.Debug.CheckArgType(table1, "table1", "table", errorHead)
-    Daneel.Debug.CheckArgType(table2, "table2", "table", errorHead)
+function table.havesamecontent( table1, table2 )
+    Daneel.Debug.StackTrace.BeginFunction( "table.havesamecontent", table1, table2 )
+    local errorHead = "table.havesamecontent( table1, table2 ) : "
+    Daneel.Debug.CheckArgType( table1, "table1", "table", errorHead )
+    Daneel.Debug.CheckArgType( table2, "table2", "table", errorHead )
 
-    local areEqual = true
-
-    if table.length(table1) ~= table.length(table2) then
-        Daneel.Debug.StackTrace.EndFunction("table.compare", false)
+    if table.getlength(table1) ~= table.getlength(table2) then
+        Daneel.Debug.StackTrace.EndFunction()
         return false
     end
 
-    for key, value in pairs(table1) do
-        if table1[key] ~= table2[key] then
+    local areEqual = true
+    for key, value in pairs( table1 ) do
+        if table1[ key ] ~= table2[ key ] then
             areEqual = false
             break
         end
     end
     
-    Daneel.Debug.StackTrace.EndFunction("table.compare", areEqual)
+    Daneel.Debug.StackTrace.EndFunction()
     return areEqual
 end
 
@@ -584,26 +521,27 @@ end
 -- @param values (table) The values of the future table.
 -- @param returnFalseIfNotSameLength [optional default=false] (boolean) If true, the function returns false if the keys and values tables have different length.
 -- @return (table or boolean) The combined table or false if the tables have different length.
-function table.combine(keys, values, returnFalseIfNotSameLength)
-    Daneel.Debug.StackTrace.BeginFunction("table.combine", keys, values, returnFalseIfNotSameLength)
-    local errorHead = "table.combine(keys, values[, returnFalseIfNotSameLength]) : "
-    Daneel.Debug.CheckArgType(keys, "keys", "table", errorHead)
-    Daneel.Debug.CheckArgType(values, "values", "table", errorHead)
-    Daneel.Debug.CheckOptionalArgType(returnFalseIfNotSameLength, "returnFalseIfNotSameLength", "boolean", errorHead)
-    if table.length(keys) ~= table.length(values) then
+function table.combine( keys, values, returnFalseIfNotSameLength )
+    Daneel.Debug.StackTrace.BeginFunction( "table.combine", keys, values, returnFalseIfNotSameLength )
+    local errorHead = "table.combine( keys, values[, returnFalseIfNotSameLength] ) : "
+    Daneel.Debug.CheckArgType( keys, "keys", "table", errorHead )
+    Daneel.Debug.CheckArgType( values, "values", "table", errorHead )
+    Daneel.Debug.CheckOptionalArgType( returnFalseIfNotSameLength, "returnFalseIfNotSameLength", "boolean", errorHead )
+    
+    if table.getlength( keys ) ~= table.getlength( values ) then
         if Daneel.Config.debug.enableDebug then
-            print(errorHead.."WARNING : Arguments 'keys' and 'values' have different length.")
+            print( errorHead.."WARNING : Arguments 'keys' and 'values' have different length." )
         end
-        if returnFalseIfNotSameLength == true then
-            Daneel.Debug.StackTrace.EndFunction("table.combine", false)
+        if returnFalseIfNotSameLength then
+            Daneel.Debug.StackTrace.EndFunction()
             return false
         end
     end
-    local newTable = table.new()
-    for i, key in ipairs(keys) do
-        newTable[key] = values[i]
+    local newTable = {}
+    for i, key in ipairs( keys ) do
+        newTable[ key ] = values[ i ]
     end
-    Daneel.Debug.StackTrace.EndFunction("table.compare", newTable)
+    Daneel.Debug.StackTrace.EndFunction()
     return newTable
 end
 
@@ -611,62 +549,65 @@ end
 -- If the index of the value is an integer, the value is nicely removed with table.remove().
 -- @param t (table) The table.
 -- @param value (mixed) The value to remove.
--- @param singleRemove [optional default=false] (boolean) Tell whether to remove all occurences of the value or just the first one.
+-- @param maxRemoveCount (number) [optional] Maximum number of occurences of the value to be removed. If nil : remove all occurences.
 -- @return (boolean) True if a value has been removed.
-function table.removevalue(t, value, singleRemove)
-    Daneel.Debug.StackTrace.BeginFunction("table.removevalue", t, value, singleRemove)
-    local errorHead = "table.removevalue(table, value[, singleRemove]) : "
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
-    Daneel.Debug.CheckOptionalArgType(singleRemove, "singleRemove", "boolean", errorHead)
-    if value == nil and Daneel.Config.debug.enableDebug then
-        print("WARNING : "..errorHead.."Argument 'value' is nil. Provided table is '"..tostring(t).."'")
-    end
-    local hasRemovedAValue = false
-    for key, _value in pairs(t) do
-        if _value == value then
-            hasRemovedAValue = true
-            if math.isinteger(key) then
-                table.remove(t, key)
-            else
-                t[key] = nil
-            end
+function table.removevalue( t, value, maxRemoveCount )
+    Daneel.Debug.StackTrace.BeginFunction( "table.removevalue", t, value, maxRemoveCount )
+    local errorHead = "table.removevalue( table, value[, maxRemoveCount] ) : "
+    Daneel.Debug.CheckArgType( t, "table", "table", errorHead)
+    Daneel.Debug.CheckOptionalArgType( maxRemoveCount, "maxRemoveCount", "number", errorHead )
 
-            if singleRemove == true then
+    if value == nil and Daneel.Config.debug.enableDebug then
+        print("WARNING : "..errorHead.."Argument 2 'value' is nil. Provided table is '"..tostring(t).."'")
+    end
+    local removeCount = 0
+    for key, _value in pairs( t ) do
+        if _value == value then
+            if math.isinteger( key ) then
+                table.remove( t, key )
+            else
+                t[ key ] = nil
+            end
+            removeCount = removeCount + 1
+
+            if maxRemoveCount ~= nil and removeCount == maxRemoveCount then
                 break
             end
         end
     end
     Daneel.Debug.StackTrace.EndFunction()
-    return hasRemovedAValue
+    return removeCount
 end
 
 --- Return all the keys of the provided table.
 -- @param t (table) The table.
 -- @return (table) The keys.
-function table.getkeys(t)
-    Daneel.Debug.StackTrace.BeginFunction("table.getkeys", t)
-    local errorHead = "table.getkeys(table) : "
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
-    local keys = table.new()
-    for key, value in pairs(t) do
-        keys:insert(key)
+function table.getkeys( t )
+    Daneel.Debug.StackTrace.BeginFunction( "table.getkeys", t )
+    local errorHead = "table.getkeys( table ) : "
+    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
+
+    local keys = {}
+    for key, value in pairs( t ) do
+        table.insert( keys, key )
     end
-    Daneel.Debug.StackTrace.EndFunction("table.getkeys", keys)
+    Daneel.Debug.StackTrace.EndFunction()
     return keys
 end
 
 --- Return all the values of the provided table.
 -- @param t (table) The table.
 -- @return (table) The values.
-function table.getvalues(t)
-    Daneel.Debug.StackTrace.BeginFunction("table.getvalues", t)
-    local errorHead = "table.getvalues(t) : "
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
-    local values = table.new()
-    for key, value in pairs(t) do
-        values:insert(value)
+function table.getvalues( t )
+    Daneel.Debug.StackTrace.BeginFunction( "table.getvalues", t )
+    local errorHead = "table.getvalues( t ) : "
+    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
+    
+    local values = {}
+    for key, value in pairs( t ) do
+        table.insert( values, value )
     end
-    Daneel.Debug.StackTrace.EndFunction("table.getvalues", values)
+    Daneel.Debug.StackTrace.EndFunction()
     return values
 end
 
@@ -674,15 +615,15 @@ end
 -- @param t (table) The table.
 -- @param value (mixed) The value.
 -- @return (mixed) The value's key or nil if the value is not found.
-function table.getkey(t, value)
-    Daneel.Debug.StackTrace.BeginFunction("table.getkey", t, value)
-    local errorHead = "table.getkey(table, value) : "
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
+function table.getkey( t, value )
+    Daneel.Debug.StackTrace.BeginFunction( "table.getkey", t, value )
+    local errorHead = "table.getkey( table, value ) : "
+    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
     if value == nil then
-        error(errorHead.."Argument 'value' is nil.")
+        error( errorHead.."Argument 'value' is nil." )
     end
     local key = nil
-    for k, v in pairs(t) do
+    for k, v in pairs( t ) do
         if value == v then
             key = k
         end
@@ -696,13 +637,13 @@ end
 -- @param property (string) The property used as criteria to sort the table.
 -- @param orderBy [optional default="asc"] (string) How the sort should be made. Can be "asc" or "desc". Asc means small values first.
 -- @return (table) The ordered table.
-function table.sortby(t, property, orderBy)
-    Daneel.Debug.StackTrace.BeginFunction("table.sortby", t, property, orderBy)
-    local errorHead = "table.sortby(table, property[, orderBy]) : "
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
-    Daneel.Debug.CheckArgType(property, "property", "string", errorHead)
-    Daneel.Debug.CheckOptionalArgType(orderBy, "orderBy", "string", errorHead)
-    if orderBy == nil or not orderBy:isoneof({"asc", "desc"}) then
+function table.sortby( t, property, orderBy )
+    Daneel.Debug.StackTrace.BeginFunction( "table.sortby", t, property, orderBy )
+    local errorHead = "table.sortby( table, property[, orderBy] ) : "
+    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
+    Daneel.Debug.CheckArgType( property, "property", "string", errorHead )
+    Daneel.Debug.CheckOptionalArgType( orderBy, "orderBy", "string", errorHead )
+    if orderBy == nil or not (orderBy == "asc" or orderBy == "desc" ) then
         orderBy = "asc"
     end
     
