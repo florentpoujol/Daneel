@@ -183,6 +183,7 @@ function Daneel.Utilities.GetValueFromName( name )
         for k, v in pairs( _G ) do
             if k == name then
                 value = v
+                break
             end
         end
     end
@@ -196,12 +197,12 @@ end
 -- Only works for first-level global variables. Check if Daneel.Utilities.GetValueFromName() returns nil for the same effect with nested tables.
 -- @param name (string) The variable name.
 -- @return (boolean) True if it exists, false otherwise.
-function Daneel.Utilities.GlobalExists(name)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.GlobalExists", name)
-    Daneel.Debug.CheckArgType(name, "name", "string", "Daneel.Utilities.GlobalExists(name) : ")
+function Daneel.Utilities.GlobalExists( name )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.GlobalExists", name )
+    Daneel.Debug.CheckArgType( name, "name", "string", "Daneel.Utilities.GlobalExists( name ) : " )
     
     local exists = false
-    for key, value in pairs(_G) do
+    for key, value in pairs( _G ) do
         if key == name then
             exists = true
             break
@@ -219,25 +220,15 @@ function Daneel.Utilities.ToNumber( data )
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.ToNumber", data )
     local errorHead = "Daneel.Utilities.ToNumber( data ) : "
     if data == nil then
-        error( errorHead .. "Argument 'data' is nil." )
+        error( errorHead .. "Argument 1 'data' is nil." )
     end
 
     local number = tonumber( data )
     if number == nil then
-        number = ""
-        data = tostring( data ):totable()
-
-        for i, char in ipairs( data ) do
-            if tonumber( char ) ~= nil then
-                number = number .. char
-            elseif number ~= "" then
-                break
-            end
-        end
-        
+        data = tostring( data )
+        number = data:match( (data:gsub( "(%d+)", "(%1)" )) )
         number = tonumber( number )
     end
-
     Daneel.Debug.StackTrace.EndFunction()
     return number
 end
