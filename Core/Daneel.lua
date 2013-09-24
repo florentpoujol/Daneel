@@ -323,35 +323,42 @@ function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgum
     error(p_errorHead.."Optional argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'.")
 end
 
---- Return the Lua or CraftStudio type of the provided argument.
--- "CraftStudio types" includes : GameObject, ModelRenderer, MapRenderer, Camera, Transform, Physiscs, Script, Model, ModelAnimation, Map, TileSet, Scene, Sound, Document, Ray, RaycastHit, Vector3, Plane, Quaternion.
+-- For instances of objects, the type is the name of the metatable of the provided object, if the metatable is a first-level global variable. 
+-- Will return "ScriptedBehavior" when the provided object is a scripted behavior instance (yet ScriptedBehavior is not its metatable).
 -- @param object (mixed) The argument to get the type of.
--- @param OnlyReturnLuaType [optional default=false] (boolean) Tell whether to return only Lua's built-in types (string, number, boolean, table, function, userdata or thread).
+-- @param luaTypeOnly (boolean) [optional default=false] Tell whether to return only Lua's built-in types (string, number, boolean, table, function, userdata or thread).
 -- @return (string) The type.
-function Daneel.Debug.GetType(object, OnlyReturnLuaType)
-    local errorHead = "Daneel.Debug.GetType(object[, OnlyReturnLuaType]) : "
+function Daneel.Debug.GetType( object, luaTypeOnly )
+    local errorHead = "Daneel.Debug.GetType( object[, luaTypeOnly] ) : "
     -- DO NOT use CheckArgType here since it uses itself GetType() => overflow
-    local argType = type(OnlyReturnLuaType)
+    local argType = type( luaTypeOnly )
     if argType ~= "nil" and argType ~= "boolean" then
-        error(errorHead.."Argument 'OnlyReturnLuaType' is of type '"..argType.."' with value '"..tostring(OnlyReturnLuaType).."' instead of 'boolean'.")
+        error(errorHead.."Argument 'luaTypeOnly' is of type '"..argType.."' with value '"..tostring(luaTypeOnly).."' instead of 'boolean'.")
     end
-    if OnlyReturnLuaType == nil then OnlyReturnLuaType = false end
-    argType = type(object)
-    if OnlyReturnLuaType == false and argType == "table" then
+    if luaTypeOnly == nil then luaTypeOnly = false end
+
+    argType = type( object )
+    if not luaTypeOnly and argType == "table" then
         -- the type is defined by the object's metatable
-        local mt = getmetatable(object)
+        local mt = getmetatable( object )
         if mt ~= nil then
-            -- the metatable of the ScriptedBehaviors is the corresponding script asset
+            -- the metatable of the scripted behaviors is the corresponding script asset ('Behavior' in the script)
             -- the metatable of all script assets is the Script object
-            if getmetatable(mt) == Script then
+            if getmetatable( mt ) == Script then
                 return "ScriptedBehavior"
             end
-            -- other types
+
             if Daneel.Config.allObjects ~= nil then
-                for type, object in pairs(Daneel.Config.allObjects) do
+                for type, object in pairs( Daneel.Config.allObjects ) do
                     if mt == object then
                         return type
                     end
+                end
+            end
+
+            for type, object in pairs( _G ) do
+                if mt == object then
+                    return type
                 end
             end
         end
