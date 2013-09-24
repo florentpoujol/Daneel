@@ -389,20 +389,28 @@ end
 --- Bypass the __tostring() function that may exists on the data's metatable.
 -- @param data (mixed) The data to be converted to string.
 -- @return (string) The string.
-function Daneel.Debug.ToRawString(data)
+function Daneel.Debug.ToRawString( data )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.GlobalExists", name )
+    if data == nil and Daneel.Config.debug.enableDebug then
+        print( "WARNING : Daneel.Debug.ToRawString( data ) : Argument 'data' is nil.")
+        Daneel.Debug.StackTrace.EndFunction()
+        return nil
+    end
+
     local text = nil
-    local mt = getmetatable(data)
+    local mt = getmetatable( data )
     if mt ~= nil then
         if mt.__tostring ~= nil then
             local mttostring = mt.__tostring
             mt.__tostring = nil
-            text = tostring(data)
+            text = tostring( data )
             mt.__tostring = mttostring
         end
     end
     if text == nil then 
-        text = tostring(data)
+        text = tostring( data )
     end
+    Daneel.Debug.StackTrace.EndFunction()
     return text
 end
 
