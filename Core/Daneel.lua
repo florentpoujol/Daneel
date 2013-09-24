@@ -67,13 +67,14 @@ end
 -- @param string (string) The string.
 -- @param replacements (table) The placeholders and their replacements ( { placeholder = "replacement", ... } ).
 -- @return (string) The string.
-function Daneel.Utilities.ReplaceInString(string, replacements)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.ReplaceInString", string, replacements)
-    local errorHead = "Daneel.Utilities.ReplaceInString(string, replacements) : "
-    Daneel.Debug.CheckArgType(string, "string", "string", errorHead)
-    Daneel.Debug.CheckArgType(replacements, "replacements", "table", errorHead)
-    for placeholder, replacement in pairs(replacements) do
-        string = string:gsub(":"..placeholder, replacement)
+function Daneel.Utilities.ReplaceInString( string, replacements )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.ReplaceInString", string, replacements )
+    local errorHead = "Daneel.Utilities.ReplaceInString( string, replacements ) : "
+    Daneel.Debug.CheckArgType( string, "string", "string", errorHead )
+    Daneel.Debug.CheckArgType( replacements, "replacements", "table", errorHead )
+    
+    for placeholder, replacement in pairs( replacements ) do
+        string = string:gsub( ":"..placeholder, replacement )
     end
     Daneel.Debug.StackTrace.EndFunction()
     return string
@@ -142,52 +143,52 @@ function Daneel.Utilities.AllowDynamicGettersAndSetters( Object, ancestors )
 end
 
 --- Returns the value of any global variable (including nested tables) from its name as a string.
--- When the variable is nested in one or several tables (like GUI.Hud), put a dot between the names.
+-- When the variable is nested in one or several tables (like CS.Input), put a dot between the names.
 -- @param name (string) The variable name.
 -- @return (mixed) The variable value, or nil.
-function Daneel.Utilities.GetValueFromName(name)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.GetValueFromName", name)
-    local errorHead = "Daneel.Utilities.GetValueFromName(name) : "
-    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
+function Daneel.Utilities.GetValueFromName( name )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.GetValueFromName", name )
+    local errorHead = "Daneel.Utilities.GetValueFromName( name ) : "
+    Daneel.Debug.CheckArgType( name, "name", "string", errorHead )
     
     local value = nil
-    if name:find( ".", 1, true ) == nil then
-        if Daneel.Utilities.GlobalExists(name) == true then
-            value = _G[name]
+    if name:find( ".", 1, true ) ~= nil then
+        local subNames = name:split( "." )
+        local varName = table.remove( subNames, 1 )
+
+        if Daneel.Utilities.GlobalExists( varName ) then
+            value = _G[ varName ]
         end
-        Daneel.Debug.StackTrace.EndFunction()
-        return value
-    
-    else
-        local subNames = name:split(".")
-        local varName = table.remove(subNames, 1)
-        if Daneel.Utilities.GlobalExists(varName) == true then
-            value = _G[varName]
-        end
-        
         if value == nil then
             if Daneel.Config.debug.enableDebug then
-                print("WARNING : "..errorHead.." : variable '"..varName.."' (from provided name '"..name.."' ) does not exists. Returning nil.")
+                print( "WARNING : "..errorHead.." : variable '"..varName.."' (from provided name '"..name.."' ) does not exists. Returning nil." )
             end
             Daneel.Debug.StackTrace.EndFunction()
             return nil
         end
         
-        for i, _key in ipairs(subNames) do
-            varName = varName..".".._key
-            if value[_key] == nil then
+        for i, _key in ipairs( subNames ) do
+            varName = varName .. "." .. _key
+            if value[ _key ] == nil then
                 if Daneel.Config.debug.enableDebug then
-                    print("WARNING : "..errorHead.." : variable '"..varName.."' (from provided name '"..name.."' ) does not exists. Returning nil.")
+                    print( "WARNING : "..errorHead.." : variable '"..varName.."' (from provided name '"..name.."' ) does not exists. Returning nil." )
                 end
                 Daneel.Debug.StackTrace.EndFunction()
                 return nil
             else
-                value = value[_key]
+                value = value[ _key ]
             end
         end
-        Daneel.Debug.StackTrace.EndFunction()
-        return value
+    else
+        for k, v in pairs( _G ) do
+            if k == name then
+                value = v
+            end
+        end
     end
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return value
 end
 
 --- Tell wether the provided global variable name exists (is non-nil).
