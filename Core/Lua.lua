@@ -36,7 +36,7 @@ end
 -- @return (number) The interpolated value.
 function math.lerp( a, b, factor, easing )
     Daneel.Debug.StackTrace.BeginFunction( "math.lerp", a, b, factor, easing )
-    local errorHead = "math.lerp( a, b, factor, easing ) : "
+    local errorHead = "math.lerp( a, b, factor[, easing] ) : "
     Daneel.Debug.CheckArgType( a, "a", "number", errorHead )
     Daneel.Debug.CheckArgType( b, "b", "number", errorHead )
     Daneel.Debug.CheckArgType( factor, "factor", "number", errorHead )
@@ -66,17 +66,16 @@ end
 --- Wrap the provided angle between -180 and 180.
 -- @param angle (number) The angle.
 -- @return (number) The angle.
-function math.warpAngle( angle )
-    Daneel.Debug.StackTrace.BeginFunction( "math.wrapAngle", angle )
-    local errorHead = "math.wrapAngle( angle ) : "
+function math.warpangle( angle )
+    Daneel.Debug.StackTrace.BeginFunction( "math.wrapangle", angle )
+    local errorHead = "math.wrapangle( angle ) : "
     Daneel.Debug.CheckArgType( angle, "angle", "number", errorHead )
-
+    
     if angle > 180 then
         angle = angle - 360
     elseif angle < -180 then
         angle = angle + 360
     end
-    
     Daneel.Debug.StackTrace.EndFunction()
     return angle
 end
@@ -96,7 +95,6 @@ function math.round( value, decimal )
     else
         value = math.floor( value + 0.5 )
     end
-
     Daneel.Debug.StackTrace.EndFunction()
     return value
 end
