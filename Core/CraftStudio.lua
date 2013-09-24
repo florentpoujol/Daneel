@@ -856,7 +856,7 @@ function CraftStudio.Destroy( object )
 
     if type( object ) == "table" then
         Daneel.Event.Fire( object, "OnDestroy", object )
-        Daneel.Event.Clear( object ) -- remove from listener list
+        Daneel.Event.StopListen( object ) -- remove from listener list
         object.isDestroyed = true
         OriginalDestroy( object )
     end

@@ -608,36 +608,31 @@ end
 --- Make the provided function or object to stop listen to the provided event(s).
 -- @param eventName (string or table) The event name (or names in a table).
 -- @param functionOrObject (function, string or GameObject) The function, or the gameObject name or instance.
-function Daneel.Event.StopListen(eventName, functionOrObject)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.StopListen", eventName, functionOrObject)
-    local errorHead = "Daneel.Event.StopListen(eventName, functionOrObject) : "
-    Daneel.Debug.CheckArgType(eventName, "eventName", "string", errorHead)
-    Daneel.Debug.CheckArgType(functionOrObject, "functionOrObject", {"table", "function"}, errorHead)
+function Daneel.Event.StopListen( eventName, functionOrObject)
+    if type( eventName ) ~= "string" then
+        functionOrObject = eventName
+        eventName = nil 
+    end
+
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Event.StopListen", eventName, functionOrObject )
+    local errorHead = "Daneel.Event.StopListen( eventName, functionOrObject ) : "
+    Daneel.Debug.CheckOptionalArgType( eventName, "eventName", "string", errorHead )
+    Daneel.Debug.CheckArgType( functionOrObject, "functionOrObject", {"table", "function"}, errorHead )
     
     local eventNames = eventName
-    if type(eventName) == "string" then
+    if type( eventName ) == "string" then
         eventNames = { eventName }
     end
-    for i, eventName in ipairs(eventNames) do
-        local listeners = Daneel.Event.events[eventName]
+    if eventNames == nil then
+        eventNames = table.getkeys( Daneel.Event.events )
+    end
+
+    for i, eventName in pairs( eventNames ) do
+        local listeners = Daneel.Event.events[ eventName ]
         if listeners ~= nil then
-            table.removevalue(listeners, functionOrObject)
+            table.removevalue( listeners, functionOrObject )
         end
     end
-    Daneel.Debug.StackTrace.EndFunction()
-end
-
---- Remove the provided function or object from the listeners and scheduled events lists.
--- @param functionOrObject (function, userdata or table)
-function Daneel.Event.Clear(functionOrObject)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Clean", functionOrObject)
-    local errorHead = "Daneel.Event.Clear(functionOrObject) : "
-    Daneel.Debug.CheckArgType(functionOrObject, "functionOrObject", {"table", "function", "userdata"}, errorHead)
-
-    for eventName, listeners in pairs(Daneel.Event.events) do
-        table.removevalue(listeners, functionOrObject)
-    end
-    
     Daneel.Debug.StackTrace.EndFunction()
 end
 
