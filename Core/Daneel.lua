@@ -43,23 +43,23 @@ Daneel.Utilities = {}
 --- Make sure that the case of the provided name is correct by checking it against the values in the provided set.
 -- @param name (string) The name to check the case of.
 -- @param set (string or table) A single value or a table of values to check the name against.
-function Daneel.Utilities.CaseProof(name, set)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Utilities.CaseProof", name, set)
-    local errorHead = "Daneel.Utilities.CaseProof(name, set) : " 
-    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
-    Daneel.Debug.CheckArgType(set, "set", {"string", "table"}, errorHead)
+function Daneel.Utilities.CaseProof( name, set )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.CaseProof", name, set )
+    local errorHead = "Daneel.Utilities.CaseProof( name, set ) : " 
+    Daneel.Debug.CheckArgType( name, "name", "string", errorHead )
+    Daneel.Debug.CheckArgType( set, "set", {"string", "table"}, errorHead )
 
-    if type(set) == "string" then
-        set = {set}
+    if type( set ) == "string" then
+        set = { set }
     end
-
-    for i, item in ipairs(set) do
-        if name:lower() == item:lower() then
+    local lname = name:lower()
+    for i, item in pairs( set ) do
+        if lname == item:lower() then
             name = item
+            break
         end
     end
-
-    Daneel.Debug.StackTrace.EndFunction("Daneel.Utilities.CaseProof", name)
+    Daneel.Debug.StackTrace.EndFunction()
     return name
 end
 

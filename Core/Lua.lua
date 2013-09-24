@@ -137,7 +137,7 @@ function string.isoneof( s, t, ignoreCase )
     Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
     Daneel.Debug.CheckOptionalArgType( ignoreCase, "ignoreCase", "boolean", errorHead )
 
-    local isOneOf = table.containsvalue(t, s, ignoreCase)
+    local isOneOf = table.containsvalue( t, s, ignoreCase )
     Daneel.Debug.StackTrace.EndFunction()
     return isOneOf
 end
@@ -377,7 +377,7 @@ function table.getlength( t, keyType )
     Daneel.Debug.StackTrace.EndFunction()
     return length
 end
-function table.length(t, keyType)
+function table.length( t, keyType )
     return table.getlength( t, keyType )
 end
 
