@@ -53,16 +53,14 @@ function Lang.Awake()
     if Lang.Update == nil and Lang.Update2 ~= nil then
         Lang.Update = Lang.Update2
     end
-    
-    Daneel.Event.Listen( "OnSceneLoad", function() 
-        Lang.gameObjectsToUpdate = {}
-    end )
+
+    Lang.gameObjectsToUpdate = {}
 end
 
 -- Lang.Start runs before every other Behavior:Start() function of the scene
 function Lang.Start()
     if Lang.Config.current ~= nil then
-        Lang.Update( Lang.Config.current, true )
+        Lang.Update( Lang.Config.current )
     end
 end
 
