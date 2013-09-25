@@ -7,7 +7,7 @@
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
 end
-CS.DaneelModules[ "GameObject" ] = {}
+CS.DaneelModules[ "GameObject" ] = GameObject
 
 function GameObject.Awake()
     GameObject.Tags = {}
@@ -152,7 +152,7 @@ function GameObject.Set( gameObject, params )
     -- components
     local component = nil
 
-    for i, componentType in ipairs( Daneel.Config.allComponentTypes ) do
+    for i, componentType in ipairs( Daneel.Config.componentTypes ) do
         if componentType ~= "ScriptedBehavior" then
             if params[ componentType ] == nil then
                 componentType = componentType:lcfirst()
@@ -421,7 +421,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
     local errorHead = "GameObject.AddComponent( gameObject, componentType[, params] ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     Daneel.Debug.CheckArgType( componentType, "componentType", "string", errorHead ) 
-    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.allComponentTypes, errorHead )
+    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead )
     Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead )
 
     if componentType == "Transform" and Daneel.Config.debug.enableDebug then
@@ -499,7 +499,7 @@ function GameObject.GetComponent( gameObject, componentType )
     local errorHead = "GameObject.GetComponent( gameObject, componentType ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     Daneel.Debug.CheckArgType( componentType, "componentType", "string", errorHead )
-    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.allComponentTypes, errorHead )
+    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead )
     
     if componentType == "ScriptedBehavior" then
         print( errorHead.."Can't get a ScriptedBehavior via 'GameObject.GetComponent()'. Use 'GameObject.GetScriptedBehavior()' instead." )

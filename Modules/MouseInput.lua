@@ -9,11 +9,13 @@ MouseInput = {}
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
 end
-CS.DaneelModules[ "MouseInput" ] = {}
+CS.DaneelModules[ "MouseInput" ] = MouseInput
 
-MouseInput.Config = {
-    doubleClickDelay = 20 -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
-}
+function MouseInput.DefaultConfig()
+    return {
+        doubleClickDelay = 20 -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
+    }
+end
 
 
 ----------------------------------------------------------------------------------

@@ -46,9 +46,9 @@ end
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
 end
-CS.DaneelModules[ "Tween" ] = {}
+CS.DaneelModules[ "Tween" ] = Tween
 
-function Tween.Config()
+function Tween.DefaultConfig()
     local config = {
         tweener = {
             isEnabled = true, -- a disabled tweener won't update but the function like Play(), Pause(), Complete(), Destroy() will have no effect
@@ -90,7 +90,7 @@ function Tween.Config()
         },
     }
 
-    Daneel.Config.allObjects = table.merge( Daneel.Config.allObjects, config.objects )
+    Daneel.Config.objects = table.merge( Daneel.Config.objects, config.objects )
 
     return config
 end
@@ -98,13 +98,11 @@ end
 
 function Tween.Awake()
     -- destroy and sanitize the tweeners when the scene loads
-    Daneel.Event.Listen( "OnSceneLoad", function()
-        for id, tweener in pairs( Tween.Tweener.tweeners ) do
-            if tweener.destroyOnSceneLoad then
-                tweener:Destroy()
-            end
+    for id, tweener in pairs( Tween.Tweener.tweeners ) do
+        if tweener.destroyOnSceneLoad then
+            tweener:Destroy()
         end
-    end )
+    end
 end
 
 

@@ -4,9 +4,9 @@ Draw = {}
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
 end
-CS.DaneelModules[ "Draw" ] = {}
+CS.DaneelModules[ "Draw" ] = Draw
 
-function Draw.Config()
+function Draw.DefaultConfig()
     local config = {
         lineRenderer = {
             direction = Vector3:Left(),
@@ -28,12 +28,6 @@ function Draw.Config()
             ["Draw.CircleRenderer"] = Draw.CircleRenderer,
         },
     }
-
-    config.componentTypes = table.getkeys( config.componentObjects )
-
-    Daneel.Config.allComponentObjects   = table.merge( Daneel.Config.allComponentObjects, config.componentObjects )
-    Daneel.Config.allComponentTypes     = table.merge( Daneel.Config.allComponentTypes, config.componentTypes )
-    Daneel.Config.allObjects            = table.merge( Daneel.Config.allObjects, config.componentObjects )
 
     return config
 end

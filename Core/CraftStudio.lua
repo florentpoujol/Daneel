@@ -8,9 +8,9 @@
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
 end
-CS.DaneelModules[ "CraftStudio" ] = {}
+CS.DaneelModules[ "CraftStudio" ] = CraftStudio
 
-function CraftStudio.Config()
+function CraftStudio.DefaultConfig()
     local config = {
         -- List of the Scripts paths as values and optionally the script alias as the keys.
         -- Ie :
@@ -65,18 +65,11 @@ function CraftStudio.Config()
         },
     }
 
-    config.componentTypes       = table.getkeys( config.componentObjects )
-    config.assetTypes           = table.getkeys( config.assetObjects )
+    config.componentTypes   = table.getkeys( config.componentObjects )
+    config.assetTypes       = table.getkeys( config.assetObjects )
 
-    Daneel.Config.allComponentObjects       = table.merge( Daneel.Config.allComponentObjects, config.componentObjects )
-    Daneel.Config.allComponentTypes         = table.merge( Daneel.Config.allComponentTypes, config.componentTypes )
-    
-    Daneel.Config.allObjects = table.merge(
-        Daneel.Config.allObjects,
-        config.objects,
-        config.componentObjects,
-        config.assetObjects
-    )
+    Daneel.Config.objects = table.merge( Daneel.Config.objects, config.assetObjects )
+    -- objects and componentObjects are added to Daneel.Config.objects by Daneel.Load()
 
     return config
 end
@@ -102,7 +95,7 @@ function CraftStudio.Load()
     end
 
     -- Components
-    for componentType, componentObject in pairs( Daneel.Config.allComponentObjects ) do
+    for componentType, componentObject in pairs( Daneel.Config.componentObjects ) do
         Daneel.Utilities.AllowDynamicGettersAndSetters( componentObject, { Component } )
 
         if componentType ~= "ScriptedBehavior" then
@@ -304,7 +297,7 @@ Component.__index = Component
 function Component.Set(component, params)
     Daneel.Debug.StackTrace.BeginFunction("Component.Set", component, params)
     local errorHead = "Component.Set(component, params) : "
-    Daneel.Debug.CheckArgType(component, "component", Daneel.Config.allComponentTypes, errorHead)
+    Daneel.Debug.CheckArgType(component, "component", Daneel.Config.componentTypes, errorHead)
     Daneel.Debug.CheckArgType(params, "params", "table", errorHead)
 
     for key, value in pairs(params) do
@@ -319,7 +312,7 @@ end
 function Component.Destroy( component )
     Daneel.Debug.StackTrace.BeginFunction( "Component.Destroy", component )
     local errorHead = "Component.Destroy( component ) : "
-    Daneel.Debug.CheckArgType( component, "component", Daneel.Config.allComponentTypes, errorHead )
+    Daneel.Debug.CheckArgType( component, "component", Daneel.Config.componentTypes, errorHead )
 
     table.removevalue( component.gameObject, component )
     component.gameObject:RemoveTag( "guiComponent" )
@@ -334,7 +327,7 @@ end
 function Component.GetId( component )
     Daneel.Debug.StackTrace.BeginFunction( "Component.GetId", component )
     local errorHead = "Component.GetId( component ) : "
-    Daneel.Debug.CheckArgType( component, "component", Daneel.Config.allComponentTypes, errorHead )
+    Daneel.Debug.CheckArgType( component, "component", Daneel.Config.componentTypes, errorHead )
 
     if component.Id ~= nil then
         Daneel.Debug.StackTrace.EndFunction()
@@ -754,13 +747,10 @@ RaycastHit = {}
 RaycastHit.__index = RaycastHit
 setmetatable( RaycastHit, { __call = function(Object, ...) return Object.New(...) end } )
 
-if CS.DaneelModules == nil then
-    CS.DaneelModules = {}
-end
-CS.DaneelModules[ "RaycastHit" ] = {}
+CS.DaneelModules[ "RaycastHit" ] = RaycastHit
 
-function RaycastHit.Config()
-    Daneel.Config.allObjects.RaycastHit = RaycastHit
+function RaycastHit.DefaultConfig()
+    Daneel.Config.objects.RaycastHit = RaycastHit
 end
 
 --- Create a new RaycastHit

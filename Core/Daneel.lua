@@ -14,8 +14,8 @@ D = Daneel
 ----------------------------------------------------------------------------------
 -- Config
 
-Daneel.Config = {
-    
+function Daneel.DefaultConfig()
+    return {
         -- Button names as you defined them in the "Administration > Game Controls" tab of your project.
         -- Button whose name is defined here can be used as HotKeys.
         buttonNames = {
@@ -26,14 +26,15 @@ Daneel.Config = {
             enableDebug = false, -- Enable/disable Daneel's global debugging features (error reporting + stacktrace).
             enableStackTrace = false, -- Enable/disable the Stack Trace.
         },
-    
-
-    ----------------------------------------------------------------------------------
-  
-    allComponentObjects = {},
-    allComponentTypes = {},
-    allObjects = {},
-}
+        
+        ----------------------------------------------------------------------------------
+      
+        componentObjects = {},
+        componentTypes = {},
+        objects = {},
+    }
+end
+Daneel.Config = Daneel.DefaultConfig()
 
 
 ----------------------------------------------------------------------------------
@@ -349,8 +350,8 @@ function Daneel.Debug.GetType( object, luaTypeOnly )
                 return "ScriptedBehavior"
             end
 
-            if Daneel.Config.allObjects ~= nil then
-                for type, object in pairs( Daneel.Config.allObjects ) do
+            if Daneel.Config.objects ~= nil then
+                for type, object in pairs( Daneel.Config.objects ) do
                     if mt == object then
                         return type
                     end
@@ -433,7 +434,7 @@ function Daneel.Debug.GetNameFromValue(value)
     if value == nil then
         error(errorHead.." Argument 'value' is nil.")
     end
-    local result = table.getkey(Daneel.Config.allObjects, value)
+    local result = table.getkey(Daneel.Config.objects, value)
     if result == nil then
         result = table.getkey(_G, value)
     end
@@ -744,55 +745,25 @@ Daneel.Cache = {
 
 local moduleUpdateFunctions = {} -- see end of Daneel.Load() and end of Daneel.update()
 
-local modulesToLoad = {}
-function checkModule( name, deps )
-
-    for i, dep in ipairs( deps ) do
-        if modulesToLoad[ dep ] == nil then
-            -- problem - a dependency is missing
-            print( "Daneel.Load() : WARNING : module '" .. dep .. "' is required to work with module '" .. name .. "' but is missing." )
-        else
-            if table.containsvalue( modulesToLoad[ dep ], name ) then
-                --print( "Daneel.Load() : WARNING : modules '" .. dep .. "' and '" .. name .. "' have a circular dependency." )
-                -- it's ok
-            else
-                checkModule( dep, modulesToLoad[ dep ] )
-            end
-        end
-    end
-
-    local object = Daneel.Utilities.GetValueFromName( name )
-    if object ~= nil and not table.containsvalue( CS.DaneelModules, object ) then
-        table.insert( CS.DaneelModules, object )
-    end
-end
-
-
 -- load Daneel at the start of the game
 function Daneel.Load()
     if Daneel.isLoaded then return end
 
-    -- check for dependencies
-    modulesToLoad = table.copy( CS.DaneelModules )
-    CS.DaneelModules = {}
-    for moduleName, dependencies in pairs( modulesToLoad ) do
-        checkModule( moduleName, dependencies )
-    end
-
     -- load modules config
     local configLoaded = {}
-    for i, moduleObject in pairs( CS.DaneelModules ) do
-        if moduleObject ~= nil and configLoaded[ moduleObject ] == nil then
-            configLoaded[ moduleObject ] = true
+    for name, _module in pairs( CS.DaneelModules ) do
+        if configLoaded[ _module ] == nil then
+            configLoaded[ _module ] = true
 
-            if moduleObject.Config == nil then
-                moduleObject.Config = {}
-            elseif type( moduleObject.Config ) == "function" then
-                moduleObject.Config = moduleObject.Config()
+            if _module.Config == nil then
+                _module.Config = {}
+            end
+            if type( _module.DefaultConfig ) == "function" then
+                _module.Config = _module.DefaultConfig()
             end
 
             local userConfig = {}
-            local functionName = Daneel.Debug.GetNameFromValue( moduleObject ) .. "Config"
+            local functionName = name .. "UserConfig"
             if Daneel.Utilities.GlobalExists( functionName ) then
                 userConfig = _G[ functionName ]
                 if type( userConfig ) == "function" then
@@ -800,18 +771,27 @@ function Daneel.Load()
                 end
             end
             
-            moduleObject.Config = table.deepmerge( moduleObject.Config, userConfig )
+            _module.Config = table.deepmerge( _module.Config, userConfig )
+
+
+            if _module.Config.objects ~= nil then
+                Daneel.Config.objects = table.merge( Daneel.Config.objects, _module.Config.objects )
+            end
+
+            if _module.Config.componentObjects ~= nil then
+                Daneel.Config.componentObjects = table.merge( Daneel.Config.componentObjects, _module.Config.componentObjects )
+                Daneel.Config.componentTypes = table.getkeys( Daneel.Config.componentObjects )
+                
+                Daneel.Config.objects = table.merge( Daneel.Config.objects, _module.Config.componentObjects )
+            end
         end
     end
 
     local userConfig = {}
-    if Daneel.Utilities.GlobalExists( "DaneelConfig" ) then
-        userConfig = DaneelConfig
-        if type( userConfig ) == "function" then
-            userConfig = userConfig()
-        end
+    if Daneel.Utilities.GlobalExists( "DaneelUserConfig" ) then
+        userConfig = DaneelUserConfig()
     end
-    Daneel.Config = table.deepmerge( Daneel.Config, userConfig )
+    Daneel.Config = table.deepmerge( Daneel.Config, userConfig ) -- use Daneel.Config here since some of its values may have been modified already by some momdules
     
     if Daneel.Config.debug.enableDebug and Daneel.Config.debug.enableStackTrace then
         SetNewError()
@@ -821,11 +801,11 @@ function Daneel.Load()
 
     -- Load modules 
     local moduleLoaded = {}
-    for i, moduleObject in pairs( CS.DaneelModules ) do
-        if moduleLoaded[ moduleObject ] == nil then
-            moduleLoaded[ moduleObject ] = true
-            if type( moduleObject.Load ) == "function" then
-                moduleObject.Load()
+    for i, _module in pairs( CS.DaneelModules ) do
+        if moduleLoaded[ _module ] == nil then
+            moduleLoaded[ _module ] = true
+            if type( _module.Load ) == "function" then
+                _module.Load()
             end
         end
     end
@@ -838,11 +818,11 @@ function Daneel.Load()
     -- check for module update functions
     -- do this now so that I don't have to call Daneel.Utilities.GlobalExists() every frame for every modules below in Behavior:Update()
     moduleLoaded = {}
-    for i, moduleObject in ipairs( CS.DaneelModules ) do
-        if moduleLoaded[ moduleObject ] == nil then
-            moduleLoaded[ moduleObject ] = true
-            if type( moduleObject.Update ) == "function" then
-                table.insert( moduleUpdateFunctions, moduleObject.Update )
+    for i, _module in pairs( CS.DaneelModules ) do
+        if moduleLoaded[ _module ] == nil then
+            moduleLoaded[ _module ] = true
+            if type( _module.Update ) == "function" then
+                table.insert( moduleUpdateFunctions, _module.Update )
             end
         end
     end
@@ -861,11 +841,11 @@ function Behavior:Awake()
 
     -- Awake modules 
     local moduleLoaded = {}
-    for i, moduleObject in pairs( CS.DaneelModules ) do
-        if moduleLoaded[ moduleObject ] == nil then
-            moduleLoaded[ moduleObject ] = true
-            if type( moduleObject.Awake ) == "function" then
-                moduleObject.Awake()
+    for i, _module in pairs( CS.DaneelModules ) do
+        if moduleLoaded[ _module ] == nil then
+            moduleLoaded[ _module ] = true
+            if type( _module.Awake ) == "function" then
+                _module.Awake()
             end
         end
     end
@@ -882,11 +862,11 @@ function Behavior:Start()
 
     -- Start modules 
     local moduleLoaded = {}
-    for i, moduleObject in pairs( CS.DaneelModules ) do
-        if moduleLoaded[ moduleObject ] == nil then
-            moduleLoaded[ moduleObject ] = true
-            if type( moduleObject.Start ) == "function" then
-                moduleObject.Start()
+    for i, _module in pairs( CS.DaneelModules ) do
+        if moduleLoaded[ _module ] == nil then
+            moduleLoaded[ _module ] = true
+            if type( _module.Start ) == "function" then
+                _module.Start()
             end
         end
     end
@@ -911,7 +891,7 @@ function Behavior:Update()
 
     -- HotKeys
     -- fire an event whenever a registered button is pressed
-    for i, buttonName in ipairs( Daneel.Config.buttonNames ) do
+    for i, buttonName in pairs( Daneel.Config.buttonNames ) do
         local ButtonName = buttonName:ucfirst()
 
         if CraftStudio.Input.WasButtonJustPressed( buttonName ) then
@@ -928,7 +908,7 @@ function Behavior:Update()
     end
 
     -- Update modules 
-    for i, func in ipairs( moduleUpdateFunctions ) do
+    for i, func in pairs( moduleUpdateFunctions ) do
         func()
     end
 end

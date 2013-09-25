@@ -12,9 +12,9 @@ Lang = { lines = {}, gameObjectsToUpdate = {}, cache = {} }
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
 end
-CS.DaneelModules[ "Lang" ] = {}
+CS.DaneelModules[ "Lang" ] = Lang
 
-function Lang.Config()
+function Lang.DefaultConfig()
     return {
         languageNames = {}, -- list of the languages supported by the game
         

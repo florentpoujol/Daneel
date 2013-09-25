@@ -29,9 +29,9 @@ end
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
 end
-CS.DaneelModules[ "GUI" ] = {}
+CS.DaneelModules[ "GUI" ] = GUI
 
-function GUI.Config()
+function GUI.DefaultConfig()
     local config = {
         screenSize = CraftStudio.Screen.GetSize(),
         cameraName = "HUDCamera",  -- Name of the gameObject who has the orthographic camera used to render the HUD
@@ -110,34 +110,7 @@ function GUI.Config()
 
     config.componentTypes = table.getkeys( config.componentObjects )
 
-    Daneel.Config.allComponentObjects   = table.merge( Daneel.Config.allComponentObjects, config.componentObjects )
-    Daneel.Config.allComponentTypes     = table.merge( Daneel.Config.allComponentTypes, config.componentTypes )
-    Daneel.Config.allObjects            = table.merge( Daneel.Config.allObjects, config.componentObjects, config.objects )
-
     return config
-end
-
-function GUI.Load()
-
-    --- Update the gameObject's scale to make the text appear the provided width.
-    -- Overwrite TextRenderer.SetTextWith() from the CraftStudio module.
-    -- @param textRenderer (TextRenderer) The textRenderer.
-    -- @param width (number or string) The text's width in units or pixels.
-    function TextRenderer.SetTextWidth( textRenderer, width )
-        Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetTextWidth", textRenderer, width)
-        local errorHead = "TextRenderer.SetTextWidth(textRenderer, width) : "
-        Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
-        local argType = Daneel.Debug.CheckArgType(width, "width", {"number", "string"}, errorHead)
-
-        if argType == "string" then
-            width = tounit( width )
-        end
-        
-        local widthScaleRatio = textRenderer:GetTextWidth() / textRenderer.gameObject.transform:GetScale()
-        textRenderer.gameObject.transform:SetScale( width / widthScaleRatio )
-        Daneel.Debug.StackTrace.EndFunction()
-    end
-
 end
 
 function GUI.Awake()
@@ -166,6 +139,26 @@ function GUI.Awake()
         -- the HUDOrigin is now at the top-left corner of the screen
         GUI.Config.originPosition = GUI.Config.originGO.transform:GetPosition()
     end
+end
+
+
+--- Update the gameObject's scale to make the text appear the provided width.
+-- Overwrite TextRenderer.SetTextWith() from the CraftStudio module.
+-- @param textRenderer (TextRenderer) The textRenderer.
+-- @param width (number or string) The text's width in units or pixels.
+function TextRenderer.SetTextWidth( textRenderer, width )
+    Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetTextWidth", textRenderer, width)
+    local errorHead = "TextRenderer.SetTextWidth(textRenderer, width) : "
+    Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
+    local argType = Daneel.Debug.CheckArgType(width, "width", {"number", "string"}, errorHead)
+
+    if argType == "string" then
+        width = tounit( width )
+    end
+    
+    local widthScaleRatio = textRenderer:GetTextWidth() / textRenderer.gameObject.transform:GetScale()
+    textRenderer.gameObject.transform:SetScale( width / widthScaleRatio )
+    Daneel.Debug.StackTrace.EndFunction()
 end
 
 

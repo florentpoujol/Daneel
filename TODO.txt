@@ -69,7 +69,7 @@ IDEAS
     table.insert( CS.DaneelModules, { modulename = {} } )
 
 
-    Daneel.RegisterObject() > ajoute à Daneel.Config.allObjects
+    Daneel.RegisterObject() > ajoute à Daneel.Config.objects
     Component.RegisterComponent( GUI.Togle ) > ajoute à CraftStudio.Config.allComponents
 
 
