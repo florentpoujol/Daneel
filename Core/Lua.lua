@@ -193,17 +193,20 @@ function string.split( s, delimiter, trim )
     Daneel.Debug.CheckArgType( delimiter, "delimiter", "string", errorHead )
     Daneel.Debug.CheckOptionalArgType( trim, "trim", "boolean", errorHead )
 
-    s = s .. delimier
+    s = s .. delimiter
     local fields = { s:match( 
         (s:gsub( "([^"..delimiter.."]*)"..delimiter, "(%1)"..delimiter ))
     ) }
     if trim then
         for i, s in pairs( fields ) do
+            if type( s ) ~= "string" then
+                s = tostring( s )
+            end
             fields[ i ] = s:gsub( "^%s+", "" ):gsub( "%s+$", "" )
         end
     end
     Daneel.Debug.StackTrace.EndFunction()
-    return chunks
+    return fields
 end
 
 --- Tell wether the provided string begins by the provided chunk or not.
