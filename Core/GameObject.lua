@@ -10,9 +10,7 @@ end
 CS.DaneelModules[ "GameObject" ] = {}
 
 function GameObject.Awake()
-    Daneel.Event.Listen( "OnSceneLoad", function()
-        GameObject.Tags = {}
-    end )
+    GameObject.Tags = {}
 end
 
 

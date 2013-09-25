@@ -40,7 +40,7 @@ function CraftStudio.Config()
             Plane = Plane,
             Ray = Ray,
         },
-        
+
         componentObjects = {
             ScriptedBehavior = ScriptedBehavior,
             ModelRenderer = ModelRenderer,
@@ -761,10 +761,6 @@ CS.DaneelModules[ "RaycastHit" ] = {}
 
 function RaycastHit.Config()
     Daneel.Config.allObjects.RaycastHit = RaycastHit
-end
-
-function RaycastHit.__tostring() 
-    return "RaycastHit"
 end
 
 --- Create a new RaycastHit

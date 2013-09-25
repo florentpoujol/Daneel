@@ -9,6 +9,7 @@ if CS.DaneelModules == nil then
 end
 
 Daneel = { isLoaded = false }
+D = Daneel
 
 ----------------------------------------------------------------------------------
 -- Config
@@ -397,7 +398,7 @@ end
 -- @param data (mixed) The data to be converted to string.
 -- @return (string) The string.
 function Daneel.Debug.ToRawString( data )
-    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.GlobalExists", name )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.GlobalExists", data )
     if data == nil and Daneel.Config.debug.enableDebug then
         print( "WARNING : Daneel.Debug.ToRawString( data ) : Argument 'data' is nil.")
         Daneel.Debug.StackTrace.EndFunction()

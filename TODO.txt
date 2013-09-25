@@ -14,10 +14,6 @@ IDEAS
     - Rectangle pseudo object with position, normal, width, height > allow pixels
         > raycashit = ray:IntersectRectangle( rectangle, true )
 
-
-    - Avoir un config indépendante pour chaque module
-    permettre à l'utilisateur de définir Module.Config() qui update Module.DefaultConfig
-
     - pouvoir accéder au enfant d'un gameObject en écrivant sont nom, comme les component
 
 
@@ -67,78 +63,20 @@ IDEAS
         > module étent la config et ajoute les modules dont il dépend qui sont ajoutés avant lui dans la table des modules à charger
     - liste des modules chargés + empècher plusieurs chargements du même modules
 
-    lorsque CS permettra de 
-
-    function CS.DaneelModules( object, dependance )
-
     if CS.DaneelModules == nil then
         CS.DaneelModules = {}
     end
     table.insert( CS.DaneelModules, { modulename = {} } )
 
 
-
-    -----
-    PARTICLE EMITTER
-    > gameObject composant
-
-    "similaire" au tweeners, dépend des tweener
-
-    propriétés
-    - isPaused, isEnabled, hasStarted, isCompleted
-    - loops, completedLoops 
-    - delay
-    - elapsed, fullElapsed
-    
-    - duration > est calculé en fonction de emitionRate et maxParticleCount si nil
-    - durationType
-    - emitionRate (nb particle per durationType) > calcule maxParticleCount si nil
-    - maxParticleCount (nb of particles emitted over the duration) > calcule emitionRate si nil
-    
-    - createParticleFromScene > 
-        set the state of the emitted particles
-        gameObject émits peuvent être issue d'une scène et/ou sont modifié par paramètres :
-    
-    - particleStartParams
-        - Lifetime > nil or < 1 for infinite life (in durationType unit)
-        - any component property
-
-
-    Events :
-    - OnStart, OnPause, OnPlay, OnComplete, OnLoopComplete,
-    - OnNewParticle sur le GO qui emet la particle et sur le gameObject émit
-    - OnParticleDie when lifetime is over > pourquoi pas utiliser OnDestroy ?
-
-    Function :
-    Pause, Play, Restart, Destroy
-    
-
-    duration  sec
-    maxSpawnCount
-
-    spawnRate   /sec
-    
-    lifetime
-    maxAliveParticle
-    
-
-
-   
-    ------
-    Occlusion Culling
-
-    Create a grid of rays based of the screen size in pixel.
-    For each rays, keep the closest gameObject 
-    Only render the closest GO
-    Enable to set a near and far plane
-    (When a game object is "selected" for render, removeit from the list of game objects to check)
+    Daneel.RegisterObject() > ajoute à Daneel.Config.allObjects
+    Component.RegisterComponent( GUI.Togle ) > ajoute à CraftStudio.Config.allComponents
 
 
 ==========
 A implémenter
     
     - add setter for all GUI properties
-    - propriété updateInterval for tweeners
     - GUI.Input permettre de définir un curseur model optionnel
     - GUI.ProgressBar remplacer SetProgress() par SetValue(), comme slider
     
