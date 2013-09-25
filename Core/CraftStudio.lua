@@ -40,7 +40,7 @@ function CraftStudio.Config()
             Plane = Plane,
             Ray = Ray,
         },
-
+        
         componentObjects = {
             ScriptedBehavior = ScriptedBehavior,
             ModelRenderer = ModelRenderer,
@@ -567,7 +567,7 @@ function Ray.Cast(ray, gameObjects, sortByDistance)
     Daneel.Debug.CheckArgType(gameObjects, "gameObjects", "table", errorHead)
     Daneel.Debug.CheckOptionalArgType(sortByDistance, "sortByDistance", "boolean", errorHead)
     
-    local hits = table.new()
+    local hits = {}
     for i, gameObject in ipairs(gameObjects) do
         local raycastHit = ray:IntersectsGameObject(gameObject)
         if raycastHit ~= nil then

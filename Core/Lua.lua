@@ -359,7 +359,7 @@ end
 -- @return (number) The table length.
 function table.getlength( t, keyType )
     Daneel.Debug.StackTrace.BeginFunction( "table.getlength", t, keyType )
-    local errorHead = "table.length( table[, keyType] ) : "
+    local errorHead = "table.getlength( table[, keyType] ) : "
     Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
     
     local length = 0
@@ -376,9 +376,6 @@ function table.getlength( t, keyType )
 
     Daneel.Debug.StackTrace.EndFunction()
     return length
-end
-function table.length( t, keyType )
-    return table.getlength( t, keyType )
 end
 
 --- Print all key/value pairs within the provided table.
@@ -402,7 +399,7 @@ function table.print(t)
     end
     print("~~~~~ table.print("..tableString..") ~~~~~ Start ~~~~~")
 
-    if table.length(t) == 0 then
+    if table.getlength(t) == 0 then
         print("Provided table is empty.")
     else
         for key, value in pairs(t) do
@@ -663,7 +660,7 @@ function table.sortby( t, property, orderBy )
         table.sort(propertyValues)
     end
     
-    t = table.new()
+    t = {}
     for i, propertyValue in ipairs(propertyValues) do
         for j, _table in pairs(itemsByPropertyValue[propertyValue]) do
             table.insert(t, _table)
