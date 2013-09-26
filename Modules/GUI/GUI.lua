@@ -148,7 +148,7 @@ end
 -- @param width (number or string) The text's width in units or pixels.
 function TextRenderer.SetTextWidth( textRenderer, width )
     Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetTextWidth", textRenderer, width)
-    local errorHead = "TextRenderer.SetTextWidth(textRenderer, width) : "
+    local errorHead = "TextRenderer.SetTextWidth( textRenderer, width ) : "
     Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
     local argType = Daneel.Debug.CheckArgType(width, "width", {"number", "string"}, errorHead)
 
