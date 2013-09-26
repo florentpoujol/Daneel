@@ -17,6 +17,13 @@ IDEAS
     - pouvoir accéder au enfant d'un gameObject en écrivant sont nom, comme les component
 
 
+    Modules/composants
+    actuellement AddComponent ne peux pas accèder aux paramètres par défaut car n'a pas accès à l'object
+    sauf si le composant est un module > paramètres par défault directement dans Config
+    IE:LineRendererUserConfig()
+    ou que les object ont une propriété qui fait référence à la Config du module
+
+
     -----
     GUI
 
@@ -76,6 +83,7 @@ IDEAS
 ==========
 A implémenter
     
+    - Remplacer component object par des variable globale de premier niveau (TextArea, LineRenderer)
     - add setter for all GUI properties
     - GUI.Input permettre de définir un curseur model optionnel
     - GUI.ProgressBar remplacer SetProgress() par SetValue(), comme slider
@@ -104,6 +112,11 @@ A modifier/ajouter dans la doc :
     - defautl CS components settings in config.craftStudio au lieu de config.components
     - mask culling
     - draw object
+
+    - création de modules
+    - création de composants
+
+
 
 =========
 BUGS
