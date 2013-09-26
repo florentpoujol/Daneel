@@ -1368,7 +1368,7 @@ end
 
 Vector2 = {}
 Vector2.__index = Vector2
-setmetatable(Vector2, { __call = function(Object, ...) return Object.New(...) end })
+setmetatable( Vector2, { __call = function(Object, ...) return Object.New(...) end } )
 
 function Vector2.__tostring(vector2)
     return "Vector2: { x="..vector2.x..", y="..vector2.y.." }"
@@ -1388,6 +1388,31 @@ function Vector2.New(x, y)
     local vector = setmetatable({ x = x, y = y }, Vector2)
     Daneel.Debug.StackTrace.EndFunction()
     return vector
+end
+
+--- Return the length of the vector.
+-- @param vector (Vector2) The vector.
+function Vector2.GetLength( vector )
+    Daneel.Debug.StackTrace.BeginFunction( "Vector2.GetLength", vector )
+    local errorHead = "Vector2.GetLength( vector ) : "
+    Daneel.Debug.CheckArgType(  vector, " vector", "Vector2", errorHead )
+    
+    local length = math.sqrt( vector.x^2 + vector.y^2 )
+    Daneel.Debug.StackTrace.EndFunction()
+    return length
+end
+
+--- Return the squared length of the vector.
+-- @param vector (Vector2) The vector.
+-- @return (number) The squared length.
+function Vector2.GetSqrLength( vector )
+    Daneel.Debug.StackTrace.BeginFunction( "Vector2.GetSqrLength", vector )
+    local errorHead = "Vector2.GetSqrLength( vector ) : "
+    Daneel.Debug.CheckArgType(  vector, " vector", "Vector2", errorHead )
+    
+    local length = vector.x^2 + vector.y^2
+    Daneel.Debug.StackTrace.EndFunction()
+    return length
 end
 
 --- Allow to add two Vector2 by using the + operator.
@@ -1509,12 +1534,6 @@ function Vector2.__eq(a, b)
     local eq = ((a.x == b.x) and (a.y == b.y))
     Daneel.Debug.StackTrace.EndFunction()
     return eq
-end
-
---- Return the length of the vector.
--- @param vector (Vector2) The vector.
-function Vector2.GetLength(vector)
-    return math.sqrt(vector.x^2 + vector.y^2)
 end
 
 
