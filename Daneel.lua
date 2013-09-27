@@ -715,13 +715,7 @@ D = Daneel
 -- Config - Loading
 
 function Daneel.DefaultConfig()
-    local config = {
-        -- Button names as you defined them in the "Administration > Game Controls" tab of your project.
-        -- Button whose name is defined here can be used as HotKeys.
-        hotKeys = {
-            -- Ie: "Fire",
-        },
-    
+    local config = {  
         debug = {
             enableDebug = false, -- Enable/disable Daneel's global debugging features (error reporting + stacktrace).
             enableStackTrace = false, -- Enable/disable the Stack Trace.
@@ -884,7 +878,18 @@ end -- end Daneel.Load()
 ----------------------------------------------------------------------------------
 -- Runtime
 
+local buttonExistsGameObject = nil -- The game object Daneel.Utilities.ButtonExists() works with
+
 function Behavior:Awake()
+    buttonExistsGameObject = self.gameObject
+    if self.buttonExists == true then
+        CS.Input.WasButtonJustPressed( self.buttonName )
+    -- this function will throw an error, kill the script and not call the callback if the button name is unknow
+        self.success()
+        CS.Destroy( self )
+        return
+    end
+
     Daneel.Load()
     Daneel.Debug.StackTrace.messages = {}
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Awake" )
@@ -900,8 +905,6 @@ function Behavior:Awake()
         end
     end
 
-    Daneel.Event.Fire( "OnDaneelAwake" )
-
     if Daneel.Config.debug.enableDebug then
         print("~~~~~ Daneel awake ~~~~~")
     end
@@ -910,7 +913,21 @@ function Behavior:Awake()
 end 
 
 function Behavior:Start()
+    if self.buttonExists == true then
+        return
+    end
+
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Start" )
+
+    -- check if the button names for the hoteys exists
+    for i, buttonName in pairs( table.copy( Daneel.Config.hotKeys ) ) do
+        if not Danel.Utilities.ButtonExists( buttonName ) then
+            if Daneel.Config.debug.enableDebug then
+                print( "WARNING : Button '" .. buttonName .. "' was registerd as hotKey but does not exists in the Game Controls." )
+            end
+            table.remove( Daneel.Config.hotKeys, i )
+        end
+    end
 
     -- Start modules 
     local moduleLoaded = {}
@@ -923,8 +940,6 @@ function Behavior:Start()
         end
     end
 
-    Daneel.Event.Fire( "OnDaneelStart" )
-
     if Daneel.Config.debug.enableDebug then
         print("~~~~~ Daneel started ~~~~~")
     end
@@ -933,6 +948,10 @@ function Behavior:Start()
 end 
 
 function Behavior:Update()
+    if self.buttonExists == true then
+        return
+    end
+
     -- Time
     local currentTime = os.clock()
     Daneel.Time.realDeltaTime = currentTime - Daneel.Time.realTime
@@ -946,18 +965,16 @@ function Behavior:Update()
     -- HotKeys
     -- fire an event whenever a registered button is pressed
     for i, buttonName in pairs( Daneel.Config.hotKeys ) do
-        local ButtonName = buttonName:ucfirst()
-
         if CraftStudio.Input.WasButtonJustPressed( buttonName ) then
-            Daneel.Event.Fire( "On"..ButtonName.."ButtonJustPressed" )
+            Daneel.Event.Fire( "On"..buttonName.."ButtonJustPressed" )
         end
 
         if CraftStudio.Input.IsButtonDown( buttonName ) then
-            Daneel.Event.Fire( "On"..ButtonName.."ButtonDown" )
+            Daneel.Event.Fire( "On"..buttonName.."ButtonDown" )
         end
 
         if CraftStudio.Input.WasButtonJustReleased( buttonName ) then
-            Daneel.Event.Fire( "On"..ButtonName.."ButtonJustReleased" )
+            Daneel.Event.Fire( "On"..buttonName.."ButtonJustReleased" )
         end
     end
 
@@ -965,8 +982,6 @@ function Behavior:Update()
     for i, func in pairs( moduleUpdateFunctions ) do
         func()
     end
-
-    Daneel.Event.Fire( "OnDaneelUpdate" )
 end
 
 
@@ -1166,6 +1181,32 @@ function Daneel.Utilities.ToNumber( data )
     end
     Daneel.Debug.StackTrace.EndFunction()
     return number
+end
+
+local DaneelScriptAsset = Behavior
+
+--- Tell wether the provided button name exists amongst the Game Controls, or not.
+-- The 'gameObject' argument is mandatory ony 
+-- WARNING : It will kill the game, if it is called from an Awake() function, and the second argument is 'self.gameObject'.
+-- @param buttonName (string) The button name.
+-- @param gameObject (GameObject) Any game object. This argument is mandatory only on the first call (as long as the game object stays alive) when Daneel is not loaded.
+-- @return (boolean) True if the button name exists, false otherwise.
+function Daneel.Utilities.ButtonExists( buttonName, gameObject )
+    if gameObject ~= nil then
+        buttonExistsGameObject = gameObject
+    end
+    if buttonExistsGameObject == nil or buttonExistsGameObject.transform == nil then
+        buttonExistsGameObject = nil
+        error( "Daneel.Utilities.ButtonExists( buttonName, gameObject ) : No valid game object to be used, please load Daneel or pass a game object as second argument." )
+    end
+
+    local buttonExists = false
+    buttonExistsGameObject:CreateScriptedBehavior( DaneelScriptAsset, {
+        buttonExists = true,
+        buttonName = buttonName, 
+        success = function() buttonExists = true end  
+    } )
+    return buttonExists
 end
 
 
@@ -1539,22 +1580,38 @@ Daneel.Event = {
 -- The function will be called whenever the provided event will be fired.
 -- @param eventName (string or table) The event name (or names in a table).
 -- @param functionOrObject (function or table) The function (not the function name) or the object.
-function Daneel.Event.Listen(eventName, functionOrObject)
-    Daneel.Debug.StackTrace.BeginFunction("Daneel.Event.Listen", eventName, functionOrObject)
-    local errorHead = "Daneel.Event.Listen(eventName, functionOrObject) : "
-    Daneel.Debug.CheckArgType(eventName, "eventName", {"string", "table"}, errorHead)
-    Daneel.Debug.CheckArgType(functionOrObject, "functionOrObject", {"table", "function", "userdata"}, errorHead)
+function Daneel.Event.Listen( eventName, functionOrObject )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Event.Listen", eventName, functionOrObject )
+    local errorHead = "Daneel.Event.Listen( eventName, functionOrObject ) : "
+    Daneel.Debug.CheckArgType( eventName, "eventName", {"string", "table"}, errorHead )
+    Daneel.Debug.CheckArgType( functionOrObject, "functionOrObject", {"table", "function", "userdata"}, errorHead )
     
     local eventNames = eventName
-    if type(eventName) == "string" then
+    if type( eventName ) == "string" then
         eventNames = { eventName }
     end
-    for i, eventName in ipairs(eventNames) do
-        if Daneel.Event.events[eventName] == nil then
-            Daneel.Event.events[eventName] = {}
+    for i, eventName in pairs( eventNames ) do
+        
+        -- check for hotkeys
+        local a,a, buttonName = eventName:find( "^On(.+)ButtonJustPressed$" )
+        if buttonName == nil then
+            a,a, buttonName = eventName:find( "^On(.+)ButtonJustReleased$" )
         end
-        if not table.containsvalue(Daneel.Event.events[eventName], functionOrObject) then
-            table.insert(Daneel.Event.events[eventName], functionOrObject)
+        if buttonName == nil then
+            a,a, buttonName = eventName:find( "^On(.+)ButtonDown$" )
+        end
+
+        if buttonName ~= nil and not table.containsvalue( Daneel.Config.hotKeys, buttonName ) then
+            table.insert( Daneel.Config.hotKeys, buttonName )
+        end
+
+        --
+        if Daneel.Event.events[ eventName ] == nil then
+            Daneel.Event.events[ eventName ] = {}
+        end
+
+        if not table.containsvalue( Daneel.Event.events[ eventName ], functionOrObject ) then
+            table.insert( Daneel.Event.events[ eventName ], functionOrObject )
         end
     end
     Daneel.Debug.StackTrace.EndFunction()
