@@ -16,6 +16,7 @@ function MouseInput.DefaultConfig()
         doubleClickDelay = 20 -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
     }
 end
+MouseInput.Config = MouseInput.DefaultConfig()
 
 
 ----------------------------------------------------------------------------------
@@ -27,7 +28,7 @@ updateInterval number 10
 
 function Behavior:Awake()
     Daneel.Debug.StackTrace.BeginFunction( "MouseInput:Awake" )
-    
+
     if self.gameObject.camera == nil then
         CS.Destroy( self )
         error( "MouseInput:Awake() : GameObject with name '" .. self.gameObject:GetName() .. "' has no Camera component attached." )
@@ -49,7 +50,7 @@ function Behavior:Update()
     
     local doubleClick = false
     if leftMouseJustPressed then
-        doubleClick = ( self.frameCount <= self.lastLeftClickFrame + doubleClickDelay )   
+        doubleClick = ( self.frameCount <= self.lastLeftClickFrame + MouseInput.Config.doubleClickDelay )   
         self.lastLeftClickFrame = self.frameCount
     end
 

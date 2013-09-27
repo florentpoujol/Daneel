@@ -53,8 +53,6 @@ function GUI.DefaultConfig()
             uncheckedMark = ":text",
             checkedModel = nil,
             uncheckedModel = nil,
-
-            behaviorPath = "Daneel/Modules/GUI/Toggle",
         },
 
         progressBar = {
@@ -72,7 +70,6 @@ function GUI.DefaultConfig()
             length = 5, -- 5 units
             axis = "x",
             value = "0%",
-            behaviorPath = "Daneel/Modules/GUI/Slider",
         },
 
         input = {
@@ -372,9 +369,33 @@ function GUI.Toggle.New( gameObject, params )
     toggle:Set( params )    
     
     gameObject.toggle = toggle
-    gameObject:AddTag( "guiComponent" )
-    if gameObject:GetScriptedBehavior( GUI.Config.toggle.behaviorPath ) == nil then
-        gameObject:AddScriptedBehavior( GUI.Config.toggle.behaviorPath )
+    gameObject:AddTag( "guicomponent" )
+    
+    gameObject.OnNewComponent = function()
+        local component = data[1]
+        if component == nil then return end
+        local mt = getmetatable( component )
+
+        if mt == TextRenderer then
+            local text = component:GetText()
+            if text == nil then
+                text = toggle.defaultText
+            end
+            toggle:SetText( text )
+
+        elseif mt == ModelRenderer and toggle.checkedModel ~= nil then
+            if toggle.isChecked and toggle.checkedModel ~= nil then
+                self.gameObject.modelRenderer:SetModel( toggle.checkedModel )
+            elseif not toggle.isChecked and toggle.uncheckedModel ~= nil then
+                self.gameObject.modelRenderer:SetModel( toggle.uncheckedModel )
+            end
+        end
+    end
+
+    gameObject.OnClick = function()
+        if not (toggle.group ~= nil and toggle.isChecked) then -- true when not in a group or when in group but not checked
+            toggle:Check( not toggle.isChecked )
+        end
     end
 
     if gameObject.textRenderer ~= nil and gameObject.textRenderer:GetText() ~= nil then
@@ -557,19 +578,6 @@ function GUI.Toggle.Set( toggle, params )
         toggle:Check(isChecked)
     end        
     
-    Daneel.Debug.StackTrace.EndFunction()
-end
-
--- Destroy the provided toggle component, removing it from the gameObject.
--- Overwrite Component.Destroy() from CraftStudio module.
--- @param toggle (Toggle) The toggle component.
-function GUI.Toggle.Destroy( toggle )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.Toggle.Destroy", toggle )
-    local errorHead = "GUI.Toggle.Destroy( toggle ) : "
-    Daneel.Debug.CheckArgType( toggle, "toggle", "GUI.Toggle", errorHead )
-
-    CraftStudio.Destroy( toggle.gameObject:GetScriptedBehavior( GUI.Config.toggle.behaviorPath ) )
-    Component.Destroy( toggle )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -764,13 +772,31 @@ function GUI.Slider.New( gameObject, params )
     slider.gameObject = gameObject
     slider.Id = Daneel.Cache.GetId()
     slider.value = nil
-    slider.parent = slider.gameObject.parent
+    slider.parent = slider.gameObject:GetParent()
     setmetatable( slider, GUI.Slider )
     
     gameObject.slider = slider
-    gameObject:AddTag( "guiComponent" )
-    if gameObject:GetScriptedBehavior( GUI.Config.slider.behaviorPath ) == nil then
-        gameObject:AddScriptedBehavior( GUI.Config.slider.behaviorPath )
+    gameObject:AddTag( "guicomponent" )
+    
+    gameObject.OnDrag = function()
+        local mouseDelta = CraftStudio.Input.GetMouseDelta()
+        local positionDelta = Vector3:New( mouseDelta.x, 0, 0 )
+        if slider.axis == "y" then
+            positionDelta = Vector3:New( 0, -mouseDelta.y, 0, 0 )
+        end
+        
+        gameObject.transform:Move( positionDelta * GUI.pixelsToUnits )
+        
+        if 
+            (slider.axis == "x" and gameObject.transform.position.x < slider.parent.transform.position.x) or
+            (slider.axis == "y" and gameObject.transform.position.y < slider.parent.transform.position.y)
+        then
+            slider.value = slider.minValue
+        elseif slider.value > slider.maxValue then
+            slider.value = slider.maxValue
+        else
+            Daneel.Event.Fire( slider, "OnUpdate", slider )
+        end
     end
 
     if params.value == nil then
@@ -868,20 +894,7 @@ function GUI.Slider.Set( slider, params )
     
     Daneel.Debug.StackTrace.EndFunction()
 end
-
--- Destroy the provided slider component, removing it from the gameObject.
--- Overwrite Component.Destroy() from CraftStudio module.
--- @param slider (Slider) The slider component.
-function GUI.Slider.Destroy( slider )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.Slider.Destroy", slider )
-    local errorHead = "GUI.Slider.Destroy( slider ) : "
-    Daneel.Debug.CheckArgType( slider, "slider", "GUI.Slider", errorHead )
-
-    CraftStudio.Destroy( slider.gameObject:GetScriptedBehavior( GUI.Config.slider.behaviorPath ) )
-    Component.Destroy( slider )
-    Daneel.Debug.StackTrace.EndFunction()
-end
-        
+       
 
 ----------------------------------------------------------------------------------
 -- Input
@@ -930,7 +943,7 @@ function GUI.Input.New( gameObject, params )
     input:Focus( isFocused )
 
     gameObject.input = input
-    gameObject:AddTag( "guiComponent" )
+    gameObject:AddTag( "guicomponent" )
     
     Daneel.Event.Listen( "OnLeftMouseButtonJustPressed", 
         function()

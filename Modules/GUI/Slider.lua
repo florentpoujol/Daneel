@@ -14,6 +14,13 @@ value string "0%"
 
 function Behavior:Awake()
     if self.gameObject.slider == nil then
+        if self.axis:trim() == "" then
+            self.axis = "x"
+        end
+        if self.value:trim() == "" then
+            self.value = "0%"
+        end
+
         GUI.Slider.New( self.gameObject, { 
             minValue = self.minValue,
             maxValue = self.maxValue,
@@ -21,29 +28,5 @@ function Behavior:Awake()
             axis = self.axis,
             value = self.value,
         } )
-    end
-end
-
--- when the handle is dragged
-function Behavior:OnDrag()
-    local slider = self.gameObject.slider
-
-    local mouseDelta = CraftStudio.Input.GetMouseDelta()
-    local positionDelta = Vector3( mouseDelta.x, 0, 0 )
-    if slider.axis == "y" then
-        positionDelta = Vector3( 0, -mouseDelta.y, 0, 0 )
-    end  
-    
-    self.gameObject.transform:Move( positionDelta * GUI.pixelsToUnits )
-    
-    if 
-        (slider.axis == "x" and self.gameObject.transform.position.x < slider.parent.transform.position.x) or
-        (slider.axis == "y" and self.gameObject.transform.position.y < slider.parent.transform.position.y)
-    then
-        slider.value = slider.minValue
-    elseif slider.value > slider.maxValue then
-        slider.value = slider.maxValue
-    else
-        Daneel.Event.Fire( slider, "OnUpdate", slider )
     end
 end
