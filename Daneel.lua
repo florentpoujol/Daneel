@@ -884,9 +884,8 @@ function Behavior:Awake()
     buttonExistsGameObject = self.gameObject
     if self.buttonExists == true then
         CS.Input.WasButtonJustPressed( self.buttonName )
-    -- this function will throw an error, kill the script and not call the callback if the button name is unknow
+        -- this function will throw an error, kill the script and not call the callback if the button name is unknow
         self.success()
-        CS.Destroy( self )
         return
     end
 
@@ -1201,11 +1200,11 @@ function Daneel.Utilities.ButtonExists( buttonName, gameObject )
     end
 
     local buttonExists = false
-    buttonExistsGameObject:CreateScriptedBehavior( DaneelScriptAsset, {
+    CraftStudio.Destroy( buttonExistsGameObject:CreateScriptedBehavior( DaneelScriptAsset, {
         buttonExists = true,
         buttonName = buttonName, 
         success = function() buttonExists = true end  
-    } )
+    } ) )
     return buttonExists
 end
 
