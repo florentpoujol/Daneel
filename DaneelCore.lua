@@ -1572,7 +1572,7 @@ end
 -- Event
 
 Daneel.Event = { 
-    events = {},
+    events = {}, -- emptied when a new scene is loaded in CraftStudio.LoadScene()
 }
 
 --- Make the provided function or object listen to the provided event(s).
