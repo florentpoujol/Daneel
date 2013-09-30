@@ -105,14 +105,9 @@ A tester
 ==========
 A modifier/ajouter dans la doc :
 
-    - Scene.current = currently loaded scene asset
+    
     - workInterval dans mouseInput et checkInterval dans trigger devins "updateInterval"
-    - placer paragraph sur les mouse interaction au dehors de la page GUI
     - add a Lang scripted behavior which replace the text of the textrenderer or textArea
-    - math.lerp, wrapangle, round
-    - GO.AddComponent() ne fonction plus qu'avec les composants de CS
-    - defautl CS components settings in config.craftStudio au lieu de config.components
-    - mask culling
     - draw object
 
     - création de modules

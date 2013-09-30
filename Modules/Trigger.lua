@@ -16,13 +16,6 @@ function Behavior:Awake()
     self.tags = self.tags:split( ",", true )
     self.frameCount = 0
     self.ray = Ray:New()
-    
-    -- if self.gameObject.modelRenderer ~= nil then
-    --     self.gameObject.modelRenderer:SetOpacity( 0 )
-    -- end
-    -- if self.gameObject.mapRenderer ~= nil then
-    --     self.gameObject.mapRenderer:SetOpacity( 0 )
-    -- end
 end
 
 function Behavior:Update()
@@ -30,13 +23,15 @@ function Behavior:Update()
     if self.updateInterval > 1 and #self.tags > 0 and self.frameCount % self.updateInterval == 0 then
         local triggerPosition = self.gameObject.transform:GetPosition()
         
-        for i, layer in ipairs( self.tags ) do
-            local gameObjects = GameObject.Tags[ layer ]
+        for i, tag in pairs( self.tags ) do
+            local gameObjects = GameObject.Tags[ tag ]
             if gameObjects ~= nil then
                 
                 for i, gameObject in pairs( gameObjects ) do
                     local gameObject = gameObjects[ i ]
-                    if gameObject.transform ~= nil and gameObject ~= self.gameObject then
+                    if gameObject.transform == nil then
+                        table.remove( gameObjects, i )
+                    elseif gameObject ~= self.gameObject then
 
                         local gameObjectIsInRange = self:IsGameObjectInRange( gameObject, triggerPosition )
                         local gameObjectWasInRange = table.containsvalue( self.GameObjectsInRange, gameObject )
@@ -61,8 +56,6 @@ function Behavior:Update()
                             end
                         end
 
-                    else
-                        table.remove( gameObjects, i )
                     end
                 end
 
