@@ -7,7 +7,11 @@
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
 
-Lang = { lines = {}, gameObjectsToUpdate = {}, cache = {} }
+Lang = { 
+    lines = {},
+    gameObjectsToUpdate = {},
+    cache = {}
+}
 
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
@@ -18,8 +22,8 @@ function Lang.DefaultConfig()
     return {
         languageNames = {}, -- list of the languages supported by the game
         
-        current = nil, -- Current language
         default = nil, -- Default language
+        current = nil, -- Current language
         searchInDefault = true, -- Tell wether Lang.Get() search a line key in the default language 
         -- when it is not found in the current language before returning the value of keyNotFound
         keyNotFound = "langkeynotfound", -- Value returned when a language key is not found
@@ -178,7 +182,7 @@ function Lang.Update( language )
             gameObject.textRenderer:SetText( text )
         
         elseif Daneel.Config.debug.enableDebug then
-            print( "WARNING : " .. errorHead .. tostring( gameObject ) .. " does not have a TextRenderer or TextArea component." )
+            print( "WARNING : " .. errorHead .. tostring( gameObject ) .. " does not have a TextRenderer or GUI.TextArea component." )
         end
     end
 
