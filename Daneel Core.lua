@@ -920,7 +920,7 @@ function Behavior:Start()
 
     -- check if the button names for the hoteys exists
     for i, buttonName in pairs( table.copy( Daneel.Config.hotKeys ) ) do
-        if not Danel.Utilities.ButtonExists( buttonName ) then
+        if not Daneel.Utilities.ButtonExists( buttonName ) then
             if Daneel.Config.debug.enableDebug then
                 print( "WARNING : Button '" .. buttonName .. "' was registerd as hotKey but does not exists in the Game Controls." )
             end

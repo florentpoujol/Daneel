@@ -7,7 +7,7 @@
 --[[PublicProperties
 tags string ""
 range number 0
-updateInterval number 10
+updateInterval number 5
 /PublicProperties]]
 
 function Behavior:Awake()
@@ -64,33 +64,14 @@ function Behavior:Update()
     end
 end
 
---- Get the gameObjets that are closer than the trigger's range.
--- @param tags [optional] (string or table) The tags(s) the gameObjects must have. If nil, it uses the trigger's tags(s).
--- @param range [optional] (number) The range within which to pick the gameObjects. If nil, it uses the trigger's range.
+--- Get the gameObjets that are whithin range of that trigger.
 -- @return (table) The list of the gameObjects in range (empty if none in range).
-function Behavior:GetGameObjectsInRange( tags, range )
-    Daneel.Debug.StackTrace.BeginFunction( "Trigger:GetGameObjectsInRange", tags, range )
-    if type( tags ) == "number" then
-        range = tags
-        tags = nil
-    end
-
-    local errorHead = "Trigger:GetGameObjectsInRange( [tags, range] ) : "
-    Daneel.Debug.CheckOptionalArgType( tags, "tags", {"string", "table"}, errorHead )
-
-    if tags == nil then
-        tags = self.tags
-    end
-    if type( tags ) == "string" then
-        tags = { tags }
-    end
-
-    range = Daneel.Debug.CheckOptionalArgType( range, "range", "number", errorHead, self.range )
-    
+function Behavior:GetGameObjectsInRange()
+    Daneel.Debug.StackTrace.BeginFunction( "Trigger:GetGameObjectsInRange" )
     local gameObjectsInRange = {}
     local triggerPosition = self.gameObject.transform:GetPosition()
     
-    for i, tag in pairs( tags ) do
+    for i, tag in pairs( self.tags ) do
         local gameObjects = GameObject.Tags[ tag ]
         if gameObjects ~= nil then
 
