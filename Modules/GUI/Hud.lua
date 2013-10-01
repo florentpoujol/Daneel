@@ -30,7 +30,7 @@ function Behavior:Awake()
         end
 
         -- allow the gameObject to stay at the same position than defined in the scene
-        local position, layer = GUI.Hud.ToHudPosition(self.gameObject.transform.position)
+        local position, layer = GUI.Hud.ToHudPosition(self.gameObject.transform:GetPosition())
         if params.position == nil and params.localPosition == nil then
             params.position = position
         end

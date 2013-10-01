@@ -12,7 +12,7 @@ local function tounit(value)
     if type(value) == "string" then
         local length = #value
         if value:endswith("px") then
-            value = tonumber(value:sub(0, length-2)) * GUI.pixelsToUnits
+            value = tonumber(value:sub(0, length-2)) * GUI.Config.pixelsToUnits
         elseif value:endswith("u") then
             value = tonumber(value:sub(0, length-1))
         else
@@ -38,6 +38,7 @@ function GUI.DefaultConfig()
         cameraGO = nil, -- the corresponding GameObject, set at runtime
         originGO = nil, -- "parent" gameObject for global hud positioning, created at runtime in DaneelModuleGUIAwake
         originPosition = Vector3:New(0),
+        pixelsToUnits = 0,
 
         -- Default GUI components settings
         hud = {
@@ -109,6 +110,30 @@ function GUI.DefaultConfig()
 
     return config
 end
+--GUI.Config = GUI.DefaultConfig() -- set at the very end of the file when vector2 exists (don't want to move vector2 code to the top)
+
+
+function GUI.Load()
+    --- Update the gameObject's scale to make the text appear the provided width.
+    -- Overwrite TextRenderer.SetTextWith() from the CraftStudio module.
+    -- @param textRenderer (TextRenderer) The textRenderer.
+    -- @param width (number or string) The text's width in units or pixels.
+    function TextRenderer.SetTextWidth( textRenderer, width )
+        Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetTextWidth", textRenderer, width)
+        local errorHead = "TextRenderer.SetTextWidth( textRenderer, width ) : "
+        Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
+        local argType = Daneel.Debug.CheckArgType(width, "width", {"number", "string"}, errorHead)
+
+        if argType == "string" then
+            width = tounit( width )
+        end
+        
+        local widthScaleRatio = textRenderer:GetTextWidth() / textRenderer.gameObject.transform:GetScale()
+        textRenderer.gameObject.transform:SetScale( width / widthScaleRatio )
+        Daneel.Debug.StackTrace.EndFunction()
+    end
+end
+
 
 function GUI.Awake()
     -- setting pixelToUnits  
@@ -125,12 +150,12 @@ function GUI.Awake()
     if GUI.Config.cameraGO ~= nil then
         -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
         -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and scene units
-        GUI.pixelsToUnits = GUI.Config.cameraGO.camera:GetOrthographicScale() / smallSideSize
+        GUI.Config.pixelsToUnits = GUI.Config.cameraGO.camera:GetOrthographicScale() / smallSideSize
 
         GUI.Config.originGO = GameObject.New( "HUDOrigin", { parent = GUI.Config.cameraGO } )
         GUI.Config.originGO.transform:SetLocalPosition( Vector3:New(
-            -screenSize.x * GUI.pixelsToUnits / 2, 
-            screenSize.y * GUI.pixelsToUnits / 2,
+            -screenSize.x * GUI.Config.pixelsToUnits / 2, 
+            screenSize.y * GUI.Config.pixelsToUnits / 2,
             0
         ) )
         -- the HUDOrigin is now at the top-left corner of the screen
@@ -139,30 +164,12 @@ function GUI.Awake()
 end
 
 
---- Update the gameObject's scale to make the text appear the provided width.
--- Overwrite TextRenderer.SetTextWith() from the CraftStudio module.
--- @param textRenderer (TextRenderer) The textRenderer.
--- @param width (number or string) The text's width in units or pixels.
-function TextRenderer.SetTextWidth( textRenderer, width )
-    Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetTextWidth", textRenderer, width)
-    local errorHead = "TextRenderer.SetTextWidth( textRenderer, width ) : "
-    Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
-    local argType = Daneel.Debug.CheckArgType(width, "width", {"number", "string"}, errorHead)
-
-    if argType == "string" then
-        width = tounit( width )
-    end
-    
-    local widthScaleRatio = textRenderer:GetTextWidth() / textRenderer.gameObject.transform:GetScale()
-    textRenderer.gameObject.transform:SetScale( width / widthScaleRatio )
-    Daneel.Debug.StackTrace.EndFunction()
-end
-
-
 ----------------------------------------------------------------------------------
 -- Hud
 
 GUI.Hud = {}
+GUI.Hud.__index = GUI.Hud -- __index will be rewritted when Daneel loads and enable the dynamic getter and setter on the components
+-- this is meant to prevent some errors if Daneel was not loaded
 
 --- Transform the 3D position into a Hud position and a layer.
 -- @param position (Vector3) The 3D position.
@@ -176,8 +183,8 @@ function GUI.Hud.ToHudPosition(position)
     local layer = GUI.Config.originPosition.z - position.z
     position = position - GUI.Config.originPosition
     position = Vector2(
-        position.x / GUI.pixelsToUnits,
-        -position.y / GUI.pixelsToUnits
+        position.x / GUI.Config.pixelsToUnits,
+        -position.y / GUI.Config.pixelsToUnits
     )
     Daneel.Debug.StackTrace.EndFunction()
     return position, layer
@@ -218,12 +225,12 @@ function GUI.Hud.SetPosition(hud, position)
 
     local newPosition = GUI.Config.originPosition + 
     Vector3:New(
-        position.x * GUI.pixelsToUnits,
-        -position.y * GUI.pixelsToUnits,
+        position.x * GUI.Config.pixelsToUnits,
+        -position.y * GUI.Config.pixelsToUnits,
         0
     )
-    newPosition.z = hud.gameObject.transform.position.z
-    hud.gameObject.transform.position = newPosition
+    newPosition.z = hud.gameObject.transform:GetPosition().z
+    hud.gameObject.transform:SetPosition( newPosition )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -235,8 +242,8 @@ function GUI.Hud.GetPosition(hud)
     local errorHead = "GUI.Hud.GetPosition(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
     
-    local position = hud.gameObject.transform.position - GUI.Config.originPosition
-    position = position / GUI.pixelsToUnits
+    local position = hud.gameObject.transform:GetPosition() - GUI.Config.originPosition
+    position = position / GUI.Config.pixelsToUnits
     position = Vector2.New(math.round(position.x), math.round(-position.y))
     Daneel.Debug.StackTrace.EndFunction()
     return position
@@ -253,14 +260,14 @@ function GUI.Hud.SetLocalPosition(hud, position)
 
     local parent = hud.gameObject.parent
     if parent == nil then parent = GUI.Config.originGO end
-    local newPosition = parent.transform.position + 
+    local newPosition = parent.transform:GetPosition() + 
     Vector3:New(
-        position.x * GUI.pixelsToUnits,
-        -position.y * GUI.pixelsToUnits,
+        position.x * GUI.Config.pixelsToUnits,
+        -position.y * GUI.Config.pixelsToUnits,
         0
     )
-    newPosition.z = hud.gameObject.transform.position.z
-    hud.gameObject.transform.position = newPosition
+    newPosition.z = hud.gameObject.transform:GetPosition().z
+    hud.gameObject.transform:SetPosition( newPosition )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -274,8 +281,8 @@ function GUI.Hud.GetLocalPosition(hud)
     
     local parent = hud.gameObject.parent
     if parent == nil then parent = GUI.Config.originGO end
-    local position = hud.gameObject.transform.position - parent.transform.position
-    position = position / GUI.pixelsToUnits
+    local position = hud.gameObject.transform:GetPosition() - parent.transform:GetPosition()
+    position = position / GUI.Config.pixelsToUnits
     position = Vector2.New(math.round(position.x), math.round(-position.y))
     Daneel.Debug.StackTrace.EndFunction()
     return position
@@ -291,8 +298,8 @@ function GUI.Hud.SetLayer(hud, layer)
     Daneel.Debug.CheckArgType(layer, "layer", "number", errorHead)
 
     local originLayer = GUI.Config.originPosition.z
-    local currentPosition = hud.gameObject.transform.position
-    hud.gameObject.transform.position = Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer)
+    local currentPosition = hud.gameObject.transform:GetPosition()
+    hud.gameObject.transform:SetPosition( Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer) )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -305,7 +312,7 @@ function GUI.Hud.GetLayer(hud)
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
 
     local originLayer = GUI.Config.originPosition.z
-    local layer = originLayer - hud.gameObject.transform.position.z 
+    local layer = originLayer - hud.gameObject.transform:GetPosition().z 
     Daneel.Debug.StackTrace.EndFunction()
     return layer
 end
@@ -321,9 +328,9 @@ function GUI.Hud.SetLocalLayer(hud, layer)
 
     local parent = hud.gameObject.parent
     if parent == nil then parent = GUI.Config.originGO end
-    local originLayer = parent.transform.position.z
-    local currentPosition = hud.gameObject.transform.position
-    hud.gameObject.transform.position = Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer)
+    local originLayer = parent.transform:GetPosition().z
+    local currentPosition = hud.gameObject.transform:GetPosition()
+    hud.gameObject.transform:SetPosition( Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer) )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -337,8 +344,8 @@ function GUI.Hud.GetLocalLayer(hud)
 
     local parent = hud.gameObject.parent
     if parent == nil then parent = GUI.Config.originGO end
-    local originLayer = parent.transform.position.z
-    local layer = originLayer - hud.gameObject.transform.position.z 
+    local originLayer = parent.transform:GetPosition().z
+    local layer = originLayer - hud.gameObject.transform:GetPosition().z 
     Daneel.Debug.StackTrace.EndFunction()
     return layer
 end
@@ -348,6 +355,7 @@ end
 -- Toggle
 
 GUI.Toggle = {}
+GUI.Toggle.__index = GUI.Toggle
 
 -- Create a new Toggle component.
 -- @param gameObject (GameObject) The component gameObject.
@@ -586,6 +594,7 @@ end
 -- ProgressBar
 
 GUI.ProgressBar = {}
+GUI.ProgressBar.__index = GUI.ProgressBar
 
 -- Create a new GUI.ProgressBar.
 -- @param gameObject (GameObject) The component gameObject.
@@ -660,8 +669,8 @@ function GUI.ProgressBar.SetProgress(progressBar, progress)
         progressBar.height = tounit(progressBar.height)
 
         local newLength = (progressBar.maxLength - progressBar.minLength) * percentageOfProgress + progressBar.minLength 
-        local currentScale = progressBar.gameObject.transform.localScale
-        progressBar.gameObject.transform.localScale = Vector3:New(newLength, progressBar.height, currentScale.z)
+        local currentScale = progressBar.gameObject.transform:GetLocalScale()
+        progressBar.gameObject.transform:SetLocalScale( Vector3:New(newLength, progressBar.height, currentScale.z) )
         -- newLength = scale only because the base size of the model is of one unit at a scale of one
 
         Daneel.Event.Fire(progressBar, "OnUpdate", progressBar)
@@ -699,8 +708,8 @@ function GUI.ProgressBar.UpdateProgress( progressBar, progress, fireEvent )
     percentageOfProgress = math.clamp( percentageOfProgress, 0.0, 1.0 )
 
     local newLength = (progressBar.maxLength - minLength) * percentageOfProgress + minLength 
-    local currentScale = progressBar.gameObject.transform.localScale
-    progressBar.gameObject.transform.localScale = Vector3:New( newLength, progressBar.height, currentScale.z )
+    local currentScale = progressBar.gameObject.transform:GetLocalScale()
+    progressBar.gameObject.transform:GetLocalScale( Vector3:New( newLength, progressBar.height, currentScale.z ) )
     
     if fireEvent == true then
         Daneel.Event.Fire( progressBar, "OnUpdate", progressBar )
@@ -717,7 +726,7 @@ function GUI.ProgressBar.GetProgress(progressBar, getAsPercentage)
     Daneel.Debug.CheckArgType(progressBar, "progressBar", "GUI.ProgressBar", errorHead)
     Daneel.Debug.CheckOptionalArgType(getAsPercentage, "getAsPercentage", "boolean", errorHead)
 
-    local scale = progressBar.gameObject.transform.localScale.x
+    local scale = progressBar.gameObject.transform:GetLocalScale().x
     local progress = (scale - progressBar.minLength) / (progressBar.maxLength - progressBar.minLength)
     if getAsPercentage == true then
         progress = progress * 100
@@ -757,6 +766,7 @@ end
 -- Slider
 
 GUI.Slider = {}
+GUI.Slider.__index = GUI.Slider
 
 -- Create a new GUI.Slider.
 -- @param gameObject (GameObject) The component gameObject.
@@ -785,11 +795,11 @@ function GUI.Slider.New( gameObject, params )
             positionDelta = Vector3:New( 0, -mouseDelta.y, 0, 0 )
         end
         
-        gameObject.transform:Move( positionDelta * GUI.pixelsToUnits )
+        gameObject.transform:Move( positionDelta * GUI.Config.pixelsToUnits )
         
         if 
-            (slider.axis == "x" and gameObject.transform.position.x < slider.parent.transform.position.x) or
-            (slider.axis == "y" and gameObject.transform.position.y < slider.parent.transform.position.y)
+            (slider.axis == "x" and gameObject.transform:GetPosition().x < slider.parent.transform:GetPosition().x) or
+            (slider.axis == "y" and gameObject.transform:GetPosition().y < slider.parent.transform:GetPosition().y)
         then
             slider.value = slider.minValue
         elseif slider.value > slider.maxValue then
@@ -844,9 +854,9 @@ function GUI.Slider.SetValue( slider, value )
     if slider.axis == "y" then
         direction = Vector3:Up()
     end
-    local orientation = Vector3.Transform( direction, slider.gameObject.transform.orientation )
-    local newPosition = slider.parent.transform.position + orientation * slider.length * percentage
-    slider.gameObject.transform.position = newPosition
+    local orientation = Vector3.Rotate( direction, slider.gameObject.transform:GetOrientation() )
+    local newPosition = slider.parent.transform:GetPosition() + orientation * slider.length * percentage
+    slider.gameObject.transform:SetPosition( newPosition )
 
     Daneel.Event.Fire( slider, "OnUpdate", slider )
     Daneel.Debug.StackTrace.EndFunction()
@@ -862,7 +872,7 @@ function GUI.Slider.GetValue( slider, getAsPercentage )
     Daneel.Debug.CheckArgType(slider, "slider", "GUI.Slider", errorHead)
     Daneel.Debug.CheckOptionalArgType( getAsPercentage, "getAsPercentage", "boolean", errorHead )
    
-    local percentage = Vector3.Distance( slider.parent.transform.position, slider.gameObject.transform.position ) / slider.length
+    local percentage = Vector3.Distance( slider.parent.transform:GetPosition(), slider.gameObject.transform:GetPosition() ) / slider.length
     local value = percentage * 100
     if getAsPercentage ~= true then
         value = (slider.maxValue - slider.minValue) * percentage + slider.minValue
@@ -900,6 +910,7 @@ end
 -- Input
 
 GUI.Input = {}
+GUI.Input.__index = GUI.Input
 
 -- Create a new GUI.Input.
 -- @param gameObject (GameObject) The component gameObject.
@@ -1014,6 +1025,7 @@ end
 -- TextArea
 
 GUI.TextArea = {}
+GUI.TextArea.__index = GUI.TextArea
 
 --- Creates a new TextArea component.
 -- @param gameObject (GameObject) The game object.
@@ -1585,3 +1597,5 @@ function CraftStudio.Screen.GetSize()
     Daneel.Debug.StackTrace.EndFunction()
     return vector
 end
+
+GUI.Config = GUI.DefaultConfig()
