@@ -1,7 +1,7 @@
 -- MouseInput.lua
 -- Enable mouse interactions with game objects when added to a game object with a camera component.
 --
--- Last modified for v1.2.0
+-- Last modified for v1.3.0
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
 MouseInput = {}
@@ -23,7 +23,7 @@ MouseInput.Config = MouseInput.DefaultConfig()
 
 --[[PublicProperties
 tags string ""
-updateInterval number 10
+updateInterval number 5
 /PublicProperties]]
 
 function Behavior:Awake()
@@ -43,33 +43,33 @@ end
 
 function Behavior:Update()
     self.frameCount = self.frameCount + 1
+    if self.frameCount % self.updateInterval == 0 then
 
-    local leftMouseJustPressed = CS.Input.WasButtonJustPressed( "LeftMouse" )
-    local leftMouseDown = CS.Input.IsButtonDown( "LeftMouse" )
-    local rightMouseJustPressed = CS.Input.WasButtonJustPressed( "RightMouse" )
-    
-    local doubleClick = false
-    if leftMouseJustPressed then
-        doubleClick = ( self.frameCount <= self.lastLeftClickFrame + MouseInput.Config.doubleClickDelay )   
-        self.lastLeftClickFrame = self.frameCount
-    end
+        local leftMouseJustPressed = CS.Input.WasButtonJustPressed( "LeftMouse" )
+        local leftMouseDown = CS.Input.IsButtonDown( "LeftMouse" )
+        local rightMouseJustPressed = CS.Input.WasButtonJustPressed( "RightMouse" )
+        
+        local doubleClick = false
+        if leftMouseJustPressed then
+            doubleClick = ( self.frameCount <= self.lastLeftClickFrame + MouseInput.Config.doubleClickDelay )   
+            self.lastLeftClickFrame = self.frameCount
+        end
 
-    local vector = CS.Input.GetMouseDelta()
-    local drag = false
-    if vector.x ~= 0 or vector.y ~= 0 then
-        drag = true
-    end
+        local vector = CS.Input.GetMouseDelta()
+        local drag = false
+        if vector.x ~= 0 or vector.y ~= 0 then
+            drag = true
+        end
 
-    local mousePosition = CS.Input.GetMousePosition()
+        local mousePosition = CS.Input.GetMousePosition()
 
-    for i, tag in pairs( self.tags ) do
-        local gameObjects = GameObject.Tags[ tag ]
-        if gameObjects ~= nil then
+        for i, tag in pairs( self.tags ) do
+            local gameObjects = GameObject.Tags[ tag ]
+            if gameObjects ~= nil then
 
-            for i, gameObject in pairs( gameObjects ) do
-                if gameObject.transform ~= nil then
-                    -- OnMouseEnter, OnMouseOver, OnMouseExit, gameObject.isMouseOver
-                    if self.frameCount % self.updateInterval == 0 then
+                for i, gameObject in pairs( gameObjects ) do
+                    if gameObject.transform ~= nil then
+                        -- OnMouseEnter, OnMouseOver, OnMouseExit, gameObject.isMouseOver
                         local ray = self.gameObject.camera:CreateRay( mousePosition )
                                                 
                         if ray:IntersectsGameObject( gameObject ) then
@@ -89,30 +89,31 @@ function Behavior:Update()
                             gameObject.isMouseOver = false
                             Daneel.Event.Fire( gameObject, "OnMouseExit", gameObject )
                         end
-                    end
+                        
 
-                    if gameObject.isMouseOver then
-                        if leftMouseJustPressed then
-                            Daneel.Event.Fire( gameObject, "OnClick", gameObject )
+                        if gameObject.isMouseOver then
+                            if leftMouseJustPressed then
+                                Daneel.Event.Fire( gameObject, "OnClick", gameObject )
 
-                            if doubleClick then
-                                Daneel.Event.Fire( gameObject, "OnDoubleClick", gameObject )
+                                if doubleClick then
+                                    Daneel.Event.Fire( gameObject, "OnDoubleClick", gameObject )
+                                end
+                            end
+
+                            if leftMouseDown and drag then
+                                Daneel.Event.Fire( gameObject, "OnDrag", gameObject )
+                            end
+
+                            if rightMouseJustPressed then
+                                Daneel.Event.Fire( gameObject, "OnRightClick", gameObject )
                             end
                         end
-
-                        if leftMouseDown and drag then
-                            Daneel.Event.Fire( gameObject, "OnDrag", gameObject )
-                        end
-
-                        if rightMouseJustPressed then
-                            Daneel.Event.Fire( gameObject, "OnRightClick", gameObject )
-                        end
+                    else -- else if gameObject is destroyed
+                        table.remove( gameObjects, i )
                     end
-                else -- else if gameObject is destroyed
-                    table.remove( gameObjects, i )
-                end
-            end -- end looping on gameObjects with current tag
-        end
-    end -- end looping on tags
+                end -- end looping on gameObjects with current tag
+            end
+        end -- end looping on tags
+    end
 
 end -- end of Behavior:Update() function
