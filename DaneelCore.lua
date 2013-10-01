@@ -1917,7 +1917,12 @@ function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
     end
 
     -- get asset
-    local asset = CraftStudio.FindAsset( assetPath, assetType )
+    local asset = nil
+    if assetType == nil then
+        asset = CraftStudio.FindAsset( assetPath )
+    else
+        asset = CraftStudio.FindAsset( assetPath, assetType )
+    end
 
     if asset == nil then
         if errorIfAssetNotFound == true then
