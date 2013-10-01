@@ -94,6 +94,7 @@ function Tween.DefaultConfig()
 
     return config
 end
+Tween.Config = Tween.DefaultConfig()
 
 
 function Tween.Awake()

@@ -709,7 +709,7 @@ end
 -- Daneel
 ----------------------------------------------------------------------------------
 
-Daneel = { isLoaded = false }
+Daneel = { isLoaded = false, isAwake = false }
 D = Daneel
 
 -- Config - Loading
@@ -743,6 +743,9 @@ function Daneel.DefaultConfig()
             alignment = "right",
         },
         ]]
+
+        hotKeys = {}, -- button names that throws events On[ButtonName]JustPressed... 
+        -- filled in Daneel.Event.Listen
 
         objects = {
             GameObject = GameObject,
@@ -880,6 +883,10 @@ end -- end Daneel.Load()
 
 local buttonExistsGameObject = nil -- The game object Daneel.Utilities.ButtonExists() works with
 
+--[[PublicProperties
+loadDaneel boolean true
+/PublicProperties]]
+
 function Behavior:Awake()
     buttonExistsGameObject = self.gameObject
     if self.buttonExists == true then
@@ -888,6 +895,19 @@ function Behavior:Awake()
         self.success()
         return
     end
+
+    if self.loadDaneel == false then -- just for testing purpose without having to remove the scripted behaviro every times
+        print( "Daneel:Awake() : Daneel was prevented to be loaded because the 'loadDaneel' public property on the 'Daneel Core' scripted behavior is set to 'false'." )
+        CS.Destroy( self )
+        return
+    end
+
+    if Daneel.isAwake then
+        print( "Daneel:Awake() : You tried to load Daneel twice ! This time the 'Daneel Core' scripted behavior was on the " .. tostring( self.gameObject ) )
+        CS.Destroy( self )
+        return
+    end
+    Daneel.isAwake = true
 
     Daneel.Load()
     Daneel.Debug.StackTrace.messages = {}

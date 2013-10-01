@@ -16,6 +16,7 @@ IDEAS
 
     - pouvoir accéder au enfant d'un gameObject en écrivant sont nom, comme les component
 
+    - gameObject:GetGenealogy() retourne toute la généalogie du gameobject "parent.child.subchild"
 
     Modules/composants
     actuellement AddComponent ne peux pas accèder aux paramètres par défaut car n'a pas accès à l'object
@@ -83,7 +84,6 @@ IDEAS
 ==========
 A implémenter
     
-    - Remplacer component object par des variable globale de premier niveau (TextArea, LineRenderer)
     - add setter for all GUI properties
     - GUI.Input permettre de définir un curseur model optionnel
     - GUI.ProgressBar remplacer SetProgress() par SetValue(), comme slider
@@ -93,10 +93,8 @@ A implémenter
 A tester
 
     - voir pourquoi certains easeType renvoient des erreurs
-    - remove use of Vector3.Distance with trigger
     - allow asset setter to accept nil as argument
     - Intersects[Component]( ray, component, returnRaycastHit )
-    - squared triggers
     - Tweener scripted behavior with most common properties, tweener ajouté à propriété 'tweener' sur game object (idem pour timer)
 
     - 
