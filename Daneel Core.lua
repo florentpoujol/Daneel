@@ -1053,7 +1053,7 @@ end
 -- The instances are tables that have the provided object as metatable.
 -- Optionaly allow to search in a ancestry of objects.
 -- @param Object (mixed) The object.
--- @param ancestors [optional] (mixed) One or several (as a table) objects the Object "inherits" from.
+-- @param ancestors (table) [optional] A table with one or several objects the Object "inherits" from.
 function Daneel.Utilities.AllowDynamicGettersAndSetters( Object, ancestors )
     function Object.__index( instance, key )
 
@@ -1859,7 +1859,7 @@ Daneel.Event.Listen( "OnDaneelLoad", function()
 
     -- Assets
     for assetType, assetObject in pairs( Daneel.Config.assetObjects ) do
-        Daneel.Utilities.AllowDynamicGettersAndSetters( assetObject )
+        Daneel.Utilities.AllowDynamicGettersAndSetters( assetObject, { Asset } )
 
         assetObject["__tostring"] = function( asset )
             -- print something like : "Model: 123456789"    asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
