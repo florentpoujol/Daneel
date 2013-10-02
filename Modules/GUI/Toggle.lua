@@ -15,8 +15,6 @@ uncheckedModel string ""
 /PublicProperties]]
 
 function Behavior:Awake()
-    Daneel.Debug.AlertLoad()
-
     if self.gameObject.toggle == nil then
         local params = {
             isChecked = self.isChecked,

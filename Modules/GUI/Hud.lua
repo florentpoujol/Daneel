@@ -14,8 +14,6 @@ localLayer string ""
 /PublicProperties]]
 
 function Behavior:Awake()
-    Daneel.Debug.AlertLoad()
-    
     if self.gameObject.hud == nil then
         local params = {}
         if self.positionX ~= "" and self.positionY ~= "" then

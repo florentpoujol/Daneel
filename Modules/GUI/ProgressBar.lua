@@ -14,8 +14,6 @@ progress string "100%"
 /PublicProperties]]
 
 function Behavior:Awake()
-    Daneel.Debug.AlertLoad()
-    
     if self.gameObject.progressBar == nil then
         GUI.ProgressBar.New( self.gameObject, { 
             minValue = self.minValue,

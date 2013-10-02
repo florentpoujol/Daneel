@@ -90,7 +90,7 @@ function Tween.DefaultConfig()
         },
     }
 
-    Daneel.Config.objects = table.merge( Daneel.Config.objects, config.objects )
+    --Daneel.Config.objects = table.merge( Daneel.Config.objects, config.objects )
 
     return config
 end

@@ -13,8 +13,6 @@ value string "0%"
 /PublicProperties]]
 
 function Behavior:Awake()
-    Daneel.Debug.AlertLoad()
-    
     if self.gameObject.slider == nil then
         if self.axis:trim() == "" then
             self.axis = "x"
