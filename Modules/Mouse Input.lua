@@ -4,7 +4,7 @@
 -- Last modified for v1.3.0
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
-MouseInput = {}
+MouseInput = { isLoaded = false }
 
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
@@ -27,6 +27,13 @@ updateInterval number 5
 /PublicProperties]]
 
 function Behavior:Awake()
+    if not MouseInput.isLoaded then
+        MouseInput.isLoaded = true
+        if Daneel.Utilities.GlobalExists( "MouseInputUserConfig" ) then
+            MouseInput.Config = MouseInputUserConfig()
+        end
+    end
+
     Daneel.Debug.StackTrace.BeginFunction( "MouseInput:Awake" )
 
     if self.gameObject.camera == nil then
