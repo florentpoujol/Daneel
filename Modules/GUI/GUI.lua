@@ -22,14 +22,10 @@ local function tounit(value)
     return value
 end
 
-
-----------------------------------------------------------------------------------
--- Init module
-
-if CS.DaneelModules == nil then
-    CS.DaneelModules = {}
+if DaneelModules == nil then
+    DaneelModules = {}
 end
-CS.DaneelModules[ "GUI" ] = GUI
+DaneelModules[ "GUI" ] = GUI
 
 function GUI.DefaultConfig()
     local config = {

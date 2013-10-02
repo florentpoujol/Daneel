@@ -4,10 +4,6 @@
 -- Last modified for v1.3
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
-if CS.DaneelModules == nil then
-    CS.DaneelModules = {}
-end
-
 ----------------------------------------------------------------------------------
 -- LUA (put here at the top because pretty much all functions depends on them)
 ----------------------------------------------------------------------------------
@@ -709,11 +705,14 @@ end
 -- Daneel
 ----------------------------------------------------------------------------------
 
-Daneel = { isLoading = false, isLoaded = false, isAwake = false }
+Daneel = {}
 D = Daneel
 
--- Config - Loading
+if DaneelModules == nil then
+    DaneelModules = {}
+end
 
+-- Config - Loading
 function Daneel.DefaultConfig()
     local config = {  
         debug = {

@@ -4,8 +4,6 @@
 -- Last modified for v1.2.0
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
-Tween = {}
-
 -- Allow to get the target's "property" even if it is virtual and normally handled via getter/setter.
 local function GetTweenerProperty(tweener)
     Daneel.Debug.StackTrace.BeginFunction("GetTweenerProperty", tweener)
@@ -43,10 +41,12 @@ end
 ----------------------------------------------------------------------------------
 -- Init module
 
-if CS.DaneelModules == nil then
-    CS.DaneelModules = {}
+Tween = {}
+
+if DaneelModules == nil then
+    DaneelModules = {}
 end
-CS.DaneelModules[ "Tween" ] = Tween
+DaneelModules[ "Tween" ] = Tween
 
 function Tween.DefaultConfig()
     local config = {

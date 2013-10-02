@@ -6,10 +6,10 @@
 
 MouseInput = { isLoaded = false }
 
-if CS.DaneelModules == nil then
-    CS.DaneelModules = {}
+if DaneelModules == nil then
+    DaneelModules = {}
 end
-CS.DaneelModules[ "MouseInput" ] = MouseInput
+DaneelModules[ "MouseInput" ] = MouseInput
 
 function MouseInput.DefaultConfig()
     return {

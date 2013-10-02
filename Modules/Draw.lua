@@ -1,10 +1,10 @@
 
 Draw = {}
 
-if CS.DaneelModules == nil then
-    CS.DaneelModules = {}
+if DaneelModules == nil then
+    DaneelModules = {}
 end
-CS.DaneelModules[ "Draw" ] = Draw
+DaneelModules[ "Draw" ] = Draw
 
 function Draw.DefaultConfig()
     local config = {

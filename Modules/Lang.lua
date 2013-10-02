@@ -10,15 +10,13 @@ Lang = {
     lines = {},
     gameObjectsToUpdate = {},
     cache = {},
-    isLoaded = false,
-    isStarted = false,
     doNotCallUpdate = true -- tell Daneel not to call Update() when the module is loaded
 }
 
-if CS.DaneelModules == nil then
-    CS.DaneelModules = {}
+if DaneelModules == nil then
+    DaneelModules = {}
 end
-CS.DaneelModules[ "Lang" ] = Lang
+DaneelModules[ "Lang" ] = Lang
 
 function Lang.DefaultConfig()
     return {
