@@ -1,8 +1,7 @@
 -- Timer.lua
 -- Scripted behavior for Timers.
 --
--- Since v1.2.1
--- Last modified for v1.2.1
+-- Last modified for v1.3
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
 --[[PublicProperties
@@ -12,6 +11,8 @@ isInfiniteLoop boolean false
 /PublicProperties]]
 
 function Behavior:Awake()
+	Daneel.Debug.AlertLoad( "Timer:Awake() : ") 
+
     if self.callback:trim() ~= "" then
         self.callback = Daneel.Utilities.GetValueFromName( self.callback )
     else

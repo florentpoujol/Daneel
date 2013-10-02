@@ -801,9 +801,9 @@ function GUI.Slider.New( gameObject, params )
             (slider.axis == "x" and gameObject.transform:GetPosition().x < slider.parent.transform:GetPosition().x) or
             (slider.axis == "y" and gameObject.transform:GetPosition().y < slider.parent.transform:GetPosition().y)
         then
-            slider.value = slider.minValue
-        elseif slider.value > slider.maxValue then
-            slider.value = slider.maxValue
+            slider:SetValue( slider.minValue )
+        elseif slider:GetValue() > slider.maxValue then
+            slider:SetValue( slider.maxValue )
         else
             Daneel.Event.Fire( slider, "OnUpdate", slider )
         end

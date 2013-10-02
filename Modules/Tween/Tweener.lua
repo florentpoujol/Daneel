@@ -1,8 +1,7 @@
 -- Tweener.lua
 -- Scripted behavior for Tweeners.
 --
--- Since v1.2.1
--- Last modified for v1.2.1
+-- Last modified for v1.3
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
 --[[PublicProperties
@@ -23,6 +22,8 @@ OnLoopComplete string ""
 /PublicProperties]]
 
 function Behavior:Awake()
+    Daneel.Debug.AlertLoad( "Tweener:Awake() : " )
+
     if self.target:trim() ~= "" then
         self.target = self.gameObject[self.target]
     else

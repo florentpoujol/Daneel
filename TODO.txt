@@ -97,7 +97,6 @@ A tester
     - Intersects[Component]( ray, component, returnRaycastHit )
     - Tweener scripted behavior with most common properties, tweener ajouté à propriété 'tweener' sur game object (idem pour timer)
 
-    - Dans gui checker que les lignes type "transform:GetPosition().z" fonctionnent
 
 
 

@@ -11,6 +11,8 @@ characterRange string ""
 /PublicProperties]]
 
 function Behavior:Awake()
+    Daneel.Debug.AlertLoad()
+    
     if self.gameObject.input == nil then
         local params = { 
             isFocused = self.isFocused,

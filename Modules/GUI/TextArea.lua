@@ -21,6 +21,8 @@ opacity number 1.0
 -- you can't dynamically add built-in components on gameObjects that are created in the scene
 -- see : http://www.craftstudioforums.net/index.php?threads/creating-physics-component-crashes-the-game.1398/
 function Behavior:Start()
+    Daneel.Debug.AlertLoad()
+    
     if self.gameObject.textArea == nil then
         local params = {
             wordWrap = self.wordWrap,
