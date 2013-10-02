@@ -2,17 +2,17 @@
 -- Update the TextRenderer or TextArea component on the game object with the localized string whose key is provided.
 -- Allow to register the game object for the localized text to be updated when the language changes.
 --
--- Since v1.2.1
--- Last modified for v1.2.1
+-- Last modified for v1.3
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
 
-Lang = { 
+Lang = {
     lines = {},
     gameObjectsToUpdate = {},
     cache = {},
     isLoaded = false,
     isStarted = false,
+    doNotCallUpdate = true -- tell Daneel not to call Update() when the module is loaded
 }
 
 if CS.DaneelModules == nil then
@@ -33,7 +33,8 @@ function Lang.DefaultConfig()
 end
 
 function Lang.Load()
-    if Lang.Config == nil then
+    Lang.isLoaded = true
+    if Lang.Config == nil then -- Daneel is not loaded
         Lang.Config = Lang.DefaultConfig()
         if Daneel.Utilities.GlobalExists( "LangUserConfig" ) then
             Lang.Config = table.merge( Lang.Config, LangUserConfig()  )
@@ -46,7 +47,7 @@ function Lang.Load()
         if Daneel.Utilities.GlobalExists( functionName ) then
             Lang.lines[language] = _G[ functionName ]()
         elseif Daneel.Config.debug.enableDebug then
-            print( "lang.Load() : WARNING : Can't load the language '"..language.."' because the global function "..functionName.."() does not exists." )
+            print( "Lang.Load() : WARNING : Can't load the language '"..language.."' because the global function "..functionName.."() does not exists." )
         end
     end
 
@@ -57,27 +58,19 @@ function Lang.Load()
     if Lang.Config.current == nil then
         Lang.Config.current = Lang.Config.default
     end
-
-    Lang.Update2 = Lang.Update
-    Lang.Update = nil
-
-    Lang.isLoaded = true
 end
 
 function Lang.Awake()
-    if Lang.Update == nil and Lang.Update2 ~= nil then
-        Lang.Update = Lang.Update2
-    end
-
     Lang.gameObjectsToUpdate = {}
+    Lang.isAwake = true
 end
 
 -- Lang.Start runs before every other Behavior:Start() function of the scene
-function Lang.Start()
+function Lang.Start() 
     if Lang.Config.current ~= nil and not Lang.isStarted then
-        Lang.isStarted = true
         Lang.Update( Lang.Config.current )
     end
+    Lang.isStarted = true
 end
 
 
