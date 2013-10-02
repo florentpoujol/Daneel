@@ -1501,6 +1501,13 @@ function Daneel.Debug.CheckArgValue(argument, argumentName, expectedArgumentValu
     return argument
 end
 
+-- Notify the dev that Daneel should be loaded
+function Daneel.Debug.AlertLoad( errorHead )
+    if Daneel.isLoaded then return end
+    if errorHead == nil then errorHead = "" end
+    print( errorHead .. "You are using a functionality that require Daneel to be loaded yet it's not the case ! Please add the 'Daneel Core' script as a scripted behavior on a game object at the top of the game objects hyerarchy." )
+end
+
 
 ----------------------------------------------------------------------------------
 -- StackTrace
@@ -2976,7 +2983,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
     end
 
     local component = nil
-    if table.containsvalue( Daneel.DefaultConfig.componentTypes, componentType ) then
+    if Daneel.DefaultConfig.componentObjects[ componentType ] ~= nil then
         component = gameObject:CreateComponent( componentType )
 
         local defaultComponentParams = Daneel.Config[ componentType:lcfirst() ]
@@ -3064,7 +3071,7 @@ function GameObject.GetComponent( gameObject, componentType )
     local lcComponentType = componentType:lcfirst()
     local component = gameObject[ lcComponentType ]
     
-    if component == nil and table.containsvalue( Daneel.DefaultConfig.componentTypes, componentType ) then
+    if component == nil and Daneel.DefaultConfig.componentObjects[ componentType ] ~= nil then
         component = OriginalGetComponent( gameObject, componentType )
 
         if component ~= nil then
