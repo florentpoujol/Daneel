@@ -4,7 +4,7 @@
 -- Last modified for v1.2.0
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
-GUI = { pixelsToUnits = 0 }
+GUI = {}
 
 -- convert a string value (maybe in pixels)
 -- into a number of units
@@ -100,6 +100,7 @@ function GUI.DefaultConfig()
             ["GUI.Input"] = GUI.Input,
             ["GUI.TextArea"] = GUI.TextArea,
         },
+        componentTypes = {},
 
         objects = {
             Vector2 = Vector2,
@@ -112,10 +113,23 @@ function GUI.DefaultConfig()
 end
 --GUI.Config = GUI.DefaultConfig() -- set at the very end of the file when vector2 exists (don't want to move vector2 code to the top)
 
-
 function GUI.Load()
+    if not Daneel.isLoading then -- GUI.Load() is called from one of the component's constructor because GUI is not loaded yet because Daneel is not loaded nor being loaded now
+        Daneel.SetComponents( GUI.Config.componentObjects )
+        Daneel.Config.objects.Vector2 = Vector2
+
+        GUI.Awake()
+        print( "GUI.Load() : You are using the GUI module but Daneel is not loaded. This may cause some code to not work properly or event to throw errors !" )
+    end
+    GUI.isLoaded = true
+
+    if CS.DaneelModules["MouseInput"] == nil and Daneel.Config.debug.enableDebug then
+        print( "GUI.Load() : Your project seems to lack the 'Mouse Input' module. It is required for the player to interact with the GUI.Toggle, GUI.Input and GUI.Slider components." )
+    end
+
     --- Update the gameObject's scale to make the text appear the provided width.
-    -- Overwrite TextRenderer.SetTextWith() from the CraftStudio module.
+    -- Overwrite TextRenderer.SetTextWith() from the Core.
+    -- /!\ Only exists when the Daneel (and the GUI module) is loaded. /!\
     -- @param textRenderer (TextRenderer) The textRenderer.
     -- @param width (number or string) The text's width in units or pixels.
     function TextRenderer.SetTextWidth( textRenderer, width )
@@ -134,7 +148,6 @@ function GUI.Load()
     end
 end
 
-
 function GUI.Awake()
     -- setting pixelToUnits  
 
@@ -152,7 +165,9 @@ function GUI.Awake()
         -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and scene units
         GUI.Config.pixelsToUnits = GUI.Config.cameraGO.camera:GetOrthographicScale() / smallSideSize
 
-        GUI.Config.originGO = GameObject.New( "HUDOrigin", { parent = GUI.Config.cameraGO } )
+        GUI.Config.originGO = CS.CreateGameObject( "HUDOrigin" )
+        GUI.Config.originGO:SetParent( GUI.Config.cameraGO )
+        
         GUI.Config.originGO.transform:SetLocalPosition( Vector3:New(
             -screenSize.x * GUI.Config.pixelsToUnits / 2, 
             screenSize.y * GUI.Config.pixelsToUnits / 2,
@@ -168,8 +183,8 @@ end
 -- Hud
 
 GUI.Hud = {}
-GUI.Hud.__index = GUI.Hud -- __index will be rewritted when Daneel loads and enable the dynamic getter and setter on the components
--- this is meant to prevent some errors if Daneel was not loaded
+GUI.Hud.__index = GUI.Hud -- __index will be rewritted when Daneel loads(in Daneel.SetComponents()) and enable the dynamic getter and setter on the components
+-- this is meant to prevent some errors if Daneel is not loaded
 
 --- Transform the 3D position into a Hud position and a layer.
 -- @param position (Vector3) The 3D position.
@@ -195,6 +210,10 @@ end
 -- @param params (table) [optional] A table of parameters.
 -- @return (GUI.Hud) The hud component.
 function GUI.Hud.New( gameObject, params )
+    if not GUI.isLoaded then
+        GUI.Load()
+    end
+
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.New", gameObject, params )
     if GUI.Config.cameraGO == nil then
         error("GUI was not set up or the HUD Camera gameObject with name '"..GUI.Config.cameraName.."' (value of 'cameraName' in the config) was not found.")
@@ -362,6 +381,10 @@ GUI.Toggle.__index = GUI.Toggle
 -- @param params (table) A table of parameters.
 -- @return (GUI.Toggle) The new component.
 function GUI.Toggle.New( gameObject, params )
+    if not GUI.isLoaded then
+        GUI.Load()
+    end
+
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Toggle.New", gameObject, params )
     local errorHead = "GUI.Toggle.New( gameObject, params ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
@@ -374,7 +397,7 @@ function GUI.Toggle.New( gameObject, params )
     toggle.Id = Daneel.Cache.GetId()
     setmetatable( toggle, GUI.Toggle )
 
-    toggle:Set( params )    
+    toggle:Set( params )
     
     gameObject.toggle = toggle
     gameObject:AddTag( "guicomponent" )
@@ -518,8 +541,8 @@ function GUI.Toggle.Check( toggle, state, forceUpdate )
 
         Daneel.Event.Fire( toggle, "OnUpdate", toggle )
 
-        if toggle._group ~= nil and state == true then
-            local gameObjects = GameObject.Tags[ toggle._group ]
+        if toggle.Group ~= nil and state == true then
+            local gameObjects = GameObject.Tags[ toggle.Group ]
             for i, gameObject in ipairs( gameObjects ) do
                 if gameObject ~= toggle.gameObject then
                     gameObject.toggle:Check( false )
@@ -541,15 +564,15 @@ function GUI.Toggle.SetGroup(toggle, group)
     Daneel.Debug.CheckArgType(toggle, "toggle", "GUI.Toggle", errorHead)
     Daneel.Debug.CheckOptionalArgType(group, "group", "string", errorHead)
 
-    if group == nil and toggle._group ~= nil then
-        toggle.gameObject:RemoveTag(toggle._group)
+    if group == nil and toggle.Group ~= nil then
+        toggle.gameObject:RemoveTag(toggle.Group)
     else
-        if toggle._group ~= nil then
-            toggle.gameObject:RemoveTag(toggle._group)
+        if toggle.Group ~= nil then
+            toggle.gameObject:RemoveTag(toggle.Group)
         end
         toggle:Check(false)
-        toggle._group = group
-        toggle.gameObject:AddTag(toggle._group)
+        toggle.Group = group
+        toggle.gameObject:AddTag(toggle.Group)
     end
     Daneel.Debug.StackTrace.EndFunction()
 end
@@ -562,7 +585,7 @@ function GUI.Toggle.GetGroup(toggle)
     local errorHead = "GUI.Toggle.GetGroup(toggle) : "
     Daneel.Debug.CheckArgType(toggle, "toggle", "GUI.Toggle", errorHead)
     Daneel.Debug.StackTrace.EndFunction()
-    return toggle._group
+    return toggle.Group
 end
 
 --- Apply the content of the params argument to the provided toggle.
@@ -601,6 +624,10 @@ GUI.ProgressBar.__index = GUI.ProgressBar
 -- @param params (table) A table of parameters.
 -- @return (ProgressBar) The new component.
 function GUI.ProgressBar.New( gameObject, params )
+    if not GUI.isLoaded then
+        GUI.Load()
+    end
+
     Daneel.Debug.StackTrace.BeginFunction( "GUI.ProgressBar.New", gameObject, params )
     local errorHead = "GUI.ProgressBar.New( gameObject, params ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
@@ -773,6 +800,10 @@ GUI.Slider.__index = GUI.Slider
 -- @param params (table) A table of parameters.
 -- @return (GUI.Slider) The new component.
 function GUI.Slider.New( gameObject, params )
+    if not GUI.isLoaded then
+        GUI.Load()
+    end
+
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Slider.New", gameObject, params )
     local errorHead = "GUI.Slider.New( gameObject, params ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
@@ -917,6 +948,10 @@ GUI.Input.__index = GUI.Input
 -- @param params (table) A table of parameters.
 -- @return (GUI.Input) The new component.
 function GUI.Input.New( gameObject, params )
+    if not GUI.isLoaded then
+        GUI.Load()
+    end
+
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Input.New", gameObject, params )
     local errorHead = "GUI.Input.New( gameObject, params ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
@@ -928,22 +963,23 @@ function GUI.Input.New( gameObject, params )
     -- adapted from Blast Turtles
     if input.OnTextEntered == nil then
         input.OnTextEntered = function( char )
-            if not input.isFocused then return end
-            local charNumber = string.byte( char )
-            
-            if charNumber == 8 then -- Backspace
-                local text = gameObject.textRenderer.text
-                input:Update( text:sub( 1, #text - 1 ), true )
-            
-            elseif charNumber == 13 then -- Enter
-                Daneel.Event.Fire( input, "OnValidate", input )
-            
-            -- Any character between 32 and 127 is regular printable ASCII
-            elseif charNumber >= 32 and charNumber <= 127 then
-                if input.characterRange ~= nil and input.characterRange:find( char, 1, true ) == nil then
-                    return
+            if input.isFocused then
+                local charNumber = string.byte( char )
+                
+                if charNumber == 8 then -- Backspace
+                    local text = gameObject.textRenderer.text
+                    input:Update( text:sub( 1, #text - 1 ), true )
+                
+                elseif charNumber == 13 then -- Enter
+                    Daneel.Event.Fire( input, "OnValidate", input )
+                
+                -- Any character between 32 and 127 is regular printable ASCII
+                elseif charNumber >= 32 and charNumber <= 127 then
+                    if input.characterRange ~= nil and input.characterRange:find( char, 1, true ) == nil then
+                        return
+                    end
+                    input:Update( char )
                 end
-                input:Update( char )
             end
         end
     end
@@ -1032,6 +1068,10 @@ GUI.TextArea.__index = GUI.TextArea
 -- @param params (table) A table of parameters.
 -- @return (GUI.TextArea) The new component.
 function GUI.TextArea.New( gameObject, params )
+    if not GUI.isLoaded then
+        GUI.Load()
+    end
+
     Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.New", gameObject, params )
     local errorHead = "GUI.TextArea.New( gameObject, params ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
