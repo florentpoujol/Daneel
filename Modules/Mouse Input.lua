@@ -28,10 +28,10 @@ updateInterval number 5
 
 function Behavior:Awake()
     if not MouseInput.isLoaded then
-        MouseInput.isLoaded = true
         if Daneel.Utilities.GlobalExists( "MouseInputUserConfig" ) and type( MouseInputUserConfig ) == "function" then
             MouseInput.Config = MouseInputUserConfig()
         end
+        MouseInput.isLoaded = true
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "MouseInput:Awake" )

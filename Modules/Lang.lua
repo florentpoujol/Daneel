@@ -31,10 +31,9 @@ function Lang.DefaultConfig()
 end
 
 function Lang.Load()
-    Lang.isLoaded = true
     if Lang.Config == nil then -- Daneel is not loaded
         Lang.Config = Lang.DefaultConfig()
-        if Daneel.Utilities.GlobalExists( "LangUserConfig" ) then
+        if Daneel.Utilities.GlobalExists( "LangUserConfig" ) and type( LangUserConfig ) == then
             Lang.Config = table.merge( Lang.Config, LangUserConfig()  )
         end
     end
@@ -56,14 +55,10 @@ function Lang.Load()
     if Lang.Config.current == nil then
         Lang.Config.current = Lang.Config.default
     end
+
+    Lang.isLoaded = true
 end
 
-function Lang.Awake()
-    Lang.gameObjectsToUpdate = {}
-    Lang.isAwake = true
-end
-
--- Lang.Start runs before every other Behavior:Start() function of the scene
 function Lang.Start() 
     if Lang.Config.current ~= nil and not Lang.isStarted then
         Lang.Update( Lang.Config.current )
@@ -184,15 +179,19 @@ function Lang.Update( language )
     Lang.cache = {} -- ideally only the items that do not begins by a language name should be deleted
     Lang.Config.current = language
     for gameObject, data in pairs( Lang.gameObjectsToUpdate ) do
-        local text = Lang.Get( data.key, data.replacements )
-        
-        if gameObject.textArea ~= nil then
-            gameObject.textArea:SetText( text )
-        elseif gameObject.textRenderer ~= nil then
-            gameObject.textRenderer:SetText( text )
-        
-        elseif Daneel.Config.debug.enableDebug then
-            print( "WARNING : " .. errorHead .. tostring( gameObject ) .. " does not have a TextRenderer or GUI.TextArea component." )
+        if gameObject.transform == nil then
+            Lang.gameObjectsToUpdate[ gameObject ] = nil
+        else
+            local text = Lang.Get( data.key, data.replacements )
+            
+            if gameObject.textArea ~= nil then
+                gameObject.textArea:SetText( text )
+            elseif gameObject.textRenderer ~= nil then
+                gameObject.textRenderer:SetText( text )
+            
+            elseif Daneel.Config.debug.enableDebug then
+                print( "WARNING : " .. errorHead .. tostring( gameObject ) .. " does not have a TextRenderer or GUI.TextArea component." )
+            end
         end
     end
 
@@ -212,7 +211,6 @@ registerForUpdate boolean false
 function Behavior:Awake()
     if not Lang.isLoaded then
         Lang.Load()
-        Lang.Awake()
     end
     Lang.isStarted = false
 end
