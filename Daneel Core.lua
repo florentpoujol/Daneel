@@ -802,7 +802,7 @@ function Daneel.Load()
             if type( _module.DefaultConfig ) == "function" then
                 _module.Config = _module.DefaultConfig()
             end
-
+            
             local userConfig = {}
             local functionName = name .. "UserConfig"
             if Daneel.Utilities.GlobalExists( functionName ) then
@@ -824,6 +824,7 @@ function Daneel.Load()
                 
                 Daneel.Config.objects = table.merge( Daneel.Config.objects, _module.Config.componentObjects )
             end
+            
         end
     end
 
@@ -845,10 +846,9 @@ function Daneel.Load()
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Load" )
 
     -- Load modules 
-    local moduleLoaded = {}
     for i, _module in pairs( CS.DaneelModules ) do
-        if moduleLoaded[ _module ] == nil then
-            moduleLoaded[ _module ] = true
+        if _module.isLoaded ~= true then
+            _module.isLoaded = true
             if type( _module.Load ) == "function" then
                 _module.Load()
             end
@@ -864,7 +864,7 @@ function Daneel.Load()
 
     -- check for module update functions
     -- do this now so that I don't have to call Daneel.Utilities.GlobalExists() every frame for every modules below in Behavior:Update()
-    moduleLoaded = {}
+    local moduleLoaded = {}
     for i, _module in pairs( CS.DaneelModules ) do
         if moduleLoaded[ _module ] == nil then
             moduleLoaded[ _module ] = true

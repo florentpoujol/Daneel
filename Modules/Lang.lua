@@ -10,7 +10,9 @@
 Lang = { 
     lines = {},
     gameObjectsToUpdate = {},
-    cache = {}
+    cache = {},
+    isLoaded = false,
+    isStarted = false,
 }
 
 if CS.DaneelModules == nil then
@@ -31,6 +33,13 @@ function Lang.DefaultConfig()
 end
 
 function Lang.Load()
+    if Lang.Config == nil then
+        Lang.Config = Lang.DefaultConfig()
+        if Daneel.Utilities.GlobalExists( "LangUserConfig" ) then
+            Lang.Config = table.merge( Lang.Config, LangUserConfig()  )
+        end
+    end
+
     for i, language in ipairs( Lang.Config.languageNames ) do
         local functionName = "Lang" .. language:ucfirst()
 
@@ -51,6 +60,8 @@ function Lang.Load()
 
     Lang.Update2 = Lang.Update
     Lang.Update = nil
+
+    Lang.isLoaded = true
 end
 
 function Lang.Awake()
@@ -63,7 +74,8 @@ end
 
 -- Lang.Start runs before every other Behavior:Start() function of the scene
 function Lang.Start()
-    if Lang.Config.current ~= nil then
+    if Lang.Config.current ~= nil and not Lang.isStarted then
+        Lang.isStarted = true
         Lang.Update( Lang.Config.current )
     end
 end
@@ -77,8 +89,11 @@ end
 -- @return (string) The line.
 function Lang.Get( key, replacements )
     if replacements == nil and Lang.cache[ key ] ~= nil then
-        Daneel.Debug.StackTrace.EndFunction()
         return Lang.cache[ key ]
+    end
+
+    if not Lang.isLoaded then
+        Lang.Load()
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "Lang.Get", key, replacements )
@@ -166,6 +181,10 @@ end
 -- Fire the OnLangUpdate event.
 -- @param language (string) The new current language.
 function Lang.Update( language )
+    if not Lang.isLoaded then
+        Lang.Load()
+    end
+
     Daneel.Debug.StackTrace.BeginFunction( "Lang.Update", language )
     local errorHead = "Lang.Update( language ) : "
     Daneel.Debug.CheckArgType( language, "language", "string", errorHead )
@@ -199,7 +218,19 @@ key string ""
 registerForUpdate boolean false
 /PublicProperties]]
 
+function Behavior:Awake()
+    if not Lang.isLoaded then
+        Lang.Load()
+        Lang.Awake()
+    end
+    Lang.isStarted = false
+end
+
 function Behavior:Start()
+    if not Lang.isStarted then
+        Lang.Start()
+    end
+
     if self.key:trim() ~= "" then
         if self.gameObject.textArea ~= nil then
             self.gameObject.textArea:SetText( Lang.Get( self.key ) )
