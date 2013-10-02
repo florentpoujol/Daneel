@@ -1,10 +1,8 @@
 -- GUI.lua
 -- Module adding the GUI components and Vector2 object
 --
--- Last modified for v1.2.0
+-- Last modified for v1.3
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
-
-GUI = {}
 
 -- convert a string value (maybe in pixels)
 -- into a number of units
@@ -21,6 +19,13 @@ local function tounit(value)
     end
     return value
 end
+
+
+----------------------------------------------------------------------------------
+
+GUI = {
+    daneelNotLoadedWarning = "WARNING : You are using the GUI module but Daneel is not loaded. This may cause some code to not work properly or even to throw errors ! Please load Daneel."
+}
 
 if DaneelModules == nil then
     DaneelModules = {}
@@ -103,29 +108,18 @@ function GUI.DefaultConfig()
         },
     }
 
-    config.componentTypes = table.getkeys( config.componentObjects )
-
     return config
 end
---GUI.Config = GUI.DefaultConfig() -- set at the very end of the file when vector2 exists (don't want to move vector2 code to the top)
+GUI.Config = GUI.DefaultConfig() -- set at the very end of the file when Vector2 and other component objects exists
 
 function GUI.Load()
-    if not Daneel.isLoading then -- GUI.Load() is called from one of the component's constructor because GUI is not loaded yet because Daneel is not loaded nor being loaded now
-        Daneel.SetComponents( GUI.Config.componentObjects )
-        Daneel.Config.objects.Vector2 = Vector2
-
-        GUI.Awake()
-        print( "GUI.Load() : You are using the GUI module but Daneel is not loaded. This may cause some code to not work properly or event to throw errors !" )
-    end
-    GUI.isLoaded = true
-
-    if CS.DaneelModules["MouseInput"] == nil and Daneel.Config.debug.enableDebug then
+    if DaneelModules["MouseInput"] == nil and Daneel.Config.debug.enableDebug then
         print( "GUI.Load() : Your project seems to lack the 'Mouse Input' module. It is required for the player to interact with the GUI.Toggle, GUI.Input and GUI.Slider components." )
     end
 
     --- Update the gameObject's scale to make the text appear the provided width.
     -- Overwrite TextRenderer.SetTextWith() from the Core.
-    -- /!\ Only exists when the Daneel (and the GUI module) is loaded. /!\
+    -- /!\ Only exists when the GUI module is loaded. /!\
     -- @param textRenderer (TextRenderer) The textRenderer.
     -- @param width (number or string) The text's width in units or pixels.
     function TextRenderer.SetTextWidth( textRenderer, width )
@@ -142,11 +136,11 @@ function GUI.Load()
         textRenderer.gameObject.transform:SetScale( width / widthScaleRatio )
         Daneel.Debug.StackTrace.EndFunction()
     end
+
+    GUI.isLoaded = true
 end
 
 function GUI.Awake()
-    -- setting pixelToUnits  
-
     -- get the smaller side of the screen (usually screenSize.y, the height)
     local screenSize = CS.Screen.GetSize()
     local smallSideSize = screenSize.y
@@ -207,7 +201,7 @@ end
 -- @return (GUI.Hud) The hud component.
 function GUI.Hud.New( gameObject, params )
     if not GUI.isLoaded then
-        GUI.Load()
+        print( GUI.daneelNotLoadedWarning )
     end
 
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.New", gameObject, params )
@@ -378,7 +372,7 @@ GUI.Toggle.__index = GUI.Toggle
 -- @return (GUI.Toggle) The new component.
 function GUI.Toggle.New( gameObject, params )
     if not GUI.isLoaded then
-        GUI.Load()
+        print( GUI.daneelNotLoadedWarning )
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Toggle.New", gameObject, params )
@@ -621,7 +615,7 @@ GUI.ProgressBar.__index = GUI.ProgressBar
 -- @return (ProgressBar) The new component.
 function GUI.ProgressBar.New( gameObject, params )
     if not GUI.isLoaded then
-        GUI.Load()
+        print( GUI.daneelNotLoadedWarning )
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "GUI.ProgressBar.New", gameObject, params )
@@ -797,7 +791,7 @@ GUI.Slider.__index = GUI.Slider
 -- @return (GUI.Slider) The new component.
 function GUI.Slider.New( gameObject, params )
     if not GUI.isLoaded then
-        GUI.Load()
+        print( GUI.daneelNotLoadedWarning )
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Slider.New", gameObject, params )
@@ -945,7 +939,7 @@ GUI.Input.__index = GUI.Input
 -- @return (GUI.Input) The new component.
 function GUI.Input.New( gameObject, params )
     if not GUI.isLoaded then
-        GUI.Load()
+        print( GUI.daneelNotLoadedWarning )
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Input.New", gameObject, params )
@@ -1065,7 +1059,7 @@ GUI.TextArea.__index = GUI.TextArea
 -- @return (GUI.TextArea) The new component.
 function GUI.TextArea.New( gameObject, params )
     if not GUI.isLoaded then
-        GUI.Load()
+        print( GUI.daneelNotLoadedWarning )
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.New", gameObject, params )
@@ -1634,4 +1628,6 @@ function CraftStudio.Screen.GetSize()
     return vector
 end
 
+
 GUI.Config = GUI.DefaultConfig()
+Daneel.SetComponents( GUI.Config.componentObjects ) 

@@ -22,8 +22,6 @@ OnLoopComplete string ""
 /PublicProperties]]
 
 function Behavior:Awake()
-    Daneel.Debug.AlertLoad( "Tweener:Awake() : " )
-
     if self.target:trim() ~= "" then
         self.target = self.gameObject[self.target]
     else

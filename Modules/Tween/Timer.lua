@@ -11,8 +11,6 @@ isInfiniteLoop boolean false
 /PublicProperties]]
 
 function Behavior:Awake()
-	Daneel.Debug.AlertLoad( "Timer:Awake() : ") 
-
     if self.callback:trim() ~= "" then
         self.callback = Daneel.Utilities.GetValueFromName( self.callback )
     else

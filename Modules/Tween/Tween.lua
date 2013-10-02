@@ -41,7 +41,9 @@ end
 ----------------------------------------------------------------------------------
 -- Init module
 
-Tween = {}
+Tween = {
+    daneelNotLoadedWarning = "WARNING : You are using the Tween module but Daneel is not loaded. The tweeners require Daneel to be loaded to be updated ! Please load Daneel."
+}
 
 if DaneelModules == nil then
     DaneelModules = {}
@@ -90,12 +92,9 @@ function Tween.DefaultConfig()
         },
     }
 
-    --Daneel.Config.objects = table.merge( Daneel.Config.objects, config.objects )
-
     return config
 end
 Tween.Config = Tween.DefaultConfig()
-
 
 function Tween.Awake()
     -- destroy and sanitize the tweeners when the scene loads
@@ -105,7 +104,6 @@ function Tween.Awake()
         end
     end
 end
-
 
 function Tween.Update()
     for id, tweener in pairs( Tween.Tweener.tweeners ) do
@@ -219,6 +217,10 @@ end
 -- @param params [optional] (table) A table of parameters.
 -- @return (Tweener) The Tweener.
 function Tween.Tweener.New(target, property, endValue, duration, params)
+    if not Tween.isLoaded then
+        print( Tween.daneelNotLoadedWarning )
+    end
+
     Daneel.Debug.StackTrace.BeginFunction("Tween.Tweener.New", target, property, endValue, duration, params)
     local errorHead = "Tween.Tweener.New(target, property, endValue, duration[, params]) : "
     
@@ -474,6 +476,10 @@ setmetatable(Tween.Timer, { __call = function(Object, ...) return Object.New(...
 -- @param params [optional] (table) A table of parameters.
 -- @return (Tweener) The tweener.
 function Tween.Timer.New( duration, callback, isInfiniteLoop, params )
+    if not Tween.isLoaded then
+        print( Tween.daneelNotLoadedWarning )
+    end
+    
     Daneel.Debug.StackTrace.BeginFunction( "Tween.Timer.New", duration, callback, isInfiniteLoop, params )
     local errorHead = "Tween.Timer.New( duration, callback[, isInfiniteLoop, params] ) : "
     if type( isInfiniteLoop ) == "table" then
