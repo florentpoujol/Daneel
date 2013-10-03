@@ -42,7 +42,7 @@ end
 -- Init module
 
 Tween = {
-    daneelNotLoadedWarning = "WARNING : You are using the Tween module but Daneel is not loaded. The tweeners require Daneel to be loaded to be updated ! Please load Daneel."
+    daneelNotLoadedWarning = "WARNING : You are using the Tween module but Daneel is not loaded. The tweeners won't works unless Daneel is loaded !."
 }
 
 if DaneelModules == nil then

@@ -15,11 +15,33 @@ endValue string ""
 loops number 1
 loopType string "simple"
 easeType string "linear"
-destroyOnComplete boolean true
 isPaused boolean false
 OnComplete string ""
 OnLoopComplete string ""
 /PublicProperties]]
+
+local function getvalue( value )
+    local values = value:split( ",", true )
+    value = nil
+    for i, value in ipairs( values ) do
+        values[i] = tonumber( value )
+    end
+
+    if #values == 1 then
+        value = values[1]
+    elseif #values == 2 then
+        if Vector2 == nil then
+            error( "Tweener:Awake() : The Vector2 object is unknow, probably because the GUI module is absent from your project." )
+        end
+        value = Vector2.New( values[1], values[2] )
+    elseif #values == 3 then
+        value = Vector3:New( values[1], values[2], values[3] )
+    elseif #values == 4 then
+        value = Quaternion:New( values[1], values[2], values[3], values[4] )
+    end
+
+    return value
+end
 
 function Behavior:Awake()
     if self.target:trim() ~= "" then
@@ -28,37 +50,34 @@ function Behavior:Awake()
         self.target = nil
     end
 
-    if self.startValue:trim() == "" then
+    if self.startValue:trim() ~= "" then
+        self.startValue = getvalue( self.startValue )
+    else
         self.startValue = nil
     end
 
     if self.endValue:trim() ~= "" then
-        local values = self.endValue:split( ",", true )
-        for i, value in ipairs( values ) do
-            values[i] = tonumber( value )
-        end
-
-        if #values == 1 then
-            self.endValue = values[1]
-        elseif #values == 2 then
-            self.endValue = Vector2.New( values[1], values[2] )
-        elseif #values == 3 then
-            self.endValue = Vector3:New( values[1], values[2], values[3] )
-        elseif #values == 4 then
-            self.endValue = Quaternion:New( values[1], values[2], values[3], values[4] )
-        end
+        self.endValue = getvalue( self.endValue )
     else
-        -- will cause error
+        self.endValue = nil
     end
 
     if self.OnComplete:trim() ~= "" then
+        local onComplete = self.OnComplete
         self.OnComplete = Daneel.Utilities.GetValueFromName( self.OnComplete )
+        if self.OnComplete = nil then
+            error( "Tweener:Awake() : OnComplete callback with name '" .. onComplete .. "' was not found. Scripted behavior is on " .. tostring( self.gameObject ) )
+        end
     else
         self.OnComplete = nil
     end
 
     if self.OnLoopComplete:trim() ~= "" then
+        local onLoopComplete = self.OnLoopComplete
         self.OnLoopComplete = Daneel.Utilities.GetValueFromName( self.OnLoopComplete )
+        if self.OnLoopComplete = nil then
+            error( "Tweener:Awake() : OnLoopComplete callback with name '" .. onLoopComplete .. "' was not found. Scripted behavior is on " .. tostring( self.gameObject ) )
+        end
     else
         self.OnLoopComplete = nil
     end
