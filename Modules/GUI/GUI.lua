@@ -24,13 +24,13 @@ end
 ----------------------------------------------------------------------------------
 
 GUI = {
-    daneelNotLoadedWarning = "WARNING : You are using the GUI module but Daneel is not loaded. This may cause some code to not work properly or even to throw errors ! Please load Daneel."
+    daneelNotLoadedWarning = "WARNING : You are using the GUI module but Daneel is not loaded. This may cause some code to not work properly or even to throw errors ! Please load Daneel to resolve these issues."
 }
 
-if DaneelModules == nil then
-    DaneelModules = {}
+if CS.DaneelModules == nil then
+    CS.DaneelModules = {}
 end
-DaneelModules[ "GUI" ] = GUI
+CS.DaneelModules[ "GUI" ] = GUI
 
 function GUI.DefaultConfig()
     local config = {
@@ -113,7 +113,7 @@ end
 GUI.Config = GUI.DefaultConfig() -- set at the very end of the file when Vector2 and other component objects exists
 
 function GUI.Load()
-    if DaneelModules["MouseInput"] == nil and Daneel.Config.debug.enableDebug then
+    if CS.DaneelModules["MouseInput"] == nil and Daneel.Config.debug.enableDebug then
         print( "GUI.Load() : Your project seems to lack the 'Mouse Input' module. It is required for the player to interact with the GUI.Toggle, GUI.Input and GUI.Slider components." )
     end
 
@@ -136,8 +136,6 @@ function GUI.Load()
         textRenderer.gameObject.transform:SetScale( width / widthScaleRatio )
         Daneel.Debug.StackTrace.EndFunction()
     end
-
-    GUI.isLoaded = true
 end
 
 function GUI.Awake()
@@ -173,8 +171,8 @@ end
 -- Hud
 
 GUI.Hud = {}
-GUI.Hud.__index = GUI.Hud -- __index will be rewritted when Daneel loads(in Daneel.SetComponents()) and enable the dynamic getter and setter on the components
--- this is meant to prevent some errors if Daneel is not loaded
+GUI.Hud.__index = GUI.Hud -- __index will be rewritted when Daneel loads (in Daneel.SetComponents()) and enable the dynamic accessors on the components
+-- this is just meant to prevent some errors if Daneel is not loaded
 
 --- Transform the 3D position into a Hud position and a layer.
 -- @param position (Vector3) The 3D position.

@@ -13,10 +13,10 @@ Lang = {
     doNotCallUpdate = true -- tell Daneel not to call Update() when the module is loaded
 }
 
-if DaneelModules == nil then
-    DaneelModules = {}
+if CS.DaneelModules == nil then
+    CS.DaneelModules = {}
 end
-DaneelModules[ "Lang" ] = Lang
+CS.DaneelModules[ "Lang" ] = Lang
 
 function Lang.DefaultConfig()
     return {

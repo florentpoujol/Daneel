@@ -45,10 +45,10 @@ Tween = {
     daneelNotLoadedWarning = "WARNING : You are using the Tween module but Daneel is not loaded. The tweeners won't works unless Daneel is loaded !."
 }
 
-if DaneelModules == nil then
-    DaneelModules = {}
+if CS.DaneelModules == nil then
+    CS.DaneelModules = {}
 end
-DaneelModules[ "Tween" ] = Tween
+CS.DaneelModules[ "Tween" ] = Tween
 
 function Tween.DefaultConfig()
     local config = {

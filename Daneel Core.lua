@@ -708,8 +708,10 @@ end
 Daneel = {}
 D = Daneel
 
-if DaneelModules == nil then
-    DaneelModules = {}
+if CS.DaneelModules == nil then
+    CS.DaneelModules = {}
+    -- DaneelModules is inside CS because you can do 'if CS.DaneelModules == nil' but you can't do 'if DaneelModules == nil'
+    -- and you can't be sure to be able to access Daneel.Utilities.GlobalExists()
 end
 
 -- Config - Loading
@@ -793,7 +795,7 @@ function Daneel.Load()
     Daneel.isLoading = true
 
     -- load modules config
-    for name, _module in pairs( DaneelModules ) do
+    for name, _module in pairs( CS.DaneelModules ) do
         if _module.isConfigLoaded ~= true then
             _module.isConfigLoaded = true
 
@@ -842,7 +844,7 @@ function Daneel.Load()
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Load" )
 
     -- Load modules 
-    for i, _module in pairs( DaneelModules ) do
+    for i, _module in pairs( CS.DaneelModules ) do
         if _module.isLoaded ~= true then
             _module.isLoaded = true
             if type( _module.Load ) == "function" then
@@ -861,7 +863,7 @@ function Daneel.Load()
 
     -- check for module update functions
     -- do this now so that I don't have to call Daneel.Utilities.GlobalExists() every frame for every modules below in Behavior:Update()
-    for i, _module in pairs( DaneelModules ) do
+    for i, _module in pairs( CS.DaneelModules ) do
         if _module.doNotCallUpdate ~= true then
             if type( _module.Update ) == "function" and not table.containsvalue( moduleUpdateFunctions, _module.Update ) then
                 table.insert( moduleUpdateFunctions, _module.Update )
@@ -915,7 +917,7 @@ function Behavior:Awake()
     GameObject.Tags = {}
 
     -- Awake modules 
-    for i, _module in pairs( DaneelModules ) do
+    for i, _module in pairs( CS.DaneelModules ) do
         if _module.isAwake ~= true then
             _module.isAwake = true
             if type( _module.Awake ) == "function" then
@@ -949,7 +951,7 @@ function Behavior:Start()
     end
 
     -- Start modules 
-    for i, _module in pairs( DaneelModules ) do
+    for i, _module in pairs( CS.DaneelModules ) do
         if _module.isStarted ~= true then
             _module.isStarted = true
             if type( _module.Start ) == "function" then

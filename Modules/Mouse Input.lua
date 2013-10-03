@@ -4,12 +4,12 @@
 -- Last modified for v1.3.0
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
-MouseInput = { isLoaded = false }
+MouseInput = {}
 
-if DaneelModules == nil then
-    DaneelModules = {}
+if CS.DaneelModules == nil then
+    CS.DaneelModules = {}
 end
-DaneelModules[ "MouseInput" ] = MouseInput
+CS.DaneelModules[ "MouseInput" ] = MouseInput
 
 function MouseInput.DefaultConfig()
     return {

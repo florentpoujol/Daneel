@@ -71,21 +71,14 @@ IDEAS
         > module étent la config et ajoute les modules dont il dépend qui sont ajoutés avant lui dans la table des modules à charger
     - liste des modules chargés + empècher plusieurs chargements du même modules
 
-    if DaneelModules == nil then
-        DaneelModules = {}
+    if CS.CS.DaneelModules == nil then
+        CS.CS.DaneelModules = {}
     end
-    table.insert( DaneelModules, { modulename = {} } )
+    table.insert( CS.CS.DaneelModules, { modulename = {} } )
 
 
     Daneel.RegisterObject() > ajoute à Daneel.Config.objects
     Component.RegisterComponent( GUI.Togle ) > ajoute à CraftStudio.Config.allComponents
-
-    module.Config = D.Module.GetConfig( moduleName )
-    
-    if DaneelModules == nil then
-        DaneelModules = { "Lang" }
-    end
-    table.insert( DaneelModules, "Lang" )
 
 
 ==========
@@ -118,8 +111,7 @@ A modifier/ajouter dans la doc :
     - création de modules
     - création de composants
 
-features that require daneel to be loaded
-    - dynamic accessor
+
 
 =========
 BUGS
