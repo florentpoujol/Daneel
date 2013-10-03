@@ -15,7 +15,6 @@ CS.DaneelModules[ "GUI" ] = GUI
 
 function GUI.DefaultConfig()
     local config = {
-        screenSize = CraftStudio.Screen.GetSize(),
         cameraName = "HUDCamera",  -- Name of the gameObject who has the orthographic camera used to render the HUD
         cameraGO = nil, -- the corresponding GameObject, set at runtime
         originGO = nil, -- "parent" gameObject for global hud positioning, created at runtime in DaneelModuleGUIAwake
@@ -100,7 +99,6 @@ function GUI.Load()
 
     --- Update the gameObject's scale to make the text appear the provided width.
     -- Overwrite TextRenderer.SetTextWith() from the Core.
-    -- /!\ Only exists when the GUI module is loaded. /!\
     -- @param textRenderer (TextRenderer) The textRenderer.
     -- @param width (number or string) The text's width in units or pixels.
     function TextRenderer.SetTextWidth( textRenderer, width )
@@ -1628,5 +1626,4 @@ function CraftStudio.Screen.GetSize()
 end
 
 
-GUI.Config = GUI.DefaultConfig()
-Daneel.SetComponents( GUI.Config.componentObjects ) 
+GUI.Config = GUI.DefaultConfig() 

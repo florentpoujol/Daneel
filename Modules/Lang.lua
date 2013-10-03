@@ -58,6 +58,10 @@ function Lang.Load()
     Lang.isLoaded = true
 end
 
+function Lang.Awake() 
+    Lang.isStarted = false
+end
+
 function Lang.Start() 
     if Lang.Config.current ~= nil and not Lang.isStarted then
         Lang.Update( Lang.Config.current )
