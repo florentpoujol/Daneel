@@ -828,7 +828,7 @@ function Daneel.Load()
 
     -- load Daneel config
     
-    if Daneel.Utilities.GlobalExists( "DaneelUserConfig" ) and type( "DaneelUserConfig" ) == "function" then 
+    if Daneel.Utilities.GlobalExists( "DaneelUserConfig" ) and type( DaneelUserConfig ) == "function" then 
         Daneel.Config = table.deepmerge( Daneel.Config, DaneelUserConfig() ) -- use Daneel.Config here since some of its values may have been modified already by some momdules
     end
     
@@ -918,11 +918,8 @@ function Behavior:Awake()
 
     -- Awake modules 
     for i, _module in pairs( CS.DaneelModules ) do
-        if _module.isAwake ~= true then
-            _module.isAwake = true
-            if type( _module.Awake ) == "function" then
-                _module.Awake()
-            end
+        if type( _module.Awake ) == "function" then
+            _module.Awake()
         end
     end
 
@@ -952,11 +949,8 @@ function Behavior:Start()
 
     -- Start modules 
     for i, _module in pairs( CS.DaneelModules ) do
-        if _module.isStarted ~= true then
-            _module.isStarted = true
-            if type( _module.Start ) == "function" then
-                _module.Start()
-            end
+        if type( _module.Start ) == "function" then
+            _module.Start()
         end
     end
 
