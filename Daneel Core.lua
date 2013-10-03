@@ -785,7 +785,7 @@ function Daneel.DefaultConfig()
     return config
 end
 Daneel.DefaultConfig = Daneel.DefaultConfig()
-Daneel.Config = Daneel.DefaultConfig
+Daneel.Config = Daneel.DefaultConfig 
 
 local moduleUpdateFunctions = {} -- see end of Daneel.Load() and end of Daneel.update()
 
@@ -811,7 +811,7 @@ function Daneel.Load()
             if Daneel.Utilities.GlobalExists( functionName ) then
                 userConfig = _G[ functionName ]
                 if type( userConfig ) == "function" then
-                    _module.Config = table.deepmerge( _module.Config, userConfig )
+                    _module.Config = table.deepmerge( _module.Config, userConfig() )
                 end
             end
 
@@ -1443,13 +1443,6 @@ end
 -- @param defaultValue [optional] (mixed) The optional default value.
 -- @return (mixed) The argument's value (one of the expected argument values or default value)
 function Daneel.Debug.CheckArgValue(argument, argumentName, expectedArgumentValues, p_errorHead, defaultValue)
-    if not Daneel.isLoaded then 
-        if argument == nil and defaultValue ~= nil then
-            return defaultValue
-        end
-        return argument
-    end
-
     Daneel.Debug.StackTrace.BeginFunction("Daneel.Debug.CheckArgValue", argument, argumentName, expectedArgumentValues, p_errorHead)
     local errorHead = "Daneel.Debug.CheckArgValue(argument, argumentName, expectedArgumentValues[, p_errorHead, defaultValue]) : "
     Daneel.Debug.CheckArgType(argumentName, "argumentName", "string", errorHead)
@@ -1494,13 +1487,6 @@ function Daneel.Debug.CheckArgValue(argument, argumentName, expectedArgumentValu
     end
     Daneel.Debug.StackTrace.EndFunction()
     return argument
-end
-
--- Notify the dev that Daneel should be loaded
-function Daneel.Debug.AlertLoad( errorHead )
-    if Daneel.isLoaded then return end
-    if errorHead == nil then errorHead = "" end
-    print( errorHead .. "You are using a functionality that require Daneel to be loaded yet it's not the case ! Please add the 'Daneel Core' script as a scripted behavior on a game object at the top of the game objects hyerarchy." )
 end
 
 
@@ -1588,6 +1574,10 @@ function Daneel.Debug.StackTrace.Print()
         end
     end
 end
+
+
+Daneel.Config.componentTypes = table.getkeys( Daneel.Config.componentObjects ) -- put here so that table.getkeys() don't throw error because Daneel.Debug doesn't exists
+Daneel.Config.assetTypes = table.getkeys( Daneel.Config.assetObjects )
 
 
 ----------------------------------------------------------------------------------
@@ -2056,7 +2046,6 @@ function Daneel.SetComponents( components )
     end
 end
 Daneel.SetComponents( Daneel.Config.componentObjects ) -- called here for the built-in components, is called another time after the modules and user config gets loaded
-Daneel.Config.componentTypes = table.getkeys( Daneel.Config.componentObjects )
 
 
 ----------------------------------------------------------------------------------

@@ -100,6 +100,10 @@ function Tween.DefaultConfig()
 end
 Tween.Config = Tween.DefaultConfig()
 
+function Tween.Load()
+    Daneel.Tween = Tween
+end
+
 function Tween.Awake()
     -- destroy and sanitize the tweeners when the scene loads
     for id, tweener in pairs( Tween.Tweener.tweeners ) do

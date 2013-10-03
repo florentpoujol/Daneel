@@ -23,7 +23,7 @@ function GUI.DefaultConfig()
 
         -- Default GUI components settings
         hud = {
-            localPosition = Vector2.New(0, 0),
+            localPosition = setmetatable( {x=0,y=0}, Vector2 ),
             layer = 1,
         },
 
@@ -93,6 +93,8 @@ end
 --GUI.Config = GUI.DefaultConfig() -- set at the very end of the file when Vector2 and other component objects exists
 
 function GUI.Load()
+    Daneel.GUI = GUI
+
     if CS.DaneelModules["MouseInput"] == nil and Daneel.Config.debug.enableDebug then
         print( "GUI.Load() : Your project seems to lack the 'Mouse Input' module. It is required for the player to interact with the GUI.Toggle, GUI.Input and GUI.Slider components." )
     end
@@ -203,7 +205,7 @@ function GUI.Hud.New( gameObject, params )
 
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.New", gameObject, params )
     if GUI.Config.cameraGO == nil then
-        error("GUI was not set up or the HUD Camera gameObject with name '"..GUI.Config.cameraName.."' (value of 'cameraName' in the config) was not found.")
+        error("GUI.Hud.New() : Daneel (and the GUI module) is not loaded and awake or the HUD Camera gameObject with name '"..GUI.Config.cameraName.."' (value of 'cameraName' in the config) was not found.")
     end
     local errorHead = "GUI.Hud.New( gameObject, params ) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead )
@@ -723,7 +725,7 @@ function GUI.ProgressBar.UpdateProgress( progressBar, progress, fireEvent )
 
     local newLength = (progressBar.maxLength - minLength) * percentageOfProgress + minLength 
     local currentScale = progressBar.gameObject.transform:GetLocalScale()
-    progressBar.gameObject.transform:GetLocalScale( Vector3:New( newLength, progressBar.height, currentScale.z ) )
+    progressBar.gameObject.transform:SetLocalScale( Vector3:New( newLength, progressBar.height, currentScale.z ) )
     
     if fireEvent == true then
         Daneel.Event.Fire( progressBar, "OnUpdate", progressBar )

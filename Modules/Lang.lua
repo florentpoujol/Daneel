@@ -30,6 +30,8 @@ function Lang.DefaultConfig()
 end
 
 function Lang.Load()
+    Daneel.Lang = Lang
+
     if Lang.Config == nil then -- Daneel is not loaded
         Lang.Config = Lang.DefaultConfig()
         if Daneel.Utilities.GlobalExists( "LangUserConfig" ) and type( LangUserConfig ) == "function" then
