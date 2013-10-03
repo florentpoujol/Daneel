@@ -1,7 +1,7 @@
 -- Tween.lua
 -- Module adding the Tweener and Timer objects, and the easing equations.
 --
--- Last modified for v1.2.0
+-- Last modified for v1.3
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
 -- Allow to get the target's "property" even if it is virtual and normally handled via getter/setter.
@@ -42,7 +42,7 @@ end
 -- Init module
 
 Tween = {
-    daneelNotLoadedWarning = "WARNING : You are using the Tween module but Daneel is not loaded. The tweeners won't works unless Daneel is loaded !."
+    daneelNotLoadedWarning = "WARNING : You are using the Tween module but Daneel is not loaded. The tweeners won't works unless Daneel is loaded."
 }
 
 if CS.DaneelModules == nil then

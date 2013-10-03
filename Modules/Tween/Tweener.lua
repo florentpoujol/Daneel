@@ -65,7 +65,7 @@ function Behavior:Awake()
     if self.OnComplete:trim() ~= "" then
         local onComplete = self.OnComplete
         self.OnComplete = Daneel.Utilities.GetValueFromName( self.OnComplete )
-        if self.OnComplete = nil then
+        if self.OnComplete == nil then
             error( "Tweener:Awake() : OnComplete callback with name '" .. onComplete .. "' was not found. Scripted behavior is on " .. tostring( self.gameObject ) )
         end
     else
@@ -75,7 +75,7 @@ function Behavior:Awake()
     if self.OnLoopComplete:trim() ~= "" then
         local onLoopComplete = self.OnLoopComplete
         self.OnLoopComplete = Daneel.Utilities.GetValueFromName( self.OnLoopComplete )
-        if self.OnLoopComplete = nil then
+        if self.OnLoopComplete == nil then
             error( "Tweener:Awake() : OnLoopComplete callback with name '" .. onLoopComplete .. "' was not found. Scripted behavior is on " .. tostring( self.gameObject ) )
         end
     else

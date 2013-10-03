@@ -4,25 +4,6 @@
 -- Last modified for v1.3
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
--- convert a string value (maybe in pixels)
--- into a number of units
-local function tounit(value)
-    if type(value) == "string" then
-        local length = #value
-        if value:endswith("px") then
-            value = tonumber(value:sub(0, length-2)) * GUI.Config.pixelsToUnits
-        elseif value:endswith("u") then
-            value = tonumber(value:sub(0, length-1))
-        else
-            value = tonumber(value)
-        end
-    end
-    return value
-end
-
-
-----------------------------------------------------------------------------------
-
 GUI = {
     daneelNotLoadedWarning = "WARNING : You are using the GUI module but Daneel is not loaded. This may cause some code to not work properly or even to throw errors ! Please load Daneel to resolve these issues."
 }
@@ -110,7 +91,7 @@ function GUI.DefaultConfig()
 
     return config
 end
-GUI.Config = GUI.DefaultConfig() -- set at the very end of the file when Vector2 and other component objects exists
+--GUI.Config = GUI.DefaultConfig() -- set at the very end of the file when Vector2 and other component objects exists
 
 function GUI.Load()
     if CS.DaneelModules["MouseInput"] == nil and Daneel.Config.debug.enableDebug then
@@ -129,7 +110,7 @@ function GUI.Load()
         local argType = Daneel.Debug.CheckArgType(width, "width", {"number", "string"}, errorHead)
 
         if argType == "string" then
-            width = tounit( width )
+            width = GUI.ToSceneUnit( width )
         end
         
         local widthScaleRatio = textRenderer:GetTextWidth() / textRenderer.gameObject.transform:GetScale()
@@ -164,6 +145,26 @@ function GUI.Awake()
         -- the HUDOrigin is now at the top-left corner of the screen
         GUI.Config.originPosition = GUI.Config.originGO.transform:GetPosition()
     end
+end
+
+--- Convert the provided value (a length) in a number expressed in scene unit.
+-- The provided value may be suffixed with "px" (pixels) or "u" (scene units).
+-- @param value (string or number) The value to convert.
+-- @return (number) The converted value, expressed in scene units.
+function GUI.ToSceneUnit( value )
+    if type( value ) == "string" then
+        local length = #value
+        if value:endswith( "px" ) then
+            value = tonumber( value:sub( 0, length-2) ) * GUI.Config.pixelsToUnits
+
+        elseif value:endswith( "u" ) then
+            value = tonumber( value:sub( 0, length-1) )
+
+        else
+            value = tonumber( value )
+        end
+    end
+    return value
 end
 
 
@@ -671,8 +672,8 @@ function GUI.ProgressBar.SetProgress(progressBar, progress)
     local oldProgress = progress
     progress = math.clamp(progress, minVal, maxVal)
 
-    progressBar.minLength = tounit(progressBar.minLength)
-    progressBar.maxLength = tounit(progressBar.maxLength)
+    progressBar.minLength = GUI.ToSceneUnit(progressBar.minLength)
+    progressBar.maxLength = GUI.ToSceneUnit(progressBar.maxLength)
     local currentProgress = progressBar.progress
 
     if progress ~= currentProgress then
@@ -681,7 +682,7 @@ function GUI.ProgressBar.SetProgress(progressBar, progress)
         end
         percentageOfProgress = (progress - minVal) / (maxVal - minVal)
         
-        progressBar.height = tounit(progressBar.height)
+        progressBar.height = GUI.ToSceneUnit(progressBar.height)
 
         local newLength = (progressBar.maxLength - progressBar.minLength) * percentageOfProgress + progressBar.minLength 
         local currentScale = progressBar.gameObject.transform:GetLocalScale()
@@ -867,7 +868,7 @@ function GUI.Slider.SetValue( slider, value )
     end
     percentage = (value - minVal) / (maxVal - minVal)
 
-    slider.length = tounit( slider.length )
+    slider.length = GUI.ToSceneUnit( slider.length )
 
     local direction = -Vector3:Left()
     if slider.axis == "y" then
@@ -1206,7 +1207,7 @@ function GUI.TextArea.SetAreaWidth( textArea, areaWidth )
     Daneel.Debug.CheckOptionalArgType( areaWidth, "areaWidth", {"string", "number"}, errorHead )
 
     if areaWidth ~= nil then
-        areaWidth = math.clamp( tounit( areaWidth ), 0, 999999 )
+        areaWidth = math.clamp( GUI.ToSceneUnit( areaWidth ), 0, 999999 )
     end
 
     if textArea.AreaWidth ~= areaWidth then
@@ -1287,7 +1288,7 @@ function GUI.TextArea.SetLineHeight( textArea, lineHeight )
     Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     Daneel.Debug.CheckArgType( lineHeight, "lineHeight", {"string", "number"}, errorHead )
 
-    textArea.LineHeight = tounit( lineHeight )
+    textArea.LineHeight = GUI.ToSceneUnit( lineHeight )
     if #textArea.lineRenderers > 0 then
         textArea:SetText( textArea.Text )
     end

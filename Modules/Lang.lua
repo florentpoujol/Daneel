@@ -5,7 +5,6 @@
 -- Last modified for v1.3
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
-
 Lang = {
     lines = {},
     gameObjectsToUpdate = {},
@@ -33,7 +32,7 @@ end
 function Lang.Load()
     if Lang.Config == nil then -- Daneel is not loaded
         Lang.Config = Lang.DefaultConfig()
-        if Daneel.Utilities.GlobalExists( "LangUserConfig" ) and type( LangUserConfig ) == then
+        if Daneel.Utilities.GlobalExists( "LangUserConfig" ) and type( LangUserConfig ) == "function" then
             Lang.Config = table.merge( Lang.Config, LangUserConfig()  )
         end
     end
