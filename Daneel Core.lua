@@ -918,27 +918,17 @@ local DaneelScriptAsset = Behavior
 Daneel.Utilities.buttonExistsGameObject = nil -- The game object Daneel.Utilities.ButtonExists() works with
 
 --- Tell wether the provided button name exists amongst the Game Controls, or not.
--- The 'gameObject' argument is mandatory ony 
--- /!\ WARNING : The function will kill the game, if it is called from an Awake() function, and the second argument is 'self.gameObject'. /!\
 -- @param buttonName (string) The button name.
--- @param gameObject (GameObject) Any game object. This argument is mandatory only on the first call (as long as the game object stays alive) when Daneel is not loaded.
 -- @return (boolean) True if the button name exists, false otherwise.
-function Daneel.Utilities.ButtonExists( buttonName, gameObject )
-    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.ButtonExists", buttonName, gameObject )
-    local errorHead = "Daneel.Utilities.ButtonExists( buttonName[, gameObject] ) : "
+function Daneel.Utilities.ButtonExists( buttonName )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.ButtonExists", buttonName )
+    local errorHead = "Daneel.Utilities.ButtonExists( buttonName ) : "
     Daneel.Debug.CheckArgType( buttonName, "buttonName", "string", errorHead )
-    Daneel.Debug.CheckOptionalArgType( gameObject, "gameObject", "GameObject", errorHead )
 
-    if gameObject ~= nil and Daneel.Utilities.buttonExistsGameObject == nil then
-        Daneel.Utilities.buttonExistsGameObject = gameObject
-    end
-
-    if gameObject == nil then
-        gameObject = Daneel.Utilities.buttonExistsGameObject
-    end
-
+    local gameObject = Daneel.Utilities.buttonExistsGameObject
     if gameObject == nil or gameObject.transform == nil then
-        error( errorHead .. "No valid game object to be used, please load Daneel or pass a game object as second argument." )
+        gameObject = CraftStudio.CreateGameObject( "ButtonExists" )
+        Daneel.Utilities.buttonExistsGameObject = gameObject
     end
 
     local buttonExists = false
