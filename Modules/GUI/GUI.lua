@@ -72,7 +72,7 @@ function GUI.DefaultConfig()
             alignment = nil,
             opacity = nil,
         },
-   
+
         componentObjects = {
             ["GUI.Hud"] = GUI.Hud,
             ["GUI.Toggle"] = GUI.Toggle,
@@ -112,7 +112,7 @@ function GUI.Load()
         if argType == "string" then
             width = GUI.ToSceneUnit( width )
         end
-        
+
         local widthScaleRatio = textRenderer:GetTextWidth() / textRenderer.gameObject.transform:GetScale()
         textRenderer.gameObject.transform:SetScale( width / widthScaleRatio )
         Daneel.Debug.StackTrace.EndFunction()
@@ -136,9 +136,9 @@ function GUI.Awake()
 
         GUI.Config.originGO = CS.CreateGameObject( "HUDOrigin" )
         GUI.Config.originGO:SetParent( GUI.Config.cameraGO )
-        
+
         GUI.Config.originGO.transform:SetLocalPosition( Vector3:New(
-            -screenSize.x * GUI.Config.pixelsToUnits / 2, 
+            -screenSize.x * GUI.Config.pixelsToUnits / 2,
             screenSize.y * GUI.Config.pixelsToUnits / 2,
             0
         ) )
@@ -231,7 +231,7 @@ function GUI.Hud.SetPosition(hud, position)
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
     Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
 
-    local newPosition = GUI.Config.originPosition + 
+    local newPosition = GUI.Config.originPosition +
     Vector3:New(
         position.x * GUI.Config.pixelsToUnits,
         -position.y * GUI.Config.pixelsToUnits,
@@ -249,7 +249,7 @@ function GUI.Hud.GetPosition(hud)
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.GetPosition", hud)
     local errorHead = "GUI.Hud.GetPosition(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
-    
+
     local position = hud.gameObject.transform:GetPosition() - GUI.Config.originPosition
     position = position / GUI.Config.pixelsToUnits
     position = Vector2.New(math.round(position.x), math.round(-position.y))
@@ -268,7 +268,7 @@ function GUI.Hud.SetLocalPosition(hud, position)
 
     local parent = hud.gameObject.parent
     if parent == nil then parent = GUI.Config.originGO end
-    local newPosition = parent.transform:GetPosition() + 
+    local newPosition = parent.transform:GetPosition() +
     Vector3:New(
         position.x * GUI.Config.pixelsToUnits,
         -position.y * GUI.Config.pixelsToUnits,
@@ -286,7 +286,7 @@ function GUI.Hud.GetLocalPosition(hud)
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.GetLocalPosition", hud)
     local errorHead = "GUI.Hud.GetLocalPosition(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
-    
+
     local parent = hud.gameObject.parent
     if parent == nil then parent = GUI.Config.originGO end
     local position = hud.gameObject.transform:GetPosition() - parent.transform:GetPosition()
@@ -320,7 +320,7 @@ function GUI.Hud.GetLayer(hud)
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
 
     local originLayer = GUI.Config.originPosition.z
-    local layer = originLayer - hud.gameObject.transform:GetPosition().z 
+    local layer = originLayer - hud.gameObject.transform:GetPosition().z
     Daneel.Debug.StackTrace.EndFunction()
     return layer
 end
@@ -353,7 +353,7 @@ function GUI.Hud.GetLocalLayer(hud)
     local parent = hud.gameObject.parent
     if parent == nil then parent = GUI.Config.originGO end
     local originLayer = parent.transform:GetPosition().z
-    local layer = originLayer - hud.gameObject.transform:GetPosition().z 
+    local layer = originLayer - hud.gameObject.transform:GetPosition().z
     Daneel.Debug.StackTrace.EndFunction()
     return layer
 end
@@ -378,7 +378,7 @@ function GUI.Toggle.New( gameObject, params )
     local errorHead = "GUI.Toggle.New( gameObject, params ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
-    
+
     local toggle = table.copy( GUI.Config.toggle )
     toggle.defaultText = toggle.text
     toggle.text = nil
@@ -387,10 +387,10 @@ function GUI.Toggle.New( gameObject, params )
     setmetatable( toggle, GUI.Toggle )
 
     toggle:Set( params )
-    
+
     gameObject.toggle = toggle
     gameObject:AddTag( "guicomponent" )
-    
+
     gameObject.OnNewComponent = function()
         local component = data[1]
         if component == nil then return end
@@ -488,13 +488,13 @@ function GUI.Toggle.GetText(toggle)
             text = toggle.defaultText
         end
         text = text:gsub(prefix, ""):gsub(suffix, "")
-    
+
     elseif Daneel.Config.debug.enableDebug then
         print("WARNING : "..errorHead.."Can't get the toggle's text because no TextRenderer component has been found on the gameObject '"..tostring(toggle.gameObject).."'. Returning nil.")
     end
     Daneel.Debug.StackTrace.EndFunction()
     return text
-end 
+end
 
 --- Check or uncheck the provided toggle and fire the OnUpdate event.
 -- You can get the toggle's state via toggle.isChecked.
@@ -506,20 +506,20 @@ function GUI.Toggle.Check( toggle, state, forceUpdate )
     local errorHead = "GUI.Toggle.Check( toggle[, state, forceUpdate] ) : "
     Daneel.Debug.CheckArgType( toggle, "toggle", "GUI.Toggle", errorHead )
     state = Daneel.Debug.CheckOptionalArgType( state, "state", "boolean", errorHead, true )
-    forceUpdate = Daneel.Debug.CheckOptionalArgType( forceUpdate, "forceUpdate", "boolean", errorHead, false ) 
+    forceUpdate = Daneel.Debug.CheckOptionalArgType( forceUpdate, "forceUpdate", "boolean", errorHead, false )
 
     if forceUpdate or toggle.isChecked ~= state then
         local text = nil
         if toggle.gameObject.textRenderer ~= nil then
             text = toggle:GetText()
         end
-        
+
         toggle.isChecked = state
-        
+
         if toggle.gameObject.textRenderer ~= nil then
             toggle:SetText( text ) -- "reload" the check mark based on the new checked state
         end
-        
+
         if toggle.gameObject.modelRenderer ~= nil then
             if state == true and toggle.checkedModel ~= nil then
                 toggle.gameObject.modelRenderer:SetModel( toggle.checkedModel )
@@ -539,7 +539,7 @@ function GUI.Toggle.Check( toggle, state, forceUpdate )
             end
         end
     end
-    
+
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -596,8 +596,8 @@ function GUI.Toggle.Set( toggle, params )
 
     if isChecked ~= nil then
         toggle:Check(isChecked)
-    end        
-    
+    end
+
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -681,10 +681,10 @@ function GUI.ProgressBar.SetProgress(progressBar, progress)
             print(errorHead.." WARNING : progress with value '"..oldProgress.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
         end
         percentageOfProgress = (progress - minVal) / (maxVal - minVal)
-        
+
         progressBar.height = GUI.ToSceneUnit(progressBar.height)
 
-        local newLength = (progressBar.maxLength - progressBar.minLength) * percentageOfProgress + progressBar.minLength 
+        local newLength = (progressBar.maxLength - progressBar.minLength) * percentageOfProgress + progressBar.minLength
         local currentScale = progressBar.gameObject.transform:GetLocalScale()
         progressBar.gameObject.transform:SetLocalScale( Vector3:New(newLength, progressBar.height, currentScale.z) )
         -- newLength = scale only because the base size of the model is of one unit at a scale of one
@@ -695,7 +695,7 @@ function GUI.ProgressBar.SetProgress(progressBar, progress)
 end
 
 --- Set the progress of the progress bar, adjusting its length.
--- Does the same things as SetProgress() by does it faster. 
+-- Does the same things as SetProgress() by does it faster.
 -- Unlike SetProgress(), does not fire the 'OnUpdate' event by default.
 -- Should be used when the progress is updated regularly (ie : from a Behavior:Update() function).
 -- @param progressBar (ProgressBar) The progressBar.
@@ -723,10 +723,10 @@ function GUI.ProgressBar.UpdateProgress( progressBar, progress, fireEvent )
     end
     percentageOfProgress = math.clamp( percentageOfProgress, 0.0, 1.0 )
 
-    local newLength = (progressBar.maxLength - minLength) * percentageOfProgress + minLength 
+    local newLength = (progressBar.maxLength - minLength) * percentageOfProgress + minLength
     local currentScale = progressBar.gameObject.transform:GetLocalScale()
     progressBar.gameObject.transform:SetLocalScale( Vector3:New( newLength, progressBar.height, currentScale.z ) )
-    
+
     if fireEvent == true then
         Daneel.Event.Fire( progressBar, "OnUpdate", progressBar )
     end
@@ -773,7 +773,7 @@ function GUI.ProgressBar.Set( progressBar, params )
         progressBar[key] = value
     end
     progressBar:SetProgress( progress )
-    
+
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -804,20 +804,20 @@ function GUI.Slider.New( gameObject, params )
     slider.value = nil
     slider.parent = slider.gameObject:GetParent()
     setmetatable( slider, GUI.Slider )
-    
+
     gameObject.slider = slider
     gameObject:AddTag( "guicomponent" )
-    
+
     gameObject.OnDrag = function()
         local mouseDelta = CraftStudio.Input.GetMouseDelta()
         local positionDelta = Vector3:New( mouseDelta.x, 0, 0 )
         if slider.axis == "y" then
             positionDelta = Vector3:New( 0, -mouseDelta.y, 0, 0 )
         end
-        
+
         gameObject.transform:Move( positionDelta * GUI.Config.pixelsToUnits )
-        
-        if 
+
+        if
             (slider.axis == "x" and gameObject.transform:GetPosition().x < slider.parent.transform:GetPosition().x) or
             (slider.axis == "y" and gameObject.transform:GetPosition().y < slider.parent.transform:GetPosition().y)
         then
@@ -833,7 +833,7 @@ function GUI.Slider.New( gameObject, params )
         params.value = GUI.Config.slider.value
     end
     slider:Set( params )
-    
+
     Daneel.Debug.StackTrace.EndFunction()
     return slider
 end
@@ -891,13 +891,13 @@ function GUI.Slider.GetValue( slider, getAsPercentage )
     local errorHead = "GUI.Slider.GetValue( slider, value ) : "
     Daneel.Debug.CheckArgType(slider, "slider", "GUI.Slider", errorHead)
     Daneel.Debug.CheckOptionalArgType( getAsPercentage, "getAsPercentage", "boolean", errorHead )
-   
+
     local percentage = Vector3.Distance( slider.parent.transform:GetPosition(), slider.gameObject.transform:GetPosition() ) / slider.length
     local value = percentage * 100
     if getAsPercentage ~= true then
         value = (slider.maxValue - slider.minValue) * percentage + slider.minValue
     end
-    
+
     Daneel.Debug.StackTrace.EndFunction()
     return value
 end
@@ -921,10 +921,10 @@ function GUI.Slider.Set( slider, params )
         slider[key] = value
     end
     slider:SetValue( value )
-    
+
     Daneel.Debug.StackTrace.EndFunction()
 end
-       
+
 
 ----------------------------------------------------------------------------------
 -- Input
@@ -954,14 +954,14 @@ function GUI.Input.New( gameObject, params )
         input.OnTextEntered = function( char )
             if input.isFocused then
                 local charNumber = string.byte( char )
-                
+
                 if charNumber == 8 then -- Backspace
                     local text = gameObject.textRenderer.text
                     input:Update( text:sub( 1, #text - 1 ), true )
-                
+
                 elseif charNumber == 13 then -- Enter
                     Daneel.Event.Fire( input, "OnValidate", input )
-                
+
                 -- Any character between 32 and 127 is regular printable ASCII
                 elseif charNumber >= 32 and charNumber <= 127 then
                     if input.characterRange ~= nil and input.characterRange:find( char, 1, true ) == nil then
@@ -973,21 +973,21 @@ function GUI.Input.New( gameObject, params )
         end
     end
     setmetatable( input, GUI.Input )
-    
+
     local isFocused = input.isFocused
     input.isFocused = nil
     input:Focus( isFocused )
 
     gameObject.input = input
     gameObject:AddTag( "guicomponent" )
-    
-    Daneel.Event.Listen( "OnLeftMouseButtonJustPressed", 
+
+    Daneel.Event.Listen( "OnLeftMouseButtonJustPressed",
         function()
             if gameObject.isMouseOver == nil then
                 gameObject.isMouseOver = false
             end
             gameObject.input:Focus( gameObject.isMouseOver )
-        end 
+        end
     )
 
     Daneel.Debug.StackTrace.EndFunction()
@@ -1002,7 +1002,7 @@ function GUI.Input.Focus( input, state )
     local errorHead = "GUI.Input.Focus(input[, state]) : "
     Daneel.Debug.CheckArgType( input, "input", "GUI.Input", errorHead )
     state = Daneel.Debug.CheckOptionalArgType( state, "state", "boolean", errorHead, true )
-    
+
     if input.isFocused ~= state then
         input.isFocused = state
         if state == true then
@@ -1026,11 +1026,11 @@ function GUI.Input.Update( input, text, replaceText )
     Daneel.Debug.CheckArgType(text, "text", "string", errorHead)
     replaceText = Daneel.Debug.CheckOptionalArgType(replaceText, "replaceText", "boolean", errorHead, false)
 
-    if input.isFocused == false then 
+    if input.isFocused == false then
         Daneel.Debug.StackTrace.EndFunction()
         return
     end
-    
+
     local oldText = input.gameObject.textRenderer.text
     if replaceText == false then
         text = oldText .. text
@@ -1073,6 +1073,7 @@ function GUI.TextArea.New( gameObject, params )
     setmetatable( textArea, GUI.TextArea )
 
     gameObject:AddComponent( "TextRenderer" ) -- used to store the TextRenderer properties and mesure the lines length in SetText()
+    gameObject.textRenderer:SetText("") -- remove the default "Text" text
     textArea:Set( table.merge( GUI.Config.textArea, params ) )
 
     gameObject.textArea = textArea
@@ -1105,26 +1106,26 @@ function GUI.TextArea.SetText( textArea, text )
 
         for i = 1, #tempLines do
             local line = tempLines[i]
-            
+
             if textArea.gameObject.textRenderer:GetTextWidth( line ) > areaWidth then
                 line = line:totable()
                 local newLine = {}
-                
+
                 for j, char in ipairs( line ) do
                     table.insert( newLine, char )
 
-                    if textArea.gameObject.textRenderer:GetTextWidth( table.concat( newLine ) ) > areaWidth then  
+                    if textArea.gameObject.textRenderer:GetTextWidth( table.concat( newLine ) ) > areaWidth then
                         table.remove( newLine )
                         table.insert( lines, table.concat( newLine ) )
                         newLine = { char }
-                                 
+
                         if not textArea.WordWrap then
                             newLine = nil
                             break
                         end
                     end
                 end
-                
+
                 if newLine ~= nil then
                     table.insert( lines, table.concat( newLine ) )
                 end
@@ -1133,7 +1134,7 @@ function GUI.TextArea.SetText( textArea, text )
             end
         end -- end loop on lines
     end
-    
+
     local linesCount = #lines
     local lineRenderers = textArea.lineRenderers
     local lineRenderersCount = #lineRenderers
@@ -1182,7 +1183,7 @@ function GUI.TextArea.SetText( textArea, text )
     end
 
     Daneel.Event.Fire( textArea, "OnUpdate", textArea)
-    
+
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -1430,14 +1431,14 @@ end
 
 --- Creates a new Vector2 intance.
 -- @param x (number or string) The vector's x component.
--- @param y [optional] (number or string) The vector's y component. If nil, will be equal to x. 
+-- @param y [optional] (number or string) The vector's y component. If nil, will be equal to x.
 -- @return (Vector2) The new instance.
 function Vector2.New(x, y)
     Daneel.Debug.StackTrace.BeginFunction("Vector2.New", x, y)
     local errorHead = "Vector2.New(x, y) : "
     Daneel.Debug.CheckArgType(x, "x", {"string", "number"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(y, "y", {"string", "number"}, errorHead)
-    
+
     if y == nil then y = x end
     local vector = setmetatable({ x = x, y = y }, Vector2)
     Daneel.Debug.StackTrace.EndFunction()
@@ -1450,7 +1451,7 @@ function Vector2.GetLength( vector )
     Daneel.Debug.StackTrace.BeginFunction( "Vector2.GetLength", vector )
     local errorHead = "Vector2.GetLength( vector ) : "
     Daneel.Debug.CheckArgType(  vector, " vector", "Vector2", errorHead )
-    
+
     local length = math.sqrt( vector.x^2 + vector.y^2 )
     Daneel.Debug.StackTrace.EndFunction()
     return length
@@ -1463,7 +1464,7 @@ function Vector2.GetSqrLength( vector )
     Daneel.Debug.StackTrace.BeginFunction( "Vector2.GetSqrLength", vector )
     local errorHead = "Vector2.GetSqrLength( vector ) : "
     Daneel.Debug.CheckArgType(  vector, " vector", "Vector2", errorHead )
-    
+
     local length = vector.x^2 + vector.y^2
     Daneel.Debug.StackTrace.EndFunction()
     return length
@@ -1607,7 +1608,7 @@ end
 local OriginalGetMouseDelta = CraftStudio.Input.GetMouseDelta
 
 --- Return the mouse delta (the variation of position) since the last frame.
--- Positive x is right, positive y is bottom. 
+-- Positive x is right, positive y is bottom.
 -- @return (Vector2) The position's delta.
 function CraftStudio.Input.GetMouseDelta()
     Daneel.Debug.StackTrace.BeginFunction("CraftStudio.Input.GetMouseDelta")
@@ -1628,4 +1629,4 @@ function CraftStudio.Screen.GetSize()
 end
 
 
-GUI.Config = GUI.DefaultConfig() 
+GUI.Config = GUI.DefaultConfig()
