@@ -177,6 +177,7 @@ function string.lcfirst( s )
 end
 
 --- Split the provided string in several chunks, using the provided delimiter.
+-- Delimiter is automatically escaped when it is a pecial characters ^$()%.[]*+-?
 -- If the string does not contain the delimiter, it returns a table containing only the whole string.
 -- @param s (string) The string.
 -- @param delimiter (string) The delimiter (may be several characters long).
@@ -189,10 +190,20 @@ function string.split( s, delimiter, trim )
     Daneel.Debug.CheckArgType( delimiter, "delimiter", "string", errorHead )
     Daneel.Debug.CheckOptionalArgType( trim, "trim", "boolean", errorHead )
 
-    s = s .. delimiter
-    local fields = { s:match( 
-        (s:gsub( "([^"..delimiter.."]*)"..delimiter, "(%1)"..delimiter ))
-    ) }
+    if not s:endswith( delimiter ) then
+        s = s .. delimiter
+    end
+
+    local specialChars = "^$()%.[]*+-?"
+    if specialChars:find( delimiter, 1, true ) ~= nil then
+        delimiter = "%"..delimiter -- escape the special char
+    end
+
+    local fields = {}
+    for match in s:gmatch( "(.-)"..delimiter ) do
+        table.insert( fields, match )
+    end
+
     if trim then
         for i, s in pairs( fields ) do
             if type( s ) ~= "string" then
@@ -1347,7 +1358,14 @@ function Daneel.Event.Listen( eventName, functionOrObject )
         end
 
         if buttonName ~= nil and not table.containsvalue( Daneel.Config.hotKeys, buttonName ) then
-            table.insert( Daneel.Config.hotKeys, buttonName )
+            if Daneel.Utilities.ButtonExists( buttonName ) then
+                table.insert( Daneel.Config.hotKeys, buttonName )
+            else
+                if Daneel.Config.debug.enableDebug then
+                    print( errorHead .. " : You tried to listen to the '" .. eventName .. "' event but the '" .. buttonName .. "' button does not exists in the Game Controls." )
+                end
+                return
+            end
         end
 
         --
@@ -3170,7 +3188,6 @@ function Behavior:Awake()
         self.success()
         return
     end
-    Daneel.Utilities.buttonExistsGameObject = self.gameObject
 
     if self.loadDaneel == false then -- just for testing purpose without having to remove the scripted behaviro every times
         print( "Daneel:Awake() : Daneel was prevented to be loaded because the 'loadDaneel' public property on the 'Daneel Core' scripted behavior is set to 'false'." )
@@ -3214,16 +3231,6 @@ function Behavior:Start()
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Start" )
-
-    -- check if the button names for the hoteys exists
-    for i, buttonName in pairs( table.copy( Daneel.Config.hotKeys ) ) do
-        if not Daneel.Utilities.ButtonExists( buttonName ) then
-            if Daneel.Config.debug.enableDebug then
-                print( "WARNING : Button '" .. buttonName .. "' was registerd as hotKey but does not exists in the Game Controls." )
-            end
-            table.remove( Daneel.Config.hotKeys, i )
-        end
-    end
 
     -- Start modules 
     for i, _module in pairs( CS.DaneelModules ) do
