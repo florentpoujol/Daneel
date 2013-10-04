@@ -625,11 +625,11 @@ function GUI.ProgressBar.New( gameObject, params )
     local progressBar = table.copy( GUI.Config.progressBar )
     progressBar.gameObject = gameObject
     progressBar.Id = Daneel.Cache.GetId()
-    progressBar.value = nil -- remove the property to allow to use the dynamic getter/setter
+    progressBar:GetValue() = nil -- remove the property to allow to use the dynamic getter/setter
     setmetatable( progressBar, GUI.ProgressBar )
 
     if params.value == nil then
-        params.value = GUI.Config.progressBar.value
+        params.value = GUI.Config.progressBar:GetValue()
     end
     progressBar:Set( params )
 
@@ -674,7 +674,7 @@ function GUI.ProgressBar.SetValue(progressBar, value)
 
     progressBar.minLength = GUI.ToSceneUnit(progressBar.minLength)
     progressBar.maxLength = GUI.ToSceneUnit(progressBar.maxLength)
-    local currentValue = progressBar.value
+    local currentValue = progressBar:GetValue()
 
     if value ~= currentValue then
         if value ~= oldValue and Daneel.Config.debug.enableDebug then
@@ -682,9 +682,9 @@ function GUI.ProgressBar.SetValue(progressBar, value)
         end
         percentageOfProgress = (value - minVal) / (maxVal - minVal)
 
-        valueBar.height = GUI.ToSceneUnit(valueBar.height)
+        progressBar.height = GUI.ToSceneUnit(progressBar.height)
 
-        local newLength = (valueBar.maxLength - progressBar.minLength) * percentageOfProgress + progressBar.minLength
+        local newLength = (progressBar.maxLength - progressBar.minLength) * percentageOfProgress + progressBar.minLength
         local currentScale = progressBar.gameObject.transform:GetLocalScale()
         progressBar.gameObject.transform:SetLocalScale( Vector3:New(newLength, progressBar.height, currentScale.z) )
         -- newLength = scale only because the base size of the model is of one unit at a scale of one

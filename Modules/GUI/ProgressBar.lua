@@ -10,7 +10,7 @@ maxValue number 100
 minLength string "0"
 maxLength string "5"
 height string "1"
-progress string "100%"
+value string "100%"
 /PublicProperties]]
 
 function Behavior:Awake()
@@ -21,7 +21,7 @@ function Behavior:Awake()
             minLength = self.minLength,
             maxLength = self.maxLength,
             height = self.height,
-            progress = self.progress,
+            value = self.value,
         })
     end
 end
