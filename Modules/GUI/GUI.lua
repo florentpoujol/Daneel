@@ -625,7 +625,7 @@ function GUI.ProgressBar.New( gameObject, params )
     local progressBar = table.copy( GUI.Config.progressBar )
     progressBar.gameObject = gameObject
     progressBar.Id = Daneel.Cache.GetId()
-    progressBar:GetValue() = nil -- remove the property to allow to use the dynamic getter/setter
+    progressBar.value = nil -- remove the property to allow to use the dynamic getter/setter
     setmetatable( progressBar, GUI.ProgressBar )
 
     if params.value == nil then
