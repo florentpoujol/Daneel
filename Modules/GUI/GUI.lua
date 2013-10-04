@@ -43,7 +43,7 @@ function GUI.DefaultConfig()
             maxValue = 100,
             minLength = 0,
             maxLength = 5, -- in units
-            progress = "100%",
+            value = "100%",
         },
 
         slider = {
@@ -625,11 +625,11 @@ function GUI.ProgressBar.New( gameObject, params )
     local progressBar = table.copy( GUI.Config.progressBar )
     progressBar.gameObject = gameObject
     progressBar.Id = Daneel.Cache.GetId()
-    progressBar.progress = nil -- remove the property to allow to use the dynamic getter/setter
+    progressBar.value = nil -- remove the property to allow to use the dynamic getter/setter
     setmetatable( progressBar, GUI.ProgressBar )
 
-    if params.progress == nil then
-        params.progress = GUI.Config.progressBar.progress
+    if params.value == nil then
+        params.value = GUI.Config.progressBar.value
     end
     progressBar:Set( params )
 
@@ -638,53 +638,53 @@ function GUI.ProgressBar.New( gameObject, params )
     return progressBar
 end
 
---- Set the progress of the progress bar, adjusting its length.
+--- Set the value of the progress bar, adjusting its length.
 -- Fires the 'OnUpdate' event.
 -- @param progressBar (ProgressBar) The progressBar.
--- @param progress (number or string) The progress as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
-function GUI.ProgressBar.SetProgress(progressBar, progress)
-    Daneel.Debug.StackTrace.BeginFunction("GUI.ProgressBar.SetProgress", progressBar, progress)
-    local errorHead = "GUI.ProgressBar.SetProgress(progressBar, progress) : "
+-- @param value (number or string) The value as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
+function GUI.ProgressBar.SetValue(progressBar, value)
+    Daneel.Debug.StackTrace.BeginFunction("GUI.ProgressBar.SetValue", progressBar, value)
+    local errorHead = "GUI.ProgressBar.SetValue(progressBar, value) : "
     Daneel.Debug.CheckArgType(progressBar, "progressBar", "GUI.ProgressBar", errorHead)
-    Daneel.Debug.CheckArgType(progress, "progress", {"string", "number"}, errorHead)
+    Daneel.Debug.CheckArgType(value, "value", {"string", "number"}, errorHead)
 
     local minVal = progressBar.minValue
     local maxVal = progressBar.maxValue
     local percentageOfProgress = nil
 
-    if type(progress) == "string" then
-        if progress:endswith("%") then
-            percentageOfProgress = tonumber(progress:sub(1, #progress-1)) / 100
+    if type(value) == "string" then
+        if value:endswith("%") then
+            percentageOfProgress = tonumber(value:sub(1, #value-1)) / 100
 
             local oldPercentage = percentageOfProgress
             percentageOfProgress = math.clamp(percentageOfProgress, 0.0, 1.0)
             if percentageOfProgress ~= oldPercentage and Daneel.Config.debug.enableDebug then
-                print(errorHead.."WARNING : progress in percentage with value '"..progress.."' is below 0% or above 100%.")
+                print(errorHead.."WARNING : value in percentage with value '"..value.."' is below 0% or above 100%.")
             end
 
-            progress = (maxVal - minVal) * percentageOfProgress + minVal
+            value = (maxVal - minVal) * percentageOfProgress + minVal
         else
-            progress = tonumber(progress)
+            value = tonumber(value)
         end
     end
 
-    -- now progress is a number and should be a value between minVal and maxVal
-    local oldProgress = progress
-    progress = math.clamp(progress, minVal, maxVal)
+    -- now value is a number and should be a value between minVal and maxVal
+    local oldValue = value
+    value = math.clamp(value, minVal, maxVal)
 
     progressBar.minLength = GUI.ToSceneUnit(progressBar.minLength)
     progressBar.maxLength = GUI.ToSceneUnit(progressBar.maxLength)
-    local currentProgress = progressBar.progress
+    local currentValue = progressBar.value
 
-    if progress ~= currentProgress then
-        if progress ~= oldProgress and Daneel.Config.debug.enableDebug then
-            print(errorHead.." WARNING : progress with value '"..oldProgress.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
+    if value ~= currentValue then
+        if value ~= oldValue and Daneel.Config.debug.enableDebug then
+            print(errorHead.." WARNING : value with value '"..oldValue.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
         end
-        percentageOfProgress = (progress - minVal) / (maxVal - minVal)
+        percentageOfProgress = (value - minVal) / (maxVal - minVal)
 
-        progressBar.height = GUI.ToSceneUnit(progressBar.height)
+        valueBar.height = GUI.ToSceneUnit(valueBar.height)
 
-        local newLength = (progressBar.maxLength - progressBar.minLength) * percentageOfProgress + progressBar.minLength
+        local newLength = (valueBar.maxLength - progressBar.minLength) * percentageOfProgress + progressBar.minLength
         local currentScale = progressBar.gameObject.transform:GetLocalScale()
         progressBar.gameObject.transform:SetLocalScale( Vector3:New(newLength, progressBar.height, currentScale.z) )
         -- newLength = scale only because the base size of the model is of one unit at a scale of one
@@ -693,33 +693,36 @@ function GUI.ProgressBar.SetProgress(progressBar, progress)
     end
     Daneel.Debug.StackTrace.EndFunction()
 end
+function GUI.ProgressBar.SetProgress(progressBar, progress)
+    GUI.ProgressBar.SetValue( progressBar, progress )
+end
 
---- Set the progress of the progress bar, adjusting its length.
+--- Set the value of the progress bar, adjusting its length.
 -- Does the same things as SetProgress() by does it faster.
 -- Unlike SetProgress(), does not fire the 'OnUpdate' event by default.
--- Should be used when the progress is updated regularly (ie : from a Behavior:Update() function).
+-- Should be used when the value is updated regularly (ie : from a Behavior:Update() function).
 -- @param progressBar (ProgressBar) The progressBar.
--- @param progress (number or string) The progress as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
+-- @param value (number or string) The value as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
 -- @param fireEvent [optional default=false] (boolean) Tell wether to fire the 'OnUpdate' event (true) or not (false).
-function GUI.ProgressBar.UpdateProgress( progressBar, progress, fireEvent )
-    if progress == progressBar._progress then return end
-    progressBar._progress = progress
+function GUI.ProgressBar.UpdateValue( progressBar, value, fireEvent )
+    if value == progressBar._value then return end
+    progressBar._value = value
 
     local minVal = progressBar.minValue
     local maxVal = progressBar.maxValue
     local minLength = progressBar.minLength
     local percentageOfProgress = nil
 
-    if type(progress) == "string" then
-        local _progress = progress
-        progress = tonumber(progress)
-        if progress == nil then -- progress in percentage. ie "50%"
-            percentageOfProgress = tonumber( _progress:sub( 1, #_progress-1 ) ) / 100
+    if type(value) == "string" then
+        local _value = value
+        value = tonumber(value)
+        if value == nil then -- value in percentage. ie "50%"
+            percentageOfProgress = tonumber( _value:sub( 1, #_value-1 ) ) / 100
         end
     end
 
     if percentageOfProgress == nil then
-        percentageOfProgress = (progress - minVal) / (maxVal - minVal)
+        percentageOfProgress = (value - minVal) / (maxVal - minVal)
     end
     percentageOfProgress = math.clamp( percentageOfProgress, 0.0, 1.0 )
 
@@ -731,27 +734,33 @@ function GUI.ProgressBar.UpdateProgress( progressBar, progress, fireEvent )
         Daneel.Event.Fire( progressBar, "OnUpdate", progressBar )
     end
 end
+function GUI.ProgressBar.UpdateProgress( progressBar, value, fireEvent )
+    GUI.ProgressBar.UpdateValue( progressBar, value, fireEvent )
+end
 
---- Get the current progress of the progress bar.
+--- Get the current value of the progress bar.
 -- @param progressBar (ProgressBar) The progressBar.
--- @param getAsPercentage [optional default=false] (boolean) Get the progress as a percentage (between 0 and 100) instead of an absolute value.
--- @return (number) The progress.
-function GUI.ProgressBar.GetProgress(progressBar, getAsPercentage)
-    Daneel.Debug.StackTrace.BeginFunction("GUI.ProgressBar.GetProgress", progressBar, getAsPercentage)
-    local errorHead = "GUI.ProgressBar.GetProgress(progressBar[, getAsPercentage]) : "
+-- @param getAsPercentage [optional default=false] (boolean) Get the value as a percentage (between 0 and 100) instead of an absolute value.
+-- @return (number) The value.
+function GUI.ProgressBar.GetValue(progressBar, getAsPercentage)
+    Daneel.Debug.StackTrace.BeginFunction("GUI.ProgressBar.GetValue", progressBar, getAsPercentage)
+    local errorHead = "GUI.ProgressBar.GetValue(progressBar[, getAsPercentage]) : "
     Daneel.Debug.CheckArgType(progressBar, "progressBar", "GUI.ProgressBar", errorHead)
     Daneel.Debug.CheckOptionalArgType(getAsPercentage, "getAsPercentage", "boolean", errorHead)
 
     local scale = progressBar.gameObject.transform:GetLocalScale().x
-    local progress = (scale - progressBar.minLength) / (progressBar.maxLength - progressBar.minLength)
+    local value = (scale - progressBar.minLength) / (progressBar.maxLength - progressBar.minLength)
     if getAsPercentage == true then
-        progress = progress * 100
+        value = value * 100
     else
-        progress = (progressBar.maxValue - progressBar.minValue) * progress + progressBar.minValue
+        value = (progressBar.maxValue - progressBar.minValue) * value + progressBar.minValue
     end
-    progress = math.round(progress)
+    value = math.round(value)
     Daneel.Debug.StackTrace.EndFunction()
-    return progress
+    return value
+end
+function GUI.ProgressBar.GetProgress(progressBar, getAsPercentage)
+    return GUI.ProgressBar.GetValue(progressBar, getAsPercentage)
 end
 
 --- Apply the content of the params argument to the provided progressBar.
@@ -764,15 +773,15 @@ function GUI.ProgressBar.Set( progressBar, params )
     Daneel.Debug.CheckArgType( progressBar, "progressBar", "GUI.ProgressBar", errorHead )
     Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
 
-    local progress = params.progress
-    params.progress = nil
-    if progress == nil then
-        progress = progressBar:GetProgress()
+    local value = params.value
+    params.value = nil
+    if value == nil then
+        value = progressBar:GetValue()
     end
     for key, value in pairs(params) do
         progressBar[key] = value
     end
-    progressBar:SetProgress( progress )
+    progressBar:SetValue( value )
 
     Daneel.Debug.StackTrace.EndFunction()
 end
