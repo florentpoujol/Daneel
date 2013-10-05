@@ -3193,7 +3193,7 @@ function Behavior:Awake()
     end
 
     if self.loadDaneel == false then -- just for testing purpose without having to remove the scripted behaviro every times
-        print( "Daneel:Awake() : Daneel was prevented to be loaded because the 'loadDaneel' public property on the 'Daneel Core' scripted behavior is set to 'false'." )
+        --print( "Daneel:Awake() : Daneel was prevented to be loaded because the 'loadDaneel' public property on the 'Daneel Core' scripted behavior is set to 'false'." )
         CS.Destroy( self )
         return
     end
@@ -3212,7 +3212,15 @@ function Behavior:Awake()
     Daneel.Debug.StackTrace.messages = {}
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Awake" )
     
-    GameObject.Tags = {}
+    -- GameObject.Tags = {} -- can't do that because of Daneel late loading, it would discard alive game objects that are already added as tags
+    -- remove all dead game objects from GameObject.Tags
+    for tag, gameObjects in pairs( GameObject.Tags ) do
+        for i, gameObject in pairs( gameObjects ) do
+            if gameObject.transform == nil then
+                table.remove( gameObjects, i )
+            end
+        end
+    end
 
     -- Awake modules 
     for i, _module in pairs( CS.DaneelModules ) do
