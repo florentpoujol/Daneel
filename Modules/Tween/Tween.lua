@@ -4,6 +4,8 @@
 -- Last modified for v1.3
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
+Tween = {}
+
 -- Allow to get the target's "property" even if it is virtual and normally handled via getter/setter.
 local function GetTweenerProperty(tweener)
     Daneel.Debug.StackTrace.BeginFunction("GetTweenerProperty", tweener)
@@ -39,178 +41,6 @@ end
 
 
 ----------------------------------------------------------------------------------
--- Init module
-
-Tween = {
-    daneelNotLoadedWarning = "WARNING : You are using the Tween module but Daneel is not loaded. The tweeners won't works unless Daneel is loaded."
-}
-
-if CS.DaneelModules == nil then
-    CS.DaneelModules = {}
-end
-CS.DaneelModules[ "Tween" ] = Tween
-
-function Tween.DefaultConfig()
-    local config = {
-        tweener = {
-            isEnabled = true, -- a disabled tweener won't update but the function like Play(), Pause(), Complete(), Destroy() will have no effect
-            isPaused = false,
-
-            delay = 0.0, -- delay before the tweener starts (in the same time unit as the duration (durationType))
-            duration = 0.0, -- time or frames the tween (or one loop) should take (in durationType unit)
-            durationType = "time", -- the unit of time for delay, duration, elapsed and fullElapsed. Can be "time", "realTime" or "frame"
-
-            startValue = nil, -- it will be the current value of the target's property
-            endValue = 0.0,
-
-            loops = 0, -- number of loops to perform (-1 = infinite)
-            loopType = "simple", -- type of loop. Can be "simple" (X to Y, repeat), "yoyo" (X to Y, Y to X, repeat)
-            
-            easeType = "linear", -- type of easing, check the doc or the end of the "Daneel/Lib/Easing" script for all possible values
-            
-            isRelative = false, -- If false, tween the value TO endValue. If true, tween the value BY endValue.
-
-            destroyOnComplete = true, -- tell wether to destroy the tweener (true) when it completes
-            destroyOnSceneLoad = true, -- tell wether to destroy the tweener (true) or keep it 'alive' (false) when the scene is changing
-
-            updateInterval = 1, 
-
-            ------------
-            -- "read-only" properties or properties the user has no interest to change the value of
-
-            Id = -1, -- can be anything, not restricted to numbers
-            hasStarted = false,
-            isCompleted = false,
-            elapsed = 0, -- elapsed time or frame (in durationType unit), delay excluded
-            fullElapsed = 0, -- elapsed time, including loops, excluding delay
-            elapsedDelay = 0,
-            completedLoops = 0,
-            diffValue = 0.0, -- endValue - startValue
-            value = 0.0, -- current value (between startValue and endValue)
-            frameCount = 0,
-            lastUpdateTime = 0,
-        },
-    
-        objects = {
-            ["Tween.Tweener"] = Tween.Tweener,
-        },
-    }
-
-    return config
-end
-Tween.Config = Tween.DefaultConfig()
-
-function Tween.Load()
-    Daneel.Tween = Tween
-end
-
-function Tween.Awake()
-    -- destroy and sanitize the tweeners when the scene loads
-    for id, tweener in pairs( Tween.Tweener.tweeners ) do
-        if tweener.destroyOnSceneLoad then
-            tweener:Destroy()
-        end
-    end
-end
-
-function Tween.Update()
-    for id, tweener in pairs( Tween.Tweener.tweeners ) do
-        if tweener:IsTargetDestroyed() then
-            tweener:Destroy()
-        end
-
-        if tweener.isEnabled == true and tweener.isPaused == false and tweener.isCompleted == false and tweener.duration > 0 then
-            tweener.frameCount = tweener.frameCount + 1
-
-            if tweener.frameCount % tweener.updateInterval == 0 then
-
-                local deltaDuration = Daneel.Time.time - tweener.lastUpdateTime
-                tweener.lastUpdateTime = Daneel.Time.time
-                
-                if tweener.durationType == "realTime" then
-                    deltaDuration = Daneel.Time.realDeltaTime * tweener.updateInterval
-                elseif tweener.durationType == "frame" then
-                    deltaDuration = tweener.updateInterval
-                end
-
-                if deltaDuration > 0 then
-                    if tweener.elapsedDelay >= tweener.delay then
-                        -- no more delay before starting the tweener, update the tweener
-                        if tweener.hasStarted == false then
-                            -- firt loop for this tweener
-                            tweener.hasStarted = true
-                            
-                            if tweener.startValue == nil then
-                                if tweener.target ~= nil then
-                                    tweener.startValue = GetTweenerProperty( tweener )
-                                else
-                                    error( "Tween.Update() : startValue is nil but no target is set for tweener with Id '" .. tweener.Id .. "'" )
-                                end
-                            elseif tweener.target ~= nil then
-                                -- when start value and a target are set move the target to startValue before updating the tweener
-                                SetTweenerProperty( tweener, tweener.startValue )
-                            end
-                            tweener.value = tweener.startValue
-
-                            if tweener.isRelative == true then
-                                tweener.diffValue = tweener.endValue
-                            else
-                                tweener.diffValue = tweener.endValue - tweener.startValue
-                            end
-
-                            Daneel.Event.Fire( tweener, "OnStart", tweener )
-                        end
-                        
-                        -- update the tweener
-                        tweener:Update( deltaDuration )
-                    else
-                        tweener.elapsedDelay = tweener.elapsedDelay + deltaDuration
-                    end -- end if tweener.delay <= 0
-
-
-                    if tweener.isCompleted == true then
-                        tweener.completedLoops = tweener.completedLoops + 1
-                        if tweener.loops == -1 or tweener.completedLoops < tweener.loops then
-                            tweener.isCompleted = false
-                            tweener.elapsed = 0
-
-                            if tweener.loopType:lower() == "yoyo" then
-                                local startValue = tweener.startValue
-                                
-                                if tweener.isRelative then
-                                    tweener.startValue = tweener.value
-                                    tweener.endValue = -tweener.endValue
-                                    tweener.diffValue = tweener.endValue
-                                else
-                                    tweener.startValue = tweener.endValue
-                                    tweener.endValue = startValue
-                                    tweener.diffValue = -tweener.diffValue
-                                end
-
-                            elseif tweener.target ~= nil then
-                                SetTweenerProperty( tweener, tweener.startValue )
-                            end
-
-                            tweener.value = tweener.startValue
-                            Daneel.Event.Fire( tweener, "OnLoopComplete", tweener )
-
-                        else
-                            Daneel.Event.Fire( tweener, "OnComplete", tweener )
-                            if tweener.destroyOnComplete and tweener.Destroy ~= nil then
-                                -- tweener.Destroy may be nil if a new scene is loaded from the OnComplete callback
-                                -- the tweener will have been destroyed already an its metatable stripped
-                                tweener:Destroy()
-                            end
-                        end
-                    end
-                end -- end if deltaDuration > 0
-            end -- end if tweener.frameCount % tweener.updateInterval == 0
-        end -- end if tweener.isEnabled == true
-    end -- end for tweeners
-end -- end Tween.Update
-
-
-----------------------------------------------------------------------------------
 -- Tweener
 
 Tween.Tweener = { tweeners = {} }
@@ -233,7 +63,7 @@ end
 -- @return (Tweener) The Tweener.
 function Tween.Tweener.New(target, property, endValue, duration, params)
     if not Tween.isLoaded then
-        print( Tween.daneelNotLoadedWarning )
+        Daneel.LateLoad()
     end
 
     Daneel.Debug.StackTrace.BeginFunction("Tween.Tweener.New", target, property, endValue, duration, params)
@@ -480,7 +310,7 @@ end
 
 Tween.Timer = {}
 Tween.Timer.__index = Tween.Tweener
-setmetatable(Tween.Timer, { __call = function(Object, ...) return Object.New(...) end })
+setmetatable( Tween.Timer, { __call = function(Object, ...) return Object.New(...) end } )
 
 
 --- Creates a new tweener via one of the two allowed constructors : <br>
@@ -493,7 +323,7 @@ setmetatable(Tween.Timer, { __call = function(Object, ...) return Object.New(...
 -- @return (Tweener) The tweener.
 function Tween.Timer.New( duration, callback, isInfiniteLoop, params )
     if not Tween.isLoaded then
-        print( Tween.daneelNotLoadedWarning )
+        Daneel.LateLoad()
     end
     
     Daneel.Debug.StackTrace.BeginFunction( "Tween.Timer.New", duration, callback, isInfiniteLoop, params )
@@ -528,6 +358,174 @@ function Tween.Timer.New( duration, callback, isInfiniteLoop, params )
     Daneel.Debug.StackTrace.EndFunction()
     return tweener
 end
+
+
+----------------------------------------------------------------------------------
+-- Config - Loading
+
+if CS.DaneelModules == nil then
+    CS.DaneelModules = {}
+end
+CS.DaneelModules[ "Tween" ] = Tween
+
+function Tween.DefaultConfig()
+    local config = {
+        tweener = {
+            isEnabled = true, -- a disabled tweener won't update but the function like Play(), Pause(), Complete(), Destroy() will have no effect
+            isPaused = false,
+
+            delay = 0.0, -- delay before the tweener starts (in the same time unit as the duration (durationType))
+            duration = 0.0, -- time or frames the tween (or one loop) should take (in durationType unit)
+            durationType = "time", -- the unit of time for delay, duration, elapsed and fullElapsed. Can be "time", "realTime" or "frame"
+
+            startValue = nil, -- it will be the current value of the target's property
+            endValue = 0.0,
+
+            loops = 0, -- number of loops to perform (-1 = infinite)
+            loopType = "simple", -- type of loop. Can be "simple" (X to Y, repeat), "yoyo" (X to Y, Y to X, repeat)
+            
+            easeType = "linear", -- type of easing, check the doc or the end of the "Daneel/Lib/Easing" script for all possible values
+            
+            isRelative = false, -- If false, tween the value TO endValue. If true, tween the value BY endValue.
+
+            destroyOnComplete = true, -- tell wether to destroy the tweener (true) when it completes
+            destroyOnSceneLoad = true, -- tell wether to destroy the tweener (true) or keep it 'alive' (false) when the scene is changing
+
+            updateInterval = 1, 
+
+            ------------
+            -- "read-only" properties or properties the user has no interest to change the value of
+
+            Id = -1, -- can be anything, not restricted to numbers
+            hasStarted = false,
+            isCompleted = false,
+            elapsed = 0, -- elapsed time or frame (in durationType unit), delay excluded
+            fullElapsed = 0, -- elapsed time, including loops, excluding delay
+            elapsedDelay = 0,
+            completedLoops = 0,
+            diffValue = 0.0, -- endValue - startValue
+            value = 0.0, -- current value (between startValue and endValue)
+            frameCount = 0,
+            lastUpdateTime = 0,
+        },
+    
+        objects = {
+            ["Tween.Tweener"] = Tween.Tweener,
+        },
+    }
+
+    return config
+end
+Tween.Config = Tween.DefaultConfig()
+
+function Tween.Load()
+    Daneel.Tween = Tween
+end
+
+function Tween.Awake()
+    -- destroy and sanitize the tweeners when the scene loads
+    for id, tweener in pairs( Tween.Tweener.tweeners ) do
+        if tweener.destroyOnSceneLoad then
+            tweener:Destroy()
+        end
+    end
+end
+
+function Tween.Update()
+    for id, tweener in pairs( Tween.Tweener.tweeners ) do
+        if tweener:IsTargetDestroyed() then
+            tweener:Destroy()
+        end
+
+        if tweener.isEnabled == true and tweener.isPaused == false and tweener.isCompleted == false and tweener.duration > 0 then
+            tweener.frameCount = tweener.frameCount + 1
+
+            if tweener.frameCount % tweener.updateInterval == 0 then
+
+                local deltaDuration = Daneel.Time.time - tweener.lastUpdateTime
+                tweener.lastUpdateTime = Daneel.Time.time
+                
+                if tweener.durationType == "realTime" then
+                    deltaDuration = Daneel.Time.realDeltaTime * tweener.updateInterval
+                elseif tweener.durationType == "frame" then
+                    deltaDuration = tweener.updateInterval
+                end
+
+                if deltaDuration > 0 then
+                    if tweener.elapsedDelay >= tweener.delay then
+                        -- no more delay before starting the tweener, update the tweener
+                        if tweener.hasStarted == false then
+                            -- firt loop for this tweener
+                            tweener.hasStarted = true
+                            
+                            if tweener.startValue == nil then
+                                if tweener.target ~= nil then
+                                    tweener.startValue = GetTweenerProperty( tweener )
+                                else
+                                    error( "Tween.Update() : startValue is nil but no target is set for tweener with Id '" .. tweener.Id .. "'" )
+                                end
+                            elseif tweener.target ~= nil then
+                                -- when start value and a target are set move the target to startValue before updating the tweener
+                                SetTweenerProperty( tweener, tweener.startValue )
+                            end
+                            tweener.value = tweener.startValue
+
+                            if tweener.isRelative == true then
+                                tweener.diffValue = tweener.endValue
+                            else
+                                tweener.diffValue = tweener.endValue - tweener.startValue
+                            end
+
+                            Daneel.Event.Fire( tweener, "OnStart", tweener )
+                        end
+                        
+                        -- update the tweener
+                        tweener:Update( deltaDuration )
+                    else
+                        tweener.elapsedDelay = tweener.elapsedDelay + deltaDuration
+                    end -- end if tweener.delay <= 0
+
+
+                    if tweener.isCompleted == true then
+                        tweener.completedLoops = tweener.completedLoops + 1
+                        if tweener.loops == -1 or tweener.completedLoops < tweener.loops then
+                            tweener.isCompleted = false
+                            tweener.elapsed = 0
+
+                            if tweener.loopType:lower() == "yoyo" then
+                                local startValue = tweener.startValue
+                                
+                                if tweener.isRelative then
+                                    tweener.startValue = tweener.value
+                                    tweener.endValue = -tweener.endValue
+                                    tweener.diffValue = tweener.endValue
+                                else
+                                    tweener.startValue = tweener.endValue
+                                    tweener.endValue = startValue
+                                    tweener.diffValue = -tweener.diffValue
+                                end
+
+                            elseif tweener.target ~= nil then
+                                SetTweenerProperty( tweener, tweener.startValue )
+                            end
+
+                            tweener.value = tweener.startValue
+                            Daneel.Event.Fire( tweener, "OnLoopComplete", tweener )
+
+                        else
+                            Daneel.Event.Fire( tweener, "OnComplete", tweener )
+                            if tweener.destroyOnComplete and tweener.Destroy ~= nil then
+                                -- tweener.Destroy may be nil if a new scene is loaded from the OnComplete callback
+                                -- the tweener will have been destroyed already an its metatable stripped
+                                tweener:Destroy()
+                            end
+                        end
+                    end
+                end -- end if deltaDuration > 0
+            end -- end if tweener.frameCount % tweener.updateInterval == 0
+        end -- end if tweener.isEnabled == true
+    end -- end for tweeners
+end -- end Tween.Update
 
 
 ----------------------------------------------------------------------------------

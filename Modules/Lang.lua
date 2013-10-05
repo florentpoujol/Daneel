@@ -32,13 +32,6 @@ end
 function Lang.Load()
     Daneel.Lang = Lang
 
-    if Lang.Config == nil then -- Daneel is not loaded
-        Lang.Config = Lang.DefaultConfig()
-        if Daneel.Utilities.GlobalExists( "LangUserConfig" ) and type( LangUserConfig ) == "function" then
-            Lang.Config = table.merge( Lang.Config, LangUserConfig()  )
-        end
-    end
-
     for i, language in ipairs( Lang.Config.languageNames ) do
         local functionName = "Lang" .. language:ucfirst()
 
@@ -60,15 +53,10 @@ function Lang.Load()
     Lang.isLoaded = true
 end
 
-function Lang.Awake() 
-    Lang.isStarted = false
-end
-
 function Lang.Start() 
-    if Lang.Config.current ~= nil and not Lang.isStarted then
+    if Lang.Config.current ~= nil then
         Lang.Update( Lang.Config.current )
     end
-    Lang.isStarted = true
 end
 
 
@@ -84,7 +72,7 @@ function Lang.Get( key, replacements )
     end
 
     if not Lang.isLoaded then
-        Lang.Load()
+        Daneel.LateLoad()
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "Lang.Get", key, replacements )
@@ -173,7 +161,7 @@ end
 -- @param language (string) The new current language.
 function Lang.Update( language )
     if not Lang.isLoaded then
-        Lang.Load()
+        Daneel.LateLoad()
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "Lang.Update", language )
@@ -215,16 +203,11 @@ registerForUpdate boolean false
 
 function Behavior:Awake()
     if not Lang.isLoaded then
-        Lang.Load()
+        Daneel.LateLoad()
     end
-    Lang.isStarted = false
 end
 
 function Behavior:Start()
-    if not Lang.isStarted then
-        Lang.Start()
-    end
-
     if self.key:trim() ~= "" then
         if self.gameObject.textArea ~= nil then
             self.gameObject.textArea:SetText( Lang.Get( self.key ) )

@@ -4,148 +4,7 @@
 -- Last modified for v1.3
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
-GUI = {
-    daneelNotLoadedWarning = "WARNING : You are using the GUI module but Daneel is not loaded. This may cause some code to not work properly or even to throw errors ! Please load Daneel to resolve these issues."
-}
-
-if CS.DaneelModules == nil then
-    CS.DaneelModules = {}
-end
-CS.DaneelModules[ "GUI" ] = GUI
-
-function GUI.DefaultConfig()
-    local config = {
-        cameraName = "HUDCamera",  -- Name of the gameObject who has the orthographic camera used to render the HUD
-        cameraGO = nil, -- the corresponding GameObject, set at runtime
-        originGO = nil, -- "parent" gameObject for global hud positioning, created at runtime in DaneelModuleGUIAwake
-        originPosition = Vector3:New(0),
-        pixelsToUnits = 0,
-
-        -- Default GUI components settings
-        hud = {
-            localPosition = setmetatable( {x=0,y=0}, Vector2 ),
-            layer = 1,
-        },
-
-        toggle = {
-            isChecked = false, -- false = unchecked, true = checked
-            text = "Toggle",
-            -- ':text' represents the toggle's text
-            checkedMark = ":text",
-            uncheckedMark = ":text",
-            checkedModel = nil,
-            uncheckedModel = nil,
-        },
-
-        progressBar = {
-            height = 1,
-            minValue = 0,
-            maxValue = 100,
-            minLength = 0,
-            maxLength = 5, -- in units
-            value = "100%",
-        },
-
-        slider = {
-            minValue = 0,
-            maxValue = 100,
-            length = 5, -- 5 units
-            axis = "x",
-            value = "0%",
-        },
-
-        input = {
-            isFocused = false,
-            maxLength = 99999,
-            characterRange = nil,
-        },
-
-        textArea = {
-            areaWidth = 0, -- max line length, in units or pixel as a string (0 = no max length)
-            wordWrap = false, -- when a ligne is longer than the area width: cut the ligne when false, put the rest of the ligne in one or several lignes when true
-            newLine = "\n", -- end of ligne delimiter
-            lineHeight = 1, -- in units or pixels as a string
-            verticalAlignment = "top",
-
-            font = nil,
-            text = "Text\nArea",
-            alignment = nil,
-            opacity = nil,
-        },
-
-        componentObjects = {
-            ["GUI.Hud"] = GUI.Hud,
-            ["GUI.Toggle"] = GUI.Toggle,
-            ["GUI.ProgressBar"] = GUI.ProgressBar,
-            ["GUI.Slider"] = GUI.Slider,
-            ["GUI.Input"] = GUI.Input,
-            ["GUI.TextArea"] = GUI.TextArea,
-        },
-        componentTypes = {},
-
-        objects = {
-            Vector2 = Vector2,
-        },
-    }
-
-    return config
-end
---GUI.Config = GUI.DefaultConfig() -- set at the very end of the file when Vector2 and other component objects exists
-
-function GUI.Load()
-    Daneel.GUI = GUI
-
-    if CS.DaneelModules["MouseInput"] == nil and Daneel.Config.debug.enableDebug then
-        print( "GUI.Load() : Your project seems to lack the 'Mouse Input' module. It is required for the player to interact with the GUI.Toggle, GUI.Input and GUI.Slider components." )
-    end
-
-    --- Update the gameObject's scale to make the text appear the provided width.
-    -- Overwrite TextRenderer.SetTextWith() from the Core.
-    -- @param textRenderer (TextRenderer) The textRenderer.
-    -- @param width (number or string) The text's width in units or pixels.
-    function TextRenderer.SetTextWidth( textRenderer, width )
-        Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetTextWidth", textRenderer, width)
-        local errorHead = "TextRenderer.SetTextWidth( textRenderer, width ) : "
-        Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
-        local argType = Daneel.Debug.CheckArgType(width, "width", {"number", "string"}, errorHead)
-
-        if argType == "string" then
-            width = GUI.ToSceneUnit( width )
-        end
-
-        local widthScaleRatio = textRenderer:GetTextWidth() / textRenderer.gameObject.transform:GetScale()
-        textRenderer.gameObject.transform:SetScale( width / widthScaleRatio )
-        Daneel.Debug.StackTrace.EndFunction()
-    end
-end
-
-function GUI.Awake()
-    -- get the smaller side of the screen (usually screenSize.y, the height)
-    local screenSize = CS.Screen.GetSize()
-    local smallSideSize = screenSize.y
-    if screenSize.x < screenSize.y then
-        smallSideSize = screenSize.x
-    end
-
-    GUI.Config.cameraGO = GameObject.Get( GUI.Config.cameraName )
-
-    if GUI.Config.cameraGO ~= nil then
-        -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
-        -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and scene units
-        GUI.Config.pixelsToUnits = GUI.Config.cameraGO.camera:GetOrthographicScale() / smallSideSize
-
-        GUI.Config.originGO = CS.CreateGameObject( "HUDOrigin" )
-        GUI.Config.originGO:SetParent( GUI.Config.cameraGO )
-
-        GUI.Config.originGO.transform:SetLocalPosition( Vector3:New(
-            -screenSize.x * GUI.Config.pixelsToUnits / 2,
-            screenSize.y * GUI.Config.pixelsToUnits / 2,
-            0
-        ) )
-        -- the HUDOrigin is now at the top-left corner of the screen
-        GUI.Config.originPosition = GUI.Config.originGO.transform:GetPosition()
-    end
-end
+GUI = {}
 
 --- Convert the provided value (a length) in a number expressed in scene unit.
 -- The provided value may be suffixed with "px" (pixels) or "u" (scene units).
@@ -180,6 +39,10 @@ GUI.Hud.__index = GUI.Hud -- __index will be rewritted when Daneel loads (in Dan
 -- @return (Vector2) The hud position.
 -- @return (numbe) The layer.
 function GUI.Hud.ToHudPosition(position)
+    if not GUI.isLoaded then
+        Daneel.LateLoad()
+    end
+    
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.ToHudPosition", position)
     local errorHead = "GUI.Hud.ToHudPosition(hud, position) : "
     Daneel.Debug.CheckArgType(position, "position", "Vector3", errorHead)
@@ -200,7 +63,7 @@ end
 -- @return (GUI.Hud) The hud component.
 function GUI.Hud.New( gameObject, params )
     if not GUI.isLoaded then
-        print( GUI.daneelNotLoadedWarning )
+        Daneel.LateLoad()
     end
 
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.New", gameObject, params )
@@ -371,7 +234,7 @@ GUI.Toggle.__index = GUI.Toggle
 -- @return (GUI.Toggle) The new component.
 function GUI.Toggle.New( gameObject, params )
     if not GUI.isLoaded then
-        print( GUI.daneelNotLoadedWarning )
+        Daneel.LateLoad()
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Toggle.New", gameObject, params )
@@ -614,7 +477,7 @@ GUI.ProgressBar.__index = GUI.ProgressBar
 -- @return (ProgressBar) The new component.
 function GUI.ProgressBar.New( gameObject, params )
     if not GUI.isLoaded then
-        print( GUI.daneelNotLoadedWarning )
+        Daneel.LateLoad()
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "GUI.ProgressBar.New", gameObject, params )
@@ -799,7 +662,7 @@ GUI.Slider.__index = GUI.Slider
 -- @return (GUI.Slider) The new component.
 function GUI.Slider.New( gameObject, params )
     if not GUI.isLoaded then
-        print( GUI.daneelNotLoadedWarning )
+        Daneel.LateLoad()
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Slider.New", gameObject, params )
@@ -947,7 +810,7 @@ GUI.Input.__index = GUI.Input
 -- @return (GUI.Input) The new component.
 function GUI.Input.New( gameObject, params )
     if not GUI.isLoaded then
-        print( GUI.daneelNotLoadedWarning )
+        Daneel.LateLoad()
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Input.New", gameObject, params )
@@ -1067,7 +930,7 @@ GUI.TextArea.__index = GUI.TextArea
 -- @return (GUI.TextArea) The new component.
 function GUI.TextArea.New( gameObject, params )
     if not GUI.isLoaded then
-        print( GUI.daneelNotLoadedWarning )
+        Daneel.LateLoad()
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.New", gameObject, params )
@@ -1638,4 +1501,144 @@ function CraftStudio.Screen.GetSize()
 end
 
 
+----------------------------------------------------------------------------------
+-- Config - loading
+
+if CS.DaneelModules == nil then
+    CS.DaneelModules = {}
+end
+CS.DaneelModules[ "GUI" ] = GUI
+
+function GUI.DefaultConfig()
+    local config = {
+        cameraName = "HUDCamera",  -- Name of the gameObject who has the orthographic camera used to render the HUD
+        cameraGO = nil, -- the corresponding GameObject, set at runtime
+        originGO = nil, -- "parent" gameObject for global hud positioning, created at runtime in DaneelModuleGUIAwake
+        originPosition = Vector3:New(0),
+        pixelsToUnits = 0,
+
+        -- Default GUI components settings
+        hud = {
+            localPosition = Vector2.New(0),
+            layer = 1,
+        },
+
+        toggle = {
+            isChecked = false, -- false = unchecked, true = checked
+            text = "Toggle",
+            -- ':text' represents the toggle's text
+            checkedMark = ":text",
+            uncheckedMark = ":text",
+            checkedModel = nil,
+            uncheckedModel = nil,
+        },
+
+        progressBar = {
+            height = 1,
+            minValue = 0,
+            maxValue = 100,
+            minLength = 0,
+            maxLength = 5, -- in units
+            value = "100%",
+        },
+
+        slider = {
+            minValue = 0,
+            maxValue = 100,
+            length = 5, -- 5 units
+            axis = "x",
+            value = "0%",
+        },
+
+        input = {
+            isFocused = false,
+            maxLength = 99999,
+            characterRange = nil,
+        },
+
+        textArea = {
+            areaWidth = 0, -- max line length, in units or pixel as a string (0 = no max length)
+            wordWrap = false, -- when a ligne is longer than the area width: cut the ligne when false, put the rest of the ligne in one or several lignes when true
+            newLine = "\n", -- end of ligne delimiter
+            lineHeight = 1, -- in units or pixels as a string
+            verticalAlignment = "top",
+
+            font = nil,
+            text = "Text\nArea",
+            alignment = nil,
+            opacity = nil,
+        },
+
+        componentObjects = {
+            ["GUI.Hud"] = GUI.Hud,
+            ["GUI.Toggle"] = GUI.Toggle,
+            ["GUI.ProgressBar"] = GUI.ProgressBar,
+            ["GUI.Slider"] = GUI.Slider,
+            ["GUI.Input"] = GUI.Input,
+            ["GUI.TextArea"] = GUI.TextArea,
+        },
+        componentTypes = {},
+
+        objects = {
+            Vector2 = Vector2,
+        },
+    }
+
+    return config
+end
 GUI.Config = GUI.DefaultConfig()
+
+function GUI.Load()
+    Daneel.GUI = GUI
+
+    if CS.DaneelModules["MouseInput"] == nil and Daneel.Config.debug.enableDebug then
+        print( "GUI.Load() : Your project seems to lack the 'Mouse Input' module. It is required for the player to interact with the GUI.Toggle, GUI.Input and GUI.Slider components." )
+    end
+
+    --- Update the gameObject's scale to make the text appear the provided width.
+    -- Overwrite TextRenderer.SetTextWith() from the Core.
+    -- @param textRenderer (TextRenderer) The textRenderer.
+    -- @param width (number or string) The text's width in scene units or pixels.
+    function TextRenderer.SetTextWidth( textRenderer, width )
+        Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetTextWidth", textRenderer, width)
+        local errorHead = "TextRenderer.SetTextWidth( textRenderer, width ) : "
+        Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
+        local argType = Daneel.Debug.CheckArgType(width, "width", {"number", "string"}, errorHead)
+
+        if argType == "string" then
+            width = GUI.ToSceneUnit( width )
+        end
+
+        local widthScaleRatio = textRenderer:GetTextWidth() / textRenderer.gameObject.transform:GetScale()
+        textRenderer.gameObject.transform:SetScale( width / widthScaleRatio )
+        Daneel.Debug.StackTrace.EndFunction()
+    end
+end
+
+function GUI.Awake()
+    -- get the smaller side of the screen (usually screenSize.y, the height)
+    local screenSize = CS.Screen.GetSize()
+    local smallSideSize = screenSize.y
+    if screenSize.x < screenSize.y then
+        smallSideSize = screenSize.x
+    end
+
+    GUI.Config.cameraGO = GameObject.Get( GUI.Config.cameraName )
+
+    if GUI.Config.cameraGO ~= nil then
+        -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
+        -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and scene units
+        GUI.Config.pixelsToUnits = GUI.Config.cameraGO.camera:GetOrthographicScale() / smallSideSize
+
+        GUI.Config.originGO = CS.CreateGameObject( "HUDOrigin" )
+        GUI.Config.originGO:SetParent( GUI.Config.cameraGO )
+
+        GUI.Config.originGO.transform:SetLocalPosition( Vector3:New(
+            -screenSize.x * GUI.Config.pixelsToUnits / 2,
+            screenSize.y * GUI.Config.pixelsToUnits / 2,
+            0
+        ) )
+        -- the HUDOrigin is now at the top-left corner of the screen
+        GUI.Config.originPosition = GUI.Config.originGO.transform:GetPosition()
+    end
+end
