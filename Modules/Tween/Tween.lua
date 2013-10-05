@@ -72,7 +72,6 @@ function Tween.Tweener.New(target, property, endValue, duration, params)
     local tweener = table.copy(Tween.Config.tweener)
     setmetatable(tweener, Tween.Tweener)
     tweener.Id = Daneel.Cache.GetId()
-    tweener.lastUpdateTime = Daneel.Time.time
 
     -- three constructors :
     -- target, property, endValue, duration[, params]
@@ -342,7 +341,6 @@ function Tween.Timer.New( duration, callback, isInfiniteLoop, params )
     tweener.startValue = duration
     tweener.endValue = 0
     tweener.duration = duration
-    tweener.lastUpdateTime = Daneel.Time.time
 
     if isInfiniteLoop == true then
         tweener.loops = -1
@@ -406,7 +404,6 @@ function Tween.DefaultConfig()
             diffValue = 0.0, -- endValue - startValue
             value = 0.0, -- current value (between startValue and endValue)
             frameCount = 0,
-            lastUpdateTime = 0,
         },
     
         objects = {
@@ -442,9 +439,7 @@ function Tween.Update()
 
             if tweener.frameCount % tweener.updateInterval == 0 then
 
-                local deltaDuration = Daneel.Time.time - tweener.lastUpdateTime
-                tweener.lastUpdateTime = Daneel.Time.time
-                
+                local deltaDuration = Daneel.Time.deltaTime * tweener.updateInterval               
                 if tweener.durationType == "realTime" then
                     deltaDuration = Daneel.Time.realDeltaTime * tweener.updateInterval
                 elseif tweener.durationType == "frame" then
