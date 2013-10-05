@@ -62,7 +62,7 @@ end
 -- @param params [optional] (table) A table of parameters.
 -- @return (Tweener) The Tweener.
 function Tween.Tweener.New(target, property, endValue, duration, params)
-    if not Tween.isLoaded then
+    if not Daneel.isAwake then
         Daneel.LateLoad()
     end
 
@@ -322,7 +322,7 @@ setmetatable( Tween.Timer, { __call = function(Object, ...) return Object.New(..
 -- @param params [optional] (table) A table of parameters.
 -- @return (Tweener) The tweener.
 function Tween.Timer.New( duration, callback, isInfiniteLoop, params )
-    if not Tween.isLoaded then
+    if not Daneel.isAwake then
         Daneel.LateLoad()
     end
     

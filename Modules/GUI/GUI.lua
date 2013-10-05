@@ -39,7 +39,7 @@ GUI.Hud.__index = GUI.Hud -- __index will be rewritted when Daneel loads (in Dan
 -- @return (Vector2) The hud position.
 -- @return (numbe) The layer.
 function GUI.Hud.ToHudPosition(position)
-    if not GUI.isLoaded then
+    if not Daneel.isAwake then
         Daneel.LateLoad()
     end
     
@@ -62,7 +62,7 @@ end
 -- @param params (table) [optional] A table of parameters.
 -- @return (GUI.Hud) The hud component.
 function GUI.Hud.New( gameObject, params )
-    if not GUI.isLoaded then
+    if not Daneel.isAwake then
         Daneel.LateLoad()
     end
 
@@ -233,7 +233,7 @@ GUI.Toggle.__index = GUI.Toggle
 -- @param params (table) A table of parameters.
 -- @return (GUI.Toggle) The new component.
 function GUI.Toggle.New( gameObject, params )
-    if not GUI.isLoaded then
+    if not Daneel.isAwake then
         Daneel.LateLoad()
     end
 
@@ -476,7 +476,7 @@ GUI.ProgressBar.__index = GUI.ProgressBar
 -- @param params (table) A table of parameters.
 -- @return (ProgressBar) The new component.
 function GUI.ProgressBar.New( gameObject, params )
-    if not GUI.isLoaded then
+    if not Daneel.isAwake then
         Daneel.LateLoad()
     end
 
@@ -661,7 +661,7 @@ GUI.Slider.__index = GUI.Slider
 -- @param params (table) A table of parameters.
 -- @return (GUI.Slider) The new component.
 function GUI.Slider.New( gameObject, params )
-    if not GUI.isLoaded then
+    if not Daneel.isAwake then
         Daneel.LateLoad()
     end
 
@@ -809,7 +809,7 @@ GUI.Input.__index = GUI.Input
 -- @param params (table) A table of parameters.
 -- @return (GUI.Input) The new component.
 function GUI.Input.New( gameObject, params )
-    if not GUI.isLoaded then
+    if not Daneel.isAwake then
         Daneel.LateLoad()
     end
 
@@ -929,7 +929,7 @@ GUI.TextArea.__index = GUI.TextArea
 -- @param params (table) A table of parameters.
 -- @return (GUI.TextArea) The new component.
 function GUI.TextArea.New( gameObject, params )
-    if not GUI.isLoaded then
+    if not Daneel.isAwake then
         Daneel.LateLoad()
     end
 

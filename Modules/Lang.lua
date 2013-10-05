@@ -71,7 +71,7 @@ function Lang.Get( key, replacements )
         return Lang.cache[ key ]
     end
 
-    if not Lang.isLoaded then
+    if not Daneel.isAwake then
         Daneel.LateLoad()
     end
 

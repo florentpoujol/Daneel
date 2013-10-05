@@ -3169,8 +3169,8 @@ end -- end Daneel.Load()
 
 -- Called at runtime by code that needs Daneel to be loaded but it isn't yet.
 function Daneel.LateLoad()
-    if Daneel.isLoaded then return end
-        
+    if Daneel.isLoaded and Daneel.isAwake then return end
+    
     local go = CS.CreateGameObject( "Daneel" )
     go:CreateScriptedBehavior( DaneelScriptAsset ) -- DaneelScriptAsset is set above, before Utilities.ButtonExists()
 end
