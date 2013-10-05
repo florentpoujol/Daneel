@@ -23,6 +23,10 @@ function Behavior:Update()
     if self.updateInterval > 1 and #self.tags > 0 and self.frameCount % self.updateInterval == 0 then
         local triggerPosition = self.gameObject.transform:GetPosition()
         
+        if type( self.tags ) == "string" then
+            self.tags = self.tags:split( ",", true )
+        end
+    
         for i, tag in pairs( self.tags ) do
             local gameObjects = GameObject.Tags[ tag ]
             if gameObjects ~= nil then
@@ -71,6 +75,9 @@ function Behavior:GetGameObjectsInRange()
     local gameObjectsInRange = {}
     local triggerPosition = self.gameObject.transform:GetPosition()
     
+    if type( self.tags ) == "string" then
+        self.tags = self.tags:split( ",", true )
+    end
     for i, tag in pairs( self.tags ) do
         local gameObjects = GameObject.Tags[ tag ]
         if gameObjects ~= nil then
