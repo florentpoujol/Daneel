@@ -1,4 +1,4 @@
--- MouseInput.lua
+-- Mouse Input.lua
 -- Enable mouse interactions with game objects when added to a game object with a camera component.
 --
 -- Last modified for v1.3.0

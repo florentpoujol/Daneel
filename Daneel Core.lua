@@ -1381,7 +1381,7 @@ end
 --- Make the provided function or object to stop listen to the provided event(s).
 -- @param eventName (string or table) The event name (or names in a table).
 -- @param functionOrObject (function, string or GameObject) The function, or the gameObject name or instance.
-function Daneel.Event.StopListen( eventName, functionOrObject)
+function Daneel.Event.StopListen( eventName, functionOrObject )
     if type( eventName ) ~= "string" then
         functionOrObject = eventName
         eventName = nil 
@@ -1417,7 +1417,7 @@ end
 -- @param object [optional] (table) The object to which fire the event at. If nil or abscent, will send the event to its listeners.
 -- @param eventName (string) The event name.
 -- @param ... [optional] Some arguments to pass along.
-function Daneel.Event.Fire( object, eventName,  ... )
+function Daneel.Event.Fire( object, eventName, ... )
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Event.Fire", object, eventName, unpack( arg ) )
     local errorHead = "Daneel.Event.Fire( [object, ]eventName[, ...] ) : "
     
@@ -2917,54 +2917,8 @@ function Daneel.SetComponents( components )
                     id = tostring( component.inner ):sub( 5, 20 )
                     component.Id = id
                 end
-                
-                local text = componentType .. ": " .. id
-                --[[
-                -- uncomment when the getter won't return error when the asset is not set yet
-                local path = "[no asset]"
-                local pathStart = ": '"
-                local pathEnd = "'"
-                local asset = nil
 
-                if componentType == "ModelRenderer" then
-                    asset = component:GetModel()
-                    if asset ~=  nil then
-                        path = Map.GetPathInPackage( asset )
-                    else
-                        path = "[no Map]"
-                    end
-                    text = text .. pathStart .. path .. pathEnd
-
-                elseif componentType == "MapRenderer" then
-                    asset = component:GetMap()
-                    if asset ~= nil then
-                        path = Map.GetPathInPackage( asset )
-                    else
-                        path = "[no Map]"
-                    end
-                    text = text .. pathStart .. path .. pathEnd
-
-                    asset = component:GetTileSet()
-                    if asset ~= nil then
-                        path = Map.GetPathInPackage( asset )
-                    else
-                        path = "[no TileSet]"
-                    end
-                    text = text .. pathStart .. path .. pathEnd
-
-                elseif componentType == "TextRenderer" then
-                    asset = component:GetFont()
-                    if asset ~= nil then
-                        path = Map.GetPathInPackage( asset )
-                    else
-                        path = "[no Font]"
-                    end
-                    text = text .. pathStart .. path .. pathEnd
-
-                end
-                ]]
-
-                return text
+                return componentType .. ": " .. id
             end
         end
     end
