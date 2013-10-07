@@ -605,7 +605,7 @@ end
 -- @param t (table) The table.
 -- @param value (mixed) The value to remove.
 -- @param maxRemoveCount (number) [optional] Maximum number of occurences of the value to be removed. If nil : remove all occurences.
--- @return (boolean) True if a value has been removed.
+-- @return (number) The number of occurence removed.
 function table.removevalue( t, value, maxRemoveCount )
     Daneel.Debug.StackTrace.BeginFunction( "table.removevalue", t, value, maxRemoveCount )
     local errorHead = "table.removevalue( table, value[, maxRemoveCount] ) : "
@@ -3133,10 +3133,6 @@ end
 ----------------------------------------------------------------------------------
 -- Runtime
 
---[[PublicProperties
-loadDaneel boolean true
-/PublicProperties]]
-
 function Behavior:Awake()
     if self.buttonExists == true then
         CraftStudio.Destroy( self )
@@ -3145,13 +3141,7 @@ function Behavior:Awake()
         self.success()
         return
     end
-
-    if self.loadDaneel == false then -- just for testing purpose without having to remove the scripted behaviro every times
-        --print( "Daneel:Awake() : Daneel was prevented to be loaded because the 'loadDaneel' public property on the 'Daneel Core' scripted behavior is set to 'false'." )
-        CS.Destroy( self )
-        return
-    end
-
+    
     if Daneel.isAwake then
         if Daneel.Config.debug.enableDebug then
             print( "Daneel:Awake() : You tried to load Daneel twice ! This time the 'Daneel Core' scripted behavior was on the " .. tostring( self.gameObject ) )
