@@ -47,8 +47,8 @@ function GUI.Hud.ToHudPosition(position)
     local errorHead = "GUI.Hud.ToHudPosition(hud, position) : "
     Daneel.Debug.CheckArgType(position, "position", "Vector3", errorHead)
 
-    local layer = GUI.Config.originPosition.z - position.z
-    position = position - GUI.Config.originPosition
+    local layer = GUI.Config.originGO.transform:GetPosition().z - position.z
+    position = position - GUI.Config.originGO.transform:GetPosition()
     position = Vector2(
         position.x / GUI.Config.pixelsToUnits,
         -position.y / GUI.Config.pixelsToUnits
@@ -94,7 +94,7 @@ function GUI.Hud.SetPosition(hud, position)
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
     Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
 
-    local newPosition = GUI.Config.originPosition +
+    local newPosition = GUI.Config.originGO.transform:GetPosition() +
     Vector3:New(
         position.x * GUI.Config.pixelsToUnits,
         -position.y * GUI.Config.pixelsToUnits,
@@ -113,7 +113,7 @@ function GUI.Hud.GetPosition(hud)
     local errorHead = "GUI.Hud.GetPosition(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
 
-    local position = hud.gameObject.transform:GetPosition() - GUI.Config.originPosition
+    local position = hud.gameObject.transform:GetPosition() - GUI.Config.originGO.transform:GetPosition()
     position = position / GUI.Config.pixelsToUnits
     position = Vector2.New(math.round(position.x), math.round(-position.y))
     Daneel.Debug.StackTrace.EndFunction()
@@ -168,7 +168,7 @@ function GUI.Hud.SetLayer(hud, layer)
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
     Daneel.Debug.CheckArgType(layer, "layer", "number", errorHead)
 
-    local originLayer = GUI.Config.originPosition.z
+    local originLayer = GUI.Config.originGO.transform:GetPosition().z
     local currentPosition = hud.gameObject.transform:GetPosition()
     hud.gameObject.transform:SetPosition( Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer) )
     Daneel.Debug.StackTrace.EndFunction()
@@ -182,7 +182,7 @@ function GUI.Hud.GetLayer(hud)
     local errorHead = "GUI.Hud.GetLyer(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
 
-    local originLayer = GUI.Config.originPosition.z
+    local originLayer = GUI.Config.originGO.transform:GetPosition().z
     local layer = originLayer - hud.gameObject.transform:GetPosition().z
     Daneel.Debug.StackTrace.EndFunction()
     return layer
@@ -1514,7 +1514,6 @@ function GUI.DefaultConfig()
         cameraName = "HUDCamera",  -- Name of the gameObject who has the orthographic camera used to render the HUD
         cameraGO = nil, -- the corresponding GameObject, set at runtime
         originGO = nil, -- "parent" gameObject for global hud positioning, created at runtime in DaneelModuleGUIAwake
-        originPosition = Vector3:New(0),
         pixelsToUnits = 0,
 
         -- Default GUI components settings
@@ -1639,6 +1638,5 @@ function GUI.Awake()
             0
         ) )
         -- the HUDOrigin is now at the top-left corner of the screen
-        GUI.Config.originPosition = GUI.Config.originGO.transform:GetPosition()
     end
 end
