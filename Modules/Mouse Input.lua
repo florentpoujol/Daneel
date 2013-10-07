@@ -45,12 +45,21 @@ function Behavior:Awake()
     self.gameObject.mouseInput = self
     self.frameCount = 0
     self.lastLeftClickFrame = -MouseInput.Config.doubleClickDelay
+    
+    self.update = false -- prevent the system to miss a click if it happens when   self.frameCount % self.updateInterval ~= 0  by forcing the update
+    Daneel.Event.Listen(
+        { "OnLeftMouseButtonWasJustPressed", "OnLeftMouseButtonDown", "OnRightMouseButtonWasJustPressed" },
+        function() self.update = true end
+    )
+
+
     Daneel.Debug.StackTrace.EndFunction()
 end
 
 function Behavior:Update()
     self.frameCount = self.frameCount + 1
-    if self.frameCount % self.updateInterval == 0 then
+    if self.update or self.frameCount % self.updateInterval == 0 then
+        self.update = false
 
         local leftMouseJustPressed = CS.Input.WasButtonJustPressed( "LeftMouse" )
         local leftMouseDown = CS.Input.IsButtonDown( "LeftMouse" )

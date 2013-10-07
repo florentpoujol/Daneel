@@ -68,7 +68,7 @@ function Behavior:Update()
     end
 end
 
---- Get the gameObjets that are whithin range of that trigger.
+--- Get the gameObjets that are within range of that trigger.
 -- @return (table) The list of the gameObjects in range (empty if none in range).
 function Behavior:GetGameObjectsInRange()
     Daneel.Debug.StackTrace.BeginFunction( "Trigger:GetGameObjectsInRange" )
@@ -98,9 +98,9 @@ function Behavior:GetGameObjectsInRange()
     return gameObjectsInRange
 end
 
---- Tell wether the provided game object is in range of the trigger.
+--- Tell whether the provided game object is in range of the trigger.
 -- @param gameObject (GameObject) The gameObject.
--- @param triggerPosition (Vector3) [optional] The current position of trigger.
+-- @param triggerPosition (Vector3) [optional] The trigger's current position.
 -- @return (boolean) True or false.
 function Behavior:IsGameObjectInRange( gameObject, triggerPosition )
     Daneel.Debug.StackTrace.BeginFunction( "Trigger:IsGameObjectInRange", gameObject, triggerPosition )
@@ -132,8 +132,8 @@ function Behavior:IsGameObjectInRange( gameObject, triggerPosition )
 
         if distance ~= nil and distance^2 > distanceToTriggerSquared then
             -- distance from the GO to the model or map is superior to the distance to the trigger
-            -- that means the GO is inside of the mode/map
-            -- the ray goes throught the GO origin before intersecting the map 
+            -- that means the GO is inside of the model/map
+            -- the ray goes through the GO origin before intersecting the map 
             gameObjectIsInTrigger = true
         end
     end
