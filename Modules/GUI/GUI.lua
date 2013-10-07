@@ -1342,6 +1342,33 @@ function Vector2.GetSqrLength( vector )
     return length
 end
 
+-- Return a copy of the provided vector, normalized.
+-- @param vector2 (Vector2) The vector2 to normalize.
+-- @return (Vector2) A copy of the vector, normalized
+function Vector2.Normalized( vector )
+    Daneel.Debug.StackTrace.BeginFunction( "Vector2.Normalized", vector )
+    local errorHead = "Vector2.Normalized( vector ) : "
+    Daneel.Debug.CheckArgType(  vector, " vector", "Vector2", errorHead )
+
+    local nv = Vector2.New( vector.x, vector.y ):Normalize()
+    Daneel.Debug.StackTrace.EndFunction()
+    return nv
+end
+
+-- Normalize the provided vector in place (makes its length equal to 1).
+-- @param vector2 (Vector2) The vector2 to normalize.
+function Vector2.Normalize( vector )
+    Daneel.Debug.StackTrace.BeginFunction( "Vector2.Normalize", vector )
+    local errorHead = "Vector2.Normalize( vector ) : "
+    Daneel.Debug.CheckArgType(  vector, " vector", "Vector2", errorHead )
+
+    local length = vector:GetLength()
+    if length ~= 0 then
+        vector = vector / length
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
 --- Allow to add two Vector2 by using the + operator.
 -- Ie : vector1 + vector2
 -- @param a (Vector2) The left member.
