@@ -23,7 +23,7 @@ MouseInput.Config = MouseInput.DefaultConfig()
 
 --[[PublicProperties
 tags string ""
-updateInterval number 5
+updateInterval number 2
 /PublicProperties]]
 
 function Behavior:Awake()

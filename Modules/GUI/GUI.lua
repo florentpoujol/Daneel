@@ -4,7 +4,7 @@
 -- Last modified for v1.3
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
 
-GUI = {}
+GUI = { pixelsToUnits = 0 }
 
 --- Convert the provided value (a length) in a number expressed in scene unit.
 -- The provided value may be suffixed with "px" (pixels) or "u" (scene units).
@@ -14,7 +14,7 @@ function GUI.ToSceneUnit( value )
     if type( value ) == "string" then
         local length = #value
         if value:endswith( "px" ) then
-            value = tonumber( value:sub( 0, length-2) ) * GUI.Config.pixelsToUnits
+            value = tonumber( value:sub( 0, length-2) ) * GUI.pixelsToUnits
 
         elseif value:endswith( "u" ) then
             value = tonumber( value:sub( 0, length-1) )
@@ -50,8 +50,8 @@ function GUI.Hud.ToHudPosition(position)
     local layer = GUI.Config.originGO.transform:GetPosition().z - position.z
     position = position - GUI.Config.originGO.transform:GetPosition()
     position = Vector2(
-        position.x / GUI.Config.pixelsToUnits,
-        -position.y / GUI.Config.pixelsToUnits
+        position.x / GUI.pixelsToUnits,
+        -position.y / GUI.pixelsToUnits
     )
     Daneel.Debug.StackTrace.EndFunction()
     return position, layer
@@ -96,8 +96,8 @@ function GUI.Hud.SetPosition(hud, position)
 
     local newPosition = GUI.Config.originGO.transform:GetPosition() +
     Vector3:New(
-        position.x * GUI.Config.pixelsToUnits,
-        -position.y * GUI.Config.pixelsToUnits,
+        position.x * GUI.pixelsToUnits,
+        -position.y * GUI.pixelsToUnits,
         0
     )
     newPosition.z = hud.gameObject.transform:GetPosition().z
@@ -114,7 +114,7 @@ function GUI.Hud.GetPosition(hud)
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
 
     local position = hud.gameObject.transform:GetPosition() - GUI.Config.originGO.transform:GetPosition()
-    position = position / GUI.Config.pixelsToUnits
+    position = position / GUI.pixelsToUnits
     position = Vector2.New(math.round(position.x), math.round(-position.y))
     Daneel.Debug.StackTrace.EndFunction()
     return position
@@ -133,8 +133,8 @@ function GUI.Hud.SetLocalPosition(hud, position)
     if parent == nil then parent = GUI.Config.originGO end
     local newPosition = parent.transform:GetPosition() +
     Vector3:New(
-        position.x * GUI.Config.pixelsToUnits,
-        -position.y * GUI.Config.pixelsToUnits,
+        position.x * GUI.pixelsToUnits,
+        -position.y * GUI.pixelsToUnits,
         0
     )
     newPosition.z = hud.gameObject.transform:GetPosition().z
@@ -153,7 +153,7 @@ function GUI.Hud.GetLocalPosition(hud)
     local parent = hud.gameObject.parent
     if parent == nil then parent = GUI.Config.originGO end
     local position = hud.gameObject.transform:GetPosition() - parent.transform:GetPosition()
-    position = position / GUI.Config.pixelsToUnits
+    position = position / GUI.pixelsToUnits
     position = Vector2.New(math.round(position.x), math.round(-position.y))
     Daneel.Debug.StackTrace.EndFunction()
     return position
@@ -252,7 +252,7 @@ function GUI.Toggle.New( gameObject, params )
     toggle:Set( params )
 
     gameObject.toggle = toggle
-    gameObject:AddTag( "guicomponent" )
+    gameObject:AddTag( "guiComponent" )
 
     gameObject.OnNewComponent = function()
         local component = data[1]
@@ -316,7 +316,7 @@ function GUI.Toggle.SetText( toggle, text )
         else
             text = Daneel.Utilities.ReplaceInString( toggle.uncheckedMark, { text = text } )
         end
-        toggle.gameObject.textRenderer.text = text
+        toggle.gameObject.textRenderer:SetText( text )
 
     else
         if Daneel.Config.debug.enableDebug then
@@ -346,7 +346,7 @@ function GUI.Toggle.GetText(toggle)
         local prefix = textMark:sub(1, start-1)
         local suffix = textMark:sub(_end+1)
 
-        text = toggle.gameObject.textRenderer.text
+        text = toggle.gameObject.textRenderer:GetText()
         if text == nil then
             text = toggle.defaultText
         end
@@ -396,7 +396,7 @@ function GUI.Toggle.Check( toggle, state, forceUpdate )
         if toggle.Group ~= nil and state == true then
             local gameObjects = GameObject.Tags[ toggle.Group ]
             for i, gameObject in ipairs( gameObjects ) do
-                if gameObject ~= toggle.gameObject then
+                if gameObject.transform ~= nil and gameObject ~= toggle.gameObject then
                     gameObject.toggle:Check( false )
                 end
             end
@@ -492,7 +492,7 @@ function GUI.ProgressBar.New( gameObject, params )
     setmetatable( progressBar, GUI.ProgressBar )
 
     if params.value == nil then
-        params.value = GUI.Config.progressBar:GetValue()
+        params.value = GUI.Config.progressBar.value
     end
     progressBar:Set( params )
 
@@ -678,7 +678,7 @@ function GUI.Slider.New( gameObject, params )
     setmetatable( slider, GUI.Slider )
 
     gameObject.slider = slider
-    gameObject:AddTag( "guicomponent" )
+    gameObject:AddTag( "guiComponent" )
 
     gameObject.OnDrag = function()
         local mouseDelta = CraftStudio.Input.GetMouseDelta()
@@ -687,11 +687,13 @@ function GUI.Slider.New( gameObject, params )
             positionDelta = Vector3:New( 0, -mouseDelta.y, 0, 0 )
         end
 
-        gameObject.transform:Move( positionDelta * GUI.Config.pixelsToUnits )
+        gameObject.transform:Move( positionDelta * GUI.pixelsToUnits )
 
+        local goPosition = gameObject.transform:GetPosition()
+        local parentPosition = slider.parent.transform:GetPosition()
         if
-            (slider.axis == "x" and gameObject.transform:GetPosition().x < slider.parent.transform:GetPosition().x) or
-            (slider.axis == "y" and gameObject.transform:GetPosition().y < slider.parent.transform:GetPosition().y)
+            (slider.axis == "x" and goPosition.x < parentPosition.x) or
+            (slider.axis == "y" and goPosition.y < parentPosition.y)
         then
             slider:SetValue( slider.minValue )
         elseif slider:GetValue() > slider.maxValue then
@@ -775,7 +777,7 @@ function GUI.Slider.GetValue( slider, getAsPercentage )
 end
 
 --- Apply the content of the params argument to the provided slider.
--- Overwrite Component.Set() from CraftStudio module.
+-- Overwrite Component.Set() from the core.
 -- @param slider (Slider) The slider.
 -- @param params (table) A table of parameters to set the component with.
 function GUI.Slider.Set( slider, params )
@@ -821,6 +823,8 @@ function GUI.Input.New( gameObject, params )
     local input = table.merge( GUI.Config.input, params )
     input.gameObject = gameObject
     input.Id = Daneel.Cache.GetId()
+    setmetatable( input, GUI.Input )
+    
     -- adapted from Blast Turtles
     if input.OnTextEntered == nil then
         input.OnTextEntered = function( char )
@@ -828,7 +832,7 @@ function GUI.Input.New( gameObject, params )
                 local charNumber = string.byte( char )
 
                 if charNumber == 8 then -- Backspace
-                    local text = gameObject.textRenderer.text
+                    local text = gameObject.textRenderer:GetText()
                     input:Update( text:sub( 1, #text - 1 ), true )
 
                 elseif charNumber == 13 then -- Enter
@@ -844,14 +848,13 @@ function GUI.Input.New( gameObject, params )
             end
         end
     end
-    setmetatable( input, GUI.Input )
 
     local isFocused = input.isFocused
     input.isFocused = nil
     input:Focus( isFocused )
 
     gameObject.input = input
-    gameObject:AddTag( "guicomponent" )
+    gameObject:AddTag( "guiComponent" )
 
     Daneel.Event.Listen( "OnLeftMouseButtonJustPressed",
         function()
@@ -868,7 +871,7 @@ end
 
 -- Set the focused state of the input.
 -- @param input (GUI.Input) The input component.
--- @param state [optional default=true] (boolean) The new state.
+-- @param state (boolean) [optional default=true] The new state.
 function GUI.Input.Focus( input, state )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Input.Focus", input, state )
     local errorHead = "GUI.Input.Focus(input[, state]) : "
@@ -890,20 +893,19 @@ end
 -- Set the focused state of the input.
 -- @param input (GUI.Input) The input component.
 -- @param text (string) The text to add to the current text.
--- @param replaceText [optional default=false] (boolean) Tell wether the provided text should be added (false) or replace (true) the current text.
+-- @param replaceText (boolean) [optional default=false] Tell wether the provided text should be added (false) or replace (true) the current text.
 function GUI.Input.Update( input, text, replaceText )
+    if not type( input ) == "table" or not input.isFocused then
+        return
+    end
+
     Daneel.Debug.StackTrace.BeginFunction("GUI.Input.Update", input, text)
     local errorHead = "GUI.Input.Update(input, text) : "
     Daneel.Debug.CheckArgType(input, "input", "GUI.Input", errorHead)
     Daneel.Debug.CheckArgType(text, "text", "string", errorHead)
     replaceText = Daneel.Debug.CheckOptionalArgType(replaceText, "replaceText", "boolean", errorHead, false)
 
-    if input.isFocused == false then
-        Daneel.Debug.StackTrace.EndFunction()
-        return
-    end
-
-    local oldText = input.gameObject.textRenderer.text
+    local oldText = input.gameObject.textRenderer:GetText()
     if replaceText == false then
         text = oldText .. text
     end
@@ -911,7 +913,7 @@ function GUI.Input.Update( input, text, replaceText )
         text = text:sub( 1, input.maxLength )
     end
     if oldText ~= text then
-        input.gameObject.textRenderer.text = text
+        input.gameObject.textRenderer:SetText( text )
         Daneel.Event.Fire( input, "OnUpdate", input )
     end
     Daneel.Debug.StackTrace.EndFunction()
@@ -944,8 +946,11 @@ function GUI.TextArea.New( gameObject, params )
     textArea.lineRenderers = {}
     setmetatable( textArea, GUI.TextArea )
 
-    gameObject:AddComponent( "TextRenderer" ) -- used to store the TextRenderer properties and mesure the lines length in SetText()
-    gameObject.textRenderer:SetText("") -- remove the default "Text" text
+    local go = CS.CreateGameObject( "Text ruler for TextArea ".. textArea.Id )
+    go:SetParent( gameObject ) -- set as child so that it is destroyed with the GO of the textArea
+    textArea.textRuler = go:CreateComponent( "TextRenderer ") -- used to store the TextRenderer properties and mesure the lines length in SetText()
+    textArea.textRuler:SetText( "" )
+    
     textArea:Set( table.merge( GUI.Config.textArea, params ) )
 
     gameObject.textArea = textArea
@@ -979,14 +984,14 @@ function GUI.TextArea.SetText( textArea, text )
         for i = 1, #tempLines do
             local line = tempLines[i]
 
-            if textArea.gameObject.textRenderer:GetTextWidth( line ) > areaWidth then
+            if textArea.textRuler:GetTextWidth( line ) > areaWidth then
                 line = line:totable()
                 local newLine = {}
 
                 for j, char in ipairs( line ) do
                     table.insert( newLine, char )
 
-                    if textArea.gameObject.textRenderer:GetTextWidth( table.concat( newLine ) ) > areaWidth then
+                    if textArea.textRuler:GetTextWidth( table.concat( newLine ) ) > areaWidth then
                         table.remove( newLine )
                         table.insert( lines, table.concat( newLine ) )
                         newLine = { char }
@@ -1185,7 +1190,7 @@ function GUI.TextArea.SetVerticalAlignment( textArea, verticalAlignment )
     local errorHead = "GUI.TextArea.SetVerticalAlignment( textArea, verticalAlignment ) : "
     Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     Daneel.Debug.CheckArgType( verticalAlignment, "verticalAlignment", "string", errorHead )
-    verticalAlignment = Daneel.Debug.CheckArgValue( verticalAlignment, "verticalAlignment", {"top", "middle", "bottom"}, errorHead, "top" )
+    verticalAlignment = Daneel.Debug.CheckArgValue( verticalAlignment, "verticalAlignment", {"top", "middle", "bottom"}, errorHead, GUI.Config.textArea.verticalAlignment )
 
     textArea.VerticalAlignment = verticalAlignment:lower():trim()
     if #textArea.lineRenderers > 0 then
@@ -1212,13 +1217,14 @@ function GUI.TextArea.SetFont( textArea, font )
     Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     Daneel.Debug.CheckArgType( font, "font", {"string", "Font"}, errorHead )
 
-    textArea.gameObject.textRenderer:SetFont( font )
-    textArea.Font = textArea.gameObject.textRenderer:GetFont()
+    textArea.textRuler:SetFont( font )
+    textArea.Font = textArea.textRuler:GetFont()
 
     if #textArea.lineRenderers > 0 then
         for i, textRenderer in ipairs( textArea.lineRenderers ) do
             textRenderer:SetFont( textArea.Font )
         end
+        textArea:SetText( textArea.Text ) -- reset the text because the size of the text may have changed
     end
     Daneel.Debug.StackTrace.EndFunction()
 end
@@ -1242,8 +1248,8 @@ function GUI.TextArea.SetAlignment( textArea, alignment )
     Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
     Daneel.Debug.CheckArgType( alignment, "alignment", {"string", "userdata"}, errorHead )
 
-    textArea.gameObject.textRenderer:SetAlignment( alignment )
-    textArea.Alignment = textArea.gameObject.textRenderer:GetAlignment()
+    textArea.textRuler:SetAlignment( alignment )
+    textArea.Alignment = textArea.textRuler:GetAlignment()
 
     if #textArea.lineRenderers > 0 then
         for i, textRenderer in ipairs( textArea.lineRenderers ) do
@@ -1541,7 +1547,6 @@ function GUI.DefaultConfig()
         cameraName = "HUDCamera",  -- Name of the gameObject who has the orthographic camera used to render the HUD
         cameraGO = nil, -- the corresponding GameObject, set at runtime
         originGO = nil, -- "parent" gameObject for global hud positioning, created at runtime in DaneelModuleGUIAwake
-        pixelsToUnits = 0,
 
         -- Default GUI components settings
         hud = {
@@ -1574,6 +1579,7 @@ function GUI.DefaultConfig()
             length = 5, -- 5 units
             axis = "x",
             value = "0%",
+            OnTextEntered = nil
         },
 
         input = {
@@ -1654,14 +1660,14 @@ function GUI.Awake()
     if GUI.Config.cameraGO ~= nil then
         -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
         -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and scene units
-        GUI.Config.pixelsToUnits = GUI.Config.cameraGO.camera:GetOrthographicScale() / smallSideSize
+        GUI.pixelsToUnits = GUI.Config.cameraGO.camera:GetOrthographicScale() / smallSideSize
 
         GUI.Config.originGO = CS.CreateGameObject( "HUDOrigin" )
         GUI.Config.originGO:SetParent( GUI.Config.cameraGO )
 
         GUI.Config.originGO.transform:SetLocalPosition( Vector3:New(
-            -screenSize.x * GUI.Config.pixelsToUnits / 2,
-            screenSize.y * GUI.Config.pixelsToUnits / 2,
+            -screenSize.x * GUI.pixelsToUnits / 2,
+            screenSize.y * GUI.pixelsToUnits / 2,
             0
         ) )
         -- the HUDOrigin is now at the top-left corner of the screen
