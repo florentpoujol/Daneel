@@ -612,7 +612,7 @@ end
 
 --- Remove the provided value from the provided table.
 -- If the index of the value is an integer, the value is nicely removed with table.remove().
--- Do not use this function on tables which have integer keys but that are not arrays (whose keys are not contiguous).
+-- /!\ Do not use this function on tables which have integer keys but that are not arrays (whose keys are not contiguous). /!\
 -- @param t (table) The table.
 -- @param value (mixed) The value to remove.
 -- @param maxRemoveCount (number) [optional] Maximum number of occurrences of the value to be removed. If nil : remove all occurrences.
@@ -780,6 +780,7 @@ function Daneel.Utilities.CaseProof( name, set )
 end
 
 --- Replace placeholders in the provided string with their corresponding provided replacements.
+-- The placeholders are any pice of string prefixed by a semicolon.
 -- @param string (string) The string.
 -- @param replacements (table) The placeholders and their replacements ( { placeholder = "replacement", ... } ).
 -- @return (string) The string.
@@ -942,7 +943,11 @@ function Daneel.Utilities.ToNumber( data )
     local number = tonumber( data )
     if number == nil then
         data = tostring( data )
-        number = data:match( (data:gsub( "(%d+)", "(%1)" )) )
+        local pattern = "(%d+)"
+        if data:find( ".", 1, true ) then
+            pattern = "(%d+%.%d+)"
+        end
+        number = data:match( (data:gsub( pattern, "(%1)" )) )
         number = tonumber( number )
     end
     Daneel.Debug.StackTrace.EndFunction()
@@ -953,6 +958,7 @@ local DaneelScriptAsset = Behavior
 Daneel.Utilities.buttonExistsGameObject = nil -- The game object Daneel.Utilities.ButtonExists() works with
 
 --- Tell whether the provided button name exists amongst the Game Controls, or not.
+-- If the button name does not exists, it will print an error in the Runtime Report but it won't kill the script that called the function.
 -- @param buttonName (string) The button name.
 -- @return (boolean) True if the button name exists, false otherwise.
 function Daneel.Utilities.ButtonExists( buttonName )
