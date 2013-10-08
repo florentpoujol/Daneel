@@ -1,5 +1,5 @@
 -- Daneel.lua
--- Contains Daneel's core fonctionnalities.
+-- Contains Daneel's core functionalities.
 --
 -- Last modified for v1.3
 -- Copyright © 2013 Florent POUJOL, published under the MIT licence.
@@ -219,7 +219,7 @@ function string.split( s, delimiter, trim )
     return fields
 end
 
---- Tell wether the provided string begins by the provided chunk or not.
+--- Tell whether the provided string begins by the provided chunk or not.
 -- @param s (string) The string.
 -- @param chunk (string) The searched chunk.
 -- @return (boolean) True or false.
@@ -234,7 +234,7 @@ function string.startswith( s, chunk )
     return startsWith
 end
 
---- Tell wether the provided string ends by the provided chunk or not.
+--- Tell whether the provided string ends by the provided chunk or not.
 -- @param s (string) The string.
 -- @param chunk (string) The searched chunk.
 -- @return (boolean) True or false.
@@ -249,7 +249,7 @@ function string.endswith( s, chunk )
     return endsWith
 end
 
---- Tell wether the provided string contains the provided chunk or not.
+--- Tell whether the provided string contains the provided chunk or not.
 -- @param s (string) The string.
 -- @param chunk (string) The searched chunk.
 -- @return (boolean) True or false.
@@ -302,7 +302,7 @@ if string.find == nil then -- happens in the webplayer
     -- @param s (string) The string to search the pattern in.
     -- @param pattern (string) The string or Lua pattern to search for.
     -- @param index (number) [optional default=1] The index at which to begin the search. If is a negative value, the search begins at the said number of characters from the end.
-    -- @param plain (boolean) [optional default=false] Tell wether to consider the pattern as plain text instead of a Lua pattern.
+    -- @param plain (boolean) [optional default=false] Tell whether to consider the pattern as plain text instead of a Lua pattern.
     -- @return (number) If an occurence of the pattern is found, the index of its first character, or nil.
     -- @return (number) If an occurence of the pattern is found, the index of its last character.
     function string.find( s, pattern, index, plain )
@@ -351,17 +351,23 @@ end
 
 --- Return a copy of the provided table.
 -- @param t (table) The table to copy.
--- @param doNotCopyMetatable [optional default=false] (boolean) Tell wether to copy the provided table's metatable or not.
+-- @param recursive (boolean) [optional default=false] Tell whether to also copy the tables found as value (true), or just leave the same table as value (false).
+-- @param doNotCopyMetatable (boolean) [optional default=false] Tell whether to copy the provided table's metatable or not.
 -- @return (table) The copied table.
-function table.copy( t, doNotCopyMetatable )
-    Daneel.Debug.StackTrace.BeginFunction( "table.copy", t, doNotCopyMetatable )
-    local errorHead = "table.copy( table[, doNotCopyMetatable] ) :"
+function table.copy( t, recursive, doNotCopyMetatable )
+    Daneel.Debug.StackTrace.BeginFunction( "table.copy", t, recursive, doNotCopyMetatable )
+    local errorHead = "table.copy( table[, recursive, doNotCopyMetatable] ) :"
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead )
+    recursive = Daneel.Debug.CheckOptionalArgType( recursive, "recursive", "boolean", errorHead, false )
     doNotCopyMetatable = Daneel.Debug.CheckOptionalArgType( doNotCopyMetatable, "doNotCopyMetatable", "boolean", errorHead, false )
     
     local newTable = {}
     for key, value in pairs( t ) do
-        newTable[ key ] = value
+        if type( value ) == "table" and recursive then
+            newTable[ key ] = table.copy( value )
+        else
+            newTable[ key ] = value
+        end
     end
 
     if doNotCopyMetatable ~= true then
@@ -900,7 +906,7 @@ function Daneel.Utilities.GetValueFromName( name )
     return value
 end
 
---- Tell wether the provided global variable name exists (is non-nil).
+--- Tell whether the provided global variable name exists (is non-nil).
 -- Since CraftStudio uses Strict.lua, you can not write (variable == nil), nor (_G[variable] == nil).
 -- Only works for first-level global variables. Check if Daneel.Utilities.GetValueFromName() returns nil for the same effect with nested tables.
 -- @param name (string) The variable name.
@@ -944,7 +950,7 @@ end
 local DaneelScriptAsset = Behavior
 Daneel.Utilities.buttonExistsGameObject = nil -- The game object Daneel.Utilities.ButtonExists() works with
 
---- Tell wether the provided button name exists amongst the Game Controls, or not.
+--- Tell whether the provided button name exists amongst the Game Controls, or not.
 -- @param buttonName (string) The button name.
 -- @return (boolean) True if the button name exists, false otherwise.
 function Daneel.Utilities.ButtonExists( buttonName )
@@ -2861,7 +2867,7 @@ function GameObject.RemoveTag(gameObject, tag)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Tell wether the provided gameObject has all (or at least one of) the provided tag.
+--- Tell whether the provided gameObject has all (or at least one of) the provided tag.
 -- @param gameObject (GameObject) The game object.
 -- @param tag (string or table) One or several tag (as a string or table of strings).
 -- @param atLeastOneTag [default=false] (boolean) If true, returns true if the gameObject has AT LEAST one of the tag (instead of ALL the tag).
