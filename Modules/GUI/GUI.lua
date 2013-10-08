@@ -1550,7 +1550,7 @@ function GUI.DefaultConfig()
 
         -- Default GUI components settings
         hud = {
-            localPosition = Vector2.New(0),
+            localPosition = setmetatable({}, Vector2),
             layer = 1,
         },
 

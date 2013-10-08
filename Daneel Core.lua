@@ -3150,6 +3150,10 @@ function Behavior:Awake()
         self.success()
         return
     end
+
+    if Daneel.Utilities.GlobalExists( "LOAD_DANEEL" ) and LOAD_DANEEL == false then
+        return
+    end
     
     if Daneel.isAwake then
         if Daneel.Config.debug.enableDebug then
