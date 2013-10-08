@@ -190,6 +190,9 @@ function string.split( s, delimiter, trim )
     Daneel.Debug.CheckArgType( delimiter, "delimiter", "string", errorHead )
     Daneel.Debug.CheckOptionalArgType( trim, "trim", "boolean", errorHead )
 
+    if s:startswith( delimiter ) then
+        s = s:sub( #delimiter+1, #s )
+    end
     if not s:endswith( delimiter ) then
         s = s .. delimiter
     end
