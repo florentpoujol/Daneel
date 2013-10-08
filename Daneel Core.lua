@@ -124,7 +124,7 @@ end
 -- Alias of table.containsvalue().
 -- @param s (string) The string.
 -- @param t (table) The table containing the values to check against the string
--- @param ignoreCase [optional default=false] (boolean) Ignore the case.
+-- @param ignoreCase (boolean) [optional default=false] Ignore the case.
 -- @return (boolean) True if the string is found in the table, false otherwise.
 function string.isoneof( s, t, ignoreCase )
     Daneel.Debug.StackTrace.BeginFunction("string.isoneof", s, t, ignoreCase )
@@ -181,7 +181,7 @@ end
 -- If the string does not contain the delimiter, it returns a table containing only the whole string.
 -- @param s (string) The string.
 -- @param delimiter (string) The delimiter (may be several characters long).
--- @param trim [optional default=false] (boolean) Trim the chunks.
+-- @param trim (boolean) [optional default=false] Trim the chunks.
 -- @return (table) The chunks.
 function string.split( s, delimiter, trim )
     Daneel.Debug.StackTrace.BeginFunction( "string.split", s, delimiter, trim )
@@ -303,8 +303,8 @@ if string.find == nil then -- happens in the webplayer
     -- @param pattern (string) The string or Lua pattern to search for.
     -- @param index (number) [optional default=1] The index at which to begin the search. If is a negative value, the search begins at the said number of characters from the end.
     -- @param plain (boolean) [optional default=false] Tell whether to consider the pattern as plain text instead of a Lua pattern.
-    -- @return (number) If an occurence of the pattern is found, the index of its first character, or nil.
-    -- @return (number) If an occurence of the pattern is found, the index of its last character.
+    -- @return (number) If an occurrence of the pattern is found, the index of its first character, or nil.
+    -- @return (number) If an occurrence of the pattern is found, the index of its last character.
     function string.find( s, pattern, index, plain )
         local start = -1
         local _end = -1
@@ -383,7 +383,7 @@ end
 --- Tell whether the provided value is found within the provided table.
 -- @param t (table) The table to search in.
 -- @param p_value (any) The value to search for.
--- @param ignoreCase [optionnal default=false] (boolean) Ignore the case of the value. If true, the value must be of type 'string'.
+-- @param ignoreCase (boolean) [optional default=false] Ignore the case of the value. If true, the value must be of type 'string'.
 -- @return (boolean) True if the value is found in the table, false otherwise.
 function table.containsvalue(t, p_value, ignoreCase)
     Daneel.Debug.StackTrace.BeginFunction("table.constainsvalue", t, p_value, ignoreCase)
@@ -423,7 +423,7 @@ end
 
 --- Returns the length of a table, which is the numbers of keys of the provided type (or of any type), for which the value is not nil.
 -- @param t (table) The table.
--- @param keyType [optional] (string) Any Lua or CraftStudio type ('string', 'GameObject', ...).
+-- @param keyType (string) [optional] Any Lua or CraftStudio type ('string', 'GameObject', ...), case insensitive.
 -- @return (number) The table length.
 function table.getlength( t, keyType )
     Daneel.Debug.StackTrace.BeginFunction( "table.getlength", t, keyType )
@@ -432,12 +432,14 @@ function table.getlength( t, keyType )
     
     local length = 0
     if keyType ~= nil then
-        keyType:lower()
+        keyType = keyType:lower()
     end
     for key, value in pairs( t ) do
-        if keyType == nil then
-            length = length + 1
-        elseif Daneel.Debug.GetType( key ) == keyType then
+        if 
+            keyType == nil or
+            type( key ) == keyType or
+            tostring( Daneel.Debug.GetType( key ) ):lower() == keyType -- tostring() is to transform 'nil' as a string
+        then
             length = length + 1
         end
     end
@@ -480,7 +482,7 @@ function table.print(t)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Merge two or more tables into one. Integer keys are not overrided.
+--- Merge two or more tables into one. Integer keys are not overridden.
 -- When several tables have the same value (with an integer key), the value is only added once in the returned table.
 -- @param ... (table) At least two tables to merge together.
 -- @return (table) The new table.
@@ -510,7 +512,7 @@ function table.merge(...)
     return fullTable
 end
 
---- Deeply merge two or more tables into one. Integer keys are not overrided.
+--- Deeply merge two or more tables into one. Integer keys are not overridden.
 -- A deep merge means that the table values are also deeply merged.
 -- When several tables have the same value (with an integer key), the value is only added once in the returned table.
 -- @param ... (table) At least two tables to merge together.
@@ -582,7 +584,7 @@ end
 --- Create an associative table with the provided keys and values tables.
 -- @param keys (table) The keys of the future table.
 -- @param values (table) The values of the future table.
--- @param returnFalseIfNotSameLength [optional default=false] (boolean) If true, the function returns false if the keys and values tables have different length.
+-- @param returnFalseIfNotSameLength (boolean) [optional default=false] If true, the function returns false if the keys and values tables have different length.
 -- @return (table or boolean) The combined table or false if the tables have different length.
 function table.combine( keys, values, returnFalseIfNotSameLength )
     Daneel.Debug.StackTrace.BeginFunction( "table.combine", keys, values, returnFalseIfNotSameLength )
@@ -613,8 +615,8 @@ end
 -- Do not use this function on tables which have integer keys but that are not arrays (whose keys are not contiguous).
 -- @param t (table) The table.
 -- @param value (mixed) The value to remove.
--- @param maxRemoveCount (number) [optional] Maximum number of occurences of the value to be removed. If nil : remove all occurences.
--- @return (number) The number of occurence removed.
+-- @param maxRemoveCount (number) [optional] Maximum number of occurrences of the value to be removed. If nil : remove all occurrences.
+-- @return (number) The number of occurrence removed.
 function table.removevalue( t, value, maxRemoveCount )
     Daneel.Debug.StackTrace.BeginFunction( "table.removevalue", t, value, maxRemoveCount )
     local errorHead = "table.removevalue( table, value[, maxRemoveCount] ) : "
@@ -675,7 +677,7 @@ function table.getvalues( t )
     return values
 end
 
---- Get the key associated with the first occurence of the provided value.
+--- Get the key associated with the first occurrence of the provided value.
 -- @param t (table) The table.
 -- @param value (mixed) The value.
 -- @return (mixed) The value's key or nil if the value is not found.
@@ -699,7 +701,7 @@ end
 --- Sort a list of table using one of the tables property as criteria.
 -- @param t (table) The table.
 -- @param property (string) The property used as criteria to sort the table.
--- @param orderBy [optional default="asc"] (string) How the sort should be made. Can be "asc" or "desc". Asc means small values first.
+-- @param orderBy (string) [optional default="asc"] How the sort should be made. Can be "asc" or "desc". Asc means small values first.
 -- @return (table) The ordered table.
 function table.sortby( t, property, orderBy )
     Daneel.Debug.StackTrace.BeginFunction( "table.sortby", t, property, orderBy )
