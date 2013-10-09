@@ -1242,6 +1242,11 @@ end
 local DaneelScriptAsset = Behavior
 Daneel.Debug.tryGameObject = nil -- The game object Daneel.Debug.Try() works with
 
+--- Allow to test out a piece of code without killing the script if the code throw an error.
+-- If the code throw an error, it will be printed in the Runtime Report but it won't kill the script that calls Daneel.Debug.Try().
+-- Does not protect against exceptions thrown by CraftStudio.
+-- @param _function (function or userdata) The function containing the code to try out.
+-- @return (boolean) True if the code runs without errors, false otherwise.
 function Daneel.Debug.Try( _function )
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Debug.Try", _function )
     local errorHead = "Daneel.Debug.Try( _function ) : "
@@ -1793,10 +1798,10 @@ local OriginalSetModel = ModelRenderer.SetModel
 
 --- Attach the provided model to the provided modelRenderer.
 -- @param modelRenderer (ModelRenderer) The modelRenderer.
--- @param modelNameOrAsset (string or Model) The model name or asset, or nil.
+-- @param modelNameOrAsset (string or Model) [optional] The model name or asset, or nil.
 function ModelRenderer.SetModel( modelRenderer, modelNameOrAsset )
     Daneel.Debug.StackTrace.BeginFunction( "ModelRenderer.SetModel", modelRenderer, modelNameOrAsset )
-    local errorHead = "ModelRenderer.SetModel( modelRenderer, modelNameOrAsset ) : "
+    local errorHead = "ModelRenderer.SetModel( modelRenderer[, modelNameOrAsset] ) : "
     Daneel.Debug.CheckArgType( modelRenderer, "modelRenderer", "ModelRenderer", errorHead )
     Daneel.Debug.CheckOptionalArgType( modelNameOrAsset, "modelNameOrAsset", {"string", "Model"}, errorHead )
 
@@ -1812,10 +1817,10 @@ local OriginalSetAnimation = ModelRenderer.SetAnimation
 
 --- Set the specified animation for the modelRenderer's current model.
 -- @param modelRenderer (ModelRenderer) The modelRenderer.
--- @param animationNameOrAsset (string or ModelAnimation) The animation name or asset, or nil.
+-- @param animationNameOrAsset (string or ModelAnimation) [optional] The animation name or asset, or nil.
 function ModelRenderer.SetAnimation( modelRenderer, animationNameOrAsset )
     Daneel.Debug.StackTrace.BeginFunction( "ModelRenderer.SetModelAnimation", modelRenderer, animationNameOrAsset )
-    local errorHead = "ModelRenderer.SetModelAnimation( modelRenderer, animationNameOrAsset ) : "
+    local errorHead = "ModelRenderer.SetModelAnimation( modelRenderer[, animationNameOrAsset] ) : "
     Daneel.Debug.CheckArgType( modelRenderer, "modelRenderer", "ModelRenderer", errorHead)
     Daneel.Debug.CheckOptionalArgType( animationNameOrAsset, "animationNameOrAsset", {"string", "ModelAnimation"}, errorHead )
 
@@ -1835,11 +1840,11 @@ local OriginalSetMap = MapRenderer.SetMap
 
 --- Attach the provided map to the provided mapRenderer.
 -- @param mapRenderer (MapRenderer) The mapRenderer.
--- @param mapNameOrAsset (string or Map) The map name or asset.
+-- @param mapNameOrAsset (string or Map) [optional] The map name or asset, or nil.
 -- @param keepTileSet [optional default=false] (boolean) Keep the current TileSet.
 function MapRenderer.SetMap( mapRenderer, mapNameOrAsset, keepTileSet )
     Daneel.Debug.StackTrace.BeginFunction( "MapRenderer.SetMap", mapRenderer, mapNameOrAsset )
-    local errorHead = "MapRenderer.SetMap( mapRenderer, mapNameOrAsset) : "
+    local errorHead = "MapRenderer.SetMap( mapRenderer[, mapNameOrAsset] ) : "
     Daneel.Debug.CheckArgType( mapRenderer, "mapRenderer", "MapRenderer", errorHead )
     Daneel.Debug.CheckOptionalArgType( mapNameOrAsset, "mapNameOrAsset", {"string", "Map"}, errorHead )
     keepTileSet = Daneel.Debug.CheckOptionalArgType( keepTileSet, "keepTileSet", "boolean", errorHead, false )
@@ -1856,15 +1861,17 @@ local OriginalSetTileSet = MapRenderer.SetTileSet
 
 --- Set the specified tileSet for the mapRenderer's map.
 -- @param mapRenderer (MapRenderer) The mapRenderer.
--- @param tileSetNameOrAsset (string or TileSet) The tileSet name or asset.
-function MapRenderer.SetTileSet(mapRenderer, tileSetNameOrAsset)
-    Daneel.Debug.StackTrace.BeginFunction("MapRenderer.SetTileSet", mapRenderer, tileSetNameOrAsset)
-    local errorHead = "MapRenderer.SetTileSet(mapRenderer, tileSetNameOrAsset) : "
-    Daneel.Debug.CheckArgType(mapRenderer, "mapRenderer", "MapRenderer", errorHead)
-    Daneel.Debug.CheckArgType(tileSetNameOrAsset, "tileSetNameOrAsset", {"string", "TileSet"}, errorHead)
+-- @param tileSetNameOrAsset (string or TileSet) [optional] The tileSet name or asset, or nil.
+function MapRenderer.SetTileSet( mapRenderer, tileSetNameOrAsset )
+    Daneel.Debug.StackTrace.BeginFunction("MapRenderer.SetTileSet", mapRenderer, tileSetNameOrAsset )
+    local errorHead = "MapRenderer.SetTileSet( mapRenderer[, tileSetNameOrAsset] ) : "
+    Daneel.Debug.CheckArgType( mapRenderer, "mapRenderer", "MapRenderer", errorHead )
+    local argType = Daneel.Debug.CheckOptionalArgType( tileSetNameOrAsset, "tileSetNameOrAsset", {"string", "TileSet"}, errorHead )
 
-    local tileSet = Asset.Get(tileSetNameOrAsset, "TileSet", true)
-    OriginalSetTileSet(mapRenderer, tileSet)
+    if argType == "string" then
+        tileSetNameOrAsset = Asset.Get( tileSetNameOrAsset, "TileSet", true )
+    end
+    OriginalSetTileSet( mapRenderer, tileSetNameOrAsset )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -1874,12 +1881,12 @@ end
 
 local OriginalSetFont = TextRenderer.SetFont
 
---- Set the specified font for the textRenderer.
--- @param textRenderer (TextRenderer) The textRenderer.
--- @param fontNameOrAsset (string or Font) The font name or asset
+--- Set the specified font for the text renderer.
+-- @param textRenderer (TextRenderer) The text renderer.
+-- @param fontNameOrAsset (string or Font) [optional] The font name or asset, or nil.
 function TextRenderer.SetFont( textRenderer, fontNameOrAsset )
     Daneel.Debug.StackTrace.BeginFunction( "TextRenderer.SetFont", textRenderer, fontNameOrAsset )
-    local errorHead = "TextRenderer.SetFont( textRenderer, fontNameOrAsset ) : "
+    local errorHead = "TextRenderer.SetFont( textRenderer[, fontNameOrAsset] ) : "
     Daneel.Debug.CheckArgType( textRenderer, "textRenderer", "TextRenderer", errorHead )
     Daneel.Debug.CheckOptionalArgType( fontNameOrAsset, "fontNameOrAsset", {"string", "Font"}, errorHead )
 
@@ -1912,7 +1919,7 @@ end
 
 --- Update the gameObject's scale to make the text appear the provided width.
 -- @param textRenderer (TextRenderer) The textRenderer.
--- @param width (number) The text's width in units.
+-- @param width (number) The text's width in scene units.
 function TextRenderer.SetTextWidth( textRenderer, width )
     Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetTextWidth", textRenderer, width)
     local errorHead = "TextRenderer.SetTextWidth(textRenderer, width) : "
