@@ -3,7 +3,7 @@
 -- Allow to register the game object for the localized text to be updated when the language changes.
 --
 -- Last modified for v1.3
--- Copyright © 2013 Florent POUJOL, published under the MIT licence.
+-- Copyright © 2013 Florent POUJOL, published under the MIT license.
 
 Lang = {
     lines = {},
@@ -23,7 +23,7 @@ function Lang.DefaultConfig()
         
         default = nil, -- Default language
         current = nil, -- Current language
-        searchInDefault = true, -- Tell wether Lang.Get() search a line key in the default language 
+        searchInDefault = true, -- Tell whether Lang.Get() search a line key in the default language 
         -- when it is not found in the current language before returning the value of keyNotFound
         keyNotFound = "langkeynotfound", -- Value returned when a language key is not found
     }
@@ -81,6 +81,7 @@ function Lang.Get( key, replacements )
     local currentLanguage = Lang.Config.current
     local defaultLanguage = Lang.Config.default
     local searchInDefault = Lang.Config.searchInDefault
+    local cache = true
 
     local keys = key:split( "." )
     local language = currentLanguage
@@ -104,11 +105,12 @@ function Lang.Get( key, replacements )
         if lines[_key] == nil then
             -- key was not found
             if Daneel.Config.debug.enableDebug then
-                print( errorHead.."Localization key '"..key.."' was not found in '"..language.."' language ." )
+                print( errorHead.."Localization key '"..key.."' was not found in '"..language.."' language." )
             end
 
             -- search for it in the default language
-            if language ~= defaultLanguage and searchInDefault == true then  
+            if language ~= defaultLanguage and searchInDefault == true then
+                cache = false
                 lines = Lang.Get( defaultLanguage.."."..noLangKey, replacements )
             else -- already default language or don't want to search in
                 lines = Lang.Config.keyNotFound
@@ -128,7 +130,7 @@ function Lang.Get( key, replacements )
     -- process replacements
     if replacements ~= nil then
         line = Daneel.Utilities.ReplaceInString( line, replacements )
-    else
+    elseif cache and line ~= Lang.Config.keyNotFound then
         Lang.cache[ key ] = line -- ie: "greetings.welcome"
         Lang.cache[ fullKey ] = line -- ie: "english.greetings.welcome"
     end
