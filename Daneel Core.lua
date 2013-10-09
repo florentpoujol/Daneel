@@ -2025,6 +2025,8 @@ function Ray.IntersectsPlane( ray, plane, returnRaycastHit )
         local raycastHit = RaycastHit.New()
         raycastHit.distance = distance
         raycastHit.hitLocation = ray.position + ray.direction * distance
+        raycastHit.hitObject = plane
+
         distance = raycastHit
     end
 
@@ -2053,6 +2055,8 @@ function Ray.IntersectsModelRenderer( ray, modelRenderer, returnRaycastHit )
         raycastHit.distance = distance
         raycastHit.normal = normal
         raycastHit.hitLocation = ray.position + ray.direction * distance
+        raycastHit.hitObject = modelRenderer
+        raycastHit.gameObject = modelRenderer.gameObject
 
         distance = raycastHit
         normal = nil
@@ -2087,6 +2091,8 @@ function Ray.IntersectsMapRenderer( ray, mapRenderer, returnRaycastHit )
         raycastHit.hitBlockLocation = hitBlockLocation
         raycastHit.adjacentBlockLocation = adjacentBlockLocation
         raycastHit.hitLocation = ray.position + ray.direction * distance
+        raycastHit.hitObject = mapRenderer
+        raycastHit.gameObject = mapRenderer.gameObject
 
         distance = raycastHit
         normal = nil
@@ -2119,6 +2125,8 @@ function Ray.IntersectsTextRenderer( ray, textRenderer, returnRaycastHit )
         raycastHit.distance = distance
         raycastHit.normal = normal
         raycastHit.hitLocation = ray.position + ray.direction * distance
+        raycastHit.hitObject = textRenderer
+        raycastHit.gameObject = textRenderer.gameObject
 
         Daneel.Debug.StackTrace.EndFunction()
         return raycastHit
