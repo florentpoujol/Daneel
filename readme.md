@@ -30,7 +30,7 @@ Or leave a support topic in CraftStudio's community forums :
 
 ## Licence
 
-Daneel is published under the MIT licence.
+Daneel is published under the MIT license.
 
 Copyright © 2013 Florent Poujol <forent.poujol@gmail.com>.
 

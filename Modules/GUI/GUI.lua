@@ -2,7 +2,7 @@
 -- Module adding the GUI components and Vector2 object
 --
 -- Last modified for v1.3
--- Copyright © 2013 Florent POUJOL, published under the MIT licence.
+-- Copyright © 2013 Florent POUJOL, published under the MIT license.
 
 GUI = { pixelsToUnits = 0 }
 

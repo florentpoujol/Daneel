@@ -2,7 +2,7 @@
 -- Contains Daneel's core functionalities.
 --
 -- Last modified for v1.3
--- Copyright © 2013 Florent POUJOL, published under the MIT licence.
+-- Copyright © 2013 Florent POUJOL, published under the MIT license.
 
 ----------------------------------------------------------------------------------
 -- LUA (put here at the top because pretty much all functions depends on them)

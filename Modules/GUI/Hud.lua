@@ -2,7 +2,7 @@
 -- Scripted behavior for GUI.Hud component.
 --
 -- Last modified for v1.2.0
--- Copyright © 2013 Florent POUJOL, published under the MIT licence.
+-- Copyright © 2013 Florent POUJOL, published under the MIT license.
 
 --[[PublicProperties
 positionX string ""

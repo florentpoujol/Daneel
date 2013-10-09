@@ -2,7 +2,7 @@
 -- Scripted behavior for Tweeners.
 --
 -- Last modified for v1.3
--- Copyright © 2013 Florent POUJOL, published under the MIT licence.
+-- Copyright © 2013 Florent POUJOL, published under the MIT license.
 
 --[[PublicProperties
 target string ""
