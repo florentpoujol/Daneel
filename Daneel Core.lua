@@ -1175,7 +1175,7 @@ end
 
 --- Returns the name as a string of the global variable (including nested tables) whose value is provided.
 -- This only works if the value of the variable is a table or a function.
--- When the variable is nested in one or several tables (like GUI.Hud), it must have been set in the 'userObject' table in the config if not already part of CraftStudio or Daneel.
+-- When the variable is nested in one or several tables (like GUI.Hud), it must have been set in the 'objects' table in the config.
 -- @param value (table or function) Any global variable, any object from CraftStudio or Daneel or objects whose name is set in 'userObjects' in the Daneel.Config.
 -- @return (string) The name, or nil.
 function Daneel.Debug.GetNameFromValue(value)
@@ -1192,7 +1192,7 @@ function Daneel.Debug.GetNameFromValue(value)
     return result
 end
 
---- Check if the provided argument's value in the provided expected value(s).
+--- Check if the provided argument's value is in the provided expected value(s).
 -- When that's not the case, return the value of the 'defaultValue' argument, or throws an error when it is nil. 
 -- Arguments of type string are considered case-insensitive. The case will be corrected but no error will be thrown.
 -- When 'expectedArgumentValues' is of type table, it is always considered as a table of several expected values.
@@ -1260,7 +1260,6 @@ Daneel.Debug.StackTrace = { messages = {} }
 -- @param ... [optional] (mixed) Arguments received by the function.
 function Daneel.Debug.StackTrace.BeginFunction( functionName, ... )
     if 
-        not Daneel.isLoaded or
         not Daneel.Config.debug.enableDebug or 
         not Daneel.Config.debug.enableStackTrace
     then 
@@ -1297,7 +1296,6 @@ end
 --- Closes a successful function call, removing it from the stacktrace.
 function Daneel.Debug.StackTrace.EndFunction()
     if 
-        not Daneel.isLoaded or
         not Daneel.Config.debug.enableDebug or 
         not Daneel.Config.debug.enableStackTrace
     then 
@@ -1311,7 +1309,6 @@ end
 --- Print the StackTrace.
 function Daneel.Debug.StackTrace.Print()
     if 
-        not Daneel.isLoaded or
         not Daneel.Config.debug.enableDebug or 
         not Daneel.Config.debug.enableStackTrace
     then 
@@ -1465,7 +1462,8 @@ function Daneel.Event.Fire( object, eventName, ... )
             listener( unpack( arg ) )
 
         else -- an object
-            if listener.isDestroyed ~= true then -- ensure that the event is not fired on a dead gameObject or component
+            local mt = getmetatable( listener )
+            if listener.isDestroyed ~= true or (mt == GameObject and listener.transform ~= nil)  then -- ensure that the event is not fired on a dead gameObject or component
                 local message = eventName
 
                 -- look for the value of the EventName property on the object
@@ -1485,7 +1483,7 @@ function Daneel.Event.Fire( object, eventName, ... )
                 end
 
                 -- always try to send the message, even when funcOrMessage was a function
-                if getmetatable( listener ) == GameObject then
+                if mt == GameObject then
                     listener:SendMessage( message, arg )
                 end
             end
