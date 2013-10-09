@@ -954,11 +954,9 @@ function Daneel.Utilities.ToNumber( data )
     return number
 end
 
-local DaneelScriptAsset = Behavior
-Daneel.Utilities.buttonExistsGameObject = nil -- The game object Daneel.Utilities.ButtonExists() works with
-
 --- Tell whether the provided button name exists amongst the Game Controls, or not.
 -- If the button name does not exists, it will print an error in the Runtime Report but it won't kill the script that called the function.
+-- CS.Input.ButtonExists is an alias of Daneel.Utilities.ButtonExists.
 -- @param buttonName (string) The button name.
 -- @return (boolean) True if the button name exists, false otherwise.
 function Daneel.Utilities.ButtonExists( buttonName )
@@ -966,22 +964,14 @@ function Daneel.Utilities.ButtonExists( buttonName )
     local errorHead = "Daneel.Utilities.ButtonExists( buttonName ) : "
     Daneel.Debug.CheckArgType( buttonName, "buttonName", "string", errorHead )
 
-    local gameObject = Daneel.Utilities.buttonExistsGameObject
-    if gameObject == nil or gameObject.transform == nil then
-        gameObject = CraftStudio.CreateGameObject( "ButtonExists" )
-        Daneel.Utilities.buttonExistsGameObject = gameObject
-    end
-
-    local buttonExists = false
-    gameObject:CreateScriptedBehavior( DaneelScriptAsset, {
-        buttonExists = true,
-        buttonName = buttonName, 
-        success = function() buttonExists = true end  
-    } )
+    local buttonExists =  Daneel.Debug.Try( function()
+        CS.Input.WasButtonJustPressed( buttonName )
+    end )
 
     Daneel.Debug.StackTrace.EndFunction()
     return buttonExists
 end
+CS.Input.ButtonExists = Daneel.Utilities.ButtonExists
 
 
 ----------------------------------------------------------------------------------
@@ -1247,6 +1237,31 @@ function Daneel.Debug.CheckArgValue(argument, argumentName, expectedArgumentValu
     end
     Daneel.Debug.StackTrace.EndFunction()
     return argument
+end
+
+local DaneelScriptAsset = Behavior
+Daneel.Debug.tryGameObject = nil -- The game object Daneel.Debug.Try() works with
+
+function Daneel.Debug.Try( _function )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Debug.Try", _function )
+    local errorHead = "Daneel.Debug.Try( _function ) : "
+    Daneel.Debug.CheckArgType( _function, "_function", {"function", "userdata"}, errorHead )
+
+    local gameObject = Daneel.Debug.tryGameObject
+    if gameObject == nil or gameObject.transform == nil then
+        gameObject = CraftStudio.CreateGameObject( "Daneel_Debug_Try" )
+        Daneel.Debug.tryGameObject = gameObject
+    end
+
+    local success = false
+    gameObject:CreateScriptedBehavior( DaneelScriptAsset, {
+        debugTry = true,
+        testFunction = _function, 
+        successCallback = function() success = true end  
+    } )
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return success
 end
 
 
@@ -3149,11 +3164,12 @@ end
 -- Runtime
 
 function Behavior:Awake()
-    if self.buttonExists == true then
+    if self.debugTry == true then
         CraftStudio.Destroy( self )
-        CS.Input.WasButtonJustPressed( self.buttonName ) -- this function will throw an error, kill the scripted behavior and not call the success callback if the button name is unknow
-        --but it on't kill the srip that created the scripted behavior
-        self.success()
+        self.testFunction()
+        -- testFunction() may throw an error, kill the scripted behavior and not call the success callback
+        -- but it won't kill the script that created the scripted behavior (the one that called Daneel.Debug.Try())
+        self.successCallback()
         return
     end
 
@@ -3200,7 +3216,7 @@ function Behavior:Awake()
 end 
 
 function Behavior:Start()
-    if self.buttonExists == true then
+    if self.debugTry then
         return
     end
 
@@ -3221,7 +3237,7 @@ function Behavior:Start()
 end 
 
 function Behavior:Update()
-    if self.buttonExists == true then
+    if self.debugTry then
         return
     end
 
