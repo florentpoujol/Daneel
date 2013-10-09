@@ -1718,7 +1718,7 @@ function Component.GetId( component )
 
     local id = -1
     if component.inner ~= nil then
-        id = tostring( component.inner ):sub( 5, 20 )
+        id = tonumber( tostring( component.inner ):sub( 5, 20 ) )
         rawset( component, "Id", id )
     end
     Daneel.Debug.StackTrace.EndFunction()
@@ -2232,18 +2232,18 @@ end
 
 setmetatable( GameObject, { __call = function(Object, ...) return Object.New(...) end } )
 
-function GameObject.__tostring(gameObject)
+function GameObject.__tostring( gameObject )
     if gameObject.transform == nil then
         return "Destroyed gameObject: " .. Daneel.Debug.ToRawString( gameObject )
         -- the important here was to prevent throwing an error
     end
     -- returns something like "GameObject: 123456789: 'MyName'"
     -- do not use gameObject:GetID() here, it throws a stack overflow when stacktrace is enabled (BeginFunction uses tostring() on the input argument)
-    local id = gameObject.Id
-    if id == nil then
-        id = tostring( gameObject.inner ):sub( 5, 20 )
-        gameObject.Id = id
-    end
+    local st = Daneel.Config.debug.enableStackTrace
+    Daneel.Config.debug.enableStackTrace = false
+    local id = gameObject:GetId()
+    Daneel.Config.debug.enableStackTrace = st
+
     return "GameObject: " .. id .. ": '" .. gameObject:GetName() .. "'"
 end
 
@@ -2491,7 +2491,7 @@ function GameObject.GetId( gameObject )
 
     local id = -1
     if gameObject.inner ~= nil then
-        id = tostring( gameObject.inner ):sub( 5, 20 )
+        id = tonumber( tostring( gameObject.inner ):sub( 5, 20 ) )
         rawset( gameObject, "Id", id )
     end
 
@@ -2942,11 +2942,10 @@ function Daneel.SetComponents( components )
             componentObject["__tostring"] = function( component )
                 -- returns something like "ModelRenderer: 123456789"    component.inner is "?: [some ID]"
                 -- do not use component:GetId() here, it throws a stack overflow when stacktrace is enabled because ST.BeginFunction() uses tostring() on the provided argument(s)
-                local id = component.Id
-                if id == nil then
-                    id = tostring( component.inner ):sub( 5, 20 )
-                    component.Id = id
-                end
+                local st = Daneel.Config.debug.enableStackTrace
+                Daneel.Config.debug.enableStackTrace = false
+                local id = component:GetId()
+                Daneel.Config.debug.enableStackTrace = st
 
                 return componentType .. ": " .. id
             end
