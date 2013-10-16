@@ -4,6 +4,13 @@
 -- Last modified for v1.3
 -- Copyright © 2013 Florent POUJOL, published under the MIT license.
 
+-- keep that up there
+if CS.DaneelModules == nil then
+    CS.DaneelModules = {}
+    -- DaneelModules is inside CS because you can do 'if CS.DaneelModules == nil' but you can't do 'if DaneelModules == nil'
+    -- and you can't be sure to be able to access Daneel.Utilities.GlobalExists()
+end
+
 ----------------------------------------------------------------------------------
 -- LUA (put here at the top because pretty much all functions depends on them)
 ----------------------------------------------------------------------------------
@@ -1517,7 +1524,9 @@ end
 ----------------------------------------------------------------------------------
 -- Time
 
-Daneel.Time = {
+Daneel.Time = {}
+
+local daneelTime = {
     realTime = 0.0,
     realDeltaTime = 0.0,
 
@@ -1527,6 +1536,34 @@ Daneel.Time = {
 
     frameCount = 0,
 }
+
+function Daneel.Time.Load()
+    setmetatable( Daneel.Time, nil )
+    Daneel.Time = daneelTime
+end
+
+local mt = {
+    __index = function( instance, key )
+        setmetatable( Daneel.Time, nil ) -- best prevent C Stack Overflow
+        if not Daneel.isLoaded then
+            Daneel.LateLoad()
+        end
+        return Daneel.Time[ key ]
+    end,
+
+    __newindex = function( instance, key, value )
+        setmetatable( Daneel.Time, nil ) 
+        if not Daneel.isLoaded then
+            Daneel.LateLoad()
+        end
+        Daneel.Time[ key ] = value
+    end
+}
+setmetatable( Daneel.Time, mt )
+-- Using the metatable allows to detect if the Time object is used when Daneel is not loaded yet
+-- in order to load it now.
+
+CS.DaneelModules['Time'] = Daneel.Time
 -- see below in Daneel.Update()
 
 
@@ -3059,11 +3096,7 @@ end
 Daneel.Config.componentTypes = table.getkeys( Daneel.Config.componentObjects ) -- put here so that table.getkeys() don't throw error because Daneel.Debug doesn't exists
 Daneel.Config.assetTypes = table.getkeys( Daneel.Config.assetObjects )
 
-if CS.DaneelModules == nil then
-    CS.DaneelModules = {}
-    -- DaneelModules is inside CS because you can do 'if CS.DaneelModules == nil' but you can't do 'if DaneelModules == nil'
-    -- and you can't be sure to be able to access Daneel.Utilities.GlobalExists()
-end
+
 
 -- load Daneel at the start of the game
 function Daneel.Load()
