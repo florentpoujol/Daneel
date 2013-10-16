@@ -53,12 +53,12 @@ IDEAS
     -----
     MODULE / PLUGIN / EXTENSION
 
+    - GUI.Input permettre de définir un curseur model optionnel
 
 ==========
 A implémenter
     
     - add setter for all GUI properties
-    - GUI.Input permettre de définir un curseur model optionnel
     
 
 ==========

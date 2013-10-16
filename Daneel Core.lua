@@ -1525,21 +1525,20 @@ end
 -- Time
 
 Daneel.Time = {}
-
-local daneelTime = {
-    realTime = 0.0,
-    realDeltaTime = 0.0,
-
-    time = 0.0,
-    deltaTime = 0.0,
-    timeScale = 1.0,
-
-    frameCount = 0,
-}
+CS.DaneelModules['Time'] = Daneel.Time
 
 function Daneel.Time.Load()
     setmetatable( Daneel.Time, nil )
-    Daneel.Time = daneelTime
+    Daneel.Time = {
+        realTime = 0.0,
+        realDeltaTime = 0.0,
+
+        time = 0.0,
+        deltaTime = 0.0,
+        timeScale = 1.0,
+
+        frameCount = 0,
+    }
 end
 
 local mt = {
@@ -1563,7 +1562,7 @@ setmetatable( Daneel.Time, mt )
 -- Using the metatable allows to detect if the Time object is used when Daneel is not loaded yet
 -- in order to load it now.
 
-CS.DaneelModules['Time'] = Daneel.Time
+
 -- see below in Daneel.Update()
 
 

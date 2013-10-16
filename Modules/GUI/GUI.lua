@@ -675,6 +675,11 @@ function GUI.Slider.New( gameObject, params )
     slider.Id = Daneel.Cache.GetId()
     slider.value = nil
     slider.parent = slider.gameObject:GetParent()
+    if slider.parent == nil then
+        local go = CS.CreateGameObject( "SliderParent" )
+        go.transform:SetPosition( slider.gameObject.transform:GetPosition() )
+        slider.gameObject:SetParent( go )
+    end
     setmetatable( slider, GUI.Slider )
 
     gameObject.slider = slider
@@ -862,6 +867,14 @@ function GUI.Input.New( gameObject, params )
                 gameObject.isMouseOver = false
             end
             gameObject.input:Focus( gameObject.isMouseOver )
+        end
+    )
+
+    Daneel.Event.Listen( "OnValidateButtonJustPressed",
+        function()
+            if input.isFocused then
+                Daneel.Event.Fire( input, "OnValidate", input )
+            end
         end
     )
 
