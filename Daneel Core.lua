@@ -1877,10 +1877,10 @@ local OriginalSetMap = MapRenderer.SetMap
 --- Attach the provided map to the provided mapRenderer.
 -- @param mapRenderer (MapRenderer) The mapRenderer.
 -- @param mapNameOrAsset (string or Map) [optional] The map name or asset, or nil.
--- @param keepTileSet [optional default=false] (boolean) Keep the current TileSet.
+-- @param keepTileSet (boolean) [optional default=false] Keep the current TileSet.
 function MapRenderer.SetMap( mapRenderer, mapNameOrAsset, keepTileSet )
-    Daneel.Debug.StackTrace.BeginFunction( "MapRenderer.SetMap", mapRenderer, mapNameOrAsset )
-    local errorHead = "MapRenderer.SetMap( mapRenderer[, mapNameOrAsset] ) : "
+    Daneel.Debug.StackTrace.BeginFunction( "MapRenderer.SetMap", mapRenderer, mapNameOrAsset, keepTileSet )
+    local errorHead = "MapRenderer.SetMap( mapRenderer[, mapNameOrAsset, keepTileSet] ) : "
     Daneel.Debug.CheckArgType( mapRenderer, "mapRenderer", "MapRenderer", errorHead )
     Daneel.Debug.CheckOptionalArgType( mapNameOrAsset, "mapNameOrAsset", {"string", "Map"}, errorHead )
     keepTileSet = Daneel.Debug.CheckOptionalArgType( keepTileSet, "keepTileSet", "boolean", errorHead, false )
@@ -1902,12 +1902,13 @@ function MapRenderer.SetTileSet( mapRenderer, tileSetNameOrAsset )
     Daneel.Debug.StackTrace.BeginFunction("MapRenderer.SetTileSet", mapRenderer, tileSetNameOrAsset )
     local errorHead = "MapRenderer.SetTileSet( mapRenderer[, tileSetNameOrAsset] ) : "
     Daneel.Debug.CheckArgType( mapRenderer, "mapRenderer", "MapRenderer", errorHead )
-    local argType = Daneel.Debug.CheckOptionalArgType( tileSetNameOrAsset, "tileSetNameOrAsset", {"string", "TileSet"}, errorHead )
+    Daneel.Debug.CheckOptionalArgType( tileSetNameOrAsset, "tileSetNameOrAsset", {"string", "TileSet"}, errorHead )
 
-    if argType == "string" then
-        tileSetNameOrAsset = Asset.Get( tileSetNameOrAsset, "TileSet", true )
+    local tileSet = nil
+    if tileSetNameOrAsset ~= nil then
+        tileSet = Asset.Get( tileSetNameOrAsset, "TileSet", true )
     end
-    OriginalSetTileSet( mapRenderer, tileSetNameOrAsset )
+    OriginalSetTileSet( mapRenderer, tileSet )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -1943,10 +1944,10 @@ function TextRenderer.SetAlignment(textRenderer, alignment)
     Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetAlignment", textRenderer, alignment)
     local errorHead = "TextRenderer.SetAlignment(textRenderer, alignment) : "
     Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
-    local argType = Daneel.Debug.CheckArgType(alignment, "alignment", {"string", "userdata"}, errorHead)
+    Daneel.Debug.CheckArgType(alignment, "alignment", {"string", "userdata"}, errorHead)
 
-    if argType == "string" then
-        alignment = Daneel.Debug.CheckArgValue( alignment, "alignment", {"Left", "Center", "Right"}, errorHead, "Left" )
+    if type( alignment ) == "string" then
+        alignment = Daneel.Debug.CheckArgValue( alignment, "alignment", {"Left", "Center", "Right"}, errorHead, "Center" ) -- Center should actually be the value of Daneel.Config.textRenderer.alignment if ti exists
         alignment = TextRenderer.Alignment[ alignment ]
     end
     OriginalSetAlignment( textRenderer, alignment )
