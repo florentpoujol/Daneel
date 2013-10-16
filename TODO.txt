@@ -84,3 +84,5 @@ A modifier/ajouter dans la doc :
 
 =========
 BUGS
+
+SetMap renvoie erreur "Object reference not set to an instance of an object." lorsque argument map est nil

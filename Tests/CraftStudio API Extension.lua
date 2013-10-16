@@ -50,6 +50,105 @@ function Behavior:Awake()
     go.textRenderer.text = math.round( go.transform.localScale.x, 1 ) .. " ".. math.round( go.transform.scale.x, 1 )
     child.textRenderer.text = math.round( child.transform.localScale.x, 1 ) .. " ".. math.round( child.transform.scale.x, 1 )
     
+    ------
+    print( "~~~~~ ModelRenderer ~~~~~" )
+    
+    local go = GameObject("")
+    go:AddComponent( "moDelRendeRer" )
+    
+    go.modelRenderer.model = "Model"
+    r = go.modelRenderer.model
+    if Daneel.Debug.GetType( r ) ~= "Model" or r:GetPath() ~= "Model" then
+        print( "ModelRenderer.SetModel 1", r )
+    end
+    
+    go.modelRenderer.model = nil
+    --[[r = go.modelRenderer.model
+    if r ~= nil then
+        print( "ModelRenderer.SetModel 2", r )
+    end
+    ]]
+    -- remove comment when getter won't throw error when asset is nil
+    
+    go.modelRenderer.animation = Asset.Get("ModelAnimationFolder/Animation")
+    r = go.modelRenderer.animation
+    if Daneel.Debug.GetType( r ) ~= "ModelAnimation" or r:GetPath() ~= "ModelAnimationFolder/Animation" then
+        print( "ModelRenderer.SetAnimation 1", r )
+    end
+    
+    go.modelRenderer.animation = nil
+    --[[r = go.modelRenderer.animation
+    if r ~= nil then
+        print( "ModelRenderer.SetAnimation 2", r )
+    end]]
+    
+    
+    ------
+    print( "~~~~~ MapRenderer ~~~~~" )
+    
+    go:AddComponent( "MApRendeRer" )
+    
+    go.mapRenderer.map = "Map"
+    r = go.mapRenderer.map
+    if Daneel.Debug.GetType( r ) ~= "Map" or r:GetPath() ~= "Map" then
+        print( "MapRenderer.SetMap 1", r )
+    end
+    
+    --go.mapRenderer.map =  nil -- throws the error too 
+    --[[r = go.mapRenderer.map
+    if r ~= nil then
+        print( "MapRenderer.SetMap 2", r )
+    end
+    ]]
+    
+    go.mapRenderer.map = "Map"
+    go.mapRenderer.tileSet = "Tile Set1" -- FIXME : to be removed, the map shuld have its tile set
+    r = go.mapRenderer.tileSet
+    if Daneel.Debug.GetType( r ) ~= "TileSet" or r:GetPath() ~= "Tile Set1" then
+        print( "MapRenderer.SetTileSet 1", r )
+    end
+    
+    --go.mapRenderer.tileSet = nil
+    --[[r = go.mapRenderer.tileSet
+    if r ~= nil then
+        print( "MapRenderer.SetTileSet 2", r )
+    end]]
+    
+    go.mapRenderer.tileSet = Asset.Get("Tile Set2", "tileset")
+    r = go.mapRenderer.tileSet
+    if Daneel.Debug.GetType( r ) ~= "TileSet" or r:GetPath() ~= "Tile Set2" then
+        print( "MapRenderer.SetTileSet 3", r )
+    end
+    
+    
+    ------
+    print( "~~~~~ TextRenderer ~~~~~" )
+    
+    go:CreateComponent( "TextRenderer" )
+    
+    go.textRenderer.font = CS.FindAsset("Calibri")
+    r = go.textRenderer.font
+    if Daneel.Debug.GetType( r ) ~= "Font" or r:GetPath() ~= "Calibri" then
+        print( "TextRenderer.SetFont 1", r )
+    end
+    
+    --go.textRenderer.font =  nil
+    --[[r = go.textRenderer.font
+    if r ~= nil then
+        print( "textRenderer.SetFont 2", r )
+    end
+    ]] 
+    
+    go.textRenderer.alignment = "LeFt"
+    r = go.textRenderer.alignment
+    if r ~= TextRenderer.Alignment.Left then
+        print( "TextRenderer.SetAlignment 1", r )
+    end
+    
+    go.textRenderer.text = "  text width = 5 units"
+    go.textRenderer.textWidth = 5
+    -- this is a visual test, GetTextWidth() returns the width as if the GO had a scale of 1
+    
     
     ------
     print( "~~~~~ Ray ~~~~~" )
@@ -129,6 +228,7 @@ function Behavior:Awake()
         print( "ray:IntersectsTextRenderer 3", r )
     end
 end
+
 
 
 function Behavior:Start()
