@@ -1,5 +1,5 @@
 -- Lang.lua
--- Update the TextRenderer or TextArea component on the game object with the localized string whose key is provided.
+-- Update the TextRenderer or GUI.TextArea component on the game object with the localized string whose key is provided.
 -- Allow to register the game object for the localized text to be updated when the language changes.
 --
 -- Last modified for v1.3
@@ -19,8 +19,6 @@ CS.DaneelModules[ "Lang" ] = Lang
 
 function Lang.DefaultConfig()
     return {
-        languageNames = {}, -- list of the languages supported by the game
-        
         default = nil, -- Default language
         current = nil, -- Current language
         searchInDefault = true, -- Tell whether Lang.Get() search a line key in the default language 
@@ -31,26 +29,31 @@ end
 
 function Lang.Load()
     Daneel.Lang = Lang
+    local defaultLanguage = nil
 
-    for i, language in ipairs( Lang.Config.languageNames ) do
-        local functionName = "Lang" .. language:ucfirst()
+    for key, value in pairs( _G ) do
+        if key:find( "^Lang%u" ) ~= nil and type( value ) == "function" then
+            local language = (key:gsub( "Lang", "" ))
+            local language = language:lower()
+            if language ~= "userconfig" then
+                Lang.lines[ language ] = value()
 
-        if Daneel.Utilities.GlobalExists( functionName ) then
-            Lang.lines[language] = _G[ functionName ]()
-        elseif Daneel.Config.debug.enableDebug then
-            print( "Lang.Load() : WARNING : Can't load the language '"..language.."' because the global function "..functionName.."() does not exists." )
+                if defaultLanguage == nil then
+                    defaultLanguage = language
+                end
+            end
         end
     end
-
+    
     if Lang.Config.default == nil then
-        Lang.Config.default = Lang.Config.languageNames[1]
+        Lang.Config.default = defaultLanguage
     end
+    Lang.Config.default = Lang.Config.default:lower()
 
     if Lang.Config.current == nil then
         Lang.Config.current = Lang.Config.default
     end
-
-    Lang.isLoaded = true
+    Lang.Config.current = Lang.Config.current:lower()
 end
 
 function Lang.Start() 
@@ -71,13 +74,14 @@ function Lang.Get( key, replacements )
         return Lang.cache[ key ]
     end
 
-    if not Daneel.isAwake then
+    if not Daneel.isLoaded then -- 17/10  was Daneel.isAwake. Any reason ?
         Daneel.LateLoad()
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "Lang.Get", key, replacements )
     local errorHead = "Lang.Get( key[, replacements] ) : "
     Daneel.Debug.CheckArgType( key, "key", "string", errorHead )
+
     local currentLanguage = Lang.Config.current
     local defaultLanguage = Lang.Config.default
     local searchInDefault = Lang.Config.searchInDefault
@@ -85,8 +89,9 @@ function Lang.Get( key, replacements )
 
     local keys = key:split( "." )
     local language = currentLanguage
-    if table.containsvalue( Lang.Config.languageNames, keys[1] ) then
+    if Lang.lines[ keys[1]:lower() ] then
         language = table.remove( keys, 1 )
+        language = language:lower()
     end
     
     local noLangKey = table.concat( keys, "." ) -- rebuilt the key, but without the language
@@ -162,19 +167,19 @@ end
 -- Fire the OnLangUpdate event.
 -- @param language (string) The new current language.
 function Lang.Update( language )
-    if not Lang.isLoaded then
+    if not Daneel.isLoaded then
         Daneel.LateLoad()
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "Lang.Update", language )
     local errorHead = "Lang.Update( language ) : "
     Daneel.Debug.CheckArgType( language, "language", "string", errorHead )
-    language = Daneel.Debug.CheckArgValue( language, "language", Lang.Config.languageNames, errorHead )
+    language = Daneel.Debug.CheckArgValue( language, "language", table.getkeys( Lang.lines ), errorHead )
     
     Lang.cache = {} -- ideally only the items that do not begins by a language name should be deleted
     Lang.Config.current = language
     for gameObject, data in pairs( Lang.gameObjectsToUpdate ) do
-        if gameObject.transform == nil then
+        if gameObject.transform == nil or gameObject.inner == nil then
             Lang.gameObjectsToUpdate[ gameObject ] = nil
         else
             local text = Lang.Get( data.key, data.replacements )
@@ -204,7 +209,7 @@ registerForUpdate boolean false
 /PublicProperties]]
 
 function Behavior:Awake()
-    if not Lang.isLoaded then
+    if not Daneel.isLoaded then
         Daneel.LateLoad()
     end
 end

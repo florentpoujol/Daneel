@@ -1,10 +1,7 @@
 
 function LangUserConfig()
     return {
-        languageNames = {
-            "French",
-            "English"
-        },
+        
     }
 end
 
