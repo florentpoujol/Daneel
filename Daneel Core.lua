@@ -1709,6 +1709,19 @@ function Asset.GetPath( asset )
     return path
 end
 
+--- Returns the name of the provided asset.
+-- @param asset (One of the asset types) The asset instance.
+-- @return (string) The name (the last segment of the fully-qualified path).
+function Asset.GetName( asset )
+    Daneel.Debug.StackTrace.BeginFunction( "Asset.GetName", asset )
+    local errorHead = "Asset.GetName( asset ) : "
+    Daneel.Debug.CheckArgType( asset, "asset", Daneel.Config.assetTypes, errorHead )
+
+    local name = Asset.GetPath( asset ):gsub( "^(.*/)", "" ) 
+    Daneel.Debug.StackTrace.EndFunction()
+    return name
+end
+
 
 ----------------------------------------------------------------------------------
 -- Components

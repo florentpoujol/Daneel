@@ -27,6 +27,16 @@ function Behavior:Awake()
     if r ~= "Daneel/Daneel Core" then
         print( "Asset.GetPath 1", r )
     end
+
+    r = script:GetName()
+    if r ~= "Daneel Core" then
+        print( "Asset.GetName 1", r )
+    end
+    
+    r = script.name
+    if r ~= "Daneel Core" then
+        print( "Asset.GetName 2", r )
+    end
     
     -----
     print( "~~~~~ Component ~~~~~" )
