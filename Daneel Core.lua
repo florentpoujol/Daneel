@@ -402,9 +402,8 @@ function table.containsvalue(t, p_value, ignoreCase)
     end
 
     Daneel.Debug.CheckOptionalArgType(ignoreCase, "ignoreCase", "boolean", errorHead)
-    
-    if ignoreCase == true and type(p_value) ~= 'string' then
-        Daneel.Debug.CheckArgType(p_value, "p_value", "string", errorHead)
+    if ignoreCase and type(p_value) ~= 'string' then
+        ignoreCase = false
     end
     
     local containsValue = false
@@ -1146,10 +1145,9 @@ end
 -- @param data (mixed) The data to be converted to string.
 -- @return (string) The string.
 function Daneel.Debug.ToRawString( data )
-    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.GlobalExists", data )
+    -- 18/10/2013 removed the stacktrace as it caused a stack overflow when printing out destroyed game objects
     if data == nil and Daneel.Config.debug.enableDebug then
         print( "WARNING : Daneel.Debug.ToRawString( data ) : Argument 'data' is nil.")
-        Daneel.Debug.StackTrace.EndFunction()
         return nil
     end
 
@@ -1166,7 +1164,6 @@ function Daneel.Debug.ToRawString( data )
     if text == nil then 
         text = tostring( data )
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return text
 end
 
@@ -2324,7 +2321,7 @@ end
 setmetatable( GameObject, { __call = function(Object, ...) return Object.New(...) end } )
 
 function GameObject.__tostring( gameObject )
-    if gameObject.transform == nil then
+    if rawget( gameObject, "transform" ) == nil then
         return "Destroyed gameObject: " .. Daneel.Debug.ToRawString( gameObject )
         -- the important here was to prevent throwing an error
     end
