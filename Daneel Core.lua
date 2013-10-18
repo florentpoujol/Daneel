@@ -2892,7 +2892,7 @@ GameObject.Tags = {}
 
 --- Returns the game object(s) that have all the provided tag(s).
 -- @param tag (string or table) One or several tags.
--- @return (table) The game object(s) (empty if none is found)
+-- @return (table) The game object(s) (empty if none is found).
 function GameObject.GetWithTag( tag )
     Daneel.Debug.StackTrace.BeginFunction( "GameObject.GetWithTag", tag )
     local errorHead = "GameObject.GetWithTag( tag ) : "
@@ -2920,6 +2920,26 @@ function GameObject.GetWithTag( tag )
     return gameObjectsWithTag
 end
 
+--- Returns the tag(s) of the provided game object.
+-- @param gameObject (GameObject) The game object.
+-- @return (table) The tag(s) (empty if the game object has no tag).
+function GameObject.GetTags( gameObject )
+    Daneel.Debug.StackTrace.BeginFunction( "GameObject.GetTags", gameObject )
+    local errorHead = "GameObject.GetTags( gameObject ) : "
+    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
+
+    local tags = {}
+
+    for tag, gameObjects in pairs( GameObject.Tags ) do
+        if table.containsvalue( gameObjects, gameObject ) then
+            table.insert( tags, tag )
+        end
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return tags
+end
+
 --- Add the provided tag(s) to the provided gameObject.
 -- @param gameObject (GameObject) The game object.
 -- @param tag (string or table) One or several tag(s) (as a string or table of strings).
@@ -2933,17 +2953,11 @@ function GameObject.AddTag( gameObject, tag )
     if type( tags ) == "string" then
         tags = { tags }
     end
-    if gameObject.tags == nil then
-        gameObject.tags = {}
-    end
 
     for i, tag in pairs( tags ) do
-        if not table.containsvalue( gameObject.tags, tag ) then
-            table.insert( gameObject.tags, tag )
-        end
         if GameObject.Tags[ tag ] == nil then
             GameObject.Tags[ tag ] = { gameObject }
-        elseif not table.containsvalue( GameObject.Tags[tag], gameObject ) then
+        elseif not table.containsvalue( GameObject.Tags[ tag ], gameObject ) then
             table.insert( GameObject.Tags[ tag ], gameObject )
         end
     end
@@ -2955,22 +2969,20 @@ end
 -- If the 'tag' argument is not provided, all tag of the gameObject will be removed.
 -- @param gameObject (GameObject) The game object.
 -- @param tag [optional] (string or table) One or several tag(s) (as a string or table of strings).
-function GameObject.RemoveTag(gameObject, tag)
-    if gameObject.tags == nil then return end
-    
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.RemoveTag", gameObject, tag)
-    local errorHead = "GameObject.RemoveTag(gameObject[, tag]) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    tag = Daneel.Debug.CheckOptionalArgType(tag, "tag", {"string", "table"}, errorHead, gameObject.tags)
+function GameObject.RemoveTag( gameObject, tag )
+    Daneel.Debug.StackTrace.BeginFunction( "GameObject.RemoveTag", gameObject, tag )
+    local errorHead = "GameObject.RemoveTag( gameObject[, tag] ) : "
+    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
+    Daneel.Debug.CheckOptionalArgType( tag, "tag", {"string", "table"}, errorHead )
     
     local tags = tag
-    if type(tags) == "string" then
+    if type( tags ) == "string" then
         tags = { tags }
     end
-    for i, tag in pairs(tags) do
-        table.removevalue(gameObject.tags, tag)
-        if GameObject.Tags[tag] ~= nil then
-            table.removevalue(GameObject.Tags[tag], gameObject)
+
+    for tag, gameObjects in pairs( GameObject.Tags ) do
+        if tags == nil or table.containsValue( tags, tag ) then
+            table.removevalue( GameObject.Tags[ tag ], gameObject )
         end
     end
     Daneel.Debug.StackTrace.EndFunction()
@@ -2982,13 +2994,11 @@ end
 -- @param atLeastOneTag [default=false] (boolean) If true, returns true if the gameObject has AT LEAST one of the tag (instead of ALL the tag).
 -- @return (boolean) True
 function GameObject.HasTag(gameObject, tag, atLeastOneTag)
-    if gameObject.tags == nil then return false end
-    
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.HasTag", gameObject, tag, atLeastOneTag)
-    local errorHead = "GameObject.HasTag(gameObject, tag) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckArgType(tag, "tag", {"string", "table"}, errorHead, {})
-    Daneel.Debug.CheckOptionalArgType(atLeastOneTag, "atLeastOneTag", "boolean", errorHead)
+    Daneel.Debug.StackTrace.BeginFunction( "GameObject.HasTag", gameObject, tag, atLeastOneTag )
+    local errorHead = "GameObject.HasTag( gameObject, tag ) : "
+    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
+    Daneel.Debug.CheckArgType( tag, "tag", {"string", "table"}, errorHead, {} )
+    Daneel.Debug.CheckOptionalArgType( atLeastOneTag, "atLeastOneTag", "boolean", errorHead )
 
     local tags = tag
     if type(tags) == "string" then
@@ -2996,16 +3006,16 @@ function GameObject.HasTag(gameObject, tag, atLeastOneTag)
     end
     local hasTags = false
     if atLeastOneTag == true then
-        for i, tag in pairs(tags) do
-            if table.containsvalue(gameObject.tags, tag) then
+        for i, tag in pairs( tags ) do
+            if GameObject.Tags[ tag ] ~= nil and table.containsvalue( GameObject.Tags[ tag ], tag ) then
                 hasTags = true
                 break
             end
         end
     else
         hasTags = true
-        for i, tag in pairs(tags) do
-            if not table.containsvalue(gameObject.tags, tag) then
+        for i, tag in pairs( tags ) do
+            if GameObject.Tags[ tag ] == nil or not table.containsvalue( GameObject.Tags[ tag ], tag ) then
                 hasTags = false
                 break
             end
