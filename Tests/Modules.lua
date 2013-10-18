@@ -45,7 +45,7 @@ function Behavior:Awake()
     end
     
     r = Lang.Get("French.gamename")
-    if r ~= Lang.lines.French.gamename then
+    if r ~= Lang.lines.french.gamename then
         print( "Lang.Get 2", r )
     end
     
@@ -66,7 +66,7 @@ function Behavior:Awake()
     end
     
     r = Lang.Get("English.greetings.welcome", { playername = "Max" } )
-    if r ~= Lang.lines.English.greetings.welcome:gsub( ":playername", "Max" ) then
+    if r ~= Lang.lines.english.greetings.welcome:gsub( ":playername", "Max" ) then
         print( "Lang.Get 6", r )
     end
     
@@ -75,7 +75,7 @@ function Behavior:Awake()
     
     Lang.Update( "English" )
     r = self.gameObject.textRenderer.text
-    if r ~= Lang.lines.English.greetings.welcome:gsub( ":playername", "Charlie" ) then
+    if r ~= Lang.lines.english.greetings.welcome:gsub( ":playername", "Charlie" ) then
         print( "Lang.Get 7", r )
     end
 

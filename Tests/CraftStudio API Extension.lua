@@ -156,7 +156,7 @@ function Behavior:Awake()
     local screenSize = CS.Screen.GetSize()
     if getmetatable( screenSize ) ~= Vector2 then
         -- issue with GUI module (not loaded)
-        print( "CS.Screen.GetSize() dans script 'CS API Extension'" )
+        print( "CS.Screen.GetSize() in script 'CS API Extension'" )
     end
     
     local cameraGO = GameObject.Get( "Daneel Core" )
@@ -226,6 +226,32 @@ function Behavior:Awake()
     r = ray:IntersectsTextRenderer( go.textRenderer, true )
     if r ~= nil then
         print( "ray:IntersectsTextRenderer 3", r )
+    end
+
+    --
+    local gos = {
+        GameObject.Get( "Test Ray.Text" ),
+        GameObject.Get( "Test Ray2.Model" ),
+        GameObject.Get( "Test Ray2.Map" ),
+        GameObject.Get( "Test Ray.Model" ),
+        GameObject.Get( "Test Ray2.Text" ),
+        GameObject.Get( "Test Ray.Map" ),
+    }
+
+    local hits = ray:Cast( gos )
+    if #hits ~= 3 then
+        print( "ray:Cast 1" )
+        table.print( hits )
+    end
+
+    hits = ray:Cast( gos, true )
+    if 
+        hits[1].gameObject ~= GameObject.Get( "Test Ray.Model" ) or
+        hits[2].gameObject ~= GameObject.Get( "Test Ray.Map" ) or
+        hits[3].gameObject ~= GameObject.Get( "Test Ray.Text" ) 
+    then
+        print( "ray:Cast 2" )
+        table.print( hits )
     end
 end
 

@@ -1979,22 +1979,22 @@ setmetatable( Ray, { __call = function(Object, ...) return Object:New(...) end }
 -- @param gameObjects (table) The set of gameObjects to cast the ray against.
 -- @param sortByDistance [optional default=false] (boolean) Sort the raycastHit by increasing distance in the returned table.
 -- @return (table) A table of RaycastHits (will be empty if the ray didn't intersects anything).
-function Ray.Cast(ray, gameObjects, sortByDistance)
-    Daneel.Debug.StackTrace.BeginFunction("Ray.Cast", ray, gameObjects, sortByDistance)
-    local errorHead = "Ray.Cast(ray, gameObjects[, sortByDistance]) : "
-    Daneel.Debug.CheckArgType(ray, "ray", "Ray", errorHead)
-    Daneel.Debug.CheckArgType(gameObjects, "gameObjects", "table", errorHead)
-    Daneel.Debug.CheckOptionalArgType(sortByDistance, "sortByDistance", "boolean", errorHead)
+function Ray.Cast( ray, gameObjects, sortByDistance )
+    Daneel.Debug.StackTrace.BeginFunction( "Ray.Cast", ray, gameObjects, sortByDistance )
+    local errorHead = "Ray.Cast( ray, gameObjects[, sortByDistance] ) : "
+    Daneel.Debug.CheckArgType( ray, "ray", "Ray", errorHead )
+    Daneel.Debug.CheckArgType( gameObjects, "gameObjects", "table", errorHead )
+    Daneel.Debug.CheckOptionalArgType( sortByDistance, "sortByDistance", "boolean", errorHead )
     
     local hits = {}
-    for i, gameObject in ipairs(gameObjects) do
-        local raycastHit = ray:IntersectsGameObject(gameObject)
+    for i, gameObject in pairs( gameObjects ) do
+        local raycastHit = ray:IntersectsGameObject( gameObject )
         if raycastHit ~= nil then
-            table.insert(hits, raycastHit)
+            table.insert( hits, raycastHit )
         end
     end
     if sortByDistance == true then
-        hits = table.sortby(hits, "distance")
+        hits = table.sortby( hits, "distance" )
     end
 
     Daneel.Debug.StackTrace.EndFunction()
@@ -2059,10 +2059,11 @@ function Ray.IntersectsPlane( ray, plane, returnRaycastHit )
 
     local distance = OriginalIntersectsPlane( ray, plane )
     if returnRaycastHit and distance ~= nil then
-        local raycastHit = RaycastHit.New()
-        raycastHit.distance = distance
-        raycastHit.hitLocation = ray.position + ray.direction * distance
-        raycastHit.hitObject = plane
+        local raycastHit = RaycastHit.New({
+            distance = distance,
+            hitLocation = ray.position + ray.direction * distance,
+            hitObject = plane,
+        })
 
         distance = raycastHit
     end
@@ -2088,12 +2089,13 @@ function Ray.IntersectsModelRenderer( ray, modelRenderer, returnRaycastHit )
 
     local distance, normal = OriginalIntersectsModelRenderer( ray, modelRenderer )
     if returnRaycastHit and distance ~= nil then
-        local raycastHit = RaycastHit.New()
-        raycastHit.distance = distance
-        raycastHit.normal = normal
-        raycastHit.hitLocation = ray.position + ray.direction * distance
-        raycastHit.hitObject = modelRenderer
-        raycastHit.gameObject = modelRenderer.gameObject
+        local raycastHit = RaycastHit.New({
+            distance = distance,
+            normal = normal,
+            hitLocation = ray.position + ray.direction * distance,
+            hitObject = modelRenderer,
+            gameObject = modelRenderer.gameObject,
+        })
 
         distance = raycastHit
         normal = nil
@@ -2121,15 +2123,23 @@ function Ray.IntersectsMapRenderer( ray, mapRenderer, returnRaycastHit )
     returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
 
     local distance, normal, hitBlockLocation, adjacentBlockLocation = OriginalIntersectsMapRenderer( ray, mapRenderer )
+    if hitBlockLocation ~= nil then
+        setmetatable( hitBlockLocation, Vector3 )
+    end
+    if adjacentBlockLocation ~= nil then
+        setmetatable( adjacentBlockLocation, Vector3 )
+    end
+
     if returnRaycastHit and distance ~= nil then
-        local raycastHit = RaycastHit.New()
-        raycastHit.distance = distance
-        raycastHit.normal = normal
-        raycastHit.hitBlockLocation = hitBlockLocation
-        raycastHit.adjacentBlockLocation = adjacentBlockLocation
-        raycastHit.hitLocation = ray.position + ray.direction * distance
-        raycastHit.hitObject = mapRenderer
-        raycastHit.gameObject = mapRenderer.gameObject
+        local raycastHit = RaycastHit.New({
+            distance = distance,
+            normal = normal,
+            hitBlockLocation = hitBlockLocation,
+            adjacentBlockLocation = adjacentBlockLocation,
+            hitLocation = ray.position + ray.direction * distance,
+            hitObject = mapRenderer,
+            gameObject = mapRenderer.gameObject,
+        })
 
         distance = raycastHit
         normal = nil
@@ -2156,14 +2166,15 @@ function Ray.IntersectsTextRenderer( ray, textRenderer, returnRaycastHit )
     Daneel.Debug.CheckArgType( textRenderer, "textRenderer", "TextRenderer", errorHead )
     returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
 
-    local distance, normal, hitBlockLocation, adjacentBlockLocation  = OriginalIntersectsTextRenderer( ray, textRenderer )
+    local distance, normal = OriginalIntersectsTextRenderer( ray, textRenderer )
     if returnRaycastHit and distance ~= nil then
-        local raycastHit = RaycastHit.New()
-        raycastHit.distance = distance
-        raycastHit.normal = normal
-        raycastHit.hitLocation = ray.position + ray.direction * distance
-        raycastHit.hitObject = textRenderer
-        raycastHit.gameObject = textRenderer.gameObject
+        local raycastHit = RaycastHit.New({
+            distance = distance,
+            normal = normal,
+            hitLocation = ray.position + ray.direction * distance,
+            hitObject = textRenderer,
+            gameObject = textRenderer.gameObject,
+        })
 
         Daneel.Debug.StackTrace.EndFunction()
         return raycastHit
@@ -2180,6 +2191,21 @@ end
 RaycastHit = {}
 RaycastHit.__index = RaycastHit
 setmetatable( RaycastHit, { __call = function(Object, ...) return Object.New(...) end } )
+
+function RaycastHit.__tostring( instance )
+    local msg = "RaycastHit: { "
+    local first = true
+    for key, value in pairs( instance ) do
+        if first then
+            msg = msg..key.."="..tostring( value )
+            first = false
+        else
+            msg = msg..", "..key.."="..tostring( value )
+        end
+    end
+
+    return msg.." }"
+end
 
 --- Create a new RaycastHit
 -- @return (RaycastHit) The raycastHit.
