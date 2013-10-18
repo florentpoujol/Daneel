@@ -27,7 +27,7 @@ function Behavior:Awake()
     if r ~= "Daneel/Daneel Core" then
         print( "Asset.GetPath 1", r )
     end
-
+    
     r = script:GetName()
     if r ~= "Daneel Core" then
         print( "Asset.GetName 1", r )
@@ -100,7 +100,7 @@ function Behavior:Awake()
     
     go.mapRenderer.map = "Map"
     r = go.mapRenderer.map
-    if Daneel.Debug.GetType( r ) ~= "Map" or r:GetPath() ~= "Map" then
+    if Daneel.Debug.GetType( r ) ~= "Map" or r.path ~= "Map" then
         print( "MapRenderer.SetMap 1", r )
     end
     
@@ -138,7 +138,7 @@ function Behavior:Awake()
     
     go.textRenderer.font = CS.FindAsset("Calibri")
     r = go.textRenderer.font
-    if Daneel.Debug.GetType( r ) ~= "Font" or r:GetPath() ~= "Calibri" then
+    if Daneel.Debug.GetType( r ) ~= "Font" or r.path ~= "Calibri" then
         print( "TextRenderer.SetFont 1", r )
     end
     
@@ -166,7 +166,7 @@ function Behavior:Awake()
     local screenSize = CS.Screen.GetSize()
     if getmetatable( screenSize ) ~= Vector2 then
         -- issue with GUI module (not loaded)
-        print( "CS.Screen.GetSize() in script 'CS API Extension'" )
+        print( "CS.Screen.GetSize() dans script 'CS API Extension'" )
     end
     
     local cameraGO = GameObject.Get( "Daneel Core" )
@@ -237,8 +237,9 @@ function Behavior:Awake()
     if r ~= nil then
         print( "ray:IntersectsTextRenderer 3", r )
     end
-
+    
     --
+
     local gos = {
         GameObject.Get( "Test Ray.Text" ),
         GameObject.Get( "Test Ray2.Model" ),
@@ -263,13 +264,59 @@ function Behavior:Awake()
         print( "ray:Cast 2" )
         table.print( hits )
     end
+    
+    
+    --------
+    -- Scene
+    print( "~~~~~ Scene ~~~~~" )
+    
+    local go = Scene.Append( "Prefab" )
+    go.transform.position = Vector3(0,-2,-5)
+    if go == nil or go.name ~= "PrefabGameObject" then
+        print( "Scene.Append 1", go )
+    end
+    
+    local parent = GameObject.Get("LocalScaleChild")
+    Scene.Append( "MultiPrefab", parent )
+    
+    if #parent.children ~= 2 then
+        print( "Scene.Append 2" )
+        table.print( parent.children )
+    end
+    
+    
+    --------
+    -- OnDestroy
+
+    self.goToDestroy = go
+    go.OnDestroy = function()
+        print( tostring(go) .. " is deing destroyed, that's OK" )
+    end
+    go:AddTag( "aTag" )
+    Daneel.Event.Listen( "AnEvent", go )
+    
+    CS.Destroy( go )
+    --print( self.goToDestroy )
 end
 
-
-
-function Behavior:Start()
-    --[[local screenSize = CS.Screen.GetSize()
-    local go = GameObject.Get( "Daneel Core" )
-    local ray = go.camera:CreateRay( screenSize / 2 )
-    print("ray2", ray, screenSize, screenSize/2)]]
+local frameCount = 0
+function Behavior:Update()
+    frameCount = frameCount + 1
+    if frameCount == 2 then
+        print( "~~~~~ OnDestroy ~~~~~" )
+    
+        if 
+            self.goToDestroy.transform ~= nil or
+            self.goToDestroy.inner ~= nil or
+            self.goToDestroy:HasTag( "aTag" ) or
+            table.containsvalue( Daneel.Event.events.AnEvent, self.goToDestroy )
+        then
+            print( "CS.Destroy", self.goToDestroy.transform, self.goToDestroy.inner, Daneel.Debug.GetType( self.goToDestroy ) )
+            print( "has tag", self.goToDestroy:HasTag( "aTag" )  )
+            print( "listen to event", table.containsvalue( Daneel.Event.events.AnEvent, self.goToDestroy ) )
+            print( self.goToDestroy )
+        end
+        
+        print( "~~~~~ End  OnDestroy ~~~~~" )
+    end
 end
