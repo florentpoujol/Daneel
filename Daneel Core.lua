@@ -2451,31 +2451,39 @@ function GameObject.Set( gameObject, params )
     -- components
     local component = nil
 
-    for i, componentType in ipairs( Daneel.Config.componentTypes ) do
+    for i, componentType in pairs( Daneel.Config.componentTypes ) do
         if componentType ~= "ScriptedBehavior" then
-            if params[ componentType ] == nil then
-                componentType = componentType:lcfirst()
-                if params[ componentType ] == nil then
-                    componentType = nil
+            componentType = componentType:lower()
+
+            -- check if params has a key for that component
+            local componentParams = nil
+            for key, value in pairs( params ) do
+                if key:lower() == componentType then
+                    componentParams = value
+                    Daneel.Debug.CheckArgType( componentParams, "params."..key, "table", errorHead )
+                    break
                 end
             end
-                
-            if componentType ~= nil then
-                Daneel.Debug.CheckArgType( params[ componentType ], "params."..componentType, "table", errorHead )
 
-                component = gameObject[ componentType ]
-                if component == nil then
+            if componentParams ~= nil then
+                -- check if gameObject has a key for that component
+                for key, value in pairs( gameObject ) do
+                    if key:lower() == componentType then
+                        component = value
+                        break
+                    end
+                end
+                
+                if component == nil then -- can work for built-in components when their property on the game object has been unset for some reason
                     component = gameObject:GetComponent( componentType )
                 end
-
+                
                 if component == nil then
-                    if table.containsvalue( Daneel.Config.componentTypes, componentType:ucfirst() ) then
-                        component = gameObject:AddComponent( componentType, params[componentType] )
-                    end
-                else
-                    component:Set( params[componentType] )
+                    component = gameObject:AddComponent( componentType )
                 end
-                params[componentType] = nil
+
+                component:Set( componentParams )
+                table.removevalue( params, componentParams )
             end
         end
     end
@@ -2483,18 +2491,19 @@ function GameObject.Set( gameObject, params )
     -- all other keys/values
     for key, value in pairs( params ) do
 
-        -- if key is a script path in Daneel.Config.scriptPath or a script alias
+        -- if key is a script alias or a script path
         if Daneel.Config.scriptPaths[key] ~= nil or table.containsvalue( Daneel.Config.scriptPaths, key ) then
             local scriptPath = key
             if Daneel.Config.scriptPaths[key] ~= nil then
                 scriptPath = Daneel.Config.scriptPaths[key]
             end
+
             local component = gameObject:GetScriptedBehavior( scriptPath )
             if component == nil then
-                component = gameObject:AddScriptedBehavior( scriptPath, value )
-            else
-                component:Set(value)
+                component = gameObject:AddScriptedBehavior( scriptPath )
             end
+            
+            component:Set(value)
 
         elseif key == "tags"  then
             gameObject:RemoveTag()
