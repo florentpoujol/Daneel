@@ -1601,6 +1601,7 @@ Asset = {
     pathsCache = {},
 }
 Asset.__index = Asset
+setmetatable( Asset, { __call = function(Object, ...) return Object.Get(...) end } )
 
 --- Alias of CraftStudio.FindAsset( assetPath[, assetType] ).
 -- Get the asset of the specified name and type.
@@ -3062,7 +3063,7 @@ function Daneel.DefaultConfig()
             enableDebug = false, -- Enable/disable Daneel's global debugging features (error reporting + stacktrace).
             enableStackTrace = false, -- Enable/disable the Stack Trace.
         },
-        
+       
         ----------------------------------------------------------------------------------
         
         -- List of the Scripts paths as values and optionally the script alias as the keys.
