@@ -13,7 +13,10 @@ IDEAS
         > raycashit = ray:IntersectRectangle( rectangle, true )
 
     - gameObject:GetGenealogy() retourne toute la généalogie du gameobject : "parent.child.subchild"
-
+    
+    - make custom component objects to keep a reference of theirs instances so that we can search if a gameObject has a component by going though all them
+        > go:GetComponent() could get custom components for a gameObject even when the instance is not set in a property on the gameObject
+        > need emptying when a new scene is loaded, when a gameObject or component is destroyed
 
     -----
     GUI

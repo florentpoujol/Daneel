@@ -2381,17 +2381,30 @@ end
 ----------------------------------------------------------------------------------
 
 --- Create a new game object and optionally initialize it.
--- @param name (string) The GameObject name.
--- @param params [optional] (table) A table with parameters to initialize the new game object with.
+-- When the first argument is a scene name or asset, the scene may contains only one top-level game object.
+-- If it's not the case, the function won't return any game object yet some may have been created (depending on the behavior of CS.AppendScene()).
+-- @param name (string or Scene) The game object name or scene name or scene asset.
+-- @param params (table) [optional] A table with parameters to initialize the new game object with.
 -- @return (GameObject) The new game object.
-function GameObject.New(name, params)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.New", name, params)
+function GameObject.New( name, params )
+    Daneel.Debug.StackTrace.BeginFunction( "GameObject.New", name, params )
     local errorHead = "GameObject.New( name[, params] ) : "
-    Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
-    Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
+    local argType = Daneel.Debug.CheckArgType( name, "name", {"string", "Scene"}, errorHead )
+    Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead )
     
-    local gameObject = CraftStudio.CreateGameObject(name)
-    if params ~= nil then
+    local scene = nil
+    if argType == "string" then
+        scene = Asset.Get( name, "Scene" )
+    end
+
+    local gameObject = nil
+    if scene == nil then
+        gameObject = CraftStudio.CreateGameObject( name )
+    else
+        gameObject = CraftStudio.AppendScene( scene )
+    end
+
+    if params ~= nil and gameObject ~= nil then
         gameObject:Set(params)
     end
     Daneel.Debug.StackTrace.EndFunction()
@@ -2410,29 +2423,10 @@ function GameObject.Instantiate(gameObjectName, sceneNameOrAsset, params)
     Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
-    local scene = Asset.Get(sceneNameOrAsset, "Scene", true)   
+    local scene = Asset.Get(sceneNameOrAsset, "Scene", true)
     local gameObject = CraftStudio.Instantiate(gameObjectName, scene)
     if params ~= nil then
-        gameObject:Set(params)
-    end
-    Daneel.Debug.StackTrace.EndFunction()
-    return gameObject
-end
-
---- Returns the first game object that was in the provided scene.
--- @param sceneNameOrAsset (string or Scene) The scene name or scene asset.
--- @param params [optional] (table) A table with parameters to initialize the new game object with.
--- @return (GameObject) The game object that was in the scene.
-function GameObject.NewFromScene(sceneNameOrAsset, params)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.NewFromScene",  sceneNameOrAsset, params)
-    local errorHead = "GameObject.NewFromScene(sceneNameOrAsset[, params]) : "
-    Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
-    Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
-    
-    local scene = Asset.Get(sceneNameOrAsset, "Scene", true)
-    local gameObject = CraftStudio.AppendScene(scene)
-    if params ~= nil and gameObject ~= nil then
-        gameObject:Set(params)
+        gameObject:Set( params )
     end
     Daneel.Debug.StackTrace.EndFunction()
     return gameObject
