@@ -1418,7 +1418,7 @@ end
 
 --- Make the provided function or object to stop listen to the provided event(s).
 -- @param eventName (string or table) The event name (or names in a table).
--- @param functionOrObject (function, string or GameObject) The function, or the gameObject name or instance.
+-- @param functionOrObject (function, string or GameObject) The function, or the game object name or instance.
 function Daneel.Event.StopListen( eventName, functionOrObject )
     if type( eventName ) ~= "string" then
         functionOrObject = eventName
@@ -1487,7 +1487,7 @@ function Daneel.Event.Fire( object, eventName, ... )
 
         else -- an object
             local mt = getmetatable( listener )
-            if listener.isDestroyed ~= true or (mt == GameObject and listener.transform ~= nil)  then -- ensure that the event is not fired on a dead gameObject or component
+            if listener.isDestroyed ~= true or (mt == GameObject and listener.transform ~= nil)  then -- ensure that the event is not fired on a dead game object or component
                 local message = eventName
 
                 -- look for the value of the EventName property on the object
@@ -1741,7 +1741,7 @@ function Component.Set(component, params)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Destroy the provided component, removing it from the gameObject.
+--- Destroy the provided component, removing it from the game object.
 -- Note that the component is removed only at the end of the current frame.
 -- @param component (any component's type) The component.
 function Component.Destroy( component )
@@ -1964,7 +1964,7 @@ function TextRenderer.SetAlignment(textRenderer, alignment)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Update the gameObject's scale to make the text appear the provided width.
+--- Update the game object's scale to make the text appear the provided width.
 -- @param textRenderer (TextRenderer) The textRenderer.
 -- @param width (number) The text's width in scene units.
 function TextRenderer.SetTextWidth( textRenderer, width )
@@ -1984,9 +1984,9 @@ end
 
 setmetatable( Ray, { __call = function(Object, ...) return Object:New(...) end } )
 
---- Check the collision of the ray against the provided set of gameObject.
+--- Check the collision of the ray against the provided set of game object.
 -- @param ray (Ray) The ray.
--- @param gameObjects (table) The set of gameObjects to cast the ray against.
+-- @param gameObjects (table) The set of game objects to cast the ray against.
 -- @param sortByDistance [optional default=false] (boolean) Sort the raycastHit by increasing distance in the returned table.
 -- @return (table) A table of RaycastHits (will be empty if the ray didn't intersects anything).
 function Ray.Cast( ray, gameObjects, sortByDistance )
@@ -2011,9 +2011,9 @@ function Ray.Cast( ray, gameObjects, sortByDistance )
     return hits
 end
 
---- Check if the ray intersect the specified gameObject.
+--- Check if the ray intersect the specified game object.
 -- @param ray (Ray) The ray.
--- @param gameObjectNameOrInstance (string or GameObject) The gameObject instance or name.
+-- @param gameObjectNameOrInstance (string or GameObject) The game object instance or name.
 -- @return (RaycastHit) A raycastHit with the if there was a collision, or nil.
 function Ray.IntersectsGameObject( ray, gameObjectNameOrInstance )
     Daneel.Debug.StackTrace.BeginFunction( "Ray.IntersectsGameObject", ray, gameObjectNameOrInstance )
@@ -2271,10 +2271,10 @@ end
 --- Alias of CraftStudio.AppendScene().
 -- Appends the specified scene to the game by instantiating all of its game objects. Contrary to CraftStudio.LoadScene, this doesn't unload the current scene nor waits for the next tick: it happens right away.
 -- You can optionally specify a parent game object which will be used as a root for adding all game objects. 
--- Returns the gameObject appended if there was only one root game object in the provided scene.
+-- Returns the game object appended if there was only one root game object in the provided scene.
 -- @param sceneNameOrAsset (string or Scene) The scene name or asset.
 -- @param parentNameOrInstance [optional] (string or GameObject) The parent game object name or instance.
--- @return (GameObject) The appended gameObject, or nil.
+-- @return (GameObject) The appended game object, or nil.
 function Scene.Append( sceneNameOrAsset, parentNameOrInstance )
     Daneel.Debug.StackTrace.BeginFunction( "Scene.Append", sceneNameOrAsset, parentNameOrInstance )
     local errorHead = "Scene.Append( sceneNameOrAsset[, parentNameOrInstance] ) : "
@@ -2300,7 +2300,7 @@ local OriginalDestroy = CraftStudio.Destroy
 --- Removes the specified game object (and all of its descendants) or the specified component from its game object.
 -- You can also optionally specify a dynamically loaded asset for unloading (See Map.LoadFromPackage ).
 -- Sets the 'isDestroyed' property to 'true' and fires the 'OnDestroy' event on the object.
--- @param object (GameObject, a component or a dynamically loaded asset) The gameObject, component or a dynamically loaded asset (like a map loaded with Map.LoadFromPackage).
+-- @param object (GameObject, a component or a dynamically loaded asset) The game object, component or a dynamically loaded asset (like a map loaded with Map.LoadFromPackage).
 function CraftStudio.Destroy( object )
     Daneel.Debug.StackTrace.BeginFunction( "CraftStudio.Destroy", object )
     if type( object ) == "table" then
@@ -2326,7 +2326,7 @@ function GameObject.__tostring( gameObject )
         -- the important here was to prevent throwing an error
     end
     -- returns something like "GameObject: 123456789: 'MyName'"
-    -- do not use gameObject:GetID() here, it throws a stack overflow when stacktrace is enabled (BeginFunction uses tostring() on the input argument)
+    -- do not use game object:GetID() here, it throws a stack overflow when stacktrace is enabled (BeginFunction uses tostring() on the input argument)
     local st = Daneel.Config.debug.enableStackTrace
     Daneel.Config.debug.enableStackTrace = false
     local id = gameObject:GetId()
@@ -2366,7 +2366,7 @@ end
 function GameObject.__newindex( gameObject, key, value )
     local ucKey = key:ucfirst()
     if key ~= ucKey and key ~= "transform" then -- first letter lowercase
-        -- check about Transform is needed because CraftStudio.CreateGameObject() set the transfom variable on new gameObjects
+        -- check about Transform is needed because CraftStudio.CreateGameObject() set the transfom variable on new game objects
         -- 26/09/2013 And so what ? If SetTransform() doesn't exist, it's not an issue
         local funcName = "Set" .. ucKey
         -- ie: variable "name" call "SetName"
@@ -2380,13 +2380,13 @@ end
 
 ----------------------------------------------------------------------------------
 
---- Create a new gameObject and optionally initialize it.
+--- Create a new game object and optionally initialize it.
 -- @param name (string) The GameObject name.
--- @param params [optional] (table) A table with parameters to initialize the new gameObject with.
--- @return (GameObject) The new gameObject.
+-- @param params [optional] (table) A table with parameters to initialize the new game object with.
+-- @return (GameObject) The new game object.
 function GameObject.New(name, params)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.New", name, params)
-    local errorHead = "GameObject.New(name[, params]) : "
+    local errorHead = "GameObject.New( name[, params] ) : "
     Daneel.Debug.CheckArgType(name, "name", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
     
@@ -2398,14 +2398,14 @@ function GameObject.New(name, params)
     return gameObject
 end
 
---- Create a new gameObject with the content of the provided scene and optionally initialize it.
--- @param gameObjectName (string) The gameObject name.
+--- Create a new game object with the content of the provided scene and optionally initialize it.
+-- @param gameObjectName (string) The game object name.
 -- @param sceneNameOrAsset (string or Scene) The scene name or scene asset.
--- @param params [optional] (table) A table with parameters to initialize the new gameObject with.
--- @return (GameObject) The new gameObject.
+-- @param params [optional] (table) A table with parameters to initialize the new game object with.
+-- @return (GameObject) The new game object.
 function GameObject.Instantiate(gameObjectName, sceneNameOrAsset, params)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.Instantiate", gameObjectName, sceneNameOrAsset, params)
-    local errorHead = "GameObject.Instantiate(gameObjectName, sceneNameOrAsset[, params]) : "
+    local errorHead = "GameObject.Instantiate( gameObjectName, sceneNameOrAsset[, params] ) : "
     Daneel.Debug.CheckArgType(gameObjectName, "gameObjectName", "string", errorHead)
     Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
@@ -2419,10 +2419,10 @@ function GameObject.Instantiate(gameObjectName, sceneNameOrAsset, params)
     return gameObject
 end
 
---- Returns the first gameObject that was in the provided scene.
+--- Returns the first game object that was in the provided scene.
 -- @param sceneNameOrAsset (string or Scene) The scene name or scene asset.
--- @param params [optional] (table) A table with parameters to initialize the new gameObject with.
--- @return (GameObject) The gameObject that was in the scene.
+-- @param params [optional] (table) A table with parameters to initialize the new game object with.
+-- @return (GameObject) The game object that was in the scene.
 function GameObject.NewFromScene(sceneNameOrAsset, params)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.NewFromScene",  sceneNameOrAsset, params)
     local errorHead = "GameObject.NewFromScene(sceneNameOrAsset[, params]) : "
@@ -2438,9 +2438,9 @@ function GameObject.NewFromScene(sceneNameOrAsset, params)
     return gameObject
 end
 
---- Apply the content of the params argument to the provided gameObject.
+--- Apply the content of the params argument to the provided game object.
 -- @param gameObject (GameObject) The game object.
--- @param params (table) A table of parameters to set the gameObject with.
+-- @param params (table) A table of parameters to set the game object with.
 function GameObject.Set( gameObject, params )
     Daneel.Debug.StackTrace.BeginFunction( "GameObject.Set", gameObject, params )
     local errorHead = "GameObject.Set( gameObject, params ) : "
@@ -2518,10 +2518,10 @@ end
 -- Miscellaneous
 
 --- Alias of CraftStudio.FindGameObject(name).
--- Get the first gameObject with the provided name.
--- @param name (string) The gameObject name.
--- @param errorIfGameObjectNotFound [optional default=false] (boolean) Throw an error if the gameObject was not found (instead of returning nil).
--- @return (GameObject) The gameObject or nil if none is found.
+-- Get the first game object with the provided name.
+-- @param name (string) The game object name.
+-- @param errorIfGameObjectNotFound [optional default=false] (boolean) Throw an error if the game object was not found (instead of returning nil).
+-- @return (GameObject) The game object or nil if none is found.
 function GameObject.Get( name, errorIfGameObjectNotFound ) 
     if getmetatable(name) == GameObject then
         return name
@@ -2589,10 +2589,10 @@ end
 
 local OriginalSetParent = GameObject.SetParent
 
---- Set the gameObject's parent. 
--- Optionaly carry over the gameObject's local transform instead of the global one.
+--- Set the game object's parent. 
+-- Optionaly carry over the game object's local transform instead of the global one.
 -- @param gameObject (GameObject) The game object.
--- @param parentNameOrInstance [optional] (string or GameObject) The parent name or gameObject (or nil to remove the parent).
+-- @param parentNameOrInstance [optional] (string or GameObject) The parent name or game object (or nil to remove the parent).
 -- @param keepLocalTransform [optional default=false] (boolean) Carry over the game object's local transform instead of the global one.
 function GameObject.SetParent(gameObject, parentNameOrInstance, keepLocalTransform)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.SetParent", gameObject, parentNameOrInstance, keepLocalTransform)
@@ -2610,7 +2610,7 @@ function GameObject.SetParent(gameObject, parentNameOrInstance, keepLocalTransfo
 end
 
 --- Alias of GameObject:FindChild().
--- Find the first gameObject's child with the provided name.
+-- Find the first game object's child with the provided name.
 -- If the name is not provided, it returns the first child.
 -- @param gameObject (GameObject) The game object.
 -- @param name [optional] (string) The child name (may be hyerarchy of names separated by dots).
@@ -2644,10 +2644,10 @@ end
 
 local OriginalGetChildren = GameObject.GetChildren
 
---- Get all descendants of the gameObject.
+--- Get all descendants of the game object.
 -- @param gameObject (GameObject) The game object.
 -- @param recursive [optional default=false] (boolean) Look for all descendants instead of just the first generation.
--- @param includeSelf [optional default=false] (boolean) Include the gameObject in the children.
+-- @param includeSelf [optional default=false] (boolean) Include the game object in the children.
 -- @return (table) The children.
 function GameObject.GetChildren(gameObject, recursive, includeSelf)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.GetChildren", gameObject, recursive, includeSelf)
@@ -2675,9 +2675,9 @@ end
 
 local OriginalSendMessage = GameObject.SendMessage
 
---- Tries to call a method with the provided name on all the scriptedBehaviors attached to the gameObject. 
+--- Tries to call a method with the provided name on all the scriptedBehaviors attached to the game object. 
 -- The data argument can be nil or a table you want the method to receive as its first (and only) argument.
--- If none of the scripteBehaviors attached to the gameObject or its children have a method matching the provided name, nothing happens. 
+-- If none of the scripteBehaviors attached to the game object or its children have a method matching the provided name, nothing happens. 
 -- @param gameObject (GameObject) The game object.
 -- @param functionName (string) The method name.
 -- @param data [optional] (table) The data to pass along the method call.
@@ -2692,9 +2692,9 @@ function GameObject.SendMessage(gameObject, functionName, data)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Tries to call a method with the provided name on all the scriptedBehaviors attached to the gameObject or any of its descendants. 
+--- Tries to call a method with the provided name on all the scriptedBehaviors attached to the game object or any of its descendants. 
 -- The data argument can be nil or a table you want the method to receive as its first (and only) argument.
--- If none of the scripteBehaviors attached to the gameObject or its children have a method matching the provided name, nothing happens. 
+-- If none of the scripteBehaviors attached to the game object or its children have a method matching the provided name, nothing happens. 
 -- @param gameObject (GameObject) The game object.
 -- @param functionName (string) The method name.
 -- @param data [optional] (table) The data to pass along the method call.
@@ -2705,7 +2705,7 @@ function GameObject.BroadcastMessage(gameObject, functionName, data)
     Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(data, "data", "table", errorHead)
     
-    local allGos = gameObject:GetChildren(true, true) -- the gameObject + all of its children
+    local allGos = gameObject:GetChildren(true, true) -- the game object + all of its children
     for i, go in ipairs(allGos) do
         go:SendMessage(functionName, data)
     end
@@ -2716,7 +2716,7 @@ end
 ----------------------------------------------------------------------------------
 -- Add components
 
---- Add a component to the gameObject and optionally initialize it.
+--- Add a component to the game object and optionally initialize it.
 -- @param gameObject (GameObject) The game object.
 -- @param componentType (string) The component type (can't be Transform or ScriptedBehavior).
 -- @param params [optional] (string, Script or table) A table of parameters to initialize the new component with or, if componentType is 'ScriptedBehavior', the mandatory script name or asset.
@@ -2779,7 +2779,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
     return component
 end
 
---- Add a ScriptedBehavior to the gameObject and optionally initialize it.
+--- Add a ScriptedBehavior to the game object and optionally initialize it.
 -- @param gameObject (GameObject) The game object.
 -- @param scriptNameOrAsset (string or Script) The script name or asset.
 -- @param params [optional] (table) A table of parameters to initialize the new component with.
@@ -2809,7 +2809,7 @@ end
 
 local OriginalGetComponent = GameObject.GetComponent
 
---- Get the first component of the provided type attached to the gameObject.
+--- Get the first component of the provided type attached to the game object.
 -- @param gameObject (GameObject) The game object.
 -- @param componentType (string) The component type.
 -- @return (One of the component types) The component instance, or nil if none is found.
@@ -2843,7 +2843,7 @@ end
 
 local OriginalGetScriptedBehavior = GameObject.GetScriptedBehavior
 
---- Get the provided scripted behavior instance attached to the gameObject.
+--- Get the provided scripted behavior instance attached to the game object.
 -- @param gameObject (GameObject) The game object.
 -- @param scriptNameOrAsset (string or Script) The script name or asset.
 -- @return (ScriptedBehavior) The ScriptedBehavior instance.
@@ -2864,9 +2864,9 @@ end
 
 
 ----------------------------------------------------------------------------------
--- Destroy gameObject
+-- Destroy game object
 
---- Destroy the gameObject at the end of this frame.
+--- Destroy the game object at the end of this frame.
 -- @param gameObject (GameObject) The game object.
 function GameObject.Destroy( gameObject )
     Daneel.Debug.StackTrace.BeginFunction( "GameObject.Destroy", gameObject )
@@ -2940,7 +2940,7 @@ function GameObject.GetTags( gameObject )
     return tags
 end
 
---- Add the provided tag(s) to the provided gameObject.
+--- Add the provided tag(s) to the provided game object.
 -- @param gameObject (GameObject) The game object.
 -- @param tag (string or table) One or several tag(s) (as a string or table of strings).
 function GameObject.AddTag( gameObject, tag )
@@ -2965,8 +2965,8 @@ function GameObject.AddTag( gameObject, tag )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Remove the provided tag(s) from the provided gameObject.
--- If the 'tag' argument is not provided, all tag of the gameObject will be removed.
+--- Remove the provided tag(s) from the provided game object.
+-- If the 'tag' argument is not provided, all tag of the game object will be removed.
 -- @param gameObject (GameObject) The game object.
 -- @param tag [optional] (string or table) One or several tag(s) (as a string or table of strings).
 function GameObject.RemoveTag( gameObject, tag )
@@ -2988,10 +2988,10 @@ function GameObject.RemoveTag( gameObject, tag )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Tell whether the provided gameObject has all (or at least one of) the provided tag.
+--- Tell whether the provided game object has all (or at least one of) the provided tag.
 -- @param gameObject (GameObject) The game object.
 -- @param tag (string or table) One or several tag (as a string or table of strings).
--- @param atLeastOneTag [default=false] (boolean) If true, returns true if the gameObject has AT LEAST one of the tag (instead of ALL the tag).
+-- @param atLeastOneTag [default=false] (boolean) If true, returns true if the game object has AT LEAST one of the tag (instead of ALL the tag).
 -- @return (boolean) True
 function GameObject.HasTag(gameObject, tag, atLeastOneTag)
     Daneel.Debug.StackTrace.BeginFunction( "GameObject.HasTag", gameObject, tag, atLeastOneTag )
