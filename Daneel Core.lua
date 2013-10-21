@@ -1866,9 +1866,9 @@ local OriginalSetAnimation = ModelRenderer.SetAnimation
 -- @param modelRenderer (ModelRenderer) The modelRenderer.
 -- @param animationNameOrAsset (string or ModelAnimation) [optional] The animation name or asset, or nil.
 function ModelRenderer.SetAnimation( modelRenderer, animationNameOrAsset )
-    Daneel.Debug.StackTrace.BeginFunction( "ModelRenderer.SetModelAnimation", modelRenderer, animationNameOrAsset )
-    local errorHead = "ModelRenderer.SetModelAnimation( modelRenderer[, animationNameOrAsset] ) : "
-    Daneel.Debug.CheckArgType( modelRenderer, "modelRenderer", "ModelRenderer", errorHead)
+    Daneel.Debug.StackTrace.BeginFunction( "ModelRenderer.SetAnimation", modelRenderer, animationNameOrAsset )
+    local errorHead = "ModelRenderer.SetAnimation( modelRenderer[, animationNameOrAsset] ) : "
+    Daneel.Debug.CheckArgType( modelRenderer, "modelRenderer", "ModelRenderer", errorHead )
     Daneel.Debug.CheckOptionalArgType( animationNameOrAsset, "animationNameOrAsset", {"string", "ModelAnimation"}, errorHead )
 
     local animation = nil 
@@ -1876,6 +1876,33 @@ function ModelRenderer.SetAnimation( modelRenderer, animationNameOrAsset )
         animation = Asset.Get( animationNameOrAsset, "ModelAnimation", true )
     end
     OriginalSetAnimation( modelRenderer, animation )
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+--- Apply the content of the params argument to the provided model renderer.
+-- @param modelRenderer (ModelRenderer) The model renderer.
+-- @param params (table) A table of parameters to set the component with.
+function ModelRenderer.Set( modelRenderer, params )
+    Daneel.Debug.StackTrace.BeginFunction( "ModelRenderer.Set", modelRenderer, params )
+    local errorHead = "ModelRenderer.Set( modelRenderer, params ) : "
+    Daneel.Debug.CheckArgType( modelRenderer, "modelRenderer", "ModelRenderer", errorHead )
+    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
+
+    local model = params.model
+    params.model = nil
+    if model ~= nil then
+        modelRenderer:SetModel( model )
+    end
+
+    if params.animationTime ~= nil and params.animation ~= nil then
+        local animation = params.animation
+        params.animation = nil
+        if animation ~= nil then
+            modelRenderer:SetAnimation( animation )
+        end
+    end
+
+    Component.Set( modelRenderer, params )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -2450,9 +2477,9 @@ function GameObject.Set( gameObject, params )
     end
     
     -- components
-    local component = nil
-
     for i, componentType in pairs( Daneel.Config.componentTypes ) do
+        local component = nil
+
         if componentType ~= "ScriptedBehavior" then
             componentType = componentType:lower()
 
