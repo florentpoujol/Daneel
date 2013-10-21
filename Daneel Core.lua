@@ -762,7 +762,7 @@ function table.getvalue( t, keys )
     Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
     Daneel.Debug.CheckArgType( keys, "keys", "string", errorHead )
 
-    local keys = keys:split( "." )
+    keys = keys:split( "." )
     local value = t
     
     for i, key in ipairs( keys ) do
@@ -2659,8 +2659,7 @@ function GameObject.Get( name, errorIfGameObjectNotFound )
     Daneel.Debug.CheckArgType( name, "name", "string", errorHead )
     Daneel.Debug.CheckOptionalArgType( errorIfGameObjectNotFound, "errorIfGameObjectNotFound", "boolean", errorHead )
     
-    -- can't use name:find(".") because for some reason it always returns 1, 1
-    -- 31/07/2013 see in Core/Lua string.split() for reason
+
     local gameObject = nil
     local names = name:split( "." )
     
@@ -2699,15 +2698,15 @@ function GameObject.GetId( gameObject )
     local errorHead = "GameObject.GetId( gameObject ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
 
-    if gameObject.Id ~= nil then
+    if rawget( gameObject, "id" ) ~= nil then
         Daneel.Debug.StackTrace.EndFunction()
-        return gameObject.Id
+        return gameObject.id
     end
 
     local id = -1
     if gameObject.inner ~= nil then
         id = tonumber( tostring( gameObject.inner ):sub( 5, 20 ) )
-        rawset( gameObject, "Id", id )
+        rawset( gameObject, "id", id )
     end
 
     Daneel.Debug.StackTrace.EndFunction()
@@ -2815,7 +2814,18 @@ function GameObject.SendMessage(gameObject, functionName, data)
     Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(data, "data", "table", errorHead)
     
-    OriginalSendMessage(gameObject, functionName, data)
+    -- prevent an error of type "La référence d'objet n'est pas définie à une instance d'un objet." to stops the script that sends the message
+    local success = Daneel.Debug.Try( function()
+        OriginalSendMessage(gameObject, functionName, data)
+    end )
+    
+    if not success then
+        print( errorHead.."Error sending message with parameters : ", gameObject, functionName, data )
+        if data ~= nil and #data > 0 then
+            table.print( data )
+        end
+    end
+
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -2852,76 +2862,71 @@ function GameObject.AddComponent( gameObject, componentType, params )
     Daneel.Debug.StackTrace.BeginFunction( "GameObject.AddComponent", gameObject, componentType, params )
     local errorHead = "GameObject.AddComponent( gameObject, componentType[, params] ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-    Daneel.Debug.CheckArgType( componentType, "componentType", "string", errorHead ) 
-    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead )
-    Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead )
-
-    if componentType == "Transform" and Daneel.Config.debug.enableDebug then
-        print( errorHead.."Can't add a transform component because gameObjects may only have one transform." )
-        Daneel.Debug.StackTrace.EndFunction()
-        return
-    end
-    if componentType == "ScriptedBehavior" and Daneel.Config.debug.enableDebug then
-        print( errorHead.."Can't add a ScriptedBehavior via 'GameObject.AddComponent( gameObject, componentType, params )'. Use 'GameObject.AddScriptedBehavior( gameObject, scriptNameOrAsset, params)' instead." )
-        Daneel.Debug.StackTrace.EndFunction()
-        return
-    end
+    Daneel.Debug.CheckArgType( componentType, "componentType", {"string", "Script"}, errorHead )
+    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead, componentType )
+    Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead )    
 
     local component = nil
-    if Daneel.DefaultConfig.componentObjects[ componentType ] ~= nil then
+    
+    if Daneel.Config.componentObjects[ componentType ] == nil then
+        -- componentType is not one of the component types
+        -- it may be a script path, alias or asset
+        local script = Asset.Get( componentType, "Script" )
+        if script == nil then
+            if Daneel.Config.debug.enableDebug then
+                error( errorHead.."Provided component type '"..tostring(componentType).."' in not one of the component types, nor a script asset, path or alias." )
+            end
+            Daneel.Debug.StackTrace.EndFunction()
+            return
+        end
+
+        component = gameObject:CreateScriptedBehavior( script )
+    
+    elseif Daneel.DefaultConfig.componentObjects[ componentType ] ~= nil then
+        if componentType == "Transform" then
+            if Daneel.Config.debug.enableDebug then
+                print( errorHead.."Can't add a transform component because gameObjects may only have one transform." )
+            end
+            Daneel.Debug.StackTrace.EndFunction()
+            return
+        elseif componentType == "ScriptedBehavior" then
+            if Daneel.Config.debug.enableDebug then
+                print( errorHead.."To add a scripted behavior, pass the script asset, path or alias instead of 'ScriptedBehavior' as argument 'compomentType'." )
+            end
+            Daneel.Debug.StackTrace.EndFunction()
+            return
+        end
+
         component = gameObject:CreateComponent( componentType )
 
         local defaultComponentParams = Daneel.Config[ componentType:lcfirst() ]
         if defaultComponentParams ~= nil then
             params = table.merge( defaultComponentParams, params )
         end
+
     else
         local componentObject = Daneel.Utilities.GetValueFromName( componentType )
 
         if componentObject ~= nil and type( componentObject.New ) == "function" then
             component = componentObject.New( gameObject )
+        else
+            if Daneel.Config.debug.enableDebug then
+                error( errorHead.."Custom component of type '"..componentType.."' does not provide a New() function; Can't create the component." )
+            end
+            Daneel.Debug.StackTrace.EndFunction()
+            return
         end
 
-        if componentObject.Config ~= nil then
-            params = table.merge( componentObject.Config, params )
-        elseif componentType:find( ".", 1, true ) ~= nil then
-            -- look for the first level object
-            
-            local object = Daneel.Utilities.GetValueFromName( (componentType:split(".")) ) -- leave the parenthesis, makes split() returns the first table value
-            if object ~= nil and object.Config ~= nil then
-                local defaultComponentParams = object.Config[ componentType:lcfirst() ]
-                if defaultComponentParams ~= nil then
-                    params = table.merge( defaultComponentParams, params )
-                end
+        local object = Daneel.Utilities.GetValueFromName( (componentType:split(".")) ) -- leave the parenthesis, makes split() returns the first table value
+        if object ~= nil and object.Config ~= nil then
+            local defaultComponentParams = object.Config[ componentType:lcfirst() ]
+            if defaultComponentParams ~= nil then
+                params = table.merge( defaultComponentParams, params )
             end
         end
     end
-   
-    if params ~= nil then
-        component:Set( params )
-    end
-
-    Daneel.Event.Fire( gameObject, "OnNewComponent", component )
-    Daneel.Debug.StackTrace.EndFunction()
-    return component
-end
-
---- Add a ScriptedBehavior to the game object and optionally initialize it.
--- @param gameObject (GameObject) The game object.
--- @param scriptNameOrAsset (string or Script) The script name or asset.
--- @param params [optional] (table) A table of parameters to initialize the new component with.
--- @return (ScriptedBehavior) The component.
-function GameObject.AddScriptedBehavior( gameObject, scriptNameOrAsset, params ) 
-    Daneel.Debug.StackTrace.BeginFunction( "GameObject.AddScriptedBehavior", gameObject, scriptNameOrAsset, params )
-    local errorHead = "GameObject.AddScriptedBehavior( gameObject, scriptNameOrAsset[, params] ) : "
-    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-    Daneel.Debug.CheckArgType( scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead )
-    Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead )
-
-    local script = Asset.Get( scriptNameOrAsset, "Script", true )
-    local component = gameObject:CreateScriptedBehavior( script )
     
-    if params ~= nil then
+    if params ~= nil and component ~= nil then
         component:Set( params )
     end
 
@@ -3377,7 +3382,7 @@ function Daneel.LateLoad( source )
     Daneel.isLateLoading = true
     
     print( "~~~~~~ Daneel Late Load ~~~~~~", source )
-    local go = CS.CreateGameObject( "Daneel" )
+    local go = CS.CreateGameObject( "Daneel Late Load" )
     go:CreateScriptedBehavior( DaneelScriptAsset ) -- DaneelScriptAsset is set above, before Utilities.ButtonExists()
 end
 

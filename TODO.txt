@@ -18,7 +18,6 @@ IDEAS
         > go:GetComponent() could get custom components for a gameObject even when the instance is not set in a property on the gameObject
         > need emptying when a new scene is loaded, when a gameObject or component is destroyed
 
-    table.getvalue( table.table.table.table ) returns the value of the provided chain of table, or nil
     
     -----
     GUI
@@ -63,25 +62,18 @@ IDEAS
 ==========
 A implémenter
     
-    - add setter for all GUI properties
+    
     
 
 ==========
 A tester
 
     - voir pourquoi certains easeType renvoient des erreurs
-    - allow asset setter to accept nil as argument
-    - Intersects[Component]( ray, component, returnRaycastHit )
     - Tweener scripted behavior with most common properties, tweener ajouté à propriété 'tweener' sur game object (idem pour timer)
 
 
 ==========
 A modifier/ajouter dans la doc :
-
-    
-    - workInterval dans mouseInput et checkInterval dans trigger devins "updateInterval"
-    - add a Lang scripted behavior which replace the text of the textrenderer or textArea
-    - draw object
 
     - création de modules
     - création de composants
@@ -91,3 +83,5 @@ A modifier/ajouter dans la doc :
 BUGS
 
 SetMap renvoie erreur "Object reference not set to an instance of an object." lorsque argument map est nil
+
+les map n'ont pas de tileSet lorsqu'elle sont misent avec SetMap
