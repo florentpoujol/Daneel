@@ -109,10 +109,6 @@ function Lang.Get( key, replacements )
     for i, _key in ipairs(keys) do
         if lines[_key] == nil then
             -- key was not found
-            if Daneel.Config.debug.enableDebug then
-                print( errorHead.."Localization key '"..key.."' was not found in '"..language.."' language." )
-            end
-
             -- search for it in the default language
             if language ~= defaultLanguage and searchInDefault == true then
                 cache = false

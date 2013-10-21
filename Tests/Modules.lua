@@ -24,14 +24,10 @@ function LangFrench()
 end
 
 function Behavior:Awake()
-    print( "~~~~~ Lang ~~~~~" )
     local r = nil
     
-    
-    if Daneel.Config.debug.enableDebug then
-        print( "The errors of type 'Localization key 'X' was not found in 'Y' language .' are OK ")
-    end
-   
+    print( "~~~~~ Lang ~~~~~" )
+       
     Lang.Config.searchInDefault = true
     r = Lang.Get("English.gamename")
     if r ~= Lang.lines[ Lang.Config.default ].gamename then
