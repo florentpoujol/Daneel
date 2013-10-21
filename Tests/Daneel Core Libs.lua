@@ -181,7 +181,10 @@ function Behavior:Awake()
     end
     
     -----
-    local conf = Daneel.Config.debug.enableStackTrace
+    -- stack trace
+    local debug = Daneel.Config.debug.enableDebug
+    local st = Daneel.Config.debug.enableStackTrace
+    Daneel.Config.debug.enableDebug = true
     Daneel.Config.debug.enableStackTrace = true
     print( "Two messages in the StackTrace below" )
     Daneel.Debug.StackTrace.BeginFunction( "Function1", "arg1", 2 )
@@ -191,10 +194,11 @@ function Behavior:Awake()
     
     Daneel.Debug.StackTrace.Print()
     
-    Daneel.Config.debug.enableStackTrace = conf
+    Daneel.Config.debug.enableDebug = debug
+    Daneel.Config.debug.enableStackTrace = st
     
     
-     --------------------------------------------------------------
+    --------------------------------------------------------------
     print("~~~~~ Daneel.Event ~~~~~")
     
     local e = Daneel.Event
@@ -227,9 +231,9 @@ function Behavior:Awake()
     
     -----
     self.testTime = true
-    print("~~~~~ Daneel.Time ~~~~~")
-    Tween.Timer( 1.2, function() print("-------------- Changind timeScale to 0.5 --------------------"); Daneel.Time.timeScale = 0.5 end )
-    Tween.Timer( 1.4, function() self.testTime = false end )
+    
+    Tween.Timer( 1.35, function() print("-------------- Changing timeScale to 0.5 --------------------"); Daneel.Time.timeScale = 0.5 end )
+    Tween.Timer( 1.42, function() self.testTime = false end )
 end
 
 
@@ -249,7 +253,12 @@ end
 
 
 -- Time
+local first = true
 function Behavior:Update()
+    if first then
+        print("~~~~~ Daneel.Time ~~~~~")
+        first = false
+    end
     if self.testTime then
         print( "Time            ", Daneel.Time.time, Daneel.Time.deltaTime, Daneel.Time.timeScale )
         print( "real time     ", Daneel.Time.realTime, Daneel.Time.realDeltaTime )
