@@ -1888,18 +1888,14 @@ function ModelRenderer.Set( modelRenderer, params )
     Daneel.Debug.CheckArgType( modelRenderer, "modelRenderer", "ModelRenderer", errorHead )
     Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
 
-    local model = params.model
-    params.model = nil
-    if model ~= nil then
-        modelRenderer:SetModel( model )
+    if params.model ~= nil then
+        modelRenderer:SetModel( params.model )
+        params.model = nil
     end
 
     if params.animationTime ~= nil and params.animation ~= nil then
-        local animation = params.animation
+        modelRenderer:SetAnimation( params.animation )
         params.animation = nil
-        if animation ~= nil then
-            modelRenderer:SetAnimation( animation )
-        end
     end
 
     Component.Set( modelRenderer, params )
@@ -1947,6 +1943,25 @@ function MapRenderer.SetTileSet( mapRenderer, tileSetNameOrAsset )
         tileSet = Asset.Get( tileSetNameOrAsset, "TileSet", true )
     end
     OriginalSetTileSet( mapRenderer, tileSet )
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+--- Apply the content of the params argument to the provided map renderer.
+-- @param mapRenderer (MapRenderer) The map renderer.
+-- @param params (table) A table of parameters to set the component with.
+function MapRenderer.Set( mapRenderer, params )
+    Daneel.Debug.StackTrace.BeginFunction( "MapRenderer.Set", mapRenderer, params )
+    local errorHead = "MapRenderer.Set( mapRenderer, params ) : "
+    Daneel.Debug.CheckArgType( mapRenderer, "mapRenderer", "MapRenderer", errorHead )
+    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
+
+    if params.map ~= nil then
+        mapRenderer:SetMap( params.map )
+        -- set the map here in case of the tileSet property is set too
+        params.map = nil
+    end
+
+    Component.Set( mapRenderer, params )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
