@@ -75,7 +75,7 @@ function Lang.Get( key, replacements )
     end
 
     if not Daneel.isLoaded then -- 17/10  was Daneel.isAwake. Any reason ?
-        Daneel.LateLoad()
+        Daneel.LateLoad( "Lang.Get" )
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "Lang.Get", key, replacements )
@@ -168,7 +168,7 @@ end
 -- @param language (string) The new current language.
 function Lang.Update( language )
     if not Daneel.isLoaded then
-        Daneel.LateLoad()
+        Daneel.LateLoad(  "Lang.update" )
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "Lang.Update", language )
@@ -210,7 +210,7 @@ registerForUpdate boolean false
 
 function Behavior:Awake()
     if not Daneel.isLoaded then
-        Daneel.LateLoad()
+        Daneel.LateLoad(  "Lang:Awake" )
     end
 end
 

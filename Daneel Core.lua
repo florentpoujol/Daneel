@@ -1391,7 +1391,7 @@ function Daneel.Event.Listen( eventName, functionOrObject )
 
         if buttonName ~= nil and not table.containsvalue( Daneel.Config.hotKeys, buttonName ) then
             if not Daneel.isLoaded then
-                Daneel.LateLoad()
+                Daneel.LateLoad( "Daneel.Event.Listen" )
             end
 
             if Daneel.Utilities.ButtonExists( buttonName ) then
@@ -1542,7 +1542,7 @@ local mt = {
     __index = function( instance, key )
         setmetatable( Daneel.Time, nil ) -- best prevent C Stack Overflow
         if not Daneel.isLoaded then
-            Daneel.LateLoad()
+            Daneel.LateLoad( "Daneel.Time __index" )
         end
         return Daneel.Time[ key ]
     end,
@@ -1550,7 +1550,7 @@ local mt = {
     __newindex = function( instance, key, value )
         setmetatable( Daneel.Time, nil ) 
         if not Daneel.isLoaded then
-            Daneel.LateLoad()
+            Daneel.LateLoad( "Daneel.Time __newindex" )
         end
         Daneel.Time[ key ] = value
     end
@@ -3249,9 +3249,10 @@ function Daneel.Load()
 end -- end Daneel.Load()
 
 -- Called at runtime by code that needs Daneel to be loaded but it isn't yet.
-function Daneel.LateLoad()
+function Daneel.LateLoad( source )
     if Daneel.isLoaded and Daneel.isAwake then return end
     
+    print( "~~~~~~ Daneel Late Load ~~~~~~", source )
     local go = CS.CreateGameObject( "Daneel" )
     go:CreateScriptedBehavior( DaneelScriptAsset ) -- DaneelScriptAsset is set above, before Utilities.ButtonExists()
 end

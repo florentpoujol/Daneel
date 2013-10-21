@@ -63,7 +63,7 @@ end
 -- @return (Tweener) The Tweener.
 function Tween.Tweener.New(target, property, endValue, duration, params)
     if not Daneel.isAwake then
-        Daneel.LateLoad()
+        Daneel.LateLoad( "Tween.Tweener.New" )
     end
 
     Daneel.Debug.StackTrace.BeginFunction("Tween.Tweener.New", target, property, endValue, duration, params)
@@ -322,7 +322,7 @@ setmetatable( Tween.Timer, { __call = function(Object, ...) return Object.New(..
 -- @return (Tweener) The tweener.
 function Tween.Timer.New( duration, callback, isInfiniteLoop, params )
     if not Daneel.isAwake then
-        Daneel.LateLoad()
+        Daneel.LateLoad( "Tween.Timer.New" )
     end
     
     Daneel.Debug.StackTrace.BeginFunction( "Tween.Timer.New", duration, callback, isInfiniteLoop, params )

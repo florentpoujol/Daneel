@@ -40,7 +40,7 @@ GUI.Hud.__index = GUI.Hud -- __index will be rewritted when Daneel loads (in Dan
 -- @return (numbe) The layer.
 function GUI.Hud.ToHudPosition(position)
     if not Daneel.isAwake then
-        Daneel.LateLoad()
+        Daneel.LateLoad( "GUI.Hud.ToHudPosition" )
     end
     
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.ToHudPosition", position)
@@ -63,7 +63,7 @@ end
 -- @return (GUI.Hud) The hud component.
 function GUI.Hud.New( gameObject, params )
     if not Daneel.isAwake then
-        Daneel.LateLoad()
+        Daneel.LateLoad( "GUI.Hud.New" )
     end
 
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.New", gameObject, params )
@@ -234,7 +234,7 @@ GUI.Toggle.__index = GUI.Toggle
 -- @return (GUI.Toggle) The new component.
 function GUI.Toggle.New( gameObject, params )
     if not Daneel.isAwake then
-        Daneel.LateLoad()
+        Daneel.LateLoad( "GUI.Toggle.New" )
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Toggle.New", gameObject, params )
@@ -477,7 +477,7 @@ GUI.ProgressBar.__index = GUI.ProgressBar
 -- @return (ProgressBar) The new component.
 function GUI.ProgressBar.New( gameObject, params )
     if not Daneel.isAwake then
-        Daneel.LateLoad()
+        Daneel.LateLoad( "GUI.ProgressBar.New" )
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "GUI.ProgressBar.New", gameObject, params )
@@ -662,7 +662,7 @@ GUI.Slider.__index = GUI.Slider
 -- @return (GUI.Slider) The new component.
 function GUI.Slider.New( gameObject, params )
     if not Daneel.isAwake then
-        Daneel.LateLoad()
+        Daneel.LateLoad(  "GUI.Slider.New" )
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Slider.New", gameObject, params )
@@ -817,7 +817,7 @@ GUI.Input.__index = GUI.Input
 -- @return (GUI.Input) The new component.
 function GUI.Input.New( gameObject, params )
     if not Daneel.isAwake then
-        Daneel.LateLoad()
+        Daneel.LateLoad(  "GUI.Input.New" )
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Input.New", gameObject, params )
@@ -945,7 +945,7 @@ GUI.TextArea.__index = GUI.TextArea
 -- @return (GUI.TextArea) The new component.
 function GUI.TextArea.New( gameObject, params )
     if not Daneel.isAwake then
-        Daneel.LateLoad()
+        Daneel.LateLoad(  "GUI.TextArea.New" )
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.New", gameObject, params )
