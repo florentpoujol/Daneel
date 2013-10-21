@@ -3250,7 +3250,8 @@ end -- end Daneel.Load()
 
 -- Called at runtime by code that needs Daneel to be loaded but it isn't yet.
 function Daneel.LateLoad( source )
-    if Daneel.isLoaded and Daneel.isAwake then return end
+    if Daneel.isLateLoading or Daneel.isAwake then return end
+    Daneel.isLateLoading = true
     
     print( "~~~~~~ Daneel Late Load ~~~~~~", source )
     local go = CS.CreateGameObject( "Daneel" )
