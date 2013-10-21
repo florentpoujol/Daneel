@@ -18,6 +18,8 @@ IDEAS
         > go:GetComponent() could get custom components for a gameObject even when the instance is not set in a property on the gameObject
         > need emptying when a new scene is loaded, when a gameObject or component is destroyed
 
+    table.getvalue( table.table.table.table ) returns the value of the provided chain of table, or nil
+    
     -----
     GUI
 

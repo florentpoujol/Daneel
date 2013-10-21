@@ -1,6 +1,6 @@
 function Behavior:Awake()
     local r = nil
-    print( "~~~~~ Asset ~~~~~" )
+    print( "~~~~~~ Asset ~~~~~~" )
     
     r = Asset.Get( "Daneel Core" )
     if r ~= nil then
@@ -39,7 +39,7 @@ function Behavior:Awake()
     end
     
     -----
-    print( "~~~~~ Component ~~~~~" )
+    print( "~~~~~~ Component ~~~~~~" )
     r = self.gameObject.transform.id
     if type( r ) ~= "number" then
         print( "Component.GetId 1", r )
@@ -49,7 +49,7 @@ function Behavior:Awake()
     end
     
     -----
-    print( "~~~~~ Transform Scale ~~~~~" )
+    print( "~~~~~~ Transform Scale ~~~~~~" )
     local go = GameObject.Get( "LocalScale" )
     local child = GameObject.Get( "LocalScale.LocalScaleChild" )
     
@@ -61,7 +61,7 @@ function Behavior:Awake()
     child.textRenderer.text = math.round( child.transform.localScale.x, 1 ) .. " ".. math.round( child.transform.scale.x, 1 )
     
     ------
-    print( "~~~~~ ModelRenderer ~~~~~" )
+    print( "~~~~~~ ModelRenderer ~~~~~~" )
     
     local go = GameObject("")
     go:AddComponent( "moDelRendeRer" )
@@ -94,7 +94,7 @@ function Behavior:Awake()
     
     
     ------
-    print( "~~~~~ MapRenderer ~~~~~" )
+    print( "~~~~~~ MapRenderer ~~~~~~" )
     
     go:AddComponent( "MApRendeRer" )
     
@@ -132,7 +132,7 @@ function Behavior:Awake()
     
     
     ------
-    print( "~~~~~ TextRenderer ~~~~~" )
+    print( "~~~~~~ TextRenderer ~~~~~~" )
     
     go:CreateComponent( "TextRenderer" )
     
@@ -159,9 +159,22 @@ function Behavior:Awake()
     go.textRenderer.textWidth = 5
     -- this is a visual test, GetTextWidth() returns the width as if the GO had a scale of 1
     
+    ------
+    print( "~~~~~~ Camera ~~~~~~" )
+
+    r = GameObject.Get( "Daneel Core" )
+
+    r.camera:Set({
+        projectionMode = "PersPectIve"
+    });
+    if r.camera.projectionMode ~= Camera.ProjectionMode.Perspective then
+        print( "Camera.SetProjectionMode 1", r.camera.projectionMode )
+    end
+    r.camera.projectionMode = "orthographic"
+    
     
     ------
-    print( "~~~~~ Ray ~~~~~" )
+    print( "~~~~~~ Ray ~~~~~~" )
     
     local screenSize = CS.Screen.GetSize()
     if getmetatable( screenSize ) ~= Vector2 then
@@ -268,7 +281,7 @@ function Behavior:Awake()
     
     --------
     -- Scene
-    print( "~~~~~ Scene ~~~~~" )
+    print( "~~~~~~ Scene ~~~~~~" )
     
     local go = Scene.Append( "Prefab" )
     go.transform.position = Vector3(0,-2,-5)
@@ -290,20 +303,50 @@ function Behavior:Awake()
 
     self.goToDestroy = go
     go.OnDestroy = function()
-        print( tostring(go) .. " is deing destroyed, that's OK" )
+        print( tostring(go) .. " is deing destroyed, that's OK. The OnDestroy event is working." )
     end
     go:AddTag( "aTag" )
     Daneel.Event.Listen( "AnEvent", go )
     
     CS.Destroy( go )
     --print( self.goToDestroy )
+
+
+    --------
+    -- Game objects
+
+    r = GameObject( "NewGameObject", {
+        transform = {
+            position = Vector3(5)
+        },
+
+        moDelRendeRer = { 
+            model = "Model",
+            animation = "ModelAnimationFolder/Animation"
+        },
+
+        test = { test = "test" },
+
+        parent = self.gameObject
+    })
+
+    if 
+        r.name ~= "NewGameObject" or 
+        r.transform.position ~= Vector3:New(5) or 
+        r.modelRenderer.model ~= Asset("Model") or
+        r.modelRenderer:GetAnimation().path ~= "ModelAnimationFolder/Animation" or
+        r.parent.name ~= self.gameObject:GetName()
+    then
+        print( "GameObject.New 1", r )
+    end
+
 end
 
 local frameCount = 0
 function Behavior:Update()
     frameCount = frameCount + 1
     if frameCount == 2 then
-        print( "~~~~~ OnDestroy ~~~~~" )
+        print( "~~~~~~ OnDestroy ~~~~~~" )
     
         if 
             self.goToDestroy.transform ~= nil or
@@ -317,6 +360,6 @@ function Behavior:Update()
             print( self.goToDestroy )
         end
         
-        print( "~~~~~ End  OnDestroy ~~~~~" )
+        print( "~~~~~~ End  OnDestroy ~~~~~~" )
     end
 end

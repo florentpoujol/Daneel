@@ -1982,10 +1982,14 @@ function TextRenderer.SetAlignment(textRenderer, alignment)
     Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetAlignment", textRenderer, alignment)
     local errorHead = "TextRenderer.SetAlignment(textRenderer, alignment) : "
     Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
-    Daneel.Debug.CheckArgType(alignment, "alignment", {"string", "userdata"}, errorHead)
+    local argType = Daneel.Debug.CheckArgType(alignment, "alignment", {"string", "userdata"}, errorHead)
 
-    if type( alignment ) == "string" then
-        alignment = Daneel.Debug.CheckArgValue( alignment, "alignment", {"Left", "Center", "Right"}, errorHead, "Center" ) -- Center should actually be the value of Daneel.Config.textRenderer.alignment if ti exists
+    if argType == "string" then
+        local default = "Center"
+        if Daneel.Config.textRenderer ~= nil and Daneel.Config.textRenderer.alignment ~= nil then
+            default = Daneel.Config.textRenderer.alignment
+        end
+        alignment = Daneel.Debug.CheckArgValue( alignment, "alignment", {"Left", "Center", "Right"}, errorHead, default )
         alignment = TextRenderer.Alignment[ alignment ]
     end
     OriginalSetAlignment( textRenderer, alignment )
@@ -2003,6 +2007,52 @@ function TextRenderer.SetTextWidth( textRenderer, width )
 
     local widthScaleRatio = textRenderer:GetTextWidth() / textRenderer.gameObject.transform:GetScale()
     textRenderer.gameObject.transform:SetScale( width / widthScaleRatio )
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+
+----------------------------------------------------------------------------------
+-- Camera
+
+local OriginalSetProjectionMode = Camera.SetProjectionMode
+
+--- Sets the camera projection mode.
+-- @param camera (Camera) The camera.
+-- @param projectionMode (string or Camera.ProjectionMode) The projection mode. Possible values are "perspective", "orthographic" (as a case-insensitive string), Camera.ProjectionMode.Perspective or Camera.ProjectionMode.Orthographic.
+function Camera.SetProjectionMode( camera, projectionMode )
+    Daneel.Debug.StackTrace.BeginFunction( "Camera.SetProjectionMode", camera, projectionMode )
+    local errorHead = "Camera.SetProjectionMode( camera, projectionMode ) : "
+    Daneel.Debug.CheckArgType( camera, "camera", "Camera", errorHead)
+    local argType = Daneel.Debug.CheckArgType( projectionMode, "projectionMode", {"string", "userdata"}, errorHead )
+
+    if argType == "string" then
+        local default = "Perspective"
+        if Daneel.Config.camera ~= nil and Daneel.Config.camera.projectionMode ~= nil then
+            default = Daneel.Config.camera.projectionMode
+        end
+        projectionMode = Daneel.Debug.CheckArgValue( projectionMode, "projectionMode", {"Perspective", "Orthographic"}, errorHead, default )
+        projectionMode = Camera.ProjectionMode[ projectionMode ]
+    end
+
+    OriginalSetProjectionMode( camera, projectionMode )
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+--- Apply the content of the params argument to the provided camera.
+-- @param camera (Camera) The camera.
+-- @param params (table) A table of parameters to set the component with.
+function Camera.Set( camera, params )
+    Daneel.Debug.StackTrace.BeginFunction( "Camera.Set", camera, params )
+    local errorHead = "Camera.Set( camera, params ) : "
+    Daneel.Debug.CheckArgType( camera, "camera", "Camera", errorHead )
+    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
+
+    if params.projectionMode ~= nil then
+        camera:SetProjectionMode( params.projectionMode )
+        params.projectionMode = nil
+    end
+
+    Component.Set( camera, params )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
