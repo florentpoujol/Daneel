@@ -379,6 +379,52 @@ function Behavior:Awake()
     if r ~= false then
         print( "table.combine 3", r )
     end
+
+    -----
+    local t = { 
+        key = "value t",
+        t1 = { 
+            key = "value t1",
+            t2 = { 
+                key = "value t2",
+            }
+        }
+    }
+    
+    r = table.getvalue( t, "key" )
+    if r ~= t.key then
+        print( "table.getvalue 1", r )
+    end
+    
+    r = table.getvalue( t, "t1.key" )
+    if r ~= t.t1.key then
+        print( "table.getvalue 2", r )
+    end
+    
+    r = table.getvalue( t, "t1.t2.key" )
+    if r ~= t.t1.t2.key then
+        print( "table.getvalue 3", r )
+    end
+    
+    r = table.getvalue( t, "foobar" )
+    if r ~= t.fooBar then
+        print( "table.getvalue 4", r )
+    end
+    
+    r = table.getvalue( t, "foo.bar" )
+    if r ~= nil then
+        print( "table.getvalue 5", r )
+    end
+    
+    r = table.getvalue( t, "t1.foo.bar" )
+    if r ~= nil then
+        print( "table.getvalue 6", r )
+    end
+    
+    r = table.getvalue( t, "t1.t2.Foo" )
+    if r ~= nil then
+        print( "table.getvalue 7", r )
+    end
 end
 
 function Behavior:stringfind( s, pattern, index, plain ) -- string.find

@@ -747,6 +747,37 @@ function table.sortby( t, property, orderBy )
     return t
 end
 
+--- Safely search several levels down inside nested tables. Just returns nil if the series of keys does not leads to a value.
+-- Ie for this series of nested table : table1.table2.table3.fooBar <br>
+-- table.getvalue( table1, "table2.table3.fooBar" ) would return the value of the 'fooBar' key in the 'table3' table <br>
+-- table.getvalue( table1, "table2.table3" ) would return the value of 'table3' <br>
+-- table.getvalue( table1, "table2.table3.Foo" ) would return nul because the 'table3' has no 'Foo' key <br>
+-- table.getvalue( table1, "table2.Foo.Bar.Lorem.Ipsum" ) idem <br>
+-- @param t (table) The table.
+-- @pram keys (string) The chain of keys to looks for as a string, each keys separated by a dot.
+-- @return (mixed) The value, or nil.
+function table.getvalue( t, keys )
+    Daneel.Debug.StackTrace.BeginFunction( "table.getvalue", t, keys )
+    local errorHead = "table.getvalue( table, keys ) : "
+    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
+    Daneel.Debug.CheckArgType( keys, "keys", "string", errorHead )
+
+    local keys = keys:split( "." )
+    local value = t
+    
+    for i, key in ipairs( keys ) do
+        if value[ key ] == nil then
+            value = nil 
+            break
+        else
+            value = value[ key ]
+        end
+    end
+    
+    Daneel.Debug.StackTrace.EndFunction()
+    return value
+end
+
 
 ----------------------------------------------------------------------------------
 -- Daneel
