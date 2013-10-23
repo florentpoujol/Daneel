@@ -2862,7 +2862,7 @@ end
 -- @param gameObject (GameObject) The game object.
 -- @param componentType (string) The component type (can't be Transform or ScriptedBehavior).
 -- @param params [optional] (string, Script or table) A table of parameters to initialize the new component with or, if componentType is 'ScriptedBehavior', the mandatory script name or asset.
--- @return (One of the CraftStudio's component types) The component.
+-- @return (mixed) The component.
 function GameObject.AddComponent( gameObject, componentType, params )
     Daneel.Debug.StackTrace.BeginFunction( "GameObject.AddComponent", gameObject, componentType, params )
     local errorHead = "GameObject.AddComponent( gameObject, componentType[, params] ) : "
@@ -2885,7 +2885,11 @@ function GameObject.AddComponent( gameObject, componentType, params )
             return
         end
 
-        component = gameObject:CreateScriptedBehavior( script )
+        if params == nil then
+            params = {}
+        end
+        component = gameObject:CreateScriptedBehavior( script, params )
+        params = nil
     
     elseif Daneel.DefaultConfig.componentObjects[ componentType ] ~= nil then
         if componentType == "Transform" then
