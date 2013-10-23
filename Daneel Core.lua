@@ -2900,7 +2900,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
             return
         elseif componentType == "ScriptedBehavior" then
             if Daneel.Config.debug.enableDebug then
-                print( errorHead.."To add a scripted behavior, pass the script asset, path or alias instead of 'ScriptedBehavior' as argument 'compomentType'." )
+                print( errorHead.."To add a scripted behavior, pass the script asset, path or alias instead of 'ScriptedBehavior' as argument 'componentType'." )
             end
             Daneel.Debug.StackTrace.EndFunction()
             return
@@ -2960,7 +2960,7 @@ function GameObject.GetComponent( gameObject, componentType )
     local errorHead = "GameObject.GetComponent( gameObject, componentType ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     local argType = Daneel.Debug.CheckArgType( componentType, "componentType", {"string", "Script"}, errorHead )
-    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead, compomentType )
+    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead, componentType )
     
     local lcComponentType = componentType
     if argType == "string" then

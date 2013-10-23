@@ -106,33 +106,32 @@ function Behavior:Awake()
         print( "MapRenderer.SetMap 1", r )
     end
     
-    --go.mapRenderer.map =  nil -- throws the error too 
+    --go.mapRenderer.map = nil -- throws the error too 
     --[[r = go.mapRenderer.map
     if r ~= nil then
         print( "MapRenderer.SetMap 2", r )
-    end
-    ]]
+    end]]
+    
     
     go.mapRenderer.map = "Map"
     --go.mapRenderer.tileSet = "Tile Set1" -- FIXME : to be removed, the map should have its tile set
     
     r = go.mapRenderer.tileSet
     if Daneel.Debug.GetType( r ) ~= "TileSet" or r:GetPath() ~= "Tile Set1" then
-        print( "MapRenderer.SetTileSet 1", r )
+        print( "MapRenderer.GetTileSet 1", r )
     end
     
-    --go.mapRenderer.tileSet = nil
+    --go.mapRenderer.tileSet = nil -- throws error
     --[[r = go.mapRenderer.tileSet
     if r ~= nil then
         print( "MapRenderer.SetTileSet 2", r )
     end]]
-    
+        
     go.mapRenderer.tileSet = Asset.Get("Tile Set2", "tileset")
     r = go.mapRenderer.tileSet
     if Daneel.Debug.GetType( r ) ~= "TileSet" or r:GetPath() ~= "Tile Set2" then
         print( "MapRenderer.SetTileSet 3", r )
     end
-    
     
     ------
     print( "~~~~~ TextRenderer ~~~~~" )
@@ -286,8 +285,7 @@ function Behavior:Awake()
     --------
     -- Scene
     print( "~~~~~ Scene ~~~~~" )
-    
-    local go = Scene.Append( "Prefab" )
+        local go = Scene.Append( "Prefab" )
     go.transform.position = Vector3(0,-2,-5)
     if go == nil or go.name ~= "PrefabGameObject" then
         print( "Scene.Append 1", go )
@@ -445,10 +443,11 @@ function Behavior:Awake()
     
     -- script asset
     r = false
-    go:AddComponent( Asset(path), {
+    local c = go:AddComponent(Asset(path), {
+        
         callback = function() r = true end
     } )
-    
+        
     if r == false then
         print( "gameObject:AddComponent 1", r )
     end
@@ -472,6 +471,35 @@ function Behavior:Awake()
     if r == false then
         print( "gameObject:AddComponent 3", r )
     end
+    
+    ---------
+    -- get component
+    
+    r = go:GetComponent( "maprenderer" )
+    if r ~= go.mapRenderer then
+        print( "gameObject:GetComponent 1", r )
+    end
+    
+    r = go:GetComponent( "phYsIcS" )
+    if r ~= nil then
+        print( "gameObject:GetComponent 2", r )
+    end
+    
+    local sb = go:GetComponent( Asset(path) )
+    if sb == nil then
+        print( "gameObject:GetComponent 3", r )
+    end
+    
+    r = go:GetComponent( path )
+    if r ~= sb then
+        print( "gameObject:GetComponent 4", r )
+    end
+    
+    r = go:GetComponent( "newScript" )
+    if r ~= sb  then
+        print( "gameObject:GetComponent 5", r )
+    end
+    
 end
 
 local frameCount = 0
