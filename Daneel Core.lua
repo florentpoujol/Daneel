@@ -1942,19 +1942,24 @@ local OriginalSetMap = MapRenderer.SetMap
 --- Attach the provided map to the provided mapRenderer.
 -- @param mapRenderer (MapRenderer) The mapRenderer.
 -- @param mapNameOrAsset (string or Map) [optional] The map name or asset, or nil.
--- @param keepTileSet (boolean) [optional default=false] Keep the current TileSet.
+-- @param keepTileSet (boolean) [optional default=false] Keep the current TileSet. 
 function MapRenderer.SetMap( mapRenderer, mapNameOrAsset, keepTileSet )
     Daneel.Debug.StackTrace.BeginFunction( "MapRenderer.SetMap", mapRenderer, mapNameOrAsset, keepTileSet )
     local errorHead = "MapRenderer.SetMap( mapRenderer[, mapNameOrAsset, keepTileSet] ) : "
     Daneel.Debug.CheckArgType( mapRenderer, "mapRenderer", "MapRenderer", errorHead )
     Daneel.Debug.CheckOptionalArgType( mapNameOrAsset, "mapNameOrAsset", {"string", "Map"}, errorHead )
-    keepTileSet = Daneel.Debug.CheckOptionalArgType( keepTileSet, "keepTileSet", "boolean", errorHead, false )
+    Daneel.Debug.CheckOptionalArgType( keepTileSet, "keepTileSet", "boolean", errorHead )
 
     local map = nil
     if mapNameOrAsset ~= nil then
         map = Asset.Get( mapNameOrAsset, "Map", true )
     end
-    OriginalSetMap( mapRenderer, map, keepTileSet )
+
+    if keepTileSet then
+        OriginalSetMap(mapRenderer, map, true)
+    else
+        OriginalSetMap(mapRenderer, map)
+    end
     Daneel.Debug.StackTrace.EndFunction()
 end
 
