@@ -2860,7 +2860,7 @@ end
 
 --- Add a component to the game object and optionally initialize it.
 -- @param gameObject (GameObject) The game object.
--- @param componentType (string) The component type (can't be Transform or ScriptedBehavior).
+-- @param componentType (string or Script) The component type, or script asset, path or alias (can't be Transform or ScriptedBehavior).
 -- @param params [optional] (string, Script or table) A table of parameters to initialize the new component with or, if componentType is 'ScriptedBehavior', the mandatory script name or asset.
 -- @return (mixed) The component.
 function GameObject.AddComponent( gameObject, componentType, params )
@@ -2949,40 +2949,37 @@ end
 -- Get components
 
 local OriginalGetComponent = GameObject.GetComponent
+local OriginalGetScriptedBehavior = GameObject.GetScriptedBehavior
 
 --- Get the first component of the provided type attached to the game object.
 -- @param gameObject (GameObject) The game object.
--- @param componentType (string) The component type.
+-- @param componentType (string or Script) The component type, or script asset, path or alias.
 -- @return (One of the component types) The component instance, or nil if none is found.
 function GameObject.GetComponent( gameObject, componentType )
     Daneel.Debug.StackTrace.BeginFunction( "GameObject.GetComponent", gameObject, componentType )
     local errorHead = "GameObject.GetComponent( gameObject, componentType ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-    Daneel.Debug.CheckArgType( componentType, "componentType", "string", errorHead )
-    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead )
+    local argType = Daneel.Debug.CheckArgType( componentType, "componentType", {"string", "Script"}, errorHead )
+    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead, compomentType )
     
-    if componentType == "ScriptedBehavior" then
-        print( errorHead.."Can't get a ScriptedBehavior via 'GameObject.GetComponent()'. Use 'GameObject.GetScriptedBehavior()' instead." )
-        Daneel.Debug.StackTrace.EndFunction()
-        return nil
+    local lcComponentType = componentType
+    if argType == "string" then
+        lcComponentType = componentType:lcfirst()
     end
-
-    local lcComponentType = componentType:lcfirst()
     local component = gameObject[ lcComponentType ]
     
-    if component == nil and Daneel.DefaultConfig.componentObjects[ componentType ] ~= nil then
-        component = OriginalGetComponent( gameObject, componentType )
-
-        if component ~= nil then
-            gameObject[ lcComponentType ] = component
+    if component == nil then
+        if Daneel.DefaultConfig.componentObjects[ componentType ] ~= nil then
+            component = OriginalGetComponent( gameObject, componentType )
+        elseif Daneel.Config.componentObjects[ componentType ] == nil then -- not a custom component either
+            local script = Asset.Get( componentType, "Script", true ) -- componentType is the script path or asset
+            component = OriginalGetScriptedBehavior( gameObject, script )
         end
     end
 
     Daneel.Debug.StackTrace.EndFunction()
     return component
 end
-
-local OriginalGetScriptedBehavior = GameObject.GetScriptedBehavior
 
 --- Get the provided scripted behavior instance attached to the game object.
 -- @param gameObject (GameObject) The game object.
@@ -2994,10 +2991,7 @@ function GameObject.GetScriptedBehavior( gameObject, scriptNameOrAsset )
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     Daneel.Debug.CheckArgType( scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead )
 
-    local script = scriptNameOrAsset
-    if type( scriptNameOrAsset ) == "string" then
-        script = Asset.Get( scriptNameOrAsset, "Script", true )
-    end
+    local script = Asset.Get( scriptNameOrAsset, "Script", true )
     local component = OriginalGetScriptedBehavior( gameObject, script )
     Daneel.Debug.StackTrace.EndFunction()
     return component
