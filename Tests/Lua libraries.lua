@@ -379,7 +379,7 @@ function Behavior:Awake()
     if r ~= false then
         print( "table.combine 3", r )
     end
-
+    
     -----
     local t = { 
         key = "value t",

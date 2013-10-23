@@ -24,9 +24,9 @@ function LangFrench()
 end
 
 function Behavior:Awake()
+    print( "~~~~~ Lang ~~~~~" )
     local r = nil
     
-    print( "~~~~~ Lang ~~~~~" )
        
     Lang.Config.searchInDefault = true
     r = Lang.Get("English.gamename")

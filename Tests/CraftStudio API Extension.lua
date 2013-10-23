@@ -1,6 +1,6 @@
 function Behavior:Awake()
     local r = nil
-    print( "~~~~~~ Asset ~~~~~~" )
+    print( "~~~~~ Asset ~~~~~" )
     
     r = Asset.Get( "Daneel Core" )
     if r ~= nil then
@@ -39,7 +39,7 @@ function Behavior:Awake()
     end
     
     -----
-    print( "~~~~~~ Component ~~~~~~" )
+    print( "~~~~~ Component ~~~~~" )
     r = self.gameObject.transform.id
     if type( r ) ~= "number" then
         print( "Component.GetId 1", r )
@@ -49,7 +49,7 @@ function Behavior:Awake()
     end
     
     -----
-    print( "~~~~~~ Transform Scale ~~~~~~" )
+    print( "~~~~~ Transform Scale ~~~~~" )
     local go = GameObject.Get( "LocalScale" )
     local child = GameObject.Get( "LocalScale.LocalScaleChild" )
     
@@ -61,9 +61,10 @@ function Behavior:Awake()
     child.textRenderer.text = math.round( child.transform.localScale.x, 1 ) .. " ".. math.round( child.transform.scale.x, 1 )
     
     ------
-    print( "~~~~~~ ModelRenderer ~~~~~~" )
+    print( "~~~~~ ModelRenderer ~~~~~" )
     
-    local go = GameObject("")
+    local go = GameObject("", { transform={ position = Vector3(2,0,-5) } } )
+    
     go:AddComponent( "moDelRendeRer" )
     
     go.modelRenderer.model = "Model"
@@ -94,7 +95,8 @@ function Behavior:Awake()
     
     
     ------
-    print( "~~~~~~ MapRenderer ~~~~~~" )
+    print( "~~~~~ MapRenderer ~~~~~" )
+    --go.modelRenderer.model = nil
     
     go:AddComponent( "MApRendeRer" )
     
@@ -112,7 +114,8 @@ function Behavior:Awake()
     ]]
     
     go.mapRenderer.map = "Map"
-    go.mapRenderer.tileSet = "Tile Set1" -- FIXME : to be removed, the map shuld have its tile set
+    --go.mapRenderer.tileSet = "Tile Set1" -- FIXME : to be removed, the map should have its tile set
+    
     r = go.mapRenderer.tileSet
     if Daneel.Debug.GetType( r ) ~= "TileSet" or r:GetPath() ~= "Tile Set1" then
         print( "MapRenderer.SetTileSet 1", r )
@@ -132,7 +135,7 @@ function Behavior:Awake()
     
     
     ------
-    print( "~~~~~~ TextRenderer ~~~~~~" )
+    print( "~~~~~ TextRenderer ~~~~~" )
     
     go:CreateComponent( "TextRenderer" )
     
@@ -159,6 +162,7 @@ function Behavior:Awake()
     go.textRenderer.textWidth = 5
     -- this is a visual test, GetTextWidth() returns the width as if the GO had a scale of 1
     
+    
     ------
     print( "~~~~~~ Camera ~~~~~~" )
 
@@ -174,7 +178,7 @@ function Behavior:Awake()
     
     
     ------
-    print( "~~~~~~ Ray ~~~~~~" )
+    print( "~~~~~ Ray ~~~~~" )
     
     local screenSize = CS.Screen.GetSize()
     if getmetatable( screenSize ) ~= Vector2 then
@@ -281,7 +285,7 @@ function Behavior:Awake()
     
     --------
     -- Scene
-    print( "~~~~~~ Scene ~~~~~~" )
+    print( "~~~~~ Scene ~~~~~" )
     
     local go = Scene.Append( "Prefab" )
     go.transform.position = Vector3(0,-2,-5)
@@ -303,7 +307,7 @@ function Behavior:Awake()
 
     self.goToDestroy = go
     go.OnDestroy = function()
-        print( tostring(go) .. " is deing destroyed, that's OK. The OnDestroy event is working." )
+        print( tostring(go) .. " is deing destroyed, that's OK" )
     end
     go:AddTag( "aTag" )
     Daneel.Event.Listen( "AnEvent", go )
@@ -314,22 +318,24 @@ function Behavior:Awake()
 
     --------
     -- Game objects
+    
+    print("~~~~~~ GameObject ~~~~~~")
 
     r = GameObject( "NewGameObject", {
         transform = {
             position = Vector3(5)
         },
 
-        moDelRendeRer = { 
+        modelRenderer = { 
             model = "Model",
             animation = "ModelAnimationFolder/Animation"
         },
-
+        
         test = { test = "test" },
 
         parent = self.gameObject
     })
-
+    
     if 
         r.name ~= "NewGameObject" or 
         r.transform.position ~= Vector3:New(5) or 
@@ -339,14 +345,140 @@ function Behavior:Awake()
     then
         print( "GameObject.New 1", r )
     end
+    
+    
+    r = GameObject( "Prefab")
+    
+    if r.name ~= "PrefabGameObject" then
+        print( "GameObject.New 2", r )
+    end
+    
+    r = GameObject.Instantiate( "NewGO", Asset("MultiPrefab") )
+    
+    if #r.children ~= 2 and r.children[2].name ~= "Object2" then
+        print( "GameObject.Instanciate 1", r )
+    end
+    
+    
+    -- test scripted behavior and alias
+    go = GameObject.Get("Daneel Core")
+    local sb = go:GetScriptedBehavior( "Daneel/Daneel Core" )
+    
+    if sb == nil then -- Daneel has been late loaded
+        go = GameObject.Get( "Daneel Late Load" )
+        sb = go:GetScriptedBehavior( "Daneel/Daneel Core" )
+    end
+    
+    r = go.daneel
 
+    if r == nil or r ~= sb then
+        print("Script Alias 1", r)
+    end
+    
+    rawset(go, "daneel", nil)
+    go:Set({
+        daneel = {
+            testvar = "value",
+        },
+        test = {test = "test"}
+    })
+    
+    if go.daneel ~= sb or go.daneel.testvar ~= "value" or go.test == nil then
+        print("Script Alias 2")
+        table.print(go.daneel)
+    end
+    
+    r = go:GetScriptedBehavior( Asset("Daneel/Daneel Core") )
+    if r ~= sb then 
+        print( "GetScriptedBehavior 1", r )
+    end
+    
+    r = go:GetScriptedBehavior( "daneel" )
+    if r ~= sb then
+        print( "GetScriptedBehavior 2", r )
+    end
+    
+    
+    -----
+
+    r = go.id
+    if r ~= tonumber( tostring( go.inner ):sub( 5, 20 ) ) then
+        print( "gameObject:GetId 1", r )
+    end
+    
+    --
+    go = GameObject.Get("Daneel Core")
+    r = go:GetChild( "Test Ray.Model" )
+    if r ~= go.child.child then
+        print("gameObject:GetChild 1", r )
+    end
+    
+    r = go:GetChild( "Model", true )
+    if r ~= go.child.child then
+        print("gameObject:GetChild 2", r )
+    end
+    
+    r = go:GetChild( "Test Ray.FooBar" )
+    if r ~= nil then
+        print("gameObject:GetChild 2", r )
+    end
+    
+    --
+    r = go.children
+    if #r ~= 2 then
+        print("gameObject:GetChildren 1", r )
+    end
+    
+    r = go:GetChildren( true ) -- recursive
+    if #r ~= 8 then
+        print("gameObject:GetChildren 2", r )
+    end
+    
+    r = go:GetChildren( true, true ) -- recursive + include self
+    if #r ~= 9 then
+        print("gameObject:GetChildren 3", r )
+    end
+    
+    
+    -----
+    local path = Daneel.Config.scriptPaths.newScript
+    
+    -- script asset
+    r = false
+    go:AddComponent( Asset(path), {
+        callback = function() r = true end
+    } )
+    
+    if r == false then
+        print( "gameObject:AddComponent 1", r )
+    end
+    
+    -- script path
+    r = false
+    go:AddComponent( path, {
+        callback = function() r = true end
+    } )
+    
+    if r == false then
+        print( "gameObject:AddComponent 2", r )
+    end
+    
+    -- script alias
+    r = false
+    go:AddComponent( "newScript", {
+        callback = function() r = true end
+    } )
+    
+    if r == false then
+        print( "gameObject:AddComponent 3", r )
+    end
 end
 
 local frameCount = 0
 function Behavior:Update()
     frameCount = frameCount + 1
     if frameCount == 2 then
-        print( "~~~~~~ OnDestroy ~~~~~~" )
+        print( "~~~~~ OnDestroy ~~~~~" )
     
         if 
             self.goToDestroy.transform ~= nil or
@@ -360,6 +492,7 @@ function Behavior:Update()
             print( self.goToDestroy )
         end
         
-        print( "~~~~~~ End  OnDestroy ~~~~~~" )
+        print( "~~~~~ End  OnDestroy ~~~~~" )
     end
 end
+

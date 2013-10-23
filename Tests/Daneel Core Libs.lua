@@ -148,7 +148,7 @@ function Behavior:Awake()
     end
     
     r = d.GetNameFromValue( GUI.Hud )
-    if r ~= "GUI.Hud" then
+    if r ~= "GUI.Hud" and Daneel.isLoaded then
         print( "Debug.GetNameFromValue 2", r )
     end
     
@@ -231,8 +231,7 @@ function Behavior:Awake()
     
     -----
     self.testTime = true
-    
-    Tween.Timer( 1.35, function() print("-------------- Changing timeScale to 0.5 --------------------"); Daneel.Time.timeScale = 0.5 end )
+    Tween.Timer( 1.35, function() print("-------------- Changind timeScale to 0.5 --------------------"); Daneel.Time.timeScale = 0.5 end )
     Tween.Timer( 1.42, function() self.testTime = false end )
 end
 
