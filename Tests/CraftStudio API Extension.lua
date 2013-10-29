@@ -483,22 +483,113 @@ function Behavior:Awake()
     if r ~= nil then
         print( "gameObject:GetComponent 2", r )
     end
-    print("test1")
+    
     local sb = go:GetComponent( Asset(path) )
     if sb == nil then
         print( "gameObject:GetComponent 3", r )
     end
-    print("test2")
+    
     r = go:GetComponent( path )
     if r ~= sb then
         print( "gameObject:GetComponent 4", r )
     end
-    print("test3")
+    
     r = go:GetComponent( "newScript" )
     if r ~= sb  then
         print( "gameObject:GetComponent 5", r )
     end
-        print("test4")
+        
+    --
+    local sb = go:GetScriptedBehavior( Asset.Get(path) )
+    if sb == nil then
+        print( "gameObject:GetScriptedBehavior 1", r )
+    end
+    
+    r = go:GetScriptedBehavior( path )
+    if r ~= sb then
+        print( "gameObject:GetScriptedBehavior 2", r )
+    end
+    
+    r = go:GetScriptedBehavior( "newScript" )
+    if r ~= sb  then
+        print( "gameObject:GetScriptedBehavior 3", r )
+    end
+
+    ------
+    -- tags
+
+    r = go:GetTags()
+    if type( r ) ~= "table" or #r ~= 0 then
+        print( "gameObject:GetTags 1", r )
+    end
+
+    go:AddTag( "Tag1" )
+    go:AddTag( {"Tag1", "Tag2"} )
+
+    r = go.tags
+    if type( r ) ~= "table" or #r ~= 2 then
+        print( "gameObject:AddTag 1", r )
+    end
+
+    go:removeTag( "Tag1" )
+    r = go.tags
+    if type( r ) ~= "table" or #r ~= 1 then
+        print( "gameObject:RemoveTag 1", r )
+    end
+
+    go:removeTag( {"Tag1", "Tag2"} )
+    r = go.tags
+    if type( r ) ~= "table" or #r ~= 0 then
+        print( "gameObject:RemoveTag 2", r )
+    end
+
+    ----
+    r = go:HasTag( "whatever" )
+    if r ~= false then
+        print( "gameObject:HasTag 1", r )
+    end
+
+    go:AddTag( {"Tag1", "Tag2"} )
+    r = go:HasTag( "Tag1" )
+    if r ~= false then
+        print( "gameObject:HasTag 2", r )
+    end
+
+    r = go:HasTag( "Tag1", true ) -- at least one tag
+    if r ~= true then
+        print( "gameObject:HasTag 2.5", r )
+    end
+
+    r = go:HasTag( {"Tag1", "Tag2"} )
+    if r ~= true then
+        print( "gameObject:HasTag 3", r )
+    end
+
+    r = go:HasTag( {"Tag1", "Tag2", "whatever"} )
+    if r ~= false then
+        print( "gameObject:HasTag 4", r )
+    end
+
+    --
+    r = GameObject.GetWithTag( "whatever" )
+    if type(r) ~= "table" or #r ~= 0 then
+        print( "GameObject.GetWithTag 1", r )
+        table.print( r )
+    end
+
+    r = GameObject.GetWithTag( "Tag1" )
+    if type(r) ~= "table" or #r ~= 1 or r[1] ~= go then
+        print( "GameObject.GetWithTag 2", r )
+        table.print( r )
+    end
+
+    local go = GameObject.New( "", { tags = { "Tag1", "Tag2" } } )
+    r = GameObject.GetWithTag( {"Tag1", "Tag2"} )
+    if type(r) ~= "table" or #r ~= 2 then
+        print( "GameObject.GetWithTag 3", r )
+        table.print( r )
+    end
+
 end
 
 local frameCount = 0
