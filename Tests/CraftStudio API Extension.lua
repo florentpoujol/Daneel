@@ -310,8 +310,7 @@ function Behavior:Awake()
     go:AddTag( "aTag" )
     Daneel.Event.Listen( "AnEvent", go )
     
-    CS.Destroy( go )
-    --print( self.goToDestroy )
+    go:Destroy()
 
 
     --------
@@ -515,6 +514,7 @@ function Behavior:Awake()
         print( "gameObject:GetScriptedBehavior 3", r )
     end
 
+
     -----
     -- tags
     
@@ -531,13 +531,13 @@ function Behavior:Awake()
         print( "gameObject:AddTag 1", r )
     end
 
-    go:removeTag( "Tag1" )
+    go:RemoveTag( "Tag1" )
     r = go.tags
     if type( r ) ~= "table" or #r ~= 1 then
         print( "gameObject:RemoveTag 1", r )
     end
 
-    go:removeTag( {"Tag1", "Tag2"} )
+    go:RemoveTag( {"Tag1", "Tag2"} )
     r = go.tags
     if type( r ) ~= "table" or #r ~= 0 then
         print( "gameObject:RemoveTag 2", r )

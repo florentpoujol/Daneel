@@ -2900,7 +2900,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
         component = gameObject:CreateScriptedBehavior( script, params )
         params = nil
     
-    elseif Daneel.DefaultConfig.componentObjects[ componentType ] ~= nil then
+    elseif Daneel.DefaultConfig().componentObjects[ componentType ] ~= nil then
         if componentType == "Transform" then
             if Daneel.Config.debug.enableDebug then
                 print( errorHead.."Can't add a transform component because gameObjects may only have one transform." )
@@ -2978,7 +2978,7 @@ function GameObject.GetComponent( gameObject, componentType )
     local component = gameObject[ lcComponentType ]
     
     if component == nil then
-        if Daneel.DefaultConfig.componentObjects[ componentType ] ~= nil then
+        if Daneel.DefaultConfig().componentObjects[ componentType ] ~= nil then
             component = OriginalGetComponent( gameObject, componentType )
         elseif Daneel.Config.componentObjects[ componentType ] == nil then -- not a custom component either
             local script = Asset.Get( componentType, "Script", true ) -- componentType is the script path or asset
@@ -3023,6 +3023,7 @@ function GameObject.Destroy( gameObject )
             Daneel.Event.Fire( value, "OnDestroy", value )
         end
     end
+
     CraftStudio.Destroy( gameObject )
     Daneel.Debug.StackTrace.EndFunction()
 end
@@ -3270,8 +3271,7 @@ function Daneel.DefaultConfig()
     return config
 end
 
-Daneel.DefaultConfig = Daneel.DefaultConfig()
-Daneel.Config = Daneel.DefaultConfig 
+Daneel.Config = Daneel.DefaultConfig()
 Daneel.SetComponents( Daneel.Config.componentObjects ) -- called here for the built-in components, is called another time after the modules and user config gets loaded
 
 -- Assets
@@ -3281,7 +3281,7 @@ for assetType, assetObject in pairs( Daneel.Config.assetObjects ) do
 
     assetObject["__tostring"] = function( asset )
         -- print something like : "Model: 123456789"    asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
-        return tostring( asset.inner ):sub( 31, 50 ) .. ": '" .. Map.GetPathInPackage( asset ) .. "'"
+        return tostring( asset.inner ):match( "%d+" ) .. ": '" .. Map.GetPathInPackage( asset ) .. "'"
     end
 end
 
@@ -3346,7 +3346,7 @@ function Daneel.Load()
             Daneel.Utilities.AllowDynamicGettersAndSetters( script, { Script, Component } )
 
             script["__tostring"] = function( scriptedBehavior )
-                return "ScriptedBehavior: " .. tostring( scriptedBehavior.inner ):sub( 2, 20 ) .. ": '" .. path .. "'"
+                return "ScriptedBehavior: " .. tostring( scriptedBehavior.inner ):match( "%d+" ) .. ": '" .. path .. "'"
             end
         else
             Daneel.Config.scriptPaths[ alias ] = nil
