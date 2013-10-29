@@ -1794,7 +1794,7 @@ function Component.GetId( component )
     local errorHead = "Component.GetId( component ) : "
     Daneel.Debug.CheckArgType( component, "component", Daneel.Config.componentTypes, errorHead )
 
-    if component.id ~= nil then
+    if rawget( component, "id" ) ~= nil then
         Daneel.Debug.StackTrace.EndFunction()
         return component.id
     end
@@ -2450,18 +2450,15 @@ end
 
 setmetatable( GameObject, { __call = function(Object, ...) return Object.New(...) end } )
 
+-- returns something like "GameObject: 123456789: 'MyName'"
 function GameObject.__tostring( gameObject )
     if rawget( gameObject, "transform" ) == nil then
         return "Destroyed gameObject: " .. Daneel.Debug.ToRawString( gameObject )
         -- the important here was to prevent throwing an error
     end
-    -- returns something like "GameObject: 123456789: 'MyName'"
-    -- do not use game object:GetID() here, it throws a stack overflow when stacktrace is enabled (BeginFunction uses tostring() on the input argument)
-    local st = Daneel.Config.debug.enableStackTrace
-    Daneel.Config.debug.enableStackTrace = false
-    local id = gameObject:GetId()
-    Daneel.Config.debug.enableStackTrace = st
 
+    local id = tonumber( tostring( gameObject.inner ):match( "%d+" ) )
+    rawset( gameObject, "id", id )
     return "GameObject: " .. id .. ": '" .. gameObject:GetName() .. "'"
 end
 
