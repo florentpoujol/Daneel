@@ -76,7 +76,7 @@ function GUI.Hud.New( gameObject, params )
 
     local hud = setmetatable( {}, GUI.Hud )
     hud.gameObject = gameObject
-    hud.Id = Daneel.Cache.GetId()
+    hud.id = Daneel.Cache.GetId()
     gameObject.hud = hud
 
     hud:Set( table.merge( GUI.Config.hud, params ) )
@@ -246,7 +246,7 @@ function GUI.Toggle.New( gameObject, params )
     toggle.defaultText = toggle.text
     toggle.text = nil
     toggle.gameObject = gameObject
-    toggle.Id = Daneel.Cache.GetId()
+    toggle.id = Daneel.Cache.GetId()
     setmetatable( toggle, GUI.Toggle )
 
     toggle:Set( params )
@@ -487,7 +487,7 @@ function GUI.ProgressBar.New( gameObject, params )
 
     local progressBar = table.copy( GUI.Config.progressBar )
     progressBar.gameObject = gameObject
-    progressBar.Id = Daneel.Cache.GetId()
+    progressBar.id = Daneel.Cache.GetId()
     progressBar.value = nil -- remove the property to allow to use the dynamic getter/setter
     setmetatable( progressBar, GUI.ProgressBar )
 
@@ -672,7 +672,7 @@ function GUI.Slider.New( gameObject, params )
 
     local slider = table.copy( GUI.Config.slider )
     slider.gameObject = gameObject
-    slider.Id = Daneel.Cache.GetId()
+    slider.id = Daneel.Cache.GetId()
     slider.value = nil
     slider.parent = slider.gameObject:GetParent()
     if slider.parent == nil then
@@ -827,7 +827,7 @@ function GUI.Input.New( gameObject, params )
 
     local input = table.merge( GUI.Config.input, params )
     input.gameObject = gameObject
-    input.Id = Daneel.Cache.GetId()
+    input.id = Daneel.Cache.GetId()
     setmetatable( input, GUI.Input )
     
     -- adapted from Blast Turtles
@@ -955,11 +955,11 @@ function GUI.TextArea.New( gameObject, params )
 
     local textArea = {}
     textArea.gameObject = gameObject
-    textArea.Id = Daneel.Cache.GetId()
+    textArea.id = Daneel.Cache.GetId()
     textArea.lineRenderers = {}
     setmetatable( textArea, GUI.TextArea )
 
-    local go = CS.CreateGameObject( "Text ruler for TextArea ".. textArea.Id )
+    local go = CS.CreateGameObject( "Text ruler for TextArea ".. textArea.id )
     go:SetParent( gameObject ) -- set as child so that it is destroyed with the GO of the textArea
     textArea.textRuler = go:CreateComponent( "TextRenderer ") -- used to store the TextRenderer properties and mesure the lines length in SetText()
     textArea.textRuler:SetText( "" )
@@ -1051,7 +1051,7 @@ function GUI.TextArea.SetText( textArea, text )
             lineRenderers[i].gameObject.transform:SetLocalPosition( Vector3:New( 0, offset, 0 ) )
             lineRenderers[i]:SetText( line )
         else
-            local newLineGO = GameObject.New( "TextAreaLine-" .. textArea.Id .. "-" .. i, {
+            local newLineGO = GameObject.New( "TextAreaLine-" .. textArea.id .. "-" .. i, {
                 parent = gameObject,
                 transform = {
                     localPosition = Vector3:New( 0, offset, 0 )

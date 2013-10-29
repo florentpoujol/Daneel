@@ -48,7 +48,7 @@ Tween.Tweener.__index = Tween.Tweener
 setmetatable(Tween.Tweener, { __call = function(Object, ...) return Object.New(...) end })
 
 function Tween.Tweener.__tostring(tweener)
-    return "Tweener: " .. tweener.Id
+    return "Tweener: " .. tweener.id
 end
 
 --- Creates a new tweener via one of the three allowed constructors : <br>
@@ -71,7 +71,7 @@ function Tween.Tweener.New(target, property, endValue, duration, params)
     
     local tweener = table.copy(Tween.Config.tweener)
     setmetatable(tweener, Tween.Tweener)
-    tweener.Id = Daneel.Cache.GetId()
+    tweener.id = Daneel.Cache.GetId()
 
     -- three constructors :
     -- target, property, endValue, duration[, params]
@@ -118,7 +118,7 @@ function Tween.Tweener.New(target, property, endValue, duration, params)
         tweener.gameObject = tweener.target.gameObject
     end
     
-    Tween.Tweener.tweeners[tweener.Id] = tweener
+    Tween.Tweener.tweeners[tweener.id] = tweener
     Daneel.Debug.StackTrace.EndFunction()
     return tweener
 end
@@ -251,7 +251,7 @@ function Tween.Tweener.Destroy( tweener )
     tweener.target = nil
     tweener.duration = 0
 
-    Tween.Tweener.tweeners[ tweener.Id ] = nil
+    Tween.Tweener.tweeners[ tweener.id ] = nil
     CraftStudio.Destroy( tweener )
     Daneel.Debug.StackTrace.EndFunction()
 end
@@ -337,7 +337,7 @@ function Tween.Timer.New( duration, callback, isInfiniteLoop, params )
 
     local tweener = table.copy( Tween.Config.tweener )
     setmetatable( tweener, Tween.Tweener )
-    tweener.Id = Daneel.Cache.GetId()
+    tweener.id = Daneel.Cache.GetId()
     tweener.startValue = duration
     tweener.endValue = 0
     tweener.duration = duration
@@ -352,7 +352,7 @@ function Tween.Timer.New( duration, callback, isInfiniteLoop, params )
         tweener:Set( params )
     end
 
-    Tween.Tweener.tweeners[ tweener.Id ] = tweener
+    Tween.Tweener.tweeners[ tweener.id ] = tweener
     Daneel.Debug.StackTrace.EndFunction()
     return tweener
 end
@@ -457,7 +457,7 @@ function Tween.Update()
                                 if tweener.target ~= nil then
                                     tweener.startValue = GetTweenerProperty( tweener )
                                 else
-                                    error( "Tween.Update() : startValue is nil but no target is set for tweener with Id '" .. tweener.Id .. "'" )
+                                    error( "Tween.Update() : startValue is nil but no target is set for tweener with Id '" .. tweener.id .. "'" )
                                 end
                             elseif tweener.target ~= nil then
                                 -- when start value and a target are set move the target to startValue before updating the tweener
