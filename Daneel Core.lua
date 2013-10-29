@@ -3182,12 +3182,14 @@ function Daneel.SetComponents( components )
 
         if componentType ~= "ScriptedBehavior" then
             componentObject["__tostring"] = function( component )
-                -- returns something like "ModelRenderer: 123456789"    component.inner is "?: [some ID]"
-                -- do not use component:GetId() here, it throws a stack overflow when stacktrace is enabled because ST.BeginFunction() uses tostring() on the provided argument(s)
-                local st = Daneel.Config.debug.enableStackTrace
-                Daneel.Config.debug.enableStackTrace = false
-                local id = component:GetId()
-                Daneel.Config.debug.enableStackTrace = st
+                -- returns something like "ModelRenderer: 123456789"
+                local id = rawget( component, "id" )
+                if id == nil and component.inner ~= nil then
+                    id = tonumber( tostring( component.inner ):match( "%d+" ) )
+                    rawset( component, "id", id )
+                else
+                    id = "[id]"
+                end
 
                 return componentType .. ": " .. id
             end
