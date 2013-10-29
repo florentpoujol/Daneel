@@ -836,16 +836,18 @@ end
 
 --- Allow to call getters and setters as if they were variable on the instance of the provided Object.
 -- The instances are tables that have the provided object as metatable.
--- Optionaly allow to search in a ancestry of objects.
+-- Optionally allow to search in a ancestry of objects.
 -- @param Object (mixed) The object.
 -- @param ancestors (table) [optional] A table with one or several objects the Object "inherits" from.
 function Daneel.Utilities.AllowDynamicGettersAndSetters( Object, ancestors )
     function Object.__index( instance, key )
+        local ucKey = key
+        if type( key ) == "string" then
+            ucKey = key:ucfirst()
+        end
 
-        local uckey = key:ucfirst()
-        if key == uckey then 
-            -- first letter was already uppercase
-            -- it may be a function or a property
+        if key == ucKey then 
+            -- first letter was already uppercase or key is not if type string
             if Object[ key ] ~= nil then
                 return Object[ key ]
             end
@@ -860,8 +862,7 @@ function Daneel.Utilities.AllowDynamicGettersAndSetters( Object, ancestors )
 
         else
             -- first letter lowercase, search for the corresponding getter
-
-            local funcName = "Get"..uckey
+            local funcName = "Get"..ucKey
 
             if Object[ funcName ] ~= nil then
                 return Object[ funcName ]( instance )
@@ -883,15 +884,19 @@ function Daneel.Utilities.AllowDynamicGettersAndSetters( Object, ancestors )
         return nil
     end
 
-    function Object.__newindex(instance, key, value)
-        local uckey = key:ucfirst()
-        if key ~= uckey then -- first letter lowercase
-            local funcName = "Set"..uckey
+    function Object.__newindex( instance, key, value )
+        local ucKey = key
+        if type( key ) == "string" then
+            ucKey = key:ucfirst()
+        end
+
+        if key ~= ucKey then -- first letter lowercase
+            local funcName = "Set"..ucKey
             if Object[ funcName ] ~= nil then
                 return Object[ funcName ]( instance, value )
             end
         end
-        -- first letter was already uppercase
+        -- first letter was already uppercase or key not of type string
         return rawset( instance, key, value )
     end
 end
@@ -2478,11 +2483,13 @@ function GameObject.__index( gameObject, key )
         end
     end
 
-    local ucKey = key:ucfirst()
-    if key ~= ucKey then
-        local funcName = "Get" .. ucKey
-        if GameObject[ funcName ] ~= nil then
-            return GameObject[ funcName ]( gameObject )
+    if type( key ) == "string" then
+        local ucKey = key:ucfirst()
+        if key ~= ucKey then
+            local funcName = "Get" .. ucKey
+            if GameObject[ funcName ] ~= nil then
+                return GameObject[ funcName ]( gameObject )
+            end
         end
     end
 
@@ -2491,7 +2498,10 @@ end
 
 -- Dynamic setters
 function GameObject.__newindex( gameObject, key, value )
-    local ucKey = key:ucfirst()
+    local ucKey = key
+    if type( key ) == "string" then
+        ucKey = key:ucfirst()
+    end
     if key ~= ucKey and key ~= "transform" then -- first letter lowercase
         -- check about Transform is needed because CraftStudio.CreateGameObject() set the transfom variable on new game objects
         -- 26/09/2013 And so what ? If SetTransform() doesn't exist, it's not an issue
