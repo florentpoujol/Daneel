@@ -40,11 +40,11 @@ function Behavior:Awake()
     
     -----
     print( "~~~~~ Component ~~~~~" )
-    r = self.gameObject.transform.id
+    r = self.gameObject.transform:GetId()
     if type( r ) ~= "number" then
         print( "Component.GetId 1", r )
     end
-    if self.gameObject.transform.Id == nil then
+    if self.gameObject.transform.id == nil then
         print( "Component.GetId 2" )
     end
     
@@ -400,7 +400,7 @@ function Behavior:Awake()
     -----
 
     r = go.id
-    if r ~= tonumber( tostring( go.inner ):sub( 5, 20 ) ) then
+    if r ~= tonumber( tostring( go.inner ):match( "%d+" ) ) then
         print( "gameObject:GetId 1", r )
     end
     
@@ -436,7 +436,6 @@ function Behavior:Awake()
     if #r ~= 9 then
         print("gameObject:GetChildren 3", r )
     end
-    
     
     -----
     local path = Daneel.Config.scriptPaths.newScript
@@ -484,22 +483,22 @@ function Behavior:Awake()
     if r ~= nil then
         print( "gameObject:GetComponent 2", r )
     end
-    
+    print("test1")
     local sb = go:GetComponent( Asset(path) )
     if sb == nil then
         print( "gameObject:GetComponent 3", r )
     end
-    
+    print("test2")
     r = go:GetComponent( path )
     if r ~= sb then
         print( "gameObject:GetComponent 4", r )
     end
-    
+    print("test3")
     r = go:GetComponent( "newScript" )
     if r ~= sb  then
         print( "gameObject:GetComponent 5", r )
     end
-    
+        print("test4")
 end
 
 local frameCount = 0

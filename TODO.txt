@@ -62,26 +62,21 @@ IDEAS
 ==========
 A implémenter
     
-    
-    
 
 ==========
 A tester
-
-    - voir pourquoi certains easeType renvoient des erreurs
-    - Tweener scripted behavior with most common properties, tweener ajouté à propriété 'tweener' sur game object (idem pour timer)
 
 
 ==========
 A modifier/ajouter dans la doc :
 
-    - création de modules
-    - création de composants
+    - création de modules ?
+    - création de composants ?
+    - refaire le changelog
+    - revoir l'ensemble de la doc
 
 
 =========
 BUGS
 
-SetMap renvoie erreur "Object reference not set to an instance of an object." lorsque argument map est nil
-
-les map n'ont pas de tileSet lorsqu'elle sont misent avec SetMap
+local sb = go:GetComponent( Asset(path) )
