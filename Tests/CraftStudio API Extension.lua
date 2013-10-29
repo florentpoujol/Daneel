@@ -515,9 +515,9 @@ function Behavior:Awake()
         print( "gameObject:GetScriptedBehavior 3", r )
     end
 
-    ------
+    -----
     -- tags
-
+    
     r = go:GetTags()
     if type( r ) ~= "table" or #r ~= 0 then
         print( "gameObject:GetTags 1", r )
@@ -550,14 +550,20 @@ function Behavior:Awake()
     end
 
     go:AddTag( {"Tag1", "Tag2"} )
+
     r = go:HasTag( "Tag1" )
-    if r ~= false then
+    if r ~= true then
         print( "gameObject:HasTag 2", r )
     end
 
-    r = go:HasTag( "Tag1", true ) -- at least one tag
+    r = go:HasTag( {"Tag1", "whatever"}, true ) -- at least one tag
     if r ~= true then
         print( "gameObject:HasTag 2.5", r )
+    end
+    
+    r = go:HasTag( {"Tag1", "whatever"}, false ) -- at least one tag
+    if r ~= false then
+        print( "gameObject:HasTag 2.6", r )
     end
 
     r = go:HasTag( {"Tag1", "Tag2"} )
