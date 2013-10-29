@@ -1940,24 +1940,24 @@ end
 
 local OriginalSetMap = MapRenderer.SetMap
 
---- Attach the provided map to the provided mapRenderer.
--- @param mapRenderer (MapRenderer) The mapRenderer.
+--- Attach the provided map to the provided map renderer.
+-- @param mapRenderer (MapRenderer) The map renderer.
 -- @param mapNameOrAsset (string or Map) [optional] The map name or asset, or nil.
--- @param keepTileSet (boolean) [optional default=false] Keep the current TileSet. 
-function MapRenderer.SetMap( mapRenderer, mapNameOrAsset, keepTileSet )
-    Daneel.Debug.StackTrace.BeginFunction( "MapRenderer.SetMap", mapRenderer, mapNameOrAsset, keepTileSet )
-    local errorHead = "MapRenderer.SetMap( mapRenderer[, mapNameOrAsset, keepTileSet] ) : "
+-- @param replaceTileSet (boolean) [optional default=true] Replace the current TileSet by the one set for the provided map in the map editor. 
+function MapRenderer.SetMap( mapRenderer, mapNameOrAsset, replaceTileSet )
+    Daneel.Debug.StackTrace.BeginFunction( "MapRenderer.SetMap", mapRenderer, mapNameOrAsset, replaceTileSet )
+    local errorHead = "MapRenderer.SetMap( mapRenderer[, mapNameOrAsset, replaceTileSet] ) : "
     Daneel.Debug.CheckArgType( mapRenderer, "mapRenderer", "MapRenderer", errorHead )
     Daneel.Debug.CheckOptionalArgType( mapNameOrAsset, "mapNameOrAsset", {"string", "Map"}, errorHead )
-    Daneel.Debug.CheckOptionalArgType( keepTileSet, "keepTileSet", "boolean", errorHead )
+    Daneel.Debug.CheckOptionalArgType( replaceTileSet, "replaceTileSet", "boolean", errorHead )
 
     local map = nil
     if mapNameOrAsset ~= nil then
         map = Asset.Get( mapNameOrAsset, "Map", true )
     end
 
-    if keepTileSet then
-        OriginalSetMap(mapRenderer, map, true)
+    if replaceTileSet ~= nil then
+        OriginalSetMap(mapRenderer, map, replaceTileSet)
     else
         OriginalSetMap(mapRenderer, map)
     end
