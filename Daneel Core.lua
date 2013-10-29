@@ -1794,15 +1794,16 @@ function Component.GetId( component )
     local errorHead = "Component.GetId( component ) : "
     Daneel.Debug.CheckArgType( component, "component", Daneel.Config.componentTypes, errorHead )
 
-    if component.Id ~= nil then
+    if component.id ~= nil then
         Daneel.Debug.StackTrace.EndFunction()
-        return component.Id
+        return component.id
     end
 
     local id = -1
     if component.inner ~= nil then
-        id = tonumber( tostring( component.inner ):sub( 5, 20 ) )
-        rawset( component, "Id", id )
+        -- component.inner = "CraftStudioRuntime.InGame.Components.ModelRenderer: 27863937" (of type userdata)
+        id = tonumber( tostring( component.inner ):match( "%d+" ) )
+        rawset( component, "id", id )
     end
     Daneel.Debug.StackTrace.EndFunction()
     return id
@@ -2710,7 +2711,8 @@ function GameObject.GetId( gameObject )
 
     local id = -1
     if gameObject.inner ~= nil then
-        id = tonumber( tostring( gameObject.inner ):sub( 5, 20 ) )
+        -- gameObject.inner = "CraftStudioRuntime.InGame.GameObject: 4620049" (of type userdata)
+        id = tonumber( tostring( gameObject.inner ):match( "%d+" ) )
         rawset( gameObject, "id", id )
     end
 
