@@ -47,32 +47,7 @@ function Behavior:Awake()
     -----
     local s1 = "123456789"
     local s2 = "sTrInG"
-    
-    r = string.isoneof( s1, {"456"} )
-    if r ~= false then
-        print( "string.isoneof 1", r )
-    end
-    
-    r = string.isoneof( s1, {"at", "123456789", "456"} )
-    if r ~= true then
-        print( "string.isoneof 2", r )
-    end
-    
-    r = string.isoneof( s2, { "string" } )
-    if r ~= false then
-        print( "string.isoneof 3", r )
-    end
-    
-    r = string.isoneof( s2, { "string" }, false )
-    if r ~= false then
-        print( "string.isoneof 4", r )
-    end
-    
-    r = string.isoneof( s2, { "string" }, true )
-    if r ~= true then
-        print( "string.isoneof 5", r )
-    end
-    
+
     -----
     local s4 = "ucfirst"
     local s5 = "LCFIRST"
@@ -171,17 +146,6 @@ function Behavior:Awake()
     r = s:endswith( "t end" )
     if r ~= true then
         print( "string.endswith 3", r )
-    end
-    
-    -----
-    r = string.contains( s, "tart" )
-    if r ~= true then
-        print( "string.contains 1", r )
-    end
-    
-    r = string.contains( s, "." )
-    if r ~= false then
-        print( "string.contains 2", r )
     end
     
     -----

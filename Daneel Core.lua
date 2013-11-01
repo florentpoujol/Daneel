@@ -127,24 +127,6 @@ function string.totable( s )
     return t
 end
 
---- Tell whether the provided table contains the provided string. 
--- Alias of table.containsvalue().
--- @param s (string) The string.
--- @param t (table) The table containing the values to check against the string
--- @param ignoreCase (boolean) [optional default=false] Ignore the case.
--- @return (boolean) True if the string is found in the table, false otherwise.
-function string.isoneof( s, t, ignoreCase )
-    Daneel.Debug.StackTrace.BeginFunction("string.isoneof", s, t, ignoreCase )
-    local errorHead = "string.isoneof( string, table[, ignoreCase] ) : "
-    Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
-    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
-    Daneel.Debug.CheckOptionalArgType( ignoreCase, "ignoreCase", "boolean", errorHead )
-
-    local isOneOf = table.containsvalue( t, s, ignoreCase )
-    Daneel.Debug.StackTrace.EndFunction()
-    return isOneOf
-end
-
 --- Turn the first letter of the string uppercase.
 -- @param s (string) The string.
 -- @return (string) The string.
@@ -254,14 +236,6 @@ function string.endswith( s, chunk )
     local endsWith = ( s:sub( #s - #chunk + 1, #s ) == chunk )
     Daneel.Debug.StackTrace.EndFunction()
     return endsWith
-end
-
---- Tell whether the provided string contains the provided chunk or not.
--- @param s (string) The string.
--- @param chunk (string) The searched chunk.
--- @return (boolean) True or false.
-function string.contains( s, chunk )
-    return ( s:find( chunk, 1, true ) ~= nil )
 end
 
 --- Removes the white spaces at the beginning of the provided string.
