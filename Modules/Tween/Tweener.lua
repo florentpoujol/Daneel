@@ -30,7 +30,7 @@ local function getvalue( value )
     if #values == 1 then
         value = values[1]
     elseif #values == 2 then
-        if not Daneel.Utilities.GlobalExists( "Vector2" ) then
+        if table.getvalue( _G, "Vector2" ) == nil then
             error( "Tweener:Awake() : The Vector2 object is unknow, probably because the GUI module is absent from your project." )
         end
         value = Vector2.New( values[1], values[2] )

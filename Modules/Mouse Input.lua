@@ -28,7 +28,7 @@ updateInterval number 2
 
 function Behavior:Awake()
     if not MouseInput.isLoaded then
-        if Daneel.Utilities.GlobalExists( "MouseInputUserConfig" ) and type( MouseInputUserConfig ) == "function" then
+        if table.getvalue( _G, "MouseInputUserConfig" ) ~= nil and type( MouseInputUserConfig ) == "function" then
             MouseInput.Config = MouseInputUserConfig()
         end
         MouseInput.isLoaded = true

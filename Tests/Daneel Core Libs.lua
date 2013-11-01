@@ -29,19 +29,7 @@ function Behavior:Awake()
     if s2 ~= "foo replacement bar" then
         print( "ReplaceInString", s2 )
     end
-    
-    
-    -----
-    r = util.GlobalExists( "Daneel" )
-    if r ~= true then
-        print( "GlobalExists 1", r )
-    end
-    
-    r = util.GlobalExists( "" )
-    if r ~= false then
-        print( "GlobalExists 2", r )
-    end
-    
+        
     -----
     r = util.ToNumber( "123 foo" )
     if r ~= 123 then

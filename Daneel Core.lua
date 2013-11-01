@@ -8,7 +8,7 @@
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
     -- DaneelModules is inside CS because you can do 'if CS.DaneelModules == nil' but you can't do 'if DaneelModules == nil'
-    -- and you can't be sure to be able to access Daneel.Utilities.GlobalExists()
+    -- and you can't be sure to be able to access table.getvalue( _G, "" )
 end
 
 ----------------------------------------------------------------------------------
@@ -667,7 +667,8 @@ function table.sortby( t, property, orderBy )
     return t
 end
 
---- Safely search several levels down inside nested tables. Just returns nil if the series of keys does not leads to a value.
+--- Safely search several levels down inside nested tables. Just returns nil if the series of keys does not leads to a value. <br>
+-- Can also be used to check if a global variable exists if the table is _G. <br>
 -- Ie for this series of nested table : table1.table2.table3.fooBar <br>
 -- table.getvalue( table1, "table2.table3.fooBar" ) would return the value of the 'fooBar' key in the 'table3' table <br>
 -- table.getvalue( table1, "table2.table3" ) would return the value of 'table3' <br>
@@ -696,6 +697,7 @@ function table.getvalue( t, keys )
         end
         
         if not exists then
+            Daneel.Debug.StackTrace.EndFunction()
             return nil
         end
     end
@@ -834,26 +836,6 @@ function Daneel.Utilities.AllowDynamicGettersAndSetters( Object, ancestors )
         -- first letter was already uppercase or key not of type string
         return rawset( instance, key, value )
     end
-end
-
---- Tell whether the provided global variable name exists (is non-nil).
--- Since CraftStudio uses Strict.lua, you can not write (variable == nil), nor (_G[variable] == nil).
--- Only works for first-level global variables. Check if Daneel.Utilities.GetValueFromName() returns nil for the same effect with nested tables.
--- @param name (string) The variable name.
--- @return (boolean) True if it exists, false otherwise.
-function Daneel.Utilities.GlobalExists( name )
-    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.GlobalExists", name )
-    Daneel.Debug.CheckArgType( name, "name", "string", "Daneel.Utilities.GlobalExists( name ) : " )
-    
-    local exists = false
-    for key, value in pairs( _G ) do
-        if key == name then
-            exists = true
-            break
-        end
-    end
-    Daneel.Debug.StackTrace.EndFunction()
-    return exists
 end
 
 --- A more flexible version of Lua's built-in tonumber() function.
@@ -3193,7 +3175,7 @@ function Daneel.Load()
             
             local userConfig = {}
             local functionName = name .. "UserConfig"
-            if Daneel.Utilities.GlobalExists( functionName ) and type( _G[ functionName ] ) == "function" then
+            if table.getvalue( _G, functionName ) ~= nil and type( _G[ functionName ] ) == "function" then
                 _module.Config = table.deepmerge( _module.Config, _G[ functionName ]() )
             end
 
@@ -3209,7 +3191,7 @@ function Daneel.Load()
     end
 
     -- load Daneel config
-    if Daneel.Utilities.GlobalExists( "DaneelUserConfig" ) and type( DaneelUserConfig ) == "function" then 
+    if table.getvalue( _G, "DaneelUserConfig" ) ~= nil and type( DaneelUserConfig ) == "function" then 
         Daneel.Config = table.deepmerge( Daneel.Config, DaneelUserConfig() ) -- use Daneel.Config here since some of its values may have been modified already by some momdules
     end
     
@@ -3261,7 +3243,6 @@ function Daneel.Load()
     end
 
     -- check for module update functions
-    -- do this now so that I don't have to call Daneel.Utilities.GlobalExists() every frame for every modules below in Behavior:Update()
     Daneel.moduleUpdateFunctions = {}
     for i, _module in pairs( CS.DaneelModules ) do
         if _module.doNotCallUpdate ~= true then
@@ -3298,7 +3279,7 @@ function Behavior:Awake()
         return
     end
 
-    if Daneel.Utilities.GlobalExists( "LOAD_DANEEL" ) and LOAD_DANEEL == false then
+    if table.getvalue( _G, "LOAD_DANEEL" ) ~= nil and LOAD_DANEEL == false then
         return
     end
     
