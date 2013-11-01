@@ -62,7 +62,7 @@ IDEAS
 ==========
 A implémenter
     
-    - retirer string.find lorsque le webplayer intégrera les ajouts à lua.js
+    
 ==========
 A tester
 

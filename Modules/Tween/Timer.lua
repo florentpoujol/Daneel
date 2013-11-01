@@ -13,7 +13,7 @@ isInfiniteLoop boolean false
 function Behavior:Awake()
     if string.trim( self.callback ) ~= "" then
         local callback = self.callback
-        self.callback = Daneel.Utilities.GetValueFromName( self.callback )
+        self.callback = table.getvalue( _G, self.callback )
         if self.callback == nil then
             error( "Timer:Awake() : Callback with name '" .. callback .. "' was not found. Scripted behavior is on " .. tostring( self.gameObject ) )
         end

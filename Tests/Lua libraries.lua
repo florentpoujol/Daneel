@@ -11,6 +11,7 @@ function Behavior:Awake()
     if math.isinteger( 2.00 ) ~= true then
         print("math.isinteger 2.00")
     end
+    
     if math.isinteger( 3 ) ~= true then
         print("math.isinteger 3")
     end
@@ -163,58 +164,7 @@ function Behavior:Awake()
     if r ~= "text" then
         print( "string.trim", r )
     end
-    
-    -----
-    
-    s = "123456789"
-    local start, _end = nil, nil
-    
-    start, _end = self:stringfind( s, "456" )
-    if start ~= 4 or _end ~= 6 then
-        print( "string.find 1", start, _end )
-    end
-    
-    start, _end = self:stringfind( s, "1456" )
-    if start ~= nil then
-        print( "string.find 2", start, _end )
-    end
-    
-    start, _end = self:stringfind( s, "456", 3 )
-    if start ~= 4 or _end ~= 6 then
-        print( "string.find 3", start, _end )
-    end
-    
-    start, _end = self:stringfind( s, "456", 5 )
-    if start ~= nil then
-        print( "string.find 4", start, _end )
-    end
-    
-    start, _end = self:stringfind( s, "1456", 999 )
-    if start ~= nil then
-        print( "string.find 5", start, _end )
-    end
-    
-    s = "un beau  jardin"
-    start, _end = self:stringfind( s, "%s" )
-    if start ~= 3 or _end ~= 3 then
-        print( "string.find 6", start, _end )
-    end
-    
-    start, _end = self:stringfind( s, "%s", 4 )
-    if start ~= 8 or _end ~= 8 then
-        print( "string.find 7", start, _end )
-    end
-    
-    start, _end = self:stringfind( s, "%s+", 4 )
-    if start ~= 8 or _end ~= 9 then
-        print( "string.find 8", start, _end )
-    end
-    
-    start, _end = self:stringfind( s, "%d" )
-    if start ~= nil then
-        print( "string.find 9", start, _end )
-    end
-    
+
     --------------------------------------------------
     -- table
     
@@ -389,43 +339,14 @@ function Behavior:Awake()
     if r ~= nil then
         print( "table.getvalue 7", r )
     end
-end
-
-function Behavior:stringfind( s, pattern, index, plain ) -- string.find
-    local start = -1
-    local _end = -1
-
-    if index == nil then
-        index = 1
-    end
-    if index < 0 then
-        index = #s + index + 1
-    end
     
-    if plain ~= true then
-        local match = s:match( pattern, index )
-        if match ~= nil then
-            pattern = match
-        else
-            return nil
-        end
-    end
-    
-    local patternFirstChar = pattern:sub( 1,1 )
-    for i = index, #s do
-        local char = s:sub( i, i ) 
-        if char == patternFirstChar then
-            if s:sub( i, i+#pattern-1 ) == pattern then
-                start = i
-                _end = i + #pattern-1
-                break
-            end
-        end
+    r = table.getvalue( _G, "Daneel.Utilities" )
+    if r ~= Daneel.Utilities then
+        print( "table.getvalue 8", r )
     end
 
-    if start == -1 then
-        return nil
-    else
-        return start, _end
+    r = table.getvalue( _G, "foobar" )
+    if r ~= nil then
+        print( "table.getvalue 9", r )
     end
 end

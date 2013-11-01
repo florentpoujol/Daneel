@@ -30,21 +30,6 @@ function Behavior:Awake()
         print( "ReplaceInString", s2 )
     end
     
-    -----
-    r = util.GetValueFromName( "Daneel" )
-    if r ~= Daneel then
-        print( "GetValueFromName 1", r )
-    end
-    
-    r = util.GetValueFromName( "Daneel.Utilities" )
-    if r ~= Daneel.Utilities then
-        print( "GetValueFromName 2", r )
-    end
-    
-    r = util.GetValueFromName( "" )
-    if r ~= nil then
-        print( "GetValueFromName 3", r )
-    end
     
     -----
     r = util.GlobalExists( "Daneel" )
@@ -227,12 +212,7 @@ function Behavior:Awake()
     
     print("Fire OnTestEvent directly at the game object, 2 prints expected, no arguments.")
     Daneel.Event.Fire( self.gameObject, "OnTestEvent" )
-    
-    
-    -----
-    self.testTime = true
-    Tween.Timer( 1.35, function() print("-------------- Changind timeScale to 0.5 --------------------"); Daneel.Time.timeScale = 0.5 end )
-    Tween.Timer( 1.42, function() self.testTime = false end )
+
 end
 
 
@@ -252,15 +232,21 @@ end
 
 
 -- Time
-local first = true
+local frameCount = 0
 function Behavior:Update()
-    if first then
+    frameCount = frameCount + 1
+    
+    if frameCount == 0 then
         print("~~~~~ Daneel.Time ~~~~~")
-        first = false
     end
-    if self.testTime then
+    if frameCount < 7 then
         print( "Time            ", Daneel.Time.time, Daneel.Time.deltaTime, Daneel.Time.timeScale )
         print( "real time     ", Daneel.Time.realTime, Daneel.Time.realDeltaTime )
         print( "framecount", Daneel.Time.frameCount )
     end
+    if frameCount == 3 then
+        print("--------- changing Daneel.Time.timeScale to 0.5 -----------")
+        Daneel.time.timeScale = 0.5
+    end
 end
+

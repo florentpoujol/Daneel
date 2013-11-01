@@ -685,6 +685,21 @@ function table.getvalue( t, keys )
     keys = string.split( keys, "." )
     local value = t
     
+    if value == _G then
+        -- prevent a "variable x was not declared" error
+        local exists = false
+        for key, value in pairs( _G ) do
+            if key == keys[1] then
+                exists = true
+                break
+            end
+        end
+        
+        if not exists then
+            return nil
+        end
+    end
+
     for i, key in ipairs( keys ) do
         if value[ key ] == nil then
             value = nil 
@@ -819,56 +834,6 @@ function Daneel.Utilities.AllowDynamicGettersAndSetters( Object, ancestors )
         -- first letter was already uppercase or key not of type string
         return rawset( instance, key, value )
     end
-end
-
---- Returns the value of any global variable (including nested tables) from its name as a string.
--- When the variable is nested in one or several tables (like CS.Input), put a dot between the names.
--- @param name (string) The variable name.
--- @return (mixed) The variable value, or nil.
-function Daneel.Utilities.GetValueFromName( name )
-    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.GetValueFromName", name )
-    local errorHead = "Daneel.Utilities.GetValueFromName( name ) : "
-    Daneel.Debug.CheckArgType( name, "name", "string", errorHead )
-    
-    local value = nil
-    if name:find( ".", 1, true ) ~= nil then
-        local subNames = string.split( name, "." )
-        local varName = table.remove( subNames, 1 )
-
-        if Daneel.Utilities.GlobalExists( varName ) then
-            value = _G[ varName ]
-        end
-        if value == nil then
-            if Daneel.Config.debug.enableDebug then
-                print( "WARNING : "..errorHead.." : variable '"..varName.."' (from provided name '"..name.."' ) does not exists. Returning nil." )
-            end
-            Daneel.Debug.StackTrace.EndFunction()
-            return nil
-        end
-        
-        for i, _key in ipairs( subNames ) do
-            varName = varName .. "." .. _key
-            if value[ _key ] == nil then
-                if Daneel.Config.debug.enableDebug then
-                    print( "WARNING : "..errorHead.." : variable '"..varName.."' (from provided name '"..name.."' ) does not exists. Returning nil." )
-                end
-                Daneel.Debug.StackTrace.EndFunction()
-                return nil
-            else
-                value = value[ _key ]
-            end
-        end
-    else
-        for k, v in pairs( _G ) do
-            if k == name then
-                value = v
-                break
-            end
-        end
-    end
-
-    Daneel.Debug.StackTrace.EndFunction()
-    return value
 end
 
 --- Tell whether the provided global variable name exists (is non-nil).
@@ -2842,7 +2807,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
         end
 
     else
-        local componentObject = Daneel.Utilities.GetValueFromName( componentType )
+        local componentObject = table.getvalue( _G, componentType )
 
         if componentObject ~= nil and type( componentObject.New ) == "function" then
             component = componentObject.New( gameObject )
@@ -2854,7 +2819,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
             return
         end
 
-        local object = Daneel.Utilities.GetValueFromName( (string.split( componentType, "." )) ) -- leave the parenthesis, makes split() returns the first table value
+        local object = table.getvalue( _G, (string.split( componentType, "." )) ) -- leave the parenthesis, makes split() returns the first table value
         if object ~= nil and object.Config ~= nil then
             local defaultComponentParams = object.Config[ string.lcfirst( componentType ) ]
             if defaultComponentParams ~= nil then
