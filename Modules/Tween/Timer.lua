@@ -11,7 +11,7 @@ isInfiniteLoop boolean false
 /PublicProperties]]
 
 function Behavior:Awake()
-    if self.callback:trim() ~= "" then
+    if string.trim( self.callback ) ~= "" then
         local callback = self.callback
         self.callback = Daneel.Utilities.GetValueFromName( self.callback )
         if self.callback == nil then

@@ -87,7 +87,7 @@ function Lang.Get( key, replacements )
     local searchInDefault = Lang.Config.searchInDefault
     local cache = true
 
-    local keys = key:split( "." )
+    local keys = string.split( key, "." )
     local language = currentLanguage
     if Lang.lines[ keys[1]:lower() ] then
         language = table.remove( keys, 1 )
@@ -211,7 +211,7 @@ function Behavior:Awake()
 end
 
 function Behavior:Start()
-    if self.key:trim() ~= "" then
+    if string.trim( self.key ) ~= "" then
         if self.gameObject.textArea ~= nil then
             self.gameObject.textArea:SetText( Lang.Get( self.key ) )
         elseif self.gameObject.textRenderer ~= nil then

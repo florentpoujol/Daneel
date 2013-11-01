@@ -13,7 +13,7 @@ updateInterval number 5
 function Behavior:Awake()
     self.gameObject.trigger = self
     self.GameObjectsInRange = {} -- the gameObjects that touches this trigger
-    self.tags = self.tags:split( ",", true )
+    self.tags = string.split( self.tags, ",", true )
     self.frameCount = 0
     self.ray = Ray:New()
 end
@@ -24,7 +24,7 @@ function Behavior:Update()
         local triggerPosition = self.gameObject.transform:GetPosition()
         
         if type( self.tags ) == "string" then
-            self.tags = self.tags:split( ",", true )
+            self.tags = string.split( self.tags, ",", true )
         end
     
         for i, tag in pairs( self.tags ) do
@@ -76,7 +76,7 @@ function Behavior:GetGameObjectsInRange()
     local triggerPosition = self.gameObject.transform:GetPosition()
     
     if type( self.tags ) == "string" then
-        self.tags = self.tags:split( ",", true )
+        self.tags = string.split( self.tags, ",", true )
     end
     for i, tag in pairs( self.tags ) do
         local gameObjects = GameObject.Tags[ tag ]

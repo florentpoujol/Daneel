@@ -48,27 +48,27 @@ function Behavior:Awake()
     local s1 = "123456789"
     local s2 = "sTrInG"
     
-    r = s1:isoneof( {"456"} )
+    r = string.isoneof( s1, {"456"} )
     if r ~= false then
         print( "string.isoneof 1", r )
     end
     
-    r = s1:isoneof( {"at", "123456789", "456"} )
+    r = string.isoneof( s1, {"at", "123456789", "456"} )
     if r ~= true then
         print( "string.isoneof 2", r )
     end
     
-    r = s2:isoneof( { "string" } )
+    r = string.isoneof( s2, { "string" } )
     if r ~= false then
         print( "string.isoneof 3", r )
     end
     
-    r = s2:isoneof( { "string" }, false )
+    r = string.isoneof( s2, { "string" }, false )
     if r ~= false then
         print( "string.isoneof 4", r )
     end
     
-    r = s2:isoneof( { "string" }, true )
+    r = string.isoneof( s2, { "string" }, true )
     if r ~= true then
         print( "string.isoneof 5", r )
     end
@@ -77,22 +77,22 @@ function Behavior:Awake()
     local s4 = "ucfirst"
     local s5 = "LCFIRST"
     
-    r = s4:ucfirst()
+    r = string.ucfirst( s4 )
     if r ~= "Ucfirst" then
         print( "string.ucfirst 1", r )
     end
 
-    r = s5:ucfirst()
+    r = string.ucfirst( s5 )
     if r ~= "LCFIRST" then
         print( "string.ucfirst 2", r )
     end
     
-    r = s5:lcfirst()
+    r = string.lcfirst( s5 )
     if r ~= "lCFIRST" then
         print( "string.lcfirst 1", r )
     end
 
-    r = s4:lcfirst()
+    r = string.lcfirst( s4 )
     if r ~= "ucfirst" then
         print( "string.lcfirst 2", r )
     end
@@ -100,14 +100,14 @@ function Behavior:Awake()
     -----
     
     s = " un, deux ,trois "
-    r = s:split( "," )
+    r = string.split( s, "," )
     local t = { " un", " deux ", "trois " }
     if not table.havesamecontent( r , t ) then
         print( "string.split 1" )
         table.print( r )
     end
     
-    r = s:split( " ", false )
+    r = string.split( s, " ", false )
     local t = { "un,", "deux", ",trois" }
     if not table.havesamecontent( r , t ) then
         print( "string.split 2" )
@@ -115,14 +115,14 @@ function Behavior:Awake()
     end
     
     s = " un. deux .trois "
-    r = s:split( ".", true )
+    r = string.split( s, ".", true )
     local t = { "un", "deux", "trois" }
     if not table.havesamecontent( r , t ) then
         print( "string.split 3" )
         table.print( r )
     end
     s = " un.] deux .]trois "
-    r = s:split( ".]" )
+    r = string.split( s, ".]" )
     local t = { " un", " deux ", "trois " }
     if not table.havesamecontent( r , t ) then
         print( "string.split 4" )
@@ -130,14 +130,14 @@ function Behavior:Awake()
     end
     
     s = " un<br> deux <br>trois "
-    r = s:split( "<br>", true )
+    r = string.split( s, "<br>", true )
     local t = { "un", "deux", "trois" }
     if not table.havesamecontent( r , t ) then
         print( "string.split 5" )
         table.print( r )
     end
     
-    r = s:split( "<br>" )
+    r = string.split( s, "<br>" )
     local t = { " un", " deux ", "trois " }
     if not table.havesamecontent( r , t ) then
         print( "string.split 6" )
@@ -174,12 +174,12 @@ function Behavior:Awake()
     end
     
     -----
-    r = s:contains( "tart" )
+    r = string.contains( s, "tart" )
     if r ~= true then
         print( "string.contains 1", r )
     end
     
-    r = s:contains( "." )
+    r = string.contains( s, "." )
     if r ~= false then
         print( "string.contains 2", r )
     end
@@ -187,15 +187,15 @@ function Behavior:Awake()
     -----
     s = "  text "
     
-    r = s:trimstart()
+    r = string.trimstart( s )
     if r ~= "text " then
         print( "string.trimstart", r )
     end
-    r = s:trimend( " " )
+    r = string.trimend( s, " " )
     if r ~= "  text" then
         print( "string.trimend", r )
     end
-    r = s:trim( " " )
+    r = string.trim( s, " " )
     if r ~= "text" then
         print( "string.trim", r )
     end

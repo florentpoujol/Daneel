@@ -14,10 +14,10 @@ value string "0%"
 
 function Behavior:Awake()
     if self.gameObject.slider == nil then
-        if self.axis:trim() == "" then
+        if string.trim( self.axis ) == "" then
             self.axis = "x"
         end
-        if self.value:trim() == "" then
+        if string.trim( self.value ) == "" then
             self.value = "0%"
         end
 

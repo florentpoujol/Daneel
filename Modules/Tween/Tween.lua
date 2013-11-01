@@ -13,7 +13,7 @@ local function GetTweenerProperty(tweener)
     if tweener.target ~= nil then
         value = tweener.target[tweener.property]
         if value == nil then
-            local functionName = "Get"..tweener.property:ucfirst()
+            local functionName = "Get"..string.ucfirst( tweener.property )
             if tweener.target[functionName] ~= nil then
                 value = tweener.target[functionName](tweener.target)
             end
@@ -28,7 +28,7 @@ local function SetTweenerProperty(tweener, value)
     Daneel.Debug.StackTrace.BeginFunction("SetTweenerProperty", tweener, value)
     if tweener.target ~= nil then
         if tweener.target[tweener.property] == nil then
-            local functionName = "Set"..tweener.property:ucfirst()
+            local functionName = "Set"..string.ucfirst( tweener.property )
             if tweener.target[functionName] ~= nil then
                 tweener.target[functionName](tweener.target, tweener.property)
             end

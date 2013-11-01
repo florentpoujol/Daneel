@@ -762,7 +762,7 @@ function table.getvalue( t, keys )
     Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
     Daneel.Debug.CheckArgType( keys, "keys", "string", errorHead )
 
-    keys = keys:split( "." )
+    keys = string.split( keys, "." )
     local value = t
     
     for i, key in ipairs( keys ) do
@@ -843,7 +843,7 @@ function Daneel.Utilities.AllowDynamicGettersAndSetters( Object, ancestors )
     function Object.__index( instance, key )
         local ucKey = key
         if type( key ) == "string" then
-            ucKey = key:ucfirst()
+            ucKey = string.ucfirst( key )
         end
 
         if key == ucKey then 
@@ -887,7 +887,7 @@ function Daneel.Utilities.AllowDynamicGettersAndSetters( Object, ancestors )
     function Object.__newindex( instance, key, value )
         local ucKey = key
         if type( key ) == "string" then
-            ucKey = key:ucfirst()
+            ucKey = string.ucfirst( key )
         end
 
         if key ~= ucKey then -- first letter lowercase
@@ -912,7 +912,7 @@ function Daneel.Utilities.GetValueFromName( name )
     
     local value = nil
     if name:find( ".", 1, true ) ~= nil then
-        local subNames = name:split( "." )
+        local subNames = string.split( name, "." )
         local varName = table.remove( subNames, 1 )
 
         if Daneel.Utilities.GlobalExists( varName ) then
@@ -2484,7 +2484,7 @@ function GameObject.__index( gameObject, key )
     end
 
     if type( key ) == "string" then
-        local ucKey = key:ucfirst()
+        local ucKey = string.ucfirst( key )
         if key ~= ucKey then
             local funcName = "Get" .. ucKey
             if GameObject[ funcName ] ~= nil then
@@ -2500,7 +2500,7 @@ end
 function GameObject.__newindex( gameObject, key, value )
     local ucKey = key
     if type( key ) == "string" then
-        ucKey = key:ucfirst()
+        ucKey = string.ucfirst( key )
     end
     if key ~= ucKey and key ~= "transform" then -- first letter lowercase
         -- check about Transform is needed because CraftStudio.CreateGameObject() set the transfom variable on new game objects
@@ -2674,7 +2674,7 @@ function GameObject.Get( name, errorIfGameObjectNotFound )
     
 
     local gameObject = nil
-    local names = name:split( "." )
+    local names = string.split( name, "." )
     
     gameObject = CraftStudio.FindGameObject( names[1] )
     if gameObject == nil and errorIfGameObjectNotFound == true then
@@ -2768,7 +2768,7 @@ function GameObject.GetChild( gameObject, name, recursive )
         local children = gameObject:GetChildren()
         child = children[1]
     else
-        local names = name:split( "." )
+        local names = string.split( name, "." )
         for i, name in ipairs( names ) do
             gameObject = gameObject:FindChild( name, recursive )
 
@@ -2917,7 +2917,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
 
         component = gameObject:CreateComponent( componentType )
 
-        local defaultComponentParams = Daneel.Config[ componentType:lcfirst() ]
+        local defaultComponentParams = Daneel.Config[ string.lcfirst( componentType ) ]
         if defaultComponentParams ~= nil then
             params = table.merge( defaultComponentParams, params )
         end
@@ -2935,9 +2935,9 @@ function GameObject.AddComponent( gameObject, componentType, params )
             return
         end
 
-        local object = Daneel.Utilities.GetValueFromName( (componentType:split(".")) ) -- leave the parenthesis, makes split() returns the first table value
+        local object = Daneel.Utilities.GetValueFromName( (string.split( componentType, "." )) ) -- leave the parenthesis, makes split() returns the first table value
         if object ~= nil and object.Config ~= nil then
-            local defaultComponentParams = object.Config[ componentType:lcfirst() ]
+            local defaultComponentParams = object.Config[ string.lcfirst( componentType ) ]
             if defaultComponentParams ~= nil then
                 params = table.merge( defaultComponentParams, params )
             end
@@ -2973,7 +2973,7 @@ function GameObject.GetComponent( gameObject, componentType )
     
     local lcComponentType = componentType
     if argType == "string" then
-        lcComponentType = componentType:lcfirst()
+        lcComponentType = string.lcfirst( componentType )
     end
     local component = gameObject[ lcComponentType ]
     

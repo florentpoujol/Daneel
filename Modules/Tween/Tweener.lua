@@ -21,7 +21,7 @@ OnLoopComplete string ""
 /PublicProperties]]
 
 local function getvalue( value )
-    local values = value:split( ",", true )
+    local values = string.split( value, ",", true )
     value = nil
     for i, value in ipairs( values ) do
         values[i] = tonumber( value )
@@ -44,25 +44,25 @@ local function getvalue( value )
 end
 
 function Behavior:Awake()
-    if self.target:trim() ~= "" then
+    if string.trim( self.target ) ~= "" then
         self.target = self.gameObject[self.target]
     else
         self.target = nil
     end
 
-    if self.startValue:trim() ~= "" then
+    if string.trim( self.startValue ) ~= "" then
         self.startValue = getvalue( self.startValue )
     else
         self.startValue = nil
     end
 
-    if self.endValue:trim() ~= "" then
+    if string.trim( self.endValue ) ~= "" then
         self.endValue = getvalue( self.endValue )
     else
         self.endValue = nil
     end
 
-    if self.OnComplete:trim() ~= "" then
+    if string.trim( self.OnComplete ) ~= "" then
         local onComplete = self.OnComplete
         self.OnComplete = Daneel.Utilities.GetValueFromName( self.OnComplete )
         if self.OnComplete == nil then
@@ -72,7 +72,7 @@ function Behavior:Awake()
         self.OnComplete = nil
     end
 
-    if self.OnLoopComplete:trim() ~= "" then
+    if string.trim( self.OnLoopComplete ) ~= "" then
         local onLoopComplete = self.OnLoopComplete
         self.OnLoopComplete = Daneel.Utilities.GetValueFromName( self.OnLoopComplete )
         if self.OnLoopComplete == nil then

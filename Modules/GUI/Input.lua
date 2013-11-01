@@ -16,7 +16,7 @@ function Behavior:Awake()
             isFocused = self.isFocused,
             maxLength = self.maxLength
         }
-        if self.characterRange:trim() ~= "" then
+        if string.trim( self.characterRange ) ~= "" then
             params.characterRange = self.characterRange
         end
 

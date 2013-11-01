@@ -984,7 +984,7 @@ function GUI.TextArea.SetText( textArea, text )
 
     local lines = { text }
     if textArea.newLine ~= "" then
-        lines = text:split( textArea.NewLine )
+        lines = string.split( text, textArea.NewLine )
     end
 
     -- areaWidth is the max length in units of each line
@@ -998,7 +998,7 @@ function GUI.TextArea.SetText( textArea, text )
             local line = tempLines[i]
 
             if textArea.textRuler:GetTextWidth( line ) > areaWidth then
-                line = line:totable()
+                line = string.totable( line )
                 local newLine = {}
 
                 for j, char in ipairs( line ) do

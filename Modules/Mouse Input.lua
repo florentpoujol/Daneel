@@ -41,7 +41,7 @@ function Behavior:Awake()
         error( "MouseInput:Awake() : GameObject with name '" .. self.gameObject:GetName() .. "' has no Camera component attached." )
     end  
 
-    self.tags = self.tags:split( ",", true )
+    self.tags = string.split( self.tags, ",", true )
     self.gameObject.mouseInput = self
     self.frameCount = 0
     self.lastLeftClickFrame = -MouseInput.Config.doubleClickDelay
