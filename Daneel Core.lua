@@ -1493,18 +1493,11 @@ setmetatable( Plane, { __call = function(Object, ...) return Object:New(...) end
 ----------------------------------------------------------------------------------
 -- Assets
 
-Asset = { 
-    -- the key may be :
-    -- the asset object itself, the value is true
-    -- or the asset name, the value is a table with the asset type as keys and asset object as values
-    -- (allows two assets to have the same name)
-    cache = { ["ScriptAliases"] = {} },
-
-    pathsCache = {},
-}
+Asset = {}
 Asset.__index = Asset
 setmetatable( Asset, { __call = function(Object, ...) return Object.Get(...) end } )
 
+local assetGetTypes = { "string" }
 --- Alias of CraftStudio.FindAsset( assetPath[, assetType] ).
 -- Get the asset of the specified name and type.
 -- The first argument may be an asset object, so that you can check if a variable was an asset object or name (and get the corresponding object).
@@ -1513,39 +1506,28 @@ setmetatable( Asset, { __call = function(Object, ...) return Object.Get(...) end
 -- @param errorIfAssetNotFound [optional default=false] Throw an error if the asset was not found (instead of returning nil).
 -- @return (One of the asset type) The asset, or nil if none is found.
 function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
-    -- the key in the cache may be the asset path, the asset Object, or "ScriptAliases"
-    local assetByType = Asset.cache[ assetPath ]
-    
-    if assetByType ~= nil then
-        if type( assetByType ) == "boolean" then -- assetPath is an asset  -  can't check if assetByType == true because it is otherwise a table and also returns true            
-            return assetPath
-        
-        elseif assetType ~= nil and assetByType[ assetType ] ~= nil then
-            return assetByType[ assetType ]
-        end
-    end
-
-    if Asset.cache[ "ScriptAliases" ][ assetPath ] ~= nil then
-        return Asset.cache[ "ScriptAliases" ][ assetPath ]
-    end
-
     Daneel.Debug.StackTrace.BeginFunction( "Asset.Get", assetPath, assetType, errorIfAssetNotFound )
     local errorHead = "Asset.Get( assetPath[, assetType, errorIfAssetNotFound] ) : "
-    
-    -- just return the asset if assetPath is already an object
-    if type( assetPath ) == "table" and Daneel.Config.assetObjects[ Daneel.Debug.GetType( assetPath ) ] then
-        -- using type() in the first part of the condition just prevent GetType() and containsvalue() to be called every times
-        Asset.cache[ assetPath ] = true
-        Daneel.Debug.StackTrace.EndFunction()
-        return assetPath
+    if #assetGetTypes == 1 and Daneel.Config.assetTypes ~= nil then
+        assetGetTypes = table.merge( assetGetTypes, Daneel.Config.assetTypes )
     end
-    Daneel.Debug.CheckArgType( assetPath, "assetPath", "string", errorHead )
+    local argType = Daneel.Debug.CheckArgType( assetPath, "assetPath", assetGetTypes, errorHead )
     
-    -- check asset type
     if assetType ~= nil then
         Daneel.Debug.CheckArgType( assetType, "assetType", "string", errorHead )
         assetType = Daneel.Debug.CheckArgValue( assetType, "assetType", Daneel.Config.assetTypes, errorHead )
     end
+
+    -- just return the asset if assetPath is already an object
+    if table.containsvalue( Daneel.Config.assetTypes, argType ) then
+        if assetType ~= nil and argType ~= assetType then 
+            error( errorHead.."Provided asset '"..assetPath.."' has a different type '"..argType.."' than the provided 'assetType' argument '"..assetType.."'." )
+        end
+        Daneel.Debug.StackTrace.EndFunction()
+        return assetPath
+    end
+    -- else assetPath is always an actual asset path as a string
+    
     Daneel.Debug.CheckOptionalArgType( errorIfAssetNotFound, "errorIfAssetNotFound", "boolean", errorHead )
 
     -- check if assetPath is a script alias
@@ -1563,27 +1545,11 @@ function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
         asset = CraftStudio.FindAsset( assetPath, assetType )
     end
 
-    if asset == nil then
-        if errorIfAssetNotFound == true then
-            if assetType == nil then
-                assetType = "asset"
-            end
-            error( errorHead .. "Argument 'assetPath' : " .. assetType .. " with name '" .. assetPath .. "' was not found." )
-        end
-    else
-        -- cache asset
+    if asset == nil and errorIfAssetNotFound then
         if assetType == nil then
-            assetType = Daneel.Debug.GetType( asset )
+            assetType = "asset"
         end
-
-        if Asset.cache[ assetPath ] == nil then
-            Asset.cache[ assetPath ] = {}
-        end
-        Asset.cache[ assetPath ][ assetType ] = asset
-
-        if scriptAlias ~= assetPath then -- scriptAlias is indeed a script alias
-            Asset.cache[ "ScriptAliases" ][ scriptAlias ] = asset
-        end
+        error( errorHead .. "Argument 'assetPath' : " .. assetType .. " with name '" .. assetPath .. "' was not found." )
     end
 
     Daneel.Debug.StackTrace.EndFunction()
@@ -1594,17 +1560,11 @@ end
 -- @param asset (One of the asset types) The asset instance.
 -- @return (string) The fully-qualified asset path.
 function Asset.GetPath( asset )
-    if Asset.pathsCache[ asset ] ~= nil then
-        return Asset.pathsCache[ asset ]
-    end
-
     Daneel.Debug.StackTrace.BeginFunction( "Asset.GetPath", asset )
     local errorHead = "Asset.GetPath( asset ) : "
     Daneel.Debug.CheckArgType( asset, "asset", Daneel.Config.assetTypes, errorHead )
-
     local path = Map.GetPathInPackage( asset )
-    Asset.pathsCache[ asset ] = path
-
+    rawset( asset, "path", path )
     Daneel.Debug.StackTrace.EndFunction()
     return path
 end
@@ -1616,8 +1576,8 @@ function Asset.GetName( asset )
     Daneel.Debug.StackTrace.BeginFunction( "Asset.GetName", asset )
     local errorHead = "Asset.GetName( asset ) : "
     Daneel.Debug.CheckArgType( asset, "asset", Daneel.Config.assetTypes, errorHead )
-
     local name = Asset.GetPath( asset ):gsub( "^(.*/)", "" ) 
+    rawset( asset, "name", name )
     Daneel.Debug.StackTrace.EndFunction()
     return name
 end

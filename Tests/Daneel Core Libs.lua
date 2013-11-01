@@ -54,10 +54,8 @@ function Behavior:Awake()
     
     print( "Error 'La clé donnée était absente du dictionnaire.' is OK" )
     r = util.ButtonExists( "whatever" )
-    if r == false then
-        print( "ButtonExists 2 SUCCESS", r )
-    else
-        print( "ButtonExists 2 WRONG VALUE", r )
+    if r ~= false then
+        print( "ButtonExists 2", r )
     end
     
     
@@ -234,7 +232,7 @@ function Behavior:Update()
     end
     if frameCount == 3 then
         print("--------- changing Daneel.Time.timeScale to 0.5 -----------")
-        Daneel.time.timeScale = 0.5
+        Daneel.Time.timeScale = 0.5
     end
 end
 
