@@ -174,12 +174,12 @@ function Behavior:Awake()
     
     local e = Daneel.Event
     
-    Daneel.Event.Listen( "OnTestEvent", function( ... ) print( "OnTestEvent event fired at anonymous function", unpack( arg ) ) end )
+    Daneel.Event.Listen( "OnTestEvent", function( ... ) print( "OnTestEvent event fired at anonymous function", ... ) end )
     Daneel.Event.Listen( { "OnTestEvent", "OnOtherTestEvent"}, self.gameObject )
     Daneel.Event.Listen( { "OnTestEvent", "OnThirdEvent" }, self.gameObject )
    
     self.gameObject.OnTestEvent = function( ... )
-        print( "OnTestEvent event fired at gameObject, catched by anonymous function", self.gameObject, unpack( arg ) )
+        print( "OnTestEvent event fired at gameObject, catched by anonymous function", self.gameObject, ... )
     end
     self.gameObject.OnOtherTestEvent = "NewMessageName"
     

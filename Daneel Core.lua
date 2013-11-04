@@ -413,11 +413,12 @@ end
 -- @param ... (table) At least two tables to merge together.
 -- @return (table) The new table.
 function table.merge(...)
+    local arg = {...}
     if arg == nil or #arg == 0 then
         Daneel.Debug.StackTrace.BeginFunction("table.merge")
         error("table.merge(...) : No argument provided. Need at least two.")
     end
-    Daneel.Debug.StackTrace.BeginFunction("table.merge", unpack(arg))
+    Daneel.Debug.StackTrace.BeginFunction( "table.merge", ... )
     
     local fullTable = {}
     for i, t in ipairs(arg) do
@@ -444,6 +445,7 @@ end
 -- @param ... (table) At least two tables to merge together.
 -- @return (table) The new table.
 function table.deepmerge(...)
+    local arg = {...}
     if arg == nil or #arg == 0 then
         Daneel.Debug.StackTrace.BeginFunction("table.deepmerge")
         error("table.deepmerge(...) : No argument provided. Need at least two.")
@@ -1202,6 +1204,7 @@ function Daneel.Debug.StackTrace.BeginFunction( functionName, ... )
     Daneel.Debug.CheckArgType( functionName, "functionName", "string", errorHead )
 
     local msg = functionName .. "( "
+    local arg = {...}
 
     if #arg > 0 then
         for i, argument in ipairs( arg ) do
@@ -1359,7 +1362,8 @@ end
 -- @param eventName (string) The event name.
 -- @param ... [optional] Some arguments to pass along.
 function Daneel.Event.Fire( object, eventName, ... )
-    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Event.Fire", object, eventName, unpack( arg ) )
+    local arg = {...}
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Event.Fire", object, eventName, ... )
     local errorHead = "Daneel.Event.Fire( [object, ]eventName[, ...] ) : "
     
     local argType = type( object )
@@ -1386,7 +1390,7 @@ function Daneel.Event.Fire( object, eventName, ... )
         
         local listenerType = type( listener )
         if listenerType == "function" or listenerType == "userdata" then
-            listener( unpack( arg ) )
+            listener( ... )
 
         else -- an object
             local mt = getmetatable( listener )

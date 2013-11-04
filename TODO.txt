@@ -66,6 +66,7 @@ A implémenter
 ==========
 A tester
 
+    CheckArgValue lorsque les valueurs ne sont pas des string et lance l'erreur
 
 ==========
 A modifier/ajouter dans la doc :
