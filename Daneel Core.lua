@@ -424,7 +424,12 @@ function table.merge(...)
     for i, t in ipairs(arg) do
         local argType = type(t)
         if argType == "table" then
-            for key, value in pairs(t) do
+            local func = pairs
+            if table.isarray( t ) then 
+                func = ipairs
+            end
+
+            for key, value in func(t) do
                 if math.isinteger(key) and not table.containsvalue(fullTable, value) then
                     table.insert(fullTable, value)
                 else
@@ -456,8 +461,12 @@ function table.deepmerge(...)
     for i, t in ipairs(arg) do
         local argType = type(t)
         if argType == "table" then
-            
-            for key, value in pairs(t) do
+            local func = pairs
+            if table.isarray( t ) then 
+                func = ipairs
+            end
+
+            for key, value in func(t) do
                 if math.isinteger(key) and not table.containsvalue(fullTable, value) then
                     table.insert(fullTable, value)
                 else
@@ -715,6 +724,26 @@ function table.getvalue( t, keys )
     
     Daneel.Debug.StackTrace.EndFunction()
     return value
+end
+
+--- Tell wether he provided table is an array (has only integer keys).
+-- Decimal numbers with only zeros after the coma are considered as integers.
+-- @param t (table) The table.
+-- @return (boolean) True or false.
+function table.isarray( t )
+    Daneel.Debug.StackTrace.BeginFunction( "table.isarray", t )
+    local errorHead = "table.isarray( table ) : "
+    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
+
+    local isArray = true
+    for k, v in pairs( t ) do
+        if type( k ) ~= "number" or not math.isinteger( k ) then
+            isArray = false
+            break
+        end
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+    return isArray
 end
 
 
