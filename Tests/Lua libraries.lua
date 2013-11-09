@@ -123,28 +123,28 @@ function Behavior:Awake()
     -----
     
     s = "start end"
-    r = s:startswith( "s" )
+    r = string.startswith( s, "s" )
     if r ~= true then
         print( "string.startswith 1", r )
     end
-    r = s:startswith( "a" )
+    r = string.startswith( s, "a" )
     if r ~= false then
         print( "string.startswith 2", r )
     end
-    r = s:startswith( "start e" )
+    r = string.startswith( s, "start e" )
     if r ~= true then
         print( "string.startswith 3", r )
     end
     
-    r = s:endswith( "d" )
+    r = string.endswith( s, "d" )
     if r ~= true then
         print( "string.endswith 1", r )
     end
-    r = s:endswith( "a" )
+    r = string.endswith( s, "a" )
     if r ~= false then
         print( "string.endswith 2", r )
     end
-    r = s:endswith( "t end" )
+    r = string.endswith( s, "t end" )
     if r ~= true then
         print( "string.endswith 3", r )
     end
@@ -156,11 +156,11 @@ function Behavior:Awake()
     if r ~= "text " then
         print( "string.trimstart", r )
     end
-    r = string.trimend( s, " " )
+    r = string.trimend( s )
     if r ~= "  text" then
         print( "string.trimend", r )
     end
-    r = string.trim( s, " " )
+    r = string.trim( s )
     if r ~= "text" then
         print( "string.trim", r )
     end
