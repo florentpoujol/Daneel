@@ -211,17 +211,19 @@ function Behavior:Awake()
         table.print( r )
     end
     
-    r = table.copy( self.gameObject )
-    if not table.havesamecontent( self.gameObject, r ) or getmetatable( r ) ~= GameObject then
-        print( "table.copy 3" )
-        table.print( r )
-        table.print( self.gameObject )
-    end
-    
-    r = table.copy( self.gameObject, nil, true )
-    if not table.havesamecontent( self.gameObject, r ) or getmetatable( r ) ~= nil then
-        print( "table.copy 4" )
-        table.print( r )
+    if not CS.IsWebPlayer then
+        r = table.copy( self.gameObject )
+        if not table.havesamecontent( self.gameObject, r ) or getmetatable( r ) ~= GameObject then
+            print( "table.copy 3" )
+            table.print( r )
+            table.print( self.gameObject )
+        end
+        
+        r = table.copy( self.gameObject, nil, true )
+        if not table.havesamecontent( self.gameObject, r ) or getmetatable( r ) ~= nil then
+            print( "table.copy 4" )
+            table.print( r )
+        end
     end
     
     
