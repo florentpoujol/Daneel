@@ -75,48 +75,77 @@ function Behavior:Awake()
     
     -----
     
-    s = " un, deux ,trois "
+    -- delimiter is no pattern
+    s = "un,deux,trois"
     r = string.split( s, "," )
-    local t = { " un", " deux ", "trois " }
+    local t = { "un", "deux", "trois" }
     if not table.havesamecontent( r , t ) then
         print( "string.split 1" )
         table.print( r )
     end
     
-    r = string.split( s, " ", false )
-    local t = { "un,", "deux", ",trois" }
+    r = string.split( s, ",", true )
     if not table.havesamecontent( r , t ) then
         print( "string.split 2" )
         table.print( r )
     end
     
-    s = " un. deux .trois "
-    r = string.split( s, ".", true )
-    local t = { "un", "deux", "trois" }
+    
+    s = "un<br>deux<br>trois"
+    r = string.split( s, "<br>", false )
     if not table.havesamecontent( r , t ) then
         print( "string.split 3" )
         table.print( r )
     end
-    s = " un.] deux .]trois "
-    r = string.split( s, ".]" )
-    local t = { " un", " deux ", "trois " }
-    if not table.havesamecontent( r , t ) then
-        print( "string.split 4" )
-        table.print( r )
+    
+    if not CS.IsWebPlayer then
+        r = string.split( s, "<br>", true ) -- fails in the webplayer because "trois" has a "r", like "<br>"
+        if not table.havesamecontent( r , t ) then
+            print( "string.split 4" )
+            table.print( r )
+        end
     end
     
-    s = " un<br> deux <br>trois "
-    r = string.split( s, "<br>", true )
-    local t = { "un", "deux", "trois" }
+    s = "un.deux.trois"
+    r = string.split( s, "." ) -- dot is supposed to be escaped
     if not table.havesamecontent( r , t ) then
         print( "string.split 5" )
         table.print( r )
     end
-    
-    r = string.split( s, "<br>" )
-    local t = { " un", " deux ", "trois " }
-    if not table.havesamecontent( r , t ) then
+       
+    r = string.split( s, "bla" )
+    if not table.havesamecontent( r , {s} ) then
         print( "string.split 6" )
+        table.print( r )
+    end
+    
+    -- delimiter is pattern
+    s = " un deux trois "
+    r = string.split( s, "%s" ) -- space  plain text
+    if not table.havesamecontent( r , {s} ) then
+        print( "string.split 7" )
+        table.print( r )
+    end
+    
+    r = string.split( s, "%s", true )
+    t = { "un", "deux", "trois" }
+    if not table.havesamecontent( r , t ) then
+        print( "string.split 8" )
+        table.print( r )
+    end
+    
+    s =  "un %sdeux%s trois "
+    t = { "un ", "deux", " trois " }
+    r = string.split( s, "%s" ) -- plain text
+    if not table.havesamecontent( r , t ) then
+        print( "string.split 9" )
+        table.print( r )
+    end
+    
+    r = string.split( s, "%s", true )
+    t = { "un", "%sdeux%s", "trois" }
+    if not table.havesamecontent( r , t ) then
+        print( "string.split 10" )
         table.print( r )
     end
     

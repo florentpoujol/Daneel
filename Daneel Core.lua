@@ -161,46 +161,87 @@ function string.lcfirst( s )
 end
 
 --- Split the provided string in several chunks, using the provided delimiter.
--- Delimiter is automatically escaped when it is a pecial characters ^$()%.[]*+-?
--- If the string does not contain the delimiter, it returns a table containing only the whole string.
+-- The delimiter can be a pattern and can be several characters long.
+-- If the string does not contain the delimiter, a table containing only the whole string is returned.
 -- @param s (string) The string.
--- @param delimiter (string) The delimiter (may be several characters long).
--- @param trim (boolean) [optional default=false] Trim the chunks.
+-- @param delimiter (string) The delimiter.
+-- @param delimiterIsPattern (boolean) [optional default=false] Interpret the delimiter as pattern instead of as plain text. The function's behavior is not garanteed if true and in the webplayer.
 -- @return (table) The chunks.
-function string.split( s, delimiter, trim )
-    Daneel.Debug.StackTrace.BeginFunction( "string.split", s, delimiter, trim )
-    local errorHead = "string.split( string, delimiter[, trim] ) : "
+function string.split( s, delimiter, delimiterIsPattern )
+    Daneel.Debug.StackTrace.BeginFunction( "string.split", s, delimiter, delimiterIsPattern )
+    local errorHead = "string.split( string, delimiter[, plainText] ) : "
     Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
     Daneel.Debug.CheckArgType( delimiter, "delimiter", "string", errorHead )
-    Daneel.Debug.CheckOptionalArgType( trim, "trim", "boolean", errorHead )
+    Daneel.Debug.CheckOptionalArgType( delimiterIsPattern, "delimiterIsPattern", "boolean", errorHead )
 
-    if string.startswith( s, delimiter ) then
-        s = s:sub( #delimiter+1, #s )
+    local chunks = {}
+    if delimiterIsPattern == nil and #delimiter == 1 then
+        delimiterIsPattern = false
     end
-    if not s:endswith( delimiter ) then
-        s = s .. delimiter
-    end
+    
+    if delimiterIsPattern then
+        local delimiterStartIndex, delimiterEndIndex = s:find( delimiter )
 
-    local specialChars = "^$()%.[]*+-?"
-    if specialChars:find( delimiter, 1, true ) ~= nil then
-        delimiter = "%"..delimiter -- escape the special char
-    end
-
-    local fields = {}
-    for match in s:gmatch( "(.-)"..delimiter ) do
-        table.insert( fields, match )
-    end
-
-    if trim then
-        for i, s in pairs( fields ) do
-            if type( s ) ~= "string" then
-                s = tostring( s )
+        if delimiterStartIndex ~= nil then
+            local pattern = delimiter
+            delimiter = s:sub( delimiterStartIndex, delimiterEndIndex )
+            if string.startswith( s, delimiter ) then
+                s = s:sub( #delimiter+1, #s )
             end
-            fields[ i ] = s:gsub( "^%s+", "" ):gsub( "%s+$", "" )
+            if not s:endswith( delimiter ) then
+                s = s .. delimiter
+            end
+            
+            if CS.IsWebPlayer then
+                -- in the webplayer,  "(.-)"..delimiter  is translated into  "(.*)"..delimiter  which seems to create an infinite loop
+                -- "(.+)"..delimiter   does not work either in the webplayer
+                for match in s:gmatch( "([^"..pattern.."]+)"..pattern ) do
+                    table.insert( chunks, match )
+                end
+            else
+                for match in s:gmatch( "(.-)"..pattern ) do 
+                    table.insert( chunks, match )
+                end
+            end
+        end
+    
+    else -- plain text delimiter
+        if s:find( delimiter, 1, true ) ~= nil then
+            if string.startswith( s, delimiter ) then
+                s = s:sub( #delimiter+1, #s )
+            end
+            if not s:endswith( delimiter ) then
+                s = s .. delimiter
+            end
+
+            local chunk = ""
+            local ts = string.totable( s )
+            local i = 1
+
+            while i <= #ts do
+                local char = ts[i]
+                if char == delimiter or s:sub( i, i-1 + #delimiter ) == delimiter then
+                    table.insert( chunks, chunk )
+                    chunk = ""
+                    i = i + #delimiter
+                else
+                    chunk = chunk..char
+                    i = i + 1
+                end
+            end
+
+            if #chunk > 0 then
+                table.insert( chunks, chunk )
+            end
         end
     end
+
+    if #chunks == 0 then
+        chunks = { s }
+    end
+
     Daneel.Debug.StackTrace.EndFunction()
-    return fields
+    return chunks
 end
 
 --- Tell whether the provided string begins by the provided chunk or not.
