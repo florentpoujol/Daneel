@@ -309,35 +309,33 @@ end
 
 --- Tell whether the provided value is found within the provided table.
 -- @param t (table) The table to search in.
--- @param p_value (any) The value to search for.
+-- @param _value (any) The value to search for.
 -- @param ignoreCase (boolean) [optional default=false] Ignore the case of the value. If true, the value must be of type 'string'.
 -- @return (boolean) True if the value is found in the table, false otherwise.
-function table.containsvalue(t, p_value, ignoreCase)
-    Daneel.Debug.StackTrace.BeginFunction("table.constainsvalue", t, p_value, ignoreCase)
+function table.containsvalue(t, _value, ignoreCase)
+    Daneel.Debug.StackTrace.BeginFunction("table.constainsvalue", t, _value, ignoreCase)
     local errorHead = "table.containsvalue(table, value) : "
     Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
     
-    if p_value == nil then
+    if _value == nil then
         error(errorHead.."Argument 'value' is nil.")
     end
 
     Daneel.Debug.CheckOptionalArgType(ignoreCase, "ignoreCase", "boolean", errorHead)
-    if ignoreCase and type(p_value) ~= 'string' then
+    if ignoreCase and type( _value ) == 'string' then
+        _value = _value:lower()
+    else
         ignoreCase = false
     end
     
     local containsValue = false
 
-    if ignoreCase then
-        p_value = p_value:lower()
-    end
-
     for key, value in pairs(t) do
-        if ignoreCase then
+        if ignoreCase and type( value ) == "string" then
             value = value:lower()
         end
 
-        if p_value == value then
+        if _value == value then
             containsValue = true
             break
         end
