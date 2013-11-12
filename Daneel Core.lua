@@ -791,7 +791,6 @@ end
 ----------------------------------------------------------------------------------
 
 Daneel = {}
-D = Daneel
 
 -- Config, loading and Runtime at the end
 
@@ -3277,6 +3276,7 @@ end
 ----------------------------------------------------------------------------------
 -- Runtime
 
+
 function Behavior:Awake()
     if self.debugTry == true then
         CraftStudio.Destroy( self )
@@ -3285,6 +3285,10 @@ function Behavior:Awake()
         -- but it won't kill the script that created the scripted behavior (the one that called Daneel.Debug.Try())
         self.successCallback()
         return
+    end
+
+    if tostring( self.gameObject.inner ) == "table" then
+        CS.IsWebPlayer = true
     end
 
     if table.getvalue( _G, "LOAD_DANEEL" ) ~= nil and LOAD_DANEEL == false then

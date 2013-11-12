@@ -273,9 +273,9 @@ function Behavior:Awake()
 
     hits = ray:Cast( gos, true )
     if 
-        hits[1].gameObject ~= GameObject.Get( "Test Ray.Model" ) or
-        hits[2].gameObject ~= GameObject.Get( "Test Ray.Map" ) or
-        hits[3].gameObject ~= GameObject.Get( "Test Ray.Text" ) 
+        (hits[1] == nil or hits[1].gameObject ~= GameObject.Get( "Test Ray.Model" )) or
+        (hits[2] == nil or hits[2].gameObject ~= GameObject.Get( "Test Ray.Map" )) or
+        (hits[3] == nil or hits[3].gameObject ~= GameObject.Get( "Test Ray.Text" )) 
     then
         print( "ray:Cast 2" )
         table.print( hits )

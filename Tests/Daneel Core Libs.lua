@@ -111,7 +111,10 @@ function Behavior:Awake()
     
     -----
     r = d.ToRawString( self.gameObject )
-    if not r:find("table: %d+") then
+    if 
+        ( CS.IsWebPlayer and r ~= "table" ) or
+        ( not CS.IsWebPlayer and not r:find("table: %d+") ) 
+    then
         print( "Debug.ToRawString", r )
         print( self.gameObject, d.ToRawString( self.gameObject ) )
     end
