@@ -350,7 +350,7 @@ end
 
 --- Tell whether the provided value is found within the provided table.
 -- @param t (table) The table to search in.
--- @param _value (any) The value to search for.
+-- @param _value (mixed) The value to search for.
 -- @param ignoreCase (boolean) [optional default=false] Ignore the case of the value. If true, the value must be of type 'string'.
 -- @return (boolean) True if the value is found in the table, false otherwise.
 function table.containsvalue(t, _value, ignoreCase)
@@ -950,7 +950,6 @@ function Daneel.Utilities.ButtonExists( buttonName )
     Daneel.Debug.StackTrace.EndFunction()
     return buttonExists
 end
-CS.Input.ButtonExists = Daneel.Utilities.ButtonExists
 
 
 ----------------------------------------------------------------------------------
@@ -1544,13 +1543,36 @@ setmetatable( Daneel.Time, mt )
 Daneel.Cache = {
     ucfirst = {},
     lcfirst = {},
-
     id = 0,
-    GetId = function()
+}
+
+--- Returns an interger greater than 0 and incremented by 1 from the last time the funciton was called.
+-- If an object is provided, returns the object's id (if no id is found, it is set).
+-- @param object (table) [optional] An object. 
+-- @return (number) The id.
+function Daneel.Cache.GetId( object )
+    if object ~= nil and type( object ) == "table" then
+        local id = rawget( object, "id" )
+        if id ~= nil then
+            return id
+        end
+        id = Daneel.Cache.GetId()
+        if object.inner ~= nil and not CS.IsWebPlayer then
+            -- object.inner : 
+            -- "CraftStudioRuntime.InGame.GameObject: 4620049" (of type userdata)
+            -- "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
+            id = tonumber( tostring( object.inner ):match( "%d+" ) )
+        end
+        if id == nil then
+            id = "[no id]"
+        end
+        rawset( object, "id", id )
+        return id
+    else
         Daneel.Cache.id = Daneel.Cache.id + 1
         return Daneel.Cache.id
-    end,
-}
+    end
+end
 
 
 ----------------------------------------------------------------------------------
@@ -1691,25 +1713,10 @@ end
 
 --- Returns the component's internal unique identifier.
 -- @param component (any component's type) The component.
--- @return (number) The id (-1 if something goes wrong)
+-- @return (number) The id.
 function Component.GetId( component )
-    Daneel.Debug.StackTrace.BeginFunction( "Component.GetId", component )
-    local errorHead = "Component.GetId( component ) : "
-    Daneel.Debug.CheckArgType( component, "component", Daneel.Config.componentTypes, errorHead )
-
-    if rawget( component, "id" ) ~= nil then
-        Daneel.Debug.StackTrace.EndFunction()
-        return component.id
-    end
-
-    local id = -1
-    if component.inner ~= nil then
-        -- component.inner = "CraftStudioRuntime.InGame.Components.ModelRenderer: 27863937" (of type userdata)
-        id = tonumber( tostring( component.inner ):match( "%d+" ) )
-        rawset( component, "id", id )
-    end
-    Daneel.Debug.StackTrace.EndFunction()
-    return id
+    -- no Debug because is used in __tostring
+    return Daneel.Cache.GetId( component )
 end
 
 
@@ -2360,9 +2367,7 @@ function GameObject.__tostring( gameObject )
         -- the important here was to prevent throwing an error
     end
 
-    local id = tonumber( tostring( gameObject.inner ):match( "%d+" ) )
-    rawset( gameObject, "id", id )
-    return "GameObject: " .. id .. ": '" .. gameObject:GetName() .. "'"
+    return "GameObject: " .. gameObject:GetId() .. ": '" .. gameObject:GetName() .. "'"
 end
 
 -- Dynamic getters
@@ -2603,26 +2608,9 @@ end
 
 --- Returns the game object's internal unique identifier.
 -- @param gameObject (GameObject) The game object.
--- @return (number) The id (-1 if something goes wrong)
+-- @return (number) The id.
 function GameObject.GetId( gameObject )
-    Daneel.Debug.StackTrace.BeginFunction( "GameObject.GetId", gameObject )
-    local errorHead = "GameObject.GetId( gameObject ) : "
-    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-
-    if rawget( gameObject, "id" ) ~= nil then
-        Daneel.Debug.StackTrace.EndFunction()
-        return gameObject.id
-    end
-
-    local id = -1
-    if gameObject.inner ~= nil then
-        -- gameObject.inner = "CraftStudioRuntime.InGame.GameObject: 4620049" (of type userdata)
-        id = tonumber( tostring( gameObject.inner ):match( "%d+" ) )
-        rawset( gameObject, "id", id )
-    end
-
-    Daneel.Debug.StackTrace.EndFunction()
-    return id
+    return Daneel.Cache.GetId( gameObject )
 end
 
 local OriginalSetParent = GameObject.SetParent
@@ -3079,16 +3067,7 @@ function Daneel.SetComponents( components )
 
         if componentType ~= "ScriptedBehavior" then
             componentObject["__tostring"] = function( component )
-                -- returns something like "ModelRenderer: 123456789"
-                local id = rawget( component, "id" )
-                if id == nil and component.inner ~= nil then
-                    id = tonumber( tostring( component.inner ):match( "%d+" ) )
-                    rawset( component, "id", id )
-                else
-                    id = "[id]"
-                end
-
-                return componentType .. ": " .. id
+                return componentType .. ": " .. component:GetId()
             end
         end
     end
@@ -3176,8 +3155,7 @@ for assetType, assetObject in pairs( Daneel.Config.assetObjects ) do
     Daneel.Utilities.AllowDynamicGettersAndSetters( assetObject, { Asset } )
 
     assetObject["__tostring"] = function( asset )
-        -- print something like : "Model: 123456789"    asset.inner is "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
-        return tostring( asset.inner ):match( "%d+" ) .. ": '" .. Map.GetPathInPackage( asset ) .. "'"
+        return  assetType .. ": " .. Daneel.Cache.GetId( asset ) .. ": '" .. Map.GetPathInPackage( asset ) .. "'"
     end
 end
 
@@ -3242,7 +3220,7 @@ function Daneel.Load()
             Daneel.Utilities.AllowDynamicGettersAndSetters( script, { Script, Component } )
 
             script["__tostring"] = function( scriptedBehavior )
-                return "ScriptedBehavior: " .. tostring( scriptedBehavior.inner ):match( "%d+" ) .. ": '" .. path .. "'"
+                return "ScriptedBehavior: " .. Daneel.Cache.GetId( scriptedBehavior ) .. ": '" .. path .. "'"
             end
         else
             Daneel.Config.scriptPaths[ alias ] = nil

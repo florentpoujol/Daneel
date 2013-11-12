@@ -52,7 +52,12 @@ function Behavior:Awake()
         print( "ButtonExists 1", r )
     end
     
-    print( "Error 'La clé donnée était absente du dictionnaire.' is OK" )
+    if CS.IsWebPlayer then
+        print("Error : 'Cannot read property 'wasJustPressed' of undefined' is OK")
+    else
+        print( "Error 'La clé donnée était absente du dictionnaire.' is OK" )
+    end
+    
     r = util.ButtonExists( "whatever" )
     if r ~= false then
         print( "ButtonExists 2", r )
