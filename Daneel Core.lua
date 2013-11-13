@@ -1657,7 +1657,6 @@ function Asset.GetPath( asset )
     local errorHead = "Asset.GetPath( asset ) : "
     Daneel.Debug.CheckArgType( asset, "asset", Daneel.Config.assetTypes, errorHead )
     local path = Map.GetPathInPackage( asset )
-    rawset( asset, "path", path )
     Daneel.Debug.StackTrace.EndFunction()
     return path
 end
@@ -1673,6 +1672,34 @@ function Asset.GetName( asset )
     rawset( asset, "name", name )
     Daneel.Debug.StackTrace.EndFunction()
     return name
+end
+
+--- Returns the asset's internal unique identifier.
+-- @param asset (any asset type) The asset.
+-- @return (number) The id.
+function Asset.GetId( asset )
+    return Daneel.Cache.GetId( asset )
+end
+
+-- fix for Map.GetPathInPackage() that returns an error when the asset was dynamically loaded
+local OriginalMapGetPathInPackage = Map.GetPathInPackage
+
+function Map.GetPathInPackage( asset )
+    local path = rawget( asset, "path" )
+    if path == nil then
+        path = OriginalMapGetPathInPackage( asset )
+    end
+    return path
+end
+
+local OriginalMapLoadFromPackage = Map.LoadFromPackage
+
+function Map.LoadFromPackage( path )
+    local asset = OriginalMapLoadFromPackage( path )
+    if asset ~= nil then
+        rawset( asset, "path", path )
+    end
+    return asset
 end
 
 
@@ -1699,7 +1726,7 @@ end
 
 --- Destroy the provided component, removing it from the game object.
 -- Note that the component is removed only at the end of the current frame.
--- @param component (any component's type) The component.
+-- @param component (any component type) The component.
 function Component.Destroy( component )
     Daneel.Debug.StackTrace.BeginFunction( "Component.Destroy", component )
     local errorHead = "Component.Destroy( component ) : "
@@ -1711,7 +1738,7 @@ function Component.Destroy( component )
 end
 
 --- Returns the component's internal unique identifier.
--- @param component (any component's type) The component.
+-- @param component (any component type) The component.
 -- @return (number) The id.
 function Component.GetId( component )
     -- no Debug because is used in __tostring
