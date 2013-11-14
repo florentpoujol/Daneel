@@ -2431,16 +2431,12 @@ function GameObject.New( name, params )
     local argType = Daneel.Debug.CheckArgType( name, "name", {"string", "Scene"}, errorHead )
     Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead )
     
-    local scene = nil
-    if argType == "string" then
-        scene = Asset.Get( name, "Scene" )
-    end
-
     local gameObject = nil
-    if scene == nil then
-        gameObject = CraftStudio.CreateGameObject( name )
-    else
+    local scene = Asset.Get( name, "Scene" ) -- scene will be nil if name is a sting ad not a scene path
+    if scene ~= nil then
         gameObject = CraftStudio.AppendScene( scene )
+    else
+        gameObject = CraftStudio.CreateGameObject( name )
     end
 
     if params ~= nil and gameObject ~= nil then
