@@ -2971,9 +2971,13 @@ function GameObject.GetWithTag( tag )
     for i, tag in pairs( tags ) do
         local gameObjects = GameObject.Tags[ tag ]
         if gameObjects ~= nil then
-            for i, gameObject in pairs( gameObjects ) do
-                if gameObject:HasTag( tags ) and not table.containsvalue( gameObjectsWithTag, gameObject ) then
-                    table.insert( gameObjectsWithTag, gameObject )
+            for j, gameObject in pairs( gameObjects ) do
+                if gameObject.inner ~= nil then
+                    if gameObject:HasTag( tags ) and not table.containsvalue( gameObjectsWithTag, gameObject ) then
+                        table.insert( gameObjectsWithTag, gameObject )
+                    end
+                else
+                    table.remove( gameObjects, j )
                 end
             end
         end
