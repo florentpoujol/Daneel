@@ -963,6 +963,11 @@ Daneel.Debug = {}
 -- @param p_errorHead [optional] (string) The beginning of the error message.
 -- @return (mixed) The argument's type.
 function Daneel.Debug.CheckArgType( argument, argumentName, expectedArgumentTypes, p_errorHead )
+    if type( argument ) == "table" and getmetatable( argument ) == GameObject and argument.inner == nil then
+        error( p_errorHead .. "Provided argument '" .. argumentName .. "' is a destroyed game object '" .. tostring(argument) )
+        -- should do that for destroyed components too
+    end
+
     if not Daneel.Config.debug.enableDebug then 
         return Daneel.Debug.GetType( argument ) 
     end
