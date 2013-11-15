@@ -2069,9 +2069,11 @@ function Ray.Cast( ray, gameObjects, sortByDistance )
     
     local hits = {}
     for i, gameObject in pairs( gameObjects ) do
-        local raycastHit = ray:IntersectsGameObject( gameObject )
-        if raycastHit ~= nil then
-            table.insert( hits, raycastHit )
+        if gameObject.inner ~= nil then
+            local raycastHit = ray:IntersectsGameObject( gameObject )
+            if raycastHit ~= nil then
+                table.insert( hits, raycastHit )
+            end
         end
     end
     if sortByDistance == true then
@@ -2094,6 +2096,11 @@ function Ray.IntersectsGameObject( ray, gameObjectNameOrInstance )
     
     local gameObject = GameObject.Get( gameObjectNameOrInstance, true )
     local raycastHit = nil
+
+    if gameObject.inner == nil then
+        -- should not happend since CheckArgType() returns an error when the game object is dead
+        return nil
+    end
 
     local component = gameObject.modelRenderer
     if component ~= nil then
