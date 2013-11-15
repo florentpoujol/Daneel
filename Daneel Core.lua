@@ -2935,7 +2935,10 @@ function GameObject.Destroy( gameObject )
     local errorHead = "GameObject.Destroy( gameObject ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
 
-    gameObject:RemoveTag()
+    for i, go in pairs( gameObject:GetChildren( true, true ) ) do -- recursive, include self
+        go:RemoveTag()
+    end
+
     for key, value in pairs( gameObject ) do
         if type( value ) == "table" then
             Daneel.Event.Fire( value, "OnDestroy", value )
