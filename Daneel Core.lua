@@ -1375,7 +1375,7 @@ function Daneel.Event.Listen( eventName, functionOrObject )
                 table.insert( Daneel.Config.hotKeys, buttonName )
             else
                 if Daneel.Config.debug.enableDebug then
-                    print( errorHead .. " : You tried to listen to the '" .. eventName .. "' event but the '" .. buttonName .. "' button does not exists in the Game Controls." )
+                    print( errorHead .. "You tried to listen to the '" .. eventName .. "' event but the '" .. buttonName .. "' button does not exists in the Game Controls." )
                 end
                 return
             end
@@ -1576,6 +1576,74 @@ function Daneel.Cache.GetId( object )
         Daneel.Cache.id = Daneel.Cache.id + 1
         return Daneel.Cache.id
     end
+end
+
+
+----------------------------------------------------------------------------------
+-- Storage
+
+Daneel.Storage = {}
+
+-- Store locally on the computer the provided data under the provided name
+-- @param name (string) The name of the data.
+-- @param data (mixed) The data to store. Can be nil.
+-- @return (boolean) True if the save was successfull, false otherwise.
+function Daneel.Storage.Save( name, data )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Storage.Save", name, data )
+    local errorHead = "Daneel.Storage.Save( name, data ) : "
+    Daneel.Debug.CheckArgType( name, "name", "string", errorHead )
+
+    if data ~= nil and type( data ) ~= "table" then
+        data = { 
+            value = data,
+            isSavedByDaneel = true
+        }
+    end
+
+    local success = true
+    CS.Storage.Save( name, data, function( error )
+        if error ~= nil then
+            if Daneel.Config.debug.enableDebug then
+                print( errorHead .. "Error saving with name, data and error : ", name, data, error )
+            end
+            success = false
+        end
+    end )
+
+    Daneel.Debug.StackTrace.EndFunction()
+    return success
+end
+
+-- Load data stored locally on the computer under the provided name.
+-- @param name (string) The name of the data.
+-- @param defaultValue (mixed) The value that is returned if no data is found.
+-- @return (mixed) The data.
+function Daneel.Storage.Load( name, defaultValue )
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Storage.Load", name, defaultValue )
+    local errorHead = "Daneel.Storage.Load( name, defaultValue ) : "
+    Daneel.Debug.CheckArgType( name, "name", "string", errorHead )
+
+    local value = defaultValue
+    
+    CS.Storage.Load( name, function( error, data )
+        if error ~= nil then
+            if Daneel.Config.debug.enableDebug then
+                print( errorHead .. "Error loading with name and error", name, error )
+            end
+            data = nil
+        end
+        
+        if data ~= nil then
+            if data.value ~= nil and data.isSavedByDaneel then
+                value = data.value
+            else
+                value = data
+            end
+        end
+    end )
+    
+    Daneel.Debug.StackTrace.EndFunction()
+    return value
 end
 
 
