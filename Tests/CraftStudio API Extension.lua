@@ -1,7 +1,7 @@
 function Behavior:Awake()
     local r = nil
     print( "~~~~~ Asset ~~~~~" )
-    
+       
     r = Asset.Get( "Daneel Core" )
     if r ~= nil then
         print( "Asset.Get 1", r )
@@ -11,13 +11,13 @@ function Behavior:Awake()
     if r ~= CS.FindAsset( "Scene1" ) then
         print( "Asset.Get 2", r )
     end
-    
+
     local script = CS.FindAsset( "Daneel/Daneel Core", "Script" )
     r = Asset.Get( "Daneel/Daneel Core" )
     if r ~= script then
         print( "Asset.Get 3", r )
     end
-    
+
     r = Asset.Get( script )
     if r ~= script then
         print( "Asset.Get 4", r )
@@ -27,17 +27,17 @@ function Behavior:Awake()
     if r ~= "Daneel/Daneel Core" then
         print( "Asset.GetPath 1", r )
     end
-    
+
     r = script:GetName()
     if r ~= "Daneel Core" then
         print( "Asset.GetName 1", r )
     end
-    
+
     r = script.name
     if r ~= "Daneel Core" then
         print( "Asset.GetName 2", r )
     end
-    
+
     -----
     print( "~~~~~ Component ~~~~~" )
     r = self.gameObject.transform:GetId()
@@ -275,7 +275,7 @@ function Behavior:Awake()
     if 
         (hits[1] == nil or hits[1].gameObject ~= GameObject.Get( "Test Ray.Model" )) or
         (hits[2] == nil or hits[2].gameObject ~= GameObject.Get( "Test Ray.Map" )) or
-        (hits[3] == nil or hits[3].gameObject ~= GameObject.Get( "Test Ray.Text" )) 
+        (hits[3] == nil or hits[3].gameObject ~= GameObject.Get( "Test Ray.Text" ))
     then
         print( "ray:Cast 2" )
         table.print( hits )
@@ -428,13 +428,16 @@ function Behavior:Awake()
     
     r = go:GetChildren( true ) -- recursive
     if #r ~= 8 then
-        print("gameObject:GetChildren 2", r )
+        print("gameObject:GetChildren 2", r, #r )
+        table.print( r )
     end
     
     r = go:GetChildren( true, true ) -- recursive + include self
     if #r ~= 9 then
-        print("gameObject:GetChildren 3", r )
+        print("gameObject:GetChildren 3", r, #r )
+        table.print( r )
     end
+    
     
     -----
     local path = Daneel.Config.scriptPaths.newScript
@@ -607,7 +610,7 @@ function Behavior:Update()
         if 
             self.goToDestroy.transform ~= nil or
             self.goToDestroy.inner ~= nil or
-            self.goToDestroy:HasTag( "aTag" ) or
+            ( self.goToDestroy.inner ~= nil and self.goToDestroy:HasTag( "aTag" ) ) or
             table.containsvalue( Daneel.Event.events.AnEvent, self.goToDestroy )
         then
             print( "CS.Destroy", self.goToDestroy.transform, self.goToDestroy.inner, Daneel.Debug.GetType( self.goToDestroy ) )

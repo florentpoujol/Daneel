@@ -207,6 +207,56 @@ function Behavior:Awake()
     print("Fire OnTestEvent directly at the game object, 2 prints expected, no arguments.")
     Daneel.Event.Fire( self.gameObject, "OnTestEvent" )
 
+    --------------------------------------------------------------
+    print("~~~~~ Daneel.Storage ~~~~~")
+    
+    r = Daneel.Storage.Load( "Whatever" )
+    if r ~= nil then
+        print( "Storage.Load 1", r )
+    end
+
+    local dv = "the default value"
+    r = Daneel.Storage.Load( "Whatever", dv )
+    if r ~= dv then
+        print( "Storage.Load 2", r )
+    end
+
+    r = Daneel.Storage.Save( "Player Name", "Foo Bar" )
+    if r ~= true then
+        print( "Storage.Save 1", r )
+    end
+
+    r = Daneel.Storage.Save( "Player Name", "John Doe" )
+    if r ~= true then
+        print( "Storage.Save 2", r )
+    end
+
+    local data = { 42, foo = "bar" }
+    r = Daneel.Storage.Save( "Some Data", data )
+    if r ~= true then
+        print( "Storage.Save 3", r )
+    end
+
+    r = Daneel.Storage.Load( "Player Name", "Florent" )
+    if r ~= "John Doe" then
+        print( "Storage.Load 3", r )
+    end
+
+    r = Daneel.Storage.Load( "Some Data" )
+    if not table.havesamecontent( data, r ) then
+        print( "Storage.Load 4", r )
+        table.print( r )
+    end
+
+    r = Daneel.Storage.Save( "Some Data", nil )
+    if r ~= true then
+        print( "Storage.Save 4", r )
+    end
+
+    r = Daneel.Storage.Load( "Some Data" )
+    if r ~= nil then
+        print( "Storage.Load 5", r )
+    end
 end
 
 
@@ -233,7 +283,7 @@ function Behavior:Update()
     if frameCount == 0 then
         print("~~~~~ Daneel.Time ~~~~~")
     end
-    if frameCount < 7 then
+    if frameCount < 10 then
         print( "Time            ", Daneel.Time.time, Daneel.Time.deltaTime, Daneel.Time.timeScale )
         print( "real time     ", Daneel.Time.realTime, Daneel.Time.realDeltaTime )
         print( "framecount", Daneel.Time.frameCount )
