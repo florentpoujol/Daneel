@@ -2777,18 +2777,18 @@ local OriginalGetChildren = GameObject.GetChildren
 -- @param recursive [optional default=false] (boolean) Look for all descendants instead of just the first generation.
 -- @param includeSelf [optional default=false] (boolean) Include the game object in the children.
 -- @return (table) The children.
-function GameObject.GetChildren(gameObject, recursive, includeSelf)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.GetChildren", gameObject, recursive, includeSelf)
-    local errorHead = "GameObject.GetChildrenRecursive(gameObject[, recursive, includeSelf]) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckOptionalArgType(recursive, "recursive", "boolean", errorHead)
-    Daneel.Debug.CheckOptionalArgType(includeSelf, "includeSelf", "boolean", errorHead)
+function GameObject.GetChildren( gameObject, recursive, includeSelf )
+    Daneel.Debug.StackTrace.BeginFunction( "GameObject.GetChildren", gameObject, recursive, includeSelf )
+    local errorHead = "GameObject.GetChildren( gameObject[, recursive, includeSelf] ) : "
+    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
+    Daneel.Debug.CheckOptionalArgType( recursive, "recursive", "boolean", errorHead )
+    Daneel.Debug.CheckOptionalArgType( includeSelf, "includeSelf", "boolean", errorHead )
 
     local allChildren = OriginalGetChildren( gameObject )
 
     if recursive then
-        for i, child in ipairs( allChildren ) do
-            allChildren = table.merge( allChildren, child:GetChildren( true, true ) )
+        for i, child in ipairs( table.copy( allChildren ) ) do
+            allChildren = table.merge( allChildren, child:GetChildren( true ) )
         end
     end
 
