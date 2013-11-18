@@ -861,12 +861,18 @@ function GUI.Input.New( gameObject, params )
     gameObject.input = input
     gameObject:AddTag( "guiComponent" )
 
+    local backgroundGO = gameObject:GetChild( "Background" )
+
     Daneel.Event.Listen( "OnLeftMouseButtonJustPressed",
         function()
-            if gameObject.isMouseOver == nil then
-                gameObject.isMouseOver = false
+            local focus = gameObject.isMouseOver -- click on the text
+            if focus ~= true and input.focusOnBackgroundClick and backgroundGO ~= nil then
+                focus = backgroundGO.isMouseOver
             end
-            gameObject.input:Focus( gameObject.isMouseOver )
+            if focus == nil then
+                focus = false
+            end
+            input:Focus( focus )
         end
     )
 
@@ -897,6 +903,10 @@ function GUI.Input.Focus( input, state )
             CS.Input.OnTextEntered( input.OnTextEntered )
         else
             CS.Input.OnTextEntered( nil )
+            local text = input.gameObject.textRenderer:GetText()
+            if input.defaultValue ~= nil and input.defaultValue ~= "" and string.trim( text ) == "" then
+                input.gameObject.textRenderer:SetText( input.defaultValue )
+            end
         end
         Daneel.Event.Fire( input, "OnFocus", input )
     end
@@ -905,7 +915,7 @@ end
 
 -- Set the focused state of the input.
 -- @param input (GUI.Input) The input component.
--- @param text (string) The text to add to the current text.
+-- @param text (string) The text (often just one character) to add to the current text.
 -- @param replaceText (boolean) [optional default=false] Tell wether the provided text should be added (false) or replace (true) the current text.
 function GUI.Input.Update( input, text, replaceText )
     if not type( input ) == "table" or not input.isFocused then
@@ -1597,8 +1607,10 @@ function GUI.DefaultConfig()
 
         input = {
             isFocused = false,
-            maxLength = 99999,
+            maxLength = 9999,
+            defaultValue = nil,
             characterRange = nil,
+            focusOnBackgroundClick = true,
         },
 
         textArea = {
