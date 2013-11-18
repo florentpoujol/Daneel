@@ -399,7 +399,7 @@ function Behavior:Awake()
     -----
 
     r = go.id
-    if r ~= tonumber( tostring( go.inner ):match( "%d+" ) ) then
+    if type( r ) ~= "number" then
         print( "gameObject:GetId 1", r )
     end
     

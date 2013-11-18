@@ -3008,7 +3008,7 @@ function GameObject.Destroy( gameObject )
     end
 
     for key, value in pairs( gameObject ) do
-        if type( value ) == "table" then
+        if key ~= "inner" and type( value ) == "table" then -- in the Webplayer inner is a regular object, considered of type table and not userdata
             Daneel.Event.Fire( value, "OnDestroy", value )
         end
     end
