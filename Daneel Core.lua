@@ -773,7 +773,7 @@ function table.isarray( t )
     Daneel.Debug.StackTrace.BeginFunction( "table.isarray", t )
     local errorHead = "table.isarray( table ) : "
     Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
-
+    
     local isArray = true
     for k, v in pairs( t ) do
         if type( k ) ~= "number" or not math.isinteger( k ) then
@@ -781,8 +781,27 @@ function table.isarray( t )
             break
         end
     end
+    
     Daneel.Debug.StackTrace.EndFunction()
     return isArray
+end
+
+--- Reverse the order of the provided table's values.
+-- @param t (table) The table.
+-- @return (table) The new table.
+function table.reverse( t )
+    Daneel.Debug.StackTrace.BeginFunction( "table.reverse", t )
+    local errorHead = "table.reverse( table ) : "
+    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
+    
+    local length = #t
+    local newTable = {}
+    for i, v in ipairs( t ) do
+        table.insert( newTable, 1, v )
+    end
+    
+    Daneel.Debug.StackTrace.EndFunction()
+    return newTable
 end
 
 
