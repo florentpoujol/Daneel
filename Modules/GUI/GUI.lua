@@ -1276,7 +1276,7 @@ function GUI.TextArea.SetAlignment( textArea, alignment )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.SetAlignment", textArea, alignment )
     local errorHead = "GUI.TextArea.SetAlignment( textArea, alignment ) : "
     Daneel.Debug.CheckArgType( textArea, "textArea", "GUI.TextArea", errorHead )
-    Daneel.Debug.CheckArgType( alignment, "alignment", {"string", "userdata"}, errorHead )
+    Daneel.Debug.CheckArgType( alignment, "alignment", {"string", "userdata", "number"}, errorHead )
 
     textArea.textRuler:SetAlignment( alignment )
     textArea.Alignment = textArea.textRuler:GetAlignment()

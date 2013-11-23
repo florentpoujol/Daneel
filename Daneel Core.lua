@@ -2062,7 +2062,7 @@ function TextRenderer.SetAlignment(textRenderer, alignment)
     Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetAlignment", textRenderer, alignment)
     local errorHead = "TextRenderer.SetAlignment(textRenderer, alignment) : "
     Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
-    local argType = Daneel.Debug.CheckArgType(alignment, "alignment", {"string", "userdata"}, errorHead)
+    local argType = Daneel.Debug.CheckArgType(alignment, "alignment", {"string", "userdata", "number"}, errorHead) -- number because enum returns a number in the webplayer
 
     if argType == "string" then
         local default = "Center"
@@ -2103,7 +2103,7 @@ function Camera.SetProjectionMode( camera, projectionMode )
     Daneel.Debug.StackTrace.BeginFunction( "Camera.SetProjectionMode", camera, projectionMode )
     local errorHead = "Camera.SetProjectionMode( camera, projectionMode ) : "
     Daneel.Debug.CheckArgType( camera, "camera", "Camera", errorHead)
-    local argType = Daneel.Debug.CheckArgType( projectionMode, "projectionMode", {"string", "userdata"}, errorHead )
+    local argType = Daneel.Debug.CheckArgType( projectionMode, "projectionMode", {"string", "userdata", "number"}, errorHead )
 
     if argType == "string" then
         local default = "Perspective"
