@@ -1533,6 +1533,7 @@ function Daneel.Time.Load()
 
         frameCount = 0,
     }
+    -- see below in Daneel.Update()
 end
 
 local mt = {
@@ -1553,11 +1554,7 @@ local mt = {
     end
 }
 setmetatable( Daneel.Time, mt )
--- Using the metatable allows to detect if the Time object is used when Daneel is not loaded yet
--- in order to load it now.
-
-
--- see below in Daneel.Update()
+-- Using the metatable allows to detect if the Time object is used when Daneel is not loaded yet.
 
 
 ----------------------------------------------------------------------------------
@@ -1580,7 +1577,7 @@ function Daneel.Cache.GetId( object )
             return id
         end
         id = Daneel.Cache.GetId()
-        if object.inner ~= nil and not CS.IsWebPlayer then
+        if object.inner ~= nil and not CS.IsWebPlayer then -- in the webplayer, tostring(object.inner) will just be table, so id will be nil
             -- object.inner : 
             -- "CraftStudioRuntime.InGame.GameObject: 4620049" (of type userdata)
             -- "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
@@ -1695,6 +1692,8 @@ function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
     local errorHead = "Asset.Get( assetPath[, assetType, errorIfAssetNotFound] ) : "
     if #assetGetTypes == 1 and Daneel.Config.assetTypes ~= nil then
         assetGetTypes = table.merge( assetGetTypes, Daneel.Config.assetTypes )
+        -- 23 nov 2013 : why do I do that ?
+        -- because Asset.Get() may be called when Daneel.Config.assetTypes is still nil ?
     end
     local argType = Daneel.Debug.CheckArgType( assetPath, "assetPath", assetGetTypes, errorHead )
     
