@@ -2835,12 +2835,18 @@ function GameObject.SendMessage(gameObject, functionName, data)
     
     -- prevent an error of type "La référence d'objet n'est pas définie à une instance d'un objet." to stops the script that sends the message
     local success = Daneel.Debug.Try( function()
-        OriginalSendMessage(gameObject, functionName, data)
+        OriginalSendMessage( gameObject, functionName, data )
     end )
     
     if not success then
-        print( errorHead.."Error sending message with parameters : ", gameObject, functionName, data )
-        if data ~= nil and #data > 0 then
+        local dataText = "No data"
+        local length = 0
+        if data ~= nil then
+            length = table.getlength( data )
+            dataText = "Data with "..length.." entries"
+        end
+        print( errorHead.."Error sending message with parameters : ", gameObject, functionName, dataText )
+        if length > 0 then
             table.print( data )
         end
     end
