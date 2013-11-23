@@ -65,11 +65,7 @@ A implémenter
     
     A faire avant release 1.3
 
-    - ajouter tests pour table.reverse
-    - test dans le web player avec ProjectionMode enum
-    - tester mass-set de composants GUI avec gameObject:Set()
     - ajouter tests pour GUI, mouseInput, etc... ?
-    - verif que GameObject.GetWithTag retourne table ou un seul GO
     - tester Mini-Galcon et Minimalist Encounter 1.3
     - revoir doc
     - une fois OK, faire branche release, envoyer à Jaunmakenro pour tests

@@ -380,4 +380,14 @@ function Behavior:Awake()
     if r ~= nil then
         print( "table.getvalue 9", r )
     end
+
+    ----
+    local t = { "1", "2", "3"}
+    local rt = { "3", "2", "1"}
+
+    r = table.reverse( t )
+    if not table.havesamecontent( r, rt ) then
+        print( "tabl.reverse 1", r )
+        table.print( r )
+    end
 end

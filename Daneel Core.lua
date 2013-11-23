@@ -2940,7 +2940,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
             return
         end
 
-        local object = table.getvalue( _G, (string.split( componentType, "." )) ) -- leave the parenthesis, makes split() returns the first table value
+        local object = table.getvalue( _G, string.split( componentType, "." )[1] ) -- leave the parenthesis
         if object ~= nil and object.Config ~= nil then
             local defaultComponentParams = object.Config[ string.lcfirst( componentType ) ]
             if defaultComponentParams ~= nil then
