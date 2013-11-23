@@ -42,6 +42,9 @@ function Behavior:Awake()
     end  
 
     self.tags = string.split( self.tags, "," )
+    for k, v in pairs( self.tags ) do
+        self.tags[ k ] = string.trim( v )
+    end
     self.gameObject.mouseInput = self
     self.frameCount = 0
     self.lastLeftClickFrame = -MouseInput.Config.doubleClickDelay

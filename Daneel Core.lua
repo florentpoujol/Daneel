@@ -2661,7 +2661,7 @@ function GameObject.Set( gameObject, params )
 
             local component = gameObject:GetScriptedBehavior( scriptPath )
             if component == nil then
-                component = gameObject:AddScriptedBehavior( scriptPath )
+                component = gameObject:AddComponent( scriptPath )
             end
             
             component:Set(value)

@@ -14,6 +14,9 @@ function Behavior:Awake()
     self.gameObject.trigger = self
     self.GameObjectsInRange = {} -- the gameObjects that touches this trigger
     self.tags = string.split( self.tags, "," )
+    for k, v in pairs( self.tags ) do
+        self.tags[ k ] = string.trim( v )
+    end
     self.frameCount = 0
     self.ray = Ray:New()
 end
@@ -25,6 +28,9 @@ function Behavior:Update()
         
         if type( self.tags ) == "string" then
             self.tags = string.split( self.tags, "," )
+            for k, v in pairs( self.tags ) do
+                self.tags[ k ] = string.trim( v )
+            end
         end
     
         for i, tag in pairs( self.tags ) do
@@ -77,7 +83,11 @@ function Behavior:GetGameObjectsInRange()
     
     if type( self.tags ) == "string" then
         self.tags = string.split( self.tags, "," )
+        for k, v in pairs( self.tags ) do
+            self.tags[ k ] = string.trim( v )
+        end
     end
+    
     for i, tag in pairs( self.tags ) do
         local gameObjects = GameObject.Tags[ tag ]
         if gameObjects ~= nil then
