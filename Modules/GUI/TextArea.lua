@@ -24,7 +24,7 @@ function Behavior:Awake()
         }
         local props = {"areaWidth", "newLine", "lineHeight", "verticalAlignment", "font", "text", "alignment"}
         for i, prop in ipairs( props ) do
-            if self[ prop ]:trim() ~= "" then
+            if string.trim( self[ prop ] ) ~= "" then
                 params[ prop ] = self[ prop ]
             end
         end

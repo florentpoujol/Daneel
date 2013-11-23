@@ -21,7 +21,7 @@ function Behavior:Awake()
         }
         local props = {"text", "group", "checkedMark", "uncheckedMark", "checkedModel", "uncheckedModel"}
         for i, prop in ipairs( props ) do
-            if self[ prop ]:trim() ~= "" then
+            if string.trim( self[ prop ] ) ~= "" then
                 params[ prop ] = self[ prop ]
             end
         end

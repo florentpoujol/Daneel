@@ -977,7 +977,7 @@ function GUI.TextArea.New( gameObject, params )
     go:SetParent( gameObject ) -- set as child so that it is destroyed with the GO of the textArea
     textArea.textRuler = gameObject.textRenderer
     if textArea.textRuler == nil then
-        textArea.textRuler = go:CreateComponent( "TextRenderer ") -- used to store the TextRenderer properties and mesure the lines length in SetText()
+        textArea.textRuler = go:CreateComponent( "TextRenderer") -- used to store the TextRenderer properties and mesure the lines length in SetText()
     end
     textArea.textRuler:SetText( "" )
     
@@ -1222,7 +1222,7 @@ function GUI.TextArea.SetVerticalAlignment( textArea, verticalAlignment )
     Daneel.Debug.CheckArgType( verticalAlignment, "verticalAlignment", "string", errorHead )
     verticalAlignment = Daneel.Debug.CheckArgValue( verticalAlignment, "verticalAlignment", {"top", "middle", "bottom"}, errorHead, GUI.Config.textArea.verticalAlignment )
 
-    textArea.VerticalAlignment = verticalAlignment:lower():trim()
+    textArea.VerticalAlignment = string.trim( verticalAlignment:lower() )
     if #textArea.lineRenderers > 0 then
         textArea:SetText( textArea.Text )
     end
