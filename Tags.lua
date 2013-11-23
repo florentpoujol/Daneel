@@ -10,7 +10,7 @@ tags string ""
 
 function Behavior:Awake()
     if self.tags ~= "" then
-        local tags = string.split( self.tags, ",", true )
+        local tags = string.split( self.tags, "," )
         self.gameObject:AddTag( tags )
     end
 end

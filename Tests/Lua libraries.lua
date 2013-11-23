@@ -82,14 +82,7 @@ function Behavior:Awake()
     if not table.havesamecontent( r , t ) then
         print( "string.split 1" )
         table.print( r )
-    end
-    
-    r = string.split( s, ",", true )
-    if not table.havesamecontent( r , t ) then
-        print( "string.split 2" )
-        table.print( r )
-    end
-    
+    end   
     
     s = "un<br>deux<br>trois"
     r = string.split( s, "<br>", false )
@@ -121,13 +114,13 @@ function Behavior:Awake()
     
     -- delimiter is pattern
     s = " un deux trois "
-    r = string.split( s, "%s" ) -- space  plain text
+    r = string.split( s, "%s" ) -- plain text
     if not table.havesamecontent( r , {s} ) then
         print( "string.split 7" )
         table.print( r )
     end
     
-    r = string.split( s, "%s", true )
+    r = string.split( s, "%s", true ) -- delimter is pattern
     t = { "un", "deux", "trois" }
     if not table.havesamecontent( r , t ) then
         print( "string.split 8" )
@@ -142,7 +135,7 @@ function Behavior:Awake()
         table.print( r )
     end
     
-    r = string.split( s, "%s", true )
+    r = string.split( s, "%s", true ) -- pattern
     t = { "un", "%sdeux%s", "trois" }
     if not table.havesamecontent( r , t ) then
         print( "string.split 10" )

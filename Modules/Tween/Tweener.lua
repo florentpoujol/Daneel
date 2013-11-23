@@ -21,7 +21,7 @@ OnLoopComplete string ""
 /PublicProperties]]
 
 local function getvalue( value )
-    local values = string.split( value, ",", true )
+    local values = string.split( value, "," )
     value = nil
     for i, value in ipairs( values ) do
         values[i] = tonumber( value )
