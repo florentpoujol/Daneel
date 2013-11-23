@@ -5,10 +5,8 @@
 -- Copyright © 2013 Florent POUJOL, published under the MIT license.
 
 --[[PublicProperties
-positionX string ""
-positionY string ""
-localPositionX string ""
-localPositionY string ""
+position string ""
+localPosition string ""
 layer string ""
 localLayer string ""
 /PublicProperties]]
@@ -16,11 +14,13 @@ localLayer string ""
 function Behavior:Awake()
     if self.gameObject.hud == nil then
         local params = {}
-        if self.positionX ~= "" and self.positionY ~= "" then
-            params.position = Vector2.New(tonumber(self.positionX), tonumber(self.positionY))
+        if self.position ~= "" then
+            local x, y = unpack( self.position:split(",") )
+            params.position = Vector2.New(tonumber(x), tonumber(y))
         end
-        if self.localPositionX ~= "" and self.localPositionY ~= "" then
-            params.localPosition = Vector2.New(tonumber(self.localPositionX), tonumber(self.localPositionY))
+        if self.localPosition ~= "" then
+            local x, y = unpack( self.localPosition:split(",") )
+            params.localPosition = Vector2.New(tonumber(x), tonumber(y))
         end
         if self.layer ~= "" then
             params.layer = tonumber(self.layer)
