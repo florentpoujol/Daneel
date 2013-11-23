@@ -28,7 +28,6 @@ function Lang.DefaultConfig()
 end
 
 function Lang.Load()
-    Daneel.Lang = Lang
     local defaultLanguage = nil
 
     for key, value in pairs( _G ) do
@@ -43,6 +42,10 @@ function Lang.Load()
                 end
             end
         end
+    end
+
+    if defaultLanguage == nil then -- no language function found
+        return
     end
     
     if Lang.Config.default == nil then
