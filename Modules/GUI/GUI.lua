@@ -42,10 +42,14 @@ function GUI.Hud.ToHudPosition(position)
     if not Daneel.isAwake then
         Daneel.LateLoad( "GUI.Hud.ToHudPosition" )
     end
-    
+
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.ToHudPosition", position)
     local errorHead = "GUI.Hud.ToHudPosition(hud, position) : "
     Daneel.Debug.CheckArgType(position, "position", "Vector3", errorHead)
+
+    if GUI.Config.originGO == nil then
+        error( errorHead.." GUI.Config.originGO is nil because no game object with name '"..GUI.Config.cameraName .."' (value of 'cameraName' in the config) has been found in the scene." )
+    end
 
     local layer = GUI.Config.originGO.transform:GetPosition().z - position.z
     position = position - GUI.Config.originGO.transform:GetPosition()
@@ -67,10 +71,10 @@ function GUI.Hud.New( gameObject, params )
     end
 
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.New", gameObject, params )
-    if GUI.Config.cameraGO == nil then
-        error("GUI.Hud.New() : Daneel (and the GUI module) is not loaded and awake or the HUD Camera gameObject with name '"..GUI.Config.cameraName.."' (value of 'cameraName' in the config) was not found.")
-    end
     local errorHead = "GUI.Hud.New( gameObject, params ) : "
+    if GUI.Config.cameraGO == nil then
+        error( errorHead.."Can't create a GUI.Hud component because no game object with name '"..GUI.Config.cameraName.."' (value of 'cameraName' in the config) has been found.")
+    end
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead )
     params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
 
@@ -1570,13 +1574,13 @@ CS.DaneelModules[ "GUI" ] = GUI
 
 function GUI.DefaultConfig()
     local config = {
-        cameraName = "HUDCamera",  -- Name of the gameObject who has the orthographic camera used to render the HUD
+        cameraName = "HUD Camera",  -- Name of the gameObject who has the orthographic camera used to render the HUD
         cameraGO = nil, -- the corresponding GameObject, set at runtime
         originGO = nil, -- "parent" gameObject for global hud positioning, created at runtime in DaneelModuleGUIAwake
 
         -- Default GUI components settings
         hud = {
-            localPosition = setmetatable({}, Vector2),
+            localPosition = setmetatable({x=0,y=0}, Vector2),
             layer = 1,
         },
 
