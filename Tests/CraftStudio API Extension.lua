@@ -2,7 +2,7 @@ function Behavior:Awake()
     local r = nil
     print( "~~~~~ Asset ~~~~~" )
        
-    r = Asset.Get( "Daneel Core" )
+    r = Asset.Get( "whatever" )
     if r ~= nil then
         print( "Asset.Get 1", r )
     end
@@ -12,8 +12,11 @@ function Behavior:Awake()
         print( "Asset.Get 2", r )
     end
 
-    local script = CS.FindAsset( "Daneel/Daneel Core", "Script" )
-    r = Asset.Get( "Daneel/Daneel Core" )
+    local daneelScriptPath = Daneel.Config.scriptPaths.daneel
+    local script = CS.FindAsset( daneelScriptPath, "Script" )
+    local daneelScriptName = script.name
+
+    r = Asset.Get( daneelScriptPath )
     if r ~= script then
         print( "Asset.Get 3", r )
     end
@@ -24,17 +27,17 @@ function Behavior:Awake()
     end 
     
     r = script:GetPath()
-    if r ~= "Daneel/Daneel Core" then
+    if r ~= daneelScriptPath then
         print( "Asset.GetPath 1", r )
     end
 
     r = script:GetName()
-    if r ~= "Daneel Core" then
+    if r ~= daneelScriptName then
         print( "Asset.GetName 1", r )
     end
 
     r = script.name
-    if r ~= "Daneel Core" then
+    if r ~= daneelScriptName then
         print( "Asset.GetName 2", r )
     end
 
@@ -359,11 +362,11 @@ function Behavior:Awake()
     
     -- test scripted behavior and alias
     go = GameObject.Get("Daneel Core")
-    local sb = go:GetScriptedBehavior( "Daneel/Daneel Core" )
+    local sb = go:GetScriptedBehavior( daneelScriptPath )
     
     if sb == nil then -- Daneel has been late loaded
         go = GameObject.Get( "Daneel Late Load" )
-        sb = go:GetScriptedBehavior( "Daneel/Daneel Core" )
+        sb = go:GetScriptedBehavior( daneelScriptPath )
     end
     
     r = go.daneel
@@ -385,7 +388,7 @@ function Behavior:Awake()
         table.print(go.daneel)
     end
     
-    r = go:GetScriptedBehavior( Asset("Daneel/Daneel Core") )
+    r = go:GetScriptedBehavior( Asset( daneelScriptPath ) )
     if r ~= sb then 
         print( "GetScriptedBehavior 1", r )
     end

@@ -3431,7 +3431,7 @@ function Behavior:Awake()
     
     if Daneel.isAwake then
         if Daneel.Config.debug.enableDebug then
-            print( "Daneel:Awake() : You tried to load Daneel twice ! This time the 'Daneel Core' scripted behavior was on the " .. tostring( self.gameObject ) )
+            print( "Daneel:Awake() : You tried to load Daneel twice ! This time the 'Daneel' scripted behavior was on the " .. tostring( self.gameObject ) )
         end
         CS.Destroy( self )
         return
