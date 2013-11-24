@@ -70,7 +70,7 @@ end
 
 --- Get the localized line identified by the provided key.
 -- @param key (string) The language key.
--- @param replacements [optional] (table) The placeholders and their replacements.
+-- @param replacements (table) [optional] The placeholders and their replacements.
 -- @return (string) The line.
 function Lang.Get( key, replacements )
     if replacements == nil and Lang.cache[ key ] ~= nil then
@@ -143,10 +143,10 @@ function Lang.Get( key, replacements )
     return line
 end
 
---- Register a gameObject to update its TextRenderer whenever the language will be updated by Lang.Update().
+--- Register a game object to update its text renderer whenever the language will be updated by Lang.Update().
 -- @param gameObject (GameObject) The gameObject.
 -- @param key (string) The language key.
--- @param replacements [optional] (table) The placeholders and their replacements (has no effect when the 'key' argument is a function).
+-- @param replacements (table) [optional] The placeholders and their replacements (has no effect when the 'key' argument is a function).
 function Lang.RegisterForUpdate( gameObject, key, replacements )
     Daneel.Debug.StackTrace.BeginFunction( "Lang.RegisterForUpdate", gameObject, key, replacements )
     local errorHead = "Lang.RegisterForUpdate( gameObject, key[, replacements] ) : "
@@ -161,8 +161,8 @@ function Lang.RegisterForUpdate( gameObject, key, replacements )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Update the current language and the text of all gameObjects that have registered via Lang.RegisterForUpdate().
--- Updates the TextRenderer or GUI.TextArea component.
+--- Update the current language and the text of all game objects that have registered via Lang.RegisterForUpdate().
+-- Updates the text renderer or text area component.
 -- Fire the OnLangUpdate event.
 -- @param language (string) The new current language.
 function Lang.Update( language )

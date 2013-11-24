@@ -725,7 +725,7 @@ end
 -- table.getvalue( table1, "table2.table3.Foo" ) would return nul because the 'table3' has no 'Foo' key <br>
 -- table.getvalue( table1, "table2.Foo.Bar.Lorem.Ipsum" ) idem <br>
 -- @param t (table) The table.
--- @pram keys (string) The chain of keys to looks for as a string, each keys separated by a dot.
+-- @param keys (string) The chain of keys to looks for as a string, each keys separated by a dot.
 -- @return (mixed) The value, or nil.
 function table.getvalue( t, keys )
     Daneel.Debug.StackTrace.BeginFunction( "table.getvalue", t, keys )
@@ -859,7 +859,7 @@ function Daneel.Utilities.ReplaceInString( string, replacements )
     return string
 end
 
---- Allow to call getters and setters as if they were variable on the instance of the provided Object.
+--- Allow to call getters and setters as if they were variable on the instance of the provided object.
 -- The instances are tables that have the provided object as metatable.
 -- Optionally allow to search in a ancestry of objects.
 -- @param Object (mixed) The object.
@@ -1241,7 +1241,7 @@ end
 local DaneelScriptAsset = Behavior
 Daneel.Debug.tryGameObject = nil -- The game object Daneel.Debug.Try() works with
 
---- Allow to test out a piece of code without killing the script if the code throw an error.
+--- Allow to test out a piece of code without killing the script if the code throws an error.
 -- If the code throw an error, it will be printed in the Runtime Report but it won't kill the script that calls Daneel.Debug.Try().
 -- Does not protect against exceptions thrown by CraftStudio.
 -- @param _function (function or userdata) The function containing the code to try out.
@@ -1274,7 +1274,7 @@ end
 
 Daneel.Debug.StackTrace = { messages = {} }
 
---- Register a function input in the stack trace.
+--- Register a function call in the stack trace.
 -- @param functionName (string) The function name.
 -- @param ... [optional] (mixed) Arguments received by the function.
 function Daneel.Debug.StackTrace.BeginFunction( functionName, ... )
@@ -1326,7 +1326,7 @@ function Daneel.Debug.StackTrace.EndFunction()
     table.remove( Daneel.Debug.StackTrace.messages )
 end
 
---- Print the StackTrace.
+--- Prints the StackTrace.
 function Daneel.Debug.StackTrace.Print()
     if 
         not Daneel.Config.debug.enableDebug or 
@@ -1413,7 +1413,7 @@ function Daneel.Event.Listen( eventName, functionOrObject )
 end
 
 --- Make the provided function or object to stop listen to the provided event(s).
--- @param eventName (string or table) The event name (or names in a table).
+-- @param eventName (string or table) [optional] The event name or names in a table or nil to stop listen to every events.
 -- @param functionOrObject (function, string or GameObject) The function, or the game object name or instance.
 function Daneel.Event.StopListen( eventName, functionOrObject )
     if type( eventName ) ~= "string" then
@@ -2035,7 +2035,7 @@ end
 
 local OriginalSetFont = TextRenderer.SetFont
 
---- Set the specified font for the text renderer.
+--- Set the provided font to the provided text renderer.
 -- @param textRenderer (TextRenderer) The text renderer.
 -- @param fontNameOrAsset (string or Font) [optional] The font name or asset, or nil.
 function TextRenderer.SetFont( textRenderer, fontNameOrAsset )
@@ -2141,7 +2141,7 @@ end
 
 setmetatable( Ray, { __call = function(Object, ...) return Object:New(...) end } )
 
---- Check the collision of the ray against the provided set of game object.
+--- Check the collision of the ray against the provided set of game objects.
 -- @param ray (Ray) The ray.
 -- @param gameObjects (table) The set of game objects to cast the ray against.
 -- @param sortByDistance [optional default=false] (boolean) Sort the raycastHit by increasing distance in the returned table.
@@ -2755,7 +2755,7 @@ function GameObject.SetParent(gameObject, parentNameOrInstance, keepLocalTransfo
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Alias of GameObject:FindChild().
+--- Alias of GameObject.FindChild().
 -- Find the first game object's child with the provided name.
 -- If the name is not provided, it returns the first child.
 -- @param gameObject (GameObject) The game object.
@@ -3150,7 +3150,7 @@ function GameObject.RemoveTag( gameObject, tag )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Tell whether the provided game object has all (or at least one of) the provided tag.
+--- Tell whether the provided game object has all (or at least one of) the provided tag(s).
 -- @param gameObject (GameObject) The game object.
 -- @param tag (string or table) One or several tag (as a string or table of strings).
 -- @param atLeastOneTag [default=false] (boolean) If true, returns true if the game object has AT LEAST one of the tag (instead of ALL the tag).
@@ -3409,7 +3409,7 @@ end
 
 ----------------------------------------------------------------------------------
 -- Runtime
-
+local luaDocStop = ""
 
 function Behavior:Awake()
     if self.debugTry == true then
