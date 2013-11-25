@@ -3231,12 +3231,7 @@ function Daneel.DefaultConfig()
         scriptPaths = {},
 
         -- Default CraftStudio's components settings (except Transform)
-        --[[ ie :
-        textRenderer = {
-            font = "MyFont",
-            alignment = "right",
-        },
-        ]]
+        -- textRenderer = { font = "MyFont" },
 
         hotKeys = {}, -- button names that throws events On[ButtonName]JustPressed... 
         -- filled in Daneel.Event.Listen
@@ -3374,8 +3369,6 @@ function Daneel.Load()
             end
         end
     end
-
-    Daneel.Event.Fire( "OnDaneelLoad" )
 
     Daneel.isLoaded = true
     Daneel.isLoading = false
