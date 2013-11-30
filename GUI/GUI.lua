@@ -844,8 +844,8 @@ function GUI.Input.New( gameObject, params )
                     local text = gameObject.textRenderer:GetText()
                     input:Update( text:sub( 1, #text - 1 ), true )
 
-                elseif charNumber == 13 then -- Enter
-                    Daneel.Event.Fire( input, "OnValidate", input )
+                --elseif charNumber == 13 then -- Enter
+                    --Daneel.Event.Fire( input, "OnValidate", input )
 
                 -- Any character between 32 and 127 is regular printable ASCII
                 elseif charNumber >= 32 and charNumber <= 127 then
@@ -880,7 +880,7 @@ function GUI.Input.New( gameObject, params )
         end
     )
 
-    Daneel.Event.Listen( "OnValidateButtonJustPressed",
+    Daneel.Event.Listen( "OnValidateInputButtonJustPressed",
         function()
             if input.isFocused then
                 Daneel.Event.Fire( input, "OnValidate", input )
