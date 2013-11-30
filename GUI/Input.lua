@@ -9,7 +9,7 @@ isFocused boolean false
 maxLength number 9999
 characterRange string ""
 defaultValue string ""
-focusOnbackgroundClick boolean true
+focusOnBackgroundClick boolean true
 /PublicProperties]]
 
 function Behavior:Awake()
