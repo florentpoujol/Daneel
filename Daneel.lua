@@ -1480,24 +1480,22 @@ function Daneel.Event.Fire( object, eventName, ... )
         
         local listenerType = type( listener )
         if listenerType == "function" or listenerType == "userdata" then
-            listener( ... )
+            listener( unpack( arg ) )
 
         else -- an object
             local mt = getmetatable( listener )
-            if listener.isDestroyed ~= true or (mt == GameObject and listener.transform ~= nil)  then -- ensure that the event is not fired on a dead game object or component
+            if listener.isDestroyed ~= true or (mt == GameObject and listener.inner ~= nil)  then -- ensure that the event is not fired on a dead game object or component
                 local message = eventName
 
                 -- look for the value of the EventName property on the object
-                local funcOrMessage = listener[ eventName ]
+                local funcOrMessage = rawget( listener, eventName )
+                -- Using rawget() prevent a 'Behavior function' to be called as a regular function when the listener is a ScriptedBehavior
+                -- because the function exists on the Script object and not on the ScriptedBehavior (the listener),
+                -- in which case rawget() returns nil
 
                 local _type = type( funcOrMessage )
                 if _type == "function" or _type == "userdata" then
-                    -- prevent a 'Behavior function' to be called as a regular function when the listener is a ScriptedBehavior
-                    -- because the functin exist on the Script object and not on the ScriptedBehavior (the listener),
-                    -- in which case rawget() returns nil
-                    if rawget( listener, eventName ) == funcOrMessage then
-                        funcOrMessage( unpack( arg ) )
-                    end
+                    funcOrMessage( unpack( arg ) )
 
                 elseif _type == "string" then
                     message = funcOrMessage
@@ -3049,7 +3047,7 @@ GameObject.Tags = {}
 -- GameObject.Tags is emptied in Daneel:Awake()
 
 --- Returns the game object(s) that have all the provided tag(s).
--- @param tag (string or table) One or several tags.
+-- @param tag (string or table) One or several tag(s) (as a string or table of strings).
 -- @return (table) The game object(s) (empty if none is found).
 function GameObject.GetWithTag( tag )
     Daneel.Debug.StackTrace.BeginFunction( "GameObject.GetWithTag", tag )
