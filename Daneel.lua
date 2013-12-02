@@ -465,14 +465,9 @@ function table.merge(...)
     for i, t in ipairs(arg) do
         local argType = type(t)
         if argType == "table" then
-            local func = pairs
-            if table.isarray( t ) then 
-                func = ipairs
-            end
-
-            for key, value in func(t) do
+            for key, value in pairs(t) do
                 if math.isinteger(key) and not table.containsvalue(fullTable, value) then
-                    table.insert(fullTable, value)
+                    table.insert(fullTable, key, value)
                 else
                     fullTable[key] = value
                 end
