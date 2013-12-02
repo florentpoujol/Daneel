@@ -332,12 +332,11 @@ function table.copy( t, recursive, doNotCopyMetatable )
     local newTable = {}
     for key, value in pairs( t ) do
         if type( value ) == "table" and recursive then
-            newTable[ key ] = table.copy( value )
-        else
-            newTable[ key ] = value
+            value = table.copy( value )
         end
+        newTable[ key ] = value
     end
-
+    
     if doNotCopyMetatable ~= true then
         local mt = getmetatable( t )
         if mt ~= nil then
@@ -434,12 +433,15 @@ function table.print(t)
     end
     print("~~~~~ table.print("..tableString..") ~~~~~ Start ~~~~~")
 
+    local func = pairs
     if table.getlength(t) == 0 then
         print("Provided table is empty.")
-    else
-        for key, value in pairs(t) do
-            print(key, value)
-        end
+    elseif table.isarray( t ) then
+        func = ipairs -- just to be sure that the entries are print in order
+    end
+    
+    for key, value in func(t) do
+        print(key, value)
     end
 
     print("~~~~~ table.print("..tableString..") ~~~~~ End ~~~~~")
