@@ -768,18 +768,25 @@ end
 --- Tell wether he provided table is an array (has only integer keys).
 -- Decimal numbers with only zeros after the coma are considered as integers.
 -- @param t (table) The table.
+-- @param strict (boolean) [default=true] When false, the function returns true when the table only has integer keys. When true, the function returns true when the table only has integer keys in a single and continuous set.
 -- @return (boolean) True or false.
-function table.isarray( t )
+function table.isarray( t, strict )
     Daneel.Debug.StackTrace.BeginFunction( "table.isarray", t )
     local errorHead = "table.isarray( table ) : "
     Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
     
     local isArray = true
+    local entriesCount = 0
+
     for k, v in pairs( t ) do
-        if type( k ) ~= "number" or not math.isinteger( k ) then
+        entriesCount = entriesCount + 1
+        if isArray and ( type( k ) ~= "number" or not math.isinteger( k ) ) then
             isArray = false
-            break
         end
+    end
+
+    if isArray and strict then
+        isArray = (entriesCount == #t)
     end
     
     Daneel.Debug.StackTrace.EndFunction()
