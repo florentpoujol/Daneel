@@ -448,7 +448,7 @@ function table.print(t)
     if table.getlength(t) == 0 then
         print("Provided table is empty.")
     elseif table.isarray( t ) then
-        func = ipairs -- just to be sure that the entries are print in order
+        func = ipairs -- just to be sure that the entries are printed in order
     end
     
     for key, value in func(t) do
@@ -464,27 +464,37 @@ end
 -- When several tables have the same value (with an integer key), the value is only added once in the returned table.
 -- @param ... (table) At least two tables to merge together.
 -- @return (table) The new table.
-function table.merge(...)
+function table.merge( ... )
     local arg = {...}
     if arg == nil or #arg == 0 then
-        Daneel.Debug.StackTrace.BeginFunction("table.merge")
-        error("table.merge(...) : No argument provided. Need at least two.")
+        Daneel.Debug.StackTrace.BeginFunction( "table.merge" )
+        error( "table.merge(...) : No argument provided. Need at least two." )
     end
     Daneel.Debug.StackTrace.BeginFunction( "table.merge", ... )
     
     local fullTable = {}
-    for i, t in ipairs(arg) do
-        local argType = type(t)
+    for i, t in ipairs( arg ) do
+        local argType = type( t )
         if argType == "table" then
-            for key, value in pairs(t) do
-                if math.isinteger(key) and not table.containsvalue(fullTable, value) then
-                    table.insert(fullTable, key, value)
-                else
-                    fullTable[key] = value
+            if table.isarray( t ) then
+                for key, value in ipairs( t ) do
+                    if not table.containsvalue( fullTable, value ) then
+                        table.insert( fullTable, value )
+                    end
+                end
+            else
+                for key, value in pairs( t ) do
+                    if math.isinteger( key ) then
+                        if not table.containsvalue( fullTable, value ) then
+                            table.insert( fullTable, value )
+                        end
+                    else
+                        fullTable[ key ] = value
+                    end
                 end
             end
         elseif Daneel.Config.debug.enableDebug then
-            print("WARNING : table.merge(...) : Argument n°"..i.." is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'. The argument as been ignored.")
+            print( "WARNING : table.merge(...) : Argument n°"..i.." is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'. The argument as been ignored." )
         end
     end
     Daneel.Debug.StackTrace.EndFunction()
@@ -496,42 +506,38 @@ end
 -- When several tables have the same value (with an integer key), the value is only added once in the returned table.
 -- @param ... (table) At least two tables to merge together.
 -- @return (table) The new table.
-function table.deepmerge(...)
+function table.deepmerge( ... )
     local arg = {...}
     if arg == nil or #arg == 0 then
         Daneel.Debug.StackTrace.BeginFunction("table.deepmerge")
-        error("table.deepmerge(...) : No argument provided. Need at least two.")
+        error( "table.deepmerge(...) : No argument provided. Need at least two." )
     end
-    Daneel.Debug.StackTrace.BeginFunction("table.deepmerge", unpack(arg))
+    Daneel.Debug.StackTrace.BeginFunction( "table.deepmerge", ... )
     
     local fullTable = {}
-    for i, t in ipairs(arg) do
-        local argType = type(t)
+    for i, t in ipairs( arg ) do
+        local argType = type( t )
         if argType == "table" then
-            local func = pairs
-            if table.isarray( t ) then 
-                func = ipairs
-            end
-
-            for key, value in func(t) do
-                if math.isinteger(key) and not table.containsvalue(fullTable, value) then
-                    table.insert(fullTable, value)
+            for key, value in pairs(t) do
+                if math.isinteger( key ) then
+                    if table.containsvalue( fullTable, value ) then
+                        table.insert( fullTable, value )
+                    end
                 else
-                    if fullTable[key] ~= nil and type(value) == "table" then
-                        local mt = getmetatable(fullTable[key])
+                    if fullTable[ key ] ~= nil and type( value ) == "table" then
+                        local mt = getmetatable( fullTable[ key ] )
                         if mt ~= nil then -- consider the value an intance of an object, just replace the instance
-                            fullTable[key] = value
+                            fullTable[ key ] = value
                         else
-                            fullTable[key] = table.deepmerge(fullTable[key], value)
+                            fullTable[ key ] = table.deepmerge( fullTable[ key ], value )
                         end
                     else
-                        fullTable[key] = value
+                        fullTable[ key ] = value
                     end
                 end
             end
-
         elseif Daneel.Config.debug.enableDebug then
-            print("WARNING : table.deepmerge(...) : Argument n°"..i.." is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'. The argument as been ignored.")
+            print( "WARNING : table.deepmerge(...) : Argument n°"..i.." is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'. The argument as been ignored." )
         end
     end
     Daneel.Debug.StackTrace.EndFunction()
