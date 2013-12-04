@@ -788,7 +788,8 @@ function table.isarray( t, strict )
     Daneel.Debug.StackTrace.BeginFunction( "table.isarray", t )
     local errorHead = "table.isarray( table ) : "
     Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
-    
+    strict = Daneel.Debug.CheckOptionalArgType( strict, "strict", "boolean", errorHead, true )
+
     local isArray = true
     local entriesCount = 0
 
@@ -823,6 +824,46 @@ function table.reverse( t )
     
     Daneel.Debug.StackTrace.EndFunction()
     return newTable
+end
+
+--- Remove and returns the first value found in the table.
+-- Works for arrays as well as associative tables.
+-- @param t (table) The table.
+-- @param returnKey (boolean) [default=false] If true, return the key and the value instead of just the value.
+-- @return (mixed) The value, or the key and the value (if the returnKey argument is true), or nil.
+function table.shift( t, returnKey )
+    Daneel.Debug.StackTrace.BeginFunction( "table.shift", t, returnKey )
+    local errorHead = "table.shift( table[, returnKey] ) : "
+    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
+    returnKey = Daneel.Debug.CheckOptionalArgType( returnKey, "returnKey", "boolean", errorHead, false )
+
+    local key = nil
+    local value = nil
+
+    if table.isarray( t ) then
+        if #t > 0 then
+            value = table.removevalue( t, 1 )
+            if value ~= nil then -- should always be ~= nil if #t > 0
+                key = 1
+            end
+        end
+    else
+        for k,v in pairs( t ) do
+            key = k
+            value = v
+            break
+        end
+        if key ~= nil then
+            t[ key ] = nil  
+        end
+    end
+    
+    Daneel.Debug.StackTrace.EndFunction()
+    if returnKey then
+        return key, value
+    else
+        return value
+    end
 end
 
 

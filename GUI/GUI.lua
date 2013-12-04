@@ -977,7 +977,7 @@ function GUI.TextArea.New( gameObject, params )
     go:SetParent( gameObject ) -- set as child so that it is destroyed with the GO of the textArea
     textArea.textRuler = gameObject.textRenderer
     if textArea.textRuler == nil then
-        textArea.textRuler = go:CreateComponent( "TextRenderer") -- used to store the TextRenderer properties and mesure the lines length in SetText()
+        textArea.textRuler = go:CreateComponent( "TextRenderer" ) -- used to store the TextRenderer properties and mesure the lines length in SetText()
     end
     textArea.textRuler:SetText( "" )
     
