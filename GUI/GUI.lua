@@ -1344,11 +1344,15 @@ end
 function Vector2.New(x, y)
     Daneel.Debug.StackTrace.BeginFunction("Vector2.New", x, y)
     local errorHead = "Vector2.New(x, y) : "
-    Daneel.Debug.CheckArgType(x, "x", {"string", "number"}, errorHead)
+    local argType = Daneel.Debug.CheckArgType(x, "x", {"string", "number", "Vector2"}, errorHead)
     Daneel.Debug.CheckOptionalArgType(y, "y", {"string", "number"}, errorHead)
 
     if y == nil then y = x end
     local vector = setmetatable({ x = x, y = y }, Vector2)
+    if argType == "Vector2" then
+        vector.x = x.x
+        vector.y = x.y
+    end
     Daneel.Debug.StackTrace.EndFunction()
     return vector
 end
