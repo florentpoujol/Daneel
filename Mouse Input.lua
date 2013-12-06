@@ -81,7 +81,8 @@ function Behavior:Update()
         end
 
         local mousePosition = CS.Input.GetMousePosition()
-
+        local reindex = true
+        
         for i, tag in pairs( self.tags ) do
             local gameObjects = GameObject.Tags[ tag ]
             if gameObjects ~= nil then
@@ -128,9 +129,15 @@ function Behavior:Update()
                             end
                         end
                     else -- else if gameObject is destroyed
-                        table.remove( gameObjects, i )
+                        gameObjects[ i ] = nil
+                        reindex = true
                     end
                 end -- end looping on gameObjects with current tag
+
+                if reindex then
+                    GameObject.Tags[ tag ] = table.reindex( gameObjects )
+                    reindex = false
+                end
             end
         end -- end looping on tags
     end

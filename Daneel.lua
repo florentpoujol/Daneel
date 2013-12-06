@@ -3150,10 +3150,11 @@ function GameObject.GetWithTag( tag )
 
     local tags = tag
     if argType == "string" then
-        tags = { tags }
+        tags = string.split( tags, ',' )
     end
 
     local gameObjectsWithTag = {}
+    local reindex = false
 
     for i, tag in pairs( tags ) do
         local gameObjects = GameObject.Tags[ tag ]
@@ -3164,8 +3165,13 @@ function GameObject.GetWithTag( tag )
                         table.insert( gameObjectsWithTag, gameObject )
                     end
                 else
-                    table.remove( gameObjects, j )
+                    gameObjects[ j ] = nil
+                    reindex = true
                 end
+            end
+            if reindex then
+                GameObject.Tags[ tag ] = table.reindex( gameObjects )
+                reindex = false
             end
         end
     end
@@ -3544,7 +3550,7 @@ function Behavior:Awake()
     else
         GameObject.Tags = {}
     end
-    
+
 
     -- Awake modules 
     for i, _module in pairs( CS.DaneelModules ) do
