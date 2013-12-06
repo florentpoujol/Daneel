@@ -889,7 +889,7 @@ function table.reindex( t )
         
         for i=1, maxi do
             if t[i] ~= nil then
-                table.insert( newTable, v )
+                table.insert( newTable, t[i] )
             end
         end
     end
@@ -3150,7 +3150,7 @@ function GameObject.GetWithTag( tag )
 
     local tags = tag
     if argType == "string" then
-        tags = string.split( tags, ',' )
+        tags = { tags }
     end
 
     local gameObjectsWithTag = {}
