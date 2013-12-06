@@ -1314,7 +1314,7 @@ function Daneel.Debug.Try( _function )
     Daneel.Debug.CheckArgType( _function, "_function", {"function", "userdata"}, errorHead )
 
     local gameObject = Daneel.Debug.tryGameObject
-    if gameObject == nil or gameObject.transform == nil then
+    if gameObject == nil or gameObject.inner == nil then
         gameObject = CraftStudio.CreateGameObject( "Daneel_Debug_Try" )
         Daneel.Debug.tryGameObject = gameObject
     end

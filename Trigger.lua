@@ -39,7 +39,7 @@ function Behavior:Update()
                 
                 for i, gameObject in pairs( gameObjects ) do
                     local gameObject = gameObjects[ i ]
-                    if gameObject.transform == nil then
+                    if gameObject.inner == nil then
                         table.remove( gameObjects, i )
                     elseif gameObject ~= self.gameObject then
 
@@ -94,7 +94,7 @@ function Behavior:GetGameObjectsInRange()
 
             for i, gameObject in pairs( gameObjects ) do
                 if 
-                    gameObject.transform ~= nil and gameObject ~= self.gameObject and
+                    gameObject.inner ~= nil and gameObject ~= self.gameObject and
                     self:IsGameObjectInRange( gameObject, triggerPosition ) and
                     not table.containsvalue( gameObjectsInRange, gameObject )
                 then

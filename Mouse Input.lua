@@ -87,7 +87,7 @@ function Behavior:Update()
             if gameObjects ~= nil then
 
                 for i, gameObject in pairs( gameObjects ) do
-                    if gameObject.transform ~= nil then
+                    if gameObject.inner ~= nil then
                         -- OnMouseEnter, OnMouseOver, OnMouseExit, gameObject.isMouseOver
                         local ray = self.gameObject.camera:CreateRay( mousePosition )
                                                 
