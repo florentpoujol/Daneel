@@ -866,6 +866,38 @@ function table.shift( t, returnKey )
     end
 end
 
+--- Turn the provided table (with only integer keys) in a proper sequence (with consecutive integer key beginning at 1).
+-- @param t (table) The table.
+-- @return (table) The sequence.
+function table.reindex( t )
+    Daneel.Debug.StackTrace.BeginFunction( "table.reindex", t )
+    local errorHead = "table.reindex( table ) : "
+    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
+
+    local newTable = {}
+    if not table.isarray( t, false ) then
+        if Daneel.Config.debug.enableDebug then
+            print( errorHead.."Provided table '"..tostring( t ).."' is not an array." )
+        end
+    else
+        local maxi = 1
+        for i, v in pairs( t ) do
+            if i > maxi then
+                maxi = i
+            end
+        end
+        
+        for i=1, maxi do
+            if t[i] ~= nil then
+                table.insert( newTable, v )
+            end
+        end
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()  
+    return newTable
+end
+
 
 ----------------------------------------------------------------------------------
 -- Daneel
