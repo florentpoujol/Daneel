@@ -3528,15 +3528,23 @@ function Behavior:Awake()
     Daneel.Debug.StackTrace.messages = {}
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Awake" )
     
-    -- GameObject.Tags = {} -- can't do that because of Daneel late loading, it would discard alive game objects that are already added as tags
+
     -- remove all dead game objects from GameObject.Tags
-    for tag, gameObjects in pairs( GameObject.Tags ) do
-        for i, gameObject in pairs( gameObjects ) do
-            if gameObject.transform == nil then
-                table.remove( gameObjects, i )
+    if Daneel.isLateLoading then
+        -- can't do GameObject.Tags = {} because of Daneel late loading, it would discard alive game objects that are already added as tags
+        for tag, gameObjects in pairs( GameObject.Tags ) do
+            for i, gameObject in pairs( gameObjects ) do
+                if gameObject.inner == nil then
+                    gameObjects[i] = nil
+                end
             end
+            
+            GameObject.Tags[ tag ] = table.reindex( gameObjects )
         end
+    else
+        GameObject.Tags = {}
     end
+    
 
     -- Awake modules 
     for i, _module in pairs( CS.DaneelModules ) do
@@ -3570,6 +3578,7 @@ function Behavior:Start()
         print("~~~~~ Daneel started ~~~~~")
     end
 
+    Daneel.isLateLoading = nil
     Daneel.Debug.StackTrace.EndFunction()
 end 
 
