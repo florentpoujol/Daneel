@@ -178,7 +178,7 @@ function Lang.Update( language )
     Lang.cache = {} -- ideally only the items that do not begins by a language name should be deleted
     Lang.Config.current = language
     for gameObject, data in pairs( Lang.gameObjectsToUpdate ) do
-        if gameObject.transform == nil or gameObject.inner == nil then
+        if gameObject.inner == nil then
             Lang.gameObjectsToUpdate[ gameObject ] = nil
         else
             local text = Lang.Get( data.key, data.replacements )

@@ -32,15 +32,18 @@ function Behavior:Update()
                 self.tags[ k ] = string.trim( v )
             end
         end
-    
+        
+        local reindex = false
+        
         for i, tag in pairs( self.tags ) do
             local gameObjects = GameObject.Tags[ tag ]
             if gameObjects ~= nil then
                 
                 for i, gameObject in pairs( gameObjects ) do
                     local gameObject = gameObjects[ i ]
-                    if gameObject.transform == nil then
-                        table.remove( gameObjects, i )
+                    if gameObject.inner == nil then
+                        gameObjects[ i ] = nil
+                        reindex = true
                     elseif gameObject ~= self.gameObject then
 
                         local gameObjectIsInRange = self:IsGameObjectInRange( gameObject, triggerPosition )
@@ -69,6 +72,10 @@ function Behavior:Update()
                     end
                 end
 
+                if reindex then
+                    GameObject.Tags[ tag ] = table.reindex( gameObjects )
+                    reindex = false
+                end
             end
         end
     end
@@ -94,7 +101,7 @@ function Behavior:GetGameObjectsInRange()
 
             for i, gameObject in pairs( gameObjects ) do
                 if 
-                    gameObject.transform ~= nil and gameObject ~= self.gameObject and
+                    gameObject.inner ~= nil and gameObject ~= self.gameObject and
                     self:IsGameObjectInRange( gameObject, triggerPosition ) and
                     not table.containsvalue( gameObjectsInRange, gameObject )
                 then

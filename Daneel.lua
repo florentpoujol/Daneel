@@ -866,6 +866,38 @@ function table.shift( t, returnKey )
     end
 end
 
+--- Turn the provided table (with only integer keys) in a proper sequence (with consecutive integer key beginning at 1).
+-- @param t (table) The table.
+-- @return (table) The sequence.
+function table.reindex( t )
+    Daneel.Debug.StackTrace.BeginFunction( "table.reindex", t )
+    local errorHead = "table.reindex( table ) : "
+    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
+
+    local newTable = {}
+    if not table.isarray( t, false ) then
+        if Daneel.Config.debug.enableDebug then
+            print( errorHead.."Provided table '"..tostring( t ).."' is not an array." )
+        end
+    else
+        local maxi = 1
+        for i, v in pairs( t ) do
+            if i > maxi then
+                maxi = i
+            end
+        end
+        
+        for i=1, maxi do
+            if t[i] ~= nil then
+                table.insert( newTable, t[i] )
+            end
+        end
+    end
+
+    Daneel.Debug.StackTrace.EndFunction()  
+    return newTable
+end
+
 
 ----------------------------------------------------------------------------------
 -- Daneel
@@ -1314,7 +1346,7 @@ function Daneel.Debug.Try( _function )
     Daneel.Debug.CheckArgType( _function, "_function", {"function", "userdata"}, errorHead )
 
     local gameObject = Daneel.Debug.tryGameObject
-    if gameObject == nil or gameObject.transform == nil then
+    if gameObject == nil or gameObject.inner == nil then
         gameObject = CraftStudio.CreateGameObject( "Daneel_Debug_Try" )
         Daneel.Debug.tryGameObject = gameObject
     end
@@ -3122,6 +3154,7 @@ function GameObject.GetWithTag( tag )
     end
 
     local gameObjectsWithTag = {}
+    local reindex = false
 
     for i, tag in pairs( tags ) do
         local gameObjects = GameObject.Tags[ tag ]
@@ -3132,8 +3165,13 @@ function GameObject.GetWithTag( tag )
                         table.insert( gameObjectsWithTag, gameObject )
                     end
                 else
-                    table.remove( gameObjects, j )
+                    gameObjects[ j ] = nil
+                    reindex = true
                 end
+            end
+            if reindex then
+                GameObject.Tags[ tag ] = table.reindex( gameObjects )
+                reindex = false
             end
         end
     end
@@ -3496,15 +3534,23 @@ function Behavior:Awake()
     Daneel.Debug.StackTrace.messages = {}
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Awake" )
     
-    -- GameObject.Tags = {} -- can't do that because of Daneel late loading, it would discard alive game objects that are already added as tags
+
     -- remove all dead game objects from GameObject.Tags
-    for tag, gameObjects in pairs( GameObject.Tags ) do
-        for i, gameObject in pairs( gameObjects ) do
-            if gameObject.transform == nil then
-                table.remove( gameObjects, i )
+    if Daneel.isLateLoading then
+        -- can't do GameObject.Tags = {} because of Daneel late loading, it would discard alive game objects that are already added as tags
+        for tag, gameObjects in pairs( GameObject.Tags ) do
+            for i, gameObject in pairs( gameObjects ) do
+                if gameObject.inner == nil then
+                    gameObjects[i] = nil
+                end
             end
+            
+            GameObject.Tags[ tag ] = table.reindex( gameObjects )
         end
+    else
+        GameObject.Tags = {}
     end
+
 
     -- Awake modules 
     for i, _module in pairs( CS.DaneelModules ) do
@@ -3538,6 +3584,7 @@ function Behavior:Start()
         print("~~~~~ Daneel started ~~~~~")
     end
 
+    Daneel.isLateLoading = nil
     Daneel.Debug.StackTrace.EndFunction()
 end 
 

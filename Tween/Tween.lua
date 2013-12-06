@@ -227,12 +227,12 @@ function Tween.Tweener.IsTargetDestroyed( tweener )
             return true
         end
 
-        if tweener.target.gameObject ~= nil and (tweener.target.gameObject.isDestroyed or tweener.target.gameObject.transform == nil) then
+        if tweener.target.gameObject ~= nil and (tweener.target.gameObject.isDestroyed or tweener.target.gameObject.inner == nil) then
             return true
         end
     end
 
-    if tweener.gameObject ~= nil and (tweener.gameObject.isDestroyed or tweener.gameObject.transform == nil) then
+    if tweener.gameObject ~= nil and (tweener.gameObject.isDestroyed or tweener.gameObject.inner == nil) then
         return true
     end
 
