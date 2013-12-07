@@ -866,6 +866,9 @@ function GUI.Input.New( gameObject, params )
     gameObject:AddTag( "guiComponent" )
 
     local backgroundGO = gameObject:GetChild( "Background" )
+    if backgroundGO ~= nil and input.focusOnBackgroundClick then
+        backgroundGO:AddTag( "guiComponent" )
+    end
 
     Daneel.Event.Listen( "OnLeftMouseButtonJustPressed",
         function()
