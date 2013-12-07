@@ -1692,14 +1692,15 @@ end
 
 Daneel.Storage = {}
 
--- Store locally on the computer the provided data under the provided name
+-- Store locally on the computer the provided data under the provided name.
 -- @param name (string) The name of the data.
--- @param data (mixed) The data to store. Can be nil.
--- @return (boolean) True if the save was successfull, false otherwise.
-function Daneel.Storage.Save( name, data )
+-- @param data (mixed) The data to store. May be nil.
+-- @param callback (function) [optional] The function called when the save has completed. The potential error (as a string) is passed the callback first and only argument.
+function Daneel.Storage.Save( name, data, callback )
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Storage.Save", name, data )
     local errorHead = "Daneel.Storage.Save( name, data ) : "
     Daneel.Debug.CheckArgType( name, "name", "string", errorHead )
+    Daneel.Debug.CheckOptionalArgType( callback, "callback", "function", errorHead )
 
     if data ~= nil and type( data ) ~= "table" then
         data = { 
@@ -1708,45 +1709,65 @@ function Daneel.Storage.Save( name, data )
         }
     end
 
-    local success = true
     CS.Storage.Save( name, data, function( error )
         if error ~= nil then
             if Daneel.Config.debug.enableDebug then
-                print( errorHead .. "Error saving with name, data and error : ", name, data, error )
+                print( errorHead .. "Error saving with name, data and error : ", name, data, error.message )
             end
-            success = false
+        end
+
+        if callback ~= nil then
+            if error == nil then
+                error = {}
+            end
+            callback( error.message )
         end
     end )
 
     Daneel.Debug.StackTrace.EndFunction()
-    return success
 end
 
--- Load data stored locally on the computer under the provided name.
+-- Load data stored locally on the computer under the provided name. The load operation may not be instantaneous.
+-- The function will return the queried value (or defaultValue) if it completes right away, otherwise it returns nil.
 -- @param name (string) The name of the data.
 -- @param defaultValue (mixed) The value that is returned if no data is found.
+-- @param callback (function) [optional] The function called when the data is loaded. The value and the potential error (as a string) are passed as first and second argument, respectivily.
 -- @return (mixed) The data.
-function Daneel.Storage.Load( name, defaultValue )
+function Daneel.Storage.Load( name, defaultValue, callback )
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Storage.Load", name, defaultValue )
     local errorHead = "Daneel.Storage.Load( name, defaultValue ) : "
     Daneel.Debug.CheckArgType( name, "name", "string", errorHead )
+    if callback == nil and type( defaultValue ) == "function" then
+        callback = defaultValue
+        defaultValue = nil
+    end
+    Daneel.Debug.CheckOptionalArgType( callback, "callback", "function", errorHead )
 
-    local value = defaultValue
-    
+    local value = nil
+
     CS.Storage.Load( name, function( error, data )
         if error ~= nil then
             if Daneel.Config.debug.enableDebug then
-                print( errorHead .. "Error loading with name and error", name, error )
+                print( errorHead .. "Error loading with name, default value and error", name, defaultValue, error.message )
             end
             data = nil
         end
         
+        value = defaultValue
+
         if data ~= nil then
             if data.value ~= nil and data.isSavedByDaneel then
                 value = data.value
             else
                 value = data
             end
+        end
+
+        if callback ~= nil then
+            if error == nil then
+                error = {}
+            end
+            callback( value, error.message )
         end
     end )
     
