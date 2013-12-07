@@ -906,12 +906,15 @@ function GUI.Input.Focus( input, state )
 
     if input.isFocused ~= state then
         input.isFocused = state
+        local text = string.trim( input.gameObject.textRenderer:GetText() )
         if state == true then
             CS.Input.OnTextEntered( input.OnTextEntered )
+            if text == input.defaultValue then
+                input.gameObject.textRenderer:SetText( "" )
+            end
         else
             CS.Input.OnTextEntered( nil )
-            local text = input.gameObject.textRenderer:GetText()
-            if input.defaultValue ~= nil and input.defaultValue ~= "" and string.trim( text ) == "" then
+            if input.defaultValue ~= nil and input.defaultValue ~= "" and text == "" then
                 input.gameObject.textRenderer:SetText( input.defaultValue )
             end
         end
