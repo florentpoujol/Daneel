@@ -1058,7 +1058,7 @@ function GUI.TextArea.SetText( textArea, text )
     if textArea.VerticalAlignment == "middle" then
         offset = lineHeight * linesCount / 2 - lineHeight / 2
     elseif textArea.VerticalAlignment == "bottom" then
-        offset = lineHeight * linesCount
+        offset = lineHeight * (linesCount - 1)
     end
 
     for i, line in ipairs( lines ) do
