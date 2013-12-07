@@ -1627,12 +1627,12 @@ function GUI.DefaultConfig()
         textArea = {
             areaWidth = 0, -- max line length, in units or pixel as a string (0 = no max length)
             wordWrap = false, -- when a ligne is longer than the area width: cut the ligne when false, put the rest of the ligne in one or several lignes when true
-            newLine = "\n", -- end of ligne delimiter
+            newLine = "<br>", -- end of ligne delimiter
             lineHeight = 1, -- in units or pixels as a string
             verticalAlignment = "top",
 
             font = nil,
-            text = "Text\nArea",
+            text = "",
             alignment = nil,
             opacity = nil,
         },

@@ -7,11 +7,11 @@
 --[[PublicProperties
 areaWidth string ""
 wordWrap boolean false
-newLine string "\n"
+newLine string "<br>"
 lineHeight string "1"
 verticalAlignment string "top"
 font string ""
-text string "Text\nArea"
+text string ""
 alignment string ""
 opacity number 1.0
 /PublicProperties]]
