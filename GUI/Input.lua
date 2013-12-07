@@ -18,9 +18,12 @@ function Behavior:Awake()
             isFocused = self.isFocused,
             maxLength = self.maxLength,
             focusOnbackgroundClick = self.focusOnbackgroundClick,
-            characterRange = self.characterRange,
             defaultValue = self.defaultValue,
         }
+        
+        if self.characterRange ~= "" then
+            params.characterRange = self.characterRange
+        end
 
         GUI.Input.New( self.gameObject, params )
     end
