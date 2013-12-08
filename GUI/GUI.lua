@@ -258,8 +258,7 @@ function GUI.Toggle.New( gameObject, params )
     gameObject.toggle = toggle
     gameObject:AddTag( "guiComponent" )
 
-    gameObject.OnNewComponent = function()
-        local component = data[1]
+    gameObject.OnNewComponent = function( component )
         if component == nil then return end
         local mt = getmetatable( component )
 
