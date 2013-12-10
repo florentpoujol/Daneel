@@ -1523,7 +1523,7 @@ function Daneel.Event.Listen( eventName, functionOrObject, isPersistent )
             if isPersistent then
                 eventList = Daneel.Event.persistentEvents
             end
-            
+
             table.insert( eventList[ eventName ], functionOrObject )
         end
     end
@@ -3510,6 +3510,10 @@ function Daneel.Load()
         end
     end
 
+    if type( Camera.ProjectionMode.Orthographic ) == "number" then -- "userdata" in native runtimes
+        CS.IsWebPlayer = true
+    end
+
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Load" )
 
     -- Load modules 
@@ -3566,17 +3570,13 @@ function Behavior:Awake()
         return
     end
 
-    if tostring( self.gameObject.inner ) == "table" then
-        CS.IsWebPlayer = true
-    end
-
-    if table.getvalue( _G, "LOAD_DANEEL" ) ~= nil and LOAD_DANEEL == false then
+    if table.getvalue( _G, "LOAD_DANEEL" ) ~= nil and LOAD_DANEEL == false then -- just for tests purposes
         return
     end
     
     if Daneel.isAwake then
         if Daneel.Config.debug.enableDebug then
-            print( "Daneel:Awake() : You tried to load Daneel twice ! This time the 'Daneel' scripted behavior was on the " .. tostring( self.gameObject ) )
+            print( "Daneel:Awake() : You tried to load Daneel twice ! This time the 'Daneel' scripted behavior was on " .. tostring( self.gameObject ) )
         end
         CS.Destroy( self )
         return
@@ -3617,6 +3617,8 @@ function Behavior:Awake()
         print("~~~~~ Daneel awake ~~~~~")
     end
 
+    Daneel.Event.Fire( "OnAwake" )
+
     Daneel.Debug.StackTrace.EndFunction()
 end 
 
@@ -3637,6 +3639,8 @@ function Behavior:Start()
     if Daneel.Config.debug.enableDebug then
         print("~~~~~ Daneel started ~~~~~")
     end
+
+    Daneel.Event.Fire( "OnStart" )
 
     Daneel.isLateLoading = nil
     Daneel.Debug.StackTrace.EndFunction()
