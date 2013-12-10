@@ -1458,11 +1458,13 @@ Daneel.Event = {
 -- The function will be called whenever the provided event will be fired.
 -- @param eventName (string or table) The event name (or names in a table).
 -- @param functionOrObject (function or table) The function (not the function name) or the object.
-function Daneel.Event.Listen( eventName, functionOrObject )
+-- @param isPersistent (boolean) [default=false] Tell wether the listener automatically stops to listen to any event when a new scene is loaded. Always false when the listener is a game object or a component.
+function Daneel.Event.Listen( eventName, functionOrObject, isPersistent )
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Event.Listen", eventName, functionOrObject )
     local errorHead = "Daneel.Event.Listen( eventName, functionOrObject ) : "
     Daneel.Debug.CheckArgType( eventName, "eventName", {"string", "table"}, errorHead )
     Daneel.Debug.CheckArgType( functionOrObject, "functionOrObject", {"table", "function", "userdata"}, errorHead )
+    isPersistent = Daneel.Debug.CheckOptionalArgType( isPersistent, "isPersistent", "boolean", errorHead, false )
     
     local eventNames = eventName
     if type( eventName ) == "string" then
@@ -1495,12 +1497,29 @@ function Daneel.Event.Listen( eventName, functionOrObject )
         end
 
         --
-        if Daneel.Event.events[ eventName ] == nil then
-            Daneel.Event.events[ eventName ] = {}
+        
+
+        if isPersistent and type( functionOrObject ) == "table" then
+            local mt = getmetatable( functionOrObject )
+            if mt ~= nil and (mt == GameObject or table.containsvalue( Daneel.Config.componentObjects, mt )) then
+                if Daneel.Config.debug.enableDebug then
+                    print( errorHead.."Game objects and components can't be persistent listeners", functionOrObject )
+                end
+                isPersistent = false
+            end
         end
 
-        if not table.containsvalue( Daneel.Event.events[ eventName ], functionOrObject ) then
-            table.insert( Daneel.Event.events[ eventName ], functionOrObject )
+        local eventList = Daneel.Event.events
+        if isPersistent then
+            eventList = Daneel.Event.persistentevents
+        end
+
+        if eventList[ eventName ] == nil then
+            eventList[ eventName ] = {}
+        end
+
+        if not table.containsvalue( eventList[ eventName ], functionOrObject ) then
+            table.insert( eventList[ eventName ], functionOrObject )
         end
     end
     Daneel.Debug.StackTrace.EndFunction()
