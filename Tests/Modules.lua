@@ -1,7 +1,7 @@
 
 function LangUserConfig()
     return {
-        
+        default = "french",
     }
 end
 

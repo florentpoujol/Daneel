@@ -221,21 +221,24 @@ function Behavior:Awake()
         print( "Storage.Load 2", r )
     end
 
-    r = Daneel.Storage.Save( "Player Name", "Foo Bar" )
-    if r ~= true then
-        print( "Storage.Save 1", r )
-    end
+    Daneel.Storage.Save( "Player Name", "Foo Bar", function(error) 
+        if error ~= nil then
+            print( "Storage.Save 1", error.message )
+        end
+    end )
 
-    r = Daneel.Storage.Save( "Player Name", "John Doe" )
-    if r ~= true then
-        print( "Storage.Save 2", r )
-    end
+    Daneel.Storage.Save( "Player Name", "John Doe", function(error) 
+        if error ~= nil then
+            print( "Storage.Save 2", error.message )
+        end
+    end )
 
     local data = { 42, foo = "bar" }
-    r = Daneel.Storage.Save( "Some Data", data )
-    if r ~= true then
-        print( "Storage.Save 3", r )
-    end
+    Daneel.Storage.Save( "Some Data", data, function(error) 
+        if error ~= nil then
+            print( "Storage.Save 3", error.message )
+        end
+    end )
 
     r = Daneel.Storage.Load( "Player Name", "Florent" )
     if r ~= "John Doe" then
@@ -248,10 +251,11 @@ function Behavior:Awake()
         table.print( r )
     end
 
-    r = Daneel.Storage.Save( "Some Data", nil )
-    if r ~= true then
-        print( "Storage.Save 4", r )
-    end
+    r = Daneel.Storage.Save( "Some Data", nil, function(error) 
+        if error ~= nil then
+            print( "Storage.Save 4", error.message )
+        end
+    end )
 
     r = Daneel.Storage.Load( "Some Data" )
     if r ~= nil then
