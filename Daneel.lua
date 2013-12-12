@@ -1939,12 +1939,13 @@ end
 
 local OriginalMapLoadFromPackage = Map.LoadFromPackage
 
-function Map.LoadFromPackage( path )
-    local asset = OriginalMapLoadFromPackage( path )
-    if asset ~= nil then
-        rawset( asset, "path", path )
-    end
-    return asset
+function Map.LoadFromPackage( path, callback )
+    OriginalMapLoadFromPackage( path, function( map )
+        if map ~= nil then
+            rawset( map, "path", path )
+        end
+        callback( map )
+    end )
 end
 
 
