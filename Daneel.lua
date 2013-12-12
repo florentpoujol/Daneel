@@ -1603,11 +1603,14 @@ function Daneel.Event.Fire( object, eventName, ... )
         end
     end
 
+    local listenersToBeRemoved = {}
     for i, listener in ipairs( listeners ) do
         
         local listenerType = type( listener )
         if listenerType == "function" or listenerType == "userdata" then
-            listener( unpack( arg ) )
+            if listener( unpack( arg ) ) == false then
+                table.insert( listenersToBeRemoved, listener )
+            end
 
         else -- an object
             local mt = getmetatable( listener )
@@ -1622,8 +1625,9 @@ function Daneel.Event.Fire( object, eventName, ... )
 
                 local _type = type( funcOrMessage )
                 if _type == "function" or _type == "userdata" then
-                    funcOrMessage( unpack( arg ) )
-
+                    if funcOrMessage( unpack( arg ) ) == false then
+                        table.insert( listenersToBeRemoved, listener )
+                    end
                 elseif _type == "string" then
                     message = funcOrMessage
                 end
@@ -1636,6 +1640,10 @@ function Daneel.Event.Fire( object, eventName, ... )
         end
 
     end -- end for listeners
+
+    if #listenersToBeRemoved > 0 then
+        Daneel.Event.StopListen( eventName, listenersToBeRemoved )
+    end
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -3311,7 +3319,7 @@ function GameObject.HasTag( gameObject, tag, atLeastOneTag )
     Daneel.Debug.StackTrace.BeginFunction( "GameObject.HasTag", gameObject, tag, atLeastOneTag )
     local errorHead = "GameObject.HasTag( gameObject, tag ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-    Daneel.Debug.CheckArgType( tag, "tag", {"string", "table"}, errorHead, {} )
+    Daneel.Debug.CheckArgType( tag, "tag", {"string", "table"}, errorHead )
     Daneel.Debug.CheckOptionalArgType( atLeastOneTag, "atLeastOneTag", "boolean", errorHead )
 
     local tags = tag
