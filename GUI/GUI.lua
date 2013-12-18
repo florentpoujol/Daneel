@@ -12,13 +12,11 @@ GUI = { pixelsToUnits = 0 }
 -- @return (number) The converted value, expressed in scene units.
 function GUI.ToSceneUnit( value )
     if type( value ) == "string" then
-        local length = #value
-        if value:endswith( "px" ) then
-            value = tonumber( value:sub( 0, length-2) ) * GUI.pixelsToUnits
-
-        elseif value:endswith( "u" ) then
-            value = tonumber( value:sub( 0, length-1) )
-
+        value = value:trim()
+        if value:find( "px" ) then
+            value = tonumber( value:sub( 0, #value-2) ) * GUI.pixelsToUnits
+        elseif value:find( "u" ) then
+            value = tonumber( value:sub( 0, #value-1) )
         else
             value = tonumber( value )
         end
@@ -61,36 +59,45 @@ function GUI.Hud.ToHudPosition(position)
     return position, layer
 end
 
+--- Convert the provided value (a length) in a number expressed in screen pixel.
+-- The provided value may be suffixed with "px" or be expressed in percentage (ie: "10%") or be relative (ie: "s" or "s-10") to the specified screen side size (in which case the 'screenSide' argument is mandatory).
+-- @param value (string or number) The value to convert.
+-- @param screenSize (string) [optional] "x" (width) or "y" (height)
+-- @return (number) The converted value, expressed in pixels.
+function GUI.Hud.ToPixel( value, screenSide )
+    if type( value ) == "string" then
+        value = value:trim()
+        local screenSize = CS.Screen.GetSize()
+
+        if value:find( "px" ) then
+            value = tonumber( value:sub( 0, #value-2) )
+
+        elseif value:find( "%", 1, true ) and screenSide ~= nil then
+            value = screenSize[ screenSide ] * tonumber( value:sub( 0, length-1) ) / 100
+
+        elseif value:find( "s" ) and screenSide ~= nil then  -- ie: "s-50"  =  "screenSize.x - 50px"
+            value = value:sub( 2 ) -- removes the "s" at the beginning
+            if value == "" then -- value was just "s"
+                value = 0
+            end
+            value = screenSize[ screenSide ] + tonumber( value )
+
+        else
+            value = tonumber( value )
+        end
+    end
+    return value
+end
+
 -- Make sure that the components of the provided position are numbers and in pixel,
--- instead of strings or in percentage or relative to the screensize
+-- instead of strings or in percentage or relative to the screensize.
 -- @param position (Vector2) The position.
 -- @return (Vector2) The fixed position.
 function GUI.Hud.FixPosition( position )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.Hud.FixPosition", position )
-    local errorHead = "GUI.Hud.FixPosition( position ) : "
-    Daneel.Debug.CheckArgType( position, "position", "Vector2", errorHead )
-
-    local screenSize = CS.Screen.GetSize()
-    position = Vector2.New( position )
-    
-    for key, value in pairs( position ) do
-        if type( value ) == "string" then
-            if value:find( "%", 1, true ) ~= nil then
-                value = screenSize[ key ] * Daneel.Utilities.ToNumber( value ) / 100
-            elseif value:find( "s" ) then  -- ie: "s-50"  =  "screenSize.x - 50px"
-                value = value:trimstart():sub( 2 ) -- removes the "s" at the beginning
-                if value == "" then -- value was just "s"
-                    value = 0
-                end
-                value = screenSize[ key ] + tonumber( value )
-            else
-                value = tonumber( value )
-            end
-            position[ key ] = value
-        end
-    end
-    
-    return position
+    return Vector2.New( 
+        GUI.Hud.ToPixel( position.x, "x" ),
+        GUI.Hud.ToPixel( position.y, "y" )
+    )
 end
 
 -- Create a new Hud component instance.
@@ -129,6 +136,7 @@ function GUI.Hud.SetPosition(hud, position)
     local errorHead = "GUI.Hud.SetPosition(hud, position) : "
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
     Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
+    position = GUI.Hud.FixPosition( position )
 
     local newPosition = GUI.Config.originGO.transform:GetPosition() +
     Vector3:New(
@@ -164,6 +172,7 @@ function GUI.Hud.SetLocalPosition(hud, position)
     local errorHead = "GUI.Hud.SetLocalPosition(hud, position) : "
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
     Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
+    position = GUI.Hud.FixPosition( position )
 
     local parent = hud.gameObject.parent
     if parent == nil then parent = GUI.Config.originGO end
