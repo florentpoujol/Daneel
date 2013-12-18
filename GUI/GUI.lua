@@ -497,6 +497,8 @@ function GUI.Toggle.Set( toggle, params )
     Daneel.Debug.CheckArgType( toggle, "toggle", "GUI.Toggle", errorHead )
     Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
 
+    local group = params.group
+    params.group = nil
     local isChecked = params.isChecked
     params.isChecked = nil
 
@@ -504,8 +506,11 @@ function GUI.Toggle.Set( toggle, params )
         toggle[key] = value
     end
 
+    if group ~= nil then
+        toggle:SetGroup( group )
+    end
     if isChecked ~= nil then
-        toggle:Check(isChecked)
+        toggle:Check( isChecked )
     end
 
     Daneel.Debug.StackTrace.EndFunction()
