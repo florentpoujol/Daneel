@@ -441,10 +441,10 @@ function GUI.Toggle.Check( toggle, state, forceUpdate )
         Daneel.Event.Fire( toggle, "OnUpdate", toggle )
 
         if toggle.Group ~= nil and state == true then
-            local gameObjects = GameObject.Tags[ toggle.Group ]
+            local gameObjects = GameObject.GetWithTag( toggle.Group )
             for i, gameObject in ipairs( gameObjects ) do
-                if gameObject.inner ~= nil and gameObject ~= toggle.gameObject then
-                    gameObject.toggle:Check( false )
+                if gameObject ~= toggle.gameObject then
+                    gameObject.toggle:Check( false, true )
                 end
             end
         end
