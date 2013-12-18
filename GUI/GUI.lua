@@ -73,7 +73,7 @@ function GUI.Hud.ToPixel( value, screenSide )
             value = tonumber( value:sub( 0, #value-2) )
 
         elseif value:find( "%", 1, true ) and screenSide ~= nil then
-            value = screenSize[ screenSide ] * tonumber( value:sub( 0, length-1) ) / 100
+            value = screenSize[ screenSide ] * tonumber( value:sub( 0, #value-1) ) / 100
 
         elseif value:find( "s" ) and screenSide ~= nil then  -- ie: "s-50"  =  "screenSize.x - 50px"
             value = value:sub( 2 ) -- removes the "s" at the beginning
@@ -221,14 +221,14 @@ end
 
 --- Get the gameObject's layer.
 -- @param hud (GUI.Hud) The hud component.
--- @return (number) The layer.
+-- @return (number) The layer (with one decimal).
 function GUI.Hud.GetLayer(hud)
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.GetLayer", hud)
     local errorHead = "GUI.Hud.GetLyer(hud) : "
     Daneel.Debug.CheckArgType(hud, "hud", "GUI.Hud", errorHead)
 
     local originLayer = GUI.Config.originGO.transform:GetPosition().z
-    local layer = originLayer - hud.gameObject.transform:GetPosition().z
+    local layer = math.round( originLayer - hud.gameObject.transform:GetPosition().z, 1 )
     Daneel.Debug.StackTrace.EndFunction()
     return layer
 end
@@ -250,9 +250,9 @@ function GUI.Hud.SetLocalLayer(hud, layer)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Get the gameObject's layer which is actually the inverse of its local position's z component.
+--- Get the gameObject's local layer.
 -- @param hud (GUI.Hud) The hud component.
--- @return (number) The layer.
+-- @return (number) The layer (with one decimal).
 function GUI.Hud.GetLocalLayer(hud)
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.GetLayer", hud)
     local errorHead = "GUI.Hud.GetLyer(hud) : "
@@ -261,7 +261,7 @@ function GUI.Hud.GetLocalLayer(hud)
     local parent = hud.gameObject.parent
     if parent == nil then parent = GUI.Config.originGO end
     local originLayer = parent.transform:GetPosition().z
-    local layer = originLayer - hud.gameObject.transform:GetPosition().z
+    local layer = math.round( originLayer - hud.gameObject.transform:GetPosition().z, 1 )
     Daneel.Debug.StackTrace.EndFunction()
     return layer
 end
