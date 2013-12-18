@@ -19,13 +19,6 @@ function Behavior:Start()
         print("GUI.Hud 2", r )
     end
     
-    go = GameObject.Get( "HUD 2" )
-    r = go.hud.position
-    local e = Vector2( screenSize.x*5/100, screenSize.y-10 )
-    if r ~= e then
-        print("GUI.Hud 3", r, e )    
-    end
-    
     
     go = GameObject.Get( "HUD 11" )
     r = go.hud.localLayer
@@ -38,7 +31,19 @@ function Behavior:Start()
         print("GUI.Hud 4.5", r)
     end
     
-    go = GameObject.Get( "HUD 12" )
+    
+    go = GameObject.New( "HUD 12", {
+        parent = "HUD 1",
+        
+        ["gUI.Hud"] = {
+            locallayer = -1,
+            localPosition = Vector2(35,0)
+        },
+        
+        modelRenderer = { model = "Model2" },
+        transform = { localScale = Vector3(5.4,6.3,1) }
+    } )
+    
     r = go.hud.localLayer
     if r ~= -1 then
         print("GUI.Hud 5", r)
@@ -48,4 +53,30 @@ function Behavior:Start()
     if r ~= 0 then
         print("GUI.Hud 6", r)
     end
+    
+    
+    go = GameObject.Get( "HUD 2" )
+    r = go.hud.position
+    local e = Vector2( screenSize.x*5/100, screenSize.y-10 )
+    if r ~= e then
+        print("GUI.Hud 3", r, e )    
+    end
+    
+    
+    print( "~~~~~ GUI.Toggle ~~~~~" )
+    
+    go = GameObject.Get("Radios")
+    for i=1, 3 do
+        GameObject.New("Radio"..i, {
+            parent = go,
+            ["gUI.Toggle"] = {
+                group = "radio1",
+                checkedModel = "Model",
+                uncheckedModel = "Model2",             
+            },
+            modelRenderer = { model = "Model"},
+            transform = { localPosition = Vector3(i,0,0) },
+        } )
+    end
+    go.child.toggle:Check( true, true )
 end
