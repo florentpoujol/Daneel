@@ -382,19 +382,22 @@ function GUI.Toggle.GetText(toggle)
 
     local text = nil
     if toggle.gameObject.textRenderer ~= nil then
-        local textMark = toggle.checkedMark
-        if not toggle.isChecked then
-            textMark = toggle.uncheckedMark
-        end
-        local start, _end = textMark:find(":text")
-        local prefix = textMark:sub(1, start-1)
-        local suffix = textMark:sub(_end+1)
-
         text = toggle.gameObject.textRenderer:GetText()
         if text == nil then
             text = toggle.defaultText
         end
-        text = text:gsub(prefix, ""):gsub(suffix, "")
+
+        local textMark = toggle.checkedMark
+        if not toggle.isChecked then
+            textMark = toggle.uncheckedMark
+        end
+
+        local start, _end = textMark:find( ":text" )
+        if start ~= nil and _end ~= nil then
+            local prefix = textMark:sub( 1, start - 1 )
+            local suffix = textMark:sub( _end + 1 )
+            text = text:gsub(prefix, ""):gsub(suffix, "")
+        end
 
     elseif Daneel.Config.debug.enableDebug then
         print("WARNING : "..errorHead.."Can't get the toggle's text because no TextRenderer component has been found on the gameObject '"..tostring(toggle.gameObject).."'. Returning nil.")
