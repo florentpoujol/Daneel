@@ -79,4 +79,48 @@ function Behavior:Start()
         } )
     end
     go.child.toggle:Check( true, true )
+    
+    
+    print( "~~~~~ GUI.ProgressBar ~~~~~" )
+    -- PB1 default, length = 5 height = 1
+    -- PB 2  length = 1,  height = 2
+    
+    local go = GameObject.Get("PB4")
+    go:Set( {
+        progressbar = {
+            minLength = "2u",
+            value = "50%"
+        }
+    } )
+    
+    
+    print( "~~~~~ GUI.Slider ~~~~~" )
+    
+    go = GameObject.Get( "Slider 1" )
+    local handle = go:GetChild( "Handle" )
+    local valueGO = go:GetChild( "Value" )
+    handle.slider.OnUpdate = function( slider )
+        valueGO.textRenderer.text = math.round( slider.value, 1 )
+    end
+    
+    go = GameObject.Get( "Slider 2" )
+    local handle = go:GetChild( "Handle" )
+    local valueGO = go:GetChild( "Value" )
+    handle.slider.OnUpdate = function( slider )
+        valueGO.textRenderer.text = math.round( slider.value, 1 )
+    end
+    
+    go = GameObject.Get( "Slider 3" )
+    local handle = go:GetChild( "Handle" )
+    handle:AddComponent( "Slider", {
+        minValue = -50,
+        maxValue = 50,
+        value = 0,
+        axis = "y"
+    } )
+    local valueGO = go:GetChild( "Value" )
+    handle.slider.OnUpdate = function( slider )
+        valueGO.textRenderer.text = math.round( slider.value, 1 )
+    end
 end
+
