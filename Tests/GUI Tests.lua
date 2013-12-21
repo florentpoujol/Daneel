@@ -35,8 +35,8 @@ function Behavior:Start()
     go = GameObject.New( "HUD 12", {
         parent = "HUD 1",
         
-        ["gUI.Hud"] = {
-            locallayer = -1,
+        hud = {
+            localLayer = -1,
             localPosition = Vector2(35,0)
         },
         
@@ -69,7 +69,7 @@ function Behavior:Start()
     for i=1, 3 do
         GameObject.New("Radio"..i, {
             parent = go,
-            ["gUI.Toggle"] = {
+            toggle = {
                 group = "radio1",
                 checkedModel = "Model",
                 uncheckedModel = "Model2",             

@@ -3066,6 +3066,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
         params = nil
     
     elseif Daneel.DefaultConfig().componentObjects[ componentType ] ~= nil then
+        -- built-in component type
         if componentType == "Transform" then
             if Daneel.Config.debug.enableDebug then
                 print( errorHead.."Can't add a transform component because gameObjects may only have one transform." )
@@ -3088,7 +3089,8 @@ function GameObject.AddComponent( gameObject, componentType, params )
         end
 
     else
-        local componentObject = table.getvalue( _G, componentType )
+        -- custom component type
+        local componentObject = Daneel.Config.componentObjects[ componentType ]
 
         if componentObject ~= nil and type( componentObject.New ) == "function" then
             component = componentObject.New( gameObject )
@@ -3100,7 +3102,8 @@ function GameObject.AddComponent( gameObject, componentType, params )
             return
         end
 
-        local object = table.getvalue( _G, string.split( componentType, "." )[1] ) -- leave the parenthesis
+        local object = table.getvalue( _G, string.split( componentType, "." )[1] )
+        -- could allow to have a Config reference on the component object instead of getting the Config table on the mother object
         if object ~= nil and object.Config ~= nil then
             local defaultComponentParams = object.Config[ string.lcfirst( componentType ) ]
             if defaultComponentParams ~= nil then
