@@ -678,6 +678,34 @@ function GUI.ProgressBar.GetProgress(progressBar, getAsPercentage)
     return GUI.ProgressBar.GetValue(progressBar, getAsPercentage)
 end
 
+--- Set the height of the progress bar.
+-- @param progressBar (ProgressBar) The progressBar.
+-- @param height (number or string) Get the height in pixel or scene unit.
+function GUI.ProgressBar.SetHeight( progressBar, height )
+    Daneel.Debug.StackTrace.BeginFunction( "GUI.ProgressBar.SetHeight", progressBar, height )
+    local errorHead = "GUI.ProgressBar.SetHeight( progressBar, height ) : "
+    Daneel.Debug.CheckArgType( progressBar, "progressBar", "ProgressBar", errorHead )
+    Daneel.Debug.CheckOptionalArgType( height, "height", {"number", "string"}, errorHead )
+
+    height = GUI.ToSceneUnit( height )
+    local currentScale = progressBar.gameObject.transform:GetLocalScale()
+    progressBar.gameObject.transform:SetLocalScale( Vector3:New( currentScale.x, height, currentScale.z ) )
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+--- Get the height of the progress bar (the local scale's y component).
+-- @param progressBar (ProgressBar) The progressBar.
+-- @return (number) The height.
+function GUI.ProgressBar.GetHeight( progressBar )
+    Daneel.Debug.StackTrace.BeginFunction( "GUI.ProgressBar.GetHeight", progressBar )
+    local errorHead = "GUI.ProgressBar.GetHeight( progressBar ) : "
+    Daneel.Debug.CheckArgType( progressBar, "progressBar", "ProgressBar", errorHead )
+
+    local height = progressBar.gameObject.transform:GetLocalScale().y
+    Daneel.Debug.StackTrace.EndFunction()
+    return height
+end
+
 --- Apply the content of the params argument to the provided progressBar.
 -- Overwrite Component.Set() from CraftStudio module.
 -- @param progressBar (ProgressBar) The progressBar.
