@@ -10,6 +10,7 @@ maxLength number 9999
 characterRange string ""
 defaultValue string ""
 focusOnBackgroundClick boolean true
+cursorBlinkInterval number 0.5
 /PublicProperties]]
 
 function Behavior:Awake()
@@ -19,6 +20,7 @@ function Behavior:Awake()
             maxLength = self.maxLength,
             focusOnbackgroundClick = self.focusOnbackgroundClick,
             defaultValue = self.defaultValue,
+            cursorBlinkInterval = self.cursorBlinkInterval,
         }
         
         if self.characterRange ~= "" then

@@ -934,8 +934,30 @@ function GUI.Input.New( gameObject, params )
         end
     end
 
+    local cursorGO = gameObject:GetChild( "Cursor" )
+    if cursorGO ~= nil then
+        -- change the opacity evry 
+        cursorGO.tweener = Tween.Timer( 
+            input.cursorBlinkInterval,
+            function( tweener )
+                if tweener.gameObject == nil or tweener.gameObject.inner == nil then
+                    tweener:Destroy()
+                    return
+                end
+                if tweener.gameObject.modelRenderer:GetOpacity() == 1 then
+                    tweener.gameObject.modelRenderer:SetOpacity( 0 )
+                else
+                    tweener.gameObject.modelRenderer:SetOpacity( 1 )
+                end
+            end,
+            true -- loop
+        )
+        cursorGO.tweener.gameObject = cursorGO
+        input.cursorGO = cursorGO
+    end
+
     local isFocused = input.isFocused
-    input.isFocused = nil
+    input.isFocused = nil -- force the state
     input:Focus( isFocused )
 
     gameObject.input = input
@@ -946,26 +968,25 @@ function GUI.Input.New( gameObject, params )
         backgroundGO:AddTag( "guiComponent" )
     end
 
-    Daneel.Event.Listen( "OnLeftMouseButtonJustPressed",
-        function()
-            local focus = gameObject.isMouseOver -- click on the text
-            if focus ~= true and input.focusOnBackgroundClick and backgroundGO ~= nil then
-                focus = backgroundGO.isMouseOver
-            end
-            if focus == nil then
-                focus = false
-            end
-            input:Focus( focus )
+    
+    input.OnLeftMouseButtonJustPressed = function()
+        local focus = gameObject.isMouseOver -- click on the text
+        if focus ~= true and input.focusOnBackgroundClick and backgroundGO ~= nil then
+            focus = backgroundGO.isMouseOver
         end
-    )
+        if focus == nil then
+            focus = false
+        end
+        input:Focus( focus )
+    end
+    Daneel.Event.Listen( "OnLeftMouseButtonJustPressed", input )
 
-    Daneel.Event.Listen( "OnValidateInputButtonJustPressed",
-        function()
-            if input.isFocused then
-                Daneel.Event.Fire( input, "OnValidate", input )
-            end
+    input.OnValidateInputButtonJustPressed = function()
+        if input.isFocused then
+            Daneel.Event.Fire( input, "OnValidate", input )
         end
-    )
+    end
+    Daneel.Event.Listen( "OnValidateInputButtonJustPressed", input )
 
     Daneel.Debug.StackTrace.EndFunction()
     return input
@@ -973,17 +994,17 @@ end
 
 -- Set the focused state of the input.
 -- @param input (Input) The input component.
--- @param state (boolean) [optional default=true] The new state.
-function GUI.Input.Focus( input, state )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.Input.Focus", input, state )
-    local errorHead = "GUI.Input.Focus(input[, state]) : "
+-- @param focus (boolean) [optional default=true] The new focus.
+function GUI.Input.Focus( input, focus )
+    Daneel.Debug.StackTrace.BeginFunction( "GUI.Input.Focus", input, focus )
+    local errorHead = "GUI.Input.Focus(input[, focus]) : "
     Daneel.Debug.CheckArgType( input, "input", "Input", errorHead )
-    state = Daneel.Debug.CheckOptionalArgType( state, "state", "boolean", errorHead, true )
+    focus = Daneel.Debug.CheckOptionalArgType( focus, "focus", "boolean", errorHead, true )
 
-    if input.isFocused ~= state then
-        input.isFocused = state
+    if input.isFocused ~= focus then
+        input.isFocused = focus
         local text = string.trim( input.gameObject.textRenderer:GetText() )
-        if state == true then
+        if focus == true then
             CS.Input.OnTextEntered( input.OnTextEntered )
             if text == input.defaultValue then
                 input.gameObject.textRenderer:SetText( "" )
@@ -994,12 +1015,35 @@ function GUI.Input.Focus( input, state )
                 input.gameObject.textRenderer:SetText( input.defaultValue )
             end
         end
+
         Daneel.Event.Fire( input, "OnFocus", input )
+        input:UpdateCursor()
     end
     Daneel.Debug.StackTrace.EndFunction()
 end
 
--- Set the focused state of the input.
+-- Update the cursor of the input.
+-- @param input (Input) The input component.
+function GUI.Input.UpdateCursor( input )
+    Daneel.Debug.StackTrace.BeginFunction( "GUI.Input.UpdateCursor", input )
+    local errorHead = "GUI.Input.UpdateCursor( input ) : "
+    Daneel.Debug.CheckArgType( input, "input", "Input", errorHead )
+
+    if input.cursorGO ~= nil then
+        local length = input.gameObject.textRenderer:GetTextWidth() 
+        input.cursorGO.transform:SetLocalPosition( Vector3:New( length, 0, 0 ) )
+        local opacity = 1
+        if not input.isFocused then
+            opacity = 0
+        end
+        input.cursorGO.modelRenderer:SetOpacity( opacity )
+        input.cursorGO.tweener.isPaused = not input.isFocused
+        Daneel.Event.Fire( input.cursorGO, "OnUpdate", input )
+    end
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
+-- Update the text of the input.
 -- @param input (Input) The input component.
 -- @param text (string) The text (often just one character) to add to the current text.
 -- @param replaceText (boolean) [optional default=false] Tell wether the provided text should be added (false) or replace (true) the current text.
@@ -1024,6 +1068,7 @@ function GUI.Input.Update( input, text, replaceText )
     if oldText ~= text then
         input.gameObject.textRenderer:SetText( text )
         Daneel.Event.Fire( input, "OnUpdate", input )
+        input:UpdateCursor()
     end
     Daneel.Debug.StackTrace.EndFunction()
 end
@@ -1704,6 +1749,7 @@ function GUI.DefaultConfig()
             defaultValue = nil,
             characterRange = nil,
             focusOnBackgroundClick = true,
+            cursorBlinkInterval = 0.5, -- second
         },
 
         textArea = {
