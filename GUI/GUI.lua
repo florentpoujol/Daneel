@@ -936,7 +936,8 @@ function GUI.Input.New( gameObject, params )
 
     local cursorGO = gameObject:GetChild( "Cursor" )
     if cursorGO ~= nil then
-        -- change the opacity evry 
+        input.cursorGO = cursorGO
+        -- make the cursor blink
         cursorGO.tweener = Tween.Timer( 
             input.cursorBlinkInterval,
             function( tweener )
@@ -952,8 +953,8 @@ function GUI.Input.New( gameObject, params )
             end,
             true -- loop
         )
+        cursorGO.tweener.isPaused = true
         cursorGO.tweener.gameObject = cursorGO
-        input.cursorGO = cursorGO
     end
 
     local isFocused = input.isFocused
@@ -1030,8 +1031,17 @@ function GUI.Input.UpdateCursor( input )
     Daneel.Debug.CheckArgType( input, "input", "Input", errorHead )
 
     if input.cursorGO ~= nil then
-        local length = input.gameObject.textRenderer:GetTextWidth() 
-        input.cursorGO.transform:SetLocalPosition( Vector3:New( length, 0, 0 ) )
+        local alignment = input.gameObject.textRenderer:GetAlignment()
+        
+        if alignment ~= TextRenderer.Alignment.Right then
+            local length = input.gameObject.textRenderer:GetTextWidth() -- Left
+            if alignment == TextRenderer.Alignment.Center then
+                length = length / 2
+            end
+
+            input.cursorGO.transform:SetLocalPosition( Vector3:New( length, 0, 0 ) )
+        end
+
         local opacity = 1
         if not input.isFocused then
             opacity = 0
