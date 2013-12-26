@@ -1123,6 +1123,36 @@ function GUI.TextArea.New( gameObject, params )
     return textArea
 end
 
+--- Apply the content of the params argument to the provided textArea.
+-- Overwrite Component.Set() from the core.
+-- @param textArea (TextArea) The textArea.
+-- @param params (table) A table of parameters to set the component with.
+function GUI.TextArea.Set( textArea, params )
+    Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.Set", textArea, params )
+    local errorHead = "GUI.TextArea.Set( textArea, params ) : "
+    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
+    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
+
+    local lineRenderers = textArea.lineRenderers
+    textArea.lineRenderers = {} -- prevent the every setters to update the text when they are called
+    -- this is done once at the end
+
+    local text = params.text
+    params.text = nil
+
+    for key, value in pairs( params ) do
+        textArea[ key ] = value
+    end
+    
+    textArea.lineRenderers = lineRenderers
+    if text == nil then
+        text = textArea.Text
+    end
+    textArea:SetText( text )
+
+    Daneel.Debug.StackTrace.EndFunction()
+end
+
 --- Set the component's text.
 -- @param textArea (TextArea) The textArea component.
 -- @param text (string) The text to display.
@@ -1201,7 +1231,7 @@ function GUI.TextArea.SetText( textArea, text )
 
         if lineRenderers[i] ~= nil then
             lineRenderers[i].gameObject.transform:SetLocalPosition( Vector3:New( 0, offset, 0 ) )
-            lineRenderers[i]:SetText( line )
+            lineRenderers[i]:Set( textRendererParams )
         else
             local newLineGO = GameObject.New( "TextArea" .. textArea.id .. "-Line" .. i, {
                 parent = gameObject,
