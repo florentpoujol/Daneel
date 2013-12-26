@@ -122,5 +122,21 @@ function Behavior:Start()
     handle.slider.OnUpdate = function( slider )
         valueGO.textRenderer.text = math.round( slider.value, 1 )
     end
+
+
+    print( "~~~~~ GUI.TextArea ~~~~~" )
+    
+    go = GameObject.Get( "TextArea 3" )
+    
+    go:AddComponent( "TextArea", {
+        font = "Calibri",
+        alignment = "RiGhT",        
+        lineHeight = 2,
+        verticalAlignment = "bOtToM",
+
+        areaWidth = 7,
+        wordWrap = true,
+        text = "abcdefghijkl<br>abcdefghijkl"
+    } )
 end
 
