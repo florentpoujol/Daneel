@@ -1169,6 +1169,8 @@ function GUI.TextArea.SetText( textArea, text )
         lines = string.split( text, textArea.NewLine )
     end
 
+    local textAreaScale = textArea.gameObject.transform:GetLocalScale()
+
     -- areaWidth is the max length in units of each line
     local areaWidth = textArea.AreaWidth
     if areaWidth ~= nil and areaWidth > 0 then
@@ -1179,14 +1181,14 @@ function GUI.TextArea.SetText( textArea, text )
         for i = 1, #tempLines do
             local line = tempLines[i]
 
-            if textArea.textRuler:GetTextWidth( line ) > areaWidth then
+            if textArea.textRuler:GetTextWidth( line ) * textAreaScale.x > areaWidth then
                 line = string.totable( line )
                 local newLine = {}
 
                 for j, char in ipairs( line ) do
                     table.insert( newLine, char )
 
-                    if textArea.textRuler:GetTextWidth( table.concat( newLine ) ) > areaWidth then
+                    if textArea.textRuler:GetTextWidth( table.concat( newLine ) ) * textAreaScale.x > areaWidth then
                         table.remove( newLine )
                         table.insert( lines, table.concat( newLine ) )
                         newLine = { char }
@@ -1210,7 +1212,7 @@ function GUI.TextArea.SetText( textArea, text )
     local linesCount = #lines
     local lineRenderers = textArea.lineRenderers
     local lineRenderersCount = #lineRenderers
-    local lineHeight = textArea.LineHeight
+    local lineHeight = textArea.LineHeight / textAreaScale.y
     local gameObject = textArea.gameObject
     local textRendererParams = {
         font = textArea.Font,
@@ -1245,7 +1247,7 @@ function GUI.TextArea.SetText( textArea, text )
             table.insert( lineRenderers, newLineGO.textRenderer )
         end
 
-        offset = offset - textArea.lineHeight
+        offset = offset - lineHeight 
     end
 
     -- this new text has less lines than the previous one
