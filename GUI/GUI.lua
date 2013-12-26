@@ -1419,11 +1419,10 @@ function GUI.TextArea.SetFont( textArea, font )
     Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     Daneel.Debug.CheckArgType( font, "font", {"string", "Font"}, errorHead )
 
-    local oldFont = textArea.textRuler:GetFont()
     textArea.textRuler:SetFont( font )
     font = textArea.textRuler:GetFont()
 
-    if oldFont ~= font then
+    if textArea.Font ~= font then
         textArea.Font = font
         if #textArea.lineRenderers > 0 then
             for i, textRenderer in ipairs( textArea.lineRenderers ) do
@@ -1454,11 +1453,10 @@ function GUI.TextArea.SetAlignment( textArea, alignment )
     Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     Daneel.Debug.CheckArgType( alignment, "alignment", {"string", "userdata", "number"}, errorHead ) -- "number" is allowed because enums are of type number in the webplayer
 
-    local oldAlignment = textArea.textRuler:GetAlignment()
     textArea.textRuler:SetAlignment( alignment )
     alignment = textArea.textRuler:GetAlignment()
-
-    if oldAlignment ~= alignment then
+    
+    if textArea.Alignment ~= alignment then
         textArea.Alignment = alignment
         if #textArea.lineRenderers > 0 then
             for i, textRenderer in ipairs( textArea.lineRenderers ) do
