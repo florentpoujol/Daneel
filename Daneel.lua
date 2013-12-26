@@ -1736,7 +1736,7 @@ Daneel.Storage = {}
 -- Store locally on the computer the provided data under the provided name.
 -- @param name (string) The name of the data.
 -- @param data (mixed) The data to store. May be nil.
--- @param callback (function) [optional] The function called when the save has completed. The potential error (as a string) is passed the callback first and only argument.
+-- @param callback (function) [optional] The function called when the save has completed. The potential error (as a string) is passed to the callback first and only argument (nil if no error).
 function Daneel.Storage.Save( name, data, callback )
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Storage.Save", name, data )
     local errorHead = "Daneel.Storage.Save( name, data ) : "
@@ -1772,7 +1772,7 @@ end
 -- The function will return the queried value (or defaultValue) if it completes right away, otherwise it returns nil.
 -- @param name (string) The name of the data.
 -- @param defaultValue (mixed) The value that is returned if no data is found.
--- @param callback (function) [optional] The function called when the data is loaded. The value and the potential error (as a string) are passed as first and second argument, respectivily.
+-- @param callback (function) [optional] The function called when the data is loaded. The value and the potential error (as a string) (ni if no error) are passed as first and second argument, respectively.
 -- @return (mixed) The data.
 function Daneel.Storage.Load( name, defaultValue, callback )
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Storage.Load", name, defaultValue )
@@ -2761,6 +2761,11 @@ function GameObject.Set( gameObject, params )
         -- do that first so that setting a local position works
         gameObject:SetParent( params.parent )
         params.parent = nil
+    end
+
+    if params.transform ~= nil then
+        gameObject.transform:Set( params.transform )
+        params.transform = nil
     end
     
     -- components
