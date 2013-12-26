@@ -1218,12 +1218,13 @@ function GUI.TextArea.SetText( textArea, text )
         opacity = textArea.Opacity,
     }
 
-    -- calculate position offset based on vertical alignment and number of lines
+    -- calculate position offset of the first line based on vertical alignment and number of lines
+    -- the offset is decremented by lineHeight after every lines
     local offset = -lineHeight / 2 -- verticalAlignment = "top"
     if textArea.VerticalAlignment == "middle" then
         offset = lineHeight * linesCount / 2 - lineHeight / 2
     elseif textArea.VerticalAlignment == "bottom" then
-        offset = lineHeight * (linesCount - 1)
+        offset = lineHeight * linesCount - lineHeight / 2
     end
 
     for i, line in ipairs( lines ) do
@@ -1455,7 +1456,7 @@ function GUI.TextArea.SetAlignment( textArea, alignment )
 
     textArea.textRuler:SetAlignment( alignment )
     alignment = textArea.textRuler:GetAlignment()
-    
+
     if textArea.Alignment ~= alignment then
         textArea.Alignment = alignment
         if #textArea.lineRenderers > 0 then
