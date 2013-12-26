@@ -20,11 +20,12 @@ function Behavior:Awake()
     if self.gameObject.textArea == nil then
         local params = {
             wordWrap = self.wordWrap,
-            opacity = self.opacity,
+            newLine = self.newLine,
             text = self.text,
+            opacity = self.opacity,
         }
-        local props = {"areaWidth", "newLine", "lineHeight", "verticalAlignment", "font", "alignment"}
-        for i, prop in ipairs( props ) do
+        local props = {"areaWidth", "lineHeight", "verticalAlignment", "font", "alignment"}
+        for i, prop in pairs( props ) do
             if string.trim( self[ prop ] ) ~= "" then
                 params[ prop ] = self[ prop ]
             end
