@@ -1642,7 +1642,9 @@ function Daneel.Event.Fire( object, eventName, ... )
     end -- end for listeners
 
     if #listenersToBeRemoved > 0 then
-        Daneel.Event.StopListen( eventName, listenersToBeRemoved )
+        for i, listener in pairs( listenersToBeRemoved ) do
+            Daneel.Event.StopListen( eventName, listener )
+        end
     end
     Daneel.Debug.StackTrace.EndFunction()
 end
