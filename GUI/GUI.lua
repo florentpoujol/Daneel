@@ -1810,9 +1810,9 @@ function GUI.DefaultConfig()
 
         textArea = {
             areaWidth = 0, -- max line length, in units or pixel as a string (0 = no max length)
-            wordWrap = false, -- when a ligne is longer than the area width: cut the ligne when false, put the rest of the ligne in one or several lignes when true
-            newLine = "<br>", -- end of ligne delimiter
-            lineHeight = 1, -- in units or pixels as a string
+            wordWrap = false, -- when a line is longer than the area width: cut the ligne when false, put the rest of the ligne in one or several lines when true
+            newLine = "<br>", -- end of line delimiter
+            lineHeight = 1, -- in units or pixels
             verticalAlignment = "top",
 
             font = nil,
@@ -1882,7 +1882,7 @@ function GUI.Awake()
         -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and scene units
         GUI.pixelsToUnits = GUI.Config.cameraGO.camera:GetOrthographicScale() / smallSideSize
 
-        GUI.Config.originGO = CS.CreateGameObject( "HUDOrigin" )
+        GUI.Config.originGO = CS.CreateGameObject( "HUD Origin" )
         GUI.Config.originGO:SetParent( GUI.Config.cameraGO )
 
         GUI.Config.originGO.transform:SetLocalPosition( Vector3:New(
@@ -1890,6 +1890,6 @@ function GUI.Awake()
             screenSize.y * GUI.pixelsToUnits / 2,
             0
         ) )
-        -- the HUDOrigin is now at the top-left corner of the screen
+        -- the HUD Origin is now at the top-left corner of the screen
     end
 end
