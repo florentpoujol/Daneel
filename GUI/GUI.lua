@@ -312,9 +312,9 @@ function GUI.Toggle.New( gameObject, params )
 
         elseif mt == ModelRenderer and toggle.checkedModel ~= nil then
             if toggle.isChecked and toggle.checkedModel ~= nil then
-                self.gameObject.modelRenderer:SetModel( toggle.checkedModel )
+                component:SetModel( toggle.checkedModel )
             elseif not toggle.isChecked and toggle.uncheckedModel ~= nil then
-                self.gameObject.modelRenderer:SetModel( toggle.uncheckedModel )
+                component:SetModel( toggle.uncheckedModel )
             end
         end
     end
