@@ -105,9 +105,9 @@ function Behavior:Start()
     
     go = GameObject.Get( "Slider 2" )
     local handle = go:GetChild( "Handle" )
-    local valueGO = go:GetChild( "Value" )
+    local valueGO2 = go:GetChild( "Value" ) -- can't use the same valueGO variable in the webplayer because they all points to the last one (the one on Slider 3)
     handle.slider.OnUpdate = function( slider )
-        valueGO.textRenderer.text = math.round( slider.value, 1 )
+        valueGO2.textRenderer.text = math.round( slider.value, 1 )
     end
     
     go = GameObject.Get( "Slider 3" )
@@ -118,9 +118,9 @@ function Behavior:Start()
         value = 0,
         axis = "y"
     } )
-    local valueGO = go:GetChild( "Value" )
+    local valueGO3 = go:GetChild( "Value" )
     handle.slider.OnUpdate = function( slider )
-        valueGO.textRenderer.text = math.round( slider.value, 1 )
+        valueGO3.textRenderer.text = math.round( slider.value, 1 )
     end
 
 
