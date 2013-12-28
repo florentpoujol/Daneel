@@ -100,7 +100,7 @@ function GUI.Hud.FixPosition( position )
     )
 end
 
--- Create a new Hud component instance.
+--- Creates a new Hud component instance.
 -- @param gameObject (GameObject) The gameObject to add to the component to.
 -- @param params (table) [optional] A table of parameters.
 -- @return (Hud) The hud component.
@@ -273,7 +273,7 @@ end
 GUI.Toggle = {}
 GUI.Toggle.__index = GUI.Toggle
 
--- Create a new Toggle component.
+--- Creates a new Toggle component.
 -- @param gameObject (GameObject) The component gameObject.
 -- @param params (table) A table of parameters.
 -- @return (Toggle) The new component.
@@ -523,7 +523,7 @@ end
 GUI.ProgressBar = {}
 GUI.ProgressBar.__index = GUI.ProgressBar
 
--- Create a new GUI.ProgressBar.
+--- Creates a new GUI.ProgressBar.
 -- @param gameObject (GameObject) The component gameObject.
 -- @param params (table) A table of parameters.
 -- @return (ProgressBar) The new component.
@@ -736,7 +736,7 @@ end
 GUI.Slider = {}
 GUI.Slider.__index = GUI.Slider
 
--- Create a new GUI.Slider.
+---- Creates a new GUI.Slider.
 -- @param gameObject (GameObject) The component gameObject.
 -- @param params (table) A table of parameters.
 -- @return (Slider) The new component.
@@ -891,7 +891,7 @@ end
 GUI.Input = {}
 GUI.Input.__index = GUI.Input
 
--- Create a new GUI.Input.
+--- Creates a new GUI.Input.
 -- @param gameObject (GameObject) The component gameObject.
 -- @param params (table) A table of parameters.
 -- @return (Input) The new component.
@@ -945,11 +945,11 @@ function GUI.Input.New( gameObject, params )
                     tweener:Destroy()
                     return
                 end
+                local opacity = 1
                 if tweener.gameObject.modelRenderer:GetOpacity() == 1 then
-                    tweener.gameObject.modelRenderer:SetOpacity( 0 )
-                else
-                    tweener.gameObject.modelRenderer:SetOpacity( 1 )
+                    opacity = 0
                 end
+                tweener.gameObject.modelRenderer:SetOpacity( opacity )
             end,
             true -- loop
         )
@@ -965,15 +965,17 @@ function GUI.Input.New( gameObject, params )
     gameObject:AddTag( "guiComponent" )
 
     local backgroundGO = gameObject:GetChild( "Background" )
-    if backgroundGO ~= nil and input.focusOnBackgroundClick then
-        backgroundGO:AddTag( "guiComponent" )
+    if backgroundGO ~= nil then
+        input.backgroundGO = backgroundGO
+        if input.focusOnBackgroundClick then
+            backgroundGO:AddTag( "guiComponent" )
+        end
     end
-
     
     input.OnLeftMouseButtonJustPressed = function()
         local focus = gameObject.isMouseOver -- click on the text
-        if focus ~= true and input.focusOnBackgroundClick and backgroundGO ~= nil then
-            focus = backgroundGO.isMouseOver
+        if focus ~= true and input.focusOnBackgroundClick and input.backgroundGO ~= nil then
+            focus = input.backgroundGO.isMouseOver
         end
         if focus == nil then
             focus = false
@@ -993,7 +995,7 @@ function GUI.Input.New( gameObject, params )
     return input
 end
 
--- Set the focused state of the input.
+--- Set the focused state of the input.
 -- @param input (Input) The input component.
 -- @param focus (boolean) [optional default=true] The new focus.
 function GUI.Input.Focus( input, focus )
@@ -1023,7 +1025,7 @@ function GUI.Input.Focus( input, focus )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
--- Update the cursor of the input.
+--- Update the cursor of the input.
 -- @param input (Input) The input component.
 function GUI.Input.UpdateCursor( input )
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Input.UpdateCursor", input )
@@ -1053,7 +1055,7 @@ function GUI.Input.UpdateCursor( input )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
--- Update the text of the input.
+--- Update the text of the input.
 -- @param input (Input) The input component.
 -- @param text (string) The text (often just one character) to add to the current text.
 -- @param replaceText (boolean) [optional default=false] Tell wether the provided text should be added (false) or replace (true) the current text.
@@ -1521,7 +1523,7 @@ function Vector2.__tostring(vector2)
 end
 
 --- Creates a new Vector2 intance.
--- @param x (number or string) The vector's x component.
+-- @param x (number, string or Vector2) The vector's x component.
 -- @param y [optional] (number or string) The vector's y component. If nil, will be equal to x.
 -- @return (Vector2) The new instance.
 function Vector2.New(x, y)
@@ -1542,10 +1544,11 @@ end
 
 --- Return the length of the vector.
 -- @param vector (Vector2) The vector.
+-- @return (number) The length.
 function Vector2.GetLength( vector )
     Daneel.Debug.StackTrace.BeginFunction( "Vector2.GetLength", vector )
     local errorHead = "Vector2.GetLength( vector ) : "
-    Daneel.Debug.CheckArgType(  vector, " vector", "Vector2", errorHead )
+    Daneel.Debug.CheckArgType( vector, "vector", "Vector2", errorHead )
 
     local length = math.sqrt( vector.x^2 + vector.y^2 )
     Daneel.Debug.StackTrace.EndFunction()
@@ -1558,32 +1561,32 @@ end
 function Vector2.GetSqrLength( vector )
     Daneel.Debug.StackTrace.BeginFunction( "Vector2.GetSqrLength", vector )
     local errorHead = "Vector2.GetSqrLength( vector ) : "
-    Daneel.Debug.CheckArgType(  vector, " vector", "Vector2", errorHead )
+    Daneel.Debug.CheckArgType( vector, "vector", "Vector2", errorHead )
 
     local length = vector.x^2 + vector.y^2
     Daneel.Debug.StackTrace.EndFunction()
     return length
 end
 
--- Return a copy of the provided vector, normalized.
--- @param vector2 (Vector2) The vector2 to normalize.
--- @return (Vector2) A copy of the vector, normalized
+--- Return a copy of the provided vector, normalized.
+-- @param vector (Vector2) The vector to normalize.
+-- @return (Vector2) A copy of the vector, normalized.
 function Vector2.Normalized( vector )
     Daneel.Debug.StackTrace.BeginFunction( "Vector2.Normalized", vector )
     local errorHead = "Vector2.Normalized( vector ) : "
-    Daneel.Debug.CheckArgType(  vector, " vector", "Vector2", errorHead )
+    Daneel.Debug.CheckArgType( vector, "vector", "Vector2", errorHead )
 
     local nv = Vector2.New( vector.x, vector.y ):Normalize()
     Daneel.Debug.StackTrace.EndFunction()
     return nv
 end
 
--- Normalize the provided vector in place (makes its length equal to 1).
--- @param vector2 (Vector2) The vector2 to normalize.
+--- Normalize the provided vector in place (makes its length equal to 1).
+-- @param vector (Vector2) The vector to normalize.
 function Vector2.Normalize( vector )
     Daneel.Debug.StackTrace.BeginFunction( "Vector2.Normalize", vector )
     local errorHead = "Vector2.Normalize( vector ) : "
-    Daneel.Debug.CheckArgType(  vector, " vector", "Vector2", errorHead )
+    Daneel.Debug.CheckArgType( vector, "vector", "Vector2", errorHead )
 
     local length = vector:GetLength()
     if length ~= 0 then
@@ -1631,7 +1634,7 @@ function Vector2.__mul(a, b)
     local errorHead = "Vector2.__mul(a, b) : "
     Daneel.Debug.CheckArgType(a, "a", {"Vector2", "number"}, errorHead)
     Daneel.Debug.CheckArgType(b, "b", {"Vector2", "number"}, errorHead)
-    local newVector = 0
+    local newVector = nil
     if type(a) == "number" then
         newVector = Vector2.New(a * b.x, a * b.y)
     elseif type(b) == "number" then
@@ -1652,20 +1655,20 @@ function Vector2.__div(a, b)
     local errorHead = "Vector2.__div(a, b) : "
     Daneel.Debug.CheckArgType(a, "a", {"Vector2", "number"}, errorHead)
     Daneel.Debug.CheckArgType(b, "b", {"Vector2", "number"}, errorHead)
-    local newVector = 0
+    local newVector = nil
     if type(a) == "number" then
         if b.x == 0 or b.y == 0 then
-            error(errorHead.."One of the components of the denominator is equal to 0. Can't divide by 0 ! b.x="..b.x.." b.y="..b.y)
+            error(errorHead.."One of the components of the denominator is equal to 0. Can't divide by 0 ! a="..a..", b.x="..b.x..", b.y="..b.y)
         end
         newVector = Vector2.New(a / b.x, a / b.y)
     elseif type(b) == "number" then
         if b == 0 then
-            error(errorHead.."The denominator is equal to 0 ! Can't divide by 0 !")
+            error(errorHead.."The denominator is equal to 0 ! Can't divide by 0 ! a.x="..a.x..", a.y="..a.y..", b=0")
         end
         newVector = Vector2.New(a.x / b, a.y / b)
     else
         if b.x == 0 or b.y == 0 then
-            error(errorHead.."One of the components of the denominator is equal to 0. Can't divide by 0 ! b.x="..b.x.." b.y="..b.y)
+            error(errorHead.."One of the components of the denominator is equal to 0. Can't divide by 0 ! a.x="..a.x..", a.y="..a.y..", b.x="..b.x..", b.y="..b.y)
         end
         newVector = Vector2.New(a.x / b.x, a.y / b.y)
     end
