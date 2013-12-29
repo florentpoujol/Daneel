@@ -62,7 +62,7 @@ end
 --- Convert the provided value (a length) in a number expressed in screen pixel.
 -- The provided value may be suffixed with "px" or be expressed in percentage (ie: "10%") or be relative (ie: "s" or "s-10") to the specified screen side size (in which case the 'screenSide' argument is mandatory).
 -- @param value (string or number) The value to convert.
--- @param screenSize (string) [optional] "x" (width) or "y" (height)
+-- @param screenSide (string) [optional] "x" (width) or "y" (height)
 -- @return (number) The converted value, expressed in pixels.
 function GUI.Hud.ToPixel( value, screenSide )
     if type( value ) == "string" then
@@ -1241,7 +1241,8 @@ function GUI.TextArea.SetText( textArea, text )
             local newLineGO = GameObject.New( "TextArea" .. textArea.id .. "-Line" .. i, {
                 parent = gameObject,
                 transform = {
-                    localPosition = Vector3:New( 0, offset, 0 )
+                    localPosition = Vector3:New( 0, offset, 0 ),
+                    localScale = Vector3:New(1), -- temporary, fix wrong behavior in the web player
                 },
                 textRenderer = textRendererParams
             })
