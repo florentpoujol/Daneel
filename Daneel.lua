@@ -3108,15 +3108,6 @@ function GameObject.AddComponent( gameObject, componentType, params )
             Daneel.Debug.StackTrace.EndFunction()
             return
         end
-
-        local object = table.getvalue( _G, string.split( componentType, "." )[1] )
-        -- could allow to have a Config reference on the component object instead of getting the Config table on the mother object
-        if object ~= nil and object.Config ~= nil then
-            local defaultComponentParams = object.Config[ string.lcfirst( componentType ) ]
-            if defaultComponentParams ~= nil then
-                params = table.merge( defaultComponentParams, params )
-            end
-        end
     end
     
     if params ~= nil and component ~= nil then
