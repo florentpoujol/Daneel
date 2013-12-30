@@ -4,7 +4,7 @@
 -- Last modified for v1.3
 -- Copyright © 2013 Florent POUJOL, published under the MIT license.
 
--- keep that up there
+-- keep that up there > used first for the Time object, then in Daneel.Load()
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
     -- DaneelModules is inside CS because you can do 'if CS.DaneelModules == nil' but you can't do 'if DaneelModules == nil'
@@ -3459,6 +3459,11 @@ function Daneel.Load()
     if Daneel.isLoaded then return end
     Daneel.isLoading = true
 
+    -- load Daneel config
+    if table.getvalue( _G, "DaneelUserConfig" ) ~= nil and type( DaneelUserConfig ) == "function" then 
+        Daneel.Config = table.deepmerge( Daneel.Config, DaneelUserConfig() ) -- use Daneel.Config here since some of its values may have been modified already by some momdules
+    end
+
     -- load modules config
     for name, _module in pairs( CS.DaneelModules ) do
         if _module.isConfigLoaded ~= true then
@@ -3486,11 +3491,6 @@ function Daneel.Load()
                 Daneel.Config.objects = table.merge( Daneel.Config.objects, _module.Config.componentObjects )
             end
         end
-    end
-
-    -- load Daneel config
-    if table.getvalue( _G, "DaneelUserConfig" ) ~= nil and type( DaneelUserConfig ) == "function" then 
-        Daneel.Config = table.deepmerge( Daneel.Config, DaneelUserConfig() ) -- use Daneel.Config here since some of its values may have been modified already by some momdules
     end
     
     Daneel.Config.objects = table.merge( Daneel.Config.objects, Daneel.Config.componentObjects, Daneel.Config.assetObjects )
