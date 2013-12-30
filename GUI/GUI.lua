@@ -14,6 +14,9 @@ function GUI.ToSceneUnit( value )
     if type( value ) == "string" then
         value = value:trim()
         if value:find( "px" ) then
+            if GUI.Config.cameraGO == nil then
+                error( "GUI.ToSceneUnit( value ) : Can't convert the value '"..value.."' from pixels to scene units because the HUD camera has not been found (the game object with name '"..GUI.Config.cameraName.."' (value of 'cameraName' in the config)).")
+            end
             value = tonumber( value:sub( 0, #value-2) ) * GUI.pixelsToUnits
         elseif value:find( "u" ) then
             value = tonumber( value:sub( 0, #value-1) )
@@ -45,8 +48,8 @@ function GUI.Hud.ToHudPosition(position)
     local errorHead = "GUI.Hud.ToHudPosition(hud, position) : "
     Daneel.Debug.CheckArgType(position, "position", "Vector3", errorHead)
 
-    if GUI.Config.originGO == nil then
-        error( errorHead.." GUI.Config.originGO is nil because no game object with name '"..GUI.Config.cameraName .."' (value of 'cameraName' in the config) has been found in the scene." )
+    if GUI.Config.cameraGO == nil then
+        error( errorHead.."Can't convert the position '"..tostring(position).."' from scene units to pixels because the HUD camera has not been found (the game object with name '"..GUI.Config.cameraName.."' (value of 'cameraName' in the config))." )
     end
 
     local layer = GUI.Config.originGO.transform:GetPosition().z - position.z
@@ -82,6 +85,12 @@ function GUI.Hud.ToPixel( value, screenSide )
             end
             value = screenSize[ screenSide ] + tonumber( value )
 
+        elseif value:find( "u" ) then
+            if GUI.Config.cameraGO == nil then
+                error( "GUI.Hud.ToPixel( value[, screenSide] ) : Can't convert the value '"..value.."' from scene units to pixels because the HUD camera has not been found (the game object with name '"..GUI.Config.cameraName.."' (value of 'cameraName' in the config)).")
+            end
+            value = tonumber( value:sub( 0, #value-1) ) / GUI.pixelsToUnits
+
         else
             value = tonumber( value )
         end
@@ -111,11 +120,12 @@ function GUI.Hud.New( gameObject, params )
 
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.New", gameObject, params )
     local errorHead = "GUI.Hud.New( gameObject, params ) : "
-    if GUI.Config.cameraGO == nil then
-        error( errorHead.."Can't create a GUI.Hud component because no game object with name '"..GUI.Config.cameraName.."' (value of 'cameraName' in the config) has been found.")
-    end
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead )
     params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
+
+    if GUI.Config.cameraGO == nil then
+        error( errorHead.."Can't create a Hud component because the HUD camera has not been found (the game object with name '"..GUI.Config.cameraName.."' (value of 'cameraName' in the config)).")
+    end
 
     local hud = setmetatable( {}, GUI.Hud )
     hud.gameObject = gameObject
@@ -286,7 +296,7 @@ function GUI.Toggle.New( gameObject, params )
     local errorHead = "GUI.Toggle.New( gameObject, params ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
-
+    
     local toggle = table.copy( GUI.Config.toggle )
     toggle.defaultText = toggle.text
     toggle.text = nil
@@ -749,6 +759,10 @@ function GUI.Slider.New( gameObject, params )
     local errorHead = "GUI.Slider.New( gameObject, params ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
+
+    if GUI.Config.cameraGO == nil then
+        error( errorHead.."Can't create a Slider component because the HUD camera has not been found (the game object with name '"..GUI.Config.cameraName.."' (value of 'cameraName' in the config)).")
+    end
 
     local slider = table.copy( GUI.Config.slider )
     slider.gameObject = gameObject
