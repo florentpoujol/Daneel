@@ -1256,7 +1256,7 @@ function GUI.TextArea.SetText( textArea, text )
                 parent = gameObject,
                 transform = {
                     localPosition = Vector3:New( 0, offset, 0 ),
-                    localScale = Vector3:New(1), -- temporary, fix wrong behavior in the web player
+                    localScale = Vector3:New(1),
                 },
                 textRenderer = textRendererParams
             })
