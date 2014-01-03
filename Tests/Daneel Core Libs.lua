@@ -127,7 +127,7 @@ function Behavior:Awake()
     end
     
     r = d.GetNameFromValue( GUI.Hud )
-    if r ~= "GUI.Hud" and Daneel.isLoaded then
+    if r ~= "Hud" and Daneel.isLoaded then
         print( "Debug.GetNameFromValue 2", r )
     end
     
