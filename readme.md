@@ -2,13 +2,13 @@
 
 # Daneel
 
-Daneel is a multipurpose [Lua](http://www.lua.org) scripting framework for [CraftStudio][] that aims to bring new functionalities, to extend and render more flexible to use the API as well as to sweeten and shorten the code you write.
+Daneel is a scripting framework written in [Lua](http://www.lua.org) for [CraftStudio][] that bring new functionalities, extend and render more flexible to use the API as well as sweeten and shorten the code you write.
 
 
 ## Installation
 
-Import the provided `Daneel_v1.2.0.cspack` in your CraftStudio project.
-The file in the `Daneel/Core` folder are mandatory.
+Import in your project whatever scripts you need from `Daneel_v1.3.0.cspack`.  
+[Check the documentation](http://daneel.florent-poujol.fr/docs/setup) for more informations.
 
 
 ## Documentation
@@ -18,9 +18,10 @@ The file in the `Daneel/Core` folder are mandatory.
 
 ## Support
 
-If you have got any trouble or question, contact me via : 
-Email   : florent.poujol@gmail.com
-Twitter : [@FlorentPoujol](https://twitter.com/FlorentPoujol) 
+If you have got any trouble or question, [leave a support ticket on GitHub](https://github.com/florentpoujol/Daneel), or contact me :
+
+- florent.poujol@gmail.com
+- [@FlorentPoujol](https://twitter.com/FlorentPoujol) 
 
 Or leave a support topic in CraftStudio's community forums : 
 
@@ -32,7 +33,7 @@ Or leave a support topic in CraftStudio's community forums :
 
 Daneel is published under the MIT license.
 
-Copyright © 2013 Florent Poujol <forent.poujol@gmail.com>.
+Copyright © 2013-2014 Florent Poujol <forent.poujol@gmail.com>.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
