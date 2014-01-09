@@ -2,7 +2,7 @@
 -- Enable mouse interactions with game objects when added to a game object with a camera component.
 --
 -- Last modified for v1.3.0
--- Copyright © 2013 Florent POUJOL, published under the MIT license.
+-- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 
 MouseInput = {}
 

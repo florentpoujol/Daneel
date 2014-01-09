@@ -1,8 +1,8 @@
 -- Hud.lua
 -- Scripted behavior for GUI.Hud component.
 --
--- Last modified for v1.2.0
--- Copyright © 2013 Florent POUJOL, published under the MIT license.
+-- Last modified for v1.3.0
+-- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 
 --[[PublicProperties
 position string ""

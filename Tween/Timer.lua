@@ -1,8 +1,8 @@
 -- Timer.lua
 -- Scripted behavior for Timers.
 --
--- Last modified for v1.3
--- Copyright © 2013 Florent POUJOL, published under the MIT license.
+-- Last modified for v1.3.0
+-- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 
 --[[PublicProperties
 duration number 0

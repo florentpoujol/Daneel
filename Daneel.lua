@@ -1,8 +1,8 @@
 -- Daneel.lua
 -- Contains Daneel's core functionalities.
 --
--- Last modified for v1.3
--- Copyright © 2013 Florent POUJOL, published under the MIT license.
+-- Last modified for v1.3.0
+-- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 
 -- keep that up there > used first for the Time object, then in Daneel.Load()
 if CS.DaneelModules == nil then
