@@ -335,14 +335,14 @@ function table.copy( t, recursive, doNotCopyMetatable )
         -- but better be safe than sorry
         for key, value in ipairs( t ) do
             if type( value ) == "table" and recursive then
-                value = table.copy( value )
+                value = table.copy( value, recursive, doNotCopyMetatable )
             end
             table.insert( newTable, value )
         end
     else
         for key, value in pairs( t ) do
             if type( value ) == "table" and recursive then
-                value = table.copy( value )
+                value = table.copy( value, recursive, doNotCopyMetatable )
             end
             newTable[ key ] = value
         end
