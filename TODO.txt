@@ -13,13 +13,8 @@ IDEAS
         > raycashit = ray:IntersectRectangle( rectangle, true )
 
     - gameObject:GetGenealogy() retourne toute la généalogie du gameobject : "parent.child.subchild"
-    - GameObject.Get() retourne tous les GOs du même nom (table) ou un seul GO
-    
-    - make custom component objects to keep a reference of theirs instances so that we can search if a gameObject has a component by going though all them
-        > go:GetComponent() could get custom components for a gameObject even when the instance is not set in a property on the gameObject
-        > need emptying when a new scene is loaded, when a gameObject or component is destroyed
-
-    
+    - GameObject.GetAll() retourne tous les GOs du même nom (table)
+        
     -----
     GUI
 
@@ -39,8 +34,6 @@ IDEAS
         > ou les cache avec un autre model par exemple
         > ou les fenètres sont rendue par d'autres cameras dont l'object Rect
 
-    - button scripted behavior avec property "onclick"
-
 
     -----
     TWEEN
@@ -59,46 +52,34 @@ IDEAS
     MODULE / PLUGIN / EXTENSION
 
     - GUI.Input permettre de définir un curseur model optionnel
+    - Permettre de charger un module après un autre. Ie :
+    CS.DaneelModules[ "Name" ] = { 
+        object = Object,
+        initFunction = function()
+
+        end,
+
+        priority = 10, -- default to 10 when abscent
+
+        loadAfter = { "OtherName" }
+        -- loadAfter = "OtherName"
+
+        loadBefore = { "OtherName" }
+        -- loadBefore = "OtherName"
+    }
 
 ==========
 A implémenter
     
-    - Corriger go:AddCompnent() > chercher l'object du component dans Config.componentObjects[ componentType ]
-    - changer le type des composants de GUI, enlever "GUI."
-    - tests pour GUI components
-    - changer enregistrement de modules
-        CS.DaneelModules[ "Name" ] = Object
-
-        CS.DaneelModules[ "Name" ] = { 
-            object = Object,
-            initFunction = function()
-
-            end,
-
-            priority = 10, -- default to 10 when abscent
-
-            loadAfter = { "OtherName" }
-            -- loadAfter = "OtherName"
-
-            loadBefore = { "OtherName" }
-            -- loadBefore = "OtherName"
-        }
-
-
+    
 ==========
 A tester
-
-    CheckArgValue lorsque les valueurs ne sont pas des string et lance l'erreur
-
+    
+    
 ==========
 A modifier/ajouter dans la doc :
-
-    - création de modules ?
-    - création de composants ?
-    - refaire le changelog
-    - revoir l'ensemble de la doc
-
-
+    
+    
 =========
 BUGS
 
