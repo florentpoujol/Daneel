@@ -2635,6 +2635,32 @@ end
 
 
 ----------------------------------------------------------------------------------
+
+CS.Input.isMouseLocked = false
+
+local OriginalLockMouse = CS.Input.LockMouse
+function CS.Input.LockMouse()
+    CS.Input.isMouseLocked = true
+    OriginalLockMouse()
+end
+
+local OriginalUnlockMouse = CS.Input.UnlockMouse
+function CS.Input.UnlockMouse()
+    CS.Input.isMouseLocked = false
+    OriginalUnlockMouse()
+end
+
+--- Toggle the locked state of the mouse, which can be accessed via the CS.Input.isMouseLocked property.
+function CS.Input.ToggleMouseLock()
+    if CS.Input.isMouseLocked then
+        CS.Input.UnlockMouse()
+    else
+        CS.Input.LockMouse()
+    end
+end
+
+
+----------------------------------------------------------------------------------
 -- GAMEOBJECT
 ----------------------------------------------------------------------------------
 
