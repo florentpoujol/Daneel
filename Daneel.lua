@@ -317,12 +317,37 @@ end
 ----------------------------------------------------------------------------------
 -- table
 
---- Deprecated since v1.3.1. Alias of table.merge( t, recursive ). 
+--- Return a copy of the provided table.
 -- @param t (table) The table to copy.
--- @param recursive (boolean) Tells whether tables as values must be copied recursively. Table that have a metatable are never copied recursively.
+-- @param recursive (boolean) [optional default=false] Tell whether to also copy the tables found as value (true), or just leave the same table as value (false).
 -- @return (table) The copied table.
 function table.copy( t, recursive )
-    return table.merge( t, recursive )
+    Daneel.Debug.StackTrace.BeginFunction( "table.copy", t, recursive )
+    local errorHead = "table.copy( table[, recursive] ) :"
+    Daneel.Debug.CheckArgType(t, "table", "table", errorHead )
+    recursive = Daneel.Debug.CheckOptionalArgType( recursive, "recursive", "boolean", errorHead, false )
+    
+    local newTable = {}
+    if table.isarray( t ) then
+        -- not sure if it's really necessary to use ipairs() instead of pairs() for arrays
+        -- but better be safe than sorry
+        for key, value in ipairs( t ) do
+            if type( value ) == "table" and recursive then
+                value = table.copy( value, recursive )
+            end
+            table.insert( newTable, value )
+        end
+    else
+        for key, value in pairs( t ) do
+            if type( value ) == "table" and recursive then
+                value = table.copy( value, recursive )
+            end
+            newTable[ key ] = value
+        end
+    end
+    
+    Daneel.Debug.StackTrace.EndFunction()
+    return newTable
 end
 
 --- Tell whether the provided value is found within the provided table.
@@ -427,11 +452,11 @@ function table.print(t)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Merge/copy two or more tables into one.
+--- Merge two or more tables into one.
 -- Table as values with a metatable are considered as instances and are not recursively merged.
 -- When the tables are arrays, the integer keys are not overridden.
--- @param ... (table) One or more tables
--- @param recursive (boolean) [default=false] Tell whether tables as values must be merged recursively. When the tables are arrays, this argument tells wheter the returned table must contains only one exemplaire of a value.
+-- @param ... (table) Two or more tables
+-- @param recursive (boolean) [default=false] Tell whether tables as values must be merged recursively. Has no effect when the tables are arrays.
 -- @return (table) The new table.
 function table.merge( ... )
     local arg = {...}
@@ -443,7 +468,7 @@ function table.merge( ... )
         end
         recursive = false
     end
-    local singleValue = recursive
+
     Daneel.Debug.StackTrace.BeginFunction( "table.merge", ..., recursive )
     
     local fullTable = {}
@@ -452,16 +477,13 @@ function table.merge( ... )
         if argType == "table" then
             
             if table.isarray( t ) then
-                -- recursive argument is "singleValue"
                 for key, value in ipairs( t ) do
-                    if not singleValue or (singleValue and not table.containsvalue( fullTable, value )) then
-                        table.insert( fullTable, value )
-                    end
+                    table.insert( fullTable, value )
                 end
 
             else
                 for key, value in pairs( t ) do
-                    if recursive and type( value ) == "table" and getmetatable( value ) == nil then
+                    if fullTable[ key ] ~= nil and recursive and type( value ) == "table" and getmetatable( value ) == nil then
                         value = table.merge( fullTable[ key ], value, true )
                     end
                     fullTable[ key ] = value
@@ -479,8 +501,8 @@ end
 --- Deprecated since v1.3.1. Alias of table.merge( ..., true ).
 -- @param ... (table) At least two tables to recursively merge together.
 -- @return (table) The new table.
-function table.deepmerge( ... )
-    return table.merge( ..., true )
+function table.deepmerge( ... )    
+    return table.merge( unpack( table.insert( {...}, true ) ) )
 end
 
 --- Compare table1 and table2. Returns true if they have the exact same keys which have the exact same values.
@@ -1774,7 +1796,7 @@ Asset = {}
 Asset.__index = Asset
 setmetatable( Asset, { __call = function(Object, ...) return Object.Get(...) end } )
 
-local assetGetTypes = { "string" }
+local assetPathTypes =  { "string" }
 --- Alias of CraftStudio.FindAsset( assetPath[, assetType] ).
 -- Get the asset of the specified name and type.
 -- The first argument may be an asset object, so that you can check if a variable was an asset object or name (and get the corresponding object).
@@ -1785,12 +1807,13 @@ local assetGetTypes = { "string" }
 function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
     Daneel.Debug.StackTrace.BeginFunction( "Asset.Get", assetPath, assetType, errorIfAssetNotFound )
     local errorHead = "Asset.Get( assetPath[, assetType, errorIfAssetNotFound] ) : "
-    if #assetGetTypes == 1 and Daneel.Config.assetTypes ~= nil then
-        assetGetTypes = table.merge( assetGetTypes, Daneel.Config.assetTypes )
-        -- 23 nov 2013 : why do I do that ?
-        -- because Asset.Get() may be called when Daneel.Config.assetTypes is still nil ?
+
+    if #assetPathTypes == 1 then
+        assetPathTypes = table.merge( assetPathTypes, Daneel.Config.assetTypes )
+        -- the assetPath can be an asset or the asset path (string)
+        -- this is done here because there is no garantee that Daneel.Config.assetTypes will already exist in the global scope
     end
-    local argType = Daneel.Debug.CheckArgType( assetPath, "assetPath", assetGetTypes, errorHead )
+    local argType = Daneel.Debug.CheckArgType( assetPath, "assetPath", assetPathTypes, errorHead )
     
     if assetType ~= nil then
         Daneel.Debug.CheckArgType( assetType, "assetType", "string", errorHead )
@@ -3415,8 +3438,6 @@ for assetType, assetObject in pairs( Daneel.Config.assetObjects ) do
 end
 
 Daneel.Config.componentTypes = table.getkeys( Daneel.Config.componentObjects ) -- put here so that table.getkeys() don't throw error because Daneel.Debug doesn't exists
-Daneel.Config.assetTypes = table.getkeys( Daneel.Config.assetObjects )
-
 
 
 -- load Daneel at the start of the game
@@ -3426,7 +3447,7 @@ function Daneel.Load()
 
     -- load Daneel config
     if table.getvalue( _G, "DaneelUserConfig" ) ~= nil and type( DaneelUserConfig ) == "function" then 
-        Daneel.Config = table.deepmerge( Daneel.Config, DaneelUserConfig() ) -- use Daneel.Config here since some of its values may have been modified already by some momdules
+        Daneel.Config = table.merge( Daneel.Config, DaneelUserConfig(), true ) -- use Daneel.Config here since some of its values may have been modified already by some momdules
     end
 
     -- load modules config
@@ -3444,7 +3465,7 @@ function Daneel.Load()
             local userConfig = {}
             local functionName = name .. "UserConfig"
             if table.getvalue( _G, functionName ) ~= nil and type( _G[ functionName ] ) == "function" then
-                _module.Config = table.deepmerge( _module.Config, _G[ functionName ]() )
+                _module.Config = table.merge( _module.Config, _G[ functionName ](), true )
             end
 
             if _module.Config.objects ~= nil then
