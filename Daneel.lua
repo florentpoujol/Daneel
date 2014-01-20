@@ -317,45 +317,12 @@ end
 ----------------------------------------------------------------------------------
 -- table
 
---- Return a copy of the provided table.
+--- Deprecated since v1.3.1. Alias of table.merge( t, recursive ). 
 -- @param t (table) The table to copy.
--- @param recursive (boolean) [optional default=false] Tell whether to also copy the tables found as value (true), or just leave the same table as value (false).
--- @param doNotCopyMetatable (boolean) [optional default=false] Tell whether to copy the provided table's metatable or not.
+-- @param recursive (boolean) Tells whether tables as values must be copied recursively. Table that have a metatable are never copied recursively.
 -- @return (table) The copied table.
-function table.copy( t, recursive, doNotCopyMetatable )
-    Daneel.Debug.StackTrace.BeginFunction( "table.copy", t, recursive, doNotCopyMetatable )
-    local errorHead = "table.copy( table[, recursive, doNotCopyMetatable] ) :"
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead )
-    recursive = Daneel.Debug.CheckOptionalArgType( recursive, "recursive", "boolean", errorHead, false )
-    doNotCopyMetatable = Daneel.Debug.CheckOptionalArgType( doNotCopyMetatable, "doNotCopyMetatable", "boolean", errorHead, false )
-    
-    local newTable = {}
-    if table.isarray( t ) then
-        -- not sure if it's really necessary to use ipairs() instead of pairs() for arrays
-        -- but better be safe than sorry
-        for key, value in ipairs( t ) do
-            if type( value ) == "table" and recursive then
-                value = table.copy( value, recursive, doNotCopyMetatable )
-            end
-            table.insert( newTable, value )
-        end
-    else
-        for key, value in pairs( t ) do
-            if type( value ) == "table" and recursive then
-                value = table.copy( value, recursive, doNotCopyMetatable )
-            end
-            newTable[ key ] = value
-        end
-    end
-    
-    if doNotCopyMetatable ~= true then
-        local mt = getmetatable( t )
-        if mt ~= nil then
-            setmetatable( newTable, mt )
-        end
-    end
-    Daneel.Debug.StackTrace.EndFunction()
-    return newTable
+function table.copy( t, recursive )
+    return table.merge( t, recursive )
 end
 
 --- Tell whether the provided value is found within the provided table.
@@ -460,88 +427,60 @@ function table.print(t)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Merge two or more tables into one. Integer keys are not overridden.
--- When several tables have the same value (with an integer key), the value is only added once in the returned table.
--- @param ... (table) At least two tables to merge together.
+--- Merge/copy two or more tables into one.
+-- Table as values with a metatable are considered as instances and are not recursively merged.
+-- When the tables are arrays, the integer keys are not overridden.
+-- @param ... (table) One or more tables
+-- @param recursive (boolean) [default=false] Tell whether tables as values must be merged recursively. When the tables are arrays, this argument tells wheter the returned table must contains only one exemplaire of a value.
 -- @return (table) The new table.
 function table.merge( ... )
     local arg = {...}
-    if arg == nil or #arg == 0 then
-        Daneel.Debug.StackTrace.BeginFunction( "table.merge" )
-        error( "table.merge(...) : No argument provided. Need at least two." )
+    local recursive = table.remove( arg )
+    local argType = type( recursive )
+    if argType ~= "boolean" then
+        if argType == "table" then
+            table.insert( arg, recursive )
+        end
+        recursive = false
     end
-    Daneel.Debug.StackTrace.BeginFunction( "table.merge", ... )
+    local singleValue = recursive
+    Daneel.Debug.StackTrace.BeginFunction( "table.merge", ..., recursive )
     
     local fullTable = {}
     for i, t in ipairs( arg ) do
         local argType = type( t )
         if argType == "table" then
+            
             if table.isarray( t ) then
+                -- recursive argument is "singleValue"
                 for key, value in ipairs( t ) do
-                    if not table.containsvalue( fullTable, value ) then
+                    if not singleValue or (singleValue and not table.containsvalue( fullTable, value )) then
                         table.insert( fullTable, value )
                     end
                 end
+
             else
                 for key, value in pairs( t ) do
-                    if math.isinteger( key ) then
-                        if not table.containsvalue( fullTable, value ) then
-                            table.insert( fullTable, value )
-                        end
-                    else
-                        fullTable[ key ] = value
+                    if recursive and type( value ) == "table" and getmetatable( value ) == nil then
+                        value = table.merge( fullTable[ key ], value, true )
                     end
+                    fullTable[ key ] = value
                 end
             end
+            
         elseif Daneel.Config.debug.enableDebug then
-            print( "WARNING : table.merge(...) : Argument n°"..i.." is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'. The argument as been ignored." )
+            print( "WARNING : table.merge( ..., recursive ) : Argument n°"..i.." is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'. The argument as been ignored." )
         end
     end
     Daneel.Debug.StackTrace.EndFunction()
     return fullTable
 end
 
---- Deeply merge two or more tables into one. Integer keys are not overridden.
--- A deep merge means that the table values are also deeply merged.
--- When several tables have the same value (with an integer key), the value is only added once in the returned table.
--- @param ... (table) At least two tables to merge together.
+--- Deprecated since v1.3.1. Alias of table.merge( ..., true ).
+-- @param ... (table) At least two tables to recursively merge together.
 -- @return (table) The new table.
 function table.deepmerge( ... )
-    local arg = {...}
-    if arg == nil or #arg == 0 then
-        Daneel.Debug.StackTrace.BeginFunction("table.deepmerge")
-        error( "table.deepmerge(...) : No argument provided. Need at least two." )
-    end
-    Daneel.Debug.StackTrace.BeginFunction( "table.deepmerge", ... )
-    
-    local fullTable = {}
-    for i, t in ipairs( arg ) do
-        local argType = type( t )
-        if argType == "table" then
-            for key, value in pairs(t) do
-                if math.isinteger( key ) then
-                    if table.containsvalue( fullTable, value ) then
-                        table.insert( fullTable, value )
-                    end
-                else
-                    if fullTable[ key ] ~= nil and type( value ) == "table" then
-                        local mt = getmetatable( fullTable[ key ] )
-                        if mt ~= nil then -- consider the value an intance of an object, just replace the instance
-                            fullTable[ key ] = value
-                        else
-                            fullTable[ key ] = table.deepmerge( fullTable[ key ], value )
-                        end
-                    else
-                        fullTable[ key ] = value
-                    end
-                end
-            end
-        elseif Daneel.Config.debug.enableDebug then
-            print( "WARNING : table.deepmerge(...) : Argument n°"..i.." is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'. The argument as been ignored." )
-        end
-    end
-    Daneel.Debug.StackTrace.EndFunction()
-    return fullTable
+    return table.merge( ..., true )
 end
 
 --- Compare table1 and table2. Returns true if they have the exact same keys which have the exact same values.
@@ -779,7 +718,7 @@ function table.getvalue( t, keys )
     return value
 end
 
---- Tell wether he provided table is an array (has only integer keys).
+--- Tell whether he provided table is an array (has only integer keys).
 -- Decimal numbers with only zeros after the coma are considered as integers.
 -- @param t (table) The table.
 -- @param strict (boolean) [default=true] When false, the function returns true when the table only has integer keys. When true, the function returns true when the table only has integer keys in a single and continuous set.
@@ -1459,7 +1398,7 @@ Daneel.Event = {
 -- The function will be called whenever the provided event will be fired.
 -- @param eventName (string or table) The event name (or names in a table).
 -- @param functionOrObject (function or table) The function (not the function name) or the object.
--- @param isPersistent (boolean) [default=false] Tell wether the listener automatically stops to listen to any event when a new scene is loaded. Always false when the listener is a game object or a component.
+-- @param isPersistent (boolean) [default=false] Tell whether the listener automatically stops to listen to any event when a new scene is loaded. Always false when the listener is a game object or a component.
 function Daneel.Event.Listen( eventName, functionOrObject, isPersistent )
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Event.Listen", eventName, functionOrObject )
     local errorHead = "Daneel.Event.Listen( eventName, functionOrObject ) : "
