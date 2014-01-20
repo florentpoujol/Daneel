@@ -15,11 +15,11 @@ function Behavior:Awake()
     if self.gameObject.hud == nil then
         local params = {}
         if self.position ~= "" then
-            local x, y = unpack( self.position:split( "," ) )
+            local x, y = unpack( string.split( self.position, "," ) )
             params.position = Vector2.New( x, y )
         end
         if self.localPosition ~= "" then
-            local x, y = unpack( self.localPosition:split( "," ) )
+            local x, y = unpack( string.split( self.localPosition, "," ) )
             params.localPosition = Vector2.New( x, y )
         end
         if self.layer ~= "" then
