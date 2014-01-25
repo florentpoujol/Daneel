@@ -3129,7 +3129,10 @@ function GameObject.GetComponent( gameObject, componentType )
     if argType == "string" then
         lcComponentType = string.lcfirst( componentType )
     end
-    local component = gameObject[ lcComponentType ]
+    local component = nil
+    if lcComponentType ~= "scriptedBehavior" then
+        component = gameObject[ lcComponentType ]
+    end
     
     if component == nil then
         if Daneel.DefaultConfig().componentObjects[ componentType ] ~= nil then
