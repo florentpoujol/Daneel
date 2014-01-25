@@ -1808,6 +1808,14 @@ function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
     Daneel.Debug.StackTrace.BeginFunction( "Asset.Get", assetPath, assetType, errorIfAssetNotFound )
     local errorHead = "Asset.Get( assetPath[, assetType, errorIfAssetNotFound] ) : "
 
+    if assetPath == nil then
+        if Daneel.Config.debug.enableDebug then
+            error( errorHead.."Argument 'assetPath' is nil." )
+        end
+        Daneel.Debug.StackTrace.EndFunction()
+        return nil
+    end
+
     if #assetPathTypes == 1 then
         assetPathTypes = table.merge( assetPathTypes, Daneel.Config.assetTypes )
         -- the assetPath can be an asset or the asset path (string)
