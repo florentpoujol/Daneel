@@ -117,6 +117,8 @@ function Tween.Tweener.New(target, property, endValue, duration, params)
     if tweener.target ~= nil then
         tweener.gameObject = tweener.target.gameObject
     end
+
+    tweener.valueType = Daneel.Debug.GetType( tweener.startValue )
     
     Tween.Tweener.tweeners[tweener.id] = tweener
     Daneel.Debug.StackTrace.EndFunction()
@@ -290,7 +292,20 @@ function Tween.Tweener.Update(tweener, deltaDuration) -- the deltaDuration argum
             value = tweener.endValue
         end
     else
-        value = Tween.Ease[tweener.easeType](tweener.elapsed, tweener.startValue, tweener.diffValue, tweener.duration)
+        if tweener.valueType == "Vector3" then
+            value = Vector3:New(
+                Tween.Ease[tweener.easeType](tweener.elapsed, tweener.startValue.x, tweener.diffValue.x, tweener.duration),
+                Tween.Ease[tweener.easeType](tweener.elapsed, tweener.startValue.y, tweener.diffValue.y, tweener.duration),
+                Tween.Ease[tweener.easeType](tweener.elapsed, tweener.startValue.z, tweener.diffValue.z, tweener.duration)
+            )
+        elseif tweener.valueType == "Vector2" then
+            value = Vector2.New(
+                Tween.Ease[tweener.easeType](tweener.elapsed, tweener.startValue.x, tweener.diffValue.x, tweener.duration),
+                Tween.Ease[tweener.easeType](tweener.elapsed, tweener.startValue.y, tweener.diffValue.y, tweener.duration)
+            )
+        else
+            value = Tween.Ease[tweener.easeType](tweener.elapsed, tweener.startValue, tweener.diffValue, tweener.duration)
+        end
     end
 
 
