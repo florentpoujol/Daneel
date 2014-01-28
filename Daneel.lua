@@ -2990,22 +2990,26 @@ function GameObject.SendMessage(gameObject, functionName, data)
     Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
     Daneel.Debug.CheckOptionalArgType(data, "data", "table", errorHead)
     
-    -- prevent an error of type "La référence d'objet n'est pas définie à une instance d'un objet." to stops the script that sends the message
-    local success = Daneel.Debug.Try( function()
+    if Daneel.Config.debug.enableDebug then
+        -- prevent an error of type "La référence d'objet n'est pas définie à une instance d'un objet." to stops the script that sends the message
+        local success = Daneel.Debug.Try( function()
+            OriginalSendMessage( gameObject, functionName, data )
+        end )
+
+        if not success then
+            local dataText = "No data"
+            local length = 0
+            if data ~= nil then
+                length = table.getlength( data )
+                dataText = "Data with "..length.." entries"
+            end
+            print( errorHead.."Error sending message with parameters : ", gameObject, functionName, dataText )
+            if length > 0 then
+                table.print( data )
+            end
+        end
+    else
         OriginalSendMessage( gameObject, functionName, data )
-    end )
-    
-    if not success then
-        local dataText = "No data"
-        local length = 0
-        if data ~= nil then
-            length = table.getlength( data )
-            dataText = "Data with "..length.." entries"
-        end
-        print( errorHead.."Error sending message with parameters : ", gameObject, functionName, dataText )
-        if length > 0 then
-            table.print( data )
-        end
     end
 
     Daneel.Debug.StackTrace.EndFunction()
