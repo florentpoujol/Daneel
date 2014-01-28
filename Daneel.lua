@@ -1422,6 +1422,8 @@ Daneel.Event = {
     persistentEvents = {}, -- not emptied
 }
 
+local EventNamesTestedForHotKeys = {} -- Event names are keys, value is true.
+
 --- Make the provided function or object listen to the provided event(s).
 -- The function will be called whenever the provided event will be fired.
 -- @param eventName (string or table) The event name (or names in a table).
@@ -1450,28 +1452,29 @@ function Daneel.Event.Listen( eventName, functionOrObject, isPersistent )
             not table.containsvalue( Daneel.Event.events[ eventName ], functionOrObject ) and 
             not table.containsvalue( Daneel.Event.persistentEvents[ eventName ], functionOrObject ) 
         then
+            -- check for hotkeys (button names in the event name)
+            if not EventNamesTestedForHotKeys[ eventName ] then
+                EventNamesTestedForHotKeys[ eventName ] = true
 
-            -- check for hotkeys
-            local a,a, buttonName = eventName:find( "^On(.+)ButtonJustPressed$" )
-            if buttonName == nil then
-                a,a, buttonName = eventName:find( "^On(.+)ButtonJustReleased$" )
-            end
-            if buttonName == nil then
-                a,a, buttonName = eventName:find( "^On(.+)ButtonDown$" )
-            end
-
-            if buttonName ~= nil and not table.containsvalue( Daneel.Config.hotKeys, buttonName ) then
-                if not Daneel.isLoaded then
-                    Daneel.LateLoad( "Daneel.Event.Listen" )
+                local a,a, buttonName = eventName:find( "^On(.+)ButtonJustPressed$" )
+                if buttonName == nil then
+                    a,a, buttonName = eventName:find( "^On(.+)ButtonJustReleased$" )
+                end
+                if buttonName == nil then
+                    a,a, buttonName = eventName:find( "^On(.+)ButtonDown$" )
                 end
 
-                if Daneel.Utilities.ButtonExists( buttonName ) then
-                    table.insert( Daneel.Config.hotKeys, buttonName )
-                else
-                    if Daneel.Config.debug.enableDebug then
+                if buttonName ~= nil then
+                    if not Daneel.isLoaded then
+                        Daneel.LateLoad( "Daneel.Event.Listen" )
+                        -- need to load here because hotkeys events are not fired if Daneel isn't loaded
+                    end
+
+                    if Daneel.Utilities.ButtonExists( buttonName ) then
+                        table.insert( Daneel.Config.hotKeys, buttonName )
+                    elseif Daneel.Config.debug.enableDebug then
                         print( errorHead .. "You tried to listen to the '" .. eventName .. "' event but the '" .. buttonName .. "' button does not exists in the Game Controls." )
                     end
-                    return
                 end
             end
 
