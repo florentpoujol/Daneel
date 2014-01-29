@@ -1006,7 +1006,7 @@ function Daneel.Utilities.ToNumber( data )
     return number
 end
 
-CS.Input.buttonExists = {} -- Button names are in key, existance (false or true) is in value
+local buttonExists = {} -- Button names are in key, existance (false or true) is in value
 
 --- Tell whether the provided button name exists amongst the Game Controls, or not.
 -- If the button name does not exists, it will print an error in the Runtime Report but it won't kill the script that called the function.
@@ -1018,16 +1018,14 @@ function Daneel.Utilities.ButtonExists( buttonName )
     local errorHead = "Daneel.Utilities.ButtonExists( buttonName ) : "
     Daneel.Debug.CheckArgType( buttonName, "buttonName", "string", errorHead )
 
-    local buttonExists = CS.Input.buttonExists[ buttonName ]
-    if buttonExists == nil then
-        buttonExists = Daneel.Debug.Try( function()
+    if buttonExists[ buttonName ] == nil then
+        buttonExists[ buttonName ] = Daneel.Debug.Try( function()
             CS.Input.WasButtonJustPressed( buttonName )
         end )
-        CS.Input.buttonExists[ buttonName ] = buttonExists
     end
 
     Daneel.Debug.StackTrace.EndFunction()
-    return buttonExists
+    return buttonExists[ buttonName ]
 end
 
 
