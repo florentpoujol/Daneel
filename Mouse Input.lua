@@ -4,7 +4,9 @@
 -- Last modified for v1.3.1
 -- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 
-MouseInput = {}
+MouseInput = { 
+    buttonExists = { LeftMouse = false, RightMouse = false, WheelUp = false, WheelDown = false }
+}
 
 if CS.DaneelModules == nil then
     CS.DaneelModules = {}
@@ -19,28 +21,8 @@ end
 MouseInput.Config = MouseInput.DefaultConfig()
 
 function MouseInput.Load()
-    MouseInput.buttonExists = { LeftMouse = false, RightMouse = false, WheelUp = false, WheelDown = false }
-    local eventList = {}
     for buttonName, _ in pairs( MouseInput.buttonExists ) do
-        local exists = Daneel.Utilities.ButtonExists( buttonName )
-        MouseInput.buttonExists[ buttonName ] = exists
-        
-        if exists then
-            table.insert( eventList, "On"..buttonName.."ButtonWasJustPressed" )
-            if buttonName == "LeftMouse" then
-                table.insert( eventList, "OnLeftMouseButtonDown" )
-            end
-        end
-    end
-
-    MouseInput.update = false -- prevent the system to miss a click if it happens when  self.frameCount % self.updateInterval ~= 0  by forcing the update
-    
-    if #eventList > 0 then
-        Daneel.Event.Listen(
-            eventList,
-            function() MouseInput.update = true end,
-            true -- persistent listener
-        )
+        MouseInput.buttonExists[ buttonName ] = Daneel.Utilities.ButtonExists( buttonName )
     end
 end
 
@@ -49,13 +31,16 @@ end
 
 --[[PublicProperties
 tags string ""
-onMouseOverInterval number 0
-updateWhenMouseMoves boolean true
+OnMouseOverInterval number 0
 /PublicProperties]]
 
 function Behavior:Awake()
-    if not Daneel.isLoaded then
-        Daneel.LateLoad( "MouseInput.Awake" )
+    if not MouseInput.isLoaded then
+        if table.getvalue( _G, "MouseInputUserConfig" ) ~= nil and type( MouseInputUserConfig ) == "function" then
+            MouseInput.Config = MouseInputUserConfig()
+        end
+        MouseInput.Load()
+        MouseInput.isLoaded = true
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "MouseInput:Awake" )
@@ -78,49 +63,54 @@ end
 
 function Behavior:Update()
     self.frameCount = self.frameCount + 1
+    
     local mouseDelta = CS.Input.GetMouseDelta()
     local mouseIsMoving = false
     if mouseDelta.x ~= 0 or mouseDelta.y ~= 0 then
         mouseIsMoving = true
     end
 
+    local leftMouseJustPressed = false
+    local leftMouseDown = false
+    if MouseInput.buttonExists.LeftMouse then
+        leftMouseJustPressed = CS.Input.WasButtonJustPressed( "LeftMouse" )
+        leftMouseDown = CS.Input.IsButtonDown( "LeftMouse" )
+    end
+
+    local rightMouseJustPressed = false
+    if MouseInput.buttonExists.RightMouse then
+        rightMouseJustPressed = CS.Input.WasButtonJustPressed( "RightMouse" )
+    end
+
+    local wheelUpJustPressed = false
+    if MouseInput.buttonExists.WheelUp then
+        wheelUpJustPressed = CS.Input.WasButtonJustPressed( "WheelUp" )
+    end
+
+    local wheelDownJustPressed = false
+    if MouseInput.buttonExists.WheelDown then
+        wheelDownJustPressed = CS.Input.WasButtonJustPressed( "WheelDown" )
+    end
+    
     if 
-        MouseInput.update or
-        (mouseIsMoving and self.updateWhenMouseMoves) or
-        ( self.onMouseOverInterval > 0 and self.frameCount % self.onMouseOverInterval == 0 )
+        mouseIsMoving or
+        leftMouseJustPressed or 
+        leftMouseDown or
+        rightMouseJustPressed or
+        wheelUpJustPressed or
+        wheelDownJustPressed or
+        (self.OnMouseOverInterval > 0 and self.frameCount % self.OnMouseOverInterval == 0 )
     then
-        MouseInput.update = false
-
-        local leftMouseJustPressed = false
-        local leftMouseDown = false
-        if MouseInput.buttonExists.LeftMouse then
-            leftMouseJustPressed = CS.Input.WasButtonJustPressed( "LeftMouse" )
-            leftMouseDown = CS.Input.IsButtonDown( "LeftMouse" )
-        end
-
-        local rightMouseJustPressed = false
-        if MouseInput.buttonExists.RightMouse then
-            rightMouseJustPressed = CS.Input.WasButtonJustPressed( "RightMouse" )
-        end
-
-        local wheelUpJustPressed = false
-        if MouseInput.buttonExists.WheelUp then
-            wheelUpJustPressed = CS.Input.WasButtonJustPressed( "WheelUp" )
-        end
-
-        local wheelDownJustPressed = false
-        if MouseInput.buttonExists.WheelDown then
-            wheelDownJustPressed = CS.Input.WasButtonJustPressed( "WheelDown" )
-        end
-        
-        --
         local doubleClick = false
         if leftMouseJustPressed then
             doubleClick = ( self.frameCount <= self.lastLeftClickFrame + MouseInput.Config.doubleClickDelay )   
             self.lastLeftClickFrame = self.frameCount
         end
 
-        local mousePosition = CS.Input.GetMousePosition()
+        local ray = nil
+        if mouseIsMoving then
+            ray = self.gameObject.camera:CreateRay( CS.Input.GetMousePosition() )
+        end
         local reindex = true
         
         for i, tag in pairs( self.tags ) do
@@ -129,29 +119,25 @@ function Behavior:Update()
 
                 for i, gameObject in pairs( gameObjects ) do
                     if gameObject.inner ~= nil then
-                        -- OnMouseEnter, OnMouseOver, OnMouseExit, gameObject.isMouseOver
-                        local ray = self.gameObject.camera:CreateRay( mousePosition )
-                                                
-                        if ray:IntersectsGameObject( gameObject ) then
-                            -- the mouse pointer is over the gameObject
-                            -- the action will depend on if this is the first time it hovers the gameObject
-                            -- or if it was already over it the last frame
-                            -- also on the user's input (clicks) while it hovers the gameObject
-                            if gameObject.isMouseOver then
-                                Daneel.Event.Fire( gameObject, "OnMouseOver", gameObject )
-                            else
-                                gameObject.isMouseOver = true
-                                Daneel.Event.Fire( gameObject, "OnMouseEnter", gameObject )
-                            end                           
+                        
+                        if mouseIsMoving then
+                            if ray:IntersectsGameObject( gameObject ) then
+                                -- the mouse pointer is over the gameObject
+                                if not gameObject.isMouseOver then
+                                    gameObject.isMouseOver = true
+                                    Daneel.Event.Fire( gameObject, "OnMouseEnter", gameObject )
+                                end
 
-                        elseif gameObject.isMouseOver then
-                            -- the gameObject was still hovered the last frame
-                            gameObject.isMouseOver = false
-                            Daneel.Event.Fire( gameObject, "OnMouseExit", gameObject )
+                            elseif gameObject.isMouseOver then
+                                -- the gameObject was still hovered the last frame
+                                gameObject.isMouseOver = false
+                                Daneel.Event.Fire( gameObject, "OnMouseExit", gameObject )
+                            end
                         end
                         
-
                         if gameObject.isMouseOver then
+                            Daneel.Event.Fire( gameObject, "OnMouseOver", gameObject )
+
                             if leftMouseJustPressed then
                                 Daneel.Event.Fire( gameObject, "OnClick", gameObject )
 
@@ -174,7 +160,6 @@ function Behavior:Update()
                             if wheelDownJustPressed then
                                 Daneel.Event.Fire( gameObject, "OnWheelDown", gameObject )
                             end
-
                         end
                     else -- else if gameObject is destroyed
                         gameObjects[ i ] = nil
@@ -189,5 +174,4 @@ function Behavior:Update()
             end
         end -- end looping on tags
     end
-
 end -- end of Behavior:Update() function
