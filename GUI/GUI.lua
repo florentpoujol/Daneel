@@ -673,14 +673,14 @@ function GUI.ProgressBar.GetValue(progressBar, getAsPercentage)
     Daneel.Debug.CheckArgType(progressBar, "progressBar", "ProgressBar", errorHead)
     Daneel.Debug.CheckOptionalArgType(getAsPercentage, "getAsPercentage", "boolean", errorHead)
 
-    local scale = progressBar.gameObject.transform:GetLocalScale().x
+    local scale = math.round( progressBar.gameObject.transform:GetLocalScale().x, 2 )
     local value = (scale - progressBar.minLength) / (progressBar.maxLength - progressBar.minLength)
     if getAsPercentage == true then
         value = value * 100
     else
         value = (progressBar.maxValue - progressBar.minValue) * value + progressBar.minValue
     end
-    value = math.round(value)
+
     Daneel.Debug.StackTrace.EndFunction()
     return value
 end
