@@ -1,7 +1,7 @@
 -- Trigger.lua
 -- Scripted behavior for triggers.
 --
--- Last modified for v1.3
+-- Last modified for v1.3.1
 -- Copyright © 2013 Florent POUJOL, published under the MIT license.
 
 --[[PublicProperties
@@ -130,25 +130,36 @@ function Behavior:IsGameObjectInRange( gameObject, triggerPosition )
 
     local gameObjectIsInTrigger = false
     local gameObjectPosition = gameObject.transform:GetPosition()
-    local directionToTrigger = triggerPosition - gameObjectPosition
-    local distanceToTriggerSquared = directionToTrigger:SqrLength()
+    local directionToGameObject = gameObjectPosition - triggerPosition
+    local sqrDistanceToGameObject = directionToGameObject:SqrLength()
 
     if self.range > 0 and distanceToTriggerSquared < self.range^2 then
         gameObjectIsInTrigger = true
 
     elseif self.range <= 0 then
-        self.ray.position = gameObjectPosition
-        self.ray.direction = directionToTrigger -- ray from the gameObject to the trigger
-        local distance = nil
-
-        if gameObject.modelRenderer ~= nil then
-            distance = self.ray:IntersectsModelRenderer( gameObject.modelRenderer )
-        elseif gameObject.mapRenderer ~= nil then
-            distance = self.ray:IntersectsMapRenderer( gameObject.mapRenderer )
+        self.ray.position = triggerPosition
+        self.ray.direction = directionToGameObject -- ray from the trigger to the game object
+        
+        local distanceToTriggerAsset = nil -- distance to trigger model or map
+        if self.gameObject.modelRenderer ~= nil then
+            distanceToTriggerAsset = self.ray:IntersectsModelRenderer( self.gameObject.modelRenderer )
+        elseif self.gameObject.mapRenderer ~= nil then
+            distanceToTriggerAsset = self.ray:IntersectsMapRenderer( self.gameObject.mapRenderer )
         end
 
-        if distance ~= nil and distance^2 > distanceToTriggerSquared then
-            -- distance from the GO to the model or map is superior to the distance to the trigger
+        local distanceToGameObjectAsset = nil
+        if gameObject.modelRenderer ~= nil then
+            distanceToGameObjectAsset = self.ray:IntersectsModelRenderer( gameObject.modelRenderer )
+        elseif gameObject.mapRenderer ~= nil then
+            distanceToGameObjectAsset = self.ray:IntersectsMapRenderer( gameObject.mapRenderer )
+        end
+        -- if the gameObject has a model or map, replace the distance to the game object with the distance to the asset
+        if distanceToGameObjectAsset ~= nil then
+            sqrDistanceToGameObject = distanceToGameObjectAsset^2
+        end
+
+        if distanceToTriggerAsset ~= nil and distanceToTriggerAsset^2 > sqrDistanceToGameObject then
+            -- distance from the trigger to the game object is inferior to the distance from the trigger to the trigger's model or map
             -- that means the GO is inside of the model/map
             -- the ray goes through the GO origin before intersecting the map 
             gameObjectIsInTrigger = true
