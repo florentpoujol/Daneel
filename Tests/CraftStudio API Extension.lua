@@ -602,6 +602,31 @@ function Behavior:Awake()
         table.print( r )
     end
 
+    ---------
+    local pos = self.gameObject.transform:GetPosition()
+    local r = self.gameObject.position
+    
+    if pos ~= r then
+        print( "GameObject dynamic getter on component 1", r )
+    end
+    
+    pos = Vector3(5)
+    self.gameObject:Set( { position = pos, modelRenderer = {} } )
+    
+    local r = self.gameObject.position
+    local r2 = self.gameObject.transform:GetPosition()
+    if r ~= r2 or r ~= pos or pos ~= r2 then
+        print( "GameObject dynamic getter on component 2", r, r2, pos )
+    end
+    
+    local model = "Model"
+    self.gameObject.model = model
+    r = self.gameObject.modelRenderer.model.path
+    r2 = self.gameObject.model.path
+    if r ~= model or r ~= r2 or r2 ~= model then
+        print( "GameObject dynamic setter on component 3", r, model )
+    end
+    
 end
 
 local frameCount = 0
