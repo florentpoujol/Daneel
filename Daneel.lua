@@ -740,6 +740,34 @@ function table.getvalue( t, keys )
     return value
 end
 
+--- Safely set a value several levels down inside nested tables. Creates the missing levels if the series of keys is incomplete. <br>
+-- Ie for this series of nested table : table1.table2.fooBar <br>
+-- table.setvalue( table1, "table2.fooBar", true ) would set true as the value of the 'fooBar' key in the 'table1.table2' table. if table2 does not exists, it is created <br>
+-- @param t (table) The table.
+-- @param keys (string) The chain of keys to looks for as a string, each keys separated by a dot.
+-- @param value (mixed) The value (nil is ok).
+function table.setvalue( t, keys, value )
+    if keys:find( ".", 1, true ) == nil then
+        t[ keys ] = value
+    
+    else
+        keys = string.split( keys, "." )
+        
+        for i, key in ipairs( keys ) do
+            if i == #keys then
+                t[ key ] = value
+            else
+                local temp = t[ key ]
+                if temp == nil then
+                    temp = {}
+                    t[ key ] = temp
+                end
+                t = temp
+            end
+        end
+    end
+end
+
 --- Tell whether he provided table is an array (has only integer keys).
 -- Decimal numbers with only zeros after the coma are considered as integers.
 -- @param t (table) The table.
