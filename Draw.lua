@@ -11,29 +11,7 @@ if CS.DaneelModules == nil then
 end
 CS.DaneelModules[ "Draw" ] = Draw
 
-function Draw.DefaultConfig()
-    local config = {
-        lineRenderer = {
-            direction = Vector3:Left(),
-            --length = 2,
-            width = 0.1,
-            --endPosition = nil
-        },
-
-        circleRenderer = {
-
-        },
-        
-        componentObjects = {
-            lineRenderer = Draw.LineRenderer,
-            circleRenderer = Draw.CircleRenderer,
-        },
-    }
-
-    return config
-end
-Draw.Config = Draw.DefaultConfig()
-
+local functionsDebugData = {}
 
 ----------------------------------------------------------------------------------
 -- LineRenderer
@@ -170,6 +148,13 @@ function Draw.LineRenderer.SetLength( line, length, draw )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
+-- functionsDebugData[ "Draw.LineRenderer.SetDirection" ] = {
+--     { name = "line", type = "LineRenderer" },
+--     { name = "direction", type = "Vector3" }
+--     { name = "useDirectionAsLength", type = "boolean", defaultValue = false }
+--     { name = "draw", type = "boolean", defaultValue = true }
+-- }
+
 --- Set the line renderer's direction.
 -- It also updates line renderer's end position.
 -- @param line (LineRenderer) The line renderer.
@@ -219,12 +204,14 @@ end
 
 Draw.CircleRenderer = {}
 
-function Draw.CircleRenderer.New( gameObject, params )
-    
-    if params == nil then
-        params = {}
-    end
-    
+
+
+functionsDebugData[ "Draw.CircleRenderer.new" ] = {
+    { name = "gameObject", type = "GameObject" },
+    { name = "params", type = "table", defaultValue = {} }
+}
+
+function Draw.CircleRenderer.New( gameObject, params )   
     local circle = {
         origin = gameObject.transform:GetPosition(),
         SegmentCount = 6,
@@ -243,6 +230,7 @@ function Draw.CircleRenderer.New( gameObject, params )
     return circle
 end
 
+functionsDebugData[ "Draw.CircleRenderer.Draw" ] = { { name = "circle", type = "CircleRenderer" } }
 
 function Draw.CircleRenderer.Draw( circle )
     -- coordinatex of a point on a circle
@@ -322,3 +310,94 @@ function Draw.CircleRenderer.SetModel( circle, model )
     end
 end
 
+
+
+----------------------------------------------------------------------------------
+
+function Draw.DefaultConfig()
+    local config = {
+        debug = {
+            functionsDebugData = functionsDebugData
+        },
+
+        lineRenderer = {
+            direction = Vector3:Left(),
+            --length = 2,
+            width = 0.1,
+            --endPosition = nil
+        },
+
+        circleRenderer = {
+
+        },
+        
+        componentObjects = {
+            lineRenderer = Draw.LineRenderer,
+            circleRenderer = Draw.CircleRenderer,
+        },
+    }
+
+    return config
+end
+Draw.Config = Draw.DefaultConfig()
+
+function Draw.Load()
+    -- should be in Daneel.Load()
+    if Daneel.Config.enableDebug then
+        for funcName, data in pairs( Daneel.Config.debug.functionsDebugData ) do
+            Daneel.Debug.RegisterFunction( data.name, data )
+        end
+    end
+end
+
+--- Overload a function to calls to debug functions before and after it is itself called.
+-- Called from Daneel.Load()
+-- @param name (string) The function name
+-- @param argsData (table) Mostly the list of arguments. may contains the 'includeInStackTrace' key.
+function Daneel.Debug.RegisterFunction( name, argsData )
+    if not Daneel.Config.enableDebug then return end
+
+    local includeInStackTrace = true
+    if not Daneel.Config.enableStackTrace then
+        includeInStackTrace = false
+    elseif argsData.includeInStackTrace ~= nil then
+        includeInStackTrace = argsData.includeInStackTrace
+    end
+
+    local errorHead = name.."( "
+    for i, arg in ipairs( argsData ) do
+        errorHead = errorHead..arg.name..", "
+    end
+
+    errorHead = errorHead:sub( 1, #msg-2 ) -- removes the last coma+space
+    errorHead = errorHead.." )"
+    
+    --
+    local originalFunction = table.getvalue( _G, name )
+
+    local newFunction = function( ... )
+        local funcArgs = { ... }
+
+        if includeInStackTrace then
+            Daneel.Debug.StackTrace.BeginFunction( name, ... )
+        end
+
+        for i, arg in ipairs( argsData ) do
+            if arg.defaultValue ~= nil then
+                funcArgs[ i ] = Danel.Debug.CheckOptionalArgType( funcArgs[ i ], arg.name, arg.type, errorHead, arg.defaultValue )
+            else
+                Danel.Debug.CheckArgType( funcArgs[ i ], arg.name, arg.type, errorHead )
+            end
+        end
+
+        local returnValues = { originalFunction( unpack( funcArgs[ i ] ) ) } -- use unpack here to take into account the values that may have been modified by CheckOptionalArgType()
+
+        if includeInStackTrace then
+            Daneel.Debug.StackTrace.EndFunction()
+        end
+
+        return unpack( returnValues )
+    end
+
+    table.setvalue( _G, name, newFunction )
+end
