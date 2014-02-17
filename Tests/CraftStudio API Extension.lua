@@ -603,6 +603,9 @@ function Behavior:Awake()
     end
 
     ---------
+    -- dynamic component getter/setter on game object
+
+    -- getter
     local pos = self.gameObject.transform:GetPosition()
     local r = self.gameObject.position
     
@@ -619,6 +622,7 @@ function Behavior:Awake()
         print( "GameObject dynamic getter on component 2", r, r2, pos )
     end
     
+    -- setter
     local model = "Model"
     self.gameObject.model = model
     r = self.gameObject.modelRenderer.model.path

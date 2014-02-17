@@ -2681,15 +2681,17 @@ function GameObject.__index( gameObject, key )
                 return GameObject[ funcName ]( gameObject )
             end
 
-            -- on a component
-            for propName, propValue in pairs( gameObject ) do
-                if type( propValue ) == "table" then
-                    local componentObject = getmetatable( propValue )
-                    if componentObject ~= nil and table.containsvalue( Daneel.Config.componentObjects, componentObject ) then
-                        -- could also check propName, which is the component name (Daneel.Config.componentObjects[ ucfirst( propName ) ] ~= nil)
-                        -- propValue is a component instance
-                        if componentObject[ funcName ] ~= nil then
-                            return componentObject[ funcName ]( propValue )
+            if Daneel.Config.allowDynamicComponentFunctionCallOnGameObject then
+                -- on a component
+                for propName, propValue in pairs( gameObject ) do
+                    if type( propValue ) == "table" then
+                        local componentObject = getmetatable( propValue )
+                        if componentObject ~= nil and table.containsvalue( Daneel.Config.componentObjects, componentObject ) then
+                            -- could also check propName, which is the component name (Daneel.Config.componentObjects[ ucfirst( propName ) ] ~= nil)
+                            -- propValue is a component instance
+                            if componentObject[ funcName ] ~= nil then
+                                return componentObject[ funcName ]( propValue )
+                            end
                         end
                     end
                 end
@@ -2715,14 +2717,16 @@ function GameObject.__newindex( gameObject, key, value )
             return GameObject[ funcName ]( gameObject, value )
         end
 
-        -- key could be a setter on a component
-        for propName, propValue in pairs( gameObject ) do
-            if type( propValue ) == "table" then
-                local componentObject = getmetatable( propValue )
-                if componentObject ~= nil and table.containsvalue( Daneel.Config.componentObjects, componentObject ) then
-                    -- propValue is a component instance
-                    if componentObject[ funcName ] ~= nil then
-                        return componentObject[ funcName ]( propValue, value )
+        if Daneel.Config.allowDynamicComponentFunctionCallOnGameObject then
+            -- key could be a setter on a component
+            for propName, propValue in pairs( gameObject ) do
+                if type( propValue ) == "table" then
+                    local componentObject = getmetatable( propValue )
+                    if componentObject ~= nil and table.containsvalue( Daneel.Config.componentObjects, componentObject ) then
+                        -- propValue is a component instance
+                        if componentObject[ funcName ] ~= nil then
+                            return componentObject[ funcName ]( propValue, value )
+                        end
                     end
                 end
             end
@@ -3416,6 +3420,8 @@ function Daneel.DefaultConfig()
             enableDebug = false, -- Enable/disable Daneel's global debugging features (error reporting + stacktrace).
             enableStackTrace = false, -- Enable/disable the Stack Trace.
         },
+
+        allowDynamicComponentFunctionCallOnGameObject = true,
        
         ----------------------------------------------------------------------------------
         
