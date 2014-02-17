@@ -11,6 +11,8 @@ if CS.DaneelModules == nil then
     -- and you can't be sure to be able to access table.getvalue( _G, "" )
 end
 
+local functionsDebugData = {}
+
 ----------------------------------------------------------------------------------
 -- LUA (put here at the top because pretty much all functions depends on them)
 ----------------------------------------------------------------------------------
@@ -740,6 +742,7 @@ function table.getvalue( t, keys )
     return value
 end
 
+functionsDebugData[ "table.setvalue" ] = { { name = "t", type = "table" }, { name = "keys", type = "string" }, }
 --- Safely set a value several levels down inside nested tables. Creates the missing levels if the series of keys is incomplete. <br>
 -- Ie for this series of nested table : table1.table2.fooBar <br>
 -- table.setvalue( table1, "table2.fooBar", true ) would set true as the value of the 'fooBar' key in the 'table1.table2' table. if table2 does not exists, it is created <br>
@@ -1353,6 +1356,62 @@ function Daneel.Debug.Try( _function )
 
     Daneel.Debug.StackTrace.EndFunction()
     return success
+end
+
+--- Overload a function to calls to debug functions before and after it is itself called.
+-- Called from Daneel.Load()
+-- @param name (string) The function name
+-- @param argsData (table) Mostly the list of arguments. may contains the 'includeInStackTrace' key.
+function Daneel.Debug.RegisterFunction( name, argsData )
+    if not Daneel.Config.debug.enableDebug then return end
+
+    local includeInStackTrace = true
+    if not Daneel.Config.debug.enableStackTrace then
+        includeInStackTrace = false
+    elseif argsData.includeInStackTrace ~= nil then
+        includeInStackTrace = argsData.includeInStackTrace
+    end
+
+    local errorHead = name.."( "
+    for i, arg in ipairs( argsData ) do
+        errorHead = errorHead..arg.name..", "
+    end
+
+    errorHead = errorHead:sub( 1, #errorHead-2 ) -- removes the last coma+space
+    errorHead = errorHead.." ) : "
+    
+    --
+    local originalFunction = table.getvalue( _G, name )
+
+    if originalFunction ~= nil then
+        local newFunction = function( ... )
+            local funcArgs = { ... }
+
+            if includeInStackTrace then
+                Daneel.Debug.StackTrace.BeginFunction( name, ... )
+            end
+
+            for i, arg in ipairs( argsData ) do
+                if arg.defaultValue ~= nil then
+                    funcArgs[ i ] = Daneel.Debug.CheckOptionalArgType( funcArgs[ i ], arg.name, arg.type, errorHead, arg.defaultValue )
+                else
+                    Daneel.Debug.CheckArgType( funcArgs[ i ], arg.name, arg.type, errorHead )
+                end
+            end
+
+            local returnValues = { originalFunction( unpack( funcArgs ) ) } -- use unpack here to take into account the values that may have been modified by CheckOptionalArgType()
+
+            if includeInStackTrace then
+                Daneel.Debug.StackTrace.EndFunction()
+            end
+
+            return unpack( returnValues )
+        end
+
+        table.setvalue( _G, name, newFunction )
+    else
+        print( "Daneel.Debug.RegisterFunction() : Function with name '"..name.."' was not found in the global table _G." )
+    end
 end
 
 
@@ -3447,6 +3506,8 @@ function Daneel.DefaultConfig()
         debug = {
             enableDebug = false, -- Enable/disable Daneel's global debugging features (error reporting + stacktrace).
             enableStackTrace = false, -- Enable/disable the Stack Trace.
+
+            functionsDebugData = functionsDebugData,
         },
 
         allowDynamicComponentFunctionCallOnGameObject = true,
@@ -3562,6 +3623,10 @@ function Daneel.Load()
                 Daneel.Config.componentObjects = table.merge( Daneel.Config.componentObjects, _module.Config.componentObjects )
                 Daneel.Config.objects = table.merge( Daneel.Config.objects, _module.Config.componentObjects )
             end
+
+            if _module.Config.functionsDebugData ~= nil then
+                Daneel.Config.debug.functionsDebugData = table.merge( Daneel.Config.debug.functionsDebugData, _module.Config.functionsDebugData )
+            end
         end
     end
     
@@ -3570,8 +3635,16 @@ function Daneel.Load()
     Daneel.SetComponents( Daneel.Config.componentObjects )
     Daneel.Config.componentTypes = table.getkeys( Daneel.Config.componentObjects )
 
-    if Daneel.Config.debug.enableDebug and Daneel.Config.debug.enableStackTrace then
-        Daneel.Debug.SetNewError()
+
+    if Daneel.Config.debug.enableDebug then
+        if Daneel.Config.debug.enableStackTrace then
+            Daneel.Debug.SetNewError()
+        end
+
+        -- overload functions with debug (error reporting + stacktrace)
+        for funcName, data in pairs( Daneel.Config.debug.functionsDebugData ) do
+            Daneel.Debug.RegisterFunction( funcName, data )
+        end
     end
 
     -- ScriptAlias

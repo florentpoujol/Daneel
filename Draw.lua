@@ -204,9 +204,7 @@ end
 
 Draw.CircleRenderer = {}
 
-
-
-functionsDebugData[ "Draw.CircleRenderer.new" ] = {
+functionsDebugData[ "Draw.CircleRenderer.New" ] = {
     { name = "gameObject", type = "GameObject" },
     { name = "params", type = "table", defaultValue = {} }
 }
@@ -316,10 +314,8 @@ end
 
 function Draw.DefaultConfig()
     local config = {
-        debug = {
-            functionsDebugData = functionsDebugData
-        },
-
+        functionsDebugData = functionsDebugData,
+        
         lineRenderer = {
             direction = Vector3:Left(),
             --length = 2,
@@ -340,64 +336,3 @@ function Draw.DefaultConfig()
     return config
 end
 Draw.Config = Draw.DefaultConfig()
-
-function Draw.Load()
-    -- should be in Daneel.Load()
-    if Daneel.Config.enableDebug then
-        for funcName, data in pairs( Daneel.Config.debug.functionsDebugData ) do
-            Daneel.Debug.RegisterFunction( data.name, data )
-        end
-    end
-end
-
---- Overload a function to calls to debug functions before and after it is itself called.
--- Called from Daneel.Load()
--- @param name (string) The function name
--- @param argsData (table) Mostly the list of arguments. may contains the 'includeInStackTrace' key.
-function Daneel.Debug.RegisterFunction( name, argsData )
-    if not Daneel.Config.enableDebug then return end
-
-    local includeInStackTrace = true
-    if not Daneel.Config.enableStackTrace then
-        includeInStackTrace = false
-    elseif argsData.includeInStackTrace ~= nil then
-        includeInStackTrace = argsData.includeInStackTrace
-    end
-
-    local errorHead = name.."( "
-    for i, arg in ipairs( argsData ) do
-        errorHead = errorHead..arg.name..", "
-    end
-
-    errorHead = errorHead:sub( 1, #msg-2 ) -- removes the last coma+space
-    errorHead = errorHead.." )"
-    
-    --
-    local originalFunction = table.getvalue( _G, name )
-
-    local newFunction = function( ... )
-        local funcArgs = { ... }
-
-        if includeInStackTrace then
-            Daneel.Debug.StackTrace.BeginFunction( name, ... )
-        end
-
-        for i, arg in ipairs( argsData ) do
-            if arg.defaultValue ~= nil then
-                funcArgs[ i ] = Danel.Debug.CheckOptionalArgType( funcArgs[ i ], arg.name, arg.type, errorHead, arg.defaultValue )
-            else
-                Danel.Debug.CheckArgType( funcArgs[ i ], arg.name, arg.type, errorHead )
-            end
-        end
-
-        local returnValues = { originalFunction( unpack( funcArgs[ i ] ) ) } -- use unpack here to take into account the values that may have been modified by CheckOptionalArgType()
-
-        if includeInStackTrace then
-            Daneel.Debug.StackTrace.EndFunction()
-        end
-
-        return unpack( returnValues )
-    end
-
-    table.setvalue( _G, name, newFunction )
-end
