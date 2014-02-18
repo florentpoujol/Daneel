@@ -501,10 +501,12 @@ function Daneel.Debug.RegisterFunction( name, argsData )
             end
 
             for i, arg in ipairs( argsData ) do
-                if arg.defaultValue ~= nil then
-                    funcArgs[ i ] = Daneel.Debug.CheckOptionalArgType( funcArgs[ i ], arg.name, arg.type, errorHead, arg.defaultValue )
-                else
-                    Daneel.Debug.CheckArgType( funcArgs[ i ], arg.name, arg.type, errorHead )
+                if arg.type ~= nil then
+                    if arg.defaultValue ~= nil or arg.isOptional then
+                        funcArgs[ i ] = Daneel.Debug.CheckOptionalArgType( funcArgs[ i ], arg.name, arg.type, errorHead, arg.defaultValue )
+                    else
+                        Daneel.Debug.CheckArgType( funcArgs[ i ], arg.name, arg.type, errorHead )
+                    end
                 end
             end
 
