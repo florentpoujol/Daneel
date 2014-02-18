@@ -58,7 +58,7 @@ end
 
 --- Return the value rounded to the closest integer or decimal.
 -- @param value (number) The value.
--- @param decimal (number) [optional default=0] The decimal at which to round the value.
+-- @param decimal (number) [default=0] The decimal at which to round the value.
 -- @return (number) The new value.
 function math.round( value, decimal )
     if decimal ~= nil then
@@ -103,7 +103,7 @@ end
 -- If the string does not contain the delimiter, a table containing only the whole string is returned.
 -- @param s (string) The string.
 -- @param delimiter (string) The delimiter.
--- @param delimiterIsPattern (boolean) [optional default=false] Interpret the delimiter as pattern instead of as plain text. The function's behavior is not garanteed if true and in the webplayer.
+-- @param delimiterIsPattern (boolean) [default=false] Interpret the delimiter as pattern instead of as plain text. The function's behavior is not garanteed if true and in the webplayer.
 -- @return (table) The chunks.
 function string.split( s, delimiter, delimiterIsPattern )
     local chunks = {}
@@ -211,14 +211,9 @@ end
 
 --- Return a copy of the provided table.
 -- @param t (table) The table to copy.
--- @param recursive (boolean) [optional default=false] Tell whether to also copy the tables found as value (true), or just leave the same table as value (false).
+-- @param recursive (boolean) [default=false] Tell whether to also copy the tables found as value (true), or just leave the same table as value (false).
 -- @return (table) The copied table.
 function table.copy( t, recursive )
-    Daneel.Debug.StackTrace.BeginFunction( "table.copy", t, recursive )
-    local errorHead = "table.copy( table[, recursive] ) :"
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead )
-    recursive = Daneel.Debug.CheckOptionalArgType( recursive, "recursive", "boolean", errorHead, false )
-    
     local newTable = {}
     if table.isarray( t ) then
         -- not sure if it's really necessary to use ipairs() instead of pairs() for arrays
@@ -237,46 +232,31 @@ function table.copy( t, recursive )
             newTable[ key ] = value
         end
     end
-    
-    Daneel.Debug.StackTrace.EndFunction()
     return newTable
 end
 
 --- Tell whether the provided value is found within the provided table.
 -- @param t (table) The table to search in.
--- @param _value (mixed) The value to search for.
--- @param ignoreCase (boolean) [optional default=false] Ignore the case of the value. If true, the value must be of type 'string'.
+-- @param value (mixed) The value to search for.
+-- @param ignoreCase (boolean) [default=false] Ignore the case of the value. If true, the value must be of type 'string'.
 -- @return (boolean) True if the value is found in the table, false otherwise.
-function table.containsvalue(t, _value, ignoreCase)
-    Daneel.Debug.StackTrace.BeginFunction("table.constainsvalue", t, _value, ignoreCase)
-    local errorHead = "table.containsvalue(table, value) : "
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
-    
-    if _value == nil then
+function table.containsvalue(t, value, ignoreCase)
+    if value == nil then
         error(errorHead.."Argument 'value' is nil.")
     end
-
-    Daneel.Debug.CheckOptionalArgType(ignoreCase, "ignoreCase", "boolean", errorHead)
-    if ignoreCase and type( _value ) == 'string' then
-        _value = _value:lower()
-    else
-        ignoreCase = false
+    if ignoreCase and type( value ) == 'string' then
+        value = value:lower()
     end
-    
     local containsValue = false
-
-    for key, value in pairs(t) do
-        if ignoreCase and type( value ) == "string" then
-            value = value:lower()
+    for key, _value in pairs(t) do
+        if ignoreCase and type( _value ) == "string" then
+            _value = _value:lower()
         end
-
-        if _value == value then
+        if value == _value then
             containsValue = true
             break
         end
     end
-    
-    Daneel.Debug.StackTrace.EndFunction()
     return containsValue
 end
 
@@ -284,11 +264,7 @@ end
 -- @param t (table) The table.
 -- @param keyType (string) [optional] Any Lua or CraftStudio type ('string', 'GameObject', ...), case insensitive.
 -- @return (number) The table length.
-function table.getlength( t, keyType )
-    Daneel.Debug.StackTrace.BeginFunction( "table.getlength", t, keyType )
-    local errorHead = "table.getlength( table[, keyType] ) : "
-    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
-    
+function table.getlength( t, keyType )   
     local length = 0
     if keyType ~= nil then
         keyType = keyType:lower()
@@ -297,13 +273,10 @@ function table.getlength( t, keyType )
         if 
             keyType == nil or
             type( key ) == keyType or
-            tostring( Daneel.Debug.GetType( key ) ):lower() == keyType -- tostring() is to transform 'nil' as a string
         then
             length = length + 1
         end
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
     return length
 end
 
@@ -381,12 +354,8 @@ function table.merge( ... )
                     fullTable[ key ] = value
                 end
             end
-            
-        elseif Daneel.Config.debug.enableDebug then
-            print( "WARNING : table.merge( ..., recursive ) : Argument n°"..i.." is of type '"..argType.."' with value '"..tostring(t).."' instead of 'table'. The argument as been ignored." )
         end
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return fullTable
 end
 
@@ -402,16 +371,9 @@ end
 -- @param table2 (table) The second table to compare to the first table.
 -- @return (boolean) True if the two tables have the exact same content.
 function table.havesamecontent( table1, table2 )
-    Daneel.Debug.StackTrace.BeginFunction( "table.havesamecontent", table1, table2 )
-    local errorHead = "table.havesamecontent( table1, table2 ) : "
-    Daneel.Debug.CheckArgType( table1, "table1", "table", errorHead )
-    Daneel.Debug.CheckArgType( table2, "table2", "table", errorHead )
-
     if table.getlength(table1) ~= table.getlength(table2) then
-        Daneel.Debug.StackTrace.EndFunction()
         return false
     end
-
     local areEqual = true
     for key, value in pairs( table1 ) do
         if table1[ key ] ~= table2[ key ] then
@@ -419,38 +381,7 @@ function table.havesamecontent( table1, table2 )
             break
         end
     end
-    
-    Daneel.Debug.StackTrace.EndFunction()
     return areEqual
-end
-
---- Create an associative table with the provided keys and values tables.
--- @param keys (table) The keys of the future table.
--- @param values (table) The values of the future table.
--- @param returnFalseIfNotSameLength (boolean) [optional default=false] If true, the function returns false if the keys and values tables have different length.
--- @return (table or boolean) The combined table or false if the tables have different length.
-function table.combine( keys, values, returnFalseIfNotSameLength )
-    Daneel.Debug.StackTrace.BeginFunction( "table.combine", keys, values, returnFalseIfNotSameLength )
-    local errorHead = "table.combine( keys, values[, returnFalseIfNotSameLength] ) : "
-    Daneel.Debug.CheckArgType( keys, "keys", "table", errorHead )
-    Daneel.Debug.CheckArgType( values, "values", "table", errorHead )
-    Daneel.Debug.CheckOptionalArgType( returnFalseIfNotSameLength, "returnFalseIfNotSameLength", "boolean", errorHead )
-    
-    if table.getlength( keys ) ~= table.getlength( values ) then
-        if Daneel.Config.debug.enableDebug then
-            print( errorHead.."WARNING : Arguments 'keys' and 'values' have different length." )
-        end
-        if returnFalseIfNotSameLength then
-            Daneel.Debug.StackTrace.EndFunction()
-            return false
-        end
-    end
-    local newTable = {}
-    for i, key in ipairs( keys ) do
-        newTable[ key ] = values[ i ]
-    end
-    Daneel.Debug.StackTrace.EndFunction()
-    return newTable
 end
 
 --- Remove the provided value from the provided table.
@@ -461,13 +392,8 @@ end
 -- @param maxRemoveCount (number) [optional] Maximum number of occurrences of the value to be removed. If nil : remove all occurrences.
 -- @return (number) The number of occurrence removed.
 function table.removevalue( t, value, maxRemoveCount )
-    Daneel.Debug.StackTrace.BeginFunction( "table.removevalue", t, value, maxRemoveCount )
-    local errorHead = "table.removevalue( table, value[, maxRemoveCount] ) : "
-    Daneel.Debug.CheckArgType( t, "table", "table", errorHead)
-    Daneel.Debug.CheckOptionalArgType( maxRemoveCount, "maxRemoveCount", "number", errorHead )
-
-    if value == nil and Daneel.Config.debug.enableDebug then
-        print("WARNING : "..errorHead.."Argument 2 'value' is nil. Provided table is '"..tostring(t).."'")
+    if value == nil then
+        return 0
     end
     local removeCount = 0
     for key, _value in pairs( t ) do
@@ -484,7 +410,6 @@ function table.removevalue( t, value, maxRemoveCount )
             end
         end
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return removeCount
 end
 
@@ -492,15 +417,10 @@ end
 -- @param t (table) The table.
 -- @return (table) The keys.
 function table.getkeys( t )
-    Daneel.Debug.StackTrace.BeginFunction( "table.getkeys", t )
-    local errorHead = "table.getkeys( table ) : "
-    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
-
     local keys = {}
     for key, value in pairs( t ) do
         table.insert( keys, key )
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return keys
 end
 
@@ -508,15 +428,10 @@ end
 -- @param t (table) The table.
 -- @return (table) The values.
 function table.getvalues( t )
-    Daneel.Debug.StackTrace.BeginFunction( "table.getvalues", t )
-    local errorHead = "table.getvalues( t ) : "
-    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
-    
     local values = {}
     for key, value in pairs( t ) do
         table.insert( values, value )
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return values
 end
 
@@ -525,33 +440,21 @@ end
 -- @param value (mixed) The value.
 -- @return (mixed) The value's key or nil if the value is not found.
 function table.getkey( t, value )
-    Daneel.Debug.StackTrace.BeginFunction( "table.getkey", t, value )
-    local errorHead = "table.getkey( table, value ) : "
-    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
-    if value == nil then
-        error( errorHead.."Argument 'value' is nil." )
-    end
     local key = nil
     for k, v in pairs( t ) do
         if value == v then
             key = k
         end
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return key
 end
 
 --- Sort a list of table using one of the tables property as criteria.
 -- @param t (table) The table.
 -- @param property (string) The property used as criteria to sort the table.
--- @param orderBy (string) [optional default="asc"] How the sort should be made. Can be "asc" or "desc". Asc means small values first.
+-- @param orderBy (string) [default="asc"] How the sort should be made. Can be "asc" or "desc". Asc means small values first.
 -- @return (table) The ordered table.
 function table.sortby( t, property, orderBy )
-    Daneel.Debug.StackTrace.BeginFunction( "table.sortby", t, property, orderBy )
-    local errorHead = "table.sortby( table, property[, orderBy] ) : "
-    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
-    Daneel.Debug.CheckArgType( property, "property", "string", errorHead )
-    Daneel.Debug.CheckOptionalArgType( orderBy, "orderBy", "string", errorHead )
     if orderBy == nil or not (orderBy == "asc" or orderBy == "desc" ) then
         orderBy = "asc"
     end
@@ -579,8 +482,6 @@ function table.sortby( t, property, orderBy )
             table.insert(t, _table)
         end
     end
-    
-    Daneel.Debug.StackTrace.EndFunction()
     return t
 end
 
@@ -595,11 +496,6 @@ end
 -- @param keys (string) The chain of keys to looks for as a string, each keys separated by a dot.
 -- @return (mixed) The value, or nil.
 function table.getvalue( t, keys )
-    Daneel.Debug.StackTrace.BeginFunction( "table.getvalue", t, keys )
-    local errorHead = "table.getvalue( table, keys ) : "
-    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
-    Daneel.Debug.CheckArgType( keys, "keys", "string", errorHead )
-
     keys = string.split( keys, "." )
     local value = t
     
@@ -614,7 +510,6 @@ function table.getvalue( t, keys )
         end
         
         if not exists then
-            Daneel.Debug.StackTrace.EndFunction()
             return nil
         end
     end
@@ -627,12 +522,9 @@ function table.getvalue( t, keys )
             value = value[ key ]
         end
     end
-    
-    Daneel.Debug.StackTrace.EndFunction()
     return value
 end
 
-functionsDebugData[ "table.setvalue" ] = { { name = "t", type = "table" }, { name = "keys", type = "string" }, }
 --- Safely set a value several levels down inside nested tables. Creates the missing levels if the series of keys is incomplete. <br>
 -- Ie for this series of nested table : table1.table2.fooBar <br>
 -- table.setvalue( table1, "table2.fooBar", true ) would set true as the value of the 'fooBar' key in the 'table1.table2' table. if table2 does not exists, it is created <br>
@@ -667,26 +559,17 @@ end
 -- @param strict (boolean) [default=true] When false, the function returns true when the table only has integer keys. When true, the function returns true when the table only has integer keys in a single and continuous set.
 -- @return (boolean) True or false.
 function table.isarray( t, strict )
-    Daneel.Debug.StackTrace.BeginFunction( "table.isarray", t )
-    local errorHead = "table.isarray( table ) : "
-    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
-    strict = Daneel.Debug.CheckOptionalArgType( strict, "strict", "boolean", errorHead, true )
-
     local isArray = true
     local entriesCount = 0
-
     for k, v in pairs( t ) do
         entriesCount = entriesCount + 1
         if isArray and ( type( k ) ~= "number" or not math.isinteger( k ) ) then
             isArray = false
         end
     end
-
     if isArray and strict then
         isArray = (entriesCount == #t)
-    end
-    
-    Daneel.Debug.StackTrace.EndFunction()
+    end  
     return isArray
 end
 
@@ -694,17 +577,10 @@ end
 -- @param t (table) The table.
 -- @return (table) The new table.
 function table.reverse( t )
-    Daneel.Debug.StackTrace.BeginFunction( "table.reverse", t )
-    local errorHead = "table.reverse( table ) : "
-    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
-    
-    local length = #t
     local newTable = {}
     for i, v in ipairs( t ) do
         table.insert( newTable, 1, v )
     end
-    
-    Daneel.Debug.StackTrace.EndFunction()
     return newTable
 end
 
@@ -714,14 +590,8 @@ end
 -- @param returnKey (boolean) [default=false] If true, return the key and the value instead of just the value.
 -- @return (mixed) The value, or the key and the value (if the returnKey argument is true), or nil.
 function table.shift( t, returnKey )
-    Daneel.Debug.StackTrace.BeginFunction( "table.shift", t, returnKey )
-    local errorHead = "table.shift( table[, returnKey] ) : "
-    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
-    returnKey = Daneel.Debug.CheckOptionalArgType( returnKey, "returnKey", "boolean", errorHead, false )
-
     local key = nil
     local value = nil
-
     if table.isarray( t ) then
         if #t > 0 then
             value = table.removevalue( t, 1 )
@@ -739,8 +609,6 @@ function table.shift( t, returnKey )
             t[ key ] = nil  
         end
     end
-    
-    Daneel.Debug.StackTrace.EndFunction()
     if returnKey then
         return key, value
     else
@@ -752,14 +620,10 @@ end
 -- @param t (table) The table.
 -- @return (table) The sequence.
 function table.reindex( t )
-    Daneel.Debug.StackTrace.BeginFunction( "table.reindex", t )
-    local errorHead = "table.reindex( table ) : "
-    Daneel.Debug.CheckArgType( t, "table", "table", errorHead )
-
     local newTable = {}
     if not table.isarray( t, false ) then
         if Daneel.Config.debug.enableDebug then
-            print( errorHead.."Provided table '"..tostring( t ).."' is not an array." )
+            print( "table.reindex( table ) : Provided table '"..tostring( t ).."' is not an array." )
         end
     else
         local maxi = 1
@@ -775,8 +639,6 @@ function table.reindex( t )
             end
         end
     end
-
-    Daneel.Debug.StackTrace.EndFunction()  
     return newTable
 end
 
@@ -786,48 +648,74 @@ end
 -- DaneelModules is inside CS because you can do 'if CS.DaneelModules == nil' but you can't do 'if DaneelModules == nil'
 -- and you can't be sure to be able to access table.getvalue( _G, "" )
 -- (actually you can since v1.4)
-CS.DaneelModules = {
-    Lua = {
-        DefaultConfig = function()
-            local s = { name = "s", type = "string" }
-            local t = { name = "t", type = "table" }
+CS.DaneelModules = { Lua = {} }
 
-            return {
-                functionsDebugData = {
-                    ["math.isinteger"] = { { name = "number" } },
-                    ["math.lerp"] = {
-                        { name = "a", type = "number" },
-                        { name = "b", type = "number" },
-                        { name = "factor", type = "number" },
-                        { name = "easing", type = "string", isOptional = true }
-                    },
-                    ["math.warpangle"] = { { name = "angle", type = "number" } },
-                    ["math.round"] = {
-                        { name = "value", type = "number" },
-                        { name = "decimal", type = "number", isOptional = true }
-                    },
+local s = "string"
+local b = "boolean"
+local n = "number"
+local t = "table"
+local _s = { name = "s", type = s }
+local _t = { name = "t", type = t }
 
-                    -----
-                    ["string.totable"] = { s },
-                    ["string.ucfirst"] = { s },
-                    ["string.lcfirst"] = { s },
-                    ["string.trimstart"] = { s },
-                    ["string.trimend"] = { s },
-                    ["string.trim"] = { s },
-                    ["string.endswith"] = { s, { name = "chunk", type = "string" } },
-                    ["string.startswith"] = { s, { name = "chunk", type = "string" } },
-                    ["string.split"] = { s,
-                        { name = "delimiter", type = "string" },
-                        { name = "delimiterIsPattern", type = "boolean", defaultValue = false },
-                    },
+local functionsDebugInfo = {
+    ["math.isinteger"] = { { name = n } },
+    ["math.lerp"] = {
+        { name = "a", type = n },
+        { name = "b", type = n },
+        { name = "factor", type = n },
+        { name = "easing", type = s, isOptional = true }
+    },
+    ["math.warpangle"] = { { name = "angle", type = n } },
+    ["math.round"] = {
+        { name = "value", type = n },
+        { name = "decimal", type = n, isOptional = true }
+    },
 
-                    -----
+    ["string.totable"] = { _s },
+    ["string.ucfirst"] = { _s },
+    ["string.lcfirst"] = { _s },
+    ["string.trimstart"] = { _s },
+    ["string.trimend"] = { _s },
+    ["string.trim"] = { _s },
+    ["string.endswith"] = { _s, { name = "chunk", type = s } },
+    ["string.startswith"] = { _s, { name = "chunk", type = s } },
+    ["string.split"] = { _s,
+        { name = "delimiter", type = s },
+        { name = "delimiterIsPattern", type = b, defaultValue = false },
+    },
 
-                }
-            }
-        end
-    }
+    ["table.getkeys"] = { _t },
+    ["table.getvalues"] = { _t },
+    ["table.reverse"] = { _t },
+    ["table.reindex"] = { _t },
+    ["table.getvalue"] = { _t, { name = "keys", type = s } },
+    ["table.setvalue"] = { _t, { name = "keys", type = s } },
+    ["table.getkey"] = { _t, { name = "value", isOptional = false } },
+    ["table.copy"] = { _t, { name = "recursive", type = b, defaultValue = false } },
+    ["table.containsvalue"] =   { _t, { name = "ignoreCase", type = b, defaultValue = false } },
+    ["table.isarray"] = { _t, { name = "strict", type = b, defaultValue = true } },
+    ["table.shift"] = { _t, { name = "returnKey", type = b, defaultValue = false } },
+    ["table.getlength"] = { _t, { name = "keyType", type = s, isOptional = true } },
+    ["table.havesamecontent"] = { _t, { name = "table1", type = t }, { name = "table2", type = t } },
+    ["table.removevalue"] = { _t, 
+        { name = "value", isOptional = false },
+        { name = "maxRemoveCount", type = n, isOptional = true }
+    },
+    ["table.sortby"] = { _t, 
+        { name = "property", type = s },
+        { name = "orderBy", type = s, isOptional = true },
+    },
 }
+
+function CS.DaneelModules.Lua.DefaultConfig()
+    return { functionsDebugInfo = functionsDebugInfo }
+end
+-- TODO
+-- functionDebugData changed in *Info
+-- arg isOptional = false > any type but throw error if nil
+-- OR voir si ça marche > type = "any" or type = nil
+-- find type based on default value type ?
+
 
 if CS.IsWebPlayer then
 
@@ -893,4 +781,25 @@ if CS.IsWebPlayer then
         return chunks
     end
 
+end
+
+--- Returns the length of a table, which is the numbers of keys of the provided type (or of any type), for which the value is not nil.
+-- @param t (table) The table.
+-- @param keyType (string) [optional] Any Lua or CraftStudio type ('string', 'GameObject', ...), case insensitive.
+-- @return (number) The table length.
+function table.getlength( t, keyType )   
+    local length = 0
+    if keyType ~= nil then
+        keyType = keyType:lower()
+    end
+    for key, value in pairs( t ) do
+        if 
+            keyType == nil or
+            type( key ) == keyType or
+            tostring( Daneel.Debug.GetType( key ) ):lower() == keyType -- tostring() is to transform 'nil' as a string
+        then
+            length = length + 1
+        end
+    end
+    return length
 end
