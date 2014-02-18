@@ -208,50 +208,55 @@ functionsDebugData[ "Draw.CircleRenderer.New" ] = {
     { name = "gameObject", type = "GameObject" },
     { name = "params", type = "table", defaultValue = {} }
 }
-
+--- Creates a new circle renderer component.
+-- @param gameObject (GameObject) The game object.
+-- @param params (table) A table of parameters.
+-- @return (CircleRenderer) The new component.
 function Draw.CircleRenderer.New( gameObject, params )   
     local circle = {
-        origin = gameObject.transform:GetPosition(),
-        SegmentCount = 6,
-        Radius = 1,
-        Width = 1,
-        lines = {},
         gameObject = gameObject,
+        origin = gameObject.transform:GetPosition(),
+        segments = {}, -- game objects
+        _segmentCount = 6,
+        _radius = 1,
+        _width = 1,
+        _model = nil, -- model asset
     }
-    circle.EndPosition = circle.origin
-    setmetatable( circle, Draw.CircleRenderer )
+    circle._endPosition = circle.origin
     gameObject.circleRenderer = circle
 
-
+    setmetatable( circle, Draw.CircleRenderer )
     circle:Set( table.merge( Draw.Config.circleRenderer, params ) )
 
     return circle
 end
 
 functionsDebugData[ "Draw.CircleRenderer.Draw" ] = { { name = "circle", type = "CircleRenderer" } }
-
+--- Draw the circle renderer. Updates the game object based on the circle renderer's properties.
+-- Fires the OnDraw event at the circle renderer.
+-- @param circle (CircleRenderer) The circle renderer.
 function Draw.CircleRenderer.Draw( circle )
-    -- coordinatex of a point on a circle
+    -- coordinate of a point on a circle
     -- x = center.x + radius * cos( angleInRadian )
     -- y = center.y + radius * sin( angleInRadian )
 
-    local offset = (2*math.pi) / circle.SegmentCount
-    local angle = - offset
+    local offset = (2*math.pi) / circle._segmentCount
+    local angle = -offset
     
     -- create and position the segments
-    for i=1, circle.SegmentCount do
+    for i=1, circle._segmentCount do
         angle = angle + offset
-        local lineStartLocalPosition = Vector3(
-            circle.Radius * math.cos( angle ),
-            circle.Radius * math.sin( angle ),
+        local lineStartLocalPosition = Vector3:New(
+            circle._radius * math.cos( angle ),
+            circle._radius * math.sin( angle ),
             0
         )
 
         if circle.segments[ i ] == nil then
-            local newSegment = CS.CreateGameObject( "Circle", circle.gameObject )
+            local newSegment = CS.CreateGameObject( "Circle "..circle:GetId().." Segment "..i, circle.gameObject )
             newSegment:CreateComponent( "ModelRenderer" )
-            if circle.Model ~= nil then
-                newSegment.modelRenderer:SetModel( circle.Model )
+            if circle._model ~= nil then
+                newSegment.modelRenderer:SetModel( circle._model )
             end
             table.insert( circle.segments[ i ], newSegment )
         end
@@ -260,51 +265,97 @@ function Draw.CircleRenderer.Draw( circle )
     end
 
     -- destroy unused gameObjects
-    while #circle.segments > circle.SegmentCount do
+    while #circle.segments > circle._segmentCount do
         table.remove( circle.segments ):Destroy()
     end
     
-    circle.SegmentLength = Vector3.Distance( circle.segments[1].transform.position, circle.segments[2].transform.position )
+    local firstSegmentPosition = circle.segments[1].transform:GetPosition()
+    circle._segmentLength = Vector3.Distance( firstSegmentPosition, circle.segments[2].transform:GetPosition() )
     
     -- scale the segments, setting their width and length
     for i, segment in ipairs( circle.segments ) do
         if circle.segments[ i+1 ] ~= nil then
-            segment.transform:LookAt( circle.segments[ i+1 ].transform.position )
+            segment.transform:LookAt( circle.segments[ i+1 ].transform:GetPosition() )
         else
-            segment.transform:LookAt( circle.segments[1].transform.position )
+            segment.transform:LookAt( firstSegmentPosition )
         end
-        segment.transform:SetLocalScale( Vector3:New( circle.Width, circle.Width, circle.SegmentLength ) )
+        segment.transform:SetLocalScale( Vector3:New( circle._width, circle._width, circle._segmentLength ) )
     end
     
     Daneel.Event.Fire( circle, "OnDraw", circle )
 end
 
-function Draw.CircleRenderer.SetRadius( circle, radius )
-    circle.Radius = radius
-    circle:Draw()
+functionsDebugData[ "Draw.CircleRenderer.SetRadius" ] = { 
+    { name = "circle", type = "CircleRenderer" },
+    { name = "radius", type = "number" },
+    { name = "draw", type = "boolean", defaultValue = true },
+}
+--- Sets the circle renderer's radius.
+-- @param circle (LineRenderer) The circle renderer.
+-- @param radius (number) The radius (in scene units).
+-- @param draw (boolean) [optional default=true] Tell whether to re-draw immediately the circle renderer.
+function Draw.CircleRenderer.SetRadius( circle, radius, draw )
+    circle._radius = radius
+    if draw then
+        circle:Draw()
+    end
 end
 
-function Draw.CircleRenderer.SetSegmentCount( circle, count )
+functionsDebugData[ "Draw.CircleRenderer.SetSegmentCount" ] = { 
+    { name = "circle", type = "CircleRenderer" },
+    { name = "count", type = "number" },
+    { name = "draw", type = "boolean", defaultValue = true },
+}
+--- Sets the circle renderer's segment count.
+-- @param circle (LineRenderer) The circle renderer.
+-- @param count (number) The segment count (can't be lower than 3).
+-- @param draw (boolean) [optional default=true] Tell whether to re-draw immediately the circle renderer.
+function Draw.CircleRenderer.SetSegmentCount( circle, count, draw )
     if count < 3 then count = 3 end
-    circle.SegmentCount = count
-    circle:Draw()
-end
-
-
-function Draw.CircleRenderer.SetWidth( circle, width )
-    circle.Width = width
-    if #circle.segments > 0 then
-        local newScale = Vector3:New( circle.Width, circle.Width, circle.segments[1].transform:GetLocalScale().z )
-        for i, line in ipairs( circle.segments ) do
-            line.transform:SetLocalScale( newScale )
+    if circle._segmentCount ~= count then
+        circle._segmentCount = count
+        if draw then
+            circle:Draw()
         end
     end
 end
 
-function Draw.CircleRenderer.SetModel( circle, model )
-    circle.Model = model
-    for i, line in ipairs( circle.segments ) do
-        line.modelRenderer:SetModel( circle.Model )
+functionsDebugData[ "Draw.CircleRenderer.SetWidth" ] = { 
+    { name = "circle", type = "CircleRenderer" },
+    { name = "width", type = "number" },
+    { name = "draw", type = "boolean", defaultValue = true },
+}
+--- Sets the circle renderer segment's width.
+-- @param circle (LineRenderer) The circle renderer.
+-- @param width (number) The segment's width (and height).
+-- @param draw (boolean) [optional default=true] Tell whether to re-draw immediately the circle renderer.
+function Draw.CircleRenderer.SetWidth( circle, width, draw )
+    if circle._width ~= width then
+        circle._width = width
+        if #circle.segments > 0 and draw then
+            local newScale = Vector3:New( circle._width, circle._width, circle.segments[1].transform:GetLocalScale().z )
+            for i, line in pairs( circle.segments ) do
+                line.transform:SetLocalScale( newScale )
+            end
+        end
+    end
+end
+
+functionsDebugData[ "Draw.CircleRenderer.SetModel" ] = { 
+    { name = "circle", type = "CircleRenderer" },
+    { name = "model", type = {"string", "Model"} },
+    { name = "draw", type = "boolean", defaultValue = true },
+}
+--- Sets the circle renderer segment's model.
+-- @param circle (LineRenderer) The circle renderer.
+-- @param model (string or Model) The segment's model name or asset.
+-- @param draw (boolean) [optional default=true] Tell whether to re-draw immediately the circle renderer.
+function Draw.CircleRenderer.SetModel( circle, model, draw )
+    if circle._model ~= model and circle._model:GetPath() ~= model then
+        circle._model = Asset.Get( model, "Model", true )
+        for i, line in pairs( circle.segments ) do
+            line.modelRenderer:SetModel( circle._model )
+        end
     end
 end
 
@@ -324,7 +375,10 @@ function Draw.DefaultConfig()
         },
 
         circleRenderer = {
-
+            --segmentCount = 6,
+            --radius = 1,
+            --width = 1,
+            --model = nil, -- model name or asset
         },
         
         componentObjects = {
