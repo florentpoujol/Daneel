@@ -1,7 +1,7 @@
 -- Daneel.lua
 -- Contains Daneel's core functionalities.
 --
--- Last modified for v1.3.0
+-- Last modified for v1.4.0
 -- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 
 -- keep that up there > used first for the Time object, then in Daneel.Load()
@@ -1708,44 +1708,16 @@ end
 ----------------------------------------------------------------------------------
 -- Time
 
-Daneel.Time = {}
-CS.DaneelModules['Time'] = Daneel.Time
+Daneel.Time = {
+    realTime = 0.0,
+    realDeltaTime = 0.0,
 
-function Daneel.Time.Load()
-    setmetatable( Daneel.Time, nil )
-    Daneel.Time = {
-        realTime = 0.0,
-        realDeltaTime = 0.0,
+    time = 0.0,
+    deltaTime = 0.0,
+    timeScale = 1.0,
 
-        time = 0.0,
-        deltaTime = 0.0,
-        timeScale = 1.0,
-
-        frameCount = 0,
-    }
-    -- see below in Daneel.Update()
-end
-
-local mt = {
-    __index = function( instance, key )
-        setmetatable( Daneel.Time, nil ) -- best prevent C Stack Overflow
-        if not Daneel.isLoaded then
-            Daneel.LateLoad( "Daneel.Time __index" )
-        end
-        return Daneel.Time[ key ]
-    end,
-
-    __newindex = function( instance, key, value )
-        setmetatable( Daneel.Time, nil ) 
-        if not Daneel.isLoaded then
-            Daneel.LateLoad( "Daneel.Time __newindex" )
-        end
-        Daneel.Time[ key ] = value
-    end
+    frameCount = 0,
 }
-setmetatable( Daneel.Time, mt )
--- Using the metatable allows to detect if the Time object is used when Daneel is not loaded yet.
-
 
 ----------------------------------------------------------------------------------
 -- Cache
