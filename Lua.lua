@@ -13,12 +13,10 @@
 -- @param number (number) The number to check.
 -- @return (boolean) True if the provided number is an integer, false otherwise.
 function math.isinteger(number)
-    Daneel.Debug.StackTrace.BeginFunction("math.isinteger", number)
     local isinteger = false
     if type(number) == "number" then
         isinteger = number == math.floor(number)
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return isinteger
 end
 
@@ -29,13 +27,6 @@ end
 -- @param easing (string) [optional] The easing of the factor, can be "smooth", "smooth in", "smooth out".
 -- @return (number) The interpolated value.
 function math.lerp( a, b, factor, easing )
-    Daneel.Debug.StackTrace.BeginFunction( "math.lerp", a, b, factor, easing )
-    local errorHead = "math.lerp( a, b, factor[, easing] ) : "
-    Daneel.Debug.CheckArgType( a, "a", "number", errorHead )
-    Daneel.Debug.CheckArgType( b, "b", "number", errorHead )
-    Daneel.Debug.CheckArgType( factor, "factor", "number", errorHead )
-    Daneel.Debug.CheckOptionalArgType( easing, "easing", "string", errorHead )
-
     if easing == "smooth" then
         factor = factor * 2
         if factor < 1 then
@@ -44,33 +35,24 @@ function math.lerp( a, b, factor, easing )
             factor = factor - 2
             factor = 0.5 * ( factor * factor * factor + 2 )
         end
-
     elseif easing == "smooth in" then
         factor = factor * factor * factor
-
     elseif easing == "smooth out" then
         factor = factor - 1
         factor = factor * factor * factor + 1
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
     return a + (b - a) * factor
 end
 
 --- Wrap the provided angle between -180 and 180.
 -- @param angle (number) The angle.
 -- @return (number) The angle.
-function math.warpangle( angle )
-    Daneel.Debug.StackTrace.BeginFunction( "math.wrapangle", angle )
-    local errorHead = "math.wrapangle( angle ) : "
-    Daneel.Debug.CheckArgType( angle, "angle", "number", errorHead )
-    
+function math.warpangle( angle )   
     if angle > 180 then
         angle = angle - 360
     elseif angle < -180 then
         angle = angle + 360
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return angle
 end
 
@@ -79,17 +61,11 @@ end
 -- @param decimal (number) [optional default=0] The decimal at which to round the value.
 -- @return (number) The new value.
 function math.round( value, decimal )
-    Daneel.Debug.StackTrace.BeginFunction( "math.round", value, decimal )
-    local errorHead = "math.round( value[, decimal] ) : "
-    Daneel.Debug.CheckArgType( value, "value", "number", errorHead )
-    Daneel.Debug.CheckOptionalArgType( decimal, "decimal", "number", errorHead )
-
     if decimal ~= nil then
         value = math.floor( (value * 10^decimal) + 0.5) / (10^decimal)
     else
         value = math.floor( value + 0.5 )
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return value
 end
 
@@ -101,15 +77,10 @@ end
 -- @param s (string) The string.
 -- @return (table) The table.
 function string.totable( s )
-    Daneel.Debug.StackTrace.BeginFunction( "string.totable", s )
-    Daneel.Debug.CheckArgType( s, "string", "string", "string.totable( string )" )
-
     local t = {}
     for i = 1, #s do
         table.insert( t, s:sub( i, i ) )
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
     return t
 end
 
@@ -117,38 +88,14 @@ end
 -- @param s (string) The string.
 -- @return (string) The string.
 function string.ucfirst( s )
-    if Daneel.Cache.ucfirst[s] ~= nil then
-        return Daneel.Cache.ucfirst[s]
-    end
-
-    Daneel.Debug.StackTrace.BeginFunction( "string.ucfirst", s )
-    local errorHead = "string.ucfirst( string ) : "
-    Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
-
-    local ns = ( s:gsub( "^%l", string.upper ) )
-    Daneel.Cache.ucfirst[s] = ns
-
-    Daneel.Debug.StackTrace.EndFunction()
-    return ns
+    return ( s:gsub( "^%l", string.upper ) )
 end
 
 --- Turn the first letter of the string lowercase.
 -- @param s (string) The string.
 -- @return (string) The string.
 function string.lcfirst( s )
-    if Daneel.Cache.lcfirst[s] ~= nil then
-        return Daneel.Cache.lcfirst[s]
-    end
-
-    Daneel.Debug.StackTrace.BeginFunction( "string.lcfirst", s )
-    local errorHead = "string.lcfirst( string ) : "
-    Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
-
-    local ns = ( s:gsub( "^%u", string.lower ) )
-    Daneel.Cache.lcfirst[s] = ns
-
-    Daneel.Debug.StackTrace.EndFunction()
-    return ns
+    return ( s:gsub( "^%u", string.lower ) )
 end
 
 --- Split the provided string in several chunks, using the provided delimiter.
@@ -159,16 +106,7 @@ end
 -- @param delimiterIsPattern (boolean) [optional default=false] Interpret the delimiter as pattern instead of as plain text. The function's behavior is not garanteed if true and in the webplayer.
 -- @return (table) The chunks.
 function string.split( s, delimiter, delimiterIsPattern )
-    Daneel.Debug.StackTrace.BeginFunction( "string.split", s, delimiter, delimiterIsPattern )
-    local errorHead = "string.split( string, delimiter[, plainText] ) : "
-    Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
-    Daneel.Debug.CheckArgType( delimiter, "delimiter", "string", errorHead )
-    Daneel.Debug.CheckOptionalArgType( delimiterIsPattern, "delimiterIsPattern", "boolean", errorHead )
-
     local chunks = {}
-    if delimiterIsPattern == nil and #delimiter == 1 then
-        delimiterIsPattern = false
-    end
     
     if delimiterIsPattern then
         local delimiterStartIndex, delimiterEndIndex = s:find( delimiter )
@@ -183,16 +121,8 @@ function string.split( s, delimiter, delimiterIsPattern )
                 s = s .. delimiter
             end
             
-            if CS.IsWebPlayer then
-                -- in the webplayer,  "(.-)"..delimiter  is translated into  "(.*)"..delimiter  which seems to create an infinite loop
-                -- "(.+)"..delimiter   does not work either in the webplayer
-                for match in s:gmatch( "([^"..pattern.."]+)"..pattern ) do
-                    table.insert( chunks, match )
-                end
-            else
-                for match in s:gmatch( "(.-)"..pattern ) do 
-                    table.insert( chunks, match )
-                end
+            for match in s:gmatch( "(.-)"..pattern ) do 
+                table.insert( chunks, match )
             end
         end
     
@@ -231,7 +161,6 @@ function string.split( s, delimiter, delimiterIsPattern )
         chunks = { s }
     end
 
-    Daneel.Debug.StackTrace.EndFunction()
     return chunks
 end
 
@@ -240,14 +169,7 @@ end
 -- @param chunk (string) The searched chunk.
 -- @return (boolean) True or false.
 function string.startswith( s, chunk )
-    Daneel.Debug.StackTrace.BeginFunction( "string.startswith", s, chunk )
-    local errorHead = "string.startswith( string, chunk ) : "
-    Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
-    Daneel.Debug.CheckArgType( chunk, "chunk", "string", errorHead )
-
-    local startsWith = ( s:sub( 1, #chunk ) == chunk )
-    Daneel.Debug.StackTrace.EndFunction()
-    return startsWith
+    return ( s:sub( 1, #chunk ) == chunk )
 end
 
 --- Tell whether the provided string ends by the provided chunk or not.
@@ -255,14 +177,7 @@ end
 -- @param chunk (string) The searched chunk.
 -- @return (boolean) True or false.
 function string.endswith( s, chunk )
-    Daneel.Debug.StackTrace.BeginFunction( "string.endswith", s, chunk )
-    local errorHead = "string.endswith( string, chunk ) : "
-    Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
-    Daneel.Debug.CheckArgType( chunk, "chunk", "string", errorHead )
-
-    local endsWith = ( s:sub( #s - #chunk + 1, #s ) == chunk )
-    Daneel.Debug.StackTrace.EndFunction()
-    return endsWith
+    return ( s:sub( #s - #chunk + 1, #s ) == chunk )
 end
 
 --- Removes the white spaces at the beginning of the provided string.
@@ -273,35 +188,21 @@ function string.trimstart( s )
     local errorHead = "string.trimstart( string ) : "
     Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
  
-    local ns = ( s:gsub( "^%s+", "" ) )
-    Daneel.Debug.StackTrace.EndFunction()
-    return ns
+    return ( s:gsub( "^%s+", "" ) )
 end
 
 --- Removes the white spaces at the end of the provided string.
 -- @param s (string) The string.
 -- @return (string) The trimmed string.
 function string.trimend( s )
-    Daneel.Debug.StackTrace.BeginFunction( "string.trimend", s )
-    local errorHead = "string.trimend( string ) : "
-    Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
-
-    local ns = ( s:gsub( "%s+$", "" ) )
-    Daneel.Debug.StackTrace.EndFunction()
-    return ns
+    return ( s:gsub( "%s+$", "" ) )
 end
 
 --- Removes the white spaces at the beginning and the end of the provided string.
 -- @param s (string) The string.
 -- @return (string) The trimmed string.
 function string.trim(s)
-    Daneel.Debug.StackTrace.BeginFunction("string.trim", s)
-    local errorHead = "string.trim(string) : "
-    Daneel.Debug.CheckArgType(s, "string", "string", errorHead)
-
-    local ns = ( s:gsub( "^%s+", "" ):gsub( "%s+$", "" ) )
-    Daneel.Debug.StackTrace.EndFunction()
-    return ns
+    return ( s:gsub( "^%s+", "" ):gsub( "%s+$", "" ) )
 end
 
 
@@ -888,12 +789,108 @@ end
 CS.DaneelModules = {
     Lua = {
         DefaultConfig = function()
+            local s = { name = "s", type = "string" }
+            local t = { name = "t", type = "table" }
+
             return {
                 functionsDebugData = {
+                    ["math.isinteger"] = { { name = "number" } },
+                    ["math.lerp"] = {
+                        { name = "a", type = "number" },
+                        { name = "b", type = "number" },
+                        { name = "factor", type = "number" },
+                        { name = "easing", type = "string", isOptional = true }
+                    },
+                    ["math.warpangle"] = { { name = "angle", type = "number" } },
+                    ["math.round"] = {
+                        { name = "value", type = "number" },
+                        { name = "decimal", type = "number", isOptional = true }
+                    },
+
+                    -----
+                    ["string.totable"] = { s },
+                    ["string.ucfirst"] = { s },
+                    ["string.lcfirst"] = { s },
+                    ["string.trimstart"] = { s },
+                    ["string.trimend"] = { s },
+                    ["string.trim"] = { s },
+                    ["string.endswith"] = { s, { name = "chunk", type = "string" } },
+                    ["string.startswith"] = { s, { name = "chunk", type = "string" } },
+                    ["string.split"] = { s,
+                        { name = "delimiter", type = "string" },
+                        { name = "delimiterIsPattern", type = "boolean", defaultValue = false },
+                    },
+
+                    -----
 
                 }
             }
         end
     }
 }
-    
+
+if CS.IsWebPlayer then
+
+    function string.split( s, delimiter, delimiterIsPattern )
+        local chunks = {}
+        
+        if delimiterIsPattern then
+            local delimiterStartIndex, delimiterEndIndex = s:find( delimiter )
+
+            if delimiterStartIndex ~= nil then
+                local pattern = delimiter
+                delimiter = s:sub( delimiterStartIndex, delimiterEndIndex )
+                if string.startswith( s, delimiter ) then
+                    s = s:sub( #delimiter+1, #s )
+                end
+                if not s:endswith( delimiter ) then
+                    s = s .. delimiter
+                end
+                
+                -- CS Webplayer specific part :
+                -- in the webplayer,  "(.-)"..delimiter  is translated into  "(.*)"..delimiter  which seems to create an infinite loop
+                -- "(.+)"..delimiter   does not work either in the webplayer
+                for match in s:gmatch( "([^"..pattern.."]+)"..pattern ) do
+                    table.insert( chunks, match )
+                end
+            end
+        
+        else -- plain text delimiter
+            if s:find( delimiter, 1, true ) ~= nil then
+                if string.startswith( s, delimiter ) then
+                    s = s:sub( #delimiter+1, #s )
+                end
+                if not s:endswith( delimiter ) then
+                    s = s .. delimiter
+                end
+
+                local chunk = ""
+                local ts = string.totable( s )
+                local i = 1
+
+                while i <= #ts do
+                    local char = ts[i]
+                    if char == delimiter or s:sub( i, i-1 + #delimiter ) == delimiter then
+                        table.insert( chunks, chunk )
+                        chunk = ""
+                        i = i + #delimiter
+                    else
+                        chunk = chunk..char
+                        i = i + 1
+                    end
+                end
+
+                if #chunk > 0 then
+                    table.insert( chunks, chunk )
+                end
+            end
+        end
+
+        if #chunks == 0 then
+            chunks = { s }
+        end
+
+        return chunks
+    end
+
+end
