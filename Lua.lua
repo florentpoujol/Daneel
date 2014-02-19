@@ -279,28 +279,17 @@ end
 --- Print all key/value pairs within the provided table.
 -- @param t (table) The table to print.
 function table.print(t)
-    Daneel.Debug.StackTrace.BeginFunction("table.print", t)
-    local errorHead = "table.print(table) : "
-
     if t == nil then
-        print(errorHead.."Provided table is nil.")
-        Daneel.Debug.StackTrace.EndFunction()
+        print("table.print( t ) : Provided table is nil.")
         return
     end
 
-    Daneel.Debug.CheckArgType(t, "table", "table", errorHead)
-    
-    local tableString = tostring(t)
-    local rawTableString = Daneel.Debug.ToRawString(t)
-    if tableString ~= rawTableString then
-        tableString = tableString.." / "..rawTableString
-    end
-    print("~~~~~ table.print("..tableString..") ~~~~~ Start ~~~~~")
+    print("~~~~~ table.print("..tostring(t)..") ~~~~~ Start ~~~~~")
 
     local func = pairs
     if table.getlength(t) == 0 then
-        print("Provided table is empty.")
-    elseif table.isarray( t ) then
+        print("Table is empty.")
+    elseif table.isarray(t) then
         func = ipairs -- just to be sure that the entries are printed in order
     end
     
@@ -308,9 +297,7 @@ function table.print(t)
         print(key, value)
     end
 
-    print("~~~~~ table.print("..tableString..") ~~~~~ End ~~~~~")
-
-    Daneel.Debug.StackTrace.EndFunction()
+    print("~~~~~ table.print("..tostring(t)..") ~~~~~ End ~~~~~")
 end
 
 --- Merge two or more tables into one.
@@ -681,13 +668,14 @@ local functionsDebugInfo = {
         { name = "delimiterIsPattern", type = b, defaultValue = false },
     },
 
+    ["table.print"] = {}, -- just for the stacktrace
     ["table.getkeys"] = { _t },
     ["table.getvalues"] = { _t },
     ["table.reverse"] = { _t },
     ["table.reindex"] = { _t },
     ["table.getvalue"] = { _t, { name = "keys", type = s } },
     ["table.setvalue"] = { _t, { name = "keys", type = s } },
-    ["table.getkey"] = { _t, { name = "value", isOptional = false } },
+    ["table.getkey"] = { _t, { name = "value" } },
     ["table.copy"] = { _t, { name = "recursive", type = b, defaultValue = false } },
     ["table.containsvalue"] =   { _t, { name = "ignoreCase", type = b, defaultValue = false } },
     ["table.isarray"] = { _t, { name = "strict", type = b, defaultValue = true } },
@@ -699,7 +687,7 @@ local functionsDebugInfo = {
         { name = "returnFalseIfNotSameLength", type = b, isOptional = true }
     },
     ["table.removevalue"] = { _t, 
-        { name = "value", isOptional = false },
+        { name = "value" },
         { name = "maxRemoveCount", type = n, isOptional = true }
     },
     ["table.sortby"] = { _t, 
@@ -710,25 +698,12 @@ local functionsDebugInfo = {
 function CS.DaneelModules.Lua.DefaultConfig()
     return { functionsDebugInfo = functionsDebugInfo }
 end
--- TODO
--- functionDebugData changed in *Info
--- arg isOptional = false > any type but throw error if nil
--- OR voir si ça marche > type = "any" or type = nil
--- find type based on default value type ?
 
 
 ----------------------------------------------------------------------------------
--- function are overridden here with some Daneel-specific stuffs
-
--- Deprecated since v1.4. Alias of table.merge( ..., true ).
--- @param ... (table) At least two tables to recursively merge together.
--- @return (table) The new table.
-function table.deepmerge( ... )    
-    return table.merge( ..., true )
-end
+-- Some functions are overridden here with some Daneel-specific stuffs
 
 if CS.IsWebPlayer then
-
     function string.split( s, delimiter, delimiterIsPattern )
         local chunks = {}
         
@@ -790,7 +765,40 @@ if CS.IsWebPlayer then
 
         return chunks
     end
+end
 
+
+-- Deprecated since v1.4.0
+function table.deepmerge( ... )    
+    return table.merge( ..., true )
+end
+
+
+function table.print(t)
+    if t == nil then
+        print("table.print( t ) : Provided table is nil.")
+        return
+    end
+
+    local tableString = tostring(t)
+    local rawTableString = Daneel.Debug.ToRawString(t)
+    if tableString ~= rawTableString then
+        tableString = tableString.." / "..rawTableString
+    end
+    print("~~~~~ table.print("..tableString..") ~~~~~ Start ~~~~~")
+
+    local func = pairs
+    if table.getlength(t) == 0 then
+        print("Table is empty.")
+    elseif table.isarray( t ) then
+        func = ipairs -- just to be sure that the entries are printed in order
+    end
+    
+    for key, value in func(t) do
+        print(key, value)
+    end
+
+    print("~~~~~ table.print("..tableString..") ~~~~~ End ~~~~~")
 end
 
 
@@ -803,7 +811,7 @@ function table.getlength( t, keyType )
         if 
             keyType == nil or
             type( key ) == keyType or
-            tostring( Daneel.Debug.GetType( key ) ):lower() == keyType -- tostring() is to transform 'nil' as a string
+            Daneel.Debug.GetType( key ):lower() == keyType
         then
             length = length + 1
         end
