@@ -105,9 +105,17 @@ function Draw.LineRenderer.SetEndPosition( line, endPosition, draw )
     line._endPosition = endPosition
     line._direction = (line._endPosition - line.origin)
     line._length = line._direction:Length()
-    if draw then
+    if draw == nil or draw then
         line:Draw()
     end
+end
+
+functionsDebugInfo[ "Draw.LineRenderer.GetEndPosition" ] = { _l }
+--- Returns the line renderer's end position.
+-- @param line (LineRenderer) The line renderer.
+-- @return (Vector3) The end position.
+function Draw.LineRenderer.GetEndPosition( line )
+    return line._endPosition
 end
 
 functionsDebugInfo[ "Draw.LineRenderer.SetLength" ] = { _l, { name = "length", type = n }, _d }
@@ -119,9 +127,17 @@ functionsDebugInfo[ "Draw.LineRenderer.SetLength" ] = { _l, { name = "length", t
 function Draw.LineRenderer.SetLength( line, length, draw )
     line._length = length
     line._endPosition = line.origin + line._direction * length
-    if draw then
+    if draw == nil or draw then
         line:Draw()
     end
+end
+
+functionsDebugInfo[ "Draw.LineRenderer.GetLength" ] = { _l }
+--- Returns the line renderer's length.
+-- @param line (LineRenderer) The line renderer.
+-- @return (number) The length (in scene units).
+function Draw.LineRenderer.GetLength( line )
+    return line._length
 end
 
 functionsDebugInfo[ "Draw.LineRenderer.SetWidth" ] = { _l, { name = "direction", type = v },
@@ -139,9 +155,17 @@ function Draw.LineRenderer.SetDirection( line, direction, useDirectionAsLength, 
         line._length = direction:Length()
     end
     line._endPosition = line.origin + line._direction * line._length
-    if draw then
+    if draw == nil or draw then
         line:Draw()
     end
+end
+
+functionsDebugInfo[ "Draw.LineRenderer.GetDirection" ] = { _l }
+--- Returns the line renderer's direction.
+-- @param line (LineRenderer) The line renderer.
+-- @return (Vector3) The direction.
+function Draw.LineRenderer.GetDirection( line )
+    return line._direction
 end
 
 functionsDebugInfo[ "Draw.LineRenderer.SetWidth" ] = { _l, { name = "width", type = n }, _d }
@@ -151,11 +175,18 @@ functionsDebugInfo[ "Draw.LineRenderer.SetWidth" ] = { _l, { name = "width", typ
 -- @param draw (boolean) [default=true] Tell whether to re-draw immediately the line renderer.
 function Draw.LineRenderer.SetWidth( line, width, draw )
     line._width = width
-    if draw then
+    if draw == nil or draw then
         line:Draw()
     end
 end
 
+functionsDebugInfo[ "Draw.LineRenderer.GetWidth" ] = { _l }
+--- Returns the line renderer's width.
+-- @param line (LineRenderer) The line renderer.
+-- @return (number) The width.
+function Draw.LineRenderer.GetWidth( line )
+    return line._width
+end
 
 ----------------------------------------------------------------------------------
 -- CircleRenderer
@@ -267,9 +298,17 @@ functionsDebugInfo[ "Draw.CircleRenderer.SetRadius" ] = { _c, { name = "radius",
 -- @param draw (boolean) [default=true] Tell whether to re-draw immediately the circle renderer.
 function Draw.CircleRenderer.SetRadius( circle, radius, draw )
     circle._radius = radius
-    if draw then
+    if draw == nil or draw then
         circle:Draw()
     end
+end
+
+functionsDebugInfo[ "Draw.CircleRenderer.GetRadius" ] = { _c }
+--- Returns the circle renderer's radius.
+-- @param circle (CircleRenderer) The circle renderer.
+-- @return (number) The radius (in scene units).
+function Draw.CircleRenderer.GetRadius( circle )
+    return circle._radius
 end
 
 functionsDebugInfo[ "Draw.CircleRenderer.SetSegmentCount" ] = { _c, { name = "count", type = n }, _d }
@@ -281,18 +320,25 @@ function Draw.CircleRenderer.SetSegmentCount( circle, count, draw )
     if count < 3 then count = 3 end
     if circle._segmentCount ~= count then
         circle._segmentCount = count
-        if draw then
+        if draw == nil or draw then
             circle:Draw()
         end
     end
 end
 
-functionsDebugInfo[ "Draw.CircleRenderer.SetWidth" ] = { _c, { name = "width", type = n }, _d }
+functionsDebugInfo[ "Draw.CircleRenderer.GetSegmentCount" ] = { _c }
+--- Returns the circle renderer's number of segments.
+-- @param circle (CircleRenderer) The circle renderer.
+-- @return (number) The segment count.
+function Draw.CircleRenderer.GetSegmentCount( circle )
+    return circle._segmentCount
+end
+
+functionsDebugInfo[ "Draw.CircleRenderer.SetWidth" ] = { _c, { name = "width", type = n } }
 --- Sets the circle renderer segment's width.
 -- @param circle (CircleRenderer) The circle renderer.
 -- @param width (number) The segment's width (and height).
--- @param draw (boolean) [default=true] Tell whether to re-draw immediately the circle renderer.
-function Draw.CircleRenderer.SetWidth( circle, width, draw )
+function Draw.CircleRenderer.SetWidth( circle, width )
     if circle._width ~= width then
         circle._width = width
         if #circle.segments > 0 and draw then
@@ -304,18 +350,33 @@ function Draw.CircleRenderer.SetWidth( circle, width, draw )
     end
 end
 
-functionsDebugInfo[ "Draw.CircleRenderer.SetModel" ] = { _c, { name = "model", type = {"string", "Model"} }, _d }
+functionsDebugInfo[ "Draw.CircleRenderer.GetWidth" ] = { _c }
+--- Returns the circle renderer's segment's width (and height).
+-- @param circle (CircleRenderer) The circle renderer.
+-- @return (number) The width (in scene units).
+function Draw.CircleRenderer.GetWidth( circle )
+    return circle._width
+end
+
+functionsDebugInfo[ "Draw.CircleRenderer.SetModel" ] = { _c, { name = "model", type = {"string", "Model"} } }
 --- Sets the circle renderer segment's model.
 -- @param circle (CircleRenderer) The circle renderer.
 -- @param model (string or Model) The segment's model name or asset.
--- @param draw (boolean) [default=true] Tell whether to re-draw immediately the circle renderer.
-function Draw.CircleRenderer.SetModel( circle, model, draw )
+function Draw.CircleRenderer.SetModel( circle, model )
     if circle._model ~= model and circle._model:GetPath() ~= model then
         circle._model = Asset.Get( model, "Model", true )
         for i, line in pairs( circle.segments ) do
             line.modelRenderer:SetModel( circle._model )
         end
     end
+end
+
+functionsDebugInfo[ "Draw.CircleRenderer.GetModel" ] = { _c }
+--- Returns the circle renderer's segment's model.
+-- @param circle (CircleRenderer) The circle renderer.
+-- @return (Model) The model asset.
+function Draw.CircleRenderer.GetWidth( circle )
+    return circle._model
 end
 
 
