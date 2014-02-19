@@ -287,22 +287,6 @@ function Behavior:Awake()
         table.print( r )
     end
     
-    table.insert( ks, "quatre" )
-    if Daneel.Config.debug.enableDebug then
-        print( "table.combine : two warning messages expected below" )
-    end
-    
-    r = table.combine( ks, vs, false )
-    if not table.havesamecontent( r, t ) then
-        print( "table.combine 2" )
-        table.print( r )
-    end
-    
-    r = table.combine( ks, vs, true )
-    if r ~= false then
-        print( "table.combine 3", r )
-    end
-    
     -----
     local t = { 
         key = "value t",
