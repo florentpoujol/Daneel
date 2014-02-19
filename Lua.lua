@@ -268,7 +268,7 @@ function table.getlength( t, keyType )
     for key, value in pairs( t ) do
         if 
             keyType == nil or
-            type( key ) == keyType or
+            type( key ) == keyType
         then
             length = length + 1
         end
@@ -672,7 +672,7 @@ local functionsDebugInfo = {
     ["table.setvalue"] = { _t, { name = "keys", type = s } },
     ["table.getkey"] = { _t, { name = "value" } },
     ["table.copy"] = { _t, { name = "recursive", type = b, defaultValue = false } },
-    ["table.containsvalue"] =   { _t, { name = "ignoreCase", type = b, defaultValue = false } },
+    ["table.containsvalue"] =   { _t, { name = "value" }, { name = "ignoreCase", type = b, defaultValue = false } },
     ["table.isarray"] = { _t, { name = "strict", type = b, defaultValue = true } },
     ["table.shift"] = { _t, { name = "returnKey", type = b, defaultValue = false } },
     ["table.getlength"] = { _t, { name = "keyType", type = s, isOptional = true } },
@@ -698,68 +698,73 @@ end
 ----------------------------------------------------------------------------------
 -- Some functions are overridden here with some Daneel-specific stuffs
 
-if CS.IsWebPlayer then
-    function string.split( s, delimiter, delimiterIsPattern )
-        local chunks = {}
-        
-        if delimiterIsPattern then
-            local delimiterStartIndex, delimiterEndIndex = s:find( delimiter )
 
-            if delimiterStartIndex ~= nil then
-                local pattern = delimiter
-                delimiter = s:sub( delimiterStartIndex, delimiterEndIndex )
-                if string.startswith( s, delimiter ) then
-                    s = s:sub( #delimiter+1, #s )
-                end
-                if not s:endswith( delimiter ) then
-                    s = s .. delimiter
-                end
-                
+function string.split( s, delimiter, delimiterIsPattern )
+    local chunks = {}
+    
+    if delimiterIsPattern then
+        local delimiterStartIndex, delimiterEndIndex = s:find( delimiter )
+
+        if delimiterStartIndex ~= nil then
+            local pattern = delimiter
+            delimiter = s:sub( delimiterStartIndex, delimiterEndIndex )
+            if string.startswith( s, delimiter ) then
+                s = s:sub( #delimiter+1, #s )
+            end
+            if not s:endswith( delimiter ) then
+                s = s .. delimiter
+            end
+            
+            if CS.IsWebPlayer then
                 -- CS Webplayer specific part :
                 -- in the webplayer,  "(.-)"..delimiter  is translated into  "(.*)"..delimiter  which seems to create an infinite loop
                 -- "(.+)"..delimiter   does not work either in the webplayer
                 for match in s:gmatch( "([^"..pattern.."]+)"..pattern ) do
                     table.insert( chunks, match )
                 end
+            else
+                for match in s:gmatch( "(.-)"..pattern ) do 
+                    table.insert( chunks, match )
+                end
             end
-        
-        else -- plain text delimiter
-            if s:find( delimiter, 1, true ) ~= nil then
-                if string.startswith( s, delimiter ) then
-                    s = s:sub( #delimiter+1, #s )
-                end
-                if not s:endswith( delimiter ) then
-                    s = s .. delimiter
-                end
+        end
+    
+    else -- plain text delimiter
+        if s:find( delimiter, 1, true ) ~= nil then
+            if string.startswith( s, delimiter ) then
+                s = s:sub( #delimiter+1, #s )
+            end
+            if not s:endswith( delimiter ) then
+                s = s .. delimiter
+            end
 
-                local chunk = ""
-                local ts = string.totable( s )
-                local i = 1
+            local chunk = ""
+            local ts = string.totable( s )
+            local i = 1
 
-                while i <= #ts do
-                    local char = ts[i]
-                    if char == delimiter or s:sub( i, i-1 + #delimiter ) == delimiter then
-                        table.insert( chunks, chunk )
-                        chunk = ""
-                        i = i + #delimiter
-                    else
-                        chunk = chunk..char
-                        i = i + 1
-                    end
-                end
-
-                if #chunk > 0 then
+            while i <= #ts do
+                local char = ts[i]
+                if char == delimiter or s:sub( i, i-1 + #delimiter ) == delimiter then
                     table.insert( chunks, chunk )
+                    chunk = ""
+                    i = i + #delimiter
+                else
+                    chunk = chunk..char
+                    i = i + 1
                 end
             end
-        end
 
-        if #chunks == 0 then
-            chunks = { s }
+            if #chunk > 0 then
+                table.insert( chunks, chunk )
+            end
         end
-
-        return chunks
     end
+
+    if #chunks == 0 then
+        chunks = { s }
+    end
+
+    return chunks
 end
 
 

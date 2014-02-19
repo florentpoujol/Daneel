@@ -375,7 +375,7 @@ functionsDebugInfo[ "Draw.CircleRenderer.GetModel" ] = { _c }
 --- Returns the circle renderer's segment's model.
 -- @param circle (CircleRenderer) The circle renderer.
 -- @return (Model) The model asset.
-function Draw.CircleRenderer.GetWidth( circle )
+function Draw.CircleRenderer.GetModel( circle )
     return circle._model
 end
 
