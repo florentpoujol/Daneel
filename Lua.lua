@@ -308,16 +308,10 @@ end
 -- @return (table) The new table.
 function table.merge( ... )
     local arg = {...}
-    local recursive = table.remove( arg )
-    local argType = type( recursive )
-    if argType ~= "boolean" then
-        if argType == "table" then
-            table.insert( arg, recursive )
-        end
-        recursive = false
+    local recursive = false
+    if #arg > 0 and type( arg[ #arg ] ) ~= "table" then
+        recursive = table.remove( arg )
     end
-
-    Daneel.Debug.StackTrace.BeginFunction( "table.merge", ..., recursive )
     
     local fullTable = {}
     for i, t in ipairs( arg ) do
@@ -669,6 +663,7 @@ local functionsDebugInfo = {
     },
 
     ["table.print"] = {}, -- just for the stacktrace
+    ["table.merge"] = {},
     ["table.getkeys"] = { _t },
     ["table.getvalues"] = { _t },
     ["table.reverse"] = { _t },
