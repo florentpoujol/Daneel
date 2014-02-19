@@ -12,27 +12,25 @@ local s = "string"
 local b = "boolean"
 local n = "number"
 local t = "table"
+local v = "Vector3"
 local _go = { name = "gameObject", type = "GameObject" }
 local _p = { name = "params", type = t, defaultValue = {} }
 local _l = { name = "line", type = "LineRenderer"}
 local _c = { name = "circle", type = "CircleRenderer"}
 local _d = { name = "draw", type = b, defaultValue = true }
 
+
 ----------------------------------------------------------------------------------
 -- LineRenderer
 
 Draw.LineRenderer = {}
 
+functionsDebugInfo[ "Draw.LineRenderer.New" ] = { _go, _p }
 --- Creates a new LineRenderer component.
 -- @param gameObject (GameObject) The game object.
 -- @param params (table) A table of parameters.
 -- @return (LineRenderer) The new component.
 function Draw.LineRenderer.New( gameObject, params )
-    Daneel.Debug.StackTrace.BeginFunction( "Draw.LineRenderer.New", gameObject, params )
-    local errorHead = "Draw.LineRenderer.New( gameObject, params ) : "
-    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-    params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
-
     local line = {
         origin = gameObject.transform:GetPosition(),
         _direction = Vector3:Left(),
@@ -46,22 +44,15 @@ function Draw.LineRenderer.New( gameObject, params )
     setmetatable( line, Draw.LineRenderer )
     line:Set( table.merge( Draw.Config.lineRenderer, params ) )
 
-    Daneel.Debug.StackTrace.EndFunction()
     return line
 end
 
+functionsDebugInfo[ "Draw.LineRenderer.Set" ] = { _l, _p }
 --- Apply the content of the params argument to the provided line renderer.
 -- Overwrite Component.Set().
 -- @param line (LineRenderer) The line renderer.
 -- @param params (table) A table of parameters.
 function Draw.LineRenderer.Set( line, params )
-    Daneel.Debug.StackTrace.BeginFunction( "Draw.LineRenderer.Set", line, params )
-    local errorHead = "Draw.LineRenderer.Set( line, params ) : "
-    Daneel.Debug.CheckArgType( line, "line", "LineRenderer", errorHead )
-    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
-
-    local draw = false
-
     if params.endPosition and (params.length or params.direction) then
         if Daneel.Config.debug.enableDebug then
             local text = errorHead.."The 'endPosition' property is set."
@@ -77,6 +68,7 @@ function Draw.LineRenderer.Set( line, params )
         params.direction = nil
     end
 
+    local draw = false
     for key, value in pairs( params ) do
         local funcName = "Set"..string.ucfirst( key )
         if Draw.LineRenderer[ funcName ] ~= nil then
@@ -88,92 +80,60 @@ function Draw.LineRenderer.Set( line, params )
             end
         end
     end
-
     if draw then
         line:Draw()
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
+functionsDebugInfo[ "Draw.LineRenderer.Draw" ] = { _l }
 --- Draw the line renderer. Updates the game object based on the line renderer's properties.
 -- Fires the OnDraw event on the line renderer.
 -- @param line (LineRenderer) The line renderer.
 function Draw.LineRenderer.Draw( line )
-    Daneel.Debug.StackTrace.BeginFunction( "Draw.LineRenderer.Draw", line )
-    local errorHead = "Draw.LineRenderer.Draw( line ) : "
-    Daneel.Debug.CheckArgType( line, "line", "LineRenderer", errorHead )
-
     line.gameObject.transform:LookAt( line._endPosition )
     line.gameObject.transform:SetLocalScale( Vector3:New( line._width, line._width, line._length ) )
     Daneel.Event.Fire( line, "OnDraw", line )
-
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
+functionsDebugInfo[ "Draw.LineRenderer.SetEndPosition" ] = { _l, { name = "endPosition", type = v }, _d }
 --- Set the line renderer's end position.
 -- It also updates the line renderer's direction and length.
 -- @param line (LineRenderer) The line renderer.
 -- @param endPosition (Vector3) The end position.
--- @param draw (boolean) [optional default=true] Tell whether to re-draw immediately the line renderer.
+-- @param draw (boolean) [default=true] Tell whether to re-draw immediately the line renderer.
 function Draw.LineRenderer.SetEndPosition( line, endPosition, draw )
-    Daneel.Debug.StackTrace.BeginFunction( "Draw.LineRenderer.SetEndPosition", line, endPosition, draw )
-    local errorHead = "Draw.LineRenderer.SetEndPosition( line, endPosition, draw ) : "
-    Daneel.Debug.CheckArgType( line, "line", "LineRenderer", errorHead )
-    Daneel.Debug.CheckArgType( endPosition, "endPosition", "Vector3", errorHead )
-    draw = Daneel.Debug.CheckOptionalArgType( draw, "draw", "boolean", errorHead, true )
-
     line._endPosition = endPosition
     line._direction = (line._endPosition - line.origin)
     line._length = line._direction:Length()
     if draw then
         line:Draw()
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
+functionsDebugInfo[ "Draw.LineRenderer.SetLength" ] = { _l, { name = "length", type = n }, _d }
 --- Set the line renderer's length.
 -- It also updates line renderer's end position.
 -- @param line (LineRenderer) The line renderer.
 -- @param length (number) The length (in scene units).
--- @param draw (boolean) [optional default=true] Tell whether to re-draw immediately the line renderer.
+-- @param draw (boolean) [default=true] Tell whether to re-draw immediately the line renderer.
 function Draw.LineRenderer.SetLength( line, length, draw )
-    Daneel.Debug.StackTrace.BeginFunction( "Draw.LineRenderer.SetEndPosition", line, length, draw )
-    local errorHead = "Draw.LineRenderer.SetEndPosition( line, length, draw ) : "
-    Daneel.Debug.CheckArgType( line, "line", "LineRenderer", errorHead )
-    Daneel.Debug.CheckArgType( length, "length", "number", errorHead )
-    draw = Daneel.Debug.CheckOptionalArgType( draw, "draw", "boolean", errorHead, true )
-
     line._length = length
     line._endPosition = line.origin + line._direction * length
     if draw then
         line:Draw()
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
--- functionsDebugInfo[ "Draw.LineRenderer.SetDirection" ] = {
---     { name = "line", type = "LineRenderer" },
---     { name = "direction", type = "Vector3" }
---     { name = "useDirectionAsLength", type = "boolean", defaultValue = false }
---     { name = "draw", type = "boolean", defaultValue = true }
--- }
-
+functionsDebugInfo[ "Draw.LineRenderer.SetWidth" ] = { _l, { name = "direction", type = v },
+    { name = "useDirectionAsLength", type = b, defaultValue = false }, _d
+}
 --- Set the line renderer's direction.
 -- It also updates line renderer's end position.
 -- @param line (LineRenderer) The line renderer.
 -- @param direction (Vector3) The direction.
--- @param useDirectionAsLength (boolean) [optional default=false] Tell whether to update the line renderer's length based on the provided direction's vector length.
--- @param draw (boolean) [optional default=true] Tell whether to re-draw immediately the line renderer.
+-- @param useDirectionAsLength (boolean) [default=false] Tell whether to update the line renderer's length based on the provided direction's vector length.
+-- @param draw (boolean) [default=true] Tell whether to re-draw immediately the line renderer.
 function Draw.LineRenderer.SetDirection( line, direction, useDirectionAsLength, draw )
-    Daneel.Debug.StackTrace.BeginFunction( "Draw.LineRenderer.SetDirection", line, direction, useDirectionAsLength, draw )
-    local errorHead = "Draw.LineRenderer.SetDirection( line, direction, useDirectionAsLength, draw ) : "
-    Daneel.Debug.CheckArgType( line, "line", "LineRenderer", errorHead )
-    Daneel.Debug.CheckArgType( direction, "direction", "Vector3", errorHead )
-    useDirectionAsLength = Daneel.Debug.CheckOptionalArgType( useDirectionAsLength, "useDirectionAsLength", "boolean", errorHead, false )
-    draw = Daneel.Debug.CheckOptionalArgType( draw, "draw", "boolean", errorHead, true )
-
     line._direction = direction:Normalized()
     if useDirectionAsLength then
         line._length = direction:Length()
@@ -182,25 +142,18 @@ function Draw.LineRenderer.SetDirection( line, direction, useDirectionAsLength, 
     if draw then
         line:Draw()
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
+functionsDebugInfo[ "Draw.LineRenderer.SetWidth" ] = { _l, { name = "width", type = n }, _d }
 --- Set the line renderer's width (and height).
 -- @param line (LineRenderer) The line renderer.
 -- @param width (number) The width (in scene units).
--- @param draw (boolean) [optional default=true] Tell whether to re-draw immediately the line renderer.
+-- @param draw (boolean) [default=true] Tell whether to re-draw immediately the line renderer.
 function Draw.LineRenderer.SetWidth( line, width, draw )
-    Daneel.Debug.StackTrace.BeginFunction( "Draw.LineRenderer.SetWidth", line, width, draw )
-    local errorHead = "Draw.LineRenderer.SetWidth( line, width, draw ) : "
-    Daneel.Debug.CheckArgType( line, "line", "LineRenderer", errorHead )
-    Daneel.Debug.CheckArgType( width, "width", "number", errorHead )
-    draw = Daneel.Debug.CheckOptionalArgType( draw, "draw", "boolean", errorHead, true )
-
     line._width = width
     if draw then
         line:Draw()
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
@@ -233,7 +186,7 @@ function Draw.CircleRenderer.New( gameObject, params )
     return circle
 end
 
-functionsDebugInfo[ "Draw.CircleRenderer.Draw" ] = { _c, _p }
+functionsDebugInfo[ "Draw.CircleRenderer.Set" ] = { _c, _p }
 --- Apply the content of the params argument to the provided circle renderer.
 -- Overwrite Component.Set().
 -- @param circle (CircleRenderer) The circle renderer.
@@ -311,7 +264,7 @@ functionsDebugInfo[ "Draw.CircleRenderer.SetRadius" ] = { _c, { name = "radius",
 --- Sets the circle renderer's radius.
 -- @param circle (CircleRenderer) The circle renderer.
 -- @param radius (number) The radius (in scene units).
--- @param draw (boolean) [optional default=true] Tell whether to re-draw immediately the circle renderer.
+-- @param draw (boolean) [default=true] Tell whether to re-draw immediately the circle renderer.
 function Draw.CircleRenderer.SetRadius( circle, radius, draw )
     circle._radius = radius
     if draw then
@@ -323,7 +276,7 @@ functionsDebugInfo[ "Draw.CircleRenderer.SetSegmentCount" ] = { _c, { name = "co
 --- Sets the circle renderer's segment count.
 -- @param circle (CircleRenderer) The circle renderer.
 -- @param count (number) The segment count (can't be lower than 3).
--- @param draw (boolean) [optional default=true] Tell whether to re-draw immediately the circle renderer.
+-- @param draw (boolean) [default=true] Tell whether to re-draw immediately the circle renderer.
 function Draw.CircleRenderer.SetSegmentCount( circle, count, draw )
     if count < 3 then count = 3 end
     if circle._segmentCount ~= count then
@@ -338,7 +291,7 @@ functionsDebugInfo[ "Draw.CircleRenderer.SetWidth" ] = { _c, { name = "width", t
 --- Sets the circle renderer segment's width.
 -- @param circle (CircleRenderer) The circle renderer.
 -- @param width (number) The segment's width (and height).
--- @param draw (boolean) [optional default=true] Tell whether to re-draw immediately the circle renderer.
+-- @param draw (boolean) [default=true] Tell whether to re-draw immediately the circle renderer.
 function Draw.CircleRenderer.SetWidth( circle, width, draw )
     if circle._width ~= width then
         circle._width = width
@@ -355,7 +308,7 @@ functionsDebugInfo[ "Draw.CircleRenderer.SetModel" ] = { _c, { name = "model", t
 --- Sets the circle renderer segment's model.
 -- @param circle (CircleRenderer) The circle renderer.
 -- @param model (string or Model) The segment's model name or asset.
--- @param draw (boolean) [optional default=true] Tell whether to re-draw immediately the circle renderer.
+-- @param draw (boolean) [default=true] Tell whether to re-draw immediately the circle renderer.
 function Draw.CircleRenderer.SetModel( circle, model, draw )
     if circle._model ~= model and circle._model:GetPath() ~= model then
         circle._model = Asset.Get( model, "Model", true )
