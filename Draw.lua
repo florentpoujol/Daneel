@@ -5,13 +5,18 @@
 -- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 
 Draw = {}
-
-if CS.DaneelModules == nil then
-    CS.DaneelModules = {}
-end
-CS.DaneelModules[ "Draw" ] = Draw
+CS.DaneelModules.Draw = Draw
 
 local functionsDebugInfo = {}
+local s = "string"
+local b = "boolean"
+local n = "number"
+local t = "table"
+local _go = { name = "gameObject", type = "GameObject" }
+local _p = { name = "params", type = t, defaultValue = {} }
+local _l = { name = "line", type = "LineRenderer"}
+local _c = { name = "circle", type = "CircleRenderer"}
+local _d = { name = "draw", type = b, defaultValue = true }
 
 ----------------------------------------------------------------------------------
 -- LineRenderer
@@ -204,10 +209,7 @@ end
 
 Draw.CircleRenderer = {}
 
-functionsDebugInfo[ "Draw.CircleRenderer.New" ] = {
-    { name = "gameObject", type = "GameObject" },
-    { name = "params", type = "table", defaultValue = {} }
-}
+functionsDebugInfo[ "Draw.CircleRenderer.New" ] = { _go, _p }
 --- Creates a new circle renderer component.
 -- @param gameObject (GameObject) The game object.
 -- @param params (table) A table of parameters.
@@ -231,10 +233,7 @@ function Draw.CircleRenderer.New( gameObject, params )
     return circle
 end
 
-functionsDebugInfo[ "Draw.CircleRenderer.Draw" ] = { 
-    { name = "circle", type = "CircleRenderer" },
-    { name = "params", type = "table", defaultValue = {} }
-}
+functionsDebugInfo[ "Draw.CircleRenderer.Draw" ] = { _c, _p }
 --- Apply the content of the params argument to the provided circle renderer.
 -- Overwrite Component.Set().
 -- @param circle (CircleRenderer) The circle renderer.
@@ -253,7 +252,7 @@ function Draw.CircleRenderer.Set( circle, params )
     end
 end
 
-functionsDebugInfo[ "Draw.CircleRenderer.Draw" ] = { { name = "circle", type = "CircleRenderer" } }
+functionsDebugInfo[ "Draw.CircleRenderer.Draw" ] = { _c }
 --- Draw the circle renderer. Updates the game object based on the circle renderer's properties.
 -- Fires the OnDraw event at the circle renderer.
 -- @param circle (CircleRenderer) The circle renderer.
@@ -308,11 +307,7 @@ function Draw.CircleRenderer.Draw( circle )
     Daneel.Event.Fire( circle, "OnDraw", circle )
 end
 
-functionsDebugInfo[ "Draw.CircleRenderer.SetRadius" ] = { 
-    { name = "circle", type = "CircleRenderer" },
-    { name = "radius", type = "number" },
-    { name = "draw", type = "boolean", defaultValue = true },
-}
+functionsDebugInfo[ "Draw.CircleRenderer.SetRadius" ] = { _c, { name = "radius", type = n }, _d }
 --- Sets the circle renderer's radius.
 -- @param circle (CircleRenderer) The circle renderer.
 -- @param radius (number) The radius (in scene units).
@@ -324,11 +319,7 @@ function Draw.CircleRenderer.SetRadius( circle, radius, draw )
     end
 end
 
-functionsDebugInfo[ "Draw.CircleRenderer.SetSegmentCount" ] = { 
-    { name = "circle", type = "CircleRenderer" },
-    { name = "count", type = "number" },
-    { name = "draw", type = "boolean", defaultValue = true },
-}
+functionsDebugInfo[ "Draw.CircleRenderer.SetSegmentCount" ] = { _c, { name = "count", type = n }, _d }
 --- Sets the circle renderer's segment count.
 -- @param circle (CircleRenderer) The circle renderer.
 -- @param count (number) The segment count (can't be lower than 3).
@@ -343,11 +334,7 @@ function Draw.CircleRenderer.SetSegmentCount( circle, count, draw )
     end
 end
 
-functionsDebugInfo[ "Draw.CircleRenderer.SetWidth" ] = { 
-    { name = "circle", type = "CircleRenderer" },
-    { name = "width", type = "number" },
-    { name = "draw", type = "boolean", defaultValue = true },
-}
+functionsDebugInfo[ "Draw.CircleRenderer.SetWidth" ] = { _c, { name = "width", type = n }, _d }
 --- Sets the circle renderer segment's width.
 -- @param circle (CircleRenderer) The circle renderer.
 -- @param width (number) The segment's width (and height).
@@ -364,11 +351,7 @@ function Draw.CircleRenderer.SetWidth( circle, width, draw )
     end
 end
 
-functionsDebugInfo[ "Draw.CircleRenderer.SetModel" ] = { 
-    { name = "circle", type = "CircleRenderer" },
-    { name = "model", type = {"string", "Model"} },
-    { name = "draw", type = "boolean", defaultValue = true },
-}
+functionsDebugInfo[ "Draw.CircleRenderer.SetModel" ] = { _c, { name = "model", type = {"string", "Model"} }, _d }
 --- Sets the circle renderer segment's model.
 -- @param circle (CircleRenderer) The circle renderer.
 -- @param model (string or Model) The segment's model name or asset.
