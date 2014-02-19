@@ -2590,7 +2590,7 @@ function Daneel.DefaultConfig()
             enableDebug = false, -- Enable/disable Daneel's global debugging features (error reporting + stacktrace).
             enableStackTrace = false, -- Enable/disable the Stack Trace.
 
-            functionsDebugData = {},
+            functionsDebugInfo = {},
         },
 
         allowDynamicComponentFunctionCallOnGameObject = true,
@@ -2707,8 +2707,8 @@ function Daneel.Load()
                 Daneel.Config.objects = table.merge( Daneel.Config.objects, _module.Config.componentObjects )
             end
 
-            if _module.Config.functionsDebugData ~= nil then
-                Daneel.Config.debug.functionsDebugData = table.merge( Daneel.Config.debug.functionsDebugData, _module.Config.functionsDebugData )
+            if _module.Config.functionsDebugInfo ~= nil then
+                Daneel.Config.debug.functionsDebugInfo = table.merge( Daneel.Config.debug.functionsDebugInfo, _module.Config.functionsDebugInfo )
             end
         end
     end
@@ -2725,7 +2725,7 @@ function Daneel.Load()
         end
 
         -- overload functions with debug (error reporting + stacktrace)
-        for funcName, data in pairs( Daneel.Config.debug.functionsDebugData ) do
+        for funcName, data in pairs( Daneel.Config.debug.functionsDebugInfo ) do
             Daneel.Debug.RegisterFunction( funcName, data )
         end
     end

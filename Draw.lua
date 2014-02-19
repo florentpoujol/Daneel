@@ -11,7 +11,7 @@ if CS.DaneelModules == nil then
 end
 CS.DaneelModules[ "Draw" ] = Draw
 
-local functionsDebugData = {}
+local functionsDebugInfo = {}
 
 ----------------------------------------------------------------------------------
 -- LineRenderer
@@ -148,7 +148,7 @@ function Draw.LineRenderer.SetLength( line, length, draw )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
--- functionsDebugData[ "Draw.LineRenderer.SetDirection" ] = {
+-- functionsDebugInfo[ "Draw.LineRenderer.SetDirection" ] = {
 --     { name = "line", type = "LineRenderer" },
 --     { name = "direction", type = "Vector3" }
 --     { name = "useDirectionAsLength", type = "boolean", defaultValue = false }
@@ -204,7 +204,7 @@ end
 
 Draw.CircleRenderer = {}
 
-functionsDebugData[ "Draw.CircleRenderer.New" ] = {
+functionsDebugInfo[ "Draw.CircleRenderer.New" ] = {
     { name = "gameObject", type = "GameObject" },
     { name = "params", type = "table", defaultValue = {} }
 }
@@ -231,7 +231,7 @@ function Draw.CircleRenderer.New( gameObject, params )
     return circle
 end
 
-functionsDebugData[ "Draw.CircleRenderer.Draw" ] = { 
+functionsDebugInfo[ "Draw.CircleRenderer.Draw" ] = { 
     { name = "circle", type = "CircleRenderer" },
     { name = "params", type = "table", defaultValue = {} }
 }
@@ -253,7 +253,7 @@ function Draw.CircleRenderer.Set( circle, params )
     end
 end
 
-functionsDebugData[ "Draw.CircleRenderer.Draw" ] = { { name = "circle", type = "CircleRenderer" } }
+functionsDebugInfo[ "Draw.CircleRenderer.Draw" ] = { { name = "circle", type = "CircleRenderer" } }
 --- Draw the circle renderer. Updates the game object based on the circle renderer's properties.
 -- Fires the OnDraw event at the circle renderer.
 -- @param circle (CircleRenderer) The circle renderer.
@@ -308,7 +308,7 @@ function Draw.CircleRenderer.Draw( circle )
     Daneel.Event.Fire( circle, "OnDraw", circle )
 end
 
-functionsDebugData[ "Draw.CircleRenderer.SetRadius" ] = { 
+functionsDebugInfo[ "Draw.CircleRenderer.SetRadius" ] = { 
     { name = "circle", type = "CircleRenderer" },
     { name = "radius", type = "number" },
     { name = "draw", type = "boolean", defaultValue = true },
@@ -324,7 +324,7 @@ function Draw.CircleRenderer.SetRadius( circle, radius, draw )
     end
 end
 
-functionsDebugData[ "Draw.CircleRenderer.SetSegmentCount" ] = { 
+functionsDebugInfo[ "Draw.CircleRenderer.SetSegmentCount" ] = { 
     { name = "circle", type = "CircleRenderer" },
     { name = "count", type = "number" },
     { name = "draw", type = "boolean", defaultValue = true },
@@ -343,7 +343,7 @@ function Draw.CircleRenderer.SetSegmentCount( circle, count, draw )
     end
 end
 
-functionsDebugData[ "Draw.CircleRenderer.SetWidth" ] = { 
+functionsDebugInfo[ "Draw.CircleRenderer.SetWidth" ] = { 
     { name = "circle", type = "CircleRenderer" },
     { name = "width", type = "number" },
     { name = "draw", type = "boolean", defaultValue = true },
@@ -364,7 +364,7 @@ function Draw.CircleRenderer.SetWidth( circle, width, draw )
     end
 end
 
-functionsDebugData[ "Draw.CircleRenderer.SetModel" ] = { 
+functionsDebugInfo[ "Draw.CircleRenderer.SetModel" ] = { 
     { name = "circle", type = "CircleRenderer" },
     { name = "model", type = {"string", "Model"} },
     { name = "draw", type = "boolean", defaultValue = true },
@@ -387,7 +387,7 @@ end
 
 function Draw.DefaultConfig()
     local config = {
-        functionsDebugData = functionsDebugData,
+        functionsDebugInfo = functionsDebugInfo,
         
         lineRenderer = {
             direction = Vector3:Left(),
