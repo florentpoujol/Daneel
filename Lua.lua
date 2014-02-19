@@ -184,10 +184,6 @@ end
 -- @param s (string) The string.
 -- @return (string) The trimmed string.
 function string.trimstart( s )
-    Daneel.Debug.StackTrace.BeginFunction( "string.trimstart", s )
-    local errorHead = "string.trimstart( string ) : "
-    Daneel.Debug.CheckArgType( s, "string", "string", errorHead )
- 
     return ( s:gsub( "^%s+", "" ) )
 end
 
@@ -240,9 +236,9 @@ end
 -- @param value (mixed) The value to search for.
 -- @param ignoreCase (boolean) [default=false] Ignore the case of the value. If true, the value must be of type 'string'.
 -- @return (boolean) True if the value is found in the table, false otherwise.
-function table.containsvalue(t, value, ignoreCase)
+function table.containsvalue( t, value, ignoreCase )
     if value == nil then
-        error(errorHead.."Argument 'value' is nil.")
+        return false
     end
     if ignoreCase and type( value ) == 'string' then
         value = value:lower()
@@ -359,13 +355,6 @@ function table.merge( ... )
     return fullTable
 end
 
---- Deprecated since v1.3.1. Alias of table.merge( ..., true ).
--- @param ... (table) At least two tables to recursively merge together.
--- @return (table) The new table.
-function table.deepmerge( ... )    
-    return table.merge( unpack( table.insert( {...}, true ) ) )
-end
-
 --- Compare table1 and table2. Returns true if they have the exact same keys which have the exact same values.
 -- @param table1 (table) The first table to compare.
 -- @param table2 (table) The second table to compare to the first table.
@@ -374,14 +363,27 @@ function table.havesamecontent( table1, table2 )
     if table.getlength(table1) ~= table.getlength(table2) then
         return false
     end
-    local areEqual = true
     for key, value in pairs( table1 ) do
         if table1[ key ] ~= table2[ key ] then
-            areEqual = false
-            break
+            return false
         end
     end
-    return areEqual
+    return true
+end
+
+--- Create an associative table with the provided keys and values tables.
+-- @param keys (table) The keys of the future table.
+-- @param values (table) The values of the future table.
+-- @return (table or boolean) The combined table or false if the tables have different length.
+function table.combine( keys, values )
+    if #keys ~= #values then
+        print( "table.combine( keys, values ) : WARNING : Arguments 'keys' and 'values' have different length :", #keys, #values )
+    end
+    local newTable = {}
+    for i, key in pairs( keys ) do
+        newTable[ key ] = values[ i ]
+    end
+    return newTable
 end
 
 --- Remove the provided value from the provided table.
@@ -404,7 +406,6 @@ function table.removevalue( t, value, maxRemoveCount )
                 t[ key ] = nil
             end
             removeCount = removeCount + 1
-
             if maxRemoveCount ~= nil and removeCount == maxRemoveCount then
                 break
             end
@@ -559,18 +560,17 @@ end
 -- @param strict (boolean) [default=true] When false, the function returns true when the table only has integer keys. When true, the function returns true when the table only has integer keys in a single and continuous set.
 -- @return (boolean) True or false.
 function table.isarray( t, strict )
-    local isArray = true
     local entriesCount = 0
     for k, v in pairs( t ) do
         entriesCount = entriesCount + 1
-        if isArray and ( type( k ) ~= "number" or not math.isinteger( k ) ) then
-            isArray = false
+        if type( k ) ~= "number" or not math.isinteger( k ) then
+            return false
         end
     end
-    if isArray and strict then
-        isArray = (entriesCount == #t)
+    if strict == nil or strict then
+        return (entriesCount == #t)
     end  
-    return isArray
+    return true
 end
 
 --- Reverse the order of the provided table's values.
@@ -620,23 +620,19 @@ end
 -- @param t (table) The table.
 -- @return (table) The sequence.
 function table.reindex( t )
-    local newTable = {}
     if not table.isarray( t, false ) then
-        if Daneel.Config.debug.enableDebug then
-            print( "table.reindex( table ) : Provided table '"..tostring( t ).."' is not an array." )
+        print( "table.reindex( table ) : Provided table '"..tostring( t ).."' is not an array." )
+    end
+    local maxi = 1
+    for i, v in pairs( t ) do
+        if type( i ) == "number" and i > maxi then
+            maxi = i
         end
-    else
-        local maxi = 1
-        for i, v in pairs( t ) do
-            if i > maxi then
-                maxi = i
-            end
-        end
-        
-        for i=1, maxi do
-            if t[i] ~= nil then
-                table.insert( newTable, t[i] )
-            end
+    end
+    local newTable = {}
+    for i=1, maxi do
+        if t[i] ~= nil then
+            table.insert( newTable, t[i] )
         end
     end
     return newTable
@@ -648,7 +644,8 @@ end
 -- DaneelModules is inside CS because you can do 'if CS.DaneelModules == nil' but you can't do 'if DaneelModules == nil'
 -- and you can't be sure to be able to access table.getvalue( _G, "" )
 -- (actually you can since v1.4)
-CS.DaneelModules = { Lua = {} }
+CS.DaneelModules = {}
+CS.DaneelModules.Lua = {} 
 
 local s = "string"
 local b = "boolean"
@@ -658,7 +655,7 @@ local _s = { name = "s", type = s }
 local _t = { name = "t", type = t }
 
 local functionsDebugInfo = {
-    ["math.isinteger"] = { { name = n } },
+    ["math.isinteger"] = { { name = "number" } },
     ["math.lerp"] = {
         { name = "a", type = n },
         { name = "b", type = n },
@@ -697,6 +694,10 @@ local functionsDebugInfo = {
     ["table.shift"] = { _t, { name = "returnKey", type = b, defaultValue = false } },
     ["table.getlength"] = { _t, { name = "keyType", type = s, isOptional = true } },
     ["table.havesamecontent"] = { _t, { name = "table1", type = t }, { name = "table2", type = t } },
+    ["table.combine"] = { _t, 
+        { name = "values", type = "table" },
+        { name = "returnFalseIfNotSameLength", type = b, isOptional = true }
+    },
     ["table.removevalue"] = { _t, 
         { name = "value", isOptional = false },
         { name = "maxRemoveCount", type = n, isOptional = true }
@@ -706,7 +707,6 @@ local functionsDebugInfo = {
         { name = "orderBy", type = s, isOptional = true },
     },
 }
-
 function CS.DaneelModules.Lua.DefaultConfig()
     return { functionsDebugInfo = functionsDebugInfo }
 end
@@ -716,6 +716,16 @@ end
 -- OR voir si ça marche > type = "any" or type = nil
 -- find type based on default value type ?
 
+
+----------------------------------------------------------------------------------
+-- function are overridden here with some Daneel-specific stuffs
+
+-- Deprecated since v1.4. Alias of table.merge( ..., true ).
+-- @param ... (table) At least two tables to recursively merge together.
+-- @return (table) The new table.
+function table.deepmerge( ... )    
+    return table.merge( ..., true )
+end
 
 if CS.IsWebPlayer then
 
@@ -783,10 +793,7 @@ if CS.IsWebPlayer then
 
 end
 
---- Returns the length of a table, which is the numbers of keys of the provided type (or of any type), for which the value is not nil.
--- @param t (table) The table.
--- @param keyType (string) [optional] Any Lua or CraftStudio type ('string', 'GameObject', ...), case insensitive.
--- @return (number) The table length.
+
 function table.getlength( t, keyType )   
     local length = 0
     if keyType ~= nil then
