@@ -300,20 +300,30 @@ function table.print(t)
     print("~~~~~ table.print("..tostring(t)..") ~~~~~ End ~~~~~")
 end
 
---- Merge two or more tables into one.
+--- Merge two or more tables into one new table.
 -- Table as values with a metatable are considered as instances and are not recursively merged.
 -- When the tables are arrays, the integer keys are not overridden.
 -- @param ... (table) Two or more tables
 -- @param recursive (boolean) [default=false] Tell whether tables as values must be merged recursively. Has no effect when the tables are arrays.
 -- @return (table) The new table.
 function table.merge( ... )
+    return table.mergein( {}, ... )
+end
+
+--- Merge two or more tables in place, into the first provided table.
+-- Table as values with a metatable are considered as instances and are not recursively merged.
+-- When the tables are arrays, the integer keys are not overridden.
+-- @param ... (table) Two or more tables
+-- @param recursive (boolean) [default=false] Tell whether tables as values must be merged recursively. Has no effect when the tables are arrays.
+-- @return (table) The first provided table.
+function table.mergein( ... )
     local arg = {...}
     local recursive = false
     if #arg > 0 and type( arg[ #arg ] ) ~= "table" then
         recursive = table.remove( arg )
     end
     
-    local fullTable = {}
+    local fullTable = table.remove( arg, 1 )
     for i, t in ipairs( arg ) do
         local argType = type( t )
         if argType == "table" then
@@ -664,6 +674,7 @@ local functionsDebugInfo = {
 
     ["table.print"] = {}, -- just for the stacktrace
     ["table.merge"] = {},
+    ["table.mergein"] = {},
     ["table.getkeys"] = { _t },
     ["table.getvalues"] = { _t },
     ["table.reverse"] = { _t },
