@@ -1059,7 +1059,7 @@ function Daneel.Load()
 
     -- load Daneel config
     if table.getvalue( _G, "DaneelUserConfig" ) ~= nil and type( DaneelUserConfig ) == "function" then 
-        Daneel.Config = table.merge( Daneel.Config, DaneelUserConfig(), true ) -- use Daneel.Config here since some of its values may have been modified already by some momdules
+        table.mergein( Daneel.Config, DaneelUserConfig(), true ) -- use Daneel.Config here since some of its values may have been modified already by some momdules
     end
 
     -- load modules config
@@ -1077,29 +1077,28 @@ function Daneel.Load()
             local userConfig = {}
             local functionName = name .. "UserConfig"
             if table.getvalue( _G, functionName ) ~= nil and type( _G[ functionName ] ) == "function" then
-                _module.Config = table.merge( _module.Config, _G[ functionName ](), true )
+                table.mergein( _module.Config, _G[ functionName ](), true )
             end
 
             if _module.Config.objects ~= nil then
-                Daneel.Config.objects = table.merge( Daneel.Config.objects, _module.Config.objects )
+                table.mergein( Daneel.Config.objects, _module.Config.objects )
             end
 
             if _module.Config.componentObjects ~= nil then
-                Daneel.Config.componentObjects = table.merge( Daneel.Config.componentObjects, _module.Config.componentObjects )
-                Daneel.Config.objects = table.merge( Daneel.Config.objects, _module.Config.componentObjects )
+                table.mergein( Daneel.Config.componentObjects, _module.Config.componentObjects )
+                table.mergein( Daneel.Config.objects, _module.Config.componentObjects )
             end
 
             if _module.Config.functionsDebugInfo ~= nil then
-                Daneel.Config.debug.functionsDebugInfo = table.merge( Daneel.Config.debug.functionsDebugInfo, _module.Config.functionsDebugInfo )
+                table.mergein( Daneel.Config.debug.functionsDebugInfo, _module.Config.functionsDebugInfo )
             end
         end
     end
     
-    Daneel.Config.objects = table.merge( Daneel.Config.objects, Daneel.Config.componentObjects, Daneel.Config.assetObjects )
+    table.mergein( Daneel.Config.objects, Daneel.Config.componentObjects, Daneel.Config.assetObjects )
     
     Daneel.SetComponents( Daneel.Config.componentObjects )
-    Daneel.Config.componentTypes = table.getkeys( Daneel.Config.componentObjects )
-
+    table.mergein( Daneel.Config.componentTypes, table.getkeys( Daneel.Config.componentObjects ) )
 
     if Daneel.Config.debug.enableDebug then
         if Daneel.Config.debug.enableStackTrace then
