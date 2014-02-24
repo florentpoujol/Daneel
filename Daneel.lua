@@ -1068,16 +1068,22 @@ function Daneel.Load()
             _module.isConfigLoaded = true
 
             if _module.Config == nil then
-                _module.Config = {}
+                local config = _module.DefaultConfig
+                if type( config ) == "function" then
+                    config = config()
+                end
+                if config == nil then
+                    config = {}
+                end
+                _module.Config = config
             end
-            if type( _module.DefaultConfig ) == "function" then
-                _module.Config = _module.DefaultConfig()
+
+            local userConfig = _module.UserConfig
+            if type( userConfig ) == "function" then
+                userConfig = userConfig()
             end
-            
-            local userConfig = {}
-            local functionName = name .. "UserConfig"
-            if table.getvalue( _G, functionName ) ~= nil and type( _G[ functionName ] ) == "function" then
-                table.mergein( _module.Config, _G[ functionName ](), true )
+            if userConfig ~= nil then
+                table.mergein( _module.Config, userConfig, true )
             end
 
             if _module.Config.objects ~= nil then
@@ -1301,6 +1307,7 @@ function Behavior:Update()
         func()
     end
 end
+
 
 -- Everything below is here because it use Daneel.Config
 
