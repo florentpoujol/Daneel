@@ -4,6 +4,17 @@
 -- Last modified for v1.3.1
 -- Copyright © 2013 Florent POUJOL, published under the MIT license.
 
+
+DaneelModules.Trigger = {
+    Load = function()
+        if DaneelModules.Tags == nil then
+            print( "ERROR : Trigger.Load() : the 'Tags' module is missing." )
+            GameObject.Tags = {} -- prevent the script to throw bazillion errors in Update
+        end
+    end
+}
+
+
 --[[PublicProperties
 tags string ""
 range number 0

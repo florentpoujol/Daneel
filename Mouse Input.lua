@@ -15,6 +15,10 @@ MouseInput.DefaultConfig = {
 MouseInput.Config = MouseInput.DefaultConfig
 
 function MouseInput.Load()
+    if DaneelModules.Tags == nil then
+        print( "ERROR : MouseInput.Load() : the 'Tags' module is missing." )
+        GameObject.Tags = {} -- prevent the script to throw bazillion errors in Update
+    end
     for buttonName, _ in pairs( MouseInput.buttonExists ) do
         MouseInput.buttonExists[ buttonName ] = Daneel.Utilities.ButtonExists( buttonName )
     end
