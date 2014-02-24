@@ -18,7 +18,7 @@ functionsDebugInfo["GameObject.GetWithTag"] = { _t }
 -- @return (table) The game object(s) (empty if none is found).
 function GameObject.GetWithTag( tag )
     local tags = tag
-    if argType == "string" then
+    if type( tags ) == "string" then
         tags = { tags }
     end
 
@@ -81,7 +81,7 @@ function GameObject.AddTag( gameObject, tag )
     end
 end
 
-functionsDebugInfo["GameObject.RemoveTag"] = { _go, _t }
+functionsDebugInfo["GameObject.RemoveTag"] = { _go, { name = "tag", type = {"string", "table"}, isOptional = true } }
 --- Remove the provided tag(s) from the provided game object.
 -- If the 'tag' argument is not provided, all tag of the game object will be removed.
 -- @param gameObject (GameObject) The game object.

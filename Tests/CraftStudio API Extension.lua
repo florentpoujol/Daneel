@@ -287,8 +287,10 @@ function Behavior:Awake()
     
     --------
     -- Scene
+    
     print( "~~~~~ Scene ~~~~~" )
-        local go = Scene.Append( "Prefab" )
+    
+    local go = Scene.Append( "Prefab" )
     go.transform.position = Vector3(0,-2,-5)
     if go == nil or go.name ~= "PrefabGameObject" then
         print( "Scene.Append 1", go )

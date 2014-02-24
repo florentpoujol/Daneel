@@ -677,11 +677,11 @@ local functionsDebugInfo = {
     ["table.setvalue"] = { _t, { name = "keys", type = s } },
     ["table.getkey"] = { _t, { name = "value" } },
     ["table.copy"] = { _t, { name = "recursive", type = b, defaultValue = false } },
-    ["table.containsvalue"] =   { _t, { name = "value" }, { name = "ignoreCase", type = b, defaultValue = false } },
+    ["table.containsvalue"] = { _t, { name = "value" }, { name = "ignoreCase", type = b, defaultValue = false } },
     ["table.isarray"] = { _t, { name = "strict", type = b, defaultValue = true } },
     ["table.shift"] = { _t, { name = "returnKey", type = b, defaultValue = false } },
     ["table.getlength"] = { _t, { name = "keyType", type = s, isOptional = true } },
-    ["table.havesamecontent"] = { _t, { name = "table1", type = t }, { name = "table2", type = t } },
+    ["table.havesamecontent"] = { { name = "table1", type = t }, { name = "table2", type = t } },
     ["table.combine"] = { _t, 
         { name = "values", type = "table" },
         { name = "returnFalseIfNotSameLength", type = b, isOptional = true }
