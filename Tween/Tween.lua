@@ -376,10 +376,7 @@ end
 ----------------------------------------------------------------------------------
 -- Config - Loading
 
-if CS.DaneelModules == nil then
-    CS.DaneelModules = {}
-end
-CS.DaneelModules[ "Tween" ] = Tween
+DaneelModules.Tween = Tween
 
 function Tween.DefaultConfig()
     local config = {
@@ -429,10 +426,6 @@ function Tween.DefaultConfig()
     return config
 end
 Tween.Config = Tween.DefaultConfig()
-
-function Tween.Load()
-    Daneel.Tween = Tween
-end
 
 function Tween.Awake()
     -- destroy and sanitize the tweeners when the scene loads

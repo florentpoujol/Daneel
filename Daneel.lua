@@ -1063,7 +1063,7 @@ function Daneel.Load()
     end
 
     -- load modules config
-    for name, _module in pairs( CS.DaneelModules ) do
+    for name, _module in pairs( DaneelModules ) do
         if _module.isConfigLoaded ~= true then
             _module.isConfigLoaded = true
 
@@ -1142,7 +1142,7 @@ function Daneel.Load()
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Load" )
 
     -- Load modules 
-    for i, _module in pairs( CS.DaneelModules ) do
+    for i, _module in pairs( DaneelModules ) do
         if _module.isLoaded ~= true then
             _module.isLoaded = true
             if type( _module.Load ) == "function" then
@@ -1159,7 +1159,7 @@ function Daneel.Load()
 
     -- check for module update functions
     Daneel.moduleUpdateFunctions = {}
-    for i, _module in pairs( CS.DaneelModules ) do
+    for i, _module in pairs( DaneelModules ) do
         if _module.doNotCallUpdate ~= true then
             if type( _module.Update ) == "function" and not table.containsvalue( Daneel.moduleUpdateFunctions, _module.Update ) then
                 table.insert( Daneel.moduleUpdateFunctions, _module.Update )
@@ -1232,7 +1232,7 @@ function Behavior:Awake()
 
 
     -- Awake modules 
-    for i, _module in pairs( CS.DaneelModules ) do
+    for i, _module in pairs( DaneelModules ) do
         if type( _module.Awake ) == "function" then
             _module.Awake()
         end
@@ -1255,7 +1255,7 @@ function Behavior:Start()
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Start" )
 
     -- Start modules 
-    for i, _module in pairs( CS.DaneelModules ) do
+    for i, _module in pairs( DaneelModules ) do
         if type( _module.Start ) == "function" then
             _module.Start()
         end

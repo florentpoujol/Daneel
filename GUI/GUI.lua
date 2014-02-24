@@ -1772,10 +1772,7 @@ end
 ----------------------------------------------------------------------------------
 -- Config - loading
 
-if CS.DaneelModules == nil then
-    CS.DaneelModules = {}
-end
-CS.DaneelModules[ "GUI" ] = GUI
+DaneelModules.GUI = GUI
 
 function GUI.DefaultConfig()
     local config = {
@@ -1859,9 +1856,7 @@ end
 GUI.Config = GUI.DefaultConfig()
 
 function GUI.Load()
-    Daneel.GUI = GUI
-
-    if CS.DaneelModules["MouseInput"] == nil and Daneel.Config.debug.enableDebug then
+    if DaneelModules.MouseInput == nil and Daneel.Config.debug.enableDebug then
         print( "GUI.Load() : Your project seems to lack the 'Mouse Input' module. It is required for the player to interact with the GUI.Toggle, GUI.Input and GUI.Slider components." )
     end
 

@@ -632,12 +632,6 @@ end
 
 ----------------------------------------------------------------------------------
 
--- DaneelModules is inside CS because you can do 'if CS.DaneelModules == nil' but you can't do 'if DaneelModules == nil'
--- and you can't be sure to be able to access table.getvalue( _G, "" )
--- (actually you can since v1.4)
-CS.DaneelModules = {}
-CS.DaneelModules.Lua = {} 
-
 local s = "string"
 local b = "boolean"
 local n = "number"
@@ -701,10 +695,8 @@ local functionsDebugInfo = {
         { name = "orderBy", type = s, isOptional = true },
     },
 }
-function CS.DaneelModules.Lua.DefaultConfig()
-    return { functionsDebugInfo = functionsDebugInfo }
-end
 
+DaneelModules = { Lua = { DefaultConfig = { functionsDebugInfo = functionsDebugInfo } } }
 
 ----------------------------------------------------------------------------------
 -- Some functions are overridden here with some Daneel-specific stuffs

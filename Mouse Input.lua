@@ -7,18 +7,12 @@
 MouseInput = { 
     buttonExists = { LeftMouse = false, RightMouse = false, WheelUp = false, WheelDown = false }
 }
+DaneelModules.MouseInput = MouseInput
 
-if CS.DaneelModules == nil then
-    CS.DaneelModules = {}
-end
-CS.DaneelModules[ "MouseInput" ] = MouseInput
-
-function MouseInput.DefaultConfig()
-    return {
-        doubleClickDelay = 20, -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
-    }
-end
-MouseInput.Config = MouseInput.DefaultConfig()
+MouseInput.DefaultConfig = {
+    doubleClickDelay = 20, -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
+}
+MouseInput.Config = MouseInput.DefaultConfig
 
 function MouseInput.Load()
     for buttonName, _ in pairs( MouseInput.buttonExists ) do
