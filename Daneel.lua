@@ -1058,8 +1058,12 @@ function Daneel.Load()
     Daneel.isLoading = true
 
     -- load Daneel config
-    if table.getvalue( _G, "DaneelUserConfig" ) ~= nil and type( DaneelUserConfig ) == "function" then 
-        table.mergein( Daneel.Config, DaneelUserConfig(), true ) -- use Daneel.Config here since some of its values may have been modified already by some momdules
+    local userConfig = Daneel.UserConfig
+    if type( userConfig ) == "function" then
+        userConfig = userConfig()
+    end
+    if userConfig ~= nil then
+        table.mergein( Daneel.Config, userConfig, true )
     end
 
     -- load modules config
