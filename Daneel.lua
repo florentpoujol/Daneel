@@ -14,72 +14,7 @@ setmetatable( Daneel.modules, {
     end
 } )
 
-
-local s = "string"
-local b = "boolean"
-local n = "number"
-local t = "table"
-local _s = { name = "s", type = s }
-local _t = { name = "t", type = t }
-
-local functionsDebugInfo = {
-    ["math.isinteger"] = { { name = "number" } },
-    ["math.lerp"] = {
-        { name = "a", type = n },
-        { name = "b", type = n },
-        { name = "factor", type = n },
-        { name = "easing", type = s, isOptional = true }
-    },
-    ["math.warpangle"] = { { name = "angle", type = n } },
-    ["math.round"] = {
-        { name = "value", type = n },
-        { name = "decimal", type = n, isOptional = true }
-    },
-
-    ["string.totable"] = { _s },
-    ["string.ucfirst"] = { _s },
-    ["string.lcfirst"] = { _s },
-    ["string.trimstart"] = { _s },
-    ["string.trimend"] = { _s },
-    ["string.trim"] = { _s },
-    ["string.endswith"] = { _s, { name = "chunk", type = s } },
-    ["string.startswith"] = { _s, { name = "chunk", type = s } },
-    ["string.split"] = { _s,
-        { name = "delimiter", type = s },
-        { name = "delimiterIsPattern", type = b, defaultValue = false },
-    },
-
-    ["table.print"] = {}, -- just for the stacktrace
-    ["table.merge"] = {},
-    ["table.mergein"] = {},
-    ["table.getkeys"] = { _t },
-    ["table.getvalues"] = { _t },
-    ["table.reverse"] = { _t },
-    ["table.reindex"] = { _t },
-    ["table.getvalue"] = { _t, { name = "keys", type = s } },
-    ["table.setvalue"] = { _t, { name = "keys", type = s } },
-    ["table.getkey"] = { _t, { name = "value" } },
-    ["table.copy"] = { _t, { name = "recursive", type = b, defaultValue = false } },
-    ["table.containsvalue"] = { _t, { name = "value" }, { name = "ignoreCase", type = b, defaultValue = false } },
-    ["table.isarray"] = { _t, { name = "strict", type = b, defaultValue = true } },
-    ["table.shift"] = { _t, { name = "returnKey", type = b, defaultValue = false } },
-    ["table.getlength"] = { _t, { name = "keyType", type = s, isOptional = true } },
-    ["table.havesamecontent"] = { { name = "table1", type = t }, { name = "table2", type = t } },
-    ["table.combine"] = { _t, 
-        { name = "values", type = "table" },
-        { name = "returnFalseIfNotSameLength", type = b, isOptional = true }
-    },
-    ["table.removevalue"] = { _t, 
-        { name = "value" },
-        { name = "maxRemoveCount", type = n, isOptional = true }
-    },
-    ["table.sortby"] = { _t, 
-        { name = "property", type = s },
-        { name = "orderBy", type = s, isOptional = true },
-    },
-}
-
-Daneel.modules.Lua = { DefaultConfig = { functionsDebugInfo = functionsDebugInfo } }
+Daneel.functionsDebugInfo = {}
 
 
 ----------------------------------------------------------------------------------
@@ -153,12 +88,10 @@ function string.split( s, delimiter, delimiterIsPattern )
     return chunks
 end
 
-
 -- Deprecated since v1.4.0
 function table.deepmerge( ... )    
     return table.merge( ..., true )
 end
-
 
 function table.print(t)
     if t == nil then
@@ -187,7 +120,6 @@ function table.print(t)
     print("~~~~~ table.print("..tableString..") ~~~~~ End ~~~~~")
 end
 
-
 function table.getlength( t, keyType )   
     local length = 0
     if keyType ~= nil then
@@ -204,6 +136,74 @@ function table.getlength( t, keyType )
     end
     return length
 end
+
+
+-- debug info
+local s = "string"
+local b = "boolean"
+local n = "number"
+local t = "table"
+local _s = { "s", type = s }
+local _t = { "t", type = t }
+
+local luaFunctionsDebugInfo = {
+    ["math.isinteger"] = { { "number" } },
+    ["math.lerp"] = {
+        { "a", n },
+        { "b", n },
+        { "factor", n },
+        { "easing", s, isOptional = true }
+    },
+    ["math.warpangle"] = { { "angle", n } },
+    ["math.round"] = {
+        { "value", n },
+        { "decimal", n, isOptional = true }
+    },
+
+    ["string.totable"] = { _s },
+    ["string.ucfirst"] = { _s },
+    ["string.lcfirst"] = { _s },
+    ["string.trimstart"] = { _s },
+    ["string.trimend"] = { _s },
+    ["string.trim"] = { _s },
+    ["string.endswith"] = { _s, { "chunk", s } },
+    ["string.startswith"] = { _s, { "chunk", s } },
+    ["string.split"] = { _s,
+        { "delimiter", s },
+        { "delimiterIsPattern", b, defaultValue = false },
+    },
+
+    ["table.print"] = {}, -- just for the stacktrace
+    ["table.merge"] = {},
+    ["table.mergein"] = {},
+    ["table.getkeys"] = { _t },
+    ["table.getvalues"] = { _t },
+    ["table.reverse"] = { _t },
+    ["table.reindex"] = { _t },
+    ["table.getvalue"] = { _t, { "keys", s } },
+    ["table.setvalue"] = { _t, { "keys", s } },
+    ["table.getkey"] = { _t, { "value" } },
+    ["table.copy"] = { _t, { "recursive", b, defaultValue = false } },
+    ["table.containsvalue"] = { _t, { "value" }, { "ignoreCase", b, defaultValue = false } },
+    ["table.isarray"] = { _t, { "strict", b, defaultValue = true } },
+    ["table.shift"] = { _t, { "returnKey", b, defaultValue = false } },
+    ["table.getlength"] = { _t, { "keyType", s, isOptional = true } },
+    ["table.havesamecontent"] = { { "table1", t }, { "table2", t } },
+    ["table.combine"] = { _t, 
+        { "values", "table" },
+        { "returnFalseIfNotSameLength", b, isOptional = true }
+    },
+    ["table.removevalue"] = { _t, 
+        { "value" },
+        { "maxRemoveCount", n, isOptional = true }
+    },
+    ["table.sortby"] = { _t, 
+        { "property", s },
+        { "orderBy", s, isOptional = true },
+    },
+}
+
+table.mergein( Daneel.functionsDebugInfo, luaFunctionsDebugInfo )
 
 
 ----------------------------------------------------------------------------------
@@ -1190,8 +1190,6 @@ function Daneel.DefaultConfig()
         debug = {
             enableDebug = false, -- Enable/disable Daneel's global debugging features (error reporting + stacktrace).
             enableStackTrace = false, -- Enable/disable the Stack Trace.
-
-            functionsDebugInfo = functionsDebugInfo,
         },
 
         allowDynamicComponentFunctionCallOnGameObject = true,
@@ -1304,10 +1302,6 @@ function Daneel.Load()
                 table.mergein( Daneel.Config.componentObjects, module.Config.componentObjects )
                 table.mergein( Daneel.Config.objects, module.Config.componentObjects )
             end
-
-            if module.Config.functionsDebugInfo ~= nil then
-                table.mergein( Daneel.Config.debug.functionsDebugInfo, module.Config.functionsDebugInfo )
-            end
         end
     end
     
@@ -1322,7 +1316,7 @@ function Daneel.Load()
         end
 
         -- overload functions with debug (error reporting + stacktrace)
-        for funcName, data in pairs( Daneel.Config.debug.functionsDebugInfo ) do
+        for funcName, data in pairs( Daneel.functionsDebugInfo ) do
             Daneel.Debug.RegisterFunction( funcName, data )
         end
     end
@@ -1514,7 +1508,7 @@ end
 Component = {}
 Component.__index = Component
 
-functionsDebugInfo["Component.Set"] = { { name = "component", type = Daneel.Config.componentTypes }, { name = "params", defaultValue = {} } }
+Daneel.functionsDebugInfo["Component.Set"] = { { "component", Daneel.Config.componentTypes }, { "params", defaultValue = {} } }
 --- Apply the content of the params argument to the provided component.
 -- @param component (any component's type) The component.
 -- @param params (table) A table of parameters to set the component with.
@@ -1524,7 +1518,7 @@ function Component.Set( component, params )
     end
 end
 
-functionsDebugInfo["Component.Destroy"] = { { name = "component", type = Daneel.Config.componentTypes } }
+Daneel.functionsDebugInfo["Component.Destroy"] = { { "component", Daneel.Config.componentTypes } }
 --- Destroy the provided component, removing it from the game object.
 -- Note that the component is removed only at the end of the current frame.
 -- @param component (any component type) The component.
@@ -1558,8 +1552,8 @@ for assetType, assetObject in pairs( Daneel.Config.assetObjects ) do
     end
 end
 
-functionsDebugInfo["Asset.Get"] = { { name = "assetPath" }, { name = "assetType", isOptional = true }, { name = "errorIfAssetNotFound", defaultValue = false } }
-local assetPathTypes =  { "string" }
+Daneel.functionsDebugInfo["Asset.Get"] = { { "assetPath" }, { "assetType", isOptional = true }, { "errorIfAssetNotFound", defaultValue = false } }
+local assetPathTypes = { "string" }
 --- Alias of CraftStudio.FindAsset( assetPath[, assetType] ).
 -- Get the asset of the specified name and type.
 -- The first argument may be an asset object, so that you can check if a variable was an asset object or name (and get the corresponding object).
@@ -1625,7 +1619,7 @@ function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
     return asset
 end
 
-functionsDebugInfo["Asset.GetPath"] = { { name = "asset", type = Daneel.Config.assetTypes } }
+Daneel.functionsDebugInfo["Asset.GetPath"] = { { "asset", Daneel.Config.assetTypes } }
 --- Returns the path of the provided asset.
 -- @param asset (One of the asset types) The asset instance.
 -- @return (string) The fully-qualified asset path.
@@ -1634,7 +1628,7 @@ function Asset.GetPath( asset )
 end
 Asset.GetPath = Map.GetPathInPackage
 
-functionsDebugInfo["Asset.GetName"] = { { name = "asset", type = Daneel.Config.assetTypes } }
+Daneel.functionsDebugInfo["Asset.GetName"] = { { "asset", Daneel.Config.assetTypes } }
 --- Returns the name of the provided asset.
 -- @param asset (One of the asset types) The asset instance.
 -- @return (string) The name (the last segment of the fully-qualified path).
@@ -1677,7 +1671,7 @@ function RaycastHit.__tostring( instance )
     return msg.." }"
 end
 
-functionsDebugInfo["RaycastHit.New"] = { { name = "params", defaultValue = {} } }
+Daneel.functionsDebugInfo["RaycastHit.New"] = { { "params", defaultValue = {} } }
 --- Create a new RaycastHit
 -- @return (RaycastHit) The raycastHit.
 function RaycastHit.New( params )

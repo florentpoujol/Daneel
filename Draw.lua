@@ -13,11 +13,11 @@ local b = "boolean"
 local n = "number"
 local t = "table"
 local v = "Vector3"
-local _go = { name = "gameObject", type = "GameObject" }
-local _p = { name = "params", type = t, defaultValue = {} }
-local _l = { name = "line", type = "LineRenderer"}
-local _c = { name = "circle", type = "CircleRenderer"}
-local _d = { name = "draw", type = b, defaultValue = true }
+local _go = { "gameObject", "GameObject" }
+local _p = { "params", t, defaultValue = {} }
+local _l = { "line", "LineRenderer"}
+local _c = { "circle", "CircleRenderer"}
+local _d = { "draw", b, defaultValue = true }
 
 
 ----------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ function Draw.LineRenderer.Draw( line )
     Daneel.Event.Fire( line, "OnDraw", line )
 end
 
-functionsDebugInfo[ "Draw.LineRenderer.SetEndPosition" ] = { _l, { name = "endPosition", type = v }, _d }
+functionsDebugInfo[ "Draw.LineRenderer.SetEndPosition" ] = { _l, { "endPosition", v }, _d }
 --- Set the line renderer's end position.
 -- It also updates the line renderer's direction and length.
 -- @param line (LineRenderer) The line renderer.
@@ -118,7 +118,7 @@ function Draw.LineRenderer.GetEndPosition( line )
     return line._endPosition
 end
 
-functionsDebugInfo[ "Draw.LineRenderer.SetLength" ] = { _l, { name = "length", type = n }, _d }
+functionsDebugInfo[ "Draw.LineRenderer.SetLength" ] = { _l, { "length", n }, _d }
 --- Set the line renderer's length.
 -- It also updates line renderer's end position.
 -- @param line (LineRenderer) The line renderer.
@@ -140,8 +140,8 @@ function Draw.LineRenderer.GetLength( line )
     return line._length
 end
 
-functionsDebugInfo[ "Draw.LineRenderer.SetWidth" ] = { _l, { name = "direction", type = v },
-    { name = "useDirectionAsLength", type = b, defaultValue = false }, _d
+functionsDebugInfo[ "Draw.LineRenderer.SetWidth" ] = { _l, { "direction", v },
+    { "useDirectionAsLength", b, defaultValue = false }, _d
 }
 --- Set the line renderer's direction.
 -- It also updates line renderer's end position.
@@ -168,7 +168,7 @@ function Draw.LineRenderer.GetDirection( line )
     return line._direction
 end
 
-functionsDebugInfo[ "Draw.LineRenderer.SetWidth" ] = { _l, { name = "width", type = n }, _d }
+functionsDebugInfo[ "Draw.LineRenderer.SetWidth" ] = { _l, { "width", n }, _d }
 --- Set the line renderer's width (and height).
 -- @param line (LineRenderer) The line renderer.
 -- @param width (number) The width (in scene units).
@@ -291,7 +291,7 @@ function Draw.CircleRenderer.Draw( circle )
     Daneel.Event.Fire( circle, "OnDraw", circle )
 end
 
-functionsDebugInfo[ "Draw.CircleRenderer.SetRadius" ] = { _c, { name = "radius", type = n }, _d }
+functionsDebugInfo[ "Draw.CircleRenderer.SetRadius" ] = { _c, { "radius", n }, _d }
 --- Sets the circle renderer's radius.
 -- @param circle (CircleRenderer) The circle renderer.
 -- @param radius (number) The radius (in scene units).
@@ -311,7 +311,7 @@ function Draw.CircleRenderer.GetRadius( circle )
     return circle._radius
 end
 
-functionsDebugInfo[ "Draw.CircleRenderer.SetSegmentCount" ] = { _c, { name = "count", type = n }, _d }
+functionsDebugInfo[ "Draw.CircleRenderer.SetSegmentCount" ] = { _c, { "count", n }, _d }
 --- Sets the circle renderer's segment count.
 -- @param circle (CircleRenderer) The circle renderer.
 -- @param count (number) The segment count (can't be lower than 3).
@@ -334,7 +334,7 @@ function Draw.CircleRenderer.GetSegmentCount( circle )
     return circle._segmentCount
 end
 
-functionsDebugInfo[ "Draw.CircleRenderer.SetWidth" ] = { _c, { name = "width", type = n } }
+functionsDebugInfo[ "Draw.CircleRenderer.SetWidth" ] = { _c, { "width", n } }
 --- Sets the circle renderer segment's width.
 -- @param circle (CircleRenderer) The circle renderer.
 -- @param width (number) The segment's width (and height).
@@ -358,7 +358,7 @@ function Draw.CircleRenderer.GetWidth( circle )
     return circle._width
 end
 
-functionsDebugInfo[ "Draw.CircleRenderer.SetModel" ] = { _c, { name = "model", type = {"string", "Model"} } }
+functionsDebugInfo[ "Draw.CircleRenderer.SetModel" ] = { _c, { "model", {"string", "Model"} } }
 --- Sets the circle renderer segment's model.
 -- @param circle (CircleRenderer) The circle renderer.
 -- @param model (string or Model) The segment's model name or asset.
@@ -382,10 +382,10 @@ end
 
 ----------------------------------------------------------------------------------
 
+table.mergein( Daneel.functionsDebugInfo, functionsDebugInfo )
+
 function Draw.DefaultConfig()
     local config = {
-        functionsDebugInfo = functionsDebugInfo,
-        
         lineRenderer = {
             direction = Vector3:Left(),
             length = 2,

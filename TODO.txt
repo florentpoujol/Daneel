@@ -58,10 +58,7 @@ IDEAS
 ==========
 A implémenter
     
-    mettre functionsDebugInfo dans Daneel.Debug.functionsDebugInfo ou Daneel.functionsDebugInfo
-    Enelever nom des clés "name" et "type"
     Ajouter functionsDebugInfo pour toutes les fonctions du fichier Daneel
-    Enlever functionsDebugInfo du fichier Lua, les passer dans Daneel
     
 ==========
 A tester

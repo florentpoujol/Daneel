@@ -8,8 +8,8 @@
 GameObject.Tags = {}
 -- GameObject.Tags is emptied in Tag.Awake() below
 
-local _go = { name = "gameObject", type = "GameObject" }
-local _t = { name = "tag", type = {"string", "table"} }
+local _go = { "gameObject", "GameObject" }
+local _t = { "tag", {"string", "table"} }
 local functionsDebugInfo = {}
 
 functionsDebugInfo["GameObject.GetWithTag"] = { _t }
@@ -81,7 +81,7 @@ function GameObject.AddTag( gameObject, tag )
     end
 end
 
-functionsDebugInfo["GameObject.RemoveTag"] = { _go, { name = "tag", type = {"string", "table"}, isOptional = true } }
+functionsDebugInfo["GameObject.RemoveTag"] = { _go, { "tag", {"string", "table"}, isOptional = true } }
 --- Remove the provided tag(s) from the provided game object.
 -- If the 'tag' argument is not provided, all tag of the game object will be removed.
 -- @param gameObject (GameObject) The game object.
@@ -99,7 +99,7 @@ function GameObject.RemoveTag( gameObject, tag )
     end
 end
 
-functionsDebugInfo["GameObject.HasTag"] = { _go, _t, { name = "atLeastOneTag", defaultValue = false } }
+functionsDebugInfo["GameObject.HasTag"] = { _go, _t, { "atLeastOneTag", defaultValue = false } }
 --- Tell whether the provided game object has all (or at least one of) the provided tag(s).
 -- @param gameObject (GameObject) The game object.
 -- @param tag (string or table) One or several tag (as a string or table of strings).
@@ -136,11 +136,9 @@ end
 ----------------------------------------------------------------------------------
 -- Config 
 
-Daneel.modules.Tags = {
-    DefaultConfig = {
-        functionsDebugInfo = functionsDebugInfo
-    },
+table.mergein( Daneel.functionsDebugInfo, functionsDebugInfo )
 
+Daneel.modules.Tags = {
     Awake = function()
         -- remove all dead game objects from GameObject.Tags
         if Daneel.isLateLoading then
