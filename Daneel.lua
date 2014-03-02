@@ -1067,7 +1067,7 @@ function Daneel.Load()
     end
 
     -- load modules config
-    for id, moduleName in pairs( DaneelModules.moduleNamesById ) do
+    for id, moduleName in ipairs( DaneelModules.moduleNamesById ) do
         local module = DaneelModules[ moduleName ]
         
         if module.isConfigLoaded ~= true then
@@ -1148,11 +1148,12 @@ function Daneel.Load()
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Load" )
 
     -- Load modules 
-    for i, _module in pairs( DaneelModules ) do
-        if _module.isLoaded ~= true then
-            _module.isLoaded = true
-            if type( _module.Load ) == "function" then
-                _module.Load()
+    for id, name in ipairs( DaneelModules.moduleNamesById ) do
+        local module = DaneelModules[ name ]
+        if module.isLoaded ~= true then
+            module.isLoaded = true
+            if type( module.Load ) == "function" then
+                module.Load()
             end
         end
     end
@@ -1165,10 +1166,11 @@ function Daneel.Load()
 
     -- check for module update functions
     Daneel.moduleUpdateFunctions = {}
-    for i, _module in pairs( DaneelModules ) do
-        if _module.doNotCallUpdate ~= true then
-            if type( _module.Update ) == "function" and not table.containsvalue( Daneel.moduleUpdateFunctions, _module.Update ) then
-                table.insert( Daneel.moduleUpdateFunctions, _module.Update )
+    for id, name in ipairs( DaneelModules.moduleNamesById ) do
+        local module = DaneelModules[ name ]
+        if module.doNotCallUpdate ~= true then
+            if type( module.Update ) == "function" and not table.containsvalue( Daneel.moduleUpdateFunctions, module.Update ) then
+                table.insert( Daneel.moduleUpdateFunctions, module.Update )
             end
         end
     end
@@ -1221,9 +1223,10 @@ function Behavior:Awake()
 
 
     -- Awake modules 
-    for i, _module in pairs( DaneelModules ) do
-        if type( _module.Awake ) == "function" then
-            _module.Awake()
+    for id, name in ipairs( DaneelModules.moduleNamesById ) do
+        local module = DaneelModules[ name ]
+        if type( module.Awake ) == "function" then
+            module.Awake()
         end
     end
 
@@ -1244,9 +1247,10 @@ function Behavior:Start()
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Start" )
 
     -- Start modules 
-    for i, _module in pairs( DaneelModules ) do
-        if type( _module.Start ) == "function" then
-            _module.Start()
+    for id, name in ipairs( DaneelModules.moduleNamesById ) do
+        local module = DaneelModules[ name ]
+        if type( module.Start ) == "function" then
+            module.Start()
         end
     end
 
@@ -1292,7 +1296,7 @@ function Behavior:Update()
     end
 
     -- Update modules 
-    for i, func in pairs( Daneel.moduleUpdateFunctions ) do
+    for i, func in ipairs( Daneel.moduleUpdateFunctions ) do
         func()
     end
 end

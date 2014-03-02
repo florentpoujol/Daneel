@@ -15,11 +15,12 @@ IDEAS
     - gameObject:GetGenealogy() retourne toute la généalogie du gameobject : "parent.child.subchild"
     - GameObject.GetAll() retourne tous les GOs du même nom (table)
         
-    -----
-    GUI
-
     - MouseInput
         passer la camera en argument des events, en plus du gameObject
+
+
+    -----
+    GUI
    
     - "progress bar" mais avec plusieurs éléments
     lorsque élément pas utilisé, il a opacity, scale etc au choix dans la config, donc
@@ -34,6 +35,7 @@ IDEAS
         > ou les cache avec un autre model par exemple
         > ou les fenètres sont rendue par d'autres cameras dont l'object Rect
 
+    - GUI.Input permettre de définir un curseur model optionnel
 
     -----
     TWEEN
@@ -51,7 +53,6 @@ IDEAS
     -----
     MODULE / PLUGIN / EXTENSION
 
-    - GUI.Input permettre de définir un curseur model optionnel
     
 
 ==========
