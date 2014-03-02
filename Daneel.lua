@@ -482,6 +482,7 @@ function Daneel.Debug.RegisterFunction( name, argsData )
 
     local errorHead = name.."( "
     for i, arg in ipairs( argsData ) do
+        if arg.name == nil then arg.name = arg[1] end
         errorHead = errorHead..arg.name..", "
     end
 
@@ -500,8 +501,12 @@ function Daneel.Debug.RegisterFunction( name, argsData )
             end
 
             for i, arg in ipairs( argsData ) do
-                if arg.type == nil and arg.defaultValue ~= nil then
-                    arg.type = type( arg.defaultValue )
+                if arg.type == nil then  end
+                    if arg.defaultValue ~= nil then
+                        arg.type = type( arg.defaultValue )
+                    else
+                        arg.type = arg[2]
+                    end
                 end
 
                 if arg.type ~= nil then
