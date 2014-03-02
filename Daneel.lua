@@ -1067,40 +1067,42 @@ function Daneel.Load()
     end
 
     -- load modules config
-    for name, _module in pairs( DaneelModules ) do
-        if _module.isConfigLoaded ~= true then
-            _module.isConfigLoaded = true
+    for id, moduleName in pairs( DaneelModules.moduleNamesById ) do
+        local module = DaneelModules[ moduleName ]
+        
+        if module.isConfigLoaded ~= true then
+            module.isConfigLoaded = true
 
-            if _module.Config == nil then
-                local config = _module.DefaultConfig
+            if module.Config == nil then
+                local config = module.DefaultConfig
                 if type( config ) == "function" then
                     config = config()
                 end
                 if config == nil then
                     config = {}
                 end
-                _module.Config = config
+                module.Config = config
             end
 
-            local userConfig = _module.UserConfig
+            local userConfig = module.UserConfig
             if type( userConfig ) == "function" then
                 userConfig = userConfig()
             end
             if userConfig ~= nil then
-                table.mergein( _module.Config, userConfig, true )
+                table.mergein( module.Config, userConfig, true )
             end
 
-            if _module.Config.objects ~= nil then
-                table.mergein( Daneel.Config.objects, _module.Config.objects )
+            if module.Config.objects ~= nil then
+                table.mergein( Daneel.Config.objects, module.Config.objects )
             end
 
-            if _module.Config.componentObjects ~= nil then
-                table.mergein( Daneel.Config.componentObjects, _module.Config.componentObjects )
-                table.mergein( Daneel.Config.objects, _module.Config.componentObjects )
+            if module.Config.componentObjects ~= nil then
+                table.mergein( Daneel.Config.componentObjects, module.Config.componentObjects )
+                table.mergein( Daneel.Config.objects, module.Config.componentObjects )
             end
 
-            if _module.Config.functionsDebugInfo ~= nil then
-                table.mergein( Daneel.Config.debug.functionsDebugInfo, _module.Config.functionsDebugInfo )
+            if module.Config.functionsDebugInfo ~= nil then
+                table.mergein( Daneel.Config.debug.functionsDebugInfo, module.Config.functionsDebugInfo )
             end
         end
     end

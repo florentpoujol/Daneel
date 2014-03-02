@@ -52,21 +52,7 @@ IDEAS
     MODULE / PLUGIN / EXTENSION
 
     - GUI.Input permettre de définir un curseur model optionnel
-    - Permettre de charger un module après un autre. Ie :
-    CS.DaneelModules[ "Name" ] = { 
-        object = Object,
-        initFunction = function()
-
-        end,
-
-        priority = 10, -- default to 10 when abscent
-
-        loadAfter = { "OtherName" }
-        -- loadAfter = "OtherName"
-
-        loadBefore = { "OtherName" }
-        -- loadBefore = "OtherName"
-    }
+    
 
 ==========
 A implémenter

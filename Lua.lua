@@ -632,6 +632,18 @@ end
 
 ----------------------------------------------------------------------------------
 
+DaneelModules = { moduleNamesById = {} }
+
+setmetatable( DaneelModules, {
+    __newindex = function( _, moduleName, moduleObject ) -- _ argument is DaneelModules object
+        table.insert( DaneelModules.moduleNamesById, moduleName )
+        rawset( DaneelModules, moduleName, moduleObject )
+    end
+} )
+
+----------------------------------------------------------------------------------
+
+
 local s = "string"
 local b = "boolean"
 local n = "number"
@@ -696,7 +708,8 @@ local functionsDebugInfo = {
     },
 }
 
-DaneelModules = { Lua = { DefaultConfig = { functionsDebugInfo = functionsDebugInfo } } }
+DaneelModules.Lua = { DefaultConfig = { functionsDebugInfo = functionsDebugInfo } }
+
 
 ----------------------------------------------------------------------------------
 -- Some functions are overridden here with some Daneel-specific stuffs
