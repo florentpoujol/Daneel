@@ -143,10 +143,10 @@ local s = "string"
 local b = "boolean"
 local n = "number"
 local t = "table"
-local _s = { "s", type = s }
-local _t = { "t", type = t }
+local _s = { "s", s }
+local _t = { "t", t }
 
-local luaFunctionsDebugInfo = {
+table.mergein( Daneel.functionsDebugInfo, {
     ["math.isinteger"] = { { "number" } },
     ["math.lerp"] = {
         { "a", n },
@@ -201,9 +201,7 @@ local luaFunctionsDebugInfo = {
         { "property", s },
         { "orderBy", s, isOptional = true },
     },
-}
-
-table.mergein( Daneel.functionsDebugInfo, luaFunctionsDebugInfo )
+} )
 
 
 ----------------------------------------------------------------------------------
@@ -215,11 +213,6 @@ Daneel.Utilities = {}
 -- @param name (string) The name to check the case of.
 -- @param set (string or table) A single value or a table of values to check the name against.
 function Daneel.Utilities.CaseProof( name, set )
-    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.CaseProof", name, set )
-    local errorHead = "Daneel.Utilities.CaseProof( name, set ) : " 
-    Daneel.Debug.CheckArgType( name, "name", "string", errorHead )
-    Daneel.Debug.CheckArgType( set, "set", {"string", "table"}, errorHead )
-
     if type( set ) == "string" then
         set = { set }
     end
@@ -230,7 +223,6 @@ function Daneel.Utilities.CaseProof( name, set )
             break
         end
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return name
 end
 
@@ -240,15 +232,9 @@ end
 -- @param replacements (table) The placeholders and their replacements ( { placeholder = "replacement", ... } ).
 -- @return (string) The string.
 function Daneel.Utilities.ReplaceInString( string, replacements )
-    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.ReplaceInString", string, replacements )
-    local errorHead = "Daneel.Utilities.ReplaceInString( string, replacements ) : "
-    Daneel.Debug.CheckArgType( string, "string", "string", errorHead )
-    Daneel.Debug.CheckArgType( replacements, "replacements", "table", errorHead )
-    
     for placeholder, replacement in pairs( replacements ) do
         string = string:gsub( ":"..placeholder, replacement )
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return string
 end
 
@@ -324,12 +310,6 @@ end
 -- @param data (mixed) Usually string or userdata.
 -- @return (number) The number, or nil.
 function Daneel.Utilities.ToNumber( data )
-    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.ToNumber", data )
-    local errorHead = "Daneel.Utilities.ToNumber( data ) : "
-    if data == nil then
-        error( errorHead .. "Argument 1 'data' is nil." )
-    end
-
     local number = tonumber( data )
     if number == nil then
         data = tostring( data )
@@ -340,7 +320,6 @@ function Daneel.Utilities.ToNumber( data )
         number = data:match( (data:gsub( pattern, "(%1)" )) )
         number = tonumber( number )
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return number
 end
 
@@ -352,19 +331,20 @@ local buttonExists = {} -- Button names are in key, existance (false or true) is
 -- @param buttonName (string) The button name.
 -- @return (boolean) True if the button name exists, false otherwise.
 function Daneel.Utilities.ButtonExists( buttonName )
-    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Utilities.ButtonExists", buttonName )
-    local errorHead = "Daneel.Utilities.ButtonExists( buttonName ) : "
-    Daneel.Debug.CheckArgType( buttonName, "buttonName", "string", errorHead )
-
     if buttonExists[ buttonName ] == nil then
         buttonExists[ buttonName ] = Daneel.Debug.Try( function()
             CS.Input.WasButtonJustPressed( buttonName )
         end )
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
     return buttonExists[ buttonName ]
 end
+
+table.mergein( Daneel.functionsDebugInfo, {
+    ["Daneel.Utilities.CaseProof"] = { { "name", s }, { "set", { s, t } } },
+    ["Daneel.Utilities.ReplaceInString"] = { { "string", s }, { "replacements", t } },
+    ["Daneel.Utilities.ToNumber"] = { { "data" } },
+    ["Daneel.Utilities.ButtonExists"] = { { "buttonName", s } }
+} )
 
 
 ----------------------------------------------------------------------------------
@@ -836,8 +816,8 @@ local EventNamesTestedForHotKeys = {} -- Event names are keys, value is true.
 -- @param functionOrObject (function or table) The function (not the function name) or the object.
 -- @param isPersistent (boolean) [default=false] Tell whether the listener automatically stops to listen to any event when a new scene is loaded. Always false when the listener is a game object or a component.
 function Daneel.Event.Listen( eventName, functionOrObject, isPersistent )
-    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Event.Listen", eventName, functionOrObject )
-    local errorHead = "Daneel.Event.Listen( eventName, functionOrObject ) : "
+    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Event.Listen", eventName, functionOrObject, isPersistent )
+    local errorHead = "Daneel.Event.Listen( eventName, functionOrObject[, isPersistent] ) : "
     Daneel.Debug.CheckArgType( eventName, "eventName", {"string", "table"}, errorHead )
     local listenerType = Daneel.Debug.CheckArgType( functionOrObject, "functionOrObject", {"table", "function", "userdata"}, errorHead )
     isPersistent = Daneel.Debug.CheckOptionalArgType( isPersistent, "isPersistent", "boolean", errorHead, false )
@@ -953,9 +933,9 @@ function Daneel.Event.Fire( object, eventName, ... )
     local arg = {...}
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Event.Fire", object, eventName, ... )
     local errorHead = "Daneel.Event.Fire( [object, ]eventName[, ...] ) : "
-    
+
     local argType = type( object )
-    if argType == "string" or argType == "nil" then -- 17/09/13 why checking for nil ?
+    if argType == "string" or argType == "nil" then -- 17/09/13 why checking for nil ? > what cases where object may be nil ?
         -- no object provided, fire on the listeners
         if eventName ~= nil then
             table.insert( arg, 1, eventName )
@@ -1087,22 +1067,16 @@ Daneel.Storage = {}
 -- @param data (mixed) The data to store. May be nil.
 -- @param callback (function) [optional] The function called when the save has completed. The potential error (as a string) is passed to the callback first and only argument (nil if no error).
 function Daneel.Storage.Save( name, data, callback )
-    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Storage.Save", name, data )
-    local errorHead = "Daneel.Storage.Save( name, data ) : "
-    Daneel.Debug.CheckArgType( name, "name", "string", errorHead )
-    Daneel.Debug.CheckOptionalArgType( callback, "callback", "function", errorHead )
-
     if data ~= nil and type( data ) ~= "table" then
         data = { 
             value = data,
             isSavedByDaneel = true
         }
     end
-
     CS.Storage.Save( name, data, function( error )
         if error ~= nil then
             if Daneel.Config.debug.enableDebug then
-                print( errorHead .. "Error saving with name, data and error : ", name, data, error.message )
+                print( "Daneel.Storage.Save( name, data[, callback] ) : Error saving with name, data and error : ", name, data, error.message )
             end
         end
 
@@ -1113,32 +1087,24 @@ function Daneel.Storage.Save( name, data, callback )
             callback( error.message )
         end
     end )
-
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 -- Load data stored locally on the computer under the provided name. The load operation may not be instantaneous.
 -- The function will return the queried value (or defaultValue) if it completes right away, otherwise it returns nil.
 -- @param name (string) The name of the data.
--- @param defaultValue (mixed) The value that is returned if no data is found.
+-- @param defaultValue (mixed) [optional] The value that is returned if no data is found.
 -- @param callback (function) [optional] The function called when the data is loaded. The value and the potential error (as a string) (ni if no error) are passed as first and second argument, respectively.
 -- @return (mixed) The data.
 function Daneel.Storage.Load( name, defaultValue, callback )
-    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Storage.Load", name, defaultValue )
-    local errorHead = "Daneel.Storage.Load( name, defaultValue ) : "
-    Daneel.Debug.CheckArgType( name, "name", "string", errorHead )
     if callback == nil and type( defaultValue ) == "function" then
         callback = defaultValue
         defaultValue = nil
     end
-    Daneel.Debug.CheckOptionalArgType( callback, "callback", "function", errorHead )
-
     local value = nil
-
     CS.Storage.Load( name, function( error, data )
         if error ~= nil then
             if Daneel.Config.debug.enableDebug then
-                print( errorHead .. "Error loading with name, default value and error", name, defaultValue, error.message )
+                print( "Daneel.Storage.Load( name[, defaultValue, callback] ) : Error loading with name, default value and error", name, defaultValue, error.message )
             end
             data = nil
         end
@@ -1146,7 +1112,7 @@ function Daneel.Storage.Load( name, defaultValue, callback )
         value = defaultValue
 
         if data ~= nil then
-            if data.value ~= nil and data.isSavedByDaneel then
+            if type( data ) == "table" and data.value ~= nil and data.isSavedByDaneel then
                 value = data.value
             else
                 value = data
@@ -1160,10 +1126,13 @@ function Daneel.Storage.Load( name, defaultValue, callback )
             callback( value, error.message )
         end
     end )
-    
-    Daneel.Debug.StackTrace.EndFunction()
     return value
 end
+
+table.mergein( Daneel.functionsDebugInfo, {
+    ["Daneel.Storage.Save"] = { { "name", s }, { "data" }, { "callback", "function", isOptional = true } },
+    ["Daneel.Storage.Load"] = { { "name", s }, { "defaultValue", isOptional = true }, { "callback", "function", isOptional = true } }
+} )
 
 
 ----------------------------------------------------------------------------------
@@ -1626,7 +1595,6 @@ Daneel.functionsDebugInfo["Asset.GetPath"] = { { "asset", Daneel.Config.assetTyp
 function Asset.GetPath( asset )
     return Map.GetPathInPackage( asset )
 end
-Asset.GetPath = Map.GetPathInPackage
 
 Daneel.functionsDebugInfo["Asset.GetName"] = { { "asset", Daneel.Config.assetTypes } }
 --- Returns the name of the provided asset.
