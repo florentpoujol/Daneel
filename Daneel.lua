@@ -5,7 +5,206 @@
 -- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 
 Daneel = {}
-local functionsDebugInfo = {}
+
+Daneel.modules = { moduleNames = {} }
+setmetatable( Daneel.modules, {
+    __newindex = function( _, moduleName, moduleObject ) -- _ argument is Daneel.modules object
+        table.insert( Daneel.modules.moduleNames, moduleName )
+        rawset( Daneel.modules, moduleName, moduleObject )
+    end
+} )
+
+
+local s = "string"
+local b = "boolean"
+local n = "number"
+local t = "table"
+local _s = { name = "s", type = s }
+local _t = { name = "t", type = t }
+
+local functionsDebugInfo = {
+    ["math.isinteger"] = { { name = "number" } },
+    ["math.lerp"] = {
+        { name = "a", type = n },
+        { name = "b", type = n },
+        { name = "factor", type = n },
+        { name = "easing", type = s, isOptional = true }
+    },
+    ["math.warpangle"] = { { name = "angle", type = n } },
+    ["math.round"] = {
+        { name = "value", type = n },
+        { name = "decimal", type = n, isOptional = true }
+    },
+
+    ["string.totable"] = { _s },
+    ["string.ucfirst"] = { _s },
+    ["string.lcfirst"] = { _s },
+    ["string.trimstart"] = { _s },
+    ["string.trimend"] = { _s },
+    ["string.trim"] = { _s },
+    ["string.endswith"] = { _s, { name = "chunk", type = s } },
+    ["string.startswith"] = { _s, { name = "chunk", type = s } },
+    ["string.split"] = { _s,
+        { name = "delimiter", type = s },
+        { name = "delimiterIsPattern", type = b, defaultValue = false },
+    },
+
+    ["table.print"] = {}, -- just for the stacktrace
+    ["table.merge"] = {},
+    ["table.mergein"] = {},
+    ["table.getkeys"] = { _t },
+    ["table.getvalues"] = { _t },
+    ["table.reverse"] = { _t },
+    ["table.reindex"] = { _t },
+    ["table.getvalue"] = { _t, { name = "keys", type = s } },
+    ["table.setvalue"] = { _t, { name = "keys", type = s } },
+    ["table.getkey"] = { _t, { name = "value" } },
+    ["table.copy"] = { _t, { name = "recursive", type = b, defaultValue = false } },
+    ["table.containsvalue"] = { _t, { name = "value" }, { name = "ignoreCase", type = b, defaultValue = false } },
+    ["table.isarray"] = { _t, { name = "strict", type = b, defaultValue = true } },
+    ["table.shift"] = { _t, { name = "returnKey", type = b, defaultValue = false } },
+    ["table.getlength"] = { _t, { name = "keyType", type = s, isOptional = true } },
+    ["table.havesamecontent"] = { { name = "table1", type = t }, { name = "table2", type = t } },
+    ["table.combine"] = { _t, 
+        { name = "values", type = "table" },
+        { name = "returnFalseIfNotSameLength", type = b, isOptional = true }
+    },
+    ["table.removevalue"] = { _t, 
+        { name = "value" },
+        { name = "maxRemoveCount", type = n, isOptional = true }
+    },
+    ["table.sortby"] = { _t, 
+        { name = "property", type = s },
+        { name = "orderBy", type = s, isOptional = true },
+    },
+}
+
+Daneel.modules.Lua = { DefaultConfig = { functionsDebugInfo = functionsDebugInfo } }
+
+
+----------------------------------------------------------------------------------
+-- Some Lua functions are overridden here with some Daneel-specific stuffs
+
+function string.split( s, delimiter, delimiterIsPattern )
+    local chunks = {}
+    
+    if delimiterIsPattern then
+        local delimiterStartIndex, delimiterEndIndex = s:find( delimiter )
+
+        if delimiterStartIndex ~= nil then
+            local pattern = delimiter
+            delimiter = s:sub( delimiterStartIndex, delimiterEndIndex )
+            if string.startswith( s, delimiter ) then
+                s = s:sub( #delimiter+1, #s )
+            end
+            if not s:endswith( delimiter ) then
+                s = s .. delimiter
+            end
+            
+            if CS.IsWebPlayer then
+                -- CS Webplayer specific part :
+                -- in the webplayer,  "(.-)"..delimiter  is translated into  "(.*)"..delimiter  which seems to create an infinite loop
+                -- "(.+)"..delimiter   does not work either in the webplayer
+                for match in s:gmatch( "([^"..pattern.."]+)"..pattern ) do
+                    table.insert( chunks, match )
+                end
+            else
+                for match in s:gmatch( "(.-)"..pattern ) do 
+                    table.insert( chunks, match )
+                end
+            end
+        end
+    
+    else -- plain text delimiter
+        if s:find( delimiter, 1, true ) ~= nil then
+            if string.startswith( s, delimiter ) then
+                s = s:sub( #delimiter+1, #s )
+            end
+            if not s:endswith( delimiter ) then
+                s = s .. delimiter
+            end
+
+            local chunk = ""
+            local ts = string.totable( s )
+            local i = 1
+
+            while i <= #ts do
+                local char = ts[i]
+                if char == delimiter or s:sub( i, i-1 + #delimiter ) == delimiter then
+                    table.insert( chunks, chunk )
+                    chunk = ""
+                    i = i + #delimiter
+                else
+                    chunk = chunk..char
+                    i = i + 1
+                end
+            end
+
+            if #chunk > 0 then
+                table.insert( chunks, chunk )
+            end
+        end
+    end
+
+    if #chunks == 0 then
+        chunks = { s }
+    end
+
+    return chunks
+end
+
+
+-- Deprecated since v1.4.0
+function table.deepmerge( ... )    
+    return table.merge( ..., true )
+end
+
+
+function table.print(t)
+    if t == nil then
+        print("table.print( t ) : Provided table is nil.")
+        return
+    end
+
+    local tableString = tostring(t)
+    local rawTableString = Daneel.Debug.ToRawString(t)
+    if tableString ~= rawTableString then
+        tableString = tableString.." / "..rawTableString
+    end
+    print("~~~~~ table.print("..tableString..") ~~~~~ Start ~~~~~")
+
+    local func = pairs
+    if table.getlength(t) == 0 then
+        print("Table is empty.")
+    elseif table.isarray( t ) then
+        func = ipairs -- just to be sure that the entries are printed in order
+    end
+    
+    for key, value in func(t) do
+        print(key, value)
+    end
+
+    print("~~~~~ table.print("..tableString..") ~~~~~ End ~~~~~")
+end
+
+
+function table.getlength( t, keyType )   
+    local length = 0
+    if keyType ~= nil then
+        keyType = keyType:lower()
+    end
+    for key, value in pairs( t ) do
+        if 
+            keyType == nil or
+            type( key ) == keyType or
+            Daneel.Debug.GetType( key ):lower() == keyType
+        then
+            length = length + 1
+        end
+    end
+    return length
+end
+
 
 ----------------------------------------------------------------------------------
 -- Utilities
