@@ -1072,8 +1072,8 @@ function Daneel.Load()
     end
 
     -- load modules config
-    for id, moduleName in ipairs( DaneelModules.moduleNamesById ) do
-        local module = DaneelModules[ moduleName ]
+    for i, name in ipairs( Daneel.modules.moduleNames ) do
+        local module = Daneel.modules[ name ]
         
         if module.isConfigLoaded ~= true then
             module.isConfigLoaded = true
@@ -1153,8 +1153,8 @@ function Daneel.Load()
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Load" )
 
     -- Load modules 
-    for id, name in ipairs( DaneelModules.moduleNamesById ) do
-        local module = DaneelModules[ name ]
+    for i, name in ipairs( Daneel.modules.moduleNames ) do
+        local module = Daneel.modules[ name ]
         if module.isLoaded ~= true then
             module.isLoaded = true
             if type( module.Load ) == "function" then
@@ -1171,8 +1171,8 @@ function Daneel.Load()
 
     -- check for module update functions
     Daneel.moduleUpdateFunctions = {}
-    for id, name in ipairs( DaneelModules.moduleNamesById ) do
-        local module = DaneelModules[ name ]
+    for i, name in ipairs( Daneel.modules.moduleNames ) do
+        local module = Daneel.modules[ name ]
         if module.doNotCallUpdate ~= true then
             if type( module.Update ) == "function" and not table.containsvalue( Daneel.moduleUpdateFunctions, module.Update ) then
                 table.insert( Daneel.moduleUpdateFunctions, module.Update )
@@ -1228,8 +1228,8 @@ function Behavior:Awake()
 
 
     -- Awake modules 
-    for id, name in ipairs( DaneelModules.moduleNamesById ) do
-        local module = DaneelModules[ name ]
+    for i, name in ipairs( Daneel.modules.moduleNames ) do
+        local module = Daneel.modules[ name ]
         if type( module.Awake ) == "function" then
             module.Awake()
         end
@@ -1252,8 +1252,8 @@ function Behavior:Start()
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Start" )
 
     -- Start modules 
-    for id, name in ipairs( DaneelModules.moduleNamesById ) do
-        local module = DaneelModules[ name ]
+    for i, name in ipairs( Daneel.modules.moduleNames ) do
+        local module = Daneel.modules[ name ]
         if type( module.Start ) == "function" then
             module.Start()
         end

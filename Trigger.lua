@@ -5,9 +5,9 @@
 -- Copyright © 2013 Florent POUJOL, published under the MIT license.
 
 
-DaneelModules.Trigger = {
+Daneel.modules.Trigger = {
     Load = function()
-        if DaneelModules.Tags == nil then
+        if Daneel.modules.Tags == nil then
             print( "ERROR : Trigger.Load() : the 'Tags' module is missing." )
             GameObject.Tags = {} -- prevent the script to throw bazillion errors in Update
         end

@@ -12,7 +12,7 @@ Lang = {
     doNotCallUpdate = true -- tell Daneel not to call Update() when the module is loaded
 }
 
-DaneelModules.Lang = Lang
+Daneel.modules.Lang = Lang
 
 function Lang.DefaultConfig()
     return {

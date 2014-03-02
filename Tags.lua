@@ -136,7 +136,7 @@ end
 ----------------------------------------------------------------------------------
 -- Config 
 
-DaneelModules.Tags = {
+Daneel.modules.Tags = {
     DefaultConfig = {
         functionsDebugInfo = functionsDebugInfo
     },

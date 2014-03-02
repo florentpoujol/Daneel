@@ -7,7 +7,7 @@
 MouseInput = { 
     buttonExists = { LeftMouse = false, RightMouse = false, WheelUp = false, WheelDown = false }
 }
-DaneelModules.MouseInput = MouseInput
+Daneel.modules.MouseInput = MouseInput
 
 MouseInput.DefaultConfig = {
     doubleClickDelay = 20, -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
@@ -15,7 +15,7 @@ MouseInput.DefaultConfig = {
 MouseInput.Config = MouseInput.DefaultConfig
 
 function MouseInput.Load()
-    if DaneelModules.Tags == nil then
+    if Daneel.modules.Tags == nil then
         print( "ERROR : MouseInput.Load() : the 'Tags' module is missing." )
         GameObject.Tags = {} -- prevent the script to throw bazillion errors in Update
     end

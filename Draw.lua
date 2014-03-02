@@ -5,7 +5,7 @@
 -- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 
 Draw = {}
-DaneelModules.Draw = Draw
+Daneel.modules.Draw = Draw
 
 local functionsDebugInfo = {}
 local s = "string"

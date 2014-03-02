@@ -376,7 +376,7 @@ end
 ----------------------------------------------------------------------------------
 -- Config - Loading
 
-DaneelModules.Tween = Tween
+Daneel.modules.Tween = Tween
 
 function Tween.DefaultConfig()
     local config = {

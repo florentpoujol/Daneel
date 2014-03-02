@@ -632,12 +632,12 @@ end
 
 ----------------------------------------------------------------------------------
 
-DaneelModules = { moduleNamesById = {} }
+Daneel.modules = { moduleNames = {} }
 
-setmetatable( DaneelModules, {
-    __newindex = function( _, moduleName, moduleObject ) -- _ argument is DaneelModules object
-        table.insert( DaneelModules.moduleNamesById, moduleName )
-        rawset( DaneelModules, moduleName, moduleObject )
+setmetatable( Daneel.modules, {
+    __newindex = function( _, moduleName, moduleObject ) -- _ argument is Daneel.modules object
+        table.insert( Daneel.modules.moduleNames, moduleName )
+        rawset( Daneel.modules, moduleName, moduleObject )
     end
 } )
 
@@ -708,7 +708,7 @@ local functionsDebugInfo = {
     },
 }
 
-DaneelModules.Lua = { DefaultConfig = { functionsDebugInfo = functionsDebugInfo } }
+Daneel.modules.Lua = { DefaultConfig = { functionsDebugInfo = functionsDebugInfo } }
 
 
 ----------------------------------------------------------------------------------
