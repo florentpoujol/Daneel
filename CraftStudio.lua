@@ -4,10 +4,24 @@
 -- Last modified for v1.4.0
 -- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 
+-- debug info
+local s = "string"
+local b = "boolean"
+local n = "number"
+local t = "table"
+local go = "GameObject"
+local v = "Vector3"
+local _p = { "params", t }
+
 
 setmetatable( Vector3, { __call = function(Object, ...) return Object:New(...) end } )
 setmetatable( Quaternion, { __call = function(Object, ...) return Object:New(...) end } )
 setmetatable( Plane, { __call = function(Object, ...) return Object:New(...) end } )
+
+-- fix
+Plane.__tostring = function( p )
+    return "Plane: { normal="..p.normal..", distance="..p.distance.." }"
+end
 
 
 ----------------------------------------------------------------------------------
@@ -17,14 +31,13 @@ Asset = {}
 Asset.__index = Asset
 setmetatable( Asset, { __call = function(Object, ...) return Object.Get(...) end } )
 
-Daneel.functionsDebugInfo["Asset.Get"] = { { "assetPath" }, { "assetType", isOptional = true }, { "errorIfAssetNotFound", defaultValue = false } }
 local assetPathTypes = { "string" }
 --- Alias of CraftStudio.FindAsset( assetPath[, assetType] ).
 -- Get the asset of the specified name and type.
 -- The first argument may be an asset object, so that you can check if a variable was an asset object or name (and get the corresponding object).
 -- @param assetPath (string or one of the asset type) The fully-qualified asset name or asset object.
 -- @param assetType [optional] (string) The asset type as a case-insensitive string.
--- @param errorIfAssetNotFound [optional default=false] Throw an error if the asset was not found (instead of returning nil).
+-- @param errorIfAssetNotFound [default=false] Throw an error if the asset was not found (instead of returning nil).
 -- @return (One of the asset type) The asset, or nil if none is found.
 function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
     local errorHead = "Asset.Get( assetPath[, assetType, errorIfAssetNotFound] ) : "
@@ -84,7 +97,6 @@ function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
     return asset
 end
 
-Daneel.functionsDebugInfo["Asset.GetPath"] = { { "asset", Daneel.Config.assetTypes } }
 --- Returns the path of the provided asset.
 -- @param asset (One of the asset types) The asset instance.
 -- @return (string) The fully-qualified asset path.
@@ -92,7 +104,6 @@ function Asset.GetPath( asset )
     return Map.GetPathInPackage( asset )
 end
 
-Daneel.functionsDebugInfo["Asset.GetName"] = { { "asset", Daneel.Config.assetTypes } }
 --- Returns the name of the provided asset.
 -- @param asset (One of the asset types) The asset instance.
 -- @return (string) The name (the last segment of the fully-qualified path).
@@ -112,14 +123,12 @@ function Asset.GetId( asset )
     return Daneel.Cache.GetId( asset )
 end
 
-
 ----------------------------------------------------------------------------------
 -- Component ("mother" object of components)
 
 Component = {}
 Component.__index = Component
 
-Daneel.functionsDebugInfo["Component.Set"] = { { "component", Daneel.Config.componentTypes }, { "params", defaultValue = {} } }
 --- Apply the content of the params argument to the provided component.
 -- @param component (any component's type) The component.
 -- @param params (table) A table of parameters to set the component with.
@@ -129,7 +138,6 @@ function Component.Set( component, params )
     end
 end
 
-Daneel.functionsDebugInfo["Component.Destroy"] = { { "component", Daneel.Config.componentTypes } }
 --- Destroy the provided component, removing it from the game object.
 -- Note that the component is removed only at the end of the current frame.
 -- @param component (any component type) The component.
@@ -146,9 +154,19 @@ function Component.GetId( component )
     return Daneel.Cache.GetId( component )
 end
 
+table.meregin( Daneel.functionsDebugInfo, {
+    ["Asset.Get"] = { { "assetPath" }, { "assetType", isOptional = true }, { "errorIfAssetNotFound", defaultValue = false } },
+    ["Asset.GetPath"] = { { "asset", Daneel.Config.assetTypes } },
+    ["Asset.GetName"] = { { "asset", Daneel.Config.assetTypes } },
+
+    ["Component.Set"] = { { "component", Daneel.Config.componentTypes }, { "params", defaultValue = {} } },
+    ["Component.Destroy"] = { { "component", Daneel.Config.componentTypes } },
+} )
+
 
 ----------------------------------------------------------------------------------
 -- fix for Map.GetPathInPackage() that returns an error when the asset was dynamically loaded
+
 Map.oGetPathInPackage = Map.GetPathInPackage
 
 function Map.GetPathInPackage( asset )
@@ -165,6 +183,7 @@ function Map.LoadFromPackage( path, callback )
     Map.oLoadFromPackage( path, function( map )
         if map ~= nil then
             rawset( map, "path", path )
+            map.isDynamicallyLoaded = true
         end
         callback( map )
     end )
@@ -180,53 +199,35 @@ Transform.oSetLocalScale = Transform.SetLocalScale
 -- @param transform (Transform) The transform component.
 -- @param scale (number or Vector3) The global scale.
 function Transform.SetLocalScale(transform, scale)
-    Daneel.Debug.StackTrace.BeginFunction("Transform.SetLocalScale", transform, scale)
-    local errorHead = "Transform.SetLocalScale(transform, scale) : "
-    Daneel.Debug.CheckArgType(transform, "transform", "Transform", errorHead)
-    local argType = Daneel.Debug.CheckArgType(scale, "scale", {"number", "Vector3"}, errorHead)
-
-    if argType == "number" then
+    if type( scale ) == "number" then
         scale = Vector3:New(scale)
     end
     Transform.oSetLocalScale(transform, scale)
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Set the transform's global scale.
 -- @param transform (Transform) The transform component.
 -- @param scale (number or Vector3) The global scale.
 function Transform.SetScale(transform, scale)
-    Daneel.Debug.StackTrace.BeginFunction("Transform.SetScale", transform, scale)
-    local errorHead = "Transform.SetScale(transform, scale) : "
-    Daneel.Debug.CheckArgType(transform, "transform", "Transform", errorHead)
-    local argType = Daneel.Debug.CheckArgType(scale, "scale", {"number", "Vector3"}, errorHead)
-
-    if argType == "number" then
+    if type( scale ) == "number" then
         scale = Vector3:New(scale)
     end
-
     local parent = transform.gameObject:GetParent()
     if parent ~= nil then
         scale = scale / parent.transform:GetScale()
     end
     transform:SetLocalScale( scale )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Get the transform's global scale.
 -- @param transform (Transform) The transform component.
 -- @return (Vector3) The global scale.
 function Transform.GetScale(transform)
-    Daneel.Debug.StackTrace.BeginFunction("Transform.GetScale", transform)
-    local errorHead = "Transform.GetScale(transform) : "
-    Daneel.Debug.CheckArgType(transform, "transform", "Transform", errorHead)
-
     local scale = transform:GetLocalScale()
     local parent = transform.gameObject:GetParent()
     if parent ~= nil then
         scale = scale * parent.transform:GetScale()
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return scale
 end
 
@@ -240,17 +241,11 @@ ModelRenderer.oSetModel = ModelRenderer.SetModel
 -- @param modelRenderer (ModelRenderer) The modelRenderer.
 -- @param modelNameOrAsset (string or Model) [optional] The model name or asset, or nil.
 function ModelRenderer.SetModel( modelRenderer, modelNameOrAsset )
-    Daneel.Debug.StackTrace.BeginFunction( "ModelRenderer.SetModel", modelRenderer, modelNameOrAsset )
-    local errorHead = "ModelRenderer.SetModel( modelRenderer[, modelNameOrAsset] ) : "
-    Daneel.Debug.CheckArgType( modelRenderer, "modelRenderer", "ModelRenderer", errorHead )
-    Daneel.Debug.CheckOptionalArgType( modelNameOrAsset, "modelNameOrAsset", {"string", "Model"}, errorHead )
-
     local model = nil
     if modelNameOrAsset ~= nil then
         model = Asset.Get( modelNameOrAsset, "Model", true )
     end
     ModelRenderer.oSetModel( modelRenderer, model )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 ModelRenderer.oSetAnimation = ModelRenderer.SetAnimation
@@ -259,40 +254,26 @@ ModelRenderer.oSetAnimation = ModelRenderer.SetAnimation
 -- @param modelRenderer (ModelRenderer) The modelRenderer.
 -- @param animationNameOrAsset (string or ModelAnimation) [optional] The animation name or asset, or nil.
 function ModelRenderer.SetAnimation( modelRenderer, animationNameOrAsset )
-    Daneel.Debug.StackTrace.BeginFunction( "ModelRenderer.SetAnimation", modelRenderer, animationNameOrAsset )
-    local errorHead = "ModelRenderer.SetAnimation( modelRenderer[, animationNameOrAsset] ) : "
-    Daneel.Debug.CheckArgType( modelRenderer, "modelRenderer", "ModelRenderer", errorHead )
-    Daneel.Debug.CheckOptionalArgType( animationNameOrAsset, "animationNameOrAsset", {"string", "ModelAnimation"}, errorHead )
-
     local animation = nil 
     if animationNameOrAsset ~= nil then
         animation = Asset.Get( animationNameOrAsset, "ModelAnimation", true )
     end
     ModelRenderer.oSetAnimation( modelRenderer, animation )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Apply the content of the params argument to the provided model renderer.
 -- @param modelRenderer (ModelRenderer) The model renderer.
 -- @param params (table) A table of parameters to set the component with.
 function ModelRenderer.Set( modelRenderer, params )
-    Daneel.Debug.StackTrace.BeginFunction( "ModelRenderer.Set", modelRenderer, params )
-    local errorHead = "ModelRenderer.Set( modelRenderer, params ) : "
-    Daneel.Debug.CheckArgType( modelRenderer, "modelRenderer", "ModelRenderer", errorHead )
-    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
-
     if params.model ~= nil then
         modelRenderer:SetModel( params.model )
         params.model = nil
     end
-
     if params.animationTime ~= nil and params.animation ~= nil then
         modelRenderer:SetAnimation( params.animation )
         params.animation = nil
     end
-
     Component.Set( modelRenderer, params )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
@@ -304,25 +285,17 @@ MapRenderer.oSetMap = MapRenderer.SetMap
 --- Attach the provided map to the provided map renderer.
 -- @param mapRenderer (MapRenderer) The map renderer.
 -- @param mapNameOrAsset (string or Map) [optional] The map name or asset, or nil.
--- @param replaceTileSet (boolean) [optional default=true] Replace the current TileSet by the one set for the provided map in the map editor. 
+-- @param replaceTileSet (boolean) [default=true] Replace the current TileSet by the one set for the provided map in the map editor. 
 function MapRenderer.SetMap( mapRenderer, mapNameOrAsset, replaceTileSet )
-    Daneel.Debug.StackTrace.BeginFunction( "MapRenderer.SetMap", mapRenderer, mapNameOrAsset, replaceTileSet )
-    local errorHead = "MapRenderer.SetMap( mapRenderer[, mapNameOrAsset, replaceTileSet] ) : "
-    Daneel.Debug.CheckArgType( mapRenderer, "mapRenderer", "MapRenderer", errorHead )
-    Daneel.Debug.CheckOptionalArgType( mapNameOrAsset, "mapNameOrAsset", {"string", "Map"}, errorHead )
-    Daneel.Debug.CheckOptionalArgType( replaceTileSet, "replaceTileSet", "boolean", errorHead )
-
     local map = nil
     if mapNameOrAsset ~= nil then
         map = Asset.Get( mapNameOrAsset, "Map", true )
     end
-
     if replaceTileSet ~= nil then
         MapRenderer.oSetMap(mapRenderer, map, replaceTileSet)
     else
         MapRenderer.oSetMap(mapRenderer, map)
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 MapRenderer.oSetTileSet = MapRenderer.SetTileSet
@@ -331,36 +304,23 @@ MapRenderer.oSetTileSet = MapRenderer.SetTileSet
 -- @param mapRenderer (MapRenderer) The mapRenderer.
 -- @param tileSetNameOrAsset (string or TileSet) [optional] The tileSet name or asset, or nil.
 function MapRenderer.SetTileSet( mapRenderer, tileSetNameOrAsset )
-    Daneel.Debug.StackTrace.BeginFunction("MapRenderer.SetTileSet", mapRenderer, tileSetNameOrAsset )
-    local errorHead = "MapRenderer.SetTileSet( mapRenderer[, tileSetNameOrAsset] ) : "
-    Daneel.Debug.CheckArgType( mapRenderer, "mapRenderer", "MapRenderer", errorHead )
-    Daneel.Debug.CheckOptionalArgType( tileSetNameOrAsset, "tileSetNameOrAsset", {"string", "TileSet"}, errorHead )
-
     local tileSet = nil
     if tileSetNameOrAsset ~= nil then
         tileSet = Asset.Get( tileSetNameOrAsset, "TileSet", true )
     end
     MapRenderer.oSetTileSet( mapRenderer, tileSet )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Apply the content of the params argument to the provided map renderer.
 -- @param mapRenderer (MapRenderer) The map renderer.
 -- @param params (table) A table of parameters to set the component with.
 function MapRenderer.Set( mapRenderer, params )
-    Daneel.Debug.StackTrace.BeginFunction( "MapRenderer.Set", mapRenderer, params )
-    local errorHead = "MapRenderer.Set( mapRenderer, params ) : "
-    Daneel.Debug.CheckArgType( mapRenderer, "mapRenderer", "MapRenderer", errorHead )
-    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
-
     if params.map ~= nil then
         mapRenderer:SetMap( params.map )
         -- set the map here in case of the tileSet property is set too
         params.map = nil
     end
-
     Component.Set( mapRenderer, params )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
@@ -373,17 +333,11 @@ TextRenderer.oSetFont = TextRenderer.SetFont
 -- @param textRenderer (TextRenderer) The text renderer.
 -- @param fontNameOrAsset (string or Font) [optional] The font name or asset, or nil.
 function TextRenderer.SetFont( textRenderer, fontNameOrAsset )
-    Daneel.Debug.StackTrace.BeginFunction( "TextRenderer.SetFont", textRenderer, fontNameOrAsset )
-    local errorHead = "TextRenderer.SetFont( textRenderer[, fontNameOrAsset] ) : "
-    Daneel.Debug.CheckArgType( textRenderer, "textRenderer", "TextRenderer", errorHead )
-    Daneel.Debug.CheckOptionalArgType( fontNameOrAsset, "fontNameOrAsset", {"string", "Font"}, errorHead )
-
     local font = nil
     if fontNameOrAsset ~= nil then
         font = Asset.Get( fontNameOrAsset, "Font", true )
     end
     TextRenderer.oSetFont( textRenderer, font )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 TextRenderer.oSetAlignment = TextRenderer.SetAlignment
@@ -392,35 +346,24 @@ TextRenderer.oSetAlignment = TextRenderer.SetAlignment
 -- @param textRenderer (TextRenderer) The textRenderer.
 -- @param alignment (string or TextRenderer.Alignment) The alignment. Values (case-insensitive when of type string) may be "left", "center", "right", TextRenderer.Alignment.Left, TextRenderer.Alignment.Center or TextRenderer.Alignment.Right.
 function TextRenderer.SetAlignment(textRenderer, alignment)
-    Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetAlignment", textRenderer, alignment)
-    local errorHead = "TextRenderer.SetAlignment(textRenderer, alignment) : "
-    Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
-    local argType = Daneel.Debug.CheckArgType(alignment, "alignment", {"string", "userdata", "number"}, errorHead) -- number because enum returns a number in the webplayer
-
-    if argType == "string" then
+    if type( alignment ) == "string" then
         local default = "Center"
         if Daneel.Config.textRenderer ~= nil and Daneel.Config.textRenderer.alignment ~= nil then
             default = Daneel.Config.textRenderer.alignment
         end
+        local errorHead = "TextRenderer.SetAlignment( textRenderer, alignment ) : "
         alignment = Daneel.Debug.CheckArgValue( alignment, "alignment", {"Left", "Center", "Right"}, errorHead, default )
         alignment = TextRenderer.Alignment[ alignment ]
     end
     TextRenderer.oSetAlignment( textRenderer, alignment )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Update the game object's scale to make the text appear the provided width.
 -- @param textRenderer (TextRenderer) The textRenderer.
 -- @param width (number) The text's width in scene units.
 function TextRenderer.SetTextWidth( textRenderer, width )
-    Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetTextWidth", textRenderer, width)
-    local errorHead = "TextRenderer.SetTextWidth(textRenderer, width) : "
-    Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
-    local argType = Daneel.Debug.CheckArgType(width, "width", "number", errorHead)
-
     local widthScaleRatio = textRenderer:GetTextWidth() / textRenderer.gameObject.transform:GetScale()
     textRenderer.gameObject.transform:SetScale( width / widthScaleRatio )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
@@ -433,12 +376,7 @@ Camera.oSetProjectionMode = Camera.SetProjectionMode
 -- @param camera (Camera) The camera.
 -- @param projectionMode (string or Camera.ProjectionMode) The projection mode. Possible values are "perspective", "orthographic" (as a case-insensitive string), Camera.ProjectionMode.Perspective or Camera.ProjectionMode.Orthographic.
 function Camera.SetProjectionMode( camera, projectionMode )
-    Daneel.Debug.StackTrace.BeginFunction( "Camera.SetProjectionMode", camera, projectionMode )
-    local errorHead = "Camera.SetProjectionMode( camera, projectionMode ) : "
-    Daneel.Debug.CheckArgType( camera, "camera", "Camera", errorHead)
-    local argType = Daneel.Debug.CheckArgType( projectionMode, "projectionMode", {"string", "userdata", "number"}, errorHead )
-
-    if argType == "string" then
+    if type( projectionMode ) == "string" then
         local default = "Perspective"
         if Daneel.Config.camera ~= nil and Daneel.Config.camera.projectionMode ~= nil then
             default = Daneel.Config.camera.projectionMode
@@ -446,28 +384,45 @@ function Camera.SetProjectionMode( camera, projectionMode )
         projectionMode = Daneel.Debug.CheckArgValue( projectionMode, "projectionMode", {"Perspective", "Orthographic"}, errorHead, default )
         projectionMode = Camera.ProjectionMode[ projectionMode ]
     end
-
     Camera.oSetProjectionMode( camera, projectionMode )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Apply the content of the params argument to the provided camera.
 -- @param camera (Camera) The camera.
 -- @param params (table) A table of parameters to set the component with.
 function Camera.Set( camera, params )
-    Daneel.Debug.StackTrace.BeginFunction( "Camera.Set", camera, params )
-    local errorHead = "Camera.Set( camera, params ) : "
-    Daneel.Debug.CheckArgType( camera, "camera", "Camera", errorHead )
-    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
-
     if params.projectionMode ~= nil then
         camera:SetProjectionMode( params.projectionMode )
         params.projectionMode = nil
     end
-
     Component.Set( camera, params )
-    Daneel.Debug.StackTrace.EndFunction()
 end
+
+
+table.mergein( Daneel.functionsDebugInfo, {
+    ["Transform.SetLocalScale"] = { { "transform", "Transform" }, { n, v } },
+    ["Transform.SetScale"] =      { { "transform", "Transform" }, { n, v } },
+    ["Transform.GetScale"] =      { { "transform", "Transform" } },
+
+    ["ModelRenderer.SetModel"] =     { { "modelRenderer", "ModelRenderer" }, { "modelNameOrAsset", { s, "Model" }, isOptional = true } },
+    ["ModelRenderer.SetAnimation"] = { { "modelRenderer", "ModelRenderer" }, { "animationNameOrAsset", { s, "ModelAnimation" }, isOptional = true } },
+    ["ModelRenderer.Set"] =          { { "modelRenderer", "ModelRenderer" }, _p },
+
+    ["MapRenderer.SetMap"] = { 
+        { "mapRenderer", "MapRenderer" },
+        { "mapNameOrAsset", { s, "Map" }, isOptional = true },
+        { "replaceTileSet", defaultValue = true } },
+    },
+    ["MapRenderer.SetTileSet"] = { { "mapRenderer", "MapRenderer" }, { "tileSetNameOrAsset", { s, "TileSet" } } },
+    ["MapRenderer.Set"] =        { { "mapRenderer", "MapRenderer" }, _p },
+
+    ["TextRenderer.SetFont"] =      { { "textRenderer", "TextRenderer" }, { "fontNameOrAsset", { s, "TileSet" } } },
+    ["TextRenderer.SetAlignment"] = { { "textRenderer", "TextRenderer" }, { "alignment", {s, "userdata", n} } }, -- number because enum returns a number in the webplayer
+    ["TextRenderer.SetTextWidth"] = { { "textRenderer", "TextRenderer" }, { "width", n } },
+
+    ["Camera.SetProjectionMode"] = { { "camera", "Camera" }, { "projectionMode", {s, "userdata", n} } },
+    ["Camera.Set"] =               { { "camera", "Camera" }, _p },
+} )
 
 
 ----------------------------------------------------------------------------------
@@ -509,15 +464,9 @@ setmetatable( Ray, { __call = function(Object, ...) return Object:New(...) end }
 --- Check the collision of the ray against the provided set of game objects.
 -- @param ray (Ray) The ray.
 -- @param gameObjects (table) The set of game objects to cast the ray against.
--- @param sortByDistance [optional default=false] (boolean) Sort the raycastHit by increasing distance in the returned table.
+-- @param sortByDistance [default=false] (boolean) Sort the raycastHit by increasing distance in the returned table.
 -- @return (table) A table of RaycastHits (will be empty if the ray didn't intersects anything).
 function Ray.Cast( ray, gameObjects, sortByDistance )
-    Daneel.Debug.StackTrace.BeginFunction( "Ray.Cast", ray, gameObjects, sortByDistance )
-    local errorHead = "Ray.Cast( ray, gameObjects[, sortByDistance] ) : "
-    Daneel.Debug.CheckArgType( ray, "ray", "Ray", errorHead )
-    Daneel.Debug.CheckArgType( gameObjects, "gameObjects", "table", errorHead )
-    Daneel.Debug.CheckOptionalArgType( sortByDistance, "sortByDistance", "boolean", errorHead )
-    
     local hits = {}
     for i, gameObject in pairs( gameObjects ) do
         if gameObject.inner ~= nil then
@@ -530,8 +479,6 @@ function Ray.Cast( ray, gameObjects, sortByDistance )
     if sortByDistance == true then
         hits = table.sortby( hits, "distance" )
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
     return hits
 end
 
@@ -540,43 +487,31 @@ end
 -- @param gameObjectNameOrInstance (string or GameObject) The game object instance or name.
 -- @return (RaycastHit) A raycastHit with the if there was a collision, or nil.
 function Ray.IntersectsGameObject( ray, gameObjectNameOrInstance )
-    Daneel.Debug.StackTrace.BeginFunction( "Ray.IntersectsGameObject", ray, gameObjectNameOrInstance )
-    local errorHead = "Ray.IntersectsGameObject( ray, gameObjectNameOrInstance ) : "
-    Daneel.Debug.CheckArgType( ray, "ray", "Ray", errorHead )
-    Daneel.Debug.CheckArgType( gameObjectNameOrInstance, "gameObjectNameOrInstance", {"string", "GameObject"}, errorHead )
-    
     local gameObject = GameObject.Get( gameObjectNameOrInstance, true )
     local raycastHit = nil
-
     if gameObject.inner == nil then
         -- should not happend since CheckArgType() returns an error when the game object is dead
         return nil
     end
-
     local component = gameObject.modelRenderer
     if component ~= nil then
         raycastHit = ray:IntersectsModelRenderer( component, true )
     end
-
     if raycastHit == nil then
         component = gameObject.mapRenderer
         if component ~= nil then
             raycastHit = ray:IntersectsMapRenderer( component, true )
         end
     end
-
     if raycastHit == nil then
         component = gameObject.textRenderer
         if component ~= nil then
             raycastHit = ray:IntersectsTextRenderer( component, true )
         end
     end
-
     if raycastHit ~= nil then
         raycastHit.gameObject = gameObject
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
     return raycastHit
 end
 
@@ -585,29 +520,17 @@ Ray.oIntersectsPlane = Ray.IntersectsPlane
 -- Check if the ray intersects the provided plane and returns the distance of intersection or a raycastHit.
 -- @param ray (Ray) The ray.
 -- @param plane (Plane) The plane.
--- @param returnRaycastHit (boolean) [optional default=false] Tell if the hit infos must be returned as a raycastHit.
+-- @param returnRaycastHit (boolean) [default=false] Tell if the hit infos must be returned as a raycastHit.
 -- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance' and 'hitLocation' properties (if any).
 function Ray.IntersectsPlane( ray, plane, returnRaycastHit )
-    -- 08/08/13 removed reference to plane in BeginFunction and CheckArgType
-    -- because Plane.__tostring is wrong, causes 'var self is not declared'
-    Daneel.Debug.StackTrace.BeginFunction( "Ray.IntersectsPlane", ray, nil, returnRaycastHit )
-    local errorHead = "Ray.IntersectsPlane( ray, plane[, returnRaycastHit] ) : "
-    Daneel.Debug.CheckArgType( ray, "ray", "Ray", errorHead )
-    --Daneel.Debug.CheckArgType( plane, "plane", "Plane", errorHead )
-    returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
-
     local distance = Ray.oIntersectsPlane( ray, plane )
     if returnRaycastHit and distance ~= nil then
-        local raycastHit = RaycastHit.New({
+        return RaycastHit.New({
             distance = distance,
             hitLocation = ray.position + ray.direction * distance,
             hitObject = plane,
         })
-
-        distance = raycastHit
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
     return distance
 end
 
@@ -616,31 +539,20 @@ Ray.oIntersectsModelRenderer = Ray.IntersectsModelRenderer
 -- Check if the ray intersects the provided modelRenderer.
 -- @param ray (Ray) The ray.
 -- @param modelRenderer (ModelRenderer) The modelRenderer.
--- @param returnRaycastHit (boolean) [optional default=false] Tell if the hit infos must be returned as a raycastHit.
+-- @param returnRaycastHit (boolean) [default=false] Tell if the hit infos must be returned as a raycastHit.
 -- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance', 'normal' and 'hitLocation' properties (if any).
 -- @return (Vector3) If 'returnRaycastHit' argument is false : the normal of the hit face, or nil
 function Ray.IntersectsModelRenderer( ray, modelRenderer, returnRaycastHit )
-    Daneel.Debug.StackTrace.BeginFunction( "Ray.IntersectsModelRenderer", ray, modelRenderer, returnRaycastHit )
-    local errorHead = "Ray.IntersectsModelRenderer( ray, modelRenderer[, returnRaycastHit] ) : "
-    Daneel.Debug.CheckArgType( ray, "ray", "Ray", errorHead )
-    Daneel.Debug.CheckArgType( modelRenderer, "modelRenderer", "ModelRenderer", errorHead )
-    returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
-
     local distance, normal = Ray.oIntersectsModelRenderer( ray, modelRenderer )
     if returnRaycastHit and distance ~= nil then
-        local raycastHit = RaycastHit.New({
+        return RaycastHit.New({
             distance = distance,
             normal = normal,
             hitLocation = ray.position + ray.direction * distance,
             hitObject = modelRenderer,
             gameObject = modelRenderer.gameObject,
         })
-
-        distance = raycastHit
-        normal = nil
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
     return distance, normal
 end
 
@@ -649,18 +561,12 @@ Ray.oIntersectsMapRenderer = Ray.IntersectsMapRenderer
 -- Check if the ray intersects the provided mapRenderer.
 -- @param ray (Ray) The ray.
 -- @param mapRenderer (MapRenderer) The mapRenderer.
--- @param returnRaycastHit (boolean) [optional default=false] Tell if the hit infos must be returned as a raycastHit.
+-- @param returnRaycastHit (boolean) [default=false] Tell if the hit infos must be returned as a raycastHit.
 -- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance', 'normal', 'hitBlockLocation', 'adjacentBlockLocation' and 'hitLocation' properties (if any).
 -- @return (Vector3) If 'returnRaycastHit' argument is false : the normal of the hit face, or nil
 -- @return (Vector3) If 'returnRaycastHit' argument is false : the location of the block hit, or nil
 -- @return (Vector3) If 'returnRaycastHit' argument is false : the location of the adjacent block, or nil
 function Ray.IntersectsMapRenderer( ray, mapRenderer, returnRaycastHit )
-    Daneel.Debug.StackTrace.BeginFunction( "Ray.IntersectsMapRenderer", ray, mapRenderer, returnRaycastHit )
-    local errorHead = "Ray.IntersectsMapRenderer( ray, mapRenderer[, returnRaycastHit] ) : "
-    Daneel.Debug.CheckArgType( ray, "ray", "Ray", errorHead )
-    Daneel.Debug.CheckArgType( mapRenderer, "mapRenderer", "MapRenderer", errorHead )
-    returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
-
     local distance, normal, hitBlockLocation, adjacentBlockLocation = Ray.oIntersectsMapRenderer( ray, mapRenderer )
     if hitBlockLocation ~= nil then
         setmetatable( hitBlockLocation, Vector3 )
@@ -668,9 +574,8 @@ function Ray.IntersectsMapRenderer( ray, mapRenderer, returnRaycastHit )
     if adjacentBlockLocation ~= nil then
         setmetatable( adjacentBlockLocation, Vector3 )
     end
-
     if returnRaycastHit and distance ~= nil then
-        local raycastHit = RaycastHit.New({
+        return RaycastHit.New({
             distance = distance,
             normal = normal,
             hitBlockLocation = hitBlockLocation,
@@ -679,14 +584,7 @@ function Ray.IntersectsMapRenderer( ray, mapRenderer, returnRaycastHit )
             hitObject = mapRenderer,
             gameObject = mapRenderer.gameObject,
         })
-
-        distance = raycastHit
-        normal = nil
-        hitBlockLocation = nil
-        adjacentBlockLocation = nil
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
     return distance, normal, hitBlockLocation, adjacentBlockLocation
 end
 
@@ -695,31 +593,20 @@ Ray.oIntersectsTextRenderer = Ray.IntersectsTextRenderer
 -- Check if the ray intersects the provided textRenderer.
 -- @param ray (Ray) The ray.
 -- @param textRenderer (TextRenderer) The textRenderer.
--- @param returnRaycastHit (boolean) [optional default=false] Tell if the hit infos must be returned as a raycastHit.
+-- @param returnRaycastHit (boolean) [default=false] Tell if the hit infos must be returned as a raycastHit.
 -- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance', 'normal' and 'hitLocation' properties (if any).
 -- @return (Vector3) If 'returnRaycastHit' argument is false : the normal of the hit face, or nil
 function Ray.IntersectsTextRenderer( ray, textRenderer, returnRaycastHit )
-    Daneel.Debug.StackTrace.BeginFunction( "Ray.IntersectsTextRenderer", ray, textRenderer, returnRaycastHit )
-    local errorHead = "Ray.IntersectsTextRenderer( ray, textRenderer[, returnRaycastHit] ) : "
-    Daneel.Debug.CheckArgType( ray, "ray", "Ray", errorHead )
-    Daneel.Debug.CheckArgType( textRenderer, "textRenderer", "TextRenderer", errorHead )
-    returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
-
     local distance, normal = Ray.oIntersectsTextRenderer( ray, textRenderer )
     if returnRaycastHit and distance ~= nil then
-        local raycastHit = RaycastHit.New({
+        return RaycastHit.New({
             distance = distance,
             normal = normal,
             hitLocation = ray.position + ray.direction * distance,
             hitObject = textRenderer,
             gameObject = textRenderer.gameObject,
         })
-
-        Daneel.Debug.StackTrace.EndFunction()
-        return raycastHit
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
     return distance, normal
 end
 
@@ -733,12 +620,7 @@ end
 -- Calling this function doesn't immediately stops the calling function. As such, you might want to add a return statement afterwards. 
 -- @param sceneNameOrAsset (string or Scene) The scene name or asset.
 function Scene.Load( sceneNameOrAsset )
-    Daneel.Debug.StackTrace.BeginFunction( "Scene.Load", sceneNameOrAsset )
-    local errorHead = "Scene.Load( sceneNameOrAsset ) : "
-    Daneel.Debug.CheckArgType( sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead )
-
     CraftStudio.LoadScene( sceneNameOrAsset )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 CraftStudio.oLoadScene = CraftStudio.LoadScene
@@ -748,17 +630,10 @@ CraftStudio.oLoadScene = CraftStudio.LoadScene
 -- Calling this function doesn't immediately stops the calling function. As such, you might want to add a return statement afterwards. 
 -- @param sceneNameOrAsset (string or Scene) The scene name or asset.
 function CraftStudio.LoadScene( sceneNameOrAsset )
-    Daneel.Debug.StackTrace.BeginFunction( "CraftStudio.LoadScene", sceneNameOrAsset )
-    local errorHead = "CraftStudio.LoadScene( sceneNameOrAsset ) : "
-    Daneel.Debug.CheckArgType( sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead )
-
-    local scene = Asset.Get( sceneNameOrAsset, "Scene", true )
-    
+    local scene = Asset.Get( sceneNameOrAsset, "Scene", true )  
     Daneel.Event.Fire( "OnSceneLoad", scene )
     Daneel.Event.events = {} -- do this here to make sure that any events that might be fired from OnSceneLoad-catching function are indeed fired
     Scene.current = scene
-
-    Daneel.Debug.StackTrace.EndFunction()
     CraftStudio.oLoadScene( scene )
 end
 
@@ -767,23 +642,15 @@ end
 -- You can optionally specify a parent game object which will be used as a root for adding all game objects. 
 -- Returns the game object appended if there was only one root game object in the provided scene.
 -- @param sceneNameOrAsset (string or Scene) The scene name or asset.
--- @param parentNameOrInstance [optional] (string or GameObject) The parent game object name or instance.
+-- @param parentNameOrInstance (string or GameObject) [optional] The parent game object name or instance.
 -- @return (GameObject) The appended game object, or nil.
 function Scene.Append( sceneNameOrAsset, parentNameOrInstance )
-    Daneel.Debug.StackTrace.BeginFunction( "Scene.Append", sceneNameOrAsset, parentNameOrInstance )
-    local errorHead = "Scene.Append( sceneNameOrAsset[, parentNameOrInstance] ) : "
-    Daneel.Debug.CheckArgType( sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead )
-    Daneel.Debug.CheckOptionalArgType( parentNameOrInstance, "parentNameOrInstance", {"string", "GameObject"}, errorHead )
-
     local scene = Asset.Get( sceneNameOrAsset, "Scene", true )
     local parent = nil
     if parentNameOrInstance ~= nil then
         parent = GameObject.Get( parentNameOrInstance, true )
     end
-    local gameObject = CraftStudio.AppendScene( scene, parent )
-
-    Daneel.Debug.StackTrace.EndFunction()
-    return gameObject
+    return CraftStudio.AppendScene( scene, parent )
 end
 
 
@@ -796,16 +663,31 @@ CraftStudio.oDestroy = CraftStudio.Destroy
 -- Sets the 'isDestroyed' property to 'true' and fires the 'OnDestroy' event on the object.
 -- @param object (GameObject, a component or a dynamically loaded asset) The game object, component or a dynamically loaded asset (like a map loaded with Map.LoadFromPackage).
 function CraftStudio.Destroy( object )
-    Daneel.Debug.StackTrace.BeginFunction( "CraftStudio.Destroy", object )
     if type( object ) == "table" then
         Daneel.Event.Fire( object, "OnDestroy", object )
         Daneel.Event.StopListen( object ) -- remove from listener list
         object.isDestroyed = true
     end
     CraftStudio.oDestroy( object )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
+local _ray = { "ray", "Ray" }
+local _returnraycasthit = { "returnRaycastHit", defaultValue = false }
+
+table.mergein( Daneel.functionsDebugInfo, {
+    ["Ray.Cast"] =                    { _ray, { "gameObjects", t }, { "sortByDistance", defaultValue = false } },  
+    ["Ray.IntersectsGameObject"] =    { _ray, { "gameObjectNameOrInstance", { s, go } }, _returnraycasthit },
+    ["Ray.IntersectsPlane"] =         { _ray, { "plane", "Plane" }, _returnraycasthit },
+    ["Ray.IntersectsModelRenderer"] = { _ray, { "modelRenderer", "ModelRenderer" }, _returnraycasthit },
+    ["Ray.IntersectsMapRenderer"] =   { _ray, { "mapRenderer", "MapRenderer" }, _returnraycasthit },
+    ["Ray.IntersectsTextRenderer"] =  { _ray, { "textRenderer", "TextRenderer" }, _returnraycasthit },
+
+    ["Scene.Load"] =            { { "sceneNameOrAsset", { s, "Scene" } } },
+    ["CraftStudio.LoadScene"] = { { "sceneNameOrAsset", { s, "Scene" } } },
+    ["Scene.Append"] =          { { "sceneNameOrAsset", { s, "Scene" } }, { "parentNameOrInstance", { s, go } } },
+
+    ["CraftStudio.Destroy"] = { { "object" } },
+} )
 
 ----------------------------------------------------------------------------------
 
@@ -1077,7 +959,7 @@ end
 --- Alias of CraftStudio.FindGameObject(name).
 -- Get the first game object with the provided name.
 -- @param name (string) The game object name.
--- @param errorIfGameObjectNotFound [optional default=false] (boolean) Throw an error if the game object was not found (instead of returning nil).
+-- @param errorIfGameObjectNotFound [default=false] (boolean) Throw an error if the game object was not found (instead of returning nil).
 -- @return (GameObject) The game object or nil if none is found.
 function GameObject.Get( name, errorIfGameObjectNotFound ) 
     if getmetatable(name) == GameObject then
@@ -1133,7 +1015,7 @@ GameObject.oSetParent = GameObject.SetParent
 -- Optionaly carry over the game object's local transform instead of the global one.
 -- @param gameObject (GameObject) The game object.
 -- @param parentNameOrInstance [optional] (string or GameObject) The parent name or game object (or nil to remove the parent).
--- @param keepLocalTransform [optional default=false] (boolean) Carry over the game object's local transform instead of the global one.
+-- @param keepLocalTransform [default=false] (boolean) Carry over the game object's local transform instead of the global one.
 function GameObject.SetParent(gameObject, parentNameOrInstance, keepLocalTransform)
     Daneel.Debug.StackTrace.BeginFunction("GameObject.SetParent", gameObject, parentNameOrInstance, keepLocalTransform)
     local errorHead = "GameObject.SetParent(gameObject, [parentNameOrInstance, keepLocalTransform]) : "
@@ -1154,7 +1036,7 @@ end
 -- If the name is not provided, it returns the first child.
 -- @param gameObject (GameObject) The game object.
 -- @param name [optional] (string) The child name (may be hyerarchy of names separated by dots).
--- @param recursive [optional default=false] (boolean) Search for the child in all descendants instead of just the first generation.
+-- @param recursive [default=false] (boolean) Search for the child in all descendants instead of just the first generation.
 -- @return (GameObject) The child or nil if none is found.
 function GameObject.GetChild( gameObject, name, recursive )
     Daneel.Debug.StackTrace.BeginFunction( "GameObject.GetChild", gameObject, name, recursive )
@@ -1186,8 +1068,8 @@ GameObject.oGetChildren = GameObject.GetChildren
 
 --- Get all descendants of the game object.
 -- @param gameObject (GameObject) The game object.
--- @param recursive [optional default=false] (boolean) Look for all descendants instead of just the first generation.
--- @param includeSelf [optional default=false] (boolean) Include the game object in the children.
+-- @param recursive [default=false] (boolean) Look for all descendants instead of just the first generation.
+-- @param includeSelf [default=false] (boolean) Include the game object in the children.
 -- @return (table) The children.
 function GameObject.GetChildren( gameObject, recursive, includeSelf )
     Daneel.Debug.StackTrace.BeginFunction( "GameObject.GetChildren", gameObject, recursive, includeSelf )
