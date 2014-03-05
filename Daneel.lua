@@ -486,7 +486,7 @@ function Daneel.Debug.GetType( object, luaTypeOnly )
     return argType
 end
 
-local OriginalError = error
+oerror = error
 
 -- prevent to set the new version of error() when DEBUG is false or before the StackTrace is enabled when DEBUG is true.
 function Daneel.Debug.SetNewError()
@@ -498,7 +498,7 @@ function Daneel.Debug.SetNewError()
         if Daneel.Config.debug.enableDebug and doNotPrintStacktrace ~= true then
             Daneel.Debug.StackTrace.Print()
         end
-        OriginalError(message)
+        oerror(message)
     end
 end
 
@@ -509,7 +509,7 @@ function Daneel.Debug.Disable(info)
         info = " : "..tostring(info)
     end
     print("Daneel.Debug.Disable()"..info)
-    error = OriginalError
+    error = oerror
     Daneel.Config.debug.enableDebug = false
 end
 

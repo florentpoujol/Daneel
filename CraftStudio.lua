@@ -149,20 +149,20 @@ end
 
 ----------------------------------------------------------------------------------
 -- fix for Map.GetPathInPackage() that returns an error when the asset was dynamically loaded
-local OriginalMapGetPathInPackage = Map.GetPathInPackage
+Map.oGetPathInPackage = Map.GetPathInPackage
 
 function Map.GetPathInPackage( asset )
     local path = rawget( asset, "path" )
     if path == nil then
-        path = OriginalMapGetPathInPackage( asset )
+        path = Map.oGetPathInPackage( asset )
     end
     return path
 end
 
-local OriginalMapLoadFromPackage = Map.LoadFromPackage
+Map.oLoadFromPackage = Map.LoadFromPackage
 
 function Map.LoadFromPackage( path, callback )
-    OriginalMapLoadFromPackage( path, function( map )
+    Map.oLoadFromPackage( path, function( map )
         if map ~= nil then
             rawset( map, "path", path )
         end
@@ -174,7 +174,7 @@ end
 ----------------------------------------------------------------------------------
 -- Transform
 
-local OriginalSetLocalScale = Transform.SetLocalScale
+Transform.oSetLocalScale = Transform.SetLocalScale
 
 --- Set the transform's local scale.
 -- @param transform (Transform) The transform component.
@@ -188,7 +188,7 @@ function Transform.SetLocalScale(transform, scale)
     if argType == "number" then
         scale = Vector3:New(scale)
     end
-    OriginalSetLocalScale(transform, scale)
+    Transform.oSetLocalScale(transform, scale)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -234,7 +234,7 @@ end
 ----------------------------------------------------------------------------------
 -- ModelRenderer
 
-local OriginalSetModel = ModelRenderer.SetModel
+ModelRenderer.oSetModel = ModelRenderer.SetModel
 
 --- Attach the provided model to the provided modelRenderer.
 -- @param modelRenderer (ModelRenderer) The modelRenderer.
@@ -249,11 +249,11 @@ function ModelRenderer.SetModel( modelRenderer, modelNameOrAsset )
     if modelNameOrAsset ~= nil then
         model = Asset.Get( modelNameOrAsset, "Model", true )
     end
-    OriginalSetModel( modelRenderer, model )
+    ModelRenderer.oSetModel( modelRenderer, model )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
-local OriginalSetAnimation = ModelRenderer.SetAnimation
+ModelRenderer.oSetAnimation = ModelRenderer.SetAnimation
 
 --- Set the specified animation for the modelRenderer's current model.
 -- @param modelRenderer (ModelRenderer) The modelRenderer.
@@ -268,7 +268,7 @@ function ModelRenderer.SetAnimation( modelRenderer, animationNameOrAsset )
     if animationNameOrAsset ~= nil then
         animation = Asset.Get( animationNameOrAsset, "ModelAnimation", true )
     end
-    OriginalSetAnimation( modelRenderer, animation )
+    ModelRenderer.oSetAnimation( modelRenderer, animation )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -299,7 +299,7 @@ end
 ----------------------------------------------------------------------------------
 -- MapRenderer
 
-local OriginalSetMap = MapRenderer.SetMap
+MapRenderer.oSetMap = MapRenderer.SetMap
 
 --- Attach the provided map to the provided map renderer.
 -- @param mapRenderer (MapRenderer) The map renderer.
@@ -318,14 +318,14 @@ function MapRenderer.SetMap( mapRenderer, mapNameOrAsset, replaceTileSet )
     end
 
     if replaceTileSet ~= nil then
-        OriginalSetMap(mapRenderer, map, replaceTileSet)
+        MapRenderer.oSetMap(mapRenderer, map, replaceTileSet)
     else
-        OriginalSetMap(mapRenderer, map)
+        MapRenderer.oSetMap(mapRenderer, map)
     end
     Daneel.Debug.StackTrace.EndFunction()
 end
 
-local OriginalSetTileSet = MapRenderer.SetTileSet
+MapRenderer.oSetTileSet = MapRenderer.SetTileSet
 
 --- Set the specified tileSet for the mapRenderer's map.
 -- @param mapRenderer (MapRenderer) The mapRenderer.
@@ -340,7 +340,7 @@ function MapRenderer.SetTileSet( mapRenderer, tileSetNameOrAsset )
     if tileSetNameOrAsset ~= nil then
         tileSet = Asset.Get( tileSetNameOrAsset, "TileSet", true )
     end
-    OriginalSetTileSet( mapRenderer, tileSet )
+    MapRenderer.oSetTileSet( mapRenderer, tileSet )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -367,7 +367,7 @@ end
 ----------------------------------------------------------------------------------
 -- TextRenderer
 
-local OriginalSetFont = TextRenderer.SetFont
+TextRenderer.oSetFont = TextRenderer.SetFont
 
 --- Set the provided font to the provided text renderer.
 -- @param textRenderer (TextRenderer) The text renderer.
@@ -382,11 +382,11 @@ function TextRenderer.SetFont( textRenderer, fontNameOrAsset )
     if fontNameOrAsset ~= nil then
         font = Asset.Get( fontNameOrAsset, "Font", true )
     end
-    OriginalSetFont( textRenderer, font )
+    TextRenderer.oSetFont( textRenderer, font )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
-local OriginalSetAlignment = TextRenderer.SetAlignment
+TextRenderer.oSetAlignment = TextRenderer.SetAlignment
 
 --- Set the text's alignment.
 -- @param textRenderer (TextRenderer) The textRenderer.
@@ -405,7 +405,7 @@ function TextRenderer.SetAlignment(textRenderer, alignment)
         alignment = Daneel.Debug.CheckArgValue( alignment, "alignment", {"Left", "Center", "Right"}, errorHead, default )
         alignment = TextRenderer.Alignment[ alignment ]
     end
-    OriginalSetAlignment( textRenderer, alignment )
+    TextRenderer.oSetAlignment( textRenderer, alignment )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -427,7 +427,7 @@ end
 ----------------------------------------------------------------------------------
 -- Camera
 
-local OriginalSetProjectionMode = Camera.SetProjectionMode
+Camera.oSetProjectionMode = Camera.SetProjectionMode
 
 --- Sets the camera projection mode.
 -- @param camera (Camera) The camera.
@@ -447,7 +447,7 @@ function Camera.SetProjectionMode( camera, projectionMode )
         projectionMode = Camera.ProjectionMode[ projectionMode ]
     end
 
-    OriginalSetProjectionMode( camera, projectionMode )
+    Camera.oSetProjectionMode( camera, projectionMode )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -580,7 +580,7 @@ function Ray.IntersectsGameObject( ray, gameObjectNameOrInstance )
     return raycastHit
 end
 
-local OriginalIntersectsPlane = Ray.IntersectsPlane
+Ray.oIntersectsPlane = Ray.IntersectsPlane
 
 -- Check if the ray intersects the provided plane and returns the distance of intersection or a raycastHit.
 -- @param ray (Ray) The ray.
@@ -596,7 +596,7 @@ function Ray.IntersectsPlane( ray, plane, returnRaycastHit )
     --Daneel.Debug.CheckArgType( plane, "plane", "Plane", errorHead )
     returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
 
-    local distance = OriginalIntersectsPlane( ray, plane )
+    local distance = Ray.oIntersectsPlane( ray, plane )
     if returnRaycastHit and distance ~= nil then
         local raycastHit = RaycastHit.New({
             distance = distance,
@@ -611,7 +611,7 @@ function Ray.IntersectsPlane( ray, plane, returnRaycastHit )
     return distance
 end
 
-local OriginalIntersectsModelRenderer = Ray.IntersectsModelRenderer
+Ray.oIntersectsModelRenderer = Ray.IntersectsModelRenderer
 
 -- Check if the ray intersects the provided modelRenderer.
 -- @param ray (Ray) The ray.
@@ -626,7 +626,7 @@ function Ray.IntersectsModelRenderer( ray, modelRenderer, returnRaycastHit )
     Daneel.Debug.CheckArgType( modelRenderer, "modelRenderer", "ModelRenderer", errorHead )
     returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
 
-    local distance, normal = OriginalIntersectsModelRenderer( ray, modelRenderer )
+    local distance, normal = Ray.oIntersectsModelRenderer( ray, modelRenderer )
     if returnRaycastHit and distance ~= nil then
         local raycastHit = RaycastHit.New({
             distance = distance,
@@ -644,7 +644,7 @@ function Ray.IntersectsModelRenderer( ray, modelRenderer, returnRaycastHit )
     return distance, normal
 end
 
-local OriginalIntersectsMapRenderer = Ray.IntersectsMapRenderer
+Ray.oIntersectsMapRenderer = Ray.IntersectsMapRenderer
 
 -- Check if the ray intersects the provided mapRenderer.
 -- @param ray (Ray) The ray.
@@ -661,7 +661,7 @@ function Ray.IntersectsMapRenderer( ray, mapRenderer, returnRaycastHit )
     Daneel.Debug.CheckArgType( mapRenderer, "mapRenderer", "MapRenderer", errorHead )
     returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
 
-    local distance, normal, hitBlockLocation, adjacentBlockLocation = OriginalIntersectsMapRenderer( ray, mapRenderer )
+    local distance, normal, hitBlockLocation, adjacentBlockLocation = Ray.oIntersectsMapRenderer( ray, mapRenderer )
     if hitBlockLocation ~= nil then
         setmetatable( hitBlockLocation, Vector3 )
     end
@@ -690,7 +690,7 @@ function Ray.IntersectsMapRenderer( ray, mapRenderer, returnRaycastHit )
     return distance, normal, hitBlockLocation, adjacentBlockLocation
 end
 
-local OriginalIntersectsTextRenderer = Ray.IntersectsTextRenderer
+Ray.oIntersectsTextRenderer = Ray.IntersectsTextRenderer
 
 -- Check if the ray intersects the provided textRenderer.
 -- @param ray (Ray) The ray.
@@ -705,7 +705,7 @@ function Ray.IntersectsTextRenderer( ray, textRenderer, returnRaycastHit )
     Daneel.Debug.CheckArgType( textRenderer, "textRenderer", "TextRenderer", errorHead )
     returnRaycastHit = Daneel.Debug.CheckOptionalArgType( returnRaycastHit, "returnRaycastHit", "boolean", errorHead, false )
 
-    local distance, normal = OriginalIntersectsTextRenderer( ray, textRenderer )
+    local distance, normal = Ray.oIntersectsTextRenderer( ray, textRenderer )
     if returnRaycastHit and distance ~= nil then
         local raycastHit = RaycastHit.New({
             distance = distance,
@@ -741,7 +741,7 @@ function Scene.Load( sceneNameOrAsset )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
-local OriginalLoadScene = CraftStudio.LoadScene
+CraftStudio.oLoadScene = CraftStudio.LoadScene
 
 --- Schedules loading the specified scene after the current tick (1/60th of a second) has completed.
 -- When the new scene is loaded, all of the current scene's game objects will be removed.
@@ -759,7 +759,7 @@ function CraftStudio.LoadScene( sceneNameOrAsset )
     Scene.current = scene
 
     Daneel.Debug.StackTrace.EndFunction()
-    OriginalLoadScene( scene )
+    CraftStudio.oLoadScene( scene )
 end
 
 --- Alias of CraftStudio.AppendScene().
@@ -789,7 +789,7 @@ end
 
 ----------------------------------------------------------------------------------
 
-local OriginalDestroy = CraftStudio.Destroy
+CraftStudio.oDestroy = CraftStudio.Destroy
 
 --- Removes the specified game object (and all of its descendants) or the specified component from its game object.
 -- You can also optionally specify a dynamically loaded asset for unloading (See Map.LoadFromPackage ).
@@ -802,33 +802,33 @@ function CraftStudio.Destroy( object )
         Daneel.Event.StopListen( object ) -- remove from listener list
         object.isDestroyed = true
     end
-    OriginalDestroy( object )
+    CraftStudio.oDestroy( object )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
 
 ----------------------------------------------------------------------------------
 
-CS.Input.isMouseLocked = false
+CraftStudio.Input.isMouseLocked = false
 
-local OriginalLockMouse = CS.Input.LockMouse
-function CS.Input.LockMouse()
-    CS.Input.isMouseLocked = true
-    OriginalLockMouse()
+CraftStudio.Input.oLockMouse = CraftStudio.Input.LockMouse
+function CraftStudio.Input.LockMouse()
+    CraftStudio.Input.isMouseLocked = true
+    CraftStudio.oLockMouse()
 end
 
-local OriginalUnlockMouse = CS.Input.UnlockMouse
-function CS.Input.UnlockMouse()
-    CS.Input.isMouseLocked = false
-    OriginalUnlockMouse()
+CraftStudio.Input.oUnlockMouse = CraftStudio.Input.UnlockMouse
+function CraftStudio.Input.UnlockMouse()
+    CraftStudio.Input.isMouseLocked = false
+    CraftStudio.oUnlockMouse()
 end
 
---- Toggle the locked state of the mouse, which can be accessed via the CS.Input.isMouseLocked property.
-function CS.Input.ToggleMouseLock()
-    if CS.Input.isMouseLocked then
-        CS.Input.UnlockMouse()
+--- Toggle the locked state of the mouse, which can be accessed via the CraftStudio.Input.isMouseLocked property.
+function CraftStudio.Input.ToggleMouseLock()
+    if CraftStudio.Input.isMouseLocked then
+        CraftStudio.Input.UnlockMouse()
     else
-        CS.Input.LockMouse()
+        CraftStudio.Input.LockMouse()
     end
 end
 
@@ -1127,7 +1127,7 @@ function GameObject.GetId( gameObject )
     return Daneel.Cache.GetId( gameObject )
 end
 
-local OriginalSetParent = GameObject.SetParent
+GameObject.oSetParent = GameObject.SetParent
 
 --- Set the game object's parent. 
 -- Optionaly carry over the game object's local transform instead of the global one.
@@ -1145,7 +1145,7 @@ function GameObject.SetParent(gameObject, parentNameOrInstance, keepLocalTransfo
     if parentNameOrInstance ~= nil then
         parent = GameObject.Get(parentNameOrInstance, true)
     end
-    OriginalSetParent(gameObject, parent, keepLocalTransform)
+    OGameObject.oSetParent(gameObject, parent, keepLocalTransform)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -1182,7 +1182,7 @@ function GameObject.GetChild( gameObject, name, recursive )
     return child
 end
 
-local OriginalGetChildren = GameObject.GetChildren
+GameObject.oGetChildren = GameObject.GetChildren
 
 --- Get all descendants of the game object.
 -- @param gameObject (GameObject) The game object.
@@ -1196,7 +1196,7 @@ function GameObject.GetChildren( gameObject, recursive, includeSelf )
     Daneel.Debug.CheckOptionalArgType( recursive, "recursive", "boolean", errorHead )
     Daneel.Debug.CheckOptionalArgType( includeSelf, "includeSelf", "boolean", errorHead )
 
-    local allChildren = OriginalGetChildren( gameObject )
+    local allChildren = GameObject.oGetChildren( gameObject )
 
     if recursive then
         for i, child in ipairs( table.copy( allChildren ) ) do
@@ -1211,7 +1211,7 @@ function GameObject.GetChildren( gameObject, recursive, includeSelf )
     return allChildren
 end
 
-local OriginalSendMessage = GameObject.SendMessage
+GameObject.oSendMessage = GameObject.SendMessage
 
 --- Tries to call a method with the provided name on all the scriptedBehaviors attached to the game object. 
 -- The data argument can be nil or a table you want the method to receive as its first (and only) argument.
@@ -1229,7 +1229,7 @@ function GameObject.SendMessage(gameObject, functionName, data)
     if Daneel.Config.debug.enableDebug then
         -- prevent an error of type "La référence d'objet n'est pas définie à une instance d'un objet." to stops the script that sends the message
         local success = Daneel.Debug.Try( function()
-            OriginalSendMessage( gameObject, functionName, data )
+            GameObject.oSendMessage( gameObject, functionName, data )
         end )
 
         if not success then
@@ -1245,7 +1245,7 @@ function GameObject.SendMessage(gameObject, functionName, data)
             end
         end
     else
-        OriginalSendMessage( gameObject, functionName, data )
+        GameObject.oSendMessage( gameObject, functionName, data )
     end
 
     Daneel.Debug.StackTrace.EndFunction()
@@ -1359,8 +1359,8 @@ end
 ----------------------------------------------------------------------------------
 -- Get components
 
-local OriginalGetComponent = GameObject.GetComponent
-local OriginalGetScriptedBehavior = GameObject.GetScriptedBehavior
+GameObject.oGetComponent = GameObject.GetComponent
+GameObject.oGetScriptedBehavior = GameObject.GetScriptedBehavior
 
 --- Get the first component of the provided type attached to the game object.
 -- @param gameObject (GameObject) The game object.
@@ -1384,10 +1384,10 @@ function GameObject.GetComponent( gameObject, componentType )
     
     if component == nil then
         if Daneel.DefaultConfig().componentObjects[ componentType ] ~= nil then
-            component = OriginalGetComponent( gameObject, componentType )
+            component = GameObject.oGetComponent( gameObject, componentType )
         elseif Daneel.Config.componentObjects[ componentType ] == nil then -- not a custom component either
             local script = Asset.Get( componentType, "Script", true ) -- componentType is the script path or asset
-            component = OriginalGetScriptedBehavior( gameObject, script )
+            component = GameObject.oGetScriptedBehavior( gameObject, script )
         end
     end
 
@@ -1406,7 +1406,7 @@ function GameObject.GetScriptedBehavior( gameObject, scriptNameOrAsset )
     Daneel.Debug.CheckArgType( scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead )
 
     local script = Asset.Get( scriptNameOrAsset, "Script", true )
-    local component = OriginalGetScriptedBehavior( gameObject, script )
+    local component = GameObject.oGetScriptedBehavior( gameObject, script )
     Daneel.Debug.StackTrace.EndFunction()
     return component
 end
