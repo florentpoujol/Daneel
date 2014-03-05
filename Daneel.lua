@@ -1138,21 +1138,6 @@ table.mergein( Daneel.functionsDebugInfo, {
 ----------------------------------------------------------------------------------
 -- Config, loading
 
--- Enables the dynamic accessors on the components
--- write the __tostring function
-function Daneel.SetComponents( components )    
-    for componentType, componentObject in pairs( components ) do
-        Daneel.Utilities.AllowDynamicGettersAndSetters( componentObject, { Component } )
-
-        if componentType ~= "ScriptedBehavior" then
-            componentObject["__tostring"] = function( component )
-                return componentType .. ": " .. component:GetId()
-            end
-        end
-    end
-end
-
-
 -- Config - Loading
 function Daneel.DefaultConfig()
     local config = {  
@@ -1221,6 +1206,31 @@ function Daneel.DefaultConfig()
     return config
 end
 Daneel.Config = Daneel.DefaultConfig()
+
+
+-- enable nice printing + dynamic acces of getters/setters on assets
+for assetType, assetObject in pairs( Daneel.Config.assetObjects ) do
+    table.insert( Daneel.Config.assetTypes, assetType )
+    Daneel.Utilities.AllowDynamicGettersAndSetters( assetObject, { Asset } )
+
+    assetObject["__tostring"] = function( asset )
+        return  assetType .. ": " .. Daneel.Cache.GetId( asset ) .. ": '" .. Map.GetPathInPackage( asset ) .. "'"
+    end
+end
+
+-- Enables the dynamic accessors on the components
+-- write the __tostring function
+function Daneel.SetComponents( components )    
+    for componentType, componentObject in pairs( components ) do
+        Daneel.Utilities.AllowDynamicGettersAndSetters( componentObject, { Component } )
+
+        if componentType ~= "ScriptedBehavior" then
+            componentObject["__tostring"] = function( component )
+                return componentType .. ": " .. component:GetId()
+            end
+        end
+    end
+end
 
 
 -- load Daneel at the start of the game
@@ -1308,9 +1318,7 @@ function Daneel.Load()
         end
     end
 
-    if type( Camera.ProjectionMode.Orthographic ) == "number" then -- "userdata" in native runtimes
-        CS.IsWebPlayer = true
-    end
+    CS.IsWebPlayer = ( type( Camera.ProjectionMode.Orthographic ) == "number" ) -- "userdata" in native runtimes
 
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Load" )
 
@@ -1466,183 +1474,4 @@ function Behavior:Update()
     for i, func in ipairs( Daneel.moduleUpdateFunctions ) do
         func()
     end
-end
-
-
--- Everything below is here because it use Daneel.Config
-
-----------------------------------------------------------------------------------
--- Component ("mother" object of components)
-
-Component = {}
-Component.__index = Component
-
-Daneel.functionsDebugInfo["Component.Set"] = { { "component", Daneel.Config.componentTypes }, { "params", defaultValue = {} } }
---- Apply the content of the params argument to the provided component.
--- @param component (any component's type) The component.
--- @param params (table) A table of parameters to set the component with.
-function Component.Set( component, params )
-    for key, value in pairs( params ) do
-        component[key] = value
-    end
-end
-
-Daneel.functionsDebugInfo["Component.Destroy"] = { { "component", Daneel.Config.componentTypes } }
---- Destroy the provided component, removing it from the game object.
--- Note that the component is removed only at the end of the current frame.
--- @param component (any component type) The component.
-function Component.Destroy( component )
-    table.removevalue( component.gameObject, component )    
-    CraftStudio.Destroy( component )
-end
-
---- Returns the component's internal unique identifier.
--- @param component (any component type) The component.
--- @return (number) The id.
-function Component.GetId( component )
-    -- no Debug because is used in __tostring
-    return Daneel.Cache.GetId( component )
-end
-
-
-----------------------------------------------------------------------------------
--- Assets
-
-Asset = {}
-Asset.__index = Asset
-setmetatable( Asset, { __call = function(Object, ...) return Object.Get(...) end } )
-
-for assetType, assetObject in pairs( Daneel.Config.assetObjects ) do
-    table.insert( Daneel.Config.assetTypes, assetType )
-    Daneel.Utilities.AllowDynamicGettersAndSetters( assetObject, { Asset } )
-
-    assetObject["__tostring"] = function( asset )
-        return  assetType .. ": " .. Daneel.Cache.GetId( asset ) .. ": '" .. Map.GetPathInPackage( asset ) .. "'"
-    end
-end
-
-Daneel.functionsDebugInfo["Asset.Get"] = { { "assetPath" }, { "assetType", isOptional = true }, { "errorIfAssetNotFound", defaultValue = false } }
-local assetPathTypes = { "string" }
---- Alias of CraftStudio.FindAsset( assetPath[, assetType] ).
--- Get the asset of the specified name and type.
--- The first argument may be an asset object, so that you can check if a variable was an asset object or name (and get the corresponding object).
--- @param assetPath (string or one of the asset type) The fully-qualified asset name or asset object.
--- @param assetType [optional] (string) The asset type as a case-insensitive string.
--- @param errorIfAssetNotFound [optional default=false] Throw an error if the asset was not found (instead of returning nil).
--- @return (One of the asset type) The asset, or nil if none is found.
-function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
-    local errorHead = "Asset.Get( assetPath[, assetType, errorIfAssetNotFound] ) : "
-
-    if assetPath == nil then
-        if Daneel.Config.debug.enableDebug then
-            error( errorHead.."Argument 'assetPath' is nil." )
-        end
-        return nil
-    end
-
-    if #assetPathTypes == 1 then
-        assetPathTypes = table.merge( assetPathTypes, Daneel.Config.assetTypes )
-        -- the assetPath can be an asset or the asset path (string)
-        -- this is done here because there is no garantee that Daneel.Config.assetTypes will already exist in the global scope
-    end
-    local argType = Daneel.Debug.CheckArgType( assetPath, "assetPath", assetPathTypes, errorHead )
-    
-    if assetType ~= nil then
-        Daneel.Debug.CheckArgType( assetType, "assetType", "string", errorHead )
-        assetType = Daneel.Debug.CheckArgValue( assetType, "assetType", Daneel.Config.assetTypes, errorHead )
-    end
-
-    -- just return the asset if assetPath is already an object
-    if table.containsvalue( Daneel.Config.assetTypes, argType ) then
-        if assetType ~= nil and argType ~= assetType then 
-            error( errorHead.."Provided asset '"..assetPath.."' has a different type '"..argType.."' than the provided 'assetType' argument '"..assetType.."'." )
-        end
-        return assetPath
-    end
-    -- else assetPath is always an actual asset path as a string
-    
-    Daneel.Debug.CheckOptionalArgType( errorIfAssetNotFound, "errorIfAssetNotFound", "boolean", errorHead )
-
-    -- check if assetPath is a script alias
-    local scriptAlias = assetPath
-    if Daneel.Config.scriptPaths[ scriptAlias ] ~= nil then 
-        assetPath = Daneel.Config.scriptPaths[ scriptAlias ]
-        assetType = "Script"
-    end
-
-    -- get asset
-    local asset = nil
-    if assetType == nil then
-        asset = CraftStudio.FindAsset( assetPath )
-    else
-        asset = CraftStudio.FindAsset( assetPath, assetType )
-    end
-
-    if asset == nil and errorIfAssetNotFound then
-        if assetType == nil then
-            assetType = "asset"
-        end
-        error( errorHead .. "Argument 'assetPath' : " .. assetType .. " with name '" .. assetPath .. "' was not found." )
-    end
-
-    return asset
-end
-
-Daneel.functionsDebugInfo["Asset.GetPath"] = { { "asset", Daneel.Config.assetTypes } }
---- Returns the path of the provided asset.
--- @param asset (One of the asset types) The asset instance.
--- @return (string) The fully-qualified asset path.
-function Asset.GetPath( asset )
-    return Map.GetPathInPackage( asset )
-end
-
-Daneel.functionsDebugInfo["Asset.GetName"] = { { "asset", Daneel.Config.assetTypes } }
---- Returns the name of the provided asset.
--- @param asset (One of the asset types) The asset instance.
--- @return (string) The name (the last segment of the fully-qualified path).
-function Asset.GetName( asset )
-    local name = rawget( asset, "name" )
-    if name == nil then
-        name = Asset.GetPath( asset ):gsub( "^(.*/)", "" ) 
-        rawset( asset, "name", name )
-    end
-    return name
-end
-
---- Returns the asset's internal unique identifier.
--- @param asset (any asset type) The asset.
--- @return (number) The id.
-function Asset.GetId( asset )
-    return Daneel.Cache.GetId( asset )
-end
-
-
-----------------------------------------------------------------------------------
--- RaycastHit
-
-RaycastHit = {}
-RaycastHit.__index = RaycastHit
-setmetatable( RaycastHit, { __call = function(Object, ...) return Object.New(...) end } )
-Daneel.Config.objects.RaycastHit = RaycastHit
-
-function RaycastHit.__tostring( instance )
-    local msg = "RaycastHit: { "
-    local first = true
-    for key, value in pairs( instance ) do
-        if first then
-            msg = msg..key.."="..tostring( value )
-            first = false
-        else
-            msg = msg..", "..key.."="..tostring( value )
-        end
-    end
-    return msg.." }"
-end
-
-Daneel.functionsDebugInfo["RaycastHit.New"] = { { "params", defaultValue = {} } }
---- Create a new RaycastHit
--- @return (RaycastHit) The raycastHit.
-function RaycastHit.New( params )
-    if params == nil then params = {} end
-    return setmetatable( params, RaycastHit )
 end

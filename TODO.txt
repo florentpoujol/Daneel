@@ -59,6 +59,7 @@ IDEAS
 A implémenter
     
     Ajouter functionsDebugInfo pour toutes les fonctions du fichier Daneel
+    Laisser les version originales de toutes les fonction surchargées accessible globale en préfixant le nom de "o"
     
 ==========
 A tester
