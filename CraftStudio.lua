@@ -752,26 +752,8 @@ function GameObject.__index( gameObject, key )
         local ucKey = string.ucfirst( key )
         if key ~= ucKey then
             local funcName = "Get" .. ucKey
-            
-            -- on GameObject
             if GameObject[ funcName ] ~= nil then
                 return GameObject[ funcName ]( gameObject )
-            end
-
-            if Daneel.Config.allowDynamicComponentFunctionCallOnGameObject then
-                -- on a component
-                for propName, propValue in pairs( gameObject ) do
-                    if type( propValue ) == "table" then
-                        local componentObject = getmetatable( propValue )
-                        if componentObject ~= nil and table.containsvalue( Daneel.Config.componentObjects, componentObject ) then
-                            -- could also check propName, which is the component name (Daneel.Config.componentObjects[ ucfirst( propName ) ] ~= nil)
-                            -- propValue is a component instance
-                            if componentObject[ funcName ] ~= nil then
-                                return componentObject[ funcName ]( propValue )
-                            end
-                        end
-                    end
-                end
             end
         end
     end
@@ -792,22 +774,7 @@ function GameObject.__newindex( gameObject, key, value )
         -- ie: variable "name" call "SetName"
         if GameObject[ funcName ] ~= nil then
             return GameObject[ funcName ]( gameObject, value )
-        end
-
-        if Daneel.Config.allowDynamicComponentFunctionCallOnGameObject then
-            -- key could be a setter on a component
-            for propName, propValue in pairs( gameObject ) do
-                if type( propValue ) == "table" then
-                    local componentObject = getmetatable( propValue )
-                    if componentObject ~= nil and table.containsvalue( Daneel.Config.componentObjects, componentObject ) then
-                        -- propValue is a component instance
-                        if componentObject[ funcName ] ~= nil then
-                            return componentObject[ funcName ]( propValue, value )
-                        end
-                    end
-                end
-            end
-        end
+        end       
     end
     rawset( gameObject, key, value )
 end

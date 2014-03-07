@@ -1141,8 +1141,6 @@ function Daneel.DefaultConfig()
             enableStackTrace = false, -- Enable/disable the Stack Trace.
         },
 
-        allowDynamicComponentFunctionCallOnGameObject = true,
-       
         ----------------------------------------------------------------------------------
         
         -- List of the Scripts paths as values and optionally the script alias as the keys.
