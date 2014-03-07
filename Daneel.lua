@@ -851,11 +851,6 @@ function Daneel.Event.Listen( eventName, functionOrObject, isPersistent )
                 end
 
                 if buttonName ~= nil then
-                    if not Daneel.isLoaded then
-                        Daneel.LateLoad( "Daneel.Event.Listen" )
-                        -- need to load here because hotkeys events are not fired if Daneel isn't loaded
-                    end
-
                     if Daneel.Utilities.ButtonExists( buttonName ) then
                         table.insert( Daneel.Config.hotKeys, buttonName )
                     elseif Daneel.Config.debug.enableDebug then
@@ -1353,16 +1348,6 @@ function Daneel.Load()
     Daneel.Debug.StackTrace.EndFunction()
 end -- end Daneel.Load()
 
--- Called at runtime by code that needs Daneel to be loaded but it isn't yet.
-function Daneel.LateLoad( source )
-    if Daneel.isLateLoading or Daneel.isAwake then return end
-    Daneel.isLateLoading = true
-    
-    print( "~~~~~~ Daneel Late Load ~~~~~~", source )
-    local go = CS.CreateGameObject( "Daneel Late Load" )
-    go:CreateScriptedBehavior( DaneelScriptAsset ) -- DaneelScriptAsset is set above, before Utilities.ButtonExists()
-end
-
 
 ----------------------------------------------------------------------------------
 -- Runtime
@@ -1434,8 +1419,6 @@ function Behavior:Start()
     end
 
     Daneel.Event.Fire( "OnStart" )
-
-    Daneel.isLateLoading = nil
     Daneel.Debug.StackTrace.EndFunction()
 end 
 

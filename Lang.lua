@@ -74,10 +74,6 @@ function Lang.Get( key, replacements )
         return Lang.cache[ key ]
     end
 
-    if not Daneel.isLoaded then -- 17/10  was Daneel.isAwake. Any reason ?
-        Daneel.LateLoad( "Lang.Get" )
-    end
-
     Daneel.Debug.StackTrace.BeginFunction( "Lang.Get", key, replacements )
     local errorHead = "Lang.Get( key[, replacements] ) : "
     Daneel.Debug.CheckArgType( key, "key", "string", errorHead )
@@ -163,10 +159,6 @@ end
 -- Fire the OnLangUpdate event.
 -- @param language (string) The new current language.
 function Lang.Update( language )
-    if not Daneel.isLoaded then
-        Daneel.LateLoad(  "Lang.update" )
-    end
-
     Daneel.Debug.StackTrace.BeginFunction( "Lang.Update", language )
     local errorHead = "Lang.Update( language ) : "
     Daneel.Debug.CheckArgType( language, "language", "string", errorHead )
@@ -203,12 +195,6 @@ end
 key string ""
 registerForUpdate boolean false
 /PublicProperties]]
-
-function Behavior:Awake()
-    if not Daneel.isLoaded then
-        Daneel.LateLoad(  "Lang:Awake" )
-    end
-end
 
 function Behavior:Start()
     if string.trim( self.key ) ~= "" then

@@ -62,10 +62,6 @@ end
 -- @param params [optional] (table) A table of parameters.
 -- @return (Tweener) The Tweener.
 function Tween.Tweener.New(target, property, endValue, duration, params)
-    if not Daneel.isAwake then
-        Daneel.LateLoad( "Tween.Tweener.New" )
-    end
-
     Daneel.Debug.StackTrace.BeginFunction("Tween.Tweener.New", target, property, endValue, duration, params)
     local errorHead = "Tween.Tweener.New(target, property, endValue, duration[, params]) : "
     
@@ -335,11 +331,7 @@ setmetatable( Tween.Timer, { __call = function(Object, ...) return Object.New(..
 -- @param isInfiniteLoop [optional default=false] (boolean) Tell wether the timer loops indefinitely.
 -- @param params [optional] (table) A table of parameters.
 -- @return (Tweener) The tweener.
-function Tween.Timer.New( duration, callback, isInfiniteLoop, params )
-    if not Daneel.isAwake then
-        Daneel.LateLoad( "Tween.Timer.New" )
-    end
-    
+function Tween.Timer.New( duration, callback, isInfiniteLoop, params )  
     Daneel.Debug.StackTrace.BeginFunction( "Tween.Timer.New", duration, callback, isInfiniteLoop, params )
     local errorHead = "Tween.Timer.New( duration, callback[, isInfiniteLoop, params] ) : "
     if type( isInfiniteLoop ) == "table" then

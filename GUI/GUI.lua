@@ -40,10 +40,6 @@ GUI.Hud.__index = GUI.Hud -- __index will be rewritted when Daneel loads (in Dan
 -- @return (Vector2) The hud position.
 -- @return (numbe) The layer.
 function GUI.Hud.ToHudPosition(position)
-    if not Daneel.isAwake then
-        Daneel.LateLoad( "GUI.Hud.ToHudPosition" )
-    end
-
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.ToHudPosition", position)
     local errorHead = "GUI.Hud.ToHudPosition(hud, position) : "
     Daneel.Debug.CheckArgType(position, "position", "Vector3", errorHead)
@@ -114,10 +110,6 @@ end
 -- @param params (table) [optional] A table of parameters.
 -- @return (Hud) The hud component.
 function GUI.Hud.New( gameObject, params )
-    if not Daneel.isAwake then
-        Daneel.LateLoad( "GUI.Hud.New" )
-    end
-
     Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.New", gameObject, params )
     local errorHead = "GUI.Hud.New( gameObject, params ) : "
     Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead )
@@ -288,10 +280,6 @@ GUI.Toggle.__index = GUI.Toggle
 -- @param params (table) A table of parameters.
 -- @return (Toggle) The new component.
 function GUI.Toggle.New( gameObject, params )
-    if not Daneel.isAwake then
-        Daneel.LateLoad( "GUI.Toggle.New" )
-    end
-
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Toggle.New", gameObject, params )
     local errorHead = "GUI.Toggle.New( gameObject, params ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
@@ -538,10 +526,6 @@ GUI.ProgressBar.__index = GUI.ProgressBar
 -- @param params (table) A table of parameters.
 -- @return (ProgressBar) The new component.
 function GUI.ProgressBar.New( gameObject, params )
-    if not Daneel.isAwake then
-        Daneel.LateLoad( "GUI.ProgressBar.New" )
-    end
-
     Daneel.Debug.StackTrace.BeginFunction( "GUI.ProgressBar.New", gameObject, params )
     local errorHead = "GUI.ProgressBar.New( gameObject, params ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
@@ -751,10 +735,6 @@ GUI.Slider.__index = GUI.Slider
 -- @param params (table) A table of parameters.
 -- @return (Slider) The new component.
 function GUI.Slider.New( gameObject, params )
-    if not Daneel.isAwake then
-        Daneel.LateLoad(  "GUI.Slider.New" )
-    end
-
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Slider.New", gameObject, params )
     local errorHead = "GUI.Slider.New( gameObject, params ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
@@ -910,10 +890,6 @@ GUI.Input.__index = GUI.Input
 -- @param params (table) A table of parameters.
 -- @return (Input) The new component.
 function GUI.Input.New( gameObject, params )
-    if not Daneel.isAwake then
-        Daneel.LateLoad(  "GUI.Input.New" )
-    end
-
     Daneel.Debug.StackTrace.BeginFunction( "GUI.Input.New", gameObject, params )
     local errorHead = "GUI.Input.New( gameObject, params ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
@@ -1111,10 +1087,6 @@ GUI.TextArea.__index = GUI.TextArea
 -- @param params (table) A table of parameters.
 -- @return (TextArea) The new component.
 function GUI.TextArea.New( gameObject, params )
-    if not Daneel.isAwake then
-        Daneel.LateLoad(  "GUI.TextArea.New" )
-    end
-
     Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.New", gameObject, params )
     local errorHead = "GUI.TextArea.New( gameObject, params ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
