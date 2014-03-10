@@ -680,7 +680,7 @@ function Daneel.Debug.RegisterFunction( name, argsData )
             end
 
             for i, arg in ipairs( argsData ) do
-                if arg.type == nil then  end
+                if arg.type == nil then
                     if arg.defaultValue ~= nil then
                         arg.type = type( arg.defaultValue )
                     else
@@ -1201,16 +1201,6 @@ end
 Daneel.Config = Daneel.DefaultConfig()
 
 
--- enable nice printing + dynamic acces of getters/setters on assets
-for assetType, assetObject in pairs( Daneel.Config.assetObjects ) do
-    table.insert( Daneel.Config.assetTypes, assetType )
-    Daneel.Utilities.AllowDynamicGettersAndSetters( assetObject, { Asset } )
-
-    assetObject["__tostring"] = function( asset )
-        return  assetType .. ": " .. Daneel.Cache.GetId( asset ) .. ": '" .. Map.GetPathInPackage( asset ) .. "'"
-    end
-end
-
 -- Enables the dynamic accessors on the components
 -- write the __tostring function
 function Daneel.SetComponents( components )    
@@ -1290,6 +1280,16 @@ function Daneel.Load()
         -- overload functions with debug (error reporting + stacktrace)
         for funcName, data in pairs( Daneel.functionsDebugInfo ) do
             Daneel.Debug.RegisterFunction( funcName, data )
+        end
+    end
+
+    -- enable nice printing + dynamic acces of getters/setters on assets
+    for assetType, assetObject in pairs( Daneel.Config.assetObjects ) do
+        table.insert( Daneel.Config.assetTypes, assetType )
+        Daneel.Utilities.AllowDynamicGettersAndSetters( assetObject, { Asset } )
+
+        assetObject["__tostring"] = function( asset )
+            return  assetType .. ": " .. Daneel.Cache.GetId( asset ) .. ": '" .. Map.GetPathInPackage( asset ) .. "'"
         end
     end
 
