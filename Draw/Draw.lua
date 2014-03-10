@@ -264,7 +264,7 @@ function Draw.CircleRenderer.Draw( circle )
             if circle._model ~= nil then
                 newSegment.modelRenderer:SetModel( circle._model )
             end
-            table.insert( circle.segments[ i ], newSegment )
+            table.insert( circle.segments, i, newSegment )
         end
 
         circle.segments[ i ].transform:SetLocalPosition( lineStartLocalPosition )
@@ -358,13 +358,20 @@ function Draw.CircleRenderer.GetWidth( circle )
     return circle._width
 end
 
-functionsDebugInfo[ "Draw.CircleRenderer.SetModel" ] = { _c, { "model", {"string", "Model"} } }
+functionsDebugInfo[ "Draw.CircleRenderer.SetModel" ] = { _c, { "model", {"string", "Model"}, isOptional = true } }
 --- Sets the circle renderer segment's model.
 -- @param circle (CircleRenderer) The circle renderer.
 -- @param model (string or Model) The segment's model name or asset.
 function Draw.CircleRenderer.SetModel( circle, model )
-    if circle._model ~= model and circle._model:GetPath() ~= model then
-        circle._model = Asset.Get( model, "Model", true )
+    if 
+        ( type( model ) == "string" and circle._model ~= nil and circle._model:GetPath() == model ) or
+        circle._model ~= model
+    then
+        if model ~= nil then
+            circle._model = Asset.Get( model, "Model", true )
+        else
+            circle._model = nil
+        end
         for i, line in pairs( circle.segments ) do
             line.modelRenderer:SetModel( circle._model )
         end
