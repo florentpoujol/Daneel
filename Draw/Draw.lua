@@ -42,7 +42,13 @@ function Draw.LineRenderer.New( gameObject, params )
     gameObject.lineRenderer = line
 
     setmetatable( line, Draw.LineRenderer )
-    line:Set( table.merge( Draw.Config.lineRenderer, params ) )
+    
+    params = table.merge( Draw.Config.lineRenderer, params )
+    if params.endPosition ~= nil then
+        params.length = nil
+        params.direction = nil
+    end
+    line:Set( params )
 
     return line
 end
@@ -55,7 +61,7 @@ functionsDebugInfo[ "Draw.LineRenderer.Set" ] = { _l, _p }
 function Draw.LineRenderer.Set( line, params )
     if params.endPosition and (params.length or params.direction) then
         if Daneel.Config.debug.enableDebug then
-            local text = errorHead.."The 'endPosition' property is set."
+            local text = "Draw.LineRenderer.Set( line, params ) : The 'endPosition' property is set."
             if params.length then
                 text = text.." The 'length' property with value '"..tostring( params.length ).."' has been ignored."
             end
