@@ -1125,7 +1125,7 @@ function Daneel.Storage.Load( name, defaultValue, callback )
 end
 
 table.mergein( Daneel.functionsDebugInfo, {
-    ["Daneel.Storage.Save"] = { { "name", s }, { "data" }, { "callback", "function", isOptional = true } },
+    ["Daneel.Storage.Save"] = { { "name", s }, { "data", isOptional = true }, { "callback", "function", isOptional = true } },
     ["Daneel.Storage.Load"] = { { "name", s }, { "defaultValue", isOptional = true }, { "callback", "function", isOptional = true } }
 } )
 

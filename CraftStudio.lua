@@ -154,7 +154,7 @@ function Component.GetId( component )
     return Daneel.Cache.GetId( component )
 end
 
-table.meregin( Daneel.functionsDebugInfo, {
+table.mergein( Daneel.functionsDebugInfo, {
     ["Asset.Get"] = { { "assetPath" }, { "assetType", isOptional = true }, { "errorIfAssetNotFound", defaultValue = false } },
     ["Asset.GetPath"] = { { "asset", Daneel.Config.assetTypes } },
     ["Asset.GetName"] = { { "asset", Daneel.Config.assetTypes } },
@@ -381,7 +381,7 @@ function Camera.SetProjectionMode( camera, projectionMode )
         if Daneel.Config.camera ~= nil and Daneel.Config.camera.projectionMode ~= nil then
             default = Daneel.Config.camera.projectionMode
         end
-        projectionMode = Daneel.Debug.CheckArgValue( projectionMode, "projectionMode", {"Perspective", "Orthographic"}, errorHead, default )
+        projectionMode = Daneel.Debug.CheckArgValue( projectionMode, "projectionMode", {"Perspective", "Orthographic"}, "Camera.SetProjectionMode( camera[, projectionMode] ) : ", default )
         projectionMode = Camera.ProjectionMode[ projectionMode ]
     end
     Camera.oSetProjectionMode( camera, projectionMode )
@@ -400,8 +400,8 @@ end
 
 
 table.mergein( Daneel.functionsDebugInfo, {
-    ["Transform.SetLocalScale"] = { { "transform", "Transform" }, { n, v } },
-    ["Transform.SetScale"] =      { { "transform", "Transform" }, { n, v } },
+    ["Transform.SetLocalScale"] = { { "transform", "Transform" }, { "number", { n, v } } },
+    ["Transform.SetScale"] =      { { "transform", "Transform" }, { "number", { n, v } } },
     ["Transform.GetScale"] =      { { "transform", "Transform" } },
 
     ["ModelRenderer.SetModel"] =     { { "modelRenderer", "ModelRenderer" }, { "modelNameOrAsset", { s, "Model" }, isOptional = true } },
@@ -411,12 +411,12 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["MapRenderer.SetMap"] = { 
         { "mapRenderer", "MapRenderer" },
         { "mapNameOrAsset", { s, "Map" }, isOptional = true },
-        { "replaceTileSet", defaultValue = true } },
+        { "replaceTileSet", defaultValue = true },
     },
     ["MapRenderer.SetTileSet"] = { { "mapRenderer", "MapRenderer" }, { "tileSetNameOrAsset", { s, "TileSet" } } },
     ["MapRenderer.Set"] =        { { "mapRenderer", "MapRenderer" }, _p },
 
-    ["TextRenderer.SetFont"] =      { { "textRenderer", "TextRenderer" }, { "fontNameOrAsset", { s, "TileSet" } } },
+    ["TextRenderer.SetFont"] =      { { "textRenderer", "TextRenderer" }, { "fontNameOrAsset", { s, "Font" } } },
     ["TextRenderer.SetAlignment"] = { { "textRenderer", "TextRenderer" }, { "alignment", {s, "userdata", n} } }, -- number because enum returns a number in the webplayer
     ["TextRenderer.SetTextWidth"] = { { "textRenderer", "TextRenderer" }, { "width", n } },
 
@@ -684,7 +684,7 @@ table.mergein( Daneel.functionsDebugInfo, {
 
     ["Scene.Load"] =            { { "sceneNameOrAsset", { s, "Scene" } } },
     ["CraftStudio.LoadScene"] = { { "sceneNameOrAsset", { s, "Scene" } } },
-    ["Scene.Append"] =          { { "sceneNameOrAsset", { s, "Scene" } }, { "parentNameOrInstance", { s, go } } },
+    ["Scene.Append"] =          { { "sceneNameOrAsset", { s, "Scene" } }, { "parentNameOrInstance", { s, go }, isOptional = true } },
 
     ["CraftStudio.Destroy"] = { { "object" } },
 } )
@@ -994,7 +994,7 @@ function GameObject.SetParent(gameObject, parentNameOrInstance, keepLocalTransfo
     if parentNameOrInstance ~= nil then
         parent = GameObject.Get(parentNameOrInstance, true)
     end
-    OGameObject.oSetParent(gameObject, parent, keepLocalTransform)
+    GameObject.oSetParent(gameObject, parent, keepLocalTransform)
     Daneel.Debug.StackTrace.EndFunction()
 end
 
@@ -1411,11 +1411,11 @@ local _t = { "tag", {"string", "table"} }
 local _go = { "gameObject", "GameObject" }
 
 table.mergein( Daneel.functionsDebugInfo, {
-    ["GameObject.GetWithTag"] = { _t }
-    ["GameObject.GetTags"] = { _go }
-    ["GameObject.AddTag"] = { _go, _t }
-    ["GameObject.RemoveTag"] = { _go, { "tag", {"string", "table"}, isOptional = true } }
-    ["GameObject.HasTag"] = { _go, _t, { "atLeastOneTag", defaultValue = false } }
+    ["GameObject.GetWithTag"] = { _t },
+    ["GameObject.GetTags"] = { _go },
+    ["GameObject.AddTag"] = { _go, _t },
+    ["GameObject.RemoveTag"] = { _go, { "tag", {"string", "table"}, isOptional = true } },
+    ["GameObject.HasTag"] = { _go, _t, { "atLeastOneTag", defaultValue = false } },
 } )
 
 Daneel.modules.Tags = {
