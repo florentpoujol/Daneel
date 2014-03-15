@@ -84,6 +84,8 @@ function Draw.LineRenderer.Set( line, params )
             else
                 Draw.LineRenderer[ funcName ]( line, value, false )
             end
+        else
+            line[ key ] = value
         end
     end
     if draw then
@@ -235,6 +237,8 @@ function Draw.CircleRenderer.Set( circle, params )
         if Draw.CircleRenderer[ funcName ] ~= nil then
             draw = true
             Draw.CircleRenderer[ funcName ]( circle, value, false )
+        else
+            circle[ key ] = value
         end
     end
     if draw then
