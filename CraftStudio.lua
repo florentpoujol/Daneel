@@ -696,13 +696,13 @@ CraftStudio.Input.isMouseLocked = false
 CraftStudio.Input.oLockMouse = CraftStudio.Input.LockMouse
 function CraftStudio.Input.LockMouse()
     CraftStudio.Input.isMouseLocked = true
-    CraftStudio.oLockMouse()
+    CraftStudio.Input.oLockMouse()
 end
 
 CraftStudio.Input.oUnlockMouse = CraftStudio.Input.UnlockMouse
 function CraftStudio.Input.UnlockMouse()
     CraftStudio.Input.isMouseLocked = false
-    CraftStudio.oUnlockMouse()
+    CraftStudio.Input.oUnlockMouse()
 end
 
 --- Toggle the locked state of the mouse, which can be accessed via the CraftStudio.Input.isMouseLocked property.

@@ -18,6 +18,9 @@ IDEAS
     - MouseInput
         passer la camera en argument des events, en plus du gameObject
 
+    - Network
+        - automatic CS.Network.Server.playerIds which is the default third argument for SendMessageToPlayers()
+        - third argument of SendMessageToPlayers() can also be a single id
 
     -----
     GUI

@@ -12,7 +12,6 @@ endPosition string ""
 /PublicProperties]]
 
 function Behavior:Awake()
-
     if self.gameObject.lineRenderer == nil then
         local direction = nil
         self.direction = string.trim( self.direction )
