@@ -20,7 +20,8 @@ setmetatable( Plane, { __call = function(Object, ...) return Object:New(...) end
 
 -- fix
 Plane.__tostring = function( p )
-    return "Plane: { normal="..p.normal..", distance="..p.distance.." }"
+    return "Plane: { normal="..tostring(p.normal)..", distance="..tostring(p.distance).." }"
+    -- tostring() to prevent a p.normal is not defined error
 end
 
 
