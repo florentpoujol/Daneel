@@ -144,7 +144,7 @@ function Behavior:IsGameObjectInRange( gameObject, triggerPosition )
     local directionToGameObject = gameObjectPosition - triggerPosition
     local sqrDistanceToGameObject = directionToGameObject:SqrLength()
 
-    if self.range > 0 and distanceToTriggerSquared < self.range^2 then
+    if self.range > 0 and sqrDistanceToGameObject < self.range^2 then
         gameObjectIsInTrigger = true
 
     elseif self.range <= 0 then
