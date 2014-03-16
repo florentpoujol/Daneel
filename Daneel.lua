@@ -645,7 +645,7 @@ function Daneel.Debug.Try( _function )
     return success
 end
 
---- Overload a function to calls to debug functions before and after it is itself called.
+--- Overload a function to call debug functions before and after it is itself called.
 -- Called from Daneel.Load()
 -- @param name (string) The function name
 -- @param argsData (table) Mostly the list of arguments. may contains the 'includeInStackTrace' key.

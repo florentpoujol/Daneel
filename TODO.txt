@@ -4,24 +4,21 @@ IDEAS
     -----
     MISC
 
-    - un moyen de placer un gameobject dans un variable via la scène
-        un scripted behavior qui prend un string comme argument
-
     - Daneel.Utilities.Circle pseudo object (like Plane) with position, radius, normal
         > rayCastHit = ray:IntersectsCircle( circle, true )
     - Rectangle pseudo object with position, normal, width, height > allow pixels
         > raycashit = ray:IntersectRectangle( rectangle, true )
 
-    - gameObject:GetGenealogy() retourne toute la généalogie du gameobject : "parent.child.subchild"
-    - GameObject.GetAll() retourne tous les GOs du même nom (table)
-        
-    - MouseInput
-        passer la camera en argument des events, en plus du gameObject
-
     - Network
         - automatic CS.Network.Server.playerIds which is the default third argument for SendMessageToPlayers()
         - third argument of SendMessageToPlayers() can also be a single id
 
+    ----
+    Draw
+
+    - set the circle's model via a model renderer on the circle game object
+
+    
     -----
     GUI
    
@@ -43,15 +40,6 @@ IDEAS
     -----
     TWEEN
 
-    - Timeline
-        table de tweeners. clés = temps, valeur = tweeners
-        fait débuter les tweeners en fonction du temps
-        fonction : Play, Pause, Restart, Complete, Destroy, Update
-
-    - stack de tweeners qui débutent les uns après les autres
-        réécrire la fonction OnComplete pour lancer le prochain tweener (timeline:StartNext())
-        propriété current qui point vers le tweenr courant
-
 
     -----
     MODULE / PLUGIN / EXTENSION
@@ -61,8 +49,6 @@ IDEAS
 ==========
 A implémenter
     
-    Ajouter functionsDebugInfo pour toutes les fonctions du fichier Daneel
-    Laisser les version originales de toutes les fonction surchargées accessible globale en préfixant le nom de "o"
     
 ==========
 A tester
