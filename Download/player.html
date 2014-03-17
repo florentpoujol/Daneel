@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>CraftStudio Web player</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="CSPlayer.js"></script>
+    <!-- // <script src="https://dl.dropboxusercontent.com/u/51314747/CraftStudio/lualib.js"></script> -->
+    <script src="http://daneel.florentpoujol.fr/download/lualib.js"></script>
+
+    <style>
+      *{font-family:'Source Sans Pro',sans-serif;margin: 0; padding: 0; -moz-box-sizing:border-box;box-sizing:border-box;text-align: center}
+      html,body{width:100%;height:100%}
+      body{text-align:center;background:#000;margin:0;color:#67615d;cursor:default;-moz-user-select:none;-webkit-user-select:none;user-select:none}
+      
+      #CanvasContainer{margin:0 auto;height:100%}
+      #CSPlayerCanvas{position:absolute;background:#000;display:block;margin:0 auto;outline: none;}
+      #CSPlayerCanvas .WebPlayerError{margin:0 auto;width:100%;height:100%;background:#362f2a;background:-moz-linear-gradient(top,#362f2a 0%,#584c44 100%);background:-webkit-linear-gradient(top,#362f2a 0%,#584c44 100%);background:-gradient(to bottom,#362f2a 0%,#584c44 100%);box-shadow:0 0 100px 10px rgba(0,0,0,0.7) inset;font-size:20px;font-size:24px;color:rgba(255,255,255,0.5)}
+      #CSPlayerCanvas.CSAssetCanvas{cursor:move}
+      #AssetLoadingWrapper{width:100%;height:100%;background:#362f2a;background:-moz-linear-gradient(top,#362f2a 0%,#584c44 100%);background:-webkit-linear-gradient(top,#362f2a 0%,#584c44 100%);background:-gradient(to bottom,#362f2a 0%,#584c44 100%);box-shadow:0 0 100px 10px rgba(0,0,0,0.7) inset;margin:0 auto}
+      #AssetLoadingInfo{padding:0;}
+      #AssetLoadProgressLabel{padding:10px;font-size:24px;color:rgba(255,255,255,0.5)}
+      #AssetLoadProgressBar{display: block; width:500px;height:10px; margin: 0 auto}
+    </style>
+  </head>
+  <body>
+    <div id="CanvasContainer">
+      <div id="AssetLoadingWrapper">
+        <div id="AssetLoadingInfo">
+          <a href="http://craftstud.io/" target="_blank"><img src="Splash.png" /></a>
+          <progress id="AssetLoadProgressBar"></progress>
+          <div id="AssetLoadProgressLabel"></div>
+        </div>
+      </div>
+    </div>
+    
+    <script>
+      
+
+      $(document).ready( function() {
+        CSPlayer.Init( "", document.getElementById('CanvasContainer'), function(canvas) {
+          if( canvas == null )
+          {
+            $("#AssetLoadingWrapper").hide();
+            return;
+          }
+          
+          $(canvas).hide();
+          
+          $AssetLoadProgressBar = $('#AssetLoadProgressBar')
+          $AssetLoadProgressLabel = $('#AssetLoadProgressLabel')
+          
+          CSPlayer.RunGame( "", function(err) {
+            if( err )
+            {
+              $AssetLoadProgressLabel.text( err.message );
+              return;
+            }
+            
+            $("#AssetLoadingInfo").fadeOut( function() { $('#AssetLoadingWrapper').hide(); $(canvas).show(); } );           
+            String.prototype["metatable"] = lua_newtable(null,"__index", lua_newtable2(window.G.str.string.str));
+          }, function(value, max, label) {
+            $AssetLoadProgressBar.prop( 'max', max );
+            $AssetLoadProgressBar.val(value);
+          } );
+
+        } );
+      } );
+    </script>
+  </body>
+</html>
