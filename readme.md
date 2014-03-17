@@ -7,13 +7,13 @@ Daneel is a scripting framework written in [Lua](http://www.lua.org) for [CraftS
 
 ## Installation
 
-[Download](http://daneel.florentpoujol.fr/dl/Daneel_v1.3.0.zip) then import in your project whatever scripts you need from `Daneel_v1.3.0.cspack`.  
+[Download](http://daneel.florentpoujol.fr/download/Daneel_v1.4.0.zip) then import in your project whatever scripts you need from `Daneel_v1.4.0.cspack`.  
 [Check the documentation](http://daneel.florent-poujol.fr/docs/setup) for more informations.
 
 
 ## Documentation
 
-[http://daneel.florentpoujol.fr](http://daneel.florent-poujol.fr/docs) 
+[http://daneel.florentpoujol.fr/docs](http://daneel.florent-poujol.fr/docs) 
 
 
 ## Support
