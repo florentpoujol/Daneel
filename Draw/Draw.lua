@@ -219,6 +219,12 @@ function Draw.CircleRenderer.New( gameObject, params )
     circle._endPosition = circle.origin
     gameObject.circleRenderer = circle
 
+    -- allow to set the circle renderer's model via a model renderer 
+    if params.model == nil and gameObject.modelRenderer ~= nil then
+        params.model = gameObject.modelRenderer:GetModel()
+        gameObject.modelRenderer:SetModel( nil )
+    end
+
     setmetatable( circle, Draw.CircleRenderer )
     circle:Set( table.merge( Draw.Config.circleRenderer, params ) )
 
