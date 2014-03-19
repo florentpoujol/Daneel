@@ -2,7 +2,7 @@
 -- Contains extensions of Lua's libraries.
 -- All functions in this file are totally independant from Daneel or CraftStudio, they can be reused in any Lua application.
 --
--- Last modified for v1.4.0
+-- Last modified for v1.5.0
 -- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 
 

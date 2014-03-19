@@ -49,7 +49,7 @@ IDEAS
 ==========
 A implémenter
     
-    
+    - inverser eventname et functionsOrObject argument of Event.Listen/StopListen
 ==========
 A tester
     

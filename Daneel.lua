@@ -1,7 +1,7 @@
 -- Daneel.lua
 -- Contains Daneel's core functionalities.
 --
--- Last modified for v1.4.0
+-- Last modified for v1.5.0
 -- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 
 Daneel = {}
@@ -143,6 +143,8 @@ local s = "string"
 local b = "boolean"
 local n = "number"
 local t = "table"
+local f = "function"
+local u = "userdata"
 local _s = { "s", s }
 local _t = { "t", t }
 
@@ -804,12 +806,7 @@ local EventNamesTestedForHotKeys = {} -- Event names are keys, value is true.
 -- @param functionOrObject (function or table) The function (not the function name) or the object.
 -- @param isPersistent (boolean) [default=false] Tell whether the listener automatically stops to listen to any event when a new scene is loaded. Always false when the listener is a game object or a component.
 function Daneel.Event.Listen( eventName, functionOrObject, isPersistent )
-    Daneel.Debug.StackTrace.BeginFunction( "Daneel.Event.Listen", eventName, functionOrObject, isPersistent )
-    local errorHead = "Daneel.Event.Listen( eventName, functionOrObject[, isPersistent] ) : "
-    Daneel.Debug.CheckArgType( eventName, "eventName", {"string", "table"}, errorHead )
-    local listenerType = Daneel.Debug.CheckArgType( functionOrObject, "functionOrObject", {"table", "function", "userdata"}, errorHead )
-    isPersistent = Daneel.Debug.CheckOptionalArgType( isPersistent, "isPersistent", "boolean", errorHead, false )
-    
+    local listenerType = type( functionOrObject )
     local eventNames = eventName
     if type( eventName ) == "string" then
         eventNames = { eventName }
@@ -866,7 +863,6 @@ function Daneel.Event.Listen( eventName, functionOrObject, isPersistent )
             table.insert( eventList[ eventName ], functionOrObject )
         end
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Make the provided function or object to stop listen to the provided event(s).
@@ -918,7 +914,7 @@ function Daneel.Event.Fire( object, eventName, ... )
     local errorHead = "Daneel.Event.Fire( [object, ]eventName[, ...] ) : "
 
     local argType = type( object )
-    if argType == "string" or argType == "nil" then -- 17/09/13 why checking for nil ? > what cases where object may be nil ?
+    if argType == "string" or argType == "nil" then -- checking for nil because argument can be expressly omitted when just supplying the eventName
         -- no object provided, fire on the listeners
         if eventName ~= nil then
             table.insert( arg, 1, eventName )
@@ -987,6 +983,10 @@ function Daneel.Event.Fire( object, eventName, ... )
     end
     Daneel.Debug.StackTrace.EndFunction()
 end
+
+table.mergein( Daneel.functionsDebugInfo, {
+    ["Daneel.Event.Listen"] = { { "eventName", s }, { "functionOrObject", {t, f, u} }, { "isPersistent", defaultValue = false } },
+} )
 
 
 ----------------------------------------------------------------------------------
