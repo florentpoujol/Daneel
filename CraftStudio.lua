@@ -21,7 +21,7 @@ setmetatable( Plane, { __call = function(Object, ...) return Object:New(...) end
 -- fix
 Plane.__tostring = function( p )
     return "Plane: { normal="..tostring(p.normal)..", distance="..tostring(p.distance).." }"
-    -- tostring() to prevent a p.normal is not defined error
+    -- tostring() to prevent a "p.normal is not defined" error
 end
 
 
@@ -99,6 +99,7 @@ function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
 end
 
 --- Returns the path of the provided asset.
+-- Alias of Map.GetPathInPackage().
 -- @param asset (One of the asset types) The asset instance.
 -- @return (string) The fully-qualified asset path.
 function Asset.GetPath( asset )
@@ -123,6 +124,7 @@ end
 function Asset.GetId( asset )
     return Daneel.Cache.GetId( asset )
 end
+
 
 ----------------------------------------------------------------------------------
 -- Component ("mother" object of components)
@@ -1424,3 +1426,46 @@ Daneel.modules.Tags = {
         GameObject.Tags = {}
     end
 }
+
+
+----------------------------------------------------------------------------------
+-- Network
+
+CS.Network.Server.playerIds = {}
+
+NetworkSync.oSendMessageToPlayers = NetworkSync.SendMessageToPlayers
+
+function NetworkSync.SendMessageToPlayers( networkSync, msgName, data, playerIds, deliveryMethod, deliveryChannel )
+    if playerIds == nil then
+        playerIds = CS.Network.Server.playerIds
+    elseif type( playerIds ) == "number" then
+        playerIds = { playerIds }
+    end
+    NetworkSync.oSendMessageToPlayers( networkSync, msgName, data, playerIds, deliveryMethod, deliveryChannel )
+end
+
+CS.Network.Server.oOnPlayerJoined = CS.Network.Server.OnPlayerJoined
+function CS.Network.Server.OnPlayerJoined( callback )
+    CS.Network.Server.oOnPlayerJoined( 
+        function( player )
+            table.insert( CS.Network.Server.playerIds, player.id )
+            if callback ~= nil then
+                callback( player )
+            end
+        end
+    )
+end
+CS.Network.Server.OnPlayerJoined()
+
+CS.Network.Server.oOnPlayerLeft = CS.Network.Server.OnPlayerLeft
+function CS.Network.Server.OnPlayerLeft( callback )
+    CS.Network.Server.oOnPlayerLeft( 
+        function( playerId )
+            table.removevalue( CS.Network.Server.playerIds, playerId )
+            if callback ~= nil then
+                callback( playerId )
+            end
+        end
+    )
+end
+CS.Network.Server.OnPlayerLeft()
