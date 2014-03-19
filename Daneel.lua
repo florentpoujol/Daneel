@@ -159,6 +159,7 @@ table.mergein( Daneel.functionsDebugInfo, {
         { "value", n },
         { "decimal", n, isOptional = true }
     },
+    ["tonumber2"] = { { "data" } },
 
     ["string.totable"] = { _s },
     ["string.ucfirst"] = { _s },
@@ -305,22 +306,10 @@ function Daneel.Utilities.AllowDynamicGettersAndSetters( Object, ancestors )
     end
 end
 
---- A more flexible version of Lua's built-in tonumber() function.
--- Returns the first continuous series of numbers found in the text version of the provided data even if it is prefixed or suffied by other characters.
--- @param data (mixed) Usually string or userdata.
--- @return (number) The number, or nil.
+-- Deprecated since v1.5.0
+-- Alias of tonumber2()
 function Daneel.Utilities.ToNumber( data )
-    local number = tonumber( data )
-    if number == nil then
-        data = tostring( data )
-        local pattern = "(%d+)"
-        if data:find( ".", 1, true ) then
-            pattern = "(%d+%.%d+)"
-        end
-        number = data:match( (data:gsub( pattern, "(%1)" )) )
-        number = tonumber( number )
-    end
-    return number
+    return tonumber2( data )
 end
 
 local buttonExists = {} -- Button names are in key, existance (false or true) is in value
@@ -342,7 +331,6 @@ end
 table.mergein( Daneel.functionsDebugInfo, {
     ["Daneel.Utilities.CaseProof"] = { { "name", s }, { "set", { s, t } } },
     ["Daneel.Utilities.ReplaceInString"] = { { "string", s }, { "replacements", t } },
-    ["Daneel.Utilities.ToNumber"] = { { "data" } },
     ["Daneel.Utilities.ButtonExists"] = { { "buttonName", s } }
 } )
 

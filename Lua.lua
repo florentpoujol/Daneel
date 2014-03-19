@@ -70,6 +70,24 @@ function math.round( value, decimal )
     return value
 end
 
+--- A more flexible version of tonumber().
+-- Returns the first continuous series of numbers found in the text version of the provided data even if it is prefixed or suffied by other characters.
+-- @param data (mixed) The data to be converted to number. Usually of type number, string or userdata.
+-- @return (number) The number, or nil.
+function tonumber2( data )
+    local number = tonumber( data )
+    if number == nil then
+        data = tostring( data )
+        local pattern = "(%d+)"
+        if data:find( ".", 1, true ) then
+            pattern = "(%d+%.%d+)"
+        end
+        number = data:match( (data:gsub( pattern, "(%1)" )) )
+        number = tonumber( number )
+    end
+    return number
+end
+
 
 ----------------------------------------------------------------------------------
 -- string
