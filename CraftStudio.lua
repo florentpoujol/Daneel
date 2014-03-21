@@ -401,6 +401,34 @@ function Camera.Set( camera, params )
     Component.Set( camera, params )
 end
 
+-- Return the pixels to scene units multiplier.
+-- PixelsToUnits = orthographic scale / smallest screen size.
+-- Only works for orthographic cameras. Returns nil for perspective cameras.
+-- @return (number) the camera's PixelsToUnits ratio.
+function Camera.GetPixelsToUnits( camera )
+    if camera:GetProjectionMode() == Camera.ProjectionMode.Orthographic then
+        local screenSize = CS.Screen.GetSize()
+        local smallestSideSize = screenSize.y
+        if screenSize.x < screenSize.y then
+            smallestSideSize = screenSize.x
+        end
+        return camera:GetOrthographicScale() / smallestSideSize
+    end
+    return nil
+end
+
+-- Return the scene units to pixels multiplier.
+-- UnitsToPixels = smallest screen size / orthographic scale.
+-- Only works for orthographic cameras. Returns nil for perspective cameras.
+-- @return (number) the camera's UnitsToPixels ratio.
+function Camera.GetUnitsToPixels( camera )
+    local pixelsToUnits = camera:GetPixelsToUnits()
+    if pixelsToUnits ~= nil and pixelsToUnits ~= 0 then
+        return 1 / pixelsToUnits
+    end
+    return nil
+end
+
 
 table.mergein( Daneel.functionsDebugInfo, {
     ["Transform.SetLocalScale"] = { { "transform", "Transform" }, { "number", { n, v } } },
@@ -425,6 +453,8 @@ table.mergein( Daneel.functionsDebugInfo, {
 
     ["Camera.SetProjectionMode"] = { { "camera", "Camera" }, { "projectionMode", {s, "userdata", n} } },
     ["Camera.Set"] =               { { "camera", "Camera" }, _p },
+    ["Camera.GetPixelsToUnits"] =  { { "camera", "Camera" } },
+    ["Camera.GetUnitsToPixels"] =  { { "camera", "Camera" } },
 } )
 
 
