@@ -520,18 +520,12 @@ end
 -- @param y [optional] (number or string) The vector's y component. If nil, will be equal to x.
 -- @return (Vector2) The new instance.
 function Vector2.New(x, y)
-    Daneel.Debug.StackTrace.BeginFunction("Vector2.New", x, y)
-    local errorHead = "Vector2.New(x, y) : "
-    local argType = Daneel.Debug.CheckArgType(x, "x", {"string", "number", "Vector2"}, errorHead)
-    Daneel.Debug.CheckOptionalArgType(y, "y", {"string", "number"}, errorHead)
-
     if y == nil then y = x end
     local vector = setmetatable({ x = x, y = y }, Vector2)
-    if argType == "Vector2" then
+    if type( x ) == "table" then -- vector2
         vector.x = x.x
         vector.y = x.y
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return vector
 end
 
@@ -539,53 +533,30 @@ end
 -- @param vector (Vector2) The vector.
 -- @return (number) The length.
 function Vector2.GetLength( vector )
-    Daneel.Debug.StackTrace.BeginFunction( "Vector2.GetLength", vector )
-    local errorHead = "Vector2.GetLength( vector ) : "
-    Daneel.Debug.CheckArgType( vector, "vector", "Vector2", errorHead )
-
-    local length = math.sqrt( vector.x^2 + vector.y^2 )
-    Daneel.Debug.StackTrace.EndFunction()
-    return length
+    return math.sqrt( vector.x^2 + vector.y^2 )
 end
 
 --- Return the squared length of the vector.
 -- @param vector (Vector2) The vector.
 -- @return (number) The squared length.
 function Vector2.GetSqrLength( vector )
-    Daneel.Debug.StackTrace.BeginFunction( "Vector2.GetSqrLength", vector )
-    local errorHead = "Vector2.GetSqrLength( vector ) : "
-    Daneel.Debug.CheckArgType( vector, "vector", "Vector2", errorHead )
-
-    local length = vector.x^2 + vector.y^2
-    Daneel.Debug.StackTrace.EndFunction()
-    return length
+    return vector.x^2 + vector.y^2
 end
 
 --- Return a copy of the provided vector, normalized.
 -- @param vector (Vector2) The vector to normalize.
 -- @return (Vector2) A copy of the vector, normalized.
 function Vector2.Normalized( vector )
-    Daneel.Debug.StackTrace.BeginFunction( "Vector2.Normalized", vector )
-    local errorHead = "Vector2.Normalized( vector ) : "
-    Daneel.Debug.CheckArgType( vector, "vector", "Vector2", errorHead )
-
-    local nv = Vector2.New( vector.x, vector.y ):Normalize()
-    Daneel.Debug.StackTrace.EndFunction()
-    return nv
+    return Vector2.New( vector.x, vector.y ):Normalize()
 end
 
 --- Normalize the provided vector in place (makes its length equal to 1).
 -- @param vector (Vector2) The vector to normalize.
 function Vector2.Normalize( vector )
-    Daneel.Debug.StackTrace.BeginFunction( "Vector2.Normalize", vector )
-    local errorHead = "Vector2.Normalize( vector ) : "
-    Daneel.Debug.CheckArgType( vector, "vector", "Vector2", errorHead )
-
     local length = vector:GetLength()
     if length ~= 0 then
         vector = vector / length
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Allow to add two Vector2 by using the + operator.
@@ -594,13 +565,7 @@ end
 -- @param b (Vector2) The right member.
 -- @return (Vector2) The new vector.
 function Vector2.__add(a, b)
-    Daneel.Debug.StackTrace.BeginFunction("Vector2.__add", a, b)
-    local errorHead = "Vector2.__add(a, b) : "
-    Daneel.Debug.CheckArgType(a, "a", "Vector2", errorHead)
-    Daneel.Debug.CheckArgType(b, "b", "Vector2", errorHead)
-    a = Vector2.New(a.x + b.x, a.y + b.y)
-    Daneel.Debug.StackTrace.EndFunction()
-    return a
+    return Vector2.New(a.x + b.x, a.y + b.y)
 end
 
 --- Allow to substract two Vector2 by using the - operator.
@@ -609,13 +574,7 @@ end
 -- @param b (Vector2) The right member.
 -- @return (Vector2) The new vector.
 function Vector2.__sub(a, b)
-    Daneel.Debug.StackTrace.BeginFunction("Vector2.__sub", a, b)
-    local errorHead = "Vector2.__sub(a, b) : "
-    Daneel.Debug.CheckArgType(a, "a", "Vector2", errorHead)
-    Daneel.Debug.CheckArgType(b, "b", "Vector2", errorHead)
-    a = Vector2.New(a.x - b.x, a.y - b.y)
-    Daneel.Debug.StackTrace.EndFunction()
-    return a
+    return Vector2.New(a.x - b.x, a.y - b.y)
 end
 
 --- Allow to multiply two Vector2 or a Vector2 and a number by using the * operator.
@@ -623,10 +582,6 @@ end
 -- @param b (Vector2 or number) The right member.
 -- @return (Vector2) The new vector.
 function Vector2.__mul(a, b)
-    Daneel.Debug.StackTrace.BeginFunction("Vector2.__mull", a, b)
-    local errorHead = "Vector2.__mul(a, b) : "
-    Daneel.Debug.CheckArgType(a, "a", {"Vector2", "number"}, errorHead)
-    Daneel.Debug.CheckArgType(b, "b", {"Vector2", "number"}, errorHead)
     local newVector = nil
     if type(a) == "number" then
         newVector = Vector2.New(a * b.x, a * b.y)
@@ -635,7 +590,6 @@ function Vector2.__mul(a, b)
     else
         newVector = Vector2.New(a.x * b.x, a.y * b.y)
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return newVector
 end
 
@@ -644,28 +598,24 @@ end
 -- @param b (Vector2 or number) The denominator. Can't be equal to 0.
 -- @return (Vector2) The new vector.
 function Vector2.__div(a, b)
-    Daneel.Debug.StackTrace.BeginFunction("Vector2.__div", a, b)
     local errorHead = "Vector2.__div(a, b) : "
-    Daneel.Debug.CheckArgType(a, "a", {"Vector2", "number"}, errorHead)
-    Daneel.Debug.CheckArgType(b, "b", {"Vector2", "number"}, errorHead)
     local newVector = nil
     if type(a) == "number" then
         if b.x == 0 or b.y == 0 then
-            error(errorHead.."One of the components of the denominator is equal to 0. Can't divide by 0 ! a="..a..", b.x="..b.x..", b.y="..b.y)
+            error(errorHead.."One of the components of the denominator is equal to 0. Can't divide by 0 !", a, b)
         end
         newVector = Vector2.New(a / b.x, a / b.y)
     elseif type(b) == "number" then
         if b == 0 then
-            error(errorHead.."The denominator is equal to 0 ! Can't divide by 0 ! a.x="..a.x..", a.y="..a.y..", b=0")
+            error(errorHead.."The denominator is equal to 0 ! Can't divide by 0 !", a, b)
         end
         newVector = Vector2.New(a.x / b, a.y / b)
     else
         if b.x == 0 or b.y == 0 then
-            error(errorHead.."One of the components of the denominator is equal to 0. Can't divide by 0 ! a.x="..a.x..", a.y="..a.y..", b.x="..b.x..", b.y="..b.y)
+            error(errorHead.."One of the components of the denominator is equal to 0. Can't divide by 0 !", a, b)
         end
         newVector = Vector2.New(a.x / b.x, a.y / b.y)
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return newVector
 end
 
@@ -673,12 +623,7 @@ end
 -- @param vector (Vector2) The vector.
 -- @return (Vector2) The new vector.
 function Vector2.__unm(vector)
-    Daneel.Debug.StackTrace.BeginFunction("Vector2.__unm", vector)
-    local errorHead = "Vector2.__unm(vector) : "
-    Daneel.Debug.CheckArgType(vector, "vector", "Vector2", errorHead)
-    local vector = Vector2.New(-vector.x, -vector.y)
-    Daneel.Debug.StackTrace.EndFunction()
-    return vector
+    return Vector2.New(-vector.x, -vector.y)
 end
 
 --- Allow to raise a Vector2 to a power using the ^ operator.
@@ -686,13 +631,7 @@ end
 -- @param exp (number) The power to raise the vector to.
 -- @return (Vector2) The new vector.
 function Vector2.__pow(vector, exp)
-    Daneel.Debug.StackTrace.BeginFunction("Vector2.__pow", vector, exp)
-    local errorHead = "Vector2.__pow(vector, exp) : "
-    Daneel.Debug.CheckArgType(vector, "vector", "Vector2", errorHead)
-    Daneel.Debug.CheckArgType(exp, "exp", "number", errorHead)
-    vector = Vector2.New(vector.x ^ exp, vector.y ^ exp)
-    Daneel.Debug.StackTrace.EndFunction()
-    return vector
+    return Vector2.New(vector.x ^ exp, vector.y ^ exp)
 end
 
 --- Allow to check for the equality between two Vector2 using the == comparison operator.
@@ -700,15 +639,23 @@ end
 -- @param b (Vector2) The right member.
 -- @return (boolean) True if the same components of the two vectors are equal (a.x=b.x and a.y=b.y)
 function Vector2.__eq(a, b)
-    Daneel.Debug.StackTrace.BeginFunction("Vector2.__eq", a, b)
-    local errorHead = "Vector2.__eq(a, b) : "
-    Daneel.Debug.CheckArgType(a, "a", "Vector2", errorHead)
-    Daneel.Debug.CheckArgType(b, "b", "Vector2", errorHead)
-    local eq = ((a.x == b.x) and (a.y == b.y))
-    Daneel.Debug.StackTrace.EndFunction()
-    return eq
+    return ((a.x == b.x) and (a.y == b.y))
 end
 
+table.mergein( Daneel.functionsDebugInfo, {
+    ["Vector2.New"] = { { "x", { s, n, "Vector2" } }, { "y", { s, n } } },
+    ["Vector2.GetLength"] = { { "vector", "Vector2" } },
+    ["Vector2.GetSqrLength"] = { { "vector", "Vector2" } },
+    ["Vector2.Normalized"] = { { "vector", "Vector2" } },
+    ["Vector2.Normalize"] = { { "vector", "Vector2" } },
+    ["Vector2.__add"] = { { "a", "Vector2" }, { "b", "Vector2" } },
+    ["Vector2.__sub"] = { { "a", "Vector2" }, { "b", "Vector2" } },
+    ["Vector2.__mul"] = { { "a", { n, "Vector2" } }, { "b", { n, "Vector2" } } },
+    ["Vector2.__div"] = { { "a", { n, "Vector2" } }, { "b", { n, "Vector2" } } },
+    ["Vector2.__unm"] = { { "vector", "Vector2" } },
+    ["Vector2.__pow"] = { { "vector", "Vector2" }, { "exp", "number" } },
+    ["Vector2.__add"] = { { "a", "Vector2" }, { "b", "Vector2" } },   
+} )
 
 ----------------------------------------------------------------------------------
 
