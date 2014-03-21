@@ -401,10 +401,10 @@ function Camera.Set( camera, params )
     Component.Set( camera, params )
 end
 
--- Return the pixels to scene units multiplier.
+--- Returns the pixels to scene units multiplier.
 -- PixelsToUnits = orthographic scale / smallest screen size.
 -- Only works for orthographic cameras. Returns nil for perspective cameras.
--- @return (number) the camera's PixelsToUnits ratio.
+-- @return (number) The camera's PixelsToUnits ratio.
 function Camera.GetPixelsToUnits( camera )
     if camera:GetProjectionMode() == Camera.ProjectionMode.Orthographic then
         local screenSize = CS.Screen.GetSize()
@@ -417,16 +417,42 @@ function Camera.GetPixelsToUnits( camera )
     return nil
 end
 
--- Return the scene units to pixels multiplier.
+--- Returns the scene units to pixels multiplier.
 -- UnitsToPixels = smallest screen size / orthographic scale.
 -- Only works for orthographic cameras. Returns nil for perspective cameras.
--- @return (number) the camera's UnitsToPixels ratio.
+-- @return (number) The camera's UnitsToPixels ratio.
 function Camera.GetUnitsToPixels( camera )
     local pixelsToUnits = camera:GetPixelsToUnits()
     if pixelsToUnits ~= nil and pixelsToUnits ~= 0 then
         return 1 / pixelsToUnits
     end
     return nil
+end
+
+--- Tell whether the provided position is inside the camera's frustum.
+-- @parap camera (Camera) The camera component.
+-- @param position (Vector3) The position.
+-- @return (boolean) True if the position is insode the camera's frustum.
+function Camera.IsPositionInFrustum( camera, position )
+    local camPosition = camera.gameObject.transform:GetPosition()
+    local screenSize = CS.Screen.GetSize()
+
+    if camera:GetProjectionMode() == Camera.ProjectionMode.Orthographic then
+        local relPosition = position - camPosition
+        local range = screenSize * camera:GetPixelsToUnits() / 2
+        
+        if 
+            relPosition.x >= -range.x and relPosition.x <= range.x and
+            relPosition.y >= - range.y and relPosition.y <= range.y and
+            relPosition.z <= 0 
+        then
+            return true
+        else
+            return false
+        end
+    else -- perspective
+        return nil
+    end
 end
 
 
@@ -455,6 +481,7 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["Camera.Set"] =               { { "camera", "Camera" }, _p },
     ["Camera.GetPixelsToUnits"] =  { { "camera", "Camera" } },
     ["Camera.GetUnitsToPixels"] =  { { "camera", "Camera" } },
+    ["Camera.IsPositionInFrustum"] =  { { "camera", "Camera" }, { "position", "Vector3" } },
 } )
 
 
