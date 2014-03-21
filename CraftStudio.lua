@@ -455,6 +455,24 @@ function Camera.IsPositionInFrustum( camera, position )
     end
 end
 
+--- Translate a position in the scene to an on-screen position.
+-- @parap camera (Camera) The camera component.
+-- @param position (Vector3) The position.
+-- @return (Vector2) The screen position
+function Camera.WorldToScreenPoint( camera, position )
+    local camPosition = camera.gameObject.transform:GetPosition()
+    local unitsToPixels = camera:GetUnitsToPixels()
+    local relPosition = position - camPosition
+    local screenSize = CS.Screen.GetSize()
+    local screenPosition = Vector2.New(0)
+
+    if camera:GetProjectionMode() == Camera.ProjectionMode.Orthographic then
+        screenPosition.x = relPosition.x * unitsToPixels - screenSize.x / 2
+        screenPosition.y = - relPosition.y * unitsToPixels + screenSize.y / 2
+        return screenPosition
+    end
+end
+
 
 table.mergein( Daneel.functionsDebugInfo, {
     ["Transform.SetLocalScale"] = { { "transform", "Transform" }, { "number", { n, v } } },
@@ -477,11 +495,12 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["TextRenderer.SetAlignment"] = { { "textRenderer", "TextRenderer" }, { "alignment", {s, "userdata", n} } }, -- number because enum returns a number in the webplayer
     ["TextRenderer.SetTextWidth"] = { { "textRenderer", "TextRenderer" }, { "width", n } },
 
-    ["Camera.SetProjectionMode"] = { { "camera", "Camera" }, { "projectionMode", {s, "userdata", n} } },
-    ["Camera.Set"] =               { { "camera", "Camera" }, _p },
-    ["Camera.GetPixelsToUnits"] =  { { "camera", "Camera" } },
-    ["Camera.GetUnitsToPixels"] =  { { "camera", "Camera" } },
-    ["Camera.IsPositionInFrustum"] =  { { "camera", "Camera" }, { "position", "Vector3" } },
+    ["Camera.SetProjectionMode"] =   { { "camera", "Camera" }, { "projectionMode", {s, "userdata", n} } },
+    ["Camera.Set"] =                 { { "camera", "Camera" }, _p },
+    ["Camera.GetPixelsToUnits"] =    { { "camera", "Camera" } },
+    ["Camera.GetUnitsToPixels"] =    { { "camera", "Camera" } },
+    ["Camera.IsPositionInFrustum"] = { { "camera", "Camera" }, { "position", "Vector3" } },
+    ["Camera.WorldToScreenPoint"] =  { { "camera", "Camera" }, { "position", "Vector3" } },
 } )
 
 
