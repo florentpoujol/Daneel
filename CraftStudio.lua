@@ -436,23 +436,28 @@ end
 function Camera.IsPositionInFrustum( camera, position )
     local camPosition = camera.gameObject.transform:GetPosition()
     local screenSize = CS.Screen.GetSize()
+    local smallestSideSize = screenSize.y
+    if screenSize.x < screenSize.y then
+        smallestSideSize = screenSize.x
+    end
+    local relPosition = position - camPosition
+    local range = Vector2.New(0)
 
     if camera:GetProjectionMode() == Camera.ProjectionMode.Orthographic then
-        local relPosition = position - camPosition
-        local range = screenSize * camera:GetPixelsToUnits() / 2
-        
-        if 
-            relPosition.x >= -range.x and relPosition.x <= range.x and
-            relPosition.y >= - range.y and relPosition.y <= range.y and
-            relPosition.z <= 0 
-        then
-            return true
-        else
-            return false
-        end
+        range = screenSize * camera:GetPixelsToUnits() / 2
     else -- perspective
-        return nil
+        range = screenSize / smallestSideSize / 2 -- range at BaseDist distance
+        relPosition = relPosition * camera:GetBaseDistance() / direction:GetLength() -- recalculate the relative position at BaseDist
     end
+
+    if 
+        relPosition.x >= -range.x and relPosition.x <= range.x and
+        relPosition.y >= - range.y and relPosition.y <= range.y and
+        relPosition.z <= 0 
+    then
+        return true
+    end
+    return false
 end
 
 --- Translate a position in the scene to an on-screen position.
