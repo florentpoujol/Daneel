@@ -401,32 +401,29 @@ function Camera.Set( camera, params )
     Component.Set( camera, params )
 end
 
---- Returns the pixels to scene units multiplier.
--- PixelsToUnits = orthographic scale / smallest screen size.
--- Only works for orthographic cameras. Returns nil for perspective cameras.
+--- Returns the pixels to scene units factor.
 -- @return (number) The camera's PixelsToUnits ratio.
 function Camera.GetPixelsToUnits( camera )
-    if camera:GetProjectionMode() == Camera.ProjectionMode.Orthographic then
-        local screenSize = CS.Screen.GetSize()
-        local smallestSideSize = screenSize.y
-        if screenSize.x < screenSize.y then
-            smallestSideSize = screenSize.x
-        end
-        return camera:GetOrthographicScale() / smallestSideSize
+    local screenSize = CS.Screen.GetSize()
+    local smallestSideSize = screenSize.y
+    if screenSize.x < screenSize.y then
+        smallestSideSize = screenSize.x
     end
-    return nil
+    if camera:GetProjectionMode() == Camera.ProjectionMode.Orthographic then 
+        return camera:GetOrthographicScale() / smallestSideSize
+    else -- perspective
+        -- UnitsToPixels (px) = BaseDist * SSS (px) = 0.5 * SSS / tan( FOV / 2 )
+        return math.tan( camera:GetFOV() / 2 ) / ( 0.5 * smallestSideSize )
+    end
 end
 
---- Returns the scene units to pixels multiplier.
--- UnitsToPixels = smallest screen size / orthographic scale.
--- Only works for orthographic cameras. Returns nil for perspective cameras.
+--- Returns the scene units to pixels factor.
 -- @return (number) The camera's UnitsToPixels ratio.
 function Camera.GetUnitsToPixels( camera )
     local pixelsToUnits = camera:GetPixelsToUnits()
     if pixelsToUnits ~= nil and pixelsToUnits ~= 0 then
         return 1 / pixelsToUnits
     end
-    return nil
 end
 
 --- Returns the perspective camera's base distance.
@@ -486,6 +483,11 @@ function Camera.WorldToScreenPoint( camera, position )
     if camera:GetProjectionMode() == Camera.ProjectionMode.Orthographic then
         screenPosition.x = relPosition.x * unitsToPixels - screenSize.x / 2
         screenPosition.y = - relPosition.y * unitsToPixels + screenSize.y / 2
+        return screenPosition
+    else -- perspective
+        local distance = relPosition:GetLength()
+        screenPosition.x = relPosition.x / distance * unitsToPixels - screenSize.x / 2
+        screenPosition.y = - relPosition.y / distance * unitsToPixels + screenSize.y / 2
         return screenPosition
     end
 end
