@@ -429,6 +429,18 @@ function Camera.GetUnitsToPixels( camera )
     return nil
 end
 
+--- Returns the perspective camera's base distance.
+-- The base distance is the distance from the camera at which 1 scene unit has the size of the smallest side of the screen.
+-- Only works for perspective cameras. Returns nil for orthographic cameras.
+-- @param camera (Camera) The camera component.
+-- @return (number) The camera's base distance.
+function Camera.GetBaseDistance( camera )
+    if camera:GetProjectionMode() == Camera.ProjectionMode.Perspective then
+        return 0.5 / math.tan( camera:GetFOV() / 2 )
+    end
+    return nil
+end
+
 --- Tell whether the provided position is inside the camera's frustum.
 -- @parap camera (Camera) The camera component.
 -- @param position (Vector3) The position.
@@ -451,9 +463,9 @@ function Camera.IsPositionInFrustum( camera, position )
     end
 
     if 
+        relPosition.z <= 0 and
         relPosition.x >= -range.x and relPosition.x <= range.x and
-        relPosition.y >= - range.y and relPosition.y <= range.y and
-        relPosition.z <= 0 
+        relPosition.y >= - range.y and relPosition.y <= range.y
     then
         return true
     end
@@ -504,6 +516,7 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["Camera.Set"] =                 { { "camera", "Camera" }, _p },
     ["Camera.GetPixelsToUnits"] =    { { "camera", "Camera" } },
     ["Camera.GetUnitsToPixels"] =    { { "camera", "Camera" } },
+    ["Camera.GetBaseDistance"] =     { { "camera", "Camera" } },
     ["Camera.IsPositionInFrustum"] = { { "camera", "Camera" }, { "position", "Vector3" } },
     ["Camera.WorldToScreenPoint"] =  { { "camera", "Camera" }, { "position", "Vector3" } },
 } )
