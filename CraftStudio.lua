@@ -1069,23 +1069,16 @@ end
 -- @param params (table) [optional] A table with parameters to initialize the new game object with.
 -- @return (GameObject) The new game object.
 function GameObject.New( name, params )
-    Daneel.Debug.StackTrace.BeginFunction( "GameObject.New", name, params )
-    local errorHead = "GameObject.New( name[, params] ) : "
-    local argType = Daneel.Debug.CheckArgType( name, "name", {"string", "Scene"}, errorHead )
-    Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead )
-    
     local gameObject = nil
-    local scene = Asset.Get( name, "Scene" ) -- scene will be nil if name is a sting ad not a scene path
+    local scene = Asset.Get( name, "Scene" ) -- scene will be nil if name is a sting istead of a scene path
     if scene ~= nil then
         gameObject = CraftStudio.AppendScene( scene )
     else
         gameObject = CraftStudio.CreateGameObject( name )
     end
-
     if params ~= nil and gameObject ~= nil then
         gameObject:Set(params)
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return gameObject
 end
 
@@ -1095,18 +1088,11 @@ end
 -- @param params [optional] (table) A table with parameters to initialize the new game object with.
 -- @return (GameObject) The new game object.
 function GameObject.Instantiate(gameObjectName, sceneNameOrAsset, params)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.Instantiate", gameObjectName, sceneNameOrAsset, params)
-    local errorHead = "GameObject.Instantiate( gameObjectName, sceneNameOrAsset[, params] ) : "
-    Daneel.Debug.CheckArgType(gameObjectName, "gameObjectName", "string", errorHead)
-    Daneel.Debug.CheckArgType(sceneNameOrAsset, "sceneNameOrAsset", {"string", "Scene"}, errorHead)
-    Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
-
     local scene = Asset.Get(sceneNameOrAsset, "Scene", true)
     local gameObject = CraftStudio.Instantiate(gameObjectName, scene)
     if params ~= nil then
         gameObject:Set( params )
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return gameObject
 end
 
@@ -1114,12 +1100,6 @@ end
 -- @param gameObject (GameObject) The game object.
 -- @param params (table) A table of parameters to set the game object with.
 function GameObject.Set( gameObject, params )
-    Daneel.Debug.StackTrace.BeginFunction( "GameObject.Set", gameObject, params )
-    local errorHead = "GameObject.Set( gameObject, params ) : "
-    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
-    local argType = nil
-    
     if params.parent ~= nil then
         -- do that first so that setting a local position works
         gameObject:SetParent( params.parent )
@@ -1196,7 +1176,6 @@ function GameObject.Set( gameObject, params )
             gameObject[key] = value
         end
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
@@ -1691,6 +1670,10 @@ local _t = { "tag", {"string", "table"} }
 local _go = { "gameObject", "GameObject" }
 
 table.mergein( Daneel.functionsDebugInfo, {
+    ["GameObject.New"] = { { "name", { s, "Scene" } }, { "params", _t, isOptional = true } },
+    ["GameObject.Instantiate"] = { { "name", s }, { "sceneNameOrAsset", { s, "Scene" } }, { "params", _t, isOptional = true } },
+    ["GameObject.Set"] = { _go, _p },
+
     ["GameObject.GetWithTag"] = { _t },
     ["GameObject.GetTags"] = { _go },
     ["GameObject.AddTag"] = { _go, _t },
