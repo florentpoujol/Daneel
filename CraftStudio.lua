@@ -1003,12 +1003,12 @@ setmetatable( GameObject, { __call = function(Object, ...) return Object.New(...
 
 -- returns something like "GameObject: 123456789: 'MyName'"
 function GameObject.__tostring( gameObject )
-    if rawget( gameObject, "transform" ) == nil then
-        return "Destroyed gameObject: " .. Daneel.Debug.ToRawString( gameObject )
-        -- the important here was to prevent throwing an error
+    if rawget( gameObject, "inner" ) == nil then
+        return "Destroyed GameObject: "..tostring(gameObject:GetId())..": '"..tostring(gameObject._name).."': "..Daneel.Debug.ToRawString( gameObject )
+        -- _name is set when the object is destroyed in GameObject.Destroy()
     end
 
-    return "GameObject: " .. gameObject:GetId() .. ": '" .. gameObject:GetName() .. "'"
+    return "GameObject: "..gameObject:GetId()..": '"..gameObject:GetName().."'"
 end
 
 -- Dynamic getters
@@ -1529,17 +1529,15 @@ function GameObject.Destroy( gameObject )
     Daneel.Debug.StackTrace.BeginFunction( "GameObject.Destroy", gameObject )
     local errorHead = "GameObject.Destroy( gameObject ) : "
     Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-
     for i, go in pairs( gameObject:GetChildren( true, true ) ) do -- recursive, include self
         go:RemoveTag()
     end
-
     for key, value in pairs( gameObject ) do
         if key ~= "inner" and type( value ) == "table" then -- in the Webplayer inner is a regular object, considered of type table and not userdata
             Daneel.Event.Fire( value, "OnDestroy", value )
         end
     end
-
+    gameObject._name = gameObject:GetName() -- used by GameObject.__tostring()
     CraftStudio.Destroy( gameObject )
     Daneel.Debug.StackTrace.EndFunction()
 end
