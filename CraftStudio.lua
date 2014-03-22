@@ -1007,7 +1007,6 @@ function GameObject.__tostring( gameObject )
         return "Destroyed GameObject: "..tostring(gameObject:GetId())..": '"..tostring(gameObject._name).."': "..Daneel.Debug.ToRawString( gameObject )
         -- _name is set when the object is destroyed in GameObject.Destroy()
     end
-
     return "GameObject: "..gameObject:GetId()..": '"..gameObject:GetName().."'"
 end
 
@@ -1085,7 +1084,7 @@ end
 --- Create a new game object with the content of the provided scene and optionally initialize it.
 -- @param gameObjectName (string) The game object name.
 -- @param sceneNameOrAsset (string or Scene) The scene name or scene asset.
--- @param params [optional] (table) A table with parameters to initialize the new game object with.
+-- @param params (table) [optional] A table with parameters to initialize the new game object with.
 -- @return (GameObject) The new game object.
 function GameObject.Instantiate(gameObjectName, sceneNameOrAsset, params)
     local scene = Asset.Get(sceneNameOrAsset, "Scene", true)
@@ -1185,27 +1184,19 @@ end
 --- Alias of CraftStudio.FindGameObject(name).
 -- Get the first game object with the provided name.
 -- @param name (string) The game object name.
--- @param errorIfGameObjectNotFound [default=false] (boolean) Throw an error if the game object was not found (instead of returning nil).
+-- @param errorIfGameObjectNotFound (boolean) [default=false] Throw an error if the game object was not found (instead of returning nil).
 -- @return (GameObject) The game object or nil if none is found.
 function GameObject.Get( name, errorIfGameObjectNotFound ) 
     if getmetatable(name) == GameObject then
         return name
     end
-
-    Daneel.Debug.StackTrace.BeginFunction( "GameObject.Get", name, errorIfGameObjectNotFound )
     local errorHead = "GameObject.Get( name[, errorIfGameObjectNotFound] ) : "
-    Daneel.Debug.CheckArgType( name, "name", "string", errorHead )
-    Daneel.Debug.CheckOptionalArgType( errorIfGameObjectNotFound, "errorIfGameObjectNotFound", "boolean", errorHead )
-    
-
     local gameObject = nil
     local names = string.split( name, "." )
-    
     gameObject = CraftStudio.FindGameObject( names[1] )
     if gameObject == nil and errorIfGameObjectNotFound == true then
         error( errorHead.."GameObject with name '" .. names[1] .. "' (from '" .. name .. "') was not found." )
     end
-
     if gameObject ~= nil then
         local originalName = name
         local fullName = table.remove( names, 1 )
@@ -1218,13 +1209,10 @@ function GameObject.Get( name, errorIfGameObjectNotFound )
                 if errorIfGameObjectNotFound == true then
                     error( errorHead.."GameObject with name '" .. fullName .. "' (from '" .. originalName .. "') was not found." )
                 end
-
                 break
             end
         end
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
     return gameObject
 end
 
@@ -1240,37 +1228,24 @@ GameObject.oSetParent = GameObject.SetParent
 --- Set the game object's parent. 
 -- Optionaly carry over the game object's local transform instead of the global one.
 -- @param gameObject (GameObject) The game object.
--- @param parentNameOrInstance [optional] (string or GameObject) The parent name or game object (or nil to remove the parent).
--- @param keepLocalTransform [default=false] (boolean) Carry over the game object's local transform instead of the global one.
-function GameObject.SetParent(gameObject, parentNameOrInstance, keepLocalTransform)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.SetParent", gameObject, parentNameOrInstance, keepLocalTransform)
-    local errorHead = "GameObject.SetParent(gameObject, [parentNameOrInstance, keepLocalTransform]) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckOptionalArgType(parentNameOrInstance, "parentNameOrInstance", {"string", "GameObject"}, errorHead)
-    keepLocalTransform = Daneel.Debug.CheckOptionalArgType(keepLocalTransform, "keepLocalTransform", "boolean", errorHead, false)
-
+-- @param parentNameOrInstance (string or GameObject) [optional] The parent name or game object (or nil to remove the parent).
+-- @param keepLocalTransform (boolean) [default=false] Carry over the game object's local transform instead of the global one.
+function GameObject.SetParent( gameObject, parentNameOrInstance, keepLocalTransform )
     local parent = nil
     if parentNameOrInstance ~= nil then
         parent = GameObject.Get(parentNameOrInstance, true)
     end
     GameObject.oSetParent(gameObject, parent, keepLocalTransform)
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Alias of GameObject.FindChild().
 -- Find the first game object's child with the provided name.
 -- If the name is not provided, it returns the first child.
 -- @param gameObject (GameObject) The game object.
--- @param name [optional] (string) The child name (may be hyerarchy of names separated by dots).
--- @param recursive [default=false] (boolean) Search for the child in all descendants instead of just the first generation.
+-- @param name (string) [optional] The child name (may be hyerarchy of names separated by dots).
+-- @param recursive (boolean) [default=false] Search for the child in all descendants instead of just the first generation.
 -- @return (GameObject) The child or nil if none is found.
 function GameObject.GetChild( gameObject, name, recursive )
-    Daneel.Debug.StackTrace.BeginFunction( "GameObject.GetChild", gameObject, name, recursive )
-    local errorHead = "GameObject.GetChild( gameObject, name[, recursive] ) : "
-    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-    Daneel.Debug.CheckOptionalArgType( name, "name", "string", errorHead )
-    recursive = Daneel.Debug.CheckOptionalArgType( recursive, "recursive", "boolean", errorHead, false )
-    
     local child = nil
     if name == nil then
         local children = gameObject:GetChildren()
@@ -1286,7 +1261,6 @@ function GameObject.GetChild( gameObject, name, recursive )
         end
         child = gameObject
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return child
 end
 
@@ -1294,28 +1268,19 @@ GameObject.oGetChildren = GameObject.GetChildren
 
 --- Get all descendants of the game object.
 -- @param gameObject (GameObject) The game object.
--- @param recursive [default=false] (boolean) Look for all descendants instead of just the first generation.
--- @param includeSelf [default=false] (boolean) Include the game object in the children.
+-- @param recursive (boolean) [default=false] Look for all descendants instead of just the first generation.
+-- @param includeSelf (boolean) [default=false] Include the game object in the children.
 -- @return (table) The children.
 function GameObject.GetChildren( gameObject, recursive, includeSelf )
-    Daneel.Debug.StackTrace.BeginFunction( "GameObject.GetChildren", gameObject, recursive, includeSelf )
-    local errorHead = "GameObject.GetChildren( gameObject[, recursive, includeSelf] ) : "
-    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-    Daneel.Debug.CheckOptionalArgType( recursive, "recursive", "boolean", errorHead )
-    Daneel.Debug.CheckOptionalArgType( includeSelf, "includeSelf", "boolean", errorHead )
-
     local allChildren = GameObject.oGetChildren( gameObject )
-
     if recursive then
         for i, child in ipairs( table.copy( allChildren ) ) do
             allChildren = table.merge( allChildren, child:GetChildren( true ) )
         end
     end
-
     if includeSelf then
         table.insert( allChildren, 1, gameObject )
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return allChildren
 end
 
@@ -1326,14 +1291,8 @@ GameObject.oSendMessage = GameObject.SendMessage
 -- If none of the scripteBehaviors attached to the game object or its children have a method matching the provided name, nothing happens. 
 -- @param gameObject (GameObject) The game object.
 -- @param functionName (string) The method name.
--- @param data [optional] (table) The data to pass along the method call.
+-- @param data (table) [optional] The data to pass along the method call.
 function GameObject.SendMessage(gameObject, functionName, data)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.SendMessage", gameObject, functionName, data)
-    local errorHead = "GameObject.SendMessage(gameObject, functionName[, data]) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
-    Daneel.Debug.CheckOptionalArgType(data, "data", "table", errorHead)
-    
     if Daneel.Config.debug.enableDebug then
         -- prevent an error of type "La référence d'objet n'est pas définie à une instance d'un objet." to stops the script that sends the message
         local success = Daneel.Debug.Try( function()
@@ -1347,7 +1306,7 @@ function GameObject.SendMessage(gameObject, functionName, data)
                 length = table.getlength( data )
                 dataText = "Data with "..length.." entries"
             end
-            print( errorHead.."Error sending message with parameters : ", gameObject, functionName, dataText )
+            print( "GameObject.SendMessage( gameObject, functionName[, data] ) : Error sending message with parameters : ", gameObject, functionName, dataText )
             if length > 0 then
                 table.print( data )
             end
@@ -1355,8 +1314,6 @@ function GameObject.SendMessage(gameObject, functionName, data)
     else
         GameObject.oSendMessage( gameObject, functionName, data )
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Tries to call a method with the provided name on all the scriptedBehaviors attached to the game object or any of its descendants. 
@@ -1364,19 +1321,12 @@ end
 -- If none of the scripteBehaviors attached to the game object or its children have a method matching the provided name, nothing happens. 
 -- @param gameObject (GameObject) The game object.
 -- @param functionName (string) The method name.
--- @param data [optional] (table) The data to pass along the method call.
+-- @param data (table) [optional] The data to pass along the method call.
 function GameObject.BroadcastMessage(gameObject, functionName, data)
-    Daneel.Debug.StackTrace.BeginFunction("GameObject.BroadcastMessage", gameObject, functionName, data)
-    local errorHead = "GameObject.BroadcastMessage(gameObject, functionName[, data]) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead)
-    Daneel.Debug.CheckArgType(functionName, "functionName", "string", errorHead)
-    Daneel.Debug.CheckOptionalArgType(data, "data", "table", errorHead)
-    
     local allGos = gameObject:GetChildren(true, true) -- the game object + all of its children
     for i, go in ipairs(allGos) do
         go:SendMessage(functionName, data)
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
@@ -1386,16 +1336,10 @@ end
 --- Add a component to the game object and optionally initialize it.
 -- @param gameObject (GameObject) The game object.
 -- @param componentType (string or Script) The component type, or script asset, path or alias (can't be Transform or ScriptedBehavior).
--- @param params [optional] (string, Script or table) A table of parameters to initialize the new component with or, if componentType is 'ScriptedBehavior', the mandatory script name or asset.
+-- @param params (string, Script or table) [optional] A table of parameters to initialize the new component with or, if componentType is 'ScriptedBehavior', the mandatory script name or asset.
 -- @return (mixed) The component.
 function GameObject.AddComponent( gameObject, componentType, params )
-    Daneel.Debug.StackTrace.BeginFunction( "GameObject.AddComponent", gameObject, componentType, params )
     local errorHead = "GameObject.AddComponent( gameObject, componentType[, params] ) : "
-    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-    Daneel.Debug.CheckArgType( componentType, "componentType", {"string", "Script"}, errorHead )
-    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead, componentType )
-    Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead )    
-
     local component = nil
     
     if Daneel.Config.componentObjects[ componentType ] == nil then
@@ -1406,7 +1350,6 @@ function GameObject.AddComponent( gameObject, componentType, params )
             if Daneel.Config.debug.enableDebug then
                 error( errorHead.."Provided component type '"..tostring(componentType).."' in not one of the component types, nor a script asset, path or alias." )
             end
-            Daneel.Debug.StackTrace.EndFunction()
             return
         end
 
@@ -1422,13 +1365,11 @@ function GameObject.AddComponent( gameObject, componentType, params )
             if Daneel.Config.debug.enableDebug then
                 print( errorHead.."Can't add a transform component because gameObjects may only have one transform." )
             end
-            Daneel.Debug.StackTrace.EndFunction()
             return
         elseif componentType == "ScriptedBehavior" then
             if Daneel.Config.debug.enableDebug then
                 print( errorHead.."To add a scripted behavior, pass the script asset, path or alias instead of 'ScriptedBehavior' as argument 'componentType'." )
             end
-            Daneel.Debug.StackTrace.EndFunction()
             return
         end
 
@@ -1449,7 +1390,6 @@ function GameObject.AddComponent( gameObject, componentType, params )
             if Daneel.Config.debug.enableDebug then
                 error( errorHead.."Custom component of type '"..componentType.."' does not provide a New() function; Can't create the component." )
             end
-            Daneel.Debug.StackTrace.EndFunction()
             return
         end
     end
@@ -1459,7 +1399,6 @@ function GameObject.AddComponent( gameObject, componentType, params )
     end
 
     Daneel.Event.Fire( gameObject, "OnNewComponent", component )
-    Daneel.Debug.StackTrace.EndFunction()
     return component
 end
 
@@ -1475,21 +1414,14 @@ GameObject.oGetScriptedBehavior = GameObject.GetScriptedBehavior
 -- @param componentType (string or Script) The component type, or script asset, path or alias.
 -- @return (One of the component types) The component instance, or nil if none is found.
 function GameObject.GetComponent( gameObject, componentType )
-    Daneel.Debug.StackTrace.BeginFunction( "GameObject.GetComponent", gameObject, componentType )
-    local errorHead = "GameObject.GetComponent( gameObject, componentType ) : "
-    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-    local argType = Daneel.Debug.CheckArgType( componentType, "componentType", {"string", "Script"}, errorHead )
-    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead, componentType )
-    
     local lcComponentType = componentType
-    if argType == "string" then
+    if type( componentType ) == "string" then
         lcComponentType = string.lcfirst( componentType )
     end
     local component = nil
     if lcComponentType ~= "scriptedBehavior" then
         component = gameObject[ lcComponentType ]
     end
-    
     if component == nil then
         if Daneel.DefaultConfig().componentObjects[ componentType ] ~= nil then
             component = GameObject.oGetComponent( gameObject, componentType )
@@ -1498,8 +1430,6 @@ function GameObject.GetComponent( gameObject, componentType )
             component = GameObject.oGetScriptedBehavior( gameObject, script )
         end
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
     return component
 end
 
@@ -1508,15 +1438,8 @@ end
 -- @param scriptNameOrAsset (string or Script) The script name or asset.
 -- @return (ScriptedBehavior) The ScriptedBehavior instance.
 function GameObject.GetScriptedBehavior( gameObject, scriptNameOrAsset )
-    Daneel.Debug.StackTrace.BeginFunction( "GameObject.GetScriptedBehavior", gameObject, scriptNameOrAsset )
-    local errorHead = "GameObject.GetScriptedBehavior( gameObject, scriptNameOrAsset ) : "
-    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-    Daneel.Debug.CheckArgType( scriptNameOrAsset, "scriptNameOrAsset", {"string", "Script"}, errorHead )
-
     local script = Asset.Get( scriptNameOrAsset, "Script", true )
-    local component = GameObject.oGetScriptedBehavior( gameObject, script )
-    Daneel.Debug.StackTrace.EndFunction()
-    return component
+    return GameObject.oGetScriptedBehavior( gameObject, script )
 end
 
 
@@ -1526,9 +1449,6 @@ end
 --- Destroy the game object at the end of this frame.
 -- @param gameObject (GameObject) The game object.
 function GameObject.Destroy( gameObject )
-    Daneel.Debug.StackTrace.BeginFunction( "GameObject.Destroy", gameObject )
-    local errorHead = "GameObject.Destroy( gameObject ) : "
-    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
     for i, go in pairs( gameObject:GetChildren( true, true ) ) do -- recursive, include self
         go:RemoveTag()
     end
@@ -1539,7 +1459,6 @@ function GameObject.Destroy( gameObject )
     end
     gameObject._name = gameObject:GetName() -- used by GameObject.__tostring()
     CraftStudio.Destroy( gameObject )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
@@ -1618,7 +1537,7 @@ end
 --- Remove the provided tag(s) from the provided game object.
 -- If the 'tag' argument is not provided, all tag of the game object will be removed.
 -- @param gameObject (GameObject) The game object.
--- @param tag [optional] (string or table) One or several tag(s) (as a string or table of strings).
+-- @param tag (string or table) [optional] One or several tag(s) (as a string or table of strings).
 function GameObject.RemoveTag( gameObject, tag )
     local tags = tag
     if type( tags ) == "string" then
@@ -1635,7 +1554,7 @@ end
 --- Tell whether the provided game object has all (or at least one of) the provided tag(s).
 -- @param gameObject (GameObject) The game object.
 -- @param tag (string or table) One or several tag (as a string or table of strings).
--- @param atLeastOneTag [default=false] (boolean) If true, returns true if the game object has AT LEAST one of the tag (instead of ALL the tag).
+-- @param atLeastOneTag (boolean) [default=false] If true, returns true if the game object has AT LEAST one of the tag (instead of ALL the tag).
 -- @return (boolean) True
 function GameObject.HasTag( gameObject, tag, atLeastOneTag )
     local tags = tag
@@ -1668,16 +1587,30 @@ local _t = { "tag", {"string", "table"} }
 local _go = { "gameObject", "GameObject" }
 
 table.mergein( Daneel.functionsDebugInfo, {
-    ["GameObject.New"] = { { "name", { s, "Scene" } }, { "params", _t, isOptional = true } },
+    ["GameObject.New"] =         { { "name", { s, "Scene" } }, { "params", _t, isOptional = true } },
     ["GameObject.Instantiate"] = { { "name", s }, { "sceneNameOrAsset", { s, "Scene" } }, { "params", _t, isOptional = true } },
-    ["GameObject.Set"] = { _go, _p },
+    ["GameObject.Set"] =         { _go, _p },
+    ["GameObject.Get"] =         { { "name", { s, "GameObject" } }, { "errorIfGameObjectNotFound", defaultValue = false } },
+    ["GameObject.Destroy"] =     { _go },
+    
+    ["GameObject.SetParent"] =   { _go, { "parentNameOrInstance", { s, "GameObject" } }, { "keepLocalTransform", defaultvalue = false } },
+    ["GameObject.GetChild"] =    { _go, { "name", s }, { "recursive", defaultvalue = false } },
+    ["GameObject.GetChildred"] = { _go, { "recursive", defaultvalue = false }, { "includeSelf", defaultvalue = false } },
+    
+    ["GameObject.SendMessage"] =      { _go, { "functionName", s }, { "data", t } },
+    ["GameObject.BroadcastMessage"] = { _go, { "functionName", s }, { "data", t } },
+    
+    ["GameObject.AddComponent"] =        { _go, { "componentType", { s, "Script" }, value = Daneel.Config.componentTypes }, { "params", t, isOptional = true } },
+    ["GameObject.GetComponent"] =        { _go, { "componentType", { s, "Script" }, value = Daneel.Config.componentTypes } },
+    ["GameObject.GetScriptedBehavior"] = { _go, { "scriptNameOrAsset", { s, "Script" } } },
 
     ["GameObject.GetWithTag"] = { _t },
-    ["GameObject.GetTags"] = { _go },
-    ["GameObject.AddTag"] = { _go, _t },
-    ["GameObject.RemoveTag"] = { _go, { "tag", {"string", "table"}, isOptional = true } },
-    ["GameObject.HasTag"] = { _go, _t, { "atLeastOneTag", defaultValue = false } },
+    ["GameObject.GetTags"] =    { _go },
+    ["GameObject.AddTag"] =     { _go, _t },
+    ["GameObject.RemoveTag"] =  { _go, { "tag", {"string", "table"}, isOptional = true } },
+    ["GameObject.HasTag"] =     { _go, _t, { "atLeastOneTag", defaultValue = false } },
 } )
+
 
 Daneel.modules.Tags = {
     Awake = function()
