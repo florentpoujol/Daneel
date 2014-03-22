@@ -330,6 +330,42 @@ function Daneel.Utilities.ButtonExists( buttonName )
     return buttonExists[ buttonName ]
 end
 
+
+Daneel.Utilities.id = 0
+
+--- Returns an interger greater than 0 and incremented by 1 from the last time the funciton was called.
+-- If an object is provided, returns the object's id (if no id is found, it is set).
+-- @param object (table) [optional] An object. 
+-- @return (number) The id.
+function Daneel.Utilities.GetId( object )
+    if object ~= nil and type( object ) == "table" then
+        local id = rawget( object, "id" )
+        if id ~= nil then
+            return id
+        end
+        id = Daneel.Utilities.GetId()
+        if object.inner ~= nil and not CS.IsWebPlayer then -- in the webplayer, tostring(object.inner) will just be table, so id will be nil
+            -- object.inner : 
+            -- "CraftStudioRuntime.InGame.GameObject: 4620049" (of type userdata)
+            -- "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
+            id = tonumber( tostring( object.inner ):match( "%d+" ) )
+        end
+        if id == nil then
+            id = "[no id]"
+        end
+        rawset( object, "id", id )
+        return id
+    else
+        Daneel.Utilities.id = Daneel.Utilities.id + 1
+        return Daneel.Utilities.id
+    end
+end
+
+-- for backward compatibility, Cache object is deprecated since v1.5.0
+Daneel.Cache = {
+    GetId = Daneel.Utilities.GetId
+}
+
 table.mergein( Daneel.functionsDebugInfo, {
     ["Daneel.Utilities.CaseProof"] = { { "name", s }, { "set", { s, t } } },
     ["Daneel.Utilities.ReplaceInString"] = { { "string", s }, { "replacements", t } },
@@ -1009,42 +1045,6 @@ Daneel.Time = {
 
 
 ----------------------------------------------------------------------------------
--- Cache
-
-Daneel.Cache = {
-    id = 0,
-}
-
---- Returns an interger greater than 0 and incremented by 1 from the last time the funciton was called.
--- If an object is provided, returns the object's id (if no id is found, it is set).
--- @param object (table) [optional] An object. 
--- @return (number) The id.
-function Daneel.Cache.GetId( object )
-    if object ~= nil and type( object ) == "table" then
-        local id = rawget( object, "id" )
-        if id ~= nil then
-            return id
-        end
-        id = Daneel.Cache.GetId()
-        if object.inner ~= nil and not CS.IsWebPlayer then -- in the webplayer, tostring(object.inner) will just be table, so id will be nil
-            -- object.inner : 
-            -- "CraftStudioRuntime.InGame.GameObject: 4620049" (of type userdata)
-            -- "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
-            id = tonumber( tostring( object.inner ):match( "%d+" ) )
-        end
-        if id == nil then
-            id = "[no id]"
-        end
-        rawset( object, "id", id )
-        return id
-    else
-        Daneel.Cache.id = Daneel.Cache.id + 1
-        return Daneel.Cache.id
-    end
-end
-
-
-----------------------------------------------------------------------------------
 -- Storage
 
 Daneel.Storage = {}
@@ -1281,7 +1281,7 @@ function Daneel.Load()
         Daneel.Utilities.AllowDynamicGettersAndSetters( assetObject, { Asset } )
 
         assetObject["__tostring"] = function( asset )
-            return  assetType .. ": " .. Daneel.Cache.GetId( asset ) .. ": '" .. Map.GetPathInPackage( asset ) .. "'"
+            return  assetType .. ": " .. Daneel.Utilities.GetId( asset ) .. ": '" .. Map.GetPathInPackage( asset ) .. "'"
         end
     end
 
@@ -1293,7 +1293,7 @@ function Daneel.Load()
             Daneel.Utilities.AllowDynamicGettersAndSetters( script, { Script, Component } )
 
             script["__tostring"] = function( scriptedBehavior )
-                return "ScriptedBehavior: " .. Daneel.Cache.GetId( scriptedBehavior ) .. ": '" .. path .. "'"
+                return "ScriptedBehavior: " .. Daneel.Utilities.GetId( scriptedBehavior ) .. ": '" .. path .. "'"
             end
         else
             Daneel.Config.scriptPaths[ alias ] = nil

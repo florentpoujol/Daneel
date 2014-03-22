@@ -122,7 +122,7 @@ end
 -- @param asset (any asset type) The asset.
 -- @return (number) The id.
 function Asset.GetId( asset )
-    return Daneel.Cache.GetId( asset )
+    return Daneel.Utilities.GetId( asset )
 end
 
 
@@ -154,7 +154,7 @@ end
 -- @return (number) The id.
 function Component.GetId( component )
     -- no Debug because is used in __tostring
-    return Daneel.Cache.GetId( component )
+    return Daneel.Utilities.GetId( component )
 end
 
 table.mergein( Daneel.functionsDebugInfo, {
@@ -1220,7 +1220,7 @@ end
 -- @param gameObject (GameObject) The game object.
 -- @return (number) The id.
 function GameObject.GetId( gameObject )
-    return Daneel.Cache.GetId( gameObject )
+    return Daneel.Utilities.GetId( gameObject )
 end
 
 GameObject.oSetParent = GameObject.SetParent

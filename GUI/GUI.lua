@@ -121,7 +121,7 @@ function GUI.Hud.New( gameObject, params )
 
     local hud = setmetatable( {}, GUI.Hud )
     hud.gameObject = gameObject
-    hud.id = Daneel.Cache.GetId()
+    hud.id = Daneel.Utilities.GetId()
     gameObject.hud = hud
 
     hud:Set( table.merge( GUI.Config.hud, params ) )
@@ -289,7 +289,7 @@ function GUI.Toggle.New( gameObject, params )
     toggle.defaultText = toggle.text
     toggle.text = nil
     toggle.gameObject = gameObject
-    toggle.id = Daneel.Cache.GetId()
+    toggle.id = Daneel.Utilities.GetId()
     setmetatable( toggle, GUI.Toggle )
 
     toggle:Set( params )
@@ -533,7 +533,7 @@ function GUI.ProgressBar.New( gameObject, params )
 
     local progressBar = table.copy( GUI.Config.progressBar )
     progressBar.gameObject = gameObject
-    progressBar.id = Daneel.Cache.GetId()
+    progressBar.id = Daneel.Utilities.GetId()
     progressBar.value = nil -- remove the property to allow to use the dynamic getter/setter
     setmetatable( progressBar, GUI.ProgressBar )
 
@@ -746,7 +746,7 @@ function GUI.Slider.New( gameObject, params )
 
     local slider = table.copy( GUI.Config.slider )
     slider.gameObject = gameObject
-    slider.id = Daneel.Cache.GetId()
+    slider.id = Daneel.Utilities.GetId()
     slider.value = nil
     slider.parent = slider.gameObject:GetParent()
     if slider.parent == nil then
@@ -897,7 +897,7 @@ function GUI.Input.New( gameObject, params )
 
     local input = table.merge( GUI.Config.input, params )
     input.gameObject = gameObject
-    input.id = Daneel.Cache.GetId()
+    input.id = Daneel.Utilities.GetId()
     setmetatable( input, GUI.Input )
     
     -- adapted from Blast Turtles
@@ -1094,7 +1094,7 @@ function GUI.TextArea.New( gameObject, params )
 
     local textArea = {}
     textArea.gameObject = gameObject
-    textArea.id = Daneel.Cache.GetId()
+    textArea.id = Daneel.Utilities.GetId()
     textArea.lineRenderers = {}
     setmetatable( textArea, GUI.TextArea )
 

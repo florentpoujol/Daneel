@@ -67,7 +67,7 @@ function Tween.Tweener.New(target, property, endValue, duration, params)
     
     local tweener = table.copy(Tween.Config.tweener)
     setmetatable(tweener, Tween.Tweener)
-    tweener.id = Daneel.Cache.GetId()
+    tweener.id = Daneel.Utilities.GetId()
 
     -- three constructors :
     -- target, property, endValue, duration[, params]
@@ -344,7 +344,7 @@ function Tween.Timer.New( duration, callback, isInfiniteLoop, params )
 
     local tweener = table.copy( Tween.Config.tweener )
     setmetatable( tweener, Tween.Tweener )
-    tweener.id = Daneel.Cache.GetId()
+    tweener.id = Daneel.Utilities.GetId()
     tweener.startValue = duration
     tweener.endValue = 0
     tweener.duration = duration
