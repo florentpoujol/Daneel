@@ -1025,7 +1025,7 @@ function Daneel.Event.Fire( object, eventName, ... )
 end
 
 table.mergein( Daneel.functionsDebugInfo, {
-    ["Daneel.Event.Listen"] = { { "eventName", s }, { "functionOrObject", {t, f, u} }, { "isPersistent", defaultValue = false } },
+    ["Daneel.Event.Listen"] = { { "eventName", { s, t } }, { "functionOrObject", {t, f, u} }, { "isPersistent", defaultValue = false } },
 } )
 
 

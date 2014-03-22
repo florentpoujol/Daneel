@@ -1,7 +1,7 @@
 -- CraftStudio.lua
 -- Contains extensions of CraftStudio's API.
 --
--- Last modified for v1.4.0
+-- Last modified for v1.5.0
 -- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 
 -- debug info
@@ -663,7 +663,7 @@ function Vector2.__eq(a, b)
 end
 
 table.mergein( Daneel.functionsDebugInfo, {
-    ["Vector2.New"] = { { "x", { s, n, "Vector2" } }, { "y", { s, n } } },
+    ["Vector2.New"] = { { "x", { s, n, "Vector2" } }, { "y", { s, n }, isOptional = true } },
     ["Vector2.GetLength"] = { { "vector", "Vector2" } },
     ["Vector2.GetSqrLength"] = { { "vector", "Vector2" } },
     ["Vector2.Normalized"] = { { "vector", "Vector2" } },
@@ -696,12 +696,12 @@ function CraftStudio.Input.GetMouseDelta()
     return setmetatable( CraftStudio.Input.oGetMouseDelta(), Vector2 )
 end
 
-CraftStudio.Input.oGetSize = CraftStudio.Screen.GetSize
+CraftStudio.Screen.oGetSize = CraftStudio.Screen.GetSize
 
 --- Return the size of the screen, in pixels.
 -- @return (Vector2) The screen's size.
 function CraftStudio.Screen.GetSize()
-    return setmetatable( CraftStudio.Input.oGetSize(), Vector2 )
+    return setmetatable( CraftStudio.Screen.oGetSize(), Vector2 )
 end
 
 
@@ -1099,6 +1099,7 @@ end
 -- @param gameObject (GameObject) The game object.
 -- @param params (table) A table of parameters to set the game object with.
 function GameObject.Set( gameObject, params )
+    local errorHead = "GameObject.Set( gameObject[, params] ) :"
     if params.parent ~= nil then
         -- do that first so that setting a local position works
         gameObject:SetParent( params.parent )
@@ -1235,6 +1236,9 @@ function GameObject.SetParent( gameObject, parentNameOrInstance, keepLocalTransf
     if parentNameOrInstance ~= nil then
         parent = GameObject.Get(parentNameOrInstance, true)
     end
+    if keepLocalTransform == nil then
+        keepLocalTransform = false
+    end
     GameObject.oSetParent(gameObject, parent, keepLocalTransform)
 end
 
@@ -1246,6 +1250,9 @@ end
 -- @param recursive (boolean) [default=false] Search for the child in all descendants instead of just the first generation.
 -- @return (GameObject) The child or nil if none is found.
 function GameObject.GetChild( gameObject, name, recursive )
+    if recursive == nil then
+        recursive = false
+    end
     local child = nil
     if name == nil then
         local children = gameObject:GetChildren()
@@ -1340,6 +1347,7 @@ end
 -- @return (mixed) The component.
 function GameObject.AddComponent( gameObject, componentType, params )
     local errorHead = "GameObject.AddComponent( gameObject, componentType[, params] ) : "
+    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead, componentType )
     local component = nil
     
     if Daneel.Config.componentObjects[ componentType ] == nil then
@@ -1414,6 +1422,8 @@ GameObject.oGetScriptedBehavior = GameObject.GetScriptedBehavior
 -- @param componentType (string or Script) The component type, or script asset, path or alias.
 -- @return (One of the component types) The component instance, or nil if none is found.
 function GameObject.GetComponent( gameObject, componentType )
+    local errorHead = "GameObject.GetComponent( gameObject, componentType ) : "
+    componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead, componentType )
     local lcComponentType = componentType
     if type( componentType ) == "string" then
         lcComponentType = string.lcfirst( componentType )
@@ -1587,21 +1597,21 @@ local _t = { "tag", {"string", "table"} }
 local _go = { "gameObject", "GameObject" }
 
 table.mergein( Daneel.functionsDebugInfo, {
-    ["GameObject.New"] =         { { "name", { s, "Scene" } }, { "params", _t, isOptional = true } },
-    ["GameObject.Instantiate"] = { { "name", s }, { "sceneNameOrAsset", { s, "Scene" } }, { "params", _t, isOptional = true } },
+    ["GameObject.New"] =         { { "name", { s, "Scene" } }, { "params", t, isOptional = true } },
+    ["GameObject.Instantiate"] = { { "name", s }, { "sceneNameOrAsset", { s, "Scene" } }, { "params", t, isOptional = true } },
     ["GameObject.Set"] =         { _go, _p },
     ["GameObject.Get"] =         { { "name", { s, "GameObject" } }, { "errorIfGameObjectNotFound", defaultValue = false } },
     ["GameObject.Destroy"] =     { _go },
     
-    ["GameObject.SetParent"] =   { _go, { "parentNameOrInstance", { s, "GameObject" } }, { "keepLocalTransform", defaultvalue = false } },
-    ["GameObject.GetChild"] =    { _go, { "name", s }, { "recursive", defaultvalue = false } },
-    ["GameObject.GetChildred"] = { _go, { "recursive", defaultvalue = false }, { "includeSelf", defaultvalue = false } },
+    ["GameObject.SetParent"] =   { _go, { "parentNameOrInstance", { s, "GameObject" } }, { "keepLocalTransform", defaultValue = false } },
+    ["GameObject.GetChild"] =    { _go, { "name", s, isOptional = true }, { "recursive", defaultValue = false } },
+    ["GameObject.GetChildren"] = { _go, { "recursive", defaultValue = false }, { "includeSelf", defaultValue = false } },
     
-    ["GameObject.SendMessage"] =      { _go, { "functionName", s }, { "data", t } },
-    ["GameObject.BroadcastMessage"] = { _go, { "functionName", s }, { "data", t } },
+    ["GameObject.SendMessage"] =      { _go, { "functionName", s }, { "data", t, isOptional = true } },
+    ["GameObject.BroadcastMessage"] = { _go, { "functionName", s }, { "data", t, isOptional = true } },
     
-    ["GameObject.AddComponent"] =        { _go, { "componentType", { s, "Script" }, value = Daneel.Config.componentTypes }, { "params", t, isOptional = true } },
-    ["GameObject.GetComponent"] =        { _go, { "componentType", { s, "Script" }, value = Daneel.Config.componentTypes } },
+    ["GameObject.AddComponent"] =        { _go, { "componentType", { s, "Script" } }, { "params", t, isOptional = true } },
+    ["GameObject.GetComponent"] =        { _go, { "componentType", { s, "Script" } } },
     ["GameObject.GetScriptedBehavior"] = { _go, { "scriptNameOrAsset", { s, "Script" } } },
 
     ["GameObject.GetWithTag"] = { _t },
