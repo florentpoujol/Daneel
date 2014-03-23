@@ -676,6 +676,25 @@ function Vector2.__eq(a, b)
     return ((a.x == b.x) and (a.y == b.y))
 end
 
+
+----------------------------------------------------------------------------------
+-- Vector3
+
+-- Returns the length of the provided vector
+-- @param vector (Vector3) The vector.
+-- @return (number) The length.
+function Vector3.GetLength( vector )
+  return math.sqrt( vector.x ^ 2 + vector.y ^ 2 + vector.z ^ 2 )
+end
+
+--- Return the squared length of the vector.
+-- @param vector (Vector3) The vector.
+-- @return (number) The squared length.
+function Vector3.GetSqrLength( vector )
+  return vector.x ^ 2 + vector.y ^ 2 + vector.z ^ 2
+end
+
+
 table.mergein( Daneel.functionsDebugInfo, {
     ["Vector2.New"] = { { "x", { s, n, "Vector2" } }, { "y", { s, n }, isOptional = true } },
     ["Vector2.GetLength"] = { { "vector", "Vector2" } },
