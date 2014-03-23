@@ -486,7 +486,7 @@ function Camera.WorldToScreenPoint( camera, position )
         return screenPosition
     else -- perspective
         local distance = relPosition:GetLength()
-        screenPosition.x = relPosition.x / distance * unitsToPixels - screenSize.x / 2
+        screenPosition.x = relPosition.x / distance * unitsToPixels + screenSize.x / 2
         screenPosition.y = - relPosition.y / distance * unitsToPixels + screenSize.y / 2
         return screenPosition
     end
