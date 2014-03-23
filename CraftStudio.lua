@@ -435,7 +435,6 @@ function Camera.GetBaseDistance( camera )
     if camera:GetProjectionMode() == Camera.ProjectionMode.Perspective then
         return 0.5 / math.tan( camera:GetFOV() / 2 )
     end
-    return nil
 end
 
 --- Tell whether the provided position is inside the camera's frustum.
@@ -482,15 +481,14 @@ function Camera.WorldToScreenPoint( camera, position )
     local screenPosition = Vector2.New(0)
 
     if camera:GetProjectionMode() == Camera.ProjectionMode.Orthographic then
-        screenPosition.x = relPosition.x * unitsToPixels - screenSize.x / 2
+        screenPosition.x = relPosition.x * unitsToPixels + screenSize.x / 2
         screenPosition.y = - relPosition.y * unitsToPixels + screenSize.y / 2
-        return screenPosition
     else -- perspective
         local distance = relPosition:GetLength()
         screenPosition.x = relPosition.x / distance * unitsToPixels + screenSize.x / 2
         screenPosition.y = - relPosition.y / distance * unitsToPixels + screenSize.y / 2
-        return screenPosition
     end
+    return screenPosition
 end
 
 Camera.oGetFOV = Camera.GetFOV
