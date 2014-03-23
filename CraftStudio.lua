@@ -456,7 +456,8 @@ function Camera.IsPositionInFrustum( camera, position )
         range = screenSize * camera:GetPixelsToUnits() / 2
     else -- perspective
         range = screenSize / smallestSideSize / 2 -- range at BaseDist distance
-        relPosition = relPosition * camera:GetBaseDistance() / direction:GetLength() -- recalculate the relative position at BaseDist
+        local direction = position - camPosition
+        relPosition = relPosition * camera:GetBaseDistance() / direction:Length() -- recalculate the relative position at BaseDist
     end
 
     if 
