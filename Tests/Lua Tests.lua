@@ -240,7 +240,7 @@ function Behavior:Awake()
     t = {
         un = "un", deux = "deux", 
         3, 4, [4.5] = 4.5, 
-        [self.gameObject] = "Lua libs", [GameObject.Get("Daneel Core")] = "Daneel Core"
+        [self.gameObject] = "Lua libs", [GameObject.Get("Perspective Camera")] = "Perspective Camera"
     }
     
     r = table.getlength( t )

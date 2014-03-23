@@ -168,15 +168,16 @@ function Behavior:Awake()
     ------
     print( "~~~~~~ Camera ~~~~~~" )
 
-    r = GameObject.Get( "Daneel Core" )
+    go = GameObject.Get( "Perspective Camera" )
 
-    r.camera:Set({
-        projectionMode = "PersPectIve"
+    go.camera:Set({
+        projectionMode = "orthographic"
     });
-    if r.camera.projectionMode ~= Camera.ProjectionMode.Perspective then
-        print( "Camera.SetProjectionMode 1", r.camera.projectionMode )
+    if go.camera.projectionMode ~= Camera.ProjectionMode.Orthographic then
+        print( "Camera.SetProjectionMode 1", go.camera.projectionMode )
     end
-    r.camera.projectionMode = "orthographic"
+    go.camera:SetProjectionMode( "PersPecTive" )
+    go.camera.fOV = 70
     
     
     ------
@@ -188,7 +189,7 @@ function Behavior:Awake()
         print( "CS.Screen.GetSize() dans script 'CS API Extension'" )
     end
     
-    local cameraGO = GameObject.Get( "Daneel Core" )
+    local cameraGO = GameObject.Get( "Perspective Camera" )
     local ray = cameraGO.camera:CreateRay( screenSize / 2 )
     -- Create ray return des vector3 buggés
     ray.position = cameraGO.transform.position
@@ -199,12 +200,12 @@ function Behavior:Awake()
         print( "ray:IntersectsGameObject 1", r )
     end
     
-    r = ray:IntersectsGameObject( "Daneel Core.Test Ray.Model" )
+    r = ray:IntersectsGameObject( "Perspective Camera.Test Ray.Model" )
     if r == nil then
         print( "ray:IntersectsGameObject 2", r )
     end
     
-    go = GameObject.Get( "Daneel Core.Test Ray.Model" )
+    go = GameObject.Get( "Perspective Camera.Test Ray.Model" )
     r = ray:IntersectsModelRenderer( go.modelRenderer )
     if type( r ) ~= "number" then
         print( "ray:IntersectsModelRenderer 1", r )
@@ -222,7 +223,7 @@ function Behavior:Awake()
     end
     
     --
-    go = GameObject.Get( "Daneel Core.Test Ray.Map" )
+    go = GameObject.Get( "Perspective Camera.Test Ray.Map" )
     r = ray:IntersectsMapRenderer( go.mapRenderer )
     if type( r ) ~= "number" then
         print( "ray:IntersectsMapRenderer 1", r )
@@ -240,7 +241,7 @@ function Behavior:Awake()
     end
     
     --
-    go = GameObject.Get( "Daneel Core.Test Ray.Text" )
+    go = GameObject.Get( "Perspective Camera.Test Ray.Text" )
     r = ray:IntersectsTextRenderer( go.textRenderer )
     if type( r ) ~= "number" then
         print( "ray:IntersectsTextRenderer 1", r )
@@ -363,7 +364,7 @@ function Behavior:Awake()
     
     
     -- test scripted behavior and alias
-    go = GameObject.Get("Daneel Core")
+    go = GameObject.Get("Perspective Camera")
     local sb = go:GetScriptedBehavior( daneelScriptPath )
     
     if sb == nil then -- Daneel has been late loaded
@@ -409,7 +410,7 @@ function Behavior:Awake()
     end
     
     --
-    go = GameObject.Get("Daneel Core")
+    go = GameObject.Get("Perspective Camera")
     r = go:GetChild( "Test Ray.Model" )
     if r ~= go.child.child then
         print("gameObject:GetChild 1", r )
@@ -426,19 +427,20 @@ function Behavior:Awake()
     end
     
     --
+    go = GameObject.Get( "Sliders" )
     r = go.children
-    if #r ~= 2 then
+    if #r ~= 3 then
         print("gameObject:GetChildren 1", r )
     end
     
     r = go:GetChildren( true ) -- recursive
-    if #r ~= 8 then
+    if #r ~= 12 then
         print("gameObject:GetChildren 2", r, #r )
         table.print( r )
     end
     
     r = go:GetChildren( true, true ) -- recursive + include self
-    if #r ~= 9 then
+    if #r ~= 13 then
         print("gameObject:GetChildren 3", r, #r )
         table.print( r )
     end
