@@ -492,6 +492,19 @@ function Camera.WorldToScreenPoint( camera, position )
     end
 end
 
+Camera.oGetFOV = Camera.GetFOV
+
+--- Returns the FOV of the provided perspective camera (rounded to the second digit after the coma).
+-- @param camera (Camera) The Camera component.
+-- @return (number) The FOV
+function Camera.GetFOV( camera )
+    return math.round( Camera.oGetFOV( camera ), 2 )
+end
+
+-- Just to be able to dynamically call Get/SetFOV() with "camera.fov" instead of "camera.fOV"
+Camera.GetFov = Camera.GetFOV
+Camera.SetFov = Camera.SetFOV
+
 
 table.mergein( Daneel.functionsDebugInfo, {
     ["Transform.SetLocalScale"] = { { "transform", "Transform" }, { "number", { n, v } } },
@@ -521,6 +534,7 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["Camera.GetBaseDistance"] =     { { "camera", "Camera" } },
     ["Camera.IsPositionInFrustum"] = { { "camera", "Camera" }, { "position", "Vector3" } },
     ["Camera.WorldToScreenPoint"] =  { { "camera", "Camera" }, { "position", "Vector3" } },
+    ["Camera.GetFOV"] =  { { "camera", "Camera" } },
 } )
 
 
