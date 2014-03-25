@@ -442,29 +442,28 @@ end
 -- @param position (Vector3) The position.
 -- @return (boolean) True if the position is insode the camera's frustum.
 function Camera.IsPositionInFrustum( camera, position )
-    local camPosition = camera.gameObject.transform:GetPosition()
-    local screenSize = CS.Screen.GetSize()
-    local smallestSideSize = screenSize.y
-    if screenSize.x < screenSize.y then
-        smallestSideSize = screenSize.x
-    end
-    local relPosition = position - camPosition
-    local range = Vector2.New(0)
+    local relPosition = position - camera.gameObject.transform:GetPosition()
+    if relPosition.z < 0 then
+        local screenSize = CS.Screen.GetSize()
+        local range = Vector2.New(0)
 
-    if camera:GetProjectionMode() == Camera.ProjectionMode.Orthographic then
-        range = screenSize * camera:GetPixelsToUnits() / 2
-    else -- perspective
-        range = screenSize / smallestSideSize / 2 -- range at BaseDist distance
-        local direction = position - camPosition
-        relPosition = relPosition * camera:GetBaseDistance() / direction:Length() -- recalculate the relative position at BaseDist
-    end
+        if camera:GetProjectionMode() == Camera.ProjectionMode.Orthographic then
+            range = screenSize * camera:GetPixelsToUnits() / 2
+        else -- perspective
+            local smallestSideSize = screenSize.y
+            if screenSize.x < screenSize.y then
+                smallestSideSize = screenSize.x
+            end
+            range = -relPosition.z / camera:GetBaseDistance() * screenSize / smallestSideSize -- frustrum size
+            range = range / 2
+        end
 
-    if 
-        relPosition.z <= 0 and
-        relPosition.x >= -range.x and relPosition.x <= range.x and
-        relPosition.y >= - range.y and relPosition.y <= range.y
-    then
-        return true
+        if
+            relPosition.x >= -range.x and relPosition.x <= range.x and
+            relPosition.y >= - range.y and relPosition.y <= range.y
+        then
+            return true
+        end
     end
     return false
 end
