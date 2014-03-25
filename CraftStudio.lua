@@ -413,7 +413,7 @@ function Camera.GetPixelsToUnits( camera )
         return camera:GetOrthographicScale() / smallestSideSize
     else -- perspective
         -- UnitsToPixels (px) = BaseDist * SSS (px) = 0.5 * SSS / tan( FOV / 2 )
-        return math.tan( camera:GetFOV() / 2 ) / ( 0.5 * smallestSideSize )
+        return math.tan( math.rad( camera:GetFOV() / 2 ) ) / ( 0.5 * smallestSideSize )
     end
 end
 
@@ -433,7 +433,7 @@ end
 -- @return (number) The camera's base distance.
 function Camera.GetBaseDistance( camera )
     if camera:GetProjectionMode() == Camera.ProjectionMode.Perspective then
-        return 0.5 / math.tan( camera:GetFOV() / 2 )
+        return 0.5 / math.tan( math.rad( camera:GetFOV() / 2 ) )
     end
 end
 
