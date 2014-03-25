@@ -473,19 +473,17 @@ end
 -- @param position (Vector3) The position.
 -- @return (Vector2) The screen position
 function Camera.WorldToScreenPoint( camera, position )
-    local camPosition = camera.gameObject.transform:GetPosition()
+    local relPosition = position - camera.gameObject.transform:GetPosition()
     local unitsToPixels = camera:GetUnitsToPixels()
-    local relPosition = position - camPosition
     local screenSize = CS.Screen.GetSize()
     local screenPosition = Vector2.New(0)
-
     if camera:GetProjectionMode() == Camera.ProjectionMode.Orthographic then
-        screenPosition.x = relPosition.x * unitsToPixels + screenSize.x / 2
-        screenPosition.y = - relPosition.y * unitsToPixels + screenSize.y / 2
+        screenPosition.x =  relPosition.x * unitsToPixels + screenSize.x / 2
+        screenPosition.y = -relPosition.y * unitsToPixels + screenSize.y / 2
     else -- perspective
-        local distance = relPosition:GetLength()
-        screenPosition.x = relPosition.x / distance * unitsToPixels + screenSize.x / 2
-        screenPosition.y = - relPosition.y / distance * unitsToPixels + screenSize.y / 2
+        distance = math.abs( relPosition.z )
+        screenPosition.x =  relPosition.x / distance * unitsToPixels + screenSize.x / 2
+        screenPosition.y = -relPosition.y / distance * unitsToPixels + screenSize.y / 2
     end
     return screenPosition
 end
