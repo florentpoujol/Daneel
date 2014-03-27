@@ -681,7 +681,12 @@ end
 -- @params x (number, Vector3 or Vector2) [optional] The vector's x component.
 -- @params y (number or Vector2) [optional] The vector's y component.
 -- @params z (number) [optional] The vector's z component.
-function Vector3.New( x, y, z )
+function Vector3.New( x, y, z, z2 )
+    if x == Vector3 then -- when called like Vector3:New( x, y, z )
+        x = y
+        y = z
+        z = z2
+    end
     if type(x) == "table" then -- x is vector2 or vector3
         if x.z == nil then -- vector2
             y = x.y
@@ -699,9 +704,6 @@ function Vector3.New( x, y, z )
     y = y or 0
     z = z or 0
     return setmetatable( { x=x, y=y, z=z }, Vector3 )
-end
-function Vector3:New( x, y, z )
-    return Vector3.New( x, y, z )
 end
 
 -- Returns the length of the provided vector
@@ -733,7 +735,6 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["Vector2.__pow"] = { { "vector", v2 }, { "exp", "number" } },
     ["Vector2.__add"] = { { "a", v2 }, { "b", v2 } },   
     
-    ["Vector3.New"] = { { "x", { n, v3, v2 }, isOptional = true }, { "z", { n, v2 }, isOptional = true }, { "z", n, isOptional = true } },   
     ["Vector3.GetLength"] = { { "vector", v3 } },   
     ["Vector3.GetSqrLength"] = { { "vector", v3 } },   
 } )
