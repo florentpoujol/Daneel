@@ -10,7 +10,8 @@ local b = "boolean"
 local n = "number"
 local t = "table"
 local go = "GameObject"
-local v = "Vector3"
+local v2 = "Vector2"
+local v3 = "Vector3"
 local _p = { "params", t }
 
 
@@ -481,7 +482,7 @@ function Camera.WorldToScreenPoint( camera, position )
         screenPosition.x =  relPosition.x * unitsToPixels + screenSize.x / 2
         screenPosition.y = -relPosition.y * unitsToPixels + screenSize.y / 2
     else -- perspective
-        distance = math.abs( relPosition.z )
+        local distance = math.abs( relPosition.z )
         screenPosition.x =  relPosition.x / distance * unitsToPixels + screenSize.x / 2
         screenPosition.y = -relPosition.y / distance * unitsToPixels + screenSize.y / 2
     end
@@ -503,8 +504,8 @@ Camera.SetFov = Camera.SetFOV
 
 
 table.mergein( Daneel.functionsDebugInfo, {
-    ["Transform.SetLocalScale"] = { { "transform", "Transform" }, { "number", { n, v } } },
-    ["Transform.SetScale"] =      { { "transform", "Transform" }, { "number", { n, v } } },
+    ["Transform.SetLocalScale"] = { { "transform", "Transform" }, { "number", { n, v3 } } },
+    ["Transform.SetScale"] =      { { "transform", "Transform" }, { "number", { n, v3 } } },
     ["Transform.GetScale"] =      { { "transform", "Transform" } },
 
     ["ModelRenderer.SetModel"] =     { { "modelRenderer", "ModelRenderer" }, { "modelNameOrAsset", { s, "Model" }, isOptional = true } },
@@ -676,6 +677,33 @@ end
 ----------------------------------------------------------------------------------
 -- Vector3
 
+-- Returns a new Vector3.
+-- @params x (number, Vector3 or Vector2) [optional] The vector's x component.
+-- @params y (number or Vector2) [optional] The vector's y component.
+-- @params z (number) [optional] The vector's z component.
+function Vector3.New( x, y, z )
+    if type(x) == "table" then -- x is vector2 or vector3
+        if x.z == nil then -- vector2
+            y = x.y
+            x = x.x
+        else -- vector3
+            y = x.y
+            z = x.z
+            x = x.x
+        end
+    elseif type(y) == "table" then -- x is a number, y is a vector2
+        z = y.y
+        y = y.x
+    end
+    x = x or 0
+    y = y or 0
+    z = z or 0
+    return setmetatable( { x=x, y=y, z=z }, Vector3 )
+end
+function Vector3:New( x, y, z )
+    return Vector3.New( x, y, z )
+end
+
 -- Returns the length of the provided vector
 -- @param vector (Vector3) The vector.
 -- @return (number) The length.
@@ -692,18 +720,22 @@ end
 
 
 table.mergein( Daneel.functionsDebugInfo, {
-    ["Vector2.New"] = { { "x", { s, n, "Vector2" } }, { "y", { s, n }, isOptional = true } },
-    ["Vector2.GetLength"] = { { "vector", "Vector2" } },
-    ["Vector2.GetSqrLength"] = { { "vector", "Vector2" } },
-    ["Vector2.Normalized"] = { { "vector", "Vector2" } },
-    ["Vector2.Normalize"] = { { "vector", "Vector2" } },
-    ["Vector2.__add"] = { { "a", "Vector2" }, { "b", "Vector2" } },
-    ["Vector2.__sub"] = { { "a", "Vector2" }, { "b", "Vector2" } },
-    ["Vector2.__mul"] = { { "a", { n, "Vector2" } }, { "b", { n, "Vector2" } } },
-    ["Vector2.__div"] = { { "a", { n, "Vector2" } }, { "b", { n, "Vector2" } } },
-    ["Vector2.__unm"] = { { "vector", "Vector2" } },
-    ["Vector2.__pow"] = { { "vector", "Vector2" }, { "exp", "number" } },
-    ["Vector2.__add"] = { { "a", "Vector2" }, { "b", "Vector2" } },   
+    ["Vector2.New"] = { { "x", { s, n, v2 } }, { "y", { s, n }, isOptional = true } },
+    ["Vector2.GetLength"] = { { "vector", v2 } },
+    ["Vector2.GetSqrLength"] = { { "vector", v2 } },
+    ["Vector2.Normalized"] = { { "vector", v2 } },
+    ["Vector2.Normalize"] = { { "vector", v2 } },
+    ["Vector2.__add"] = { { "a", v2 }, { "b", v2 } },
+    ["Vector2.__sub"] = { { "a", v2 }, { "b", v2 } },
+    ["Vector2.__mul"] = { { "a", { n, v2 } }, { "b", { n, v2 } } },
+    ["Vector2.__div"] = { { "a", { n, v2 } }, { "b", { n, v2 } } },
+    ["Vector2.__unm"] = { { "vector", v2 } },
+    ["Vector2.__pow"] = { { "vector", v2 }, { "exp", "number" } },
+    ["Vector2.__add"] = { { "a", v2 }, { "b", v2 } },   
+    
+    ["Vector3.New"] = { { "x", { n, v3, v2 }, isOptional = true }, { "z", { n, v2 }, isOptional = true }, { "z", n, isOptional = true } },   
+    ["Vector3.GetLength"] = { { "vector", v3 } },   
+    ["Vector3.GetSqrLength"] = { { "vector", v3 } },   
 } )
 
 ----------------------------------------------------------------------------------
