@@ -1242,6 +1242,23 @@ function GUI.TextArea.GetText( textArea )
     return textArea.Text
 end
 
+--- Add a line to the text area's text.
+-- @param textArea (TextArea) The textArea component.
+-- @param line (string) The line to add.
+-- @param prepend (boolean) [default=false] If true, prepend the line to the text. Otherwise, append the line to the text.
+function GUI.TextArea.AddLine( textArea, line, prepend )
+    local text = textArea.Text
+    if prepend == true then
+        text = line..textArea.NewLine..text
+    else
+        if not string.endswith( text, textArea.NewLine ) then
+            line = textArea.NewLine..line
+        end
+        text = text..line
+    end
+    textArea:SetText( text )
+end
+
 --- Set the component's area width (maximum line length).
 -- Must be strictly positive to have an effect.
 -- Set as a negative value, 0 or nil to remove the limitation.
@@ -1416,6 +1433,7 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["GUI.TextArea.Set"] =                  { _ta, _p },
     ["GUI.TextArea.SetText"] =              { _ta, { "text", s } },
     ["GUI.TextArea.GetText"] =              { _ta },
+    ["GUI.TextArea.AddLine"] =              { _ta, { "line", s }, { "prepend", defaultValue = false } },
     ["GUI.TextArea.SetAreaWidth"] =         { _ta, { "areaWidth", { s, n }, defaultValue = 0 } },
     ["GUI.TextArea.GetAreaWidth"] =         { _ta },
     ["GUI.TextArea.SetWordWrap"] =          { _ta, { "wordWrap", defaultValue = false } },
