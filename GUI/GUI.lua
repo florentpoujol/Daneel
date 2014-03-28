@@ -1248,7 +1248,7 @@ end
 -- @param textArea (TextArea) The textArea component.
 -- @param areaWidth (number or string) The area width in scene units or in pixels as a string suffixed with "px".
 function GUI.TextArea.SetAreaWidth( textArea, areaWidth )
-    areaWidth = math.clamp( GUI.ToSceneUnit( areaWidth ), 0, 9999 )   
+    areaWidth = math.clamp( GUI.ToSceneUnit( areaWidth ), 0, 999 )   
     if textArea.AreaWidth ~= areaWidth then
         textArea.AreaWidth = areaWidth
         if #textArea.lineRenderers > 0 then
@@ -1416,7 +1416,7 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["GUI.TextArea.Set"] =                  { _ta, _p },
     ["GUI.TextArea.SetText"] =              { _ta, { "text", s } },
     ["GUI.TextArea.GetText"] =              { _ta },
-    ["GUI.TextArea.SetAreaWidth"] =         { _ta, { "areaWidth", { s, n } } },
+    ["GUI.TextArea.SetAreaWidth"] =         { _ta, { "areaWidth", { s, n }, defaultValue = 0 } },
     ["GUI.TextArea.GetAreaWidth"] =         { _ta },
     ["GUI.TextArea.SetWordWrap"] =          { _ta, { "wordWrap", defaultValue = false } },
     ["GUI.TextArea.GetWordWrap"] =          { _ta },
