@@ -701,8 +701,8 @@ function Vector3.New( x, y, z, z2 )
         y = y.x
     end
     x = x or 0
-    y = y or 0
-    z = z or 0
+    y = y or x
+    z = z or y
     return setmetatable( { x=x, y=y, z=z }, Vector3 )
 end
 
