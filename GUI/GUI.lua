@@ -1,10 +1,20 @@
 -- GUI.lua
 -- Module adding the GUI components and Vector2 object
 --
--- Last modified for v1.3.0
+-- Last modified for v1.5.0
 -- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 
 GUI = { pixelsToUnits = 0 }
+
+-- debug info
+local s = "string"
+local b = "boolean"
+local n = "number"
+local t = "table"
+local go = "GameObject"
+local v2 = "Vector2"
+local v3 = "Vector3"
+local _p = { "params", t }
 
 --- Convert the provided value (a length) in a number expressed in scene unit.
 -- The provided value may be suffixed with "px" (pixels) or "u" (scene units).
@@ -1087,27 +1097,18 @@ GUI.TextArea.__index = GUI.TextArea
 -- @param params (table) A table of parameters.
 -- @return (TextArea) The new component.
 function GUI.TextArea.New( gameObject, params )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.New", gameObject, params )
-    local errorHead = "GUI.TextArea.New( gameObject, params ) : "
-    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-    params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
-
     local textArea = {}
     textArea.gameObject = gameObject
+    gameObject.textArea = textArea
     textArea.id = Daneel.Utilities.GetId()
     textArea.lineRenderers = {}
     setmetatable( textArea, GUI.TextArea )
-
     textArea.textRuler = gameObject.textRenderer -- used to store the TextRenderer properties and mesure the lines length in SetText()
     if textArea.textRuler == nil then
         textArea.textRuler = gameObject:CreateComponent( "TextRenderer" ) 
     end
     textArea.textRuler:SetText( "" )
-    
     textArea:Set( table.merge( GUI.Config.textArea, params ) )
-
-    gameObject.textArea = textArea
-    Daneel.Debug.StackTrace.EndFunction()
     return textArea
 end
 
@@ -1116,40 +1117,25 @@ end
 -- @param textArea (TextArea) The textArea.
 -- @param params (table) A table of parameters to set the component with.
 function GUI.TextArea.Set( textArea, params )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.Set", textArea, params )
-    local errorHead = "GUI.TextArea.Set( textArea, params ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
-    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
-
     local lineRenderers = textArea.lineRenderers
     textArea.lineRenderers = {} -- prevent the every setters to update the text when they are called
     -- this is done once at the end
-
     local text = params.text
     params.text = nil
-
     for key, value in pairs( params ) do
         textArea[ key ] = value
     end
-    
     textArea.lineRenderers = lineRenderers
     if text == nil then
         text = textArea.Text
     end
     textArea:SetText( text )
-
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Set the component's text.
 -- @param textArea (TextArea) The textArea component.
 -- @param text (string) The text to display.
 function GUI.TextArea.SetText( textArea, text )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.SetText", textArea, text )
-    local errorHead = "GUI.TextArea.SetText( textArea, text ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
-    Daneel.Debug.CheckArgType( text, "text", "string", errorHead )
-
     textArea.Text = text
 
     local lines = { text }
@@ -1247,16 +1233,12 @@ function GUI.TextArea.SetText( textArea, text )
     end
 
     Daneel.Event.Fire( textArea, "OnUpdate", textArea )
-
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Get the component's text.
 -- @param textArea (TextArea) The textArea component.
 -- @return (string) The component's text.
 function GUI.TextArea.GetText( textArea )
-    local errorHead = "GUI.TextArea.GetText( textArea ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     return textArea.Text
 end
 
@@ -1266,55 +1248,39 @@ end
 -- @param textArea (TextArea) The textArea component.
 -- @param areaWidth (number or string) The area width in scene units or in pixels as a string suffixed with "px".
 function GUI.TextArea.SetAreaWidth( textArea, areaWidth )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.SetAreaWidth", textArea, areaWidth )
-    local errorHead = "GUI.TextArea.SetAreaWidth( textArea, areaWidth ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
-    areaWidth = Daneel.Debug.CheckOptionalArgType( areaWidth, "areaWidth", {"string", "number"}, errorHead, 0 )
-    areaWidth = math.clamp( GUI.ToSceneUnit( areaWidth ), 0, 9999 )
-    
+    areaWidth = math.clamp( GUI.ToSceneUnit( areaWidth ), 0, 9999 )   
     if textArea.AreaWidth ~= areaWidth then
         textArea.AreaWidth = areaWidth
         if #textArea.lineRenderers > 0 then
             textArea:SetText( textArea.Text )
         end
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Get the component's area width.
 -- @param textArea (TextArea) The textArea component.
 -- @return (number) The area width in scene units.
 function GUI.TextArea.GetAreaWidth( textArea )
-    local errorHead = "GUI.TextArea.GetAreaWidth( textArea ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     return textArea.AreaWidth
 end
 
 --- Set the component's wordWrap property.
 -- Define what happens when the lines are longer then the area width.
 -- @param textArea (TextArea) The textArea component.
--- @param wordWrap (boolean) Cut the line when false, or creates new additional lines with the remaining text when true.
+-- @param wordWrap (boolean) [default=false] Cut the line when false, or creates new additional lines with the remaining text when true.
 function GUI.TextArea.SetWordWrap( textArea, wordWrap )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.SetWordWrap", textArea, wordWrap )
-    local errorHead = "GUI.TextArea.SetWordWrap( textArea, wordWrap ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
-    Daneel.Debug.CheckArgType( wordWrap, "wordWrap", "boolean", errorHead )
-
     if textArea.WordWrap ~= wordWrap then
         textArea.WordWrap = wordWrap
         if #textArea.lineRenderers > 0 then
             textArea:SetText( textArea.Text )
         end
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Get the component's wordWrap property.
 -- @param textArea (TextArea) The textArea component.
 -- @return (boolean) True or false.
 function GUI.TextArea.GetWordWrap( textArea )
-    local errorHead = "GUI.TextArea.GetWordWrap( textArea ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     return textArea.WordWrap
 end
 
@@ -1322,26 +1288,18 @@ end
 -- @param textArea (TextArea) The textArea component.
 -- @param newLine (string) The newLine string (one or several character long). Set "\n" to split multiline strings.
 function GUI.TextArea.SetNewLine( textArea, newLine )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.SetNewLine", textArea, newLine )
-    local errorHead = "GUI.TextArea.SetNewLine( textArea, newLine ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
-    Daneel.Debug.CheckArgType( newLine, "newLine", "string", errorHead )
-
     if textArea.NewLine ~= newLine then
         textArea.NewLine = newLine
         if #textArea.lineRenderers > 0 then
             textArea:SetText( textArea.Text )
         end
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Get the component's newLine string.
 -- @param textArea (TextArea) The textArea component.
 -- @return (string) The newLine string.
 function GUI.TextArea.GetNewLine( textArea )
-    local errorHead = "GUI.TextArea.GetNewLine( textArea ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     return textArea.NewLine
 end
 
@@ -1349,11 +1307,6 @@ end
 -- @param textArea (TextArea) The textArea component.
 -- @param lineHeight (number or string) The line height in scene units or in pixels as a string suffixed with "px".
 function GUI.TextArea.SetLineHeight( textArea, lineHeight )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.SetLineHeight", textArea, lineHeight )
-    local errorHead = "GUI.TextArea.SetLineHeight( textArea, lineHeight ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
-    Daneel.Debug.CheckArgType( lineHeight, "lineHeight", {"string", "number"}, errorHead )
-
     local lineHeight = GUI.ToSceneUnit( lineHeight )
     if textArea.LineHeight ~= lineHeight then
         textArea.LineHeight = lineHeight
@@ -1361,15 +1314,12 @@ function GUI.TextArea.SetLineHeight( textArea, lineHeight )
             textArea:SetText( textArea.Text )
         end
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Get the component's line height.
 -- @param textArea (TextArea) The textArea component.
 -- @return (number) The line height in scene units.
 function GUI.TextArea.GetLineHeight( textArea )
-    local errorHead = "GUI.TextArea.GetLineHeight( textArea ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     return textArea.LineHeight
 end
 
@@ -1377,28 +1327,21 @@ end
 -- @param textArea (TextArea) The textArea component.
 -- @param verticalAlignment (string) "top", "middle" or "bottom". Case-insensitive.
 function GUI.TextArea.SetVerticalAlignment( textArea, verticalAlignment )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.SetVerticalAlignment", textArea, verticalAlignment )
     local errorHead = "GUI.TextArea.SetVerticalAlignment( textArea, verticalAlignment ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
-    Daneel.Debug.CheckArgType( verticalAlignment, "verticalAlignment", "string", errorHead )
     verticalAlignment = Daneel.Debug.CheckArgValue( verticalAlignment, "verticalAlignment", {"top", "middle", "bottom"}, errorHead, GUI.Config.textArea.verticalAlignment )
     verticalAlignment = string.trim( verticalAlignment:lower() )
-
     if textArea.VerticalAlignment ~= verticalAlignment then 
         textArea.VerticalAlignment = verticalAlignment
         if #textArea.lineRenderers > 0 then
             textArea:SetText( textArea.Text )
         end
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Get the component's vertical alignment property.
 -- @param textArea (TextArea) The textArea component.
 -- @return (string) The vertical alignment.
 function GUI.TextArea.GetVerticalAlignment( textArea )
-    local errorHead = "GUI.TextArea.GetVerticalAlignment( textArea ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     return textArea.VerticalAlignment
 end
 
@@ -1406,14 +1349,8 @@ end
 -- @param textArea (TextArea) The textArea component.
 -- @param font (Font or string) The font asset or fully-qualified path.
 function GUI.TextArea.SetFont( textArea, font )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.SetFont", textArea, font )
-    local errorHead = "GUI.TextArea.SetFont( textArea, font ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
-    Daneel.Debug.CheckArgType( font, "font", {"string", "Font"}, errorHead )
-
     textArea.textRuler:SetFont( font )
     font = textArea.textRuler:GetFont()
-
     if textArea.Font ~= font then
         textArea.Font = font
         if #textArea.lineRenderers > 0 then
@@ -1423,15 +1360,12 @@ function GUI.TextArea.SetFont( textArea, font )
             textArea:SetText( textArea.Text ) -- reset the text because the size of the text may have changed
         end
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Get the component's font used to render the text.
 -- @param textArea (TextArea) The textArea component.
 -- @return (Font) The font.
 function GUI.TextArea.GetFont( textArea )
-    local errorHead = "GUI.TextArea.GetFont( textArea ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     return textArea.Font
 end
 
@@ -1440,31 +1374,20 @@ end
 -- @param textArea (TextArea) The textArea component.
 -- @param alignment (TextRenderer.Alignment or string) One of the values in the 'TextRenderer.Alignment' enum (Left, Center or Right) or the same values as case-insensitive string ("left", "center" or "right").
 function GUI.TextArea.SetAlignment( textArea, alignment )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.SetAlignment", textArea, alignment )
-    local errorHead = "GUI.TextArea.SetAlignment( textArea, alignment ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
-    Daneel.Debug.CheckArgType( alignment, "alignment", {"string", "userdata", "number"}, errorHead ) -- "number" is allowed because enums are of type number in the webplayer
-
     textArea.textRuler:SetAlignment( alignment )
     alignment = textArea.textRuler:GetAlignment()
-
     if textArea.Alignment ~= alignment then
         textArea.Alignment = alignment
-        if #textArea.lineRenderers > 0 then
-            for i, textRenderer in ipairs( textArea.lineRenderers ) do
-                textRenderer:SetAlignment( textArea.Alignment )
-            end
+        for i, textRenderer in ipairs( textArea.lineRenderers ) do
+            textRenderer:SetAlignment( textArea.Alignment )
         end
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Get the component's horizontal alignment.
 -- @param textArea (TextArea) The textArea component.
 -- @return (TextRenderer.Alignment or number) The alignment (of type number in the webplayer).
 function GUI.TextArea.GetAlignment( textArea )
-    local errorHead = "GUI.TextArea.GetAlignment( textArea ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     return textArea.Alignment
 end
 
@@ -1472,30 +1395,44 @@ end
 -- @param textArea (TextArea) The textArea component.
 -- @param opacity (number) The opacity between 0.0 and 1.0.
 function GUI.TextArea.SetOpacity( textArea, opacity )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.TextArea.SetOpacity", textArea, opacity )
-    local errorHead = "GUI.TextArea.SetOpacity( textArea, opacity ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
-    Daneel.Debug.CheckArgType( opacity, "opacity", "number", errorHead )
-
     if textArea.Opacity ~= opacity then
         textArea.Opacity = opacity
-        if #textArea.lineRenderers > 0 then
-            for i, textRenderer in ipairs( textArea.lineRenderers ) do
-                textRenderer:SetOpacity( opacity )
-            end
+        for i, textRenderer in ipairs( textArea.lineRenderers ) do
+            textRenderer:SetOpacity( opacity )
         end
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Get the component's opacity.
 -- @param textArea (TextArea) The textArea component.
 -- @return (number) The opacity between 0.0 and 1.0.
 function GUI.TextArea.GetOpacity( textArea )
-    local errorHead = "GUI.TextArea.GetOpacity( textArea ) : "
-    Daneel.Debug.CheckArgType( textArea, "textArea", "TextArea", errorHead )
     return textArea.Opacity
 end
+
+local _ta = { "textArea", "TextArea" }
+table.mergein( Daneel.functionsDebugInfo, {
+    ["GUI.TextArea.New"] =                  { { "gameObject", go }, { "params", t, isOptional = true } },
+    ["GUI.TextArea.Set"] =                  { _ta, _p },
+    ["GUI.TextArea.SetText"] =              { _ta, { "text", s } },
+    ["GUI.TextArea.GetText"] =              { _ta },
+    ["GUI.TextArea.SetAreaWidth"] =         { _ta, { "areaWidth", { s, n } } },
+    ["GUI.TextArea.GetAreaWidth"] =         { _ta },
+    ["GUI.TextArea.SetWordWrap"] =          { _ta, { "wordWrap", defaultValue = false } },
+    ["GUI.TextArea.GetWordWrap"] =          { _ta },
+    ["GUI.TextArea.SetNewLine"] =           { _ta, { "newLine", s } },
+    ["GUI.TextArea.GetNewLine"] =           { _ta },
+    ["GUI.TextArea.SetLineHeight"] =        { _ta, { "lineHeight", { s, n } } },
+    ["GUI.TextArea.GetLineHeight"] =        { _ta },
+    ["GUI.TextArea.SetVerticalAlignment"] = { _ta, { "verticalAlignment", s } },
+    ["GUI.TextArea.GetVerticalAlignment"] = { _ta },
+    ["GUI.TextArea.SetFont"] =              { _ta, { "font", { s, "Font" } } },
+    ["GUI.TextArea.GetFont"] =              { _ta },
+    ["GUI.TextArea.SetAlignment"] =         { _ta, { "alignment", { s, "unserdata", n } } },
+    ["GUI.TextArea.GetAlignment"] =         { _ta },
+    ["GUI.TextArea.SetOpacity"] =           { _ta, { "opacity", n } },
+    ["GUI.TextArea.GetOpacity"] =           { _ta },
+} )
 
 
 ----------------------------------------------------------------------------------
