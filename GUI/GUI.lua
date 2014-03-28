@@ -1183,6 +1183,10 @@ function GUI.TextArea.SetText( textArea, text )
         end -- end loop on lines
     end
 
+    if type( textArea.linesFilter ) == "function" then
+        lines = textArea.linesFilter( textArea, lines ) or lines
+    end
+    
     local linesCount = #lines
     local lineRenderers = textArea.lineRenderers
     local lineRenderersCount = #lineRenderers
@@ -1263,7 +1267,7 @@ end
 -- Must be strictly positive to have an effect.
 -- Set as a negative value, 0 or nil to remove the limitation.
 -- @param textArea (TextArea) The textArea component.
--- @param areaWidth (number or string) The area width in scene units or in pixels as a string suffixed with "px".
+-- @param areaWidth (number or string) [optional] The area width in scene units or in pixels as a string suffixed with "px".
 function GUI.TextArea.SetAreaWidth( textArea, areaWidth )
     areaWidth = math.clamp( GUI.ToSceneUnit( areaWidth ), 0, 999 )   
     if textArea.AreaWidth ~= areaWidth then
