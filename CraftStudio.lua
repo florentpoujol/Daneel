@@ -1665,7 +1665,7 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["GameObject.Get"] =         { { "name", { s, "GameObject" } }, { "errorIfGameObjectNotFound", defaultValue = false } },
     ["GameObject.Destroy"] =     { _go },
     
-    ["GameObject.SetParent"] =   { _go, { "parentNameOrInstance", { s, "GameObject" } }, { "keepLocalTransform", defaultValue = false } },
+    ["GameObject.SetParent"] =   { _go, { "parentNameOrInstance", { s, "GameObject" }, isOptional = true }, { "keepLocalTransform", defaultValue = false } },
     ["GameObject.GetChild"] =    { _go, { "name", s, isOptional = true }, { "recursive", defaultValue = false } },
     ["GameObject.GetChildren"] = { _go, { "recursive", defaultValue = false }, { "includeSelf", defaultValue = false } },
     
