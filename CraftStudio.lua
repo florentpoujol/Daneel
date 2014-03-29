@@ -235,6 +235,34 @@ function Transform.GetScale(transform)
     return scale
 end
 
+--- Transform a global position to a position local to this transform.
+-- @param transform (Transform) The transform component.
+-- @param position (Vector3) The global position.
+-- @return (Vector3) The local position corresponding to the provided global position.
+function Transform.WorldToLocal( transform, position )
+    local go = transform.worldToLocalGO
+    if go == nil then
+        go = CS.CreateGameObject( "WorldToLocal", transform.gameObject )
+        transform.worldToLocalGO = go
+    end
+    go.transform:SetPosition( position )
+    return go.transform:GetLocalPosition()
+end
+
+--- Transform a position local to this transform to a global position.
+-- @param transform (Transform) The transform component.
+-- @param position (Vector3) The local position.
+-- @return (Vector3) The global position corresponding to the provided local position.
+function Transform.LocalToWorld( transform, position )
+    local go = transform.worldToLocalGO
+    if go == nil then
+        go = CS.CreateGameObject( "WorldToLocal", transform.gameObject )
+        transform.worldToLocalGO = go
+    end
+    go.transform:SetLocalPosition( position )
+    return go.transform:GetPosition()
+end
+
 
 ----------------------------------------------------------------------------------
 -- ModelRenderer
@@ -507,6 +535,8 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["Transform.SetLocalScale"] = { { "transform", "Transform" }, { "number", { n, v3 } } },
     ["Transform.SetScale"] =      { { "transform", "Transform" }, { "number", { n, v3 } } },
     ["Transform.GetScale"] =      { { "transform", "Transform" } },
+    ["Transform.WorldToLocal"] =  { { "transform", "Transform" }, { "position", v3 } },
+    ["Transform.LocalToWorld"] =  { { "transform", "Transform" }, { "position", v3 } },
 
     ["ModelRenderer.SetModel"] =     { { "modelRenderer", "ModelRenderer" }, { "modelNameOrAsset", { s, "Model" }, isOptional = true } },
     ["ModelRenderer.SetAnimation"] = { { "modelRenderer", "ModelRenderer" }, { "animationNameOrAsset", { s, "ModelAnimation" }, isOptional = true } },
