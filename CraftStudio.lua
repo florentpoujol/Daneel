@@ -467,9 +467,9 @@ function Camera.GetBaseDistance( camera )
 end
 
 --- Tell whether the provided position is inside the camera's frustum.
--- @parap camera (Camera) The camera component.
+-- @param camera (Camera) The camera component.
 -- @param position (Vector3) The position.
--- @return (boolean) True if the position is insode the camera's frustum.
+-- @return (boolean) True if the position is inside the camera's frustum.
 function Camera.IsPositionInFrustum( camera, position )
     local relPosition = position - camera.gameObject.transform:GetPosition()
     if relPosition.z < 0 then
@@ -498,23 +498,24 @@ function Camera.IsPositionInFrustum( camera, position )
 end
 
 --- Translate a position in the scene to an on-screen position.
--- @parap camera (Camera) The camera component.
+-- The Z component of the returned Vector3 represent the distance from the camera to the position's plane.
+-- It's inferior to zero when the position is in front of the camera.
+-- @param camera (Camera) The camera component.
 -- @param position (Vector3) The position.
--- @return (Vector2) The screen position
+-- @return (Vector3) A Vector3 where X and Y are the screen position and Z the distance to the position's plane.
 function Camera.WorldToScreenPoint( camera, position )
-    local relPosition = position - camera.gameObject.transform:GetPosition()
+    local localPosition = camera.gameObject.transform:WorldToLocal( position )
     local unitsToPixels = camera:GetUnitsToPixels()
     local screenSize = CS.Screen.GetSize()
-    local screenPosition = Vector2.New(0)
     if camera:GetProjectionMode() == Camera.ProjectionMode.Orthographic then
-        screenPosition.x =  relPosition.x * unitsToPixels + screenSize.x / 2
-        screenPosition.y = -relPosition.y * unitsToPixels + screenSize.y / 2
+        localPosition.x =  localPosition.x * unitsToPixels + screenSize.x / 2
+        localPosition.y = -localPosition.y * unitsToPixels + screenSize.y / 2
     else -- perspective
-        local distance = math.abs( relPosition.z )
-        screenPosition.x =  relPosition.x / distance * unitsToPixels + screenSize.x / 2
-        screenPosition.y = -relPosition.y / distance * unitsToPixels + screenSize.y / 2
+        local distance = math.abs( localPosition.z )
+        localPosition.x =  localPosition.x / distance * unitsToPixels + screenSize.x / 2
+        localPosition.y = -localPosition.y / distance * unitsToPixels + screenSize.y / 2
     end
-    return screenPosition
+    return localPosition 
 end
 
 Camera.oGetFOV = Camera.GetFOV
@@ -559,8 +560,8 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["Camera.GetPixelsToUnits"] =    { { "camera", "Camera" } },
     ["Camera.GetUnitsToPixels"] =    { { "camera", "Camera" } },
     ["Camera.GetBaseDistance"] =     { { "camera", "Camera" } },
-    ["Camera.IsPositionInFrustum"] = { { "camera", "Camera" }, { "position", "Vector3" } },
-    ["Camera.WorldToScreenPoint"] =  { { "camera", "Camera" }, { "position", "Vector3" } },
+    ["Camera.IsPositionInFrustum"] = { { "camera", "Camera" }, { "position", v3 } },
+    ["Camera.WorldToScreenPoint"] =  { { "camera", "Camera" }, { "position", v3 } },
     ["Camera.GetFOV"] =  { { "camera", "Camera" } },
 } )
 
