@@ -471,8 +471,8 @@ end
 -- @param position (Vector3) The position.
 -- @return (boolean) True if the position is inside the camera's frustum.
 function Camera.IsPositionInFrustum( camera, position )
-    local relPosition = position - camera.gameObject.transform:GetPosition()
-    if relPosition.z < 0 then
+    local localPosition = camera.gameObject.transform:WorldToLocal( position )
+    if localPosition.z < 0 then
         local screenSize = CS.Screen.GetSize()
         local range = Vector2.New(0)
 
@@ -483,13 +483,13 @@ function Camera.IsPositionInFrustum( camera, position )
             if screenSize.x < screenSize.y then
                 smallestSideSize = screenSize.x
             end
-            range = -relPosition.z / camera:GetBaseDistance() * screenSize / smallestSideSize -- frustrum size
+            range = -localPosition.z / camera:GetBaseDistance() * screenSize / smallestSideSize -- frustrum size
             range = range / 2
         end
 
         if
-            relPosition.x >= -range.x and relPosition.x <= range.x and
-            relPosition.y >= - range.y and relPosition.y <= range.y
+            localPosition.x >= -range.x and localPosition.x <= range.x and
+            localPosition.y >= - range.y and localPosition.y <= range.y
         then
             return true
         end
