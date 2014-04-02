@@ -1735,6 +1735,12 @@ function NetworkSync.SendMessageToPlayers( networkSync, msgName, data, playerIds
     elseif type( playerIds ) == "number" then
         playerIds = { playerIds }
     end
+    if deliveryMethod == nil then
+        deliveryMethod = CS.Network.DeliveryMethod.ReliableOrdered
+    end
+    if deliveryChannel == nil then
+        deliveryChannel = 0
+    end
     NetworkSync.oSendMessageToPlayers( networkSync, msgName, data, playerIds, deliveryMethod, deliveryChannel )
 end
 
