@@ -1049,7 +1049,7 @@ Daneel.Time = {
 
 Daneel.Storage = {}
 
--- Store locally on the computer the provided data under the provided name.
+--- Store locally on the computer the provided data under the provided name.
 -- @param name (string) The name of the data.
 -- @param data (mixed) The data to store. May be nil.
 -- @param callback (function) [optional] The function called when the save has completed. The potential error (as a string) is passed to the callback first and only argument (nil if no error).
@@ -1076,7 +1076,7 @@ function Daneel.Storage.Save( name, data, callback )
     end )
 end
 
--- Load data stored locally on the computer under the provided name. The load operation may not be instantaneous.
+--- Load data stored locally on the computer under the provided name. The load operation may not be instantaneous.
 -- The function will return the queried value (or defaultValue) if it completes right away, otherwise it returns nil.
 -- @param name (string) The name of the data.
 -- @param defaultValue (mixed) [optional] The value that is returned if no data is found.
