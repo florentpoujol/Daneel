@@ -846,6 +846,7 @@ local EventNamesTestedForHotKeys = {} -- Event names are keys, value is true.
 -- @param functionOrObject (function or table) The function (not the function name) or the object.
 -- @param isPersistent (boolean) [default=false] Tell whether the listener automatically stops to listen to any event when a new scene is loaded. Always false when the listener is a game object or a component.
 function Daneel.Event.Listen( eventName, functionOrObject, isPersistent )
+    local errorHead = "Daneel.Event.Listen( eventName, functionOrObject[, isPersistent] ) : "
     local listenerType = type( functionOrObject )
     local eventNames = eventName
     if type( eventName ) == "string" then
