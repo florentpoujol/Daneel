@@ -466,19 +466,19 @@ end
 -- @param orderBy (string) [default="asc"] How the sort should be made. Can be "asc" or "desc". Asc means small values first.
 -- @return (table) The ordered table.
 function table.sortby( t, property, orderBy )
-    if orderBy == nil or not (orderBy == "asc" or orderBy == "desc" ) then
+    if orderBy == nil or not (orderBy == "asc" or orderBy == "desc") then
         orderBy = "asc"
     end
     
     local propertyValues = {}
-    local itemsByPropertyValue = {} -- propertyValue = _table (values in the t table)
-    for i, _table in ipairs(t) do
-        local propertyValue = _table[property]
-        table.insert(propertyValues, propertyValue)
+    local itemsByPropertyValue = {}
+    for i=1, #t do
+        local propertyValue = t[i][property]
         if itemsByPropertyValue[propertyValue] == nil then
+            table.insert(propertyValues, propertyValue)    
             itemsByPropertyValue[propertyValue] = {}
         end
-        table.insert(itemsByPropertyValue[propertyValue], _table)
+        table.insert(itemsByPropertyValue[propertyValue], t[i])
     end
     
     if orderBy == "desc" then
@@ -488,8 +488,8 @@ function table.sortby( t, property, orderBy )
     end
     
     t = {}
-    for i, propertyValue in ipairs(propertyValues) do
-        for j, _table in pairs(itemsByPropertyValue[propertyValue]) do
+    for i=1, #propertyValues do
+        for j, _table in pairs(itemsByPropertyValue[propertyValues[i]]) do
             table.insert(t, _table)
         end
     end
