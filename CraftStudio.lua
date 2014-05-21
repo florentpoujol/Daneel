@@ -500,6 +500,7 @@ end
 --- Translate a position in the scene to an on-screen position.
 -- The Z component of the returned Vector3 represent the distance from the camera to the position's plane.
 -- It's inferior to zero when the position is in front of the camera.
+-- Note that when the object is behind the camera, the returned screen coordinates are not the same as the ones given by Camera.Project().
 -- @param camera (Camera) The camera component.
 -- @param position (Vector3) The position.
 -- @return (Vector3) A Vector3 where X and Y are the screen position and Z the distance to the position's plane.
@@ -530,6 +531,16 @@ end
 -- Just to be able to dynamically call Get/SetFOV() with "camera.fov" instead of "camera.fOV"
 Camera.GetFov = Camera.GetFOV
 Camera.SetFov = Camera.SetFOV
+
+Camera.oProject = Camera.Project
+
+--- Projects a 3D space position to a 2D screen position.
+-- @param camera (Camera) The camera component.
+-- @param position (Vector3) The position.
+-- @return (Vector2) The projected screen coordinates.
+function Camera.Project( camera, position )
+    return setmetatable( Camera.oProject( camera, position ), Vector2 )
+end
 
 
 table.mergein( Daneel.functionsDebugInfo, {
