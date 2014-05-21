@@ -582,11 +582,12 @@ end
 -- @param y [optional] (number or string) The vector's y component. If nil, will be equal to x.
 -- @return (Vector2) The new instance.
 function Vector2.New(x, y)
-    if y == nil then y = x end
-    local vector = setmetatable({ x = x, y = y }, Vector2)
-    if type( x ) == "table" then -- vector2
+    local vector = setmetatable( { x = x, y = y }, Vector2 )
+    if type( x ) == "table" then
         vector.x = x.x
         vector.y = x.y
+    elseif y == nil then
+        vector.y = x
     end
     return vector
 end
@@ -753,7 +754,7 @@ end
 
 
 table.mergein( Daneel.functionsDebugInfo, {
-    ["Vector2.New"] = { { "x", { s, n, v2 } }, { "y", { s, n }, isOptional = true } },
+    ["Vector2.New"] = { { "x", { s, n, t, v2 } }, { "y", { s, n }, isOptional = true } },
     ["Vector2.GetLength"] = { { "vector", v2 } },
     ["Vector2.GetSqrLength"] = { { "vector", v2 } },
     ["Vector2.Normalized"] = { { "vector", v2 } },
