@@ -720,6 +720,16 @@ end
 ----------------------------------------------------------------------------------
 -- Vector3
 
+Vector3.tostringRoundValue = 3
+Vector3.__tostring = function( vector )
+    local roundValue = Vector3.tostringRoundValue
+    if roundValue ~= nil and roundValue >= 0 then
+        return "Vector3: { x="..math.round( vector.x, roundValue )..", y="..math.round( vector.y, roundValue )..", z="..math.round( vector.z, roundValue ).." }"
+    else
+        return "Vector3: { x="..vector.x..", y="..vector.y..", z="..vector.z.." }"
+    end
+end
+
 -- Returns a new Vector3.
 -- @params x (number, Vector3 or Vector2) [optional] The vector's x component.
 -- @params y (number or Vector2) [optional] The vector's y component.
