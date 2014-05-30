@@ -1,7 +1,7 @@
 -- Tween.lua
 -- Module adding the Tweener and Timer objects, and the easing equations.
 --
--- Last modified for v1.3.0
+-- Last modified for v1.5.0
 -- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 
 Tween = {}
@@ -59,9 +59,10 @@ end
 -- @param property (string) The name of the propertty to animate.
 -- @param endValue (number) The value the property should have at the end of the duration.
 -- @param duration (number) The time or frame it should take for the property to reach endValue.
--- @param params [optional] (table) A table of parameters.
+-- @param onCompleteCallback (function) [optional] The function to execute when the tweener has completed.
+-- @param params (table) [optional] A table of parameters.
 -- @return (Tweener) The Tweener.
-function Tween.Tweener.New(target, property, endValue, duration, params)
+function Tween.Tweener.New(target, property, endValue, duration, onCompleteCallback, params)
     Daneel.Debug.StackTrace.BeginFunction("Tween.Tweener.New", target, property, endValue, duration, params)
     local errorHead = "Tween.Tweener.New(target, property, endValue, duration[, params]) : "
     
@@ -70,20 +71,35 @@ function Tween.Tweener.New(target, property, endValue, duration, params)
     tweener.id = Daneel.Utilities.GetId()
 
     -- three constructors :
-    -- target, property, endValue, duration[, params]
-    -- startValue, endValue, duration[, params]
+    -- target, property, endValue, duration, [onCompleteCallback, params]
+    -- startValue, endValue, duration, [onCompleteCallback, params]
     -- params
     if type(target) == "number" then
         -- constructor n°2
-        errorHead = "Tween.Tweener.New(startValue, endValue, duration[, params]) : "
-        Daneel.Debug.CheckArgType(endValue, "duration", "number", errorHead)
-        Daneel.Debug.CheckOptionalArgType(duration, "params", "table", errorHead)
+        params = onCompleteCallback
+        onCompleteCallback = duration
+        duration = endValue
+        endValue = property
+        local startValue = target
+        
+        errorHead = "Tween.Tweener.New(startValue, endValue, duration[, onCompleteCallback, params]) : "
 
-        tweener.startValue = target
-        tweener.endValue = property
-        tweener.duration = endValue
-        if duration ~= nil then
-            tweener:Set(duration)
+        Daneel.Debug.CheckArgType(duration, "duration", "number", errorHead)
+        if type( onCompleteCallback ) == "table" then
+            params = onCompleteCallback
+            onCompleteCallback = nil
+        end
+        Daneel.Debug.CheckOptionalArgType(onCompleteCallback, "onCompleteCallback", "function", errorHead)
+        Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
+
+        tweener.startValue = startValue
+        tweener.endValue = endValue
+        tweener.duration = duration
+        if onCompleteCallback ~= nil then
+            tweener.OnComplete = onCompleteCallback
+        end
+        if params ~= nil then
+            tweener:Set(params)
         end
     elseif property == nil then
         -- constructor n°3
@@ -95,12 +111,20 @@ function Tween.Tweener.New(target, property, endValue, duration, params)
         Daneel.Debug.CheckArgType(target, "target", "table", errorHead)
         Daneel.Debug.CheckArgType(property, "property", "string", errorHead)
         Daneel.Debug.CheckArgType(duration, "duration", "number", errorHead)
+        if type( onCompleteCallback ) == "table" then
+            params = onCompleteCallback
+            onCompleteCallback = nil
+        end
+        Daneel.Debug.CheckOptionalArgType(onCompleteCallback, "onCompleteCallback", "function", errorHead)
         Daneel.Debug.CheckOptionalArgType(params, "params", "table", errorHead)
 
         tweener.target = target
         tweener.property = property
         tweener.endValue = endValue
         tweener.duration = duration
+        if onCompleteCallback ~= nil then
+            tweener.OnComplete = onCompleteCallback
+        end
         if params ~= nil then
             tweener:Set(params)
         end
