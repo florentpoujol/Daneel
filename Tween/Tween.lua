@@ -449,16 +449,6 @@ function Tween.DefaultConfig()
             mapRenderer = { "opacity" },
             textRenderer = { "opacity" },
             camera = { "fov" },
-            --[[
-            -- Draw
-            lineRenderer = { "length", "endPosition", "direction", "width" },
-            circleRenderer = { "radius", "segmentCount", "direction", "width" },
-            -- GUI
-            hud = { "position", "localPosition", "layer", "localLayer"},
-            progressBar = {"value", "height"},
-            slider = {"value"},
-
-            ]]
         }
     }
 
@@ -468,7 +458,8 @@ Tween.Config = Tween.DefaultConfig()
 
 function Tween.Awake()
     if Tween.Config.componentNamesByProperty == nil then
-        -- in awake to let other modules update Tween.Config.componentNamesByProperty from Load()
+        -- In Awake() to let other modules update Tween.Config.componentNamesByProperty from Load()
+        -- Actually this you be done automatically (without things to set up in the config) by looking up the functions on the components' objects
         local t = {}
         for compName, properties in pairs( Tween.Config.propertiesByComponentName ) do
             for i=1, #properties do

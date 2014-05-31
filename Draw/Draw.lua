@@ -427,8 +427,18 @@ function Draw.DefaultConfig()
             LineRenderer = Draw.LineRenderer,
             CircleRenderer = Draw.CircleRenderer,
         },
+
+        -- for the GameObject.Animate() functions in the Tween module
+        propertiesByComponentName = {
+            lineRenderer = { "length", "endPosition", "direction", "width" },
+            circleRenderer = { "radius", "segmentCount", "direction", "width" },
+        }
     }
 
     return config
 end
 Draw.Config = Draw.DefaultConfig()
+
+function Draw.Load()
+    table.mergein( Tween.Config.propertiesByComponentName, Draw.Config.propertiesByComponentName )
+end

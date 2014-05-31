@@ -1537,6 +1537,14 @@ function GUI.DefaultConfig()
         objects = {
             Vector2 = Vector2,
         },
+
+        -- for the GameObject.Animate() functions in the Tween module
+        propertiesByComponentName = {
+            hud = {"position", "localPosition", "layer", "localLayer"},
+            progressBar = {"value", "height"},
+            slider = {"value"},
+            textArea = {"areaWidth", "lineHeight", "opacity"},
+        }
     }
 
     return config
@@ -1566,6 +1574,8 @@ function GUI.Load()
         textRenderer.gameObject.transform:SetScale( width / widthScaleRatio )
         Daneel.Debug.StackTrace.EndFunction()
     end
+
+    table.mergein( Tween.Config.propertiesByComponentName, GUI.Config.propertiesByComponentName )
 end
 
 function GUI.Awake()
