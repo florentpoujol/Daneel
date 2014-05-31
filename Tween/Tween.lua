@@ -130,6 +130,10 @@ function Tween.Tweener.New(target, property, endValue, duration, onCompleteCallb
         end
     end
 
+    if tweener.endValue == nil then
+        error("Tween.Tweener.New(): 'endValue' property is nil.")
+    end
+    
     if tweener.startValue == nil then
         tweener.startValue = GetTweenerProperty( tweener )
     end
