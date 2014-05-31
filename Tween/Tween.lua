@@ -437,6 +437,29 @@ function Tween.DefaultConfig()
         objects = {
             ["Tween.Tweener"] = Tween.Tweener,
         },
+
+        propertiesByComponentName = {
+            transform = {
+                "scale", "localScale",
+                "position", "localPosition",
+                "eulerAngles", "localEulerAngles",
+                "orientation", "localOrientation",
+            },
+            modelRenderer = { "opacity" },
+            mapRenderer = { "opacity" },
+            textRenderer = { "opacity" },
+            camera = { "fov" },
+            --[[
+            -- Draw
+            lineRenderer = { "length", "endPosition", "direction", "width" },
+            circleRenderer = { "radius", "segmentCount", "direction", "width" },
+            -- GUI
+            hud = { "position", "localPosition", "layer", "localLayer"},
+            progressBar = {"value", "height"},
+            slider = {"value"},
+
+            ]]
+        }
     }
 
     return config
@@ -444,6 +467,19 @@ end
 Tween.Config = Tween.DefaultConfig()
 
 function Tween.Awake()
+    if Tween.Config.componentNamesByProperty == nil then
+        -- in awake to let other modules update Tween.Config.componentNamesByProperty from Load()
+        local t = {}
+        for compName, properties in pairs( Tween.Config.propertiesByComponentName ) do
+            for i=1, #properties do
+                local property = properties[i]
+                t[ property ] = t[ property ] or {}
+                table.insert( t[ property ], compName )
+            end
+        end
+        Tween.Config.componentNamesByProperty = t
+    end
+
     -- destroy and sanitize the tweeners when the scene loads
     for id, tweener in pairs( Tween.Tweener.tweeners ) do
         if tweener.destroyOnSceneLoad then
@@ -548,6 +584,82 @@ end -- end Tween.Update
 
 
 ----------------------------------------------------------------------------------
+-- GameObject
+
+local function resolveArguments(...)
+    local args = {...}
+    local params = {}
+    local gameObject = nil
+
+    for i=1, #args do
+        local arg = args[i]
+        local _type = type( arg )
+
+        if _type == "table" then
+            -- gameObject, target, value or params
+            local mt = getmetatable( arg )
+            if mt ~= nil then
+                if mt == GameObject then
+                    gameObject = arg
+                elseif arg.gameObject ~= nil then -- suppose a component
+                    params.target = arg
+                elseif mt == Vector3 or mt == Quaternion or -- suppose value (mt can only be Vector2, Vector3 or Quaternion)
+                       mt == table.getvalue( _G, "Vector2" ) then -- checks if Vector2 exist and test the value at the same time
+                    params.endValue = arg
+                else
+                    error("Tween: resolveArguments(): Unknow metatable for argument n°"..i..": ", arg, mt, table.getkey( _G, mt ) ) -- getkey return the name of the metatable (if it's a first level global variable)
+                end
+            else
+                table.mergein( params, arg )
+            end
+
+        elseif _type == "string" then
+            -- property, easeType, durationType (loopType is not supported)
+            if Tween.Ease[ arg ] ~= nil then
+                params.easeType = arg
+            elseif table.containsvalue( {"time", "realTime", "frame"}, arg ) then
+                params.durationType = arg
+            else
+                params.property = arg
+            end
+
+        elseif _type == "number" then
+            -- endValue, duration (startValue, loops, delay are not supported)
+            if params.endValue == nil then
+                params.endValue = arg
+            else
+                params.duration = arg
+            end
+
+        elseif _type == "boolean" then
+            params.isRelative = arg
+        elseif _type == "function" then
+            params.OnComplete = arg
+        end
+    end
+
+    -- resolving property and target
+    if params.property ~= nil then
+        if gameObject ~= nil and params.target == nil then
+            local compNames = Tween.Config.componentNamesByProperty[ params.property ]
+            for i=1, #compNames do
+                local component = gameObject[ compNames[i] ]
+                if component ~= nil then
+                    -- this gameObject has a component that has this property
+                    params.target = component
+                    break
+                end
+            end
+        elseif gameObject == nil and params.target == nil then
+            error("Tween: resolveArguments(): The property is set to '"..params.property.."' but no gameObject and no target has been set.")
+        end
+        if params.target == nil then
+            error("Tween: resolveArguments(): Couldn't resolve the target for property '"..params.property.."' and gameObject: ", gameObject)
+        end
+    end
+
+    return params
+end
 -- Easing equations
 -- From Emmanuel Oga's easing equations : https://github.com/EmmanuelOga/easing
 
