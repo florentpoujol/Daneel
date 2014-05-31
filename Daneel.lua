@@ -22,7 +22,7 @@ Daneel.functionsDebugInfo = {}
 
 function string.split( s, delimiter, delimiterIsPattern )
     local chunks = {}
-    
+
     if delimiterIsPattern then
         local delimiterStartIndex, delimiterEndIndex = s:find( delimiter )
 
@@ -35,7 +35,7 @@ function string.split( s, delimiter, delimiterIsPattern )
             if not s:endswith( delimiter ) then
                 s = s .. delimiter
             end
-            
+
             if CS.IsWebPlayer then
                 -- CS Webplayer specific part :
                 -- in the webplayer,  "(.-)"..delimiter  is translated into  "(.*)"..delimiter  which seems to create an infinite loop
@@ -44,12 +44,12 @@ function string.split( s, delimiter, delimiterIsPattern )
                     table.insert( chunks, match )
                 end
             else
-                for match in s:gmatch( "(.-)"..pattern ) do 
+                for match in s:gmatch( "(.-)"..pattern ) do
                     table.insert( chunks, match )
                 end
             end
         end
-    
+
     else -- plain text delimiter
         if s:find( delimiter, 1, true ) ~= nil then
             if string.startswith( s, delimiter ) then
@@ -89,7 +89,7 @@ function string.split( s, delimiter, delimiterIsPattern )
 end
 
 -- Deprecated since v1.4.0
-function table.deepmerge( ... )    
+function table.deepmerge( ... )
     return table.merge( ..., true )
 end
 
@@ -112,7 +112,7 @@ function table.print(t)
     elseif table.isarray( t ) then
         func = ipairs -- just to be sure that the entries are printed in order
     end
-    
+
     for key, value in func(t) do
         print(key, value)
     end
@@ -120,13 +120,13 @@ function table.print(t)
     print("~~~~~ table.print("..tableString..") ~~~~~ End ~~~~~")
 end
 
-function table.getlength( t, keyType )   
+function table.getlength( t, keyType )
     local length = 0
     if keyType ~= nil then
         keyType = keyType:lower()
     end
     for key, value in pairs( t ) do
-        if 
+        if
             keyType == nil or
             type( key ) == keyType or
             Daneel.Debug.GetType( key ):lower() == keyType
@@ -192,15 +192,15 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["table.shift"] = { _t, { "returnKey", b, defaultValue = false } },
     ["table.getlength"] = { _t, { "keyType", s, isOptional = true } },
     ["table.havesamecontent"] = { { "table1", t }, { "table2", t } },
-    ["table.combine"] = { _t, 
+    ["table.combine"] = { _t,
         { "values", "table" },
         { "returnFalseIfNotSameLength", b, isOptional = true }
     },
-    ["table.removevalue"] = { _t, 
+    ["table.removevalue"] = { _t,
         { "value" },
         { "maxRemoveCount", n, isOptional = true }
     },
-    ["table.sortby"] = { _t, 
+    ["table.sortby"] = { _t,
         { "property", s },
         { "orderBy", s, isOptional = true },
     },
@@ -253,7 +253,7 @@ function Daneel.Utilities.AllowDynamicGettersAndSetters( Object, ancestors )
             ucKey = string.ucfirst( key )
         end
 
-        if key == ucKey then 
+        if key == ucKey then
             -- first letter was already uppercase or key is not if type string
             if Object[ key ] ~= nil then
                 return Object[ key ]
@@ -335,7 +335,7 @@ Daneel.Utilities.id = 0
 
 --- Returns an interger greater than 0 and incremented by 1 from the last time the funciton was called.
 -- If an object is provided, returns the object's id (if no id is found, it is set).
--- @param object (table) [optional] An object. 
+-- @param object (table) [optional] An object.
 -- @return (number) The id.
 function Daneel.Utilities.GetId( object )
     if object ~= nil and type( object ) == "table" then
@@ -345,7 +345,7 @@ function Daneel.Utilities.GetId( object )
         end
         id = Daneel.Utilities.GetId()
         if object.inner ~= nil and not CS.IsWebPlayer then -- in the webplayer, tostring(object.inner) will just be table, so id will be nil
-            -- object.inner : 
+            -- object.inner :
             -- "CraftStudioRuntime.InGame.GameObject: 4620049" (of type userdata)
             -- "CraftStudioCommon.ProjectData.[AssetType]: [some ID]"
             id = tonumber( tostring( object.inner ):match( "%d+" ) )
@@ -390,11 +390,11 @@ function Daneel.Debug.CheckArgType( argument, argumentName, expectedArgumentType
         -- should do that for destroyed components too
     end
 
-    if not Daneel.Config.debug.enableDebug then 
-        return Daneel.Debug.GetType( argument ) 
+    if not Daneel.Config.debug.enableDebug then
+        return Daneel.Debug.GetType( argument )
     end
     local errorHead = "Daneel.Debug.CheckArgType(argument, argumentName, expectedArgumentTypes[, p_errorHead]) : "
-    
+
     local argType = type(argumentName)
     if argType ~= "string" then
         error(errorHead.."Argument 'argumentName' is of type '"..argType.."' with value '"..tostring(argumentName).."' instead of 'string'.")
@@ -417,7 +417,7 @@ function Daneel.Debug.CheckArgType( argument, argumentName, expectedArgumentType
     if p_errorHead == nil then p_errorHead = "" end
 
     argType = Daneel.Debug.GetType(argument)
-    local luaArgType = type(argument) -- any object (that are tables) will now pass the test even when Daneel.Debug.GetType(argument) does not return "table" 
+    local luaArgType = type(argument) -- any object (that are tables) will now pass the test even when Daneel.Debug.GetType(argument) does not return "table"
     for i, expectedType in ipairs(expectedArgumentTypes) do
         if argType == expectedType or luaArgType == expectedType then
             return expectedType
@@ -437,7 +437,7 @@ function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgum
     if argument == nil then return defaultValue end
     if not Daneel.Config.debug.enableDebug then return argument end
     local errorHead = "Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgumentTypes[, p_errorHead, defaultValue]) : "
-    
+
     local argType = type(argumentName)
     if argType ~= "string" then
         error(errorHead.."Argument 'argumentName' is of type '"..argType.."' with value '"..tostring(argumentName).."' instead of 'string'.")
@@ -469,7 +469,7 @@ function Daneel.Debug.CheckOptionalArgType(argument, argumentName, expectedArgum
     error(p_errorHead.."Optional argument '"..argumentName.."' is of type '"..argType.."' with value '"..tostring(argument).."' instead of '"..table.concat(expectedArgumentTypes, "', '").."'.")
 end
 
--- For instances of objects, the type is the name of the metatable of the provided object, if the metatable is a first-level global variable. 
+-- For instances of objects, the type is the name of the metatable of the provided object, if the metatable is a first-level global variable.
 -- Will return "ScriptedBehavior" when the provided object is a scripted behavior instance (yet ScriptedBehavior is not its metatable).
 -- @param object (mixed) The argument to get the type of.
 -- @param luaTypeOnly (boolean) [optional default=false] Tell whether to return only Lua's built-in types (string, number, boolean, table, function, userdata or thread).
@@ -559,7 +559,7 @@ function Daneel.Debug.ToRawString( data )
             mt.__tostring = mttostring
         end
     end
-    if text == nil then 
+    if text == nil then
         text = tostring( data )
     end
     return text
@@ -585,7 +585,7 @@ function Daneel.Debug.GetNameFromValue(value)
 end
 
 --- Check if the provided argument's value is in the provided expected value(s).
--- When that's not the case, return the value of the 'defaultValue' argument, or throws an error when it is nil. 
+-- When that's not the case, return the value of the 'defaultValue' argument, or throws an error when it is nil.
 -- Arguments of type string are considered case-insensitive. The case will be corrected but no error will be thrown.
 -- When 'expectedArgumentValues' is of type table, it is always considered as a table of several expected values.
 -- @param argument (mixed) The argument to check.
@@ -602,7 +602,7 @@ function Daneel.Debug.CheckArgValue(argument, argumentName, expectedArgumentValu
         error(errorHead.."Argument 'expectedArgumentValues' is nil.")
     end
     Daneel.Debug.CheckOptionalArgType(p_errorHead, "p_errorHead", "string", errorHead)
- 
+
     if type(expectedArgumentValues) ~= "table" then
         expectedArgumentValues = { expectedArgumentValues }
     elseif #expectedArgumentValues == 0 then
@@ -663,8 +663,8 @@ function Daneel.Debug.Try( _function )
     local success = false
     gameObject:CreateScriptedBehavior( DaneelScriptAsset, {
         debugTry = true,
-        testFunction = _function, 
-        successCallback = function() success = true end  
+        testFunction = _function,
+        successCallback = function() success = true end
     } )
 
     Daneel.Debug.StackTrace.EndFunction()
@@ -693,7 +693,7 @@ function Daneel.Debug.RegisterFunction( name, argsData )
 
     errorHead = errorHead:sub( 1, #errorHead-2 ) -- removes the last coma+space
     errorHead = errorHead.." ) : "
-    
+
     --
     local originalFunction = table.getvalue( _G, name )
 
@@ -755,14 +755,14 @@ Daneel.Debug.StackTrace = { messages = {} }
 -- @param functionName (string) The function name.
 -- @param ... [optional] (mixed) Arguments received by the function.
 function Daneel.Debug.StackTrace.BeginFunction( functionName, ... )
-    if 
-        not Daneel.Config.debug.enableDebug or 
+    if
+        not Daneel.Config.debug.enableDebug or
         not Daneel.Config.debug.enableStackTrace
-    then 
-        return 
+    then
+        return
     end
 
-    if #Daneel.Debug.StackTrace.messages > 200 then 
+    if #Daneel.Debug.StackTrace.messages > 200 then
         print( "WARNING : your StackTrace is more than 200 items long ! Emptying the StackTrace now. Did you forget to write a 'EndFunction()' somewhere ?" )
         Daneel.Debug.StackTrace.messages = {}
     end
@@ -792,24 +792,24 @@ end
 
 --- Closes a successful function call, removing it from the stacktrace.
 function Daneel.Debug.StackTrace.EndFunction()
-    if 
-        not Daneel.Config.debug.enableDebug or 
+    if
+        not Daneel.Config.debug.enableDebug or
         not Daneel.Config.debug.enableStackTrace
-    then 
-        return 
+    then
+        return
     end
     -- since 16/05/2013 no arguments is needed anymore, since the StackTrace only keeps open functions calls and never keep returned values
-    -- I didn't rewrote all the calls to EndFunction() 
+    -- I didn't rewrote all the calls to EndFunction()
     table.remove( Daneel.Debug.StackTrace.messages )
 end
 
 --- Prints the StackTrace.
 function Daneel.Debug.StackTrace.Print()
-    if 
-        not Daneel.Config.debug.enableDebug or 
+    if
+        not Daneel.Config.debug.enableDebug or
         not Daneel.Config.debug.enableStackTrace
-    then 
-        return 
+    then
+        return
     end
 
     local messages = Daneel.Debug.StackTrace.messages
@@ -833,7 +833,7 @@ end
 ----------------------------------------------------------------------------------
 -- Event
 
-Daneel.Event = { 
+Daneel.Event = {
     events = {}, -- emptied when a new scene is loaded in CraftStudio.LoadScene()
     persistentEvents = {}, -- not emptied
 }
@@ -860,9 +860,9 @@ function Daneel.Event.Listen( eventName, functionOrObject, isPersistent )
             Daneel.Event.persistentEvents[ eventName ] = {}
         end
 
-        if 
-            not table.containsvalue( Daneel.Event.events[ eventName ], functionOrObject ) and 
-            not table.containsvalue( Daneel.Event.persistentEvents[ eventName ], functionOrObject ) 
+        if
+            not table.containsvalue( Daneel.Event.events[ eventName ], functionOrObject ) and
+            not table.containsvalue( Daneel.Event.persistentEvents[ eventName ], functionOrObject )
         then
             -- check for hotkeys (button names in the event name)
             if not EventNamesTestedForHotKeys[ eventName ] then
@@ -912,14 +912,14 @@ end
 function Daneel.Event.StopListen( eventName, functionOrObject )
     if type( eventName ) ~= "string" then
         functionOrObject = eventName
-        eventName = nil 
+        eventName = nil
     end
 
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Event.StopListen", eventName, functionOrObject )
     local errorHead = "Daneel.Event.StopListen( eventName, functionOrObject ) : "
     Daneel.Debug.CheckOptionalArgType( eventName, "eventName", "string", errorHead )
     Daneel.Debug.CheckArgType( functionOrObject, "functionOrObject", {"table", "function"}, errorHead )
-    
+
     local eventNames = eventName
     if type( eventName ) == "string" then
         eventNames = { eventName }
@@ -968,7 +968,7 @@ function Daneel.Event.Fire( object, eventName, ... )
         Daneel.Debug.CheckArgType( eventName, "eventName", "string", errorHead )
     end
 
-    
+
     local listeners = { object }
     if object == nil then
         if Daneel.Event.events[ eventName ] ~= nil then
@@ -981,7 +981,7 @@ function Daneel.Event.Fire( object, eventName, ... )
 
     local listenersToBeRemoved = {}
     for i, listener in ipairs( listeners ) do
-        
+
         local listenerType = type( listener )
         if listenerType == "function" or listenerType == "userdata" then
             if listener( unpack( arg ) ) == false then
@@ -1056,7 +1056,7 @@ Daneel.Storage = {}
 -- @param callback (function) [optional] The function called when the save has completed. The potential error (as a string) is passed to the callback first and only argument (nil if no error).
 function Daneel.Storage.Save( name, data, callback )
     if data ~= nil and type( data ) ~= "table" then
-        data = { 
+        data = {
             value = data,
             isSavedByDaneel = true
         }
@@ -1096,7 +1096,7 @@ function Daneel.Storage.Load( name, defaultValue, callback )
             end
             data = nil
         end
-        
+
         value = defaultValue
 
         if data ~= nil then
@@ -1128,14 +1128,14 @@ table.mergein( Daneel.functionsDebugInfo, {
 
 -- Config - Loading
 function Daneel.DefaultConfig()
-    local config = {  
+    local config = {
         debug = {
             enableDebug = false, -- Enable/disable Daneel's global debugging features (error reporting + stacktrace).
             enableStackTrace = false, -- Enable/disable the Stack Trace.
         },
 
         ----------------------------------------------------------------------------------
-        
+
         -- List of the Scripts paths as values and optionally the script alias as the keys.
         -- Ie :
         -- "fully-qualified Script path"
@@ -1152,7 +1152,7 @@ function Daneel.DefaultConfig()
         -- Default CraftStudio's components settings (except Transform)
         -- textRenderer = { font = "MyFont" },
 
-        hotKeys = {}, -- button names that throws events On[ButtonName]JustPressed... 
+        hotKeys = {}, -- button names that throws events On[ButtonName]JustPressed...
         -- filled in Daneel.Event.Listen
 
         objects = {
@@ -1196,7 +1196,7 @@ Daneel.Config = Daneel.DefaultConfig()
 
 -- Enables the dynamic accessors on the components
 -- write the __tostring function
-function Daneel.SetComponents( components )    
+function Daneel.SetComponents( components )
     for componentType, componentObject in pairs( components ) do
         Daneel.Utilities.AllowDynamicGettersAndSetters( componentObject, { Component } )
 
@@ -1226,7 +1226,7 @@ function Daneel.Load()
     -- load modules config
     for i, name in ipairs( Daneel.modules.moduleNames ) do
         local module = Daneel.modules[ name ]
-        
+
         if module.isConfigLoaded ~= true then
             module.isConfigLoaded = true
 
@@ -1259,9 +1259,9 @@ function Daneel.Load()
             end
         end
     end
-    
+
     table.mergein( Daneel.Config.objects, Daneel.Config.componentObjects, Daneel.Config.assetObjects )
-    
+
     Daneel.SetComponents( Daneel.Config.componentObjects )
     table.mergein( Daneel.Config.componentTypes, table.getkeys( Daneel.Config.componentObjects ) )
 
@@ -1308,7 +1308,7 @@ function Daneel.Load()
 
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Load" )
 
-    -- Load modules 
+    -- Load modules
     for i, name in ipairs( Daneel.modules.moduleNames ) do
         local module = Daneel.modules[ name ]
         if module.isLoaded ~= true then
@@ -1357,7 +1357,7 @@ function Behavior:Awake()
     if table.getvalue( _G, "LOAD_DANEEL" ) ~= nil and LOAD_DANEEL == false then -- just for tests purposes
         return
     end
-    
+
     if Daneel.isAwake then
         if Daneel.Config.debug.enableDebug then
             print( "Daneel:Awake() : You tried to load Daneel twice ! This time the 'Daneel' scripted behavior was on " .. tostring( self.gameObject ) )
@@ -1373,7 +1373,7 @@ function Behavior:Awake()
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Awake" )
 
 
-    -- Awake modules 
+    -- Awake modules
     for i, name in ipairs( Daneel.modules.moduleNames ) do
         local module = Daneel.modules[ name ]
         if type( module.Awake ) == "function" then
@@ -1388,7 +1388,7 @@ function Behavior:Awake()
     Daneel.Event.Fire( "OnAwake" )
 
     Daneel.Debug.StackTrace.EndFunction()
-end 
+end
 
 function Behavior:Start()
     if self.debugTry then
@@ -1397,7 +1397,7 @@ function Behavior:Start()
 
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Start" )
 
-    -- Start modules 
+    -- Start modules
     for i, name in ipairs( Daneel.modules.moduleNames ) do
         local module = Daneel.modules[ name ]
         if type( module.Start ) == "function" then
@@ -1411,7 +1411,7 @@ function Behavior:Start()
 
     Daneel.Event.Fire( "OnStart" )
     Daneel.Debug.StackTrace.EndFunction()
-end 
+end
 
 function Behavior:Update()
     if self.debugTry then
@@ -1444,7 +1444,7 @@ function Behavior:Update()
         end
     end
 
-    -- Update modules 
+    -- Update modules
     for i, func in ipairs( Daneel.moduleUpdateFunctions ) do
         func()
     end

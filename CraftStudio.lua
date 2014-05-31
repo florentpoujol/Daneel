@@ -65,18 +65,18 @@ function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
 
     -- just return the asset if assetPath is already an object
     if table.containsvalue( Daneel.Config.assetTypes, argType ) then
-        if assetType ~= nil and argType ~= assetType then 
+        if assetType ~= nil and argType ~= assetType then
             error( errorHead.."Provided asset '"..assetPath.."' has a different type '"..argType.."' than the provided 'assetType' argument '"..assetType.."'." )
         end
         return assetPath
     end
     -- else assetPath is always an actual asset path as a string
-    
+
     Daneel.Debug.CheckOptionalArgType( errorIfAssetNotFound, "errorIfAssetNotFound", "boolean", errorHead )
 
     -- check if assetPath is a script alias
     local scriptAlias = assetPath
-    if Daneel.Config.scriptPaths[ scriptAlias ] ~= nil then 
+    if Daneel.Config.scriptPaths[ scriptAlias ] ~= nil then
         assetPath = Daneel.Config.scriptPaths[ scriptAlias ]
         assetType = "Script"
     end
@@ -113,7 +113,7 @@ end
 function Asset.GetName( asset )
     local name = rawget( asset, "name" )
     if name == nil then
-        name = Asset.GetPath( asset ):gsub( "^(.*/)", "" ) 
+        name = Asset.GetPath( asset ):gsub( "^(.*/)", "" )
         rawset( asset, "name", name )
     end
     return name
@@ -146,7 +146,7 @@ end
 -- Note that the component is removed only at the end of the current frame.
 -- @param component (any component type) The component.
 function Component.Destroy( component )
-    table.removevalue( component.gameObject, component )    
+    table.removevalue( component.gameObject, component )
     CraftStudio.Destroy( component )
 end
 
@@ -286,7 +286,7 @@ ModelRenderer.oSetAnimation = ModelRenderer.SetAnimation
 -- @param modelRenderer (ModelRenderer) The modelRenderer.
 -- @param animationNameOrAsset (string or ModelAnimation) [optional] The animation name or asset, or nil.
 function ModelRenderer.SetAnimation( modelRenderer, animationNameOrAsset )
-    local animation = nil 
+    local animation = nil
     if animationNameOrAsset ~= nil then
         animation = Asset.Get( animationNameOrAsset, "ModelAnimation", true )
     end
@@ -317,7 +317,7 @@ MapRenderer.oSetMap = MapRenderer.SetMap
 --- Attach the provided map to the provided map renderer.
 -- @param mapRenderer (MapRenderer) The map renderer.
 -- @param mapNameOrAsset (string or Map) [optional] The map name or asset, or nil.
--- @param replaceTileSet (boolean) [default=true] Replace the current TileSet by the one set for the provided map in the map editor. 
+-- @param replaceTileSet (boolean) [default=true] Replace the current TileSet by the one set for the provided map in the map editor.
 function MapRenderer.SetMap( mapRenderer, mapNameOrAsset, replaceTileSet )
     local map = nil
     if mapNameOrAsset ~= nil then
@@ -438,7 +438,7 @@ function Camera.GetPixelsToUnits( camera )
     if screenSize.x < screenSize.y then
         smallestSideSize = screenSize.x
     end
-    if camera:GetProjectionMode() == Camera.ProjectionMode.Orthographic then 
+    if camera:GetProjectionMode() == Camera.ProjectionMode.Orthographic then
         return camera:GetOrthographicScale() / smallestSideSize
     else -- perspective
         -- UnitsToPixels (px) = BaseDist * SSS (px) = 0.5 * SSS / tan( FOV / 2 )
@@ -516,7 +516,7 @@ function Camera.WorldToScreenPoint( camera, position )
         localPosition.x =  localPosition.x / distance * unitsToPixels + screenSize.x / 2
         localPosition.y = -localPosition.y / distance * unitsToPixels + screenSize.y / 2
     end
-    return localPosition 
+    return localPosition
 end
 
 Camera.oGetFOV = Camera.GetFOV
@@ -554,7 +554,7 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["ModelRenderer.SetAnimation"] = { { "modelRenderer", "ModelRenderer" }, { "animationNameOrAsset", { s, "ModelAnimation" }, isOptional = true } },
     ["ModelRenderer.Set"] =          { { "modelRenderer", "ModelRenderer" }, _p },
 
-    ["MapRenderer.SetMap"] = { 
+    ["MapRenderer.SetMap"] = {
         { "mapRenderer", "MapRenderer" },
         { "mapNameOrAsset", { s, "Map" }, isOptional = true },
         { "replaceTileSet", defaultValue = true },
@@ -794,10 +794,10 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["Vector2.__div"] = { { "a", { n, v2 } }, { "b", { n, v2 } } },
     ["Vector2.__unm"] = { { "vector", v2 } },
     ["Vector2.__pow"] = { { "vector", v2 }, { "exp", "number" } },
-    ["Vector2.__add"] = { { "a", v2 }, { "b", v2 } },   
-    
-    ["Vector3.GetLength"] = { { "vector", v3 } },   
-    ["Vector3.GetSqrLength"] = { { "vector", v3 } },   
+    ["Vector2.__add"] = { { "a", v2 }, { "b", v2 } },
+
+    ["Vector3.GetLength"] = { { "vector", v3 } },
+    ["Vector3.GetSqrLength"] = { { "vector", v3 } },
 } )
 
 ----------------------------------------------------------------------------------
@@ -1020,7 +1020,7 @@ end
 --- Alias of CraftStudio.LoadScene().
 -- Schedules loading the specified scene after the current tick (frame) (1/60th of a second) has completed.
 -- When the new scene is loaded, all of the current scene's game objects will be removed.
--- Calling this function doesn't immediately stops the calling function. As such, you might want to add a return statement afterwards. 
+-- Calling this function doesn't immediately stops the calling function. As such, you might want to add a return statement afterwards.
 -- @param sceneNameOrAsset (string or Scene) The scene name or asset.
 function Scene.Load( sceneNameOrAsset )
     CraftStudio.LoadScene( sceneNameOrAsset )
@@ -1030,10 +1030,10 @@ CraftStudio.oLoadScene = CraftStudio.LoadScene
 
 --- Schedules loading the specified scene after the current tick (1/60th of a second) has completed.
 -- When the new scene is loaded, all of the current scene's game objects will be removed.
--- Calling this function doesn't immediately stops the calling function. As such, you might want to add a return statement afterwards. 
+-- Calling this function doesn't immediately stops the calling function. As such, you might want to add a return statement afterwards.
 -- @param sceneNameOrAsset (string or Scene) The scene name or asset.
 function CraftStudio.LoadScene( sceneNameOrAsset )
-    local scene = Asset.Get( sceneNameOrAsset, "Scene", true )  
+    local scene = Asset.Get( sceneNameOrAsset, "Scene", true )
     Daneel.Event.Fire( "OnSceneLoad", scene )
     Daneel.Event.events = {} -- do this here to make sure that any events that might be fired from OnSceneLoad-catching function are indeed fired
     Scene.current = scene
@@ -1042,7 +1042,7 @@ end
 
 --- Alias of CraftStudio.AppendScene().
 -- Appends the specified scene to the game by instantiating all of its game objects. Contrary to CraftStudio.LoadScene, this doesn't unload the current scene nor waits for the next tick: it happens right away.
--- You can optionally specify a parent game object which will be used as a root for adding all game objects. 
+-- You can optionally specify a parent game object which will be used as a root for adding all game objects.
 -- Returns the game object appended if there was only one root game object in the provided scene.
 -- @param sceneNameOrAsset (string or Scene) The scene name or asset.
 -- @param parentNameOrInstance (string or GameObject) [optional] The parent game object name or instance.
@@ -1078,7 +1078,7 @@ local _ray = { "ray", "Ray" }
 local _returnraycasthit = { "returnRaycastHit", defaultValue = false }
 
 table.mergein( Daneel.functionsDebugInfo, {
-    ["Ray.Cast"] =                    { _ray, { "gameObjects", t }, { "sortByDistance", defaultValue = false } },  
+    ["Ray.Cast"] =                    { _ray, { "gameObjects", t }, { "sortByDistance", defaultValue = false } },
     ["Ray.IntersectsGameObject"] =    { _ray, { "gameObjectNameOrInstance", { s, go } }, _returnraycasthit },
     ["Ray.IntersectsPlane"] =         { _ray, { "plane", "Plane" }, _returnraycasthit },
     ["Ray.IntersectsModelRenderer"] = { _ray, { "modelRenderer", "ModelRenderer" }, _returnraycasthit },
@@ -1150,7 +1150,7 @@ function GameObject.__index( gameObject, key )
     end
 
     if type( key ) == "string" then
-        -- or the name of a getter 
+        -- or the name of a getter
         local ucKey = string.ucfirst( key )
         if key ~= ucKey then
             local funcName = "Get" .. ucKey
@@ -1176,7 +1176,7 @@ function GameObject.__newindex( gameObject, key, value )
         -- ie: variable "name" call "SetName"
         if GameObject[ funcName ] ~= nil then
             return GameObject[ funcName ]( gameObject, value )
-        end       
+        end
     end
     rawset( gameObject, key, value )
 end
@@ -1233,7 +1233,7 @@ function GameObject.Set( gameObject, params )
         gameObject.transform:Set( params.transform )
         params.transform = nil
     end
-    
+
     -- components
     for i, componentType in pairs( Daneel.Config.componentTypes ) do
         local component = nil
@@ -1259,11 +1259,11 @@ function GameObject.Set( gameObject, params )
                         break
                     end
                 end
-                
+
                 if component == nil then -- can work for built-in components when their property on the game object has been unset for some reason
                     component = gameObject:GetComponent( componentType )
                 end
-                
+
                 if component == nil then
                     component = gameObject:AddComponent( componentType )
                 end
@@ -1288,7 +1288,7 @@ function GameObject.Set( gameObject, params )
             if component == nil then
                 component = gameObject:AddComponent( scriptPath )
             end
-            
+
             component:Set(value)
 
         elseif key == "tags"  then
@@ -1310,7 +1310,7 @@ end
 -- @param name (string) The game object name.
 -- @param errorIfGameObjectNotFound (boolean) [default=false] Throw an error if the game object was not found (instead of returning nil).
 -- @return (GameObject) The game object or nil if none is found.
-function GameObject.Get( name, errorIfGameObjectNotFound ) 
+function GameObject.Get( name, errorIfGameObjectNotFound )
     if getmetatable(name) == GameObject then
         return name
     end
@@ -1349,7 +1349,7 @@ end
 
 GameObject.oSetParent = GameObject.SetParent
 
---- Set the game object's parent. 
+--- Set the game object's parent.
 -- Optionaly carry over the game object's local transform instead of the global one.
 -- @param gameObject (GameObject) The game object.
 -- @param parentNameOrInstance (string or GameObject) [optional] The parent name or game object (or nil to remove the parent).
@@ -1416,9 +1416,9 @@ end
 
 GameObject.oSendMessage = GameObject.SendMessage
 
---- Tries to call a method with the provided name on all the scriptedBehaviors attached to the game object. 
+--- Tries to call a method with the provided name on all the scriptedBehaviors attached to the game object.
 -- The data argument can be nil or a table you want the method to receive as its first (and only) argument.
--- If none of the scripteBehaviors attached to the game object or its children have a method matching the provided name, nothing happens. 
+-- If none of the scripteBehaviors attached to the game object or its children have a method matching the provided name, nothing happens.
 -- @param gameObject (GameObject) The game object.
 -- @param functionName (string) The method name.
 -- @param data (table) [optional] The data to pass along the method call.
@@ -1446,9 +1446,9 @@ function GameObject.SendMessage(gameObject, functionName, data)
     end
 end
 
---- Tries to call a method with the provided name on all the scriptedBehaviors attached to the game object or any of its descendants. 
+--- Tries to call a method with the provided name on all the scriptedBehaviors attached to the game object or any of its descendants.
 -- The data argument can be nil or a table you want the method to receive as its first (and only) argument.
--- If none of the scripteBehaviors attached to the game object or its children have a method matching the provided name, nothing happens. 
+-- If none of the scripteBehaviors attached to the game object or its children have a method matching the provided name, nothing happens.
 -- @param gameObject (GameObject) The game object.
 -- @param functionName (string) The method name.
 -- @param data (table) [optional] The data to pass along the method call.
@@ -1472,7 +1472,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
     local errorHead = "GameObject.AddComponent( gameObject, componentType[, params] ) : "
     componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead, componentType )
     local component = nil
-    
+
     if Daneel.Config.componentObjects[ componentType ] == nil then
         -- componentType is not one of the component types
         -- it may be a script path, alias or asset
@@ -1489,7 +1489,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
         end
         component = gameObject:CreateScriptedBehavior( script, params )
         params = nil
-    
+
     elseif Daneel.DefaultConfig().componentObjects[ componentType ] ~= nil then
         -- built-in component type
         if componentType == "Transform" then
@@ -1524,7 +1524,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
             return
         end
     end
-    
+
     if params ~= nil and component ~= nil then
         component:Set( params )
     end
@@ -1725,14 +1725,14 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["GameObject.Set"] =         { _go, _p },
     ["GameObject.Get"] =         { { "name", { s, "GameObject" } }, { "errorIfGameObjectNotFound", defaultValue = false } },
     ["GameObject.Destroy"] =     { _go },
-    
+
     ["GameObject.SetParent"] =   { _go, { "parentNameOrInstance", { s, "GameObject" }, isOptional = true }, { "keepLocalTransform", defaultValue = false } },
     ["GameObject.GetChild"] =    { _go, { "name", s, isOptional = true }, { "recursive", defaultValue = false } },
     ["GameObject.GetChildren"] = { _go, { "recursive", defaultValue = false }, { "includeSelf", defaultValue = false } },
-    
+
     ["GameObject.SendMessage"] =      { _go, { "functionName", s }, { "data", t, isOptional = true } },
     ["GameObject.BroadcastMessage"] = { _go, { "functionName", s }, { "data", t, isOptional = true } },
-    
+
     ["GameObject.AddComponent"] =        { _go, { "componentType", { s, "Script" } }, { "params", t, isOptional = true } },
     ["GameObject.GetComponent"] =        { _go, { "componentType", { s, "Script" } } },
     ["GameObject.GetScriptedBehavior"] = { _go, { "scriptNameOrAsset", { s, "Script" } } },
@@ -1776,7 +1776,7 @@ end
 
 CS.Network.Server.oOnPlayerJoined = CS.Network.Server.OnPlayerJoined
 function CS.Network.Server.OnPlayerJoined( callback )
-    CS.Network.Server.oOnPlayerJoined( 
+    CS.Network.Server.oOnPlayerJoined(
         function( player )
             table.insert( CS.Network.Server.playerIds, player.id )
             if callback ~= nil then
@@ -1789,7 +1789,7 @@ CS.Network.Server.OnPlayerJoined()
 
 CS.Network.Server.oOnPlayerLeft = CS.Network.Server.OnPlayerLeft
 function CS.Network.Server.OnPlayerLeft( callback )
-    CS.Network.Server.oOnPlayerLeft( 
+    CS.Network.Server.oOnPlayerLeft(
         function( playerId )
             table.removevalue( CS.Network.Server.playerIds, playerId )
             if callback ~= nil then
