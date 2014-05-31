@@ -660,6 +660,31 @@ local function resolveArguments(...)
 
     return params
 end
+
+--- Creates an animation (a tweener) with the provided parameters.
+-- Mandatory arguments with no forced order are: gameObject (GameObject), property (string), endValue (number, Vector2, Vector3 or Quaternion) and duration (number).
+-- The only order requirement is that endValue must comes before the duration when it is of type number.
+-- Optional arguments with no forced order are: target (a component), durationType (string), easeType (string), isRelative (boolean), OnComplete callback (function) or params (table).
+-- You can set other standard tweener's properties via the params table.
+-- @return (Tweener) The animation's tweener.
+function GameObject.Animate( ... )
+    return Tween.Tweener.New( resolveArguments( ... ) )   
+end
+
+--- Creates an animation (a tweener) with the provided parameters.
+-- Automatically destroy the game object when the twener completes.
+-- Mandatory arguments with no forced order are: gameObject (GameObject), property (string), endValue (number, Vector2, Vector3 or Quaternion) and duration (number).
+-- The only order requirement is that endValue must comes before the duration when it is of type number.
+-- Optional arguments with no forced order are: target (a component), durationType (string), easeType (string), isRelative (boolean), OnComplete callback (function) or params (table).
+-- You can set other standard tweener's properties via the params table.
+-- @return (Tweener) The animation's tweener.
+function GameObject.AnimateAndDestroy( ... )
+    local args = {...}
+    return Tween.Tweener.New( resolveArguments( function() args[1]:Destroy() end, ... ) )   
+end
+
+
+----------------------------------------------------------------------------------
 -- Easing equations
 -- From Emmanuel Oga's easing equations : https://github.com/EmmanuelOga/easing
 
