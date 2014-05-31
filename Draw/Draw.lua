@@ -402,6 +402,27 @@ function Draw.CircleRenderer.GetModel( circle )
     return circle._model
 end
 
+functionsDebugInfo[ "Draw.CircleRenderer.SetOpacity" ] = { _c, { "opacity", "number" } }
+--- Sets the circle renderer segments' opacity.
+-- @param circle (CircleRenderer) The circle renderer.
+-- @param opacity (number) The opacity.
+function Draw.CircleRenderer.SetOpacity( circle, opacity )  
+    for i=1, #cicle.segments do
+        circle.segments[i].modelRenderer:SetOpacity( opacity )
+    end
+end
+
+functionsDebugInfo[ "Draw.CircleRenderer.GetOpacity" ] = { _c }
+--- Returns the circle renderer's segments' opacity.
+-- @param circle (CircleRenderer) The circle renderer.
+-- @return (number) The opacity (nil if the circle renderer has no segment).
+function Draw.CircleRenderer.GetOpacity( circle )
+    if circle.segments[1] ~= nil then
+        return circle.segments[1].modelRenderer:GetOpacity()
+    end
+    return nil
+end
+
 
 ----------------------------------------------------------------------------------
 
@@ -431,7 +452,7 @@ function Draw.DefaultConfig()
         -- for the GameObject.Animate() functions in the Tween module
         propertiesByComponentName = {
             lineRenderer = { "length", "endPosition", "direction", "width" },
-            circleRenderer = { "radius", "segmentCount", "direction", "width" },
+            circleRenderer = { "radius", "segmentCount", "direction", "width", "opacity" },
         }
     }
 
