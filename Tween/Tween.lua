@@ -678,6 +678,40 @@ function GameObject.AnimateAndDestroy( ... )
     return Tween.Tweener.New( resolveArguments( function() args[1]:Destroy() end, ... ) )   
 end
 
+--- Fades in the provided game object's renderer's opacity to 1 in the provided duration.
+-- @param gameObject (GameObject) The game object.
+-- @param duration (number) The duration in seconds (durationType = "time").
+-- @param onCompleteCallback (function) The function to call when the fade has completed.
+-- @return (Tweener) The tweener.
+function GameObject.FadeIn( gameObject, duration, onCompleteCallback )
+    local component = nil
+    for i=1, #Tween.Config.componentNamesByProperty.opacity do
+        local compName = Tween.Config.componentNamesByProperty.opacity[i] -- nice to see another use for componentNamesByProperty
+        component = gameObject[ compName ]
+        if component ~= nil then
+            break    
+        end
+    end
+    return Tween.Tweener.New( component, "opacity", 1, duration, onCompleteCallback )
+end
+
+--- Fades out the provided game object's renderer's opacity to 0 in the provided duration.
+-- @param gameObject (GameObject) The game object.
+-- @param duration (number) The duration in seconds (durationType = "time").
+-- @param onCompleteCallback (function) The function to call when the fade has completed.
+-- @return (Tweener) The tweener.
+function GameObject.FadeOut( gameObject, duration, onCompleteCallback )
+    local component = nil
+    for i=1, #Tween.Config.componentNamesByProperty.opacity do
+        local compName = Tween.Config.componentNamesByProperty.opacity[i] -- nice to see another use for componentNamesByProperty
+        component = gameObject[ compName ]
+        if component ~= nil then
+            break    
+        end
+    end
+    return Tween.Tweener.New( component, "opacity", 0, duration, onCompleteCallback )
+end
+
 
 ----------------------------------------------------------------------------------
 -- Easing equations
