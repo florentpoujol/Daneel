@@ -584,6 +584,14 @@ Vector2 = {}
 Vector2.__index = Vector2
 setmetatable( Vector2, { __call = function(Object, ...) return Object.New(...) end } )
 
+Daneel.modules.Vector2 = {
+    DefaultConfig = {
+        objects = {
+            Vector2 = Vector2
+        }
+    }
+}
+
 function Vector2.__tostring(vector2)
     return "Vector2: { x="..vector2.x..", y="..vector2.y.." }"
 end

@@ -1534,10 +1534,6 @@ function GUI.DefaultConfig()
         },
         componentTypes = {},
 
-        objects = {
-            Vector2 = Vector2,
-        },
-
         -- for the GameObject.Animate() functions in the Tween module
         propertiesByComponentName = {
             hud = {"position", "localPosition", "layer", "localLayer"},
