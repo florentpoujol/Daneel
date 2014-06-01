@@ -447,7 +447,6 @@ function Tween.DefaultConfig()
                 "scale", "localScale",
                 "position", "localPosition",
                 "eulerAngles", "localEulerAngles",
-                "orientation", "localOrientation",
             },
             modelRenderer = { "opacity" },
             mapRenderer = { "opacity" },
@@ -598,8 +597,7 @@ local function resolveArguments(...)
                     gameObject = arg
                 elseif arg.gameObject ~= nil then -- suppose a component
                     params.target = arg
-                elseif mt == Vector3 or mt == Quaternion or -- suppose value (mt can only be Vector2, Vector3 or Quaternion)
-                       mt == table.getvalue( _G, "Vector2" ) then -- checks if Vector2 exist and test the value at the same time
+                elseif mt == Vector2 or mt == Vector3 then
                     params.endValue = arg
                 else
                     error("Tween: resolveArguments(): Unknow metatable for argument n°"..i..": ", arg, mt, table.getkey( _G, mt ) ) -- getkey return the name of the metatable (if it's a first level global variable)
@@ -636,13 +634,20 @@ local function resolveArguments(...)
     -- resolving property and target
     if params.property ~= nil then
         if gameObject ~= nil and params.target == nil then
-            local compNames = Tween.Config.componentNamesByProperty[ params.property ]
-            for i=1, #compNames do
-                local component = gameObject[ compNames[i] ]
-                if component ~= nil then
-                    -- this gameObject has a component that has this property
-                    params.target = component
-                    break
+            if 
+                (params.property == "position" or params.property == "localPosition") and
+                Daneel.modules.GUI ~= nil and gameObject.hud ~= nil
+            then
+                params.target = gameObject.hud
+            else
+                local compNames = Tween.Config.componentNamesByProperty[ params.property ]
+                for i=1, #compNames do
+                    local component = gameObject[ compNames[i] ]
+                    if component ~= nil then
+                        -- this gameObject has a component that has this property
+                        params.target = component
+                        break
+                    end
                 end
             end
         elseif gameObject == nil and params.target == nil then
@@ -657,7 +662,7 @@ local function resolveArguments(...)
 end
 
 --- Creates an animation (a tweener) with the provided parameters.
--- Mandatory arguments with no forced order are: gameObject (GameObject), property (string), endValue (number, Vector2, Vector3 or Quaternion) and duration (number).
+-- Mandatory arguments with no forced order are: gameObject (GameObject), property (string), endValue (number, Vector2, Vector3) and duration (number).
 -- The only order requirement is that endValue must comes before the duration when it is of type number.
 -- Optional arguments with no forced order are: target (a component), durationType (string), easeType (string), isRelative (boolean), OnComplete callback (function) or params (table).
 -- You can set other standard tweener's properties via the params table.
@@ -668,7 +673,7 @@ end
 
 --- Creates an animation (a tweener) with the provided parameters.
 -- Automatically destroy the game object when the twener completes.
--- Mandatory arguments with no forced order are: gameObject (GameObject), property (string), endValue (number, Vector2, Vector3 or Quaternion) and duration (number).
+-- Mandatory arguments with no forced order are: gameObject (GameObject), property (string), endValue (number, Vector2, Vector3) and duration (number).
 -- The only order requirement is that endValue must comes before the duration when it is of type number.
 -- Optional arguments with no forced order are: target (a component), durationType (string), easeType (string), isRelative (boolean), OnComplete callback (function) or params (table).
 -- You can set other standard tweener's properties via the params table.
