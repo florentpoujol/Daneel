@@ -1342,8 +1342,8 @@ end -- end Daneel.Load()
 
 ----------------------------------------------------------------------------------
 -- Runtime
-local luaDocStop = ""
 
+-- luadoc stop
 function Behavior:Awake()
     if self.debugTry == true then
         CraftStudio.Destroy( self )

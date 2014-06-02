@@ -580,6 +580,7 @@ end -- end Tween.Update
 ----------------------------------------------------------------------------------
 -- GameObject
 
+-- luadoc stop
 local function resolveArguments(...)
     local args = {...}
     local params = {}
@@ -661,22 +662,22 @@ local function resolveArguments(...)
     return params
 end
 
---- Creates an animation (a tweener) with the provided parameters.
--- Mandatory arguments with no forced order are: gameObject (GameObject), property (string), endValue (number, Vector2, Vector3) and duration (number).
--- The only order requirement is that endValue must comes before the duration when it is of type number.
--- Optional arguments with no forced order are: target (a component), durationType (string), easeType (string), isRelative (boolean), OnComplete callback (function) or params (table).
--- You can set other standard tweener's properties via the params table.
+--- Creates an animation (a tweener) with the provided parameters.<br>
+-- Mandatory arguments with no forced order are: gameObject (GameObject), property (string), endValue (number, Vector2, Vector3) and duration (number).<br>
+-- The only order requirement is that endValue must comes before the duration when it is of type number.<br>
+-- Optional arguments with no forced order are: target (a component), durationType (string), easeType (string), isRelative (boolean), OnComplete callback (function) or params (table).<br>
+-- You can set other standard tweener's properties via the params table.<br>
 -- @return (Tweener) The animation's tweener.
 function GameObject.Animate( ... )
     return Tween.Tweener.New( resolveArguments( ... ) )   
 end
 
---- Creates an animation (a tweener) with the provided parameters.
--- Automatically destroy the game object when the twener completes.
--- Mandatory arguments with no forced order are: gameObject (GameObject), property (string), endValue (number, Vector2, Vector3) and duration (number).
--- The only order requirement is that endValue must comes before the duration when it is of type number.
--- Optional arguments with no forced order are: target (a component), durationType (string), easeType (string), isRelative (boolean), OnComplete callback (function) or params (table).
--- You can set other standard tweener's properties via the params table.
+--- Creates an animation (a tweener) with the provided parameters.<br>
+-- Automatically destroy the game object when the twener completes.<br>
+-- Mandatory arguments with no forced order are: gameObject (GameObject), property (string), endValue (number, Vector2, Vector3) and duration (number).<br>
+-- The only order requirement is that endValue must comes before the duration when it is of type number.<br>
+-- Optional arguments with no forced order are: target (a component), durationType (string), easeType (string), isRelative (boolean), OnComplete callback (function) or params (table).<br>
+-- You can set other standard tweener's properties via the params table.<br>
 -- @return (Tweener) The animation's tweener.
 function GameObject.AnimateAndDestroy( ... )
     local args = {...}
