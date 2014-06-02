@@ -663,59 +663,41 @@ local function resolveArguments(...)
 end
 
 --- Creates an animation (a tweener) with the provided parameters.<br>
--- Mandatory arguments with no forced order are: gameObject (GameObject), property (string), endValue (number, Vector2, Vector3) and duration (number).<br>
--- The only order requirement is that endValue must comes before the duration when it is of type number.<br>
--- Optional arguments with no forced order are: target (a component), durationType (string), easeType (string), isRelative (boolean), OnComplete callback (function) or params (table).<br>
--- You can set other standard tweener's properties via the params table.<br>
--- @return (Tweener) The animation's tweener.
-function GameObject.Animate( ... )
-    return Tween.Tweener.New( resolveArguments( ... ) )   
-end
-
---- Creates an animation (a tweener) with the provided parameters.<br>
--- Automatically destroy the game object when the twener completes.<br>
--- Mandatory arguments with no forced order are: gameObject (GameObject), property (string), endValue (number, Vector2, Vector3) and duration (number).<br>
--- The only order requirement is that endValue must comes before the duration when it is of type number.<br>
--- Optional arguments with no forced order are: target (a component), durationType (string), easeType (string), isRelative (boolean), OnComplete callback (function) or params (table).<br>
--- You can set other standard tweener's properties via the params table.<br>
--- @return (Tweener) The animation's tweener.
-function GameObject.AnimateAndDestroy( ... )
-    local args = {...}
-    return Tween.Tweener.New( resolveArguments( function() args[1]:Destroy() end, ... ) )   
-end
-
---- Fades in the provided game object's renderer's opacity to 1 in the provided duration.
--- @param gameObject (GameObject) The game object.
--- @param duration (number) The duration in seconds (durationType = "time").
--- @param onCompleteCallback (function) The function to call when the fade has completed.
+-- @param property (string) The name of the property to animate.
+-- @param endValue (number) The value the property should have at the end of the duration.
+-- @param duration (number) The time (in seconds) or frame it should take for the property to reach endValue.
+-- @param onCompleteCallback (function) [optional] The function to execute when the tweener has completed.
+-- @param params (table) [optional] A table of parameters.
 -- @return (Tweener) The tweener.
-function GameObject.FadeIn( gameObject, duration, onCompleteCallback )
+function GameObject.Animate( gameObject, property, endValue, duration, onCompleteCallback, params )
     local component = nil
-    for i=1, #Tween.Config.componentNamesByProperty.opacity do
-        local compName = Tween.Config.componentNamesByProperty.opacity[i] -- nice to see another use for componentNamesByProperty
-        component = gameObject[ compName ]
-        if component ~= nil then
-            break    
-        end
+    if type( onCompleteCallback ) == "table" and params == nil then
+        params = onCompleteCallback
+        onCompleteCallback = nil
     end
-    return Tween.Tweener.New( component, "opacity", 1, duration, onCompleteCallback )
+    if params ~= nil and params.target ~= nil then
+        component = params.target
+    else
+        component = resolveTarget( gameObject, property )
+    end
+    return Tween.Tweener.New( component, property, endValue, duration, onCompleteCallback, params )   
 end
 
---- Fades out the provided game object's renderer's opacity to 0 in the provided duration.
+--- Creates an animation (a tweener) with the provided parameters and destroy the game object when the tweener has completed.
 -- @param gameObject (GameObject) The game object.
--- @param duration (number) The duration in seconds (durationType = "time").
--- @param onCompleteCallback (function) The function to call when the fade has completed.
+-- @param property (string) The name of the property to animate.
+-- @param endValue (number) The value the property should have at the end of the duration.
+-- @param duration (number) The time (in seconds) or frame it should take for the property to reach endValue.
+-- @param params (table) [optional] A table of parameters.
 -- @return (Tweener) The tweener.
-function GameObject.FadeOut( gameObject, duration, onCompleteCallback )
+function GameObject.AnimateAndDestroy( gameObject, property, endValue, duration, params )
     local component = nil
-    for i=1, #Tween.Config.componentNamesByProperty.opacity do
-        local compName = Tween.Config.componentNamesByProperty.opacity[i] -- nice to see another use for componentNamesByProperty
-        component = gameObject[ compName ]
-        if component ~= nil then
-            break    
-        end
+    if params ~= nil and params.target ~= nil then
+        component = params.target
+    else
+        component = resolveTarget( gameObject, property )
     end
-    return Tween.Tweener.New( component, "opacity", 0, duration, onCompleteCallback )
+    return Tween.Tweener.New( component, property, endValue, duration, function() gameObject:Destroy() end, params )   
 end
 
 
