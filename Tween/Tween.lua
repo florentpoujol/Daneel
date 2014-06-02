@@ -580,86 +580,33 @@ end -- end Tween.Update
 ----------------------------------------------------------------------------------
 -- GameObject
 
--- luadoc stop
-local function resolveArguments(...)
-    local args = {...}
-    local params = {}
-    local gameObject = nil
-
-    for i=1, #args do
-        local arg = args[i]
-        local _type = type( arg )
-
-        if _type == "table" then
-            -- gameObject, target, value or params
-            local mt = getmetatable( arg )
-            if mt ~= nil then
-                if mt == GameObject then
-                    gameObject = arg
-                elseif arg.gameObject ~= nil then -- suppose a component
-                    params.target = arg
-                elseif mt == Vector2 or mt == Vector3 then
-                    params.endValue = arg
-                else
-                    error("Tween: resolveArguments(): Unknow metatable for argument n°"..i..": ", arg, mt, table.getkey( _G, mt ) ) -- getkey return the name of the metatable (if it's a first level global variable)
-                end
-            else
-                table.mergein( params, arg )
+-- Find the component that has the provided property on the provided game object.
+-- @param gameObject (GameObject) The game object.
+-- @param property (string) The property.
+-- @return (a component) The component.
+local function resolveTarget( gameObject, property )
+    local component = nil
+    if 
+        (property == "position" or property == "localPosition") and
+        Daneel.modules.GUI ~= nil and gameObject.hud ~= nil
+        -- 02/06/2014 - This is bad, this code should be handled by the GUI module itself
+        -- but I have no idea how to properly set that up easily
+        -- Plus I really should test the type of the endValue instead (in case it's a Vector3 for instance beacuse the user whants to work on the transform and not the hud)
+    then
+        component = gameObject.hud
+    else
+        local compNames = Tween.Config.componentNamesByProperty[ property ]
+        for i=1, #compNames do
+            component = gameObject[ compNames[i] ]
+            if component ~= nil then
+                break
             end
-
-        elseif _type == "string" then
-            -- property, easeType, durationType (loopType is not supported)
-            if Tween.Ease[ arg ] ~= nil then
-                params.easeType = arg
-            elseif table.containsvalue( {"time", "realTime", "frame"}, arg ) then
-                params.durationType = arg
-            else
-                params.property = arg
-            end
-
-        elseif _type == "number" then
-            -- endValue, duration (startValue, loops, delay are not supported)
-            if params.endValue == nil then
-                params.endValue = arg
-            else
-                params.duration = arg
-            end
-
-        elseif _type == "boolean" then
-            params.isRelative = arg
-        elseif _type == "function" then
-            params.OnComplete = arg
         end
     end
-
-    -- resolving property and target
-    if params.property ~= nil then
-        if gameObject ~= nil and params.target == nil then
-            if 
-                (params.property == "position" or params.property == "localPosition") and
-                Daneel.modules.GUI ~= nil and gameObject.hud ~= nil
-            then
-                params.target = gameObject.hud
-            else
-                local compNames = Tween.Config.componentNamesByProperty[ params.property ]
-                for i=1, #compNames do
-                    local component = gameObject[ compNames[i] ]
-                    if component ~= nil then
-                        -- this gameObject has a component that has this property
-                        params.target = component
-                        break
-                    end
-                end
-            end
-        elseif gameObject == nil and params.target == nil then
-            error("Tween: resolveArguments(): The property is set to '"..params.property.."' but no gameObject and no target has been set.")
-        end
-        if params.target == nil then
-            error("Tween: resolveArguments(): Couldn't resolve the target for property '"..params.property.."' and gameObject: ", gameObject)
-        end
+    if component == nil then
+        error("Tween: resolveTarget(): Couldn't resolve the target for property '"..property.."' and gameObject: ", gameObject)
     end
-
-    return params
+    return component
 end
 
 --- Creates an animation (a tweener) with the provided parameters.<br>
