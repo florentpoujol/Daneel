@@ -1255,7 +1255,7 @@ function GUI.TextArea.AddLine( textArea, line, prepend )
     if prepend == true then
         text = line..textArea.NewLine..text
     else
-        if not string.endswith( text, textArea.NewLine ) then
+        if text ~= "" and not string.endswith( text, textArea.NewLine ) then
             line = textArea.NewLine..line
         end
         text = text..line
