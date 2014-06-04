@@ -28,9 +28,19 @@ end
 local function SetTweenerProperty(tweener, value)
     if tweener.target ~= nil then
         Daneel.Debug.StackTrace.BeginFunction("SetTweenerProperty", tweener, value)
-        if tweener.valueType == "string" and type(value) == "number" then
-            tweener.stringValue = tweener.startStringValue..tweener.endStringValue:sub( tweener.startValue, value )
-            value = tweener.stringValue
+        if tweener.valueType == "string" then
+            -- don't update the property unless the text has actually changed
+            if type(value) == "number" and value >= #tweener.stringValue + 1 then               
+                local newValue = tweener.startStringValue..tweener.endStringValue:sub( 1, value )
+                if newValue ~= tweener.stringValue then
+                    tweener.stringValue = newValue
+                    value = newValue
+                else 
+                    return
+                end
+            else
+                return
+            end
         end
         if tweener.target[tweener.property] == nil then
             local functionName = "Set"..string.ucfirst( tweener.property )
@@ -160,8 +170,9 @@ function Tween.Tweener.New(target, property, endValue, duration, onCompleteCallb
 
     if tweener.valueType == "string" then
         tweener.startStringValue = tweener.startValue
-        tweener.startValue = 0
+        tweener.stringValue = tweener.startStringValue
         tweener.endStringValue = tweener.endValue
+        tweener.startValue = 1
         tweener.endValue = #tweener.endStringValue
     end
     
