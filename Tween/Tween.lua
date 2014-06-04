@@ -74,7 +74,16 @@ function Tween.Tweener.New(target, property, endValue, duration, onCompleteCallb
     -- target, property, endValue, duration, [onCompleteCallback, params]
     -- startValue, endValue, duration, [onCompleteCallback, params]
     -- params
-    if type(target) == "number" then
+    local targetType = type( target )
+    local mt = nil
+    if targetType == "table" then 
+        mt = getmetatable( target )
+    end
+
+    if 
+        targetType == "number" or targetType == "string" or 
+        (mt == Vector2 or mt == Vector3)
+    then
         -- constructor n°2
         params = onCompleteCallback
         onCompleteCallback = duration
