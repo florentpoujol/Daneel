@@ -6,27 +6,32 @@
 
 Tween = {}
 
--- Allow to get the target's "property" even if it is virtual and normally handled via getter/setter.
+-- Allow to get the target's "property" even if it's virtual and normally handled via getter/setter.
 local function GetTweenerProperty(tweener)
-    Daneel.Debug.StackTrace.BeginFunction("GetTweenerProperty", tweener)
-    local value = nil
     if tweener.target ~= nil then
+        Daneel.Debug.StackTrace.BeginFunction("GetTweenerProperty", tweener)
+        local value = nil
         value = tweener.target[tweener.property]
         if value == nil then
+            -- 04/06/2014 : this piece of code allows tweeners to work even on objects that do not have Daneel's dynamic getters and setters.
             local functionName = "Get"..string.ucfirst( tweener.property )
             if tweener.target[functionName] ~= nil then
                 value = tweener.target[functionName](tweener.target)
             end
         end
+        Daneel.Debug.StackTrace.EndFunction()
+        return value
     end
-    Daneel.Debug.StackTrace.EndFunction()
-    return value
 end
 
--- Allow to set the target's "property" even if it is virtual and normally handled via getter/setter.
+-- Allow to set the target's "property" even if it's virtual and normally handled via getter/setter.
 local function SetTweenerProperty(tweener, value)
-    Daneel.Debug.StackTrace.BeginFunction("SetTweenerProperty", tweener, value)
     if tweener.target ~= nil then
+        Daneel.Debug.StackTrace.BeginFunction("SetTweenerProperty", tweener, value)
+        if tweener.valueType == "string" and type(value) == "number" then
+            tweener.stringValue = tweener.startStringValue..tweener.endStringValue:sub( tweener.startValue, value )
+            value = tweener.stringValue
+        end
         if tweener.target[tweener.property] == nil then
             local functionName = "Set"..string.ucfirst( tweener.property )
             if tweener.target[functionName] ~= nil then
@@ -35,8 +40,8 @@ local function SetTweenerProperty(tweener, value)
         else
             tweener.target[tweener.property] = value
         end
+        Daneel.Debug.StackTrace.EndFunction()
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
@@ -152,6 +157,13 @@ function Tween.Tweener.New(target, property, endValue, duration, onCompleteCallb
     end
 
     tweener.valueType = Daneel.Debug.GetType( tweener.startValue )
+
+    if tweener.valueType == "string" then
+        tweener.startStringValue = tweener.startValue
+        tweener.startValue = 0
+        tweener.endStringValue = tweener.endValue
+        tweener.endValue = #tweener.endStringValue
+    end
     
     Tween.Tweener.tweeners[tweener.id] = tweener
     Daneel.Debug.StackTrace.EndFunction()
@@ -335,15 +347,15 @@ function Tween.Tweener.Update(tweener, deltaDuration) -- the deltaDuration argum
                 Tween.Ease[tweener.easeType](tweener.elapsed, tweener.startValue.x, tweener.diffValue.x, tweener.duration),
                 Tween.Ease[tweener.easeType](tweener.elapsed, tweener.startValue.y, tweener.diffValue.y, tweener.duration)
             )
-        elseif tweener.valueType == "number" then
+        else -- tweener.valueType == number or string
+            -- when valueType == string, value represent the number of chars that must be displayed
             value = Tween.Ease[tweener.easeType](tweener.elapsed, tweener.startValue, tweener.diffValue, tweener.duration)
-        elseif tweener.valueType == "string" then
         end
     end
 
-
     if tweener.target ~= nil then
         SetTweenerProperty(tweener, value)
+        -- when valueType == string, SetTweenerProperty() sets tweener.stringValue
     end
     tweener.value = value
 
@@ -459,7 +471,7 @@ function Tween.DefaultConfig()
             },
             modelRenderer = { "opacity" },
             mapRenderer = { "opacity" },
-            textRenderer = { "opacity" },
+            textRenderer = { "text", "opacity" },
             camera = { "fov" },
         }
     }
@@ -605,15 +617,17 @@ local function resolveTarget( gameObject, property )
         component = gameObject.hud
     else
         local compNames = Tween.Config.componentNamesByProperty[ property ]
-        for i=1, #compNames do
-            component = gameObject[ compNames[i] ]
-            if component ~= nil then
-                break
+        if compNames ~= nil then
+            for i=1, #compNames do
+                component = gameObject[ compNames[i] ]
+                if component ~= nil then
+                    break
+                end
             end
         end
     end
     if component == nil then
-        error("Tween: resolveTarget(): Couldn't resolve the target for property '"..property.."' and gameObject: ", gameObject)
+        error("Tween: resolveTarget(): Couldn't resolve the target for property '"..property.."' and gameObject: "..tostring(gameObject))
     end
     return component
 end
