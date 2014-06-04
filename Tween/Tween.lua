@@ -643,9 +643,9 @@ local function resolveTarget( gameObject, property )
     return component
 end
 
---- Creates an animation (a tweener) with the provided parameters.<br>
+--- Creates an animation (a tweener) with the provided parameters.
 -- @param property (string) The name of the property to animate.
--- @param endValue (number) The value the property should have at the end of the duration.
+-- @param endValue (number, Vector2, Vector3 or string) The value the property should have at the end of the duration.
 -- @param duration (number) The time (in seconds) or frame it should take for the property to reach endValue.
 -- @param onCompleteCallback (function) [optional] The function to execute when the tweener has completed.
 -- @param params (table) [optional] A table of parameters.
@@ -667,7 +667,7 @@ end
 --- Creates an animation (a tweener) with the provided parameters and destroy the game object when the tweener has completed.
 -- @param gameObject (GameObject) The game object.
 -- @param property (string) The name of the property to animate.
--- @param endValue (number) The value the property should have at the end of the duration.
+-- @param endValue (number, Vector2, Vector3 or string) The value the property should have at the end of the duration.
 -- @param duration (number) The time (in seconds) or frame it should take for the property to reach endValue.
 -- @param params (table) [optional] A table of parameters.
 -- @return (Tweener) The tweener.
