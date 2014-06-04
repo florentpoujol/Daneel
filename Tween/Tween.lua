@@ -140,7 +140,7 @@ function Tween.Tweener.New(target, property, endValue, duration, onCompleteCallb
     end
 
     if tweener.endValue == nil then
-        error("Tween.Tweener.New(): 'endValue' property is nil.")
+        error("Tween.Tweener.New(): 'endValue' property is nil for tweener: "..tostring(tweener))
     end
     
     if tweener.startValue == nil then
@@ -255,22 +255,21 @@ function Tween.Tweener.Complete( tweener )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
-
+-- Tell whether the tweener's target has been destroyed.
+-- @param tweener (Tween.Tweener) The tweener.
+-- @return (boolean)
 function Tween.Tweener.IsTargetDestroyed( tweener )
     if tweener.target ~= nil then
         if tweener.target.isDestroyed then
             return true
         end
-
         if tweener.target.gameObject ~= nil and (tweener.target.gameObject.isDestroyed or tweener.target.gameObject.inner == nil) then
             return true
         end
     end
-
     if tweener.gameObject ~= nil and (tweener.gameObject.isDestroyed or tweener.gameObject.inner == nil) then
         return true
     end
-
     return false
 end
 
@@ -336,8 +335,9 @@ function Tween.Tweener.Update(tweener, deltaDuration) -- the deltaDuration argum
                 Tween.Ease[tweener.easeType](tweener.elapsed, tweener.startValue.x, tweener.diffValue.x, tweener.duration),
                 Tween.Ease[tweener.easeType](tweener.elapsed, tweener.startValue.y, tweener.diffValue.y, tweener.duration)
             )
-        else
+        elseif tweener.valueType == "number" then
             value = Tween.Ease[tweener.easeType](tweener.elapsed, tweener.startValue, tweener.diffValue, tweener.duration)
+        elseif tweener.valueType == "string" then
         end
     end
 
@@ -470,8 +470,8 @@ Tween.Config = Tween.DefaultConfig()
 
 function Tween.Awake()
     if Tween.Config.componentNamesByProperty == nil then
-        -- In Awake() to let other modules update Tween.Config.componentNamesByProperty from Load()
-        -- Actually this you be done automatically (without things to set up in the config) by looking up the functions on the components' objects
+        -- In Awake() to let other modules update Tween.Config.componentNamesByProperty from their Load() function
+        -- Actually this should be done automatically (without things to set up in the config) by looking up the functions on the components' objects
         local t = {}
         for compName, properties in pairs( Tween.Config.propertiesByComponentName ) do
             for i=1, #properties do
@@ -520,7 +520,7 @@ function Tween.Update()
                                 if tweener.target ~= nil then
                                     tweener.startValue = GetTweenerProperty( tweener )
                                 else
-                                    error( "Tween.Update() : startValue is nil but no target is set for tweener with Id '" .. tweener.id .. "'" )
+                                    error( "Tween.Update() : startValue is nil but no target is set for tweener: "..tostring(tweener) )
                                 end
                             elseif tweener.target ~= nil then
                                 -- when start value and a target are set move the target to startValue before updating the tweener
