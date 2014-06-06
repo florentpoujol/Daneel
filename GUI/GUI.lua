@@ -14,6 +14,8 @@ local t = "table"
 local go = "GameObject"
 local v2 = "Vector2"
 local v3 = "Vector3"
+local _go = { "gameObject", go }
+local _op = { "params", t, defaultValue = {} }
 local _p = { "params", t }
 
 --- Convert the provided value (a length) in a number expressed in scene unit.
@@ -45,27 +47,12 @@ GUI.Hud = {}
 GUI.Hud.__index = GUI.Hud -- __index will be rewritted when Daneel loads (in Daneel.SetComponents()) and enable the dynamic accessors on the components
 -- this is just meant to prevent some errors if Daneel is not loaded
 
---- Transform the 3D position into a Hud position and a layer.
--- @param position (Vector3) The 3D position.
--- @return (Vector2) The hud position.
--- @return (numbe) The layer.
-function GUI.Hud.ToHudPosition(position)
-    Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.ToHudPosition", position)
-    local errorHead = "GUI.Hud.ToHudPosition(hud, position) : "
-    Daneel.Debug.CheckArgType(position, "position", "Vector3", errorHead)
-
-    if GUI.Config.cameraGO == nil then
-        error( errorHead.."Can't convert the position '"..tostring(position).."' from scene units to pixels because the HUD camera has not been found (the game object with name '"..GUI.Config.cameraName.."' (value of 'cameraName' in the config))." )
     end
 
-    local layer = GUI.Config.originGO.transform:GetPosition().z - position.z
-    position = position - GUI.Config.originGO.transform:GetPosition()
-    position = Vector2(
-        position.x / GUI.pixelsToUnits,
-        -position.y / GUI.pixelsToUnits
-    )
-    Daneel.Debug.StackTrace.EndFunction()
-    return position, layer
+-- Deprecated since v1.5.0.
+-- Use Camera.WorldToScreenPoint() or Camera.Project() instead.
+function GUI.Hud.ToHudPosition()
+    print("ERROR: GUI.Hud.ToHudPosition() is deprecated since v1.5.0. Use Camera.WorldToScreenPoint() or Camera.Project() instead." )
 end
 
 --- Convert the provided value (a length) in a number expressed in screen pixel.
@@ -120,22 +107,14 @@ end
 -- @param params (table) [optional] A table of parameters.
 -- @return (Hud) The hud component.
 function GUI.Hud.New( gameObject, params )
-    Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.New", gameObject, params )
-    local errorHead = "GUI.Hud.New( gameObject, params ) : "
-    Daneel.Debug.CheckArgType(gameObject, "gameObject", "GameObject", errorHead )
-    params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
-
     if GUI.Config.cameraGO == nil then
         error( errorHead.."Can't create a Hud component because the HUD camera has not been found (the game object with name '"..GUI.Config.cameraName.."' (value of 'cameraName' in the config)).")
     end
-
     local hud = setmetatable( {}, GUI.Hud )
     hud.gameObject = gameObject
     hud.id = Daneel.Utilities.GetId()
     gameObject.hud = hud
-
     hud:Set( table.merge( GUI.Config.hud, params ) )
-    Daneel.Debug.StackTrace.EndFunction()
     return hud
 end
 
@@ -144,12 +123,7 @@ end
 -- @param hud (Hud) The hud component.
 -- @param position (Vector2) The position as a Vector2.
 function GUI.Hud.SetPosition(hud, position)
-    Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.SetPosition", hud, position)
-    local errorHead = "GUI.Hud.SetPosition(hud, position) : "
-    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
-    Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
     position = GUI.Hud.FixPosition( position )
-
     local newPosition = GUI.Config.originGO.transform:GetPosition() +
     Vector3:New(
         position.x * GUI.pixelsToUnits,
@@ -158,36 +132,23 @@ function GUI.Hud.SetPosition(hud, position)
     )
     newPosition.z = hud.gameObject.transform:GetPosition().z
     hud.gameObject.transform:SetPosition( newPosition )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Get the position of the provided hud on the screen.
 -- @param hud (Hud) The hud component.
 -- @return (Vector2) The position.
 function GUI.Hud.GetPosition(hud)
-    Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.GetPosition", hud)
-    local errorHead = "GUI.Hud.GetPosition(hud) : "
-    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
-
     local position = hud.gameObject.transform:GetPosition() - GUI.Config.originGO.transform:GetPosition()
     position = position / GUI.pixelsToUnits
-    position = Vector2.New(math.round(position.x), math.round(-position.y))
-    Daneel.Debug.StackTrace.EndFunction()
-    return position
+    return Vector2.New(math.round(position.x), math.round(-position.y))
 end
 
 --- Sets the local position (relative to its parent) of the gameObject on screen .
 -- @param hud (Hud) The hud component.
 -- @param position (Vector2) The position as a Vector2.
 function GUI.Hud.SetLocalPosition(hud, position)
-    Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.SetLocalPosition", hud, position)
-    local errorHead = "GUI.Hud.SetLocalPosition(hud, position) : "
-    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
-    Daneel.Debug.CheckArgType(position, "position", "Vector2", errorHead)
     position = GUI.Hud.FixPosition( position )
-
-    local parent = hud.gameObject.parent
-    if parent == nil then parent = GUI.Config.originGO end
+    local parent = hud.gameObject.parent or GUI.Config.originGO
     local newPosition = parent.transform:GetPosition() +
     Vector3:New(
         position.x * GUI.pixelsToUnits,
@@ -196,87 +157,66 @@ function GUI.Hud.SetLocalPosition(hud, position)
     )
     newPosition.z = hud.gameObject.transform:GetPosition().z
     hud.gameObject.transform:SetPosition( newPosition )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Get the local position (relative to its parent) of the gameObject on screen.
 -- @param hud (Hud) The hud component.
 -- @return (Vector2) The position.
 function GUI.Hud.GetLocalPosition(hud)
-    Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.GetLocalPosition", hud)
-    local errorHead = "GUI.Hud.GetLocalPosition(hud) : "
-    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
-
-    local parent = hud.gameObject.parent
-    if parent == nil then parent = GUI.Config.originGO end
+    local parent = hud.gameObject.parent or GUI.Config.originGO
     local position = hud.gameObject.transform:GetPosition() - parent.transform:GetPosition()
     position = position / GUI.pixelsToUnits
-    position = Vector2.New(math.round(position.x), math.round(-position.y))
-    Daneel.Debug.StackTrace.EndFunction()
-    return position
+    return Vector2.New(math.round(position.x), math.round(-position.y))
 end
 
 --- Set the gameObject's layer.
 -- @param hud (Hud) The hud component.
 -- @param layer (number) The layer (a postive number).
 function GUI.Hud.SetLayer(hud, layer)
-    Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.SetLayer", hud)
-    local errorHead = "GUI.Hud.SetLayer(hud, layer) : "
-    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
-    Daneel.Debug.CheckArgType(layer, "layer", "number", errorHead)
-
     local originLayer = GUI.Config.originGO.transform:GetPosition().z
     local currentPosition = hud.gameObject.transform:GetPosition()
     hud.gameObject.transform:SetPosition( Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer) )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Get the gameObject's layer.
 -- @param hud (Hud) The hud component.
 -- @return (number) The layer (with one decimal).
 function GUI.Hud.GetLayer(hud)
-    Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.GetLayer", hud)
-    local errorHead = "GUI.Hud.GetLyer(hud) : "
-    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
-
     local originLayer = GUI.Config.originGO.transform:GetPosition().z
-    local layer = math.round( originLayer - hud.gameObject.transform:GetPosition().z, 1 )
-    Daneel.Debug.StackTrace.EndFunction()
-    return layer
+    return math.round( originLayer - hud.gameObject.transform:GetPosition().z, 1 )
 end
 
 --- Set the huds's local layer.
 -- @param hud (Hud) The hud component.
 -- @param layer (number) The layer (a postiv number).
 function GUI.Hud.SetLocalLayer(hud, layer)
-    Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.SetLayer", hud)
-    local errorHead = "GUI.Hud.SetLayer(hud, layer) : "
-    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
-    Daneel.Debug.CheckArgType(layer, "layer", "number", errorHead)
-
-    local parent = hud.gameObject.parent
-    if parent == nil then parent = GUI.Config.originGO end
+    local parent = hud.gameObject.parent or GUI.Config.originGO
     local originLayer = parent.transform:GetPosition().z
     local currentPosition = hud.gameObject.transform:GetPosition()
     hud.gameObject.transform:SetPosition( Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer) )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Get the gameObject's local layer.
 -- @param hud (Hud) The hud component.
 -- @return (number) The layer (with one decimal).
 function GUI.Hud.GetLocalLayer(hud)
-    Daneel.Debug.StackTrace.BeginFunction("GUI.Hud.GetLayer", hud)
-    local errorHead = "GUI.Hud.GetLyer(hud) : "
-    Daneel.Debug.CheckArgType(hud, "hud", "Hud", errorHead)
-
-    local parent = hud.gameObject.parent
-    if parent == nil then parent = GUI.Config.originGO end
+    local parent = hud.gameObject.parent or GUI.Config.originGO
     local originLayer = parent.transform:GetPosition().z
-    local layer = math.round( originLayer - hud.gameObject.transform:GetPosition().z, 1 )
-    Daneel.Debug.StackTrace.EndFunction()
-    return layer
+    return math.round( originLayer - hud.gameObject.transform:GetPosition().z, 1 )
 end
+
+local _hud = { "hud", "Hud" }
+table.mergein( Daneel.functionsDebugInfo, {
+    ["GUI.Hud.New"] =               { _go, _op },
+    ["GUI.Hud.SetPosition"] =       { _hud, { "position", v2 } },
+    ["GUI.Hud.GetPosition"] =       { _hud },
+    ["GUI.Hud.SetLocalPosition"] =  { _hud, { "position", v2 } },
+    ["GUI.Hud.GetLocalPosition"] =  { _hud },
+    ["GUI.Hud.SetLayer"] =          { _hud, { "layer", n } },
+    ["GUI.Hud.GetLayer"] =          { _hud },
+    ["GUI.Hud.SetLocalLayer"] =     { _hud, { "layer", n } },
+    ["GUI.Hud.GetLocalLayer"] =     { _hud },
+} )
 
 
 ----------------------------------------------------------------------------------
