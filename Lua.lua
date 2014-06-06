@@ -343,6 +343,14 @@ function table.mergein( ... )
     end
     
     local fullTable = table.remove( arg, 1 )
+    if fullTable == nil then
+        local msg = "table.mergein(): No table where passed as argument."
+        if #arg > 0 then
+            table.print( arg )
+            msg = "table.mergein(): First argument is nil. Other arguments are shown above."
+        else
+        error( msg )
+    end
     for i, t in ipairs( arg ) do
         local argType = type( t )
         if argType == "table" then
