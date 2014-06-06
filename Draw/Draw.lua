@@ -461,5 +461,7 @@ end
 Draw.Config = Draw.DefaultConfig()
 
 function Draw.Load()
-    table.mergein( Tween.Config.propertiesByComponentName, Draw.Config.propertiesByComponentName )
+    if Daneel.modules.Tween then
+        table.mergein( Tween.Config.propertiesByComponentName, Draw.Config.propertiesByComponentName )
+    end
 end

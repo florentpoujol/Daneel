@@ -1571,7 +1571,9 @@ function GUI.Load()
         Daneel.Debug.StackTrace.EndFunction()
     end
 
-    table.mergein( Tween.Config.propertiesByComponentName, GUI.Config.propertiesByComponentName )
+    if Daneel.modules.Tween then
+        table.mergein( Tween.Config.propertiesByComponentName, GUI.Config.propertiesByComponentName )
+    end
 end
 
 function GUI.Awake()
