@@ -1101,7 +1101,7 @@ function GUI.TextArea.New( gameObject, params )
     textArea.gameObject = gameObject
     gameObject.textArea = textArea
     textArea.id = Daneel.Utilities.GetId()
-    textArea.lineRenderers = {}
+    textArea.lineGOs = {}
     setmetatable( textArea, GUI.TextArea )
     textArea.textRuler = gameObject.textRenderer -- used to store the TextRenderer properties and mesure the lines length in SetText()
     if textArea.textRuler == nil then
@@ -1117,15 +1117,15 @@ end
 -- @param textArea (TextArea) The textArea.
 -- @param params (table) A table of parameters to set the component with.
 function GUI.TextArea.Set( textArea, params )
-    local lineRenderers = textArea.lineRenderers
-    textArea.lineRenderers = {} -- prevent the every setters to update the text when they are called
+    local lineGOs = textArea.lineGOs
+    textArea.lineGOs = {} -- prevent the every setters to update the text when they are called
     -- this is done once at the end
     local text = params.text
     params.text = nil
     for key, value in pairs( params ) do
         textArea[ key ] = value
     end
-    textArea.lineRenderers = lineRenderers
+    textArea.lineGOs = lineGOs
     if text == nil then
         text = textArea.Text
     end
@@ -1188,8 +1188,8 @@ function GUI.TextArea.SetText( textArea, text )
     end
     
     local linesCount = #lines
-    local lineRenderers = textArea.lineRenderers
-    local lineRenderersCount = #lineRenderers
+    local lineGOs = textArea.lineGOs
+    local oldLinesCount = #lineGOs
     local lineHeight = textArea.LineHeight / textAreaScale.y
     local gameObject = textArea.gameObject
     local textRendererParams = {
@@ -1207,32 +1207,29 @@ function GUI.TextArea.SetText( textArea, text )
         offset = lineHeight * linesCount - lineHeight / 2
     end
 
-    for i, line in ipairs( lines ) do
+    for i=1, linesCount do
+        local line = lines[i]    
         textRendererParams.text = line
 
-        if lineRenderers[i] ~= nil then
-            lineRenderers[i].gameObject.transform:SetLocalPosition( Vector3:New( 0, offset, 0 ) )
-            lineRenderers[i]:Set( textRendererParams )
+        if lineGOs[i] ~= nil then
+            lineGOs[i].transform:SetLocalPosition( Vector3:New( 0, offset, 0 ) )
+            lineGOs[i].textRenderer:Set( textRendererParams )
         else
-            local newLineGO = GameObject.New( "TextArea" .. textArea.id .. "-Line" .. i, {
-                parent = gameObject,
-                transform = {
-                    localPosition = Vector3:New( 0, offset, 0 ),
-                    localScale = Vector3:New(1),
-                },
-                textRenderer = textRendererParams
-            })
-
-            table.insert( lineRenderers, newLineGO.textRenderer )
+            local newLineGO = CS.CreateGameObject( "TextArea" .. textArea.id .. "-Line" .. i, gameObject )
+            newLineGO.transform:SetLocalPosition( Vector3:New( 0, offset, 0 ) )
+            newLineGO.transform:SetLocalScale( Vector3:New(1) )
+            newLineGO:CreateComponent( "TextRenderer" )
+            newLineGO.textRenderer:Set( textRendererParams )
+            table.insert( lineGOs, newLineGO )
         end
 
         offset = offset - lineHeight 
     end
 
     -- this new text has less lines than the previous one
-    if lineRenderersCount > linesCount then
-        for i = linesCount + 1, lineRenderersCount do
-            lineRenderers[i]:SetText( "" )
+    if linesCount < oldLinesCount then
+        for i = linesCount + 1, oldLinesCount do
+            lineGOs[i].textRenderer:SetText( "" ) -- don't destroy the line game object, just remove any text
         end
     end
 
@@ -1272,7 +1269,7 @@ function GUI.TextArea.SetAreaWidth( textArea, areaWidth )
     areaWidth = math.clamp( GUI.ToSceneUnit( areaWidth ), 0, 999 )   
     if textArea.AreaWidth ~= areaWidth then
         textArea.AreaWidth = areaWidth
-        if #textArea.lineRenderers > 0 then
+        if #textArea.lineGOs > 0 then
             textArea:SetText( textArea.Text )
         end
     end
@@ -1292,7 +1289,7 @@ end
 function GUI.TextArea.SetWordWrap( textArea, wordWrap )
     if textArea.WordWrap ~= wordWrap then
         textArea.WordWrap = wordWrap
-        if #textArea.lineRenderers > 0 then
+        if #textArea.lineGOs > 0 then
             textArea:SetText( textArea.Text )
         end
     end
@@ -1311,7 +1308,7 @@ end
 function GUI.TextArea.SetNewLine( textArea, newLine )
     if textArea.NewLine ~= newLine then
         textArea.NewLine = newLine
-        if #textArea.lineRenderers > 0 then
+        if #textArea.lineGOs > 0 then
             textArea:SetText( textArea.Text )
         end
     end
@@ -1331,7 +1328,7 @@ function GUI.TextArea.SetLineHeight( textArea, lineHeight )
     local lineHeight = GUI.ToSceneUnit( lineHeight )
     if textArea.LineHeight ~= lineHeight then
         textArea.LineHeight = lineHeight
-        if #textArea.lineRenderers > 0 then
+        if #textArea.lineGOs > 0 then
             textArea:SetText( textArea.Text )
         end
     end
@@ -1353,7 +1350,7 @@ function GUI.TextArea.SetVerticalAlignment( textArea, verticalAlignment )
     verticalAlignment = string.trim( verticalAlignment:lower() )
     if textArea.VerticalAlignment ~= verticalAlignment then 
         textArea.VerticalAlignment = verticalAlignment
-        if #textArea.lineRenderers > 0 then
+        if #textArea.lineGOs > 0 then
             textArea:SetText( textArea.Text )
         end
     end
@@ -1374,9 +1371,9 @@ function GUI.TextArea.SetFont( textArea, font )
     font = textArea.textRuler:GetFont()
     if textArea.Font ~= font then
         textArea.Font = font
-        if #textArea.lineRenderers > 0 then
-            for i, textRenderer in ipairs( textArea.lineRenderers ) do
-                textRenderer:SetFont( textArea.Font )
+        if #textArea.lineGOs > 0 then
+            for i=1, #textArea.lineGOs do
+                textArea.lineGOs[i].textRenderer:SetFont( textArea.Font )
             end
             textArea:SetText( textArea.Text ) -- reset the text because the size of the text may have changed
         end
@@ -1399,8 +1396,8 @@ function GUI.TextArea.SetAlignment( textArea, alignment )
     alignment = textArea.textRuler:GetAlignment()
     if textArea.Alignment ~= alignment then
         textArea.Alignment = alignment
-        for i, textRenderer in ipairs( textArea.lineRenderers ) do
-            textRenderer:SetAlignment( textArea.Alignment )
+        for i=1, #textArea.lineGOs do
+            textArea.lineGOs[i].textRenderer:SetAlignment( textArea.Alignment )
         end
     end
 end
@@ -1418,8 +1415,8 @@ end
 function GUI.TextArea.SetOpacity( textArea, opacity )
     if textArea.Opacity ~= opacity then
         textArea.Opacity = opacity
-        for i, textRenderer in ipairs( textArea.lineRenderers ) do
-            textRenderer:SetOpacity( opacity )
+        for i=1, #textArea.lineGOs do
+            textArea.lineGOs[i].textRenderer:SetOpacity( opacity )
         end
     end
 end
