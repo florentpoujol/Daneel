@@ -707,10 +707,9 @@ function Daneel.Debug.RegisterFunction( name, argsData )
 
             for i, arg in ipairs( argsData ) do
                 if arg.type == nil then
-                    if arg.defaultValue ~= nil then
+                    arg.type = arg[2]
+                    if arg.type == nil and arg.defaultValue ~= nil then
                         arg.type = type( arg.defaultValue )
-                    else
-                        arg.type = arg[2]
                     end
                 end
 
