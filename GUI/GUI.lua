@@ -47,7 +47,24 @@ GUI.Hud = {}
 GUI.Hud.__index = GUI.Hud -- __index will be rewritted when Daneel loads (in Daneel.SetComponents()) and enable the dynamic accessors on the components
 -- this is just meant to prevent some errors if Daneel is not loaded
 
+--- Creates a "Hud Origin" child used for positioning hud components.
+-- @param gameObject (GameObject) The game object with a camera component.
+function GUI.Hud.RegisterCamera( gameObject )
+    if gameObject.camera == nil then
+        error( "GUI.Hud.RegisterCamera(): Provided game object "..tostring(gameObject).." has no camera component." )
     end
+    local pixelsToUnits = gameObject.camera:GetPixelsToUnits()
+    local screenSize = CS.Screen.GetSize()
+    local originGO = CS.CreateGameObject( "Hud Origin for camera "..gameObject:GetName(), gameObject )
+    originGO.transform:SetLocalPosition( Vector3:New(
+        -screenSize.x * pixelsToUnits / 2,
+        screenSize.y * pixelsToUnits / 2,
+        0
+    ) )
+    -- the originGO is now at the top-left corner of the camera's frustum
+    -- 06/06/2014: what happens with perspective cameras ?
+    gameObject.camera.hudOriginGO = originGO
+end
 
 -- Deprecated since v1.5.0.
 -- Use Camera.WorldToScreenPoint() or Camera.Project() instead.
@@ -102,18 +119,36 @@ function GUI.Hud.FixPosition( position )
     )
 end
 
+-- Returns the first game object with camera component among the provided game object's ancestors.
+-- @param gameObject (GameObject) The child game object.
+-- @return (GameObject) The game object with a camera component.
+function GUI.Hud.GetCameraInAncestors( gameObject )
+    local parent = gameObject:GetParent()
+    if parent == nil then return end
+    return parent or GUI.Hud.GetCameraInAncestors( parent )
+end
+
 --- Creates a new Hud component instance.
 -- @param gameObject (GameObject) The gameObject to add to the component to.
 -- @param params (table) [optional] A table of parameters.
 -- @return (Hud) The hud component.
 function GUI.Hud.New( gameObject, params )
-    if GUI.Config.cameraGO == nil then
-        error( errorHead.."Can't create a Hud component because the HUD camera has not been found (the game object with name '"..GUI.Config.cameraName.."' (value of 'cameraName' in the config)).")
+    params = params or {}
+    if params.cameraGO == nil then
+        params.cameraGO = GUI.Hud.GetCameraInAncestors( gameObject )
+        if params.cameraGO == nil then
+            error("GUI.Hud.New(): The "..tostring(gameObject).." isn't a child of a game object with a camera component and no camera game object is passed via the 'params' argument.")
+        end
     end
     local hud = setmetatable( {}, GUI.Hud )
     hud.gameObject = gameObject
-    hud.id = Daneel.Utilities.GetId()
     gameObject.hud = hud
+    hud.id = Daneel.Utilities.GetId()
+    print(params.cameraGO)
+    if params.cameraGO.camera.hudOriginGO == nil then
+        GUI.Hud.RegisterCamera( params.cameraGO )
+    end
+    hud.camera = params.cameraGO.camera
     hud:Set( table.merge( GUI.Config.hud, params ) )
     return hud
 end
@@ -124,10 +159,10 @@ end
 -- @param position (Vector2) The position as a Vector2.
 function GUI.Hud.SetPosition(hud, position)
     position = GUI.Hud.FixPosition( position )
-    local newPosition = GUI.Config.originGO.transform:GetPosition() +
+    local newPosition = hud.camera.hudOriginGO.transform:GetPosition() +
     Vector3:New(
-        position.x * GUI.pixelsToUnits,
-        -position.y * GUI.pixelsToUnits,
+        position.x * hud.camera:GetPixelsToUnits(),
+        -position.y * hud.camera:GetPixelsToUnits(),
         0
     )
     newPosition.z = hud.gameObject.transform:GetPosition().z
@@ -138,8 +173,8 @@ end
 -- @param hud (Hud) The hud component.
 -- @return (Vector2) The position.
 function GUI.Hud.GetPosition(hud)
-    local position = hud.gameObject.transform:GetPosition() - GUI.Config.originGO.transform:GetPosition()
-    position = position / GUI.pixelsToUnits
+    local position = hud.gameObject.transform:GetPosition() - hud.camera.hudOriginGO.transform:GetPosition()
+    position = position / hud.camera:GetPixelsToUnits()
     return Vector2.New(math.round(position.x), math.round(-position.y))
 end
 
@@ -148,11 +183,11 @@ end
 -- @param position (Vector2) The position as a Vector2.
 function GUI.Hud.SetLocalPosition(hud, position)
     position = GUI.Hud.FixPosition( position )
-    local parent = hud.gameObject.parent or GUI.Config.originGO
+    local parent = hud.gameObject.parent or hud.camera.hudOriginGO
     local newPosition = parent.transform:GetPosition() +
     Vector3:New(
-        position.x * GUI.pixelsToUnits,
-        -position.y * GUI.pixelsToUnits,
+        position.x * hud.camera:GetPixelsToUnits(),
+        -position.y * hud.camera:GetPixelsToUnits(),
         0
     )
     newPosition.z = hud.gameObject.transform:GetPosition().z
@@ -163,9 +198,9 @@ end
 -- @param hud (Hud) The hud component.
 -- @return (Vector2) The position.
 function GUI.Hud.GetLocalPosition(hud)
-    local parent = hud.gameObject.parent or GUI.Config.originGO
+    local parent = hud.gameObject.parent or hud.camera.hudOriginGO
     local position = hud.gameObject.transform:GetPosition() - parent.transform:GetPosition()
-    position = position / GUI.pixelsToUnits
+    position = position / hud.camera:GetPixelsToUnits()
     return Vector2.New(math.round(position.x), math.round(-position.y))
 end
 
@@ -173,7 +208,7 @@ end
 -- @param hud (Hud) The hud component.
 -- @param layer (number) The layer (a postive number).
 function GUI.Hud.SetLayer(hud, layer)
-    local originLayer = GUI.Config.originGO.transform:GetPosition().z
+    local originLayer = hud.camera.hudOriginGO.transform:GetPosition().z
     local currentPosition = hud.gameObject.transform:GetPosition()
     hud.gameObject.transform:SetPosition( Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer) )
 end
@@ -182,7 +217,7 @@ end
 -- @param hud (Hud) The hud component.
 -- @return (number) The layer (with one decimal).
 function GUI.Hud.GetLayer(hud)
-    local originLayer = GUI.Config.originGO.transform:GetPosition().z
+    local originLayer = hud.camera.hudOriginGO.transform:GetPosition().z
     return math.round( originLayer - hud.gameObject.transform:GetPosition().z, 1 )
 end
 
@@ -190,7 +225,7 @@ end
 -- @param hud (Hud) The hud component.
 -- @param layer (number) The layer (a postiv number).
 function GUI.Hud.SetLocalLayer(hud, layer)
-    local parent = hud.gameObject.parent or GUI.Config.originGO
+    local parent = hud.gameObject.parent or hud.camera.hudOriginGO
     local originLayer = parent.transform:GetPosition().z
     local currentPosition = hud.gameObject.transform:GetPosition()
     hud.gameObject.transform:SetPosition( Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer) )
@@ -200,13 +235,14 @@ end
 -- @param hud (Hud) The hud component.
 -- @return (number) The layer (with one decimal).
 function GUI.Hud.GetLocalLayer(hud)
-    local parent = hud.gameObject.parent or GUI.Config.originGO
+    local parent = hud.gameObject.parent or hud.camera.hudOriginGO
     local originLayer = parent.transform:GetPosition().z
     return math.round( originLayer - hud.gameObject.transform:GetPosition().z, 1 )
 end
 
 local _hud = { "hud", "Hud" }
 table.mergein( Daneel.functionsDebugInfo, {
+    ["GUI.Hud.RegisterCamera"] =    { _go },
     ["GUI.Hud.New"] =               { _go, _op },
     ["GUI.Hud.SetPosition"] =       { _hud, { "position", v2 } },
     ["GUI.Hud.GetPosition"] =       { _hud },
