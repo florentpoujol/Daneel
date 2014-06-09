@@ -1416,6 +1416,23 @@ end
 
 GameObject.oSendMessage = GameObject.SendMessage
 
+--- Search the ancestors of the provided game object. It returns the game object that match the condition in the search function.
+-- The search function receive a game object as the only argument.
+-- The search function must return true in order for GetInAncestors() to return the searched game object.
+-- @param gameObject (GameObject) The game object.
+-- @param searchFunction (function) The search function.
+-- @return (GameObject) The searched game object, or nil.
+function GameObject.GetInAncestors( gameObject, searchFunction )
+    local parent = gameObject:GetParent()
+    if parent == nil then
+        return
+    end
+    if searchFunction( parent ) == true then
+        return parent
+    end
+    return parent:GetInAncestors( searchFunction )
+end
+
 --- Tries to call a method with the provided name on all the scriptedBehaviors attached to the game object.
 -- The data argument can be nil or a table you want the method to receive as its first (and only) argument.
 -- If none of the scripteBehaviors attached to the game object or its children have a method matching the provided name, nothing happens.
@@ -1729,6 +1746,7 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["GameObject.SetParent"] =   { _go, { "parentNameOrInstance", { s, "GameObject" }, isOptional = true }, { "keepLocalTransform", defaultValue = false } },
     ["GameObject.GetChild"] =    { _go, { "name", s, isOptional = true }, { "recursive", defaultValue = false } },
     ["GameObject.GetChildren"] = { _go, { "recursive", defaultValue = false }, { "includeSelf", defaultValue = false } },
+    ["GameObject.GetInAncestors"] = { _go, { "searchFunction", "function" } },
 
     ["GameObject.SendMessage"] =      { _go, { "functionName", s }, { "data", t, isOptional = true } },
     ["GameObject.BroadcastMessage"] = { _go, { "functionName", s }, { "data", t, isOptional = true } },

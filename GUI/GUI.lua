@@ -119,15 +119,6 @@ function GUI.Hud.FixPosition( position )
     )
 end
 
--- Returns the first game object with camera component among the provided game object's ancestors.
--- @param gameObject (GameObject) The child game object.
--- @return (GameObject) The game object with a camera component.
-function GUI.Hud.GetCameraInAncestors( gameObject )
-    local parent = gameObject:GetParent()
-    if parent == nil then return end
-    return parent or GUI.Hud.GetCameraInAncestors( parent )
-end
-
 --- Creates a new Hud component instance.
 -- @param gameObject (GameObject) The gameObject to add to the component to.
 -- @param params (table) [optional] A table of parameters.
@@ -135,7 +126,7 @@ end
 function GUI.Hud.New( gameObject, params )
     params = params or {}
     if params.cameraGO == nil then
-        params.cameraGO = GUI.Hud.GetCameraInAncestors( gameObject )
+        params.cameraGO = gameObject:GetInAncestors( function( go ) if go.camera ~= nil then return true end end )
         if params.cameraGO == nil then
             error("GUI.Hud.New(): The "..tostring(gameObject).." isn't a child of a game object with a camera component and no camera game object is passed via the 'params' argument.")
         end
