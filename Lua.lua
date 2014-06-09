@@ -262,17 +262,15 @@ function table.containsvalue( t, value, ignoreCase )
     if ignoreCase and type( value ) == 'string' then
         value = value:lower()
     end
-    local containsValue = false
     for key, _value in pairs(t) do
         if ignoreCase and type( _value ) == "string" then
             _value = _value:lower()
         end
         if value == _value then
-            containsValue = true
-            break
+            return true
         end
     end
-    return containsValue
+    return false
 end
 
 --- Returns the length of a table, which is the numbers of keys of the provided type (or of any type), for which the value is not nil.
@@ -654,4 +652,27 @@ function table.reindex( t )
         end
     end
     return newTable
+end
+
+--- Insert the provided value at the end of the provided table (or at the provided index) but only if the value is not already found in the table.
+-- @param t (table) The table.
+-- @param index (number) [optional] The index at which to insert the value.
+-- @param value (mixed) The value to insert.
+-- @return (boolean) Whether the value has been inserted (true) or not (false).
+function table.insertonce( t, index, value )
+    if value == nil then
+        value = index
+        index = nil
+    end
+    for key, _value in pairs(t) do
+        if value == _value then
+            return false
+        end
+    end
+    if index == nil then
+        table.insert( t, value )
+    else
+        table.insert( t, index, value )
+    end
+    return true
 end
