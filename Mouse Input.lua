@@ -24,6 +24,22 @@ function MouseInput.Load()
     end
 end
 
+local MouseInputScriptAsset = Behavior
+Daneel.Event.Listen( "GameObject.On", function( gameObject, eventName, _function )
+    -- find game object with camera in ancestry
+    local cameraGO = gameObject:GetInAncestors( function( parent ) if parent.camera ~= nil then return true end end )
+    if cameraGO ~= nil then
+        local miScript = cameraGO:GetScriptedBehavior( MouseInputScriptAsset )
+        if miScript == nil then
+            cameraGO:CreateScriptedBehavior( MouseInputScriptAsset )
+        end
+        table.insertonce( miScript.tags, "mouseinput" )
+        gameObject:AddTag( "mouseinput" )
+    else
+        error("MouseInput: 'GameObject.On' event: You tried to use mouse input event '"..eventName.."' on the "..tostring(gameObject)..", which is not a child of a game object with a camera component.")
+    end
+end )
+
 
 ----------------------------------------------------------------------------------
 
