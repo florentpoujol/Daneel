@@ -254,14 +254,9 @@ GUI.Toggle.__index = GUI.Toggle
 
 --- Creates a new Toggle component.
 -- @param gameObject (GameObject) The component gameObject.
--- @param params (table) A table of parameters.
+-- @param params (table) [optional] A table of parameters.
 -- @return (Toggle) The new component.
 function GUI.Toggle.New( gameObject, params )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.Toggle.New", gameObject, params )
-    local errorHead = "GUI.Toggle.New( gameObject, params ) : "
-    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-    params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
-    
     local toggle = table.copy( GUI.Config.toggle )
     toggle.defaultText = toggle.text
     toggle.text = nil
@@ -313,8 +308,6 @@ function GUI.Toggle.New( gameObject, params )
     end
 
     toggle:Check( toggle.isChecked, true )
-
-    Daneel.Debug.StackTrace.EndFunction()
     return toggle
 end
 
@@ -324,11 +317,6 @@ end
 -- @param toggle (Toggle) The toggle component.
 -- @param text (string) The text to display.
 function GUI.Toggle.SetText( toggle, text )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.Toggle.SetText", toggle, text )
-    local errorHead = "GUI.Toggle.SetText( toggle, text ) : "
-    Daneel.Debug.CheckArgType( toggle, "toggle", "Toggle", errorHead )
-    Daneel.Debug.CheckArgType( text, "text", "string", errorHead )
-
     if toggle.gameObject.textRenderer ~= nil then
         if toggle.isChecked == true then
             text = Daneel.Utilities.ReplaceInString( toggle.checkedMark, { text = text } )
@@ -336,75 +324,57 @@ function GUI.Toggle.SetText( toggle, text )
             text = Daneel.Utilities.ReplaceInString( toggle.uncheckedMark, { text = text } )
         end
         toggle.gameObject.textRenderer:SetText( text )
-
     else
         if Daneel.Config.debug.enableDebug then
-            print( "WARNING : "..errorHead.."Can't set the toggle's text because no TextRenderer component has been found on the gameObject '"..tostring( toggle.gameObject ).."'. Waiting for a TextRenderer to be added." )
+            print( "WARNING: GUI.Toggle.SetText(toggle, text): Can't set the toggle's text because no TextRenderer component has been found on the gameObject '"..tostring( toggle.gameObject ).."'. Waiting for a TextRenderer to be added." )
         end
         toggle.defaultText = text
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Get the provided toggle's text.
 -- Actually get the text of the TextRenderer component on the same gameObject but without the check mark.
 -- @param toggle (Toggle) The toggle component.
 -- @return (string) The text.
-function GUI.Toggle.GetText(toggle)
-    Daneel.Debug.StackTrace.BeginFunction("GUI.Toggle.GetText", toggle)
-    local errorHead = "GUI.Toggle.GetText(toggle, text) : "
-    Daneel.Debug.CheckArgType(toggle, "toggle", "Toggle", errorHead)
-
+function GUI.Toggle.GetText( toggle )
     local text = nil
     if toggle.gameObject.textRenderer ~= nil then
         text = toggle.gameObject.textRenderer:GetText()
         if text == nil then
             text = toggle.defaultText
         end
-
         local textMark = toggle.checkedMark
         if not toggle.isChecked then
             textMark = toggle.uncheckedMark
         end
-
         local start, _end = textMark:find( ":text" )
         if start ~= nil and _end ~= nil then
             local prefix = textMark:sub( 1, start - 1 )
             local suffix = textMark:sub( _end + 1 )
             text = text:gsub(prefix, ""):gsub(suffix, "")
         end
-
     elseif Daneel.Config.debug.enableDebug then
-        print("WARNING : "..errorHead.."Can't get the toggle's text because no TextRenderer component has been found on the gameObject '"..tostring(toggle.gameObject).."'. Returning nil.")
+        print("WARNING: GUI.Toggle.GetText(toggle): Can't get the toggle's text because no TextRenderer component has been found on the gameObject '"..tostring(toggle.gameObject).."'. Returning nil.")
     end
-    Daneel.Debug.StackTrace.EndFunction()
     return text
 end
 
 --- Check or uncheck the provided toggle and fire the OnUpdate event.
 -- You can get the toggle's state via toggle.isChecked.
 -- @param toggle (Toggle) The toggle component.
--- @param state [optional default=true] (boolean) The new state of the toggle.
--- @param forceUpdate [optional default=false] (boolean) Tell wether to force the updating of the state.
+-- @param state (boolean) [default=true] The new state of the toggle.
+-- @param forceUpdate (boolean) [default=false] Tell wether to force the updating of the state.
 function GUI.Toggle.Check( toggle, state, forceUpdate )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.Toggle.Check", toggle, state, forceUpdate )
-    local errorHead = "GUI.Toggle.Check( toggle[, state, forceUpdate] ) : "
-    Daneel.Debug.CheckArgType( toggle, "toggle", "Toggle", errorHead )
-    state = Daneel.Debug.CheckOptionalArgType( state, "state", "boolean", errorHead, true )
-    forceUpdate = Daneel.Debug.CheckOptionalArgType( forceUpdate, "forceUpdate", "boolean", errorHead, false )
-
+    state = state or true
     if forceUpdate or toggle.isChecked ~= state then
         local text = nil
         if toggle.gameObject.textRenderer ~= nil then
             text = toggle:GetText()
         end
-
         toggle.isChecked = state
-
         if toggle.gameObject.textRenderer ~= nil then
             toggle:SetText( text ) -- "reload" the check mark based on the new checked state
         end
-
         if toggle.gameObject.modelRenderer ~= nil then
             if state == true and toggle.checkedModel ~= nil then
                 toggle.gameObject.modelRenderer:SetModel( toggle.checkedModel )
@@ -412,9 +382,7 @@ function GUI.Toggle.Check( toggle, state, forceUpdate )
                 toggle.gameObject.modelRenderer:SetModel( toggle.uncheckedModel )
             end
         end
-
         Daneel.Event.Fire( toggle, "OnUpdate", toggle )
-
         if toggle.Group ~= nil and state == true then
             local gameObjects = GameObject.GetWithTag( toggle.Group )
             for i, gameObject in ipairs( gameObjects ) do
@@ -424,72 +392,62 @@ function GUI.Toggle.Check( toggle, state, forceUpdate )
             end
         end
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Set the toggle's group.
 -- If the toggle was already in a group it will be removed from it.
 -- @param toggle (Toggle) The toggle component.
--- @param group [optional] (string) The new group, or nil to remove from its group.
-function GUI.Toggle.SetGroup(toggle, group)
-    Daneel.Debug.StackTrace.BeginFunction("GUI.Toggle.SetGroup", toggle, group)
-    local errorHead = "GUI.Toggle.SetGroup(toggle[, group]) : "
-    Daneel.Debug.CheckArgType(toggle, "toggle", "Toggle", errorHead)
-    Daneel.Debug.CheckOptionalArgType(group, "group", "string", errorHead)
-
+-- @param group (string) [optional] The new group, or nil to remove the toggle from its group.
+function GUI.Toggle.SetGroup( toggle, group )
     if group == nil and toggle.Group ~= nil then
-        toggle.gameObject:RemoveTag(toggle.Group)
+        toggle.gameObject:RemoveTag( toggle.Group )
     else
         if toggle.Group ~= nil then
-            toggle.gameObject:RemoveTag(toggle.Group)
+            toggle.gameObject:RemoveTag( toggle.Group )
         end
-        toggle:Check(false)
+        toggle:Check( false )
         toggle.Group = group
-        toggle.gameObject:AddTag(toggle.Group)
+        toggle.gameObject:AddTag( toggle.Group )
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
--- Get the toggle's group.
+--- Get the toggle's group.
 -- @param toggle (Toggle) The toggle component.
 -- @return (string) The group, or nil.
-function GUI.Toggle.GetGroup(toggle)
-    Daneel.Debug.StackTrace.BeginFunction("GUI.Toggle.GetGroup", toggle)
-    local errorHead = "GUI.Toggle.GetGroup(toggle) : "
-    Daneel.Debug.CheckArgType(toggle, "toggle", "Toggle", errorHead)
-    Daneel.Debug.StackTrace.EndFunction()
+function GUI.Toggle.GetGroup( toggle )
     return toggle.Group
 end
 
 --- Apply the content of the params argument to the provided toggle.
--- Overwrite Component.Set() from CraftStudio module.
+-- Overwrite Component.Set() from Daneel's CraftStudio file.
 -- @param toggle (Toggle) The toggle component.
 -- @param params (table) A table of parameters to set the component with.
 function GUI.Toggle.Set( toggle, params )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.Toggle.Set", toggle, params )
-    local errorHead = "GUI.Toggle.Set( toggle, params ) : "
-    Daneel.Debug.CheckArgType( toggle, "toggle", "Toggle", errorHead )
-    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
-
     local group = params.group
     params.group = nil
     local isChecked = params.isChecked
     params.isChecked = nil
-
     for key, value in pairs( params ) do
         toggle[key] = value
     end
-
     if group ~= nil then
         toggle:SetGroup( group )
     end
     if isChecked ~= nil then
         toggle:Check( isChecked )
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
 end
+
+local _toggle = { "toggle", "Toggle" }
+table.mergein( Daneel.functionsDebugInfo, {
+    ["GUI.Toggle.New"] =        { _go, _op },
+    ["GUI.Toggle.Set"] =        { _toggle, _p },
+    ["GUI.Toggle.SetText"] =    { _toggle, { "text", s } },
+    ["GUI.Toggle.GetText"] =    { _toggle },
+    ["GUI.Toggle.Check"] =      { _toggle, { "state", defaultValue = true }, { "forceUpdate", defaultValue = false } },
+    ["GUI.Toggle.SetGtoup"] =   { _toggle, { "group", s, isOptional = true } },
+    ["GUI.Toggle.GetGtoup"] =   { _toggle },
+} )
 
 
 ----------------------------------------------------------------------------------
