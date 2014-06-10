@@ -263,8 +263,9 @@ function GUI.Toggle.New( gameObject, params )
     toggle.gameObject = gameObject
     toggle.id = Daneel.Utilities.GetId()
     setmetatable( toggle, GUI.Toggle )
-
-    toggle:Set( params )
+    if params ~= nil then
+        toggle:Set( params )
+    end
 
     gameObject.toggle = toggle
     gameObject:AddTag( "guiComponent" )
@@ -363,7 +364,7 @@ end
 -- You can get the toggle's state via toggle.isChecked.
 -- @param toggle (Toggle) The toggle component.
 -- @param state (boolean) [default=true] The new state of the toggle.
--- @param forceUpdate (boolean) [default=false] Tell wether to force the updating of the state.
+-- @param forceUpdate (boolean) [default=false] Tell whether to force the updating of the state.
 function GUI.Toggle.Check( toggle, state, forceUpdate )
     state = state or true
     if forceUpdate or toggle.isChecked ~= state then
@@ -458,27 +459,20 @@ GUI.ProgressBar.__index = GUI.ProgressBar
 
 --- Creates a new GUI.ProgressBar.
 -- @param gameObject (GameObject) The component gameObject.
--- @param params (table) A table of parameters.
+-- @param params (table) [optional] A table of parameters.
 -- @return (ProgressBar) The new component.
 function GUI.ProgressBar.New( gameObject, params )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.ProgressBar.New", gameObject, params )
-    local errorHead = "GUI.ProgressBar.New( gameObject, params ) : "
-    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-    params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
-
     local progressBar = table.copy( GUI.Config.progressBar )
     progressBar.gameObject = gameObject
     progressBar.id = Daneel.Utilities.GetId()
     progressBar.value = nil -- remove the property to allow to use the dynamic getter/setter
     setmetatable( progressBar, GUI.ProgressBar )
-
+    params = params or {}
     if params.value == nil then
         params.value = GUI.Config.progressBar.value
     end
     progressBar:Set( params )
-
     gameObject.progressBar = progressBar
-    Daneel.Debug.StackTrace.EndFunction()
     return progressBar
 end
 
@@ -487,11 +481,7 @@ end
 -- @param progressBar (ProgressBar) The progressBar.
 -- @param value (number or string) The value as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
 function GUI.ProgressBar.SetValue(progressBar, value)
-    Daneel.Debug.StackTrace.BeginFunction("GUI.ProgressBar.SetValue", progressBar, value)
     local errorHead = "GUI.ProgressBar.SetValue(progressBar, value) : "
-    Daneel.Debug.CheckArgType(progressBar, "progressBar", "ProgressBar", errorHead)
-    Daneel.Debug.CheckArgType(value, "value", {"string", "number"}, errorHead)
-
     local minVal = progressBar.minValue
     local maxVal = progressBar.maxValue
     local percentageOfProgress = nil
@@ -535,11 +525,8 @@ function GUI.ProgressBar.SetValue(progressBar, value)
 
         Daneel.Event.Fire(progressBar, "OnUpdate", progressBar)
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
-function GUI.ProgressBar.SetProgress(progressBar, progress)
-    GUI.ProgressBar.SetValue( progressBar, progress )
-end
+GUI.ProgressBar.SetProgress = GUI.ProgressBar.SetValue
 
 --- Set the value of the progress bar, adjusting its length.
 -- Does the same things as SetProgress() by does it faster.
@@ -547,7 +534,7 @@ end
 -- Should be used when the value is updated regularly (ie : from a Behavior:Update() function).
 -- @param progressBar (ProgressBar) The progressBar.
 -- @param value (number or string) The value as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
--- @param fireEvent [optional default=false] (boolean) Tell wether to fire the 'OnUpdate' event (true) or not (false).
+-- @param fireEvent (boolean) [default=false] Tell whether to fire the 'OnUpdate' event (true) or not (false).
 function GUI.ProgressBar.UpdateValue( progressBar, value, fireEvent )
     if value == progressBar._value then return end
     progressBar._value = value
@@ -578,20 +565,13 @@ function GUI.ProgressBar.UpdateValue( progressBar, value, fireEvent )
         Daneel.Event.Fire( progressBar, "OnUpdate", progressBar )
     end
 end
-function GUI.ProgressBar.UpdateProgress( progressBar, value, fireEvent )
-    GUI.ProgressBar.UpdateValue( progressBar, value, fireEvent )
-end
+GUI.ProgressBar.UpdateProgress = GUI.ProgressBar.UpdateValue
 
 --- Get the current value of the progress bar.
 -- @param progressBar (ProgressBar) The progressBar.
--- @param getAsPercentage [optional default=false] (boolean) Get the value as a percentage (between 0 and 100) instead of an absolute value.
+-- @param getAsPercentage (boolean) [default=false] Get the value as a percentage (between 0 and 100) instead of an absolute value.
 -- @return (number) The value.
 function GUI.ProgressBar.GetValue(progressBar, getAsPercentage)
-    Daneel.Debug.StackTrace.BeginFunction("GUI.ProgressBar.GetValue", progressBar, getAsPercentage)
-    local errorHead = "GUI.ProgressBar.GetValue(progressBar[, getAsPercentage]) : "
-    Daneel.Debug.CheckArgType(progressBar, "progressBar", "ProgressBar", errorHead)
-    Daneel.Debug.CheckOptionalArgType(getAsPercentage, "getAsPercentage", "boolean", errorHead)
-
     local scale = math.round( progressBar.gameObject.transform:GetLocalScale().x, 2 )
     local value = (scale - progressBar.minLength) / (progressBar.maxLength - progressBar.minLength)
     if getAsPercentage == true then
@@ -599,40 +579,23 @@ function GUI.ProgressBar.GetValue(progressBar, getAsPercentage)
     else
         value = (progressBar.maxValue - progressBar.minValue) * value + progressBar.minValue
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
     return value
 end
-function GUI.ProgressBar.GetProgress(progressBar, getAsPercentage)
-    return GUI.ProgressBar.GetValue(progressBar, getAsPercentage)
-end
+GUI.ProgressBar.GetProgress = GUI.ProgressBar.GetValue
 
 --- Set the height of the progress bar.
 -- @param progressBar (ProgressBar) The progressBar.
 -- @param height (number or string) Get the height in pixel or scene unit.
 function GUI.ProgressBar.SetHeight( progressBar, height )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.ProgressBar.SetHeight", progressBar, height )
-    local errorHead = "GUI.ProgressBar.SetHeight( progressBar, height ) : "
-    Daneel.Debug.CheckArgType( progressBar, "progressBar", "ProgressBar", errorHead )
-    Daneel.Debug.CheckOptionalArgType( height, "height", {"number", "string"}, errorHead )
-
-    height = GUI.ToSceneUnit( height )
     local currentScale = progressBar.gameObject.transform:GetLocalScale()
-    progressBar.gameObject.transform:SetLocalScale( Vector3:New( currentScale.x, height, currentScale.z ) )
-    Daneel.Debug.StackTrace.EndFunction()
+    progressBar.gameObject.transform:SetLocalScale( Vector3:New( currentScale.x, GUI.ToSceneUnit( height ), currentScale.z ) )
 end
 
 --- Get the height of the progress bar (the local scale's y component).
 -- @param progressBar (ProgressBar) The progressBar.
 -- @return (number) The height.
 function GUI.ProgressBar.GetHeight( progressBar )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.ProgressBar.GetHeight", progressBar )
-    local errorHead = "GUI.ProgressBar.GetHeight( progressBar ) : "
-    Daneel.Debug.CheckArgType( progressBar, "progressBar", "ProgressBar", errorHead )
-
-    local height = progressBar.gameObject.transform:GetLocalScale().y
-    Daneel.Debug.StackTrace.EndFunction()
-    return height
+    return progressBar.gameObject.transform:GetLocalScale().y
 end
 
 --- Apply the content of the params argument to the provided progressBar.
@@ -640,11 +603,6 @@ end
 -- @param progressBar (ProgressBar) The progressBar.
 -- @param params (table) A table of parameters to set the component with.
 function GUI.ProgressBar.Set( progressBar, params )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.ProgressBar.Set", progressBar, params )
-    local errorHead = "GUI.ProgressBar.Set( progressBar, params ) : "
-    Daneel.Debug.CheckArgType( progressBar, "progressBar", "ProgressBar", errorHead )
-    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
-
     local value = params.value
     params.value = nil
     if value == nil then
@@ -654,9 +612,17 @@ function GUI.ProgressBar.Set( progressBar, params )
         progressBar[key] = value
     end
     progressBar:SetValue( value )
-
-    Daneel.Debug.StackTrace.EndFunction()
 end
+
+local _pb = { "progressBar", "ProgressBar" }
+table.mergein( Daneel.functionsDebugInfo, {
+    ["GUI.ProgressBar.New"] =       { _go, _op },
+    ["GUI.ProgressBar.Set"] =       { _pb, _p },
+    ["GUI.ProgressBar.SetValue"] =  { _pb, { "value", { s, n } } },
+    ["GUI.ProgressBar.GetValue"] =  { _pb, { "getAsPercentage", defaultValue = false } },
+    ["GUI.ProgressBar.SetHeight"] = { _pb, { "height", { s, n } } },
+    ["GUI.ProgressBar.GetHeight"] = { _pb },
+} )
 
 
 ----------------------------------------------------------------------------------
@@ -667,14 +633,10 @@ GUI.Slider.__index = GUI.Slider
 
 ---- Creates a new GUI.Slider.
 -- @param gameObject (GameObject) The component gameObject.
--- @param params (table) A table of parameters.
+-- @param params (table) [optional] A table of parameters.
 -- @return (Slider) The new component.
 function GUI.Slider.New( gameObject, params )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.Slider.New", gameObject, params )
-    local errorHead = "GUI.Slider.New( gameObject, params ) : "
-    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-    params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
-
+    local errorHead = "GUI.Slider.New( gameObject[, params] ) : "
     if GUI.Config.cameraGO == nil then
         error( errorHead.."Can't create a Slider component because the HUD camera has not been found (the game object with name '"..GUI.Config.cameraName.."' (value of 'cameraName' in the config)).")
     end
@@ -717,12 +679,11 @@ function GUI.Slider.New( gameObject, params )
         end
     end
 
+    params = params or {}
     if params.value == nil then
         params.value = GUI.Config.slider.value
     end
     slider:Set( params )
-
-    Daneel.Debug.StackTrace.EndFunction()
     return slider
 end
 
@@ -730,11 +691,7 @@ end
 -- @param slider (Slider) The slider.
 -- @param value (number or string) The value as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
 function GUI.Slider.SetValue( slider, value )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.Slider.SetValue", slider, value )
     local errorHead = "GUI.Slider.SetValue( slider, value ) : "
-    Daneel.Debug.CheckArgType( slider, "slider", "Slider", errorHead )
-    Daneel.Debug.CheckArgType( value, "value", {"string", "number"}, errorHead )
-
     local maxVal = slider.maxValue
     local minVal = slider.minValue
     local percentage = nil
@@ -767,26 +724,18 @@ function GUI.Slider.SetValue( slider, value )
     slider.gameObject.transform:SetPosition( newPosition )
 
     Daneel.Event.Fire( slider, "OnUpdate", slider )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Get the current slider's value.
 -- @param slider (Slider) The slider.
--- @param getAsPercentage [optional default=false] (boolean) Get the value as a percentage (between 0 and 100) instead of an absolute value.
+-- @param getAsPercentage (boolean) [default=false] Get the value as a percentage (between 0 and 100) instead of an absolute value.
 -- @return (number) The value.
 function GUI.Slider.GetValue( slider, getAsPercentage )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.Slider.GetValue", slider, getAsPercentage )
-    local errorHead = "GUI.Slider.GetValue( slider, value ) : "
-    Daneel.Debug.CheckArgType(slider, "slider", "Slider", errorHead)
-    Daneel.Debug.CheckOptionalArgType( getAsPercentage, "getAsPercentage", "boolean", errorHead )
-
     local percentage = Vector3.Distance( slider.parent.transform:GetPosition(), slider.gameObject.transform:GetPosition() ) / slider.length
     local value = percentage * 100
     if getAsPercentage ~= true then
         value = (slider.maxValue - slider.minValue) * percentage + slider.minValue
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
     return value
 end
 
@@ -795,11 +744,6 @@ end
 -- @param slider (Slider) The slider.
 -- @param params (table) A table of parameters to set the component with.
 function GUI.Slider.Set( slider, params )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.Slider.Set", slider, params )
-    local errorHead = "GUI.Slider.Set( slider, params ) : "
-    Daneel.Debug.CheckArgType( slider, "slider", "Slider", errorHead )
-    Daneel.Debug.CheckArgType( params, "params", "table", errorHead )
-
     local value = params.value
     params.value = nil
     if value == nil then
@@ -809,8 +753,6 @@ function GUI.Slider.Set( slider, params )
         slider[key] = value
     end
     slider:SetValue( value )
-
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 
@@ -822,14 +764,10 @@ GUI.Input.__index = GUI.Input
 
 --- Creates a new GUI.Input.
 -- @param gameObject (GameObject) The component gameObject.
--- @param params (table) A table of parameters.
+-- @param params (table) [optional] A table of parameters.
 -- @return (Input) The new component.
 function GUI.Input.New( gameObject, params )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.Input.New", gameObject, params )
-    local errorHead = "GUI.Input.New( gameObject, params ) : "
-    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-    params = Daneel.Debug.CheckOptionalArgType( params, "params", "table", errorHead, {} )
-
+    params = params or {}
     local input = table.merge( GUI.Config.input, params )
     input.gameObject = gameObject
     input.id = Daneel.Utilities.GetId()
@@ -915,20 +853,14 @@ function GUI.Input.New( gameObject, params )
         end
     end
     Daneel.Event.Listen( "OnValidateInputButtonJustPressed", input )
-
-    Daneel.Debug.StackTrace.EndFunction()
     return input
 end
 
 --- Set the focused state of the input.
 -- @param input (Input) The input component.
--- @param focus (boolean) [optional default=true] The new focus.
+-- @param focus (boolean) [default=true] The new focus.
 function GUI.Input.Focus( input, focus )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.Input.Focus", input, focus )
-    local errorHead = "GUI.Input.Focus(input[, focus]) : "
-    Daneel.Debug.CheckArgType( input, "input", "Input", errorHead )
-    focus = Daneel.Debug.CheckOptionalArgType( focus, "focus", "boolean", errorHead, true )
-
+    focus = focus or true
     if input.isFocused ~= focus then
         input.isFocused = focus
         local text = string.trim( input.gameObject.textRenderer:GetText() )
@@ -943,32 +875,23 @@ function GUI.Input.Focus( input, focus )
                 input.gameObject.textRenderer:SetText( input.defaultValue )
             end
         end
-
         Daneel.Event.Fire( input, "OnFocus", input )
         input:UpdateCursor()
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Update the cursor of the input.
 -- @param input (Input) The input component.
 function GUI.Input.UpdateCursor( input )
-    Daneel.Debug.StackTrace.BeginFunction( "GUI.Input.UpdateCursor", input )
-    local errorHead = "GUI.Input.UpdateCursor( input ) : "
-    Daneel.Debug.CheckArgType( input, "input", "Input", errorHead )
-
     if input.cursorGO ~= nil then
         local alignment = input.gameObject.textRenderer:GetAlignment()
-        
         if alignment ~= TextRenderer.Alignment.Right then
             local length = input.gameObject.textRenderer:GetTextWidth() -- Left
             if alignment == TextRenderer.Alignment.Center then
                 length = length / 2
             end
-
             input.cursorGO.transform:SetLocalPosition( Vector3:New( length, 0, 0 ) )
         end
-
         local opacity = 1
         if not input.isFocused then
             opacity = 0
@@ -977,24 +900,16 @@ function GUI.Input.UpdateCursor( input )
         input.cursorGO.tweener.isPaused = not input.isFocused
         Daneel.Event.Fire( input.cursorGO, "OnUpdate", input )
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Update the text of the input.
 -- @param input (Input) The input component.
 -- @param text (string) The text (often just one character) to add to the current text.
--- @param replaceText (boolean) [optional default=false] Tell wether the provided text should be added (false) or replace (true) the current text.
+-- @param replaceText (boolean) [default=false] Tell whether the provided text should be added (false) or replace (true) the current text.
 function GUI.Input.Update( input, text, replaceText )
-    if not type( input ) == "table" or not input.isFocused then
-        return
-    end
-
-    Daneel.Debug.StackTrace.BeginFunction("GUI.Input.Update", input, text)
-    local errorHead = "GUI.Input.Update(input, text) : "
-    Daneel.Debug.CheckArgType(input, "input", "Input", errorHead)
-    Daneel.Debug.CheckArgType(text, "text", "string", errorHead)
-    replaceText = Daneel.Debug.CheckOptionalArgType(replaceText, "replaceText", "boolean", errorHead, false)
-
+    --if not type( input ) == "table" or not input.isFocused then  -- 10/06/2014 : when would input not be a table ?
+        --return
+    --end
     local oldText = input.gameObject.textRenderer:GetText()
     if replaceText == false then
         text = oldText .. text
@@ -1007,8 +922,20 @@ function GUI.Input.Update( input, text, replaceText )
         Daneel.Event.Fire( input, "OnUpdate", input )
         input:UpdateCursor()
     end
-    Daneel.Debug.StackTrace.EndFunction()
 end
+
+local _slider = { "slider", "Slider" }
+local _input = { "input", "Input" }
+table.mergein( Daneel.functionsDebugInfo, {
+    ["GUI.Slider.New"] =       { _go, _op },
+    ["GUI.Slider.Set"] =       { _slider, _p },
+    ["GUI.Slider.SetValue"] =  { _slider, { "value", { s, n } } },
+    ["GUI.Slider.GetValue"] =  { _slider, { "getAsPercentage", defaultValue = false } },
+    ["GUI.Input.New"] =          { _go, _op },
+    ["GUI.Input.Focus"] =        { _input, { "focus", defaultValue = true } },
+    ["GUI.Input.UpdateCursor"] = { _input },
+    ["GUI.Input.UpdateText"] =   { _input, { "text", s }, { "replaceText", defaultValue = true } },
+} )
 
 
 ----------------------------------------------------------------------------------
