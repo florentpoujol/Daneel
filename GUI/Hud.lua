@@ -9,11 +9,13 @@ position string ""
 localPosition string ""
 layer string ""
 localLayer string ""
+cameraName string ""
 /PublicProperties]]
 
 function Behavior:Awake()
     if self.gameObject.hud == nil then
         local params = {}
+
         if self.position ~= "" then
             local x, y = unpack( string.split( self.position, "," ) )
             params.position = Vector2.New( x, y )
@@ -22,6 +24,7 @@ function Behavior:Awake()
             local x, y = unpack( string.split( self.localPosition, "," ) )
             params.localPosition = Vector2.New( x, y )
         end
+
         if self.layer ~= "" then
             params.layer = tonumber( self.layer )
         end
@@ -29,15 +32,21 @@ function Behavior:Awake()
             params.localLayer = tonumber( self.localLayer )
         end
 
-        -- allow the gameObject to stay at the same position than defined in the scene
-        local position, layer = GUI.Hud.ToHudPosition( self.gameObject.transform:GetPosition() )
-        if params.position == nil and params.localPosition == nil then
-            params.position = position
+        if string.trim( self.cameraName ) ~= "" then
+            params.cameraGO = GameObject.Get( self.cameraName )
         end
-        if params.layer == nil and params.localLayer == nil then
-            params.layer = layer
+        if params.cameraGO == nil then
+            params.cameraGO = self.gameObject:GetInAncestors( function( go ) if go.camera ~= nil then return true end end )
         end
 
+        -- allow the gameObject to stay at the position defined in the scene
+        local currentPos =  self.gameObject.transform:GetPosition()
+        if params.cameraGO ~= nil and params.position == nil and params.localPosition == nil then
+            params.position = cameraGO.camera:WorldToScreenPoint( currentPos )
+        end
+        if params.layer == nil and params.localLayer == nil then
+            params.layer = -currentPos.z
+        end
         GUI.Hud.New( self.gameObject, params )
     end
 end
