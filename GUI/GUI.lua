@@ -21,15 +21,16 @@ local _p = { "params", t }
 --- Convert the provided value (a length) in a number expressed in scene unit.
 -- The provided value may be suffixed with "px" (pixels) or "u" (scene units).
 -- @param value (string or number) The value to convert.
+-- @param camera (Camera) [optional] The reference camera used to convert from pixels to units. Only needed when the value is in pixels.
 -- @return (number) The converted value, expressed in scene units.
-function GUI.ToSceneUnit( value )
+function GUI.ToSceneUnit( value, camera )
     if type( value ) == "string" then
         value = value:trim()
         if value:find( "px" ) then
-            if GUI.Config.cameraGO == nil then
-                error( "GUI.ToSceneUnit( value ) : Can't convert the value '"..value.."' from pixels to scene units because the HUD camera has not been found (the game object with name '"..GUI.Config.cameraName.."' (value of 'cameraName' in the config)).")
+            if camera == nil then
+                error( "GUI.ToSceneUnit(value, camera) : Can't convert the value '"..value.."' from pixels to scene units because no camera component has been passed as argument.")
             end
-            value = tonumber( value:sub( 0, #value-2) ) * GUI.pixelsToUnits
+            value = tonumber( value:sub( 0, #value-2) ) * camera:GetPixelsToUnits()
         elseif value:find( "u" ) then
             value = tonumber( value:sub( 0, #value-1) )
         else
@@ -39,45 +40,17 @@ function GUI.ToSceneUnit( value )
     return value
 end
 
-
-----------------------------------------------------------------------------------
--- Hud
-
-GUI.Hud = {}
-GUI.Hud.__index = GUI.Hud -- __index will be rewritted when Daneel loads (in Daneel.SetComponents()) and enable the dynamic accessors on the components
--- this is just meant to prevent some errors if Daneel is not loaded
-
---- Creates a "Hud Origin" child used for positioning hud components.
--- @param gameObject (GameObject) The game object with a camera component.
-function GUI.Hud.RegisterCamera( gameObject )
-    if gameObject.camera == nil then
-        error( "GUI.Hud.RegisterCamera(): Provided game object "..tostring(gameObject).." has no camera component." )
-    end
-    local pixelsToUnits = gameObject.camera:GetPixelsToUnits()
-    local screenSize = CS.Screen.GetSize()
-    local originGO = CS.CreateGameObject( "Hud Origin for camera "..gameObject:GetName(), gameObject )
-    originGO.transform:SetLocalPosition( Vector3:New(
-        -screenSize.x * pixelsToUnits / 2,
-        screenSize.y * pixelsToUnits / 2,
-        0
-    ) )
-    -- the originGO is now at the top-left corner of the camera's frustum
-    -- 06/06/2014: what happens with perspective cameras ?
-    gameObject.camera.hudOriginGO = originGO
-end
-
--- Deprecated since v1.5.0.
--- Use Camera.WorldToScreenPoint() or Camera.Project() instead.
-function GUI.Hud.ToHudPosition()
-    print("ERROR: GUI.Hud.ToHudPosition() is deprecated since v1.5.0. Use Camera.WorldToScreenPoint() or Camera.Project() instead." )
-end
-
 --- Convert the provided value (a length) in a number expressed in screen pixel.
 -- The provided value may be suffixed with "px" or be expressed in percentage (ie: "10%") or be relative (ie: "s" or "s-10") to the specified screen side size (in which case the 'screenSide' argument is mandatory).
 -- @param value (string or number) The value to convert.
 -- @param screenSide (string) [optional] "x" (width) or "y" (height)
+-- @param camera (Camera) [optional] The reference camera used to convert from pixels to units. Only needed when the value is in units.
 -- @return (number) The converted value, expressed in pixels.
-function GUI.Hud.ToPixel( value, screenSide )
+function GUI.ToPixel( value, screenSide, camera )
+    if type( screenSide ) == "table" then
+        camera = screenSide
+        screenSide = nil
+    end
     if type( value ) == "string" then
         value = value:trim()
         local screenSize = CS.Screen.GetSize()
@@ -108,15 +81,56 @@ function GUI.Hud.ToPixel( value, screenSide )
     return value
 end
 
--- Make sure that the components of the provided position are numbers and in pixel,
+local function getCameraGO( params, gameObject, errorHead )
+    if params.cameraGO == nil then
+        params.cameraGO = gameObject:GetInAncestors( function( go ) if go.camera ~= nil then return true end end )
+        if params.cameraGO == nil then
+            error(errorHead..": The "..tostring(gameObject).." isn't a child of a game object with a camera component and no camera game object is passed via the 'params' argument.")
+        end
+    end
+end
+
+----------------------------------------------------------------------------------
+-- Hud
+
+GUI.Hud = {}
+GUI.Hud.__index = GUI.Hud -- __index will be rewritted when Daneel loads (in Daneel.SetComponents()) and enable the dynamic accessors on the components
+-- this is just meant to prevent some errors if Daneel is not loaded
+
+--- Creates a "Hud Origin" child used for positioning hud components.
+-- @param gameObject (GameObject) The game object with a camera component.
+function GUI.Hud.RegisterCamera( gameObject )
+    if gameObject.camera == nil then
+        error( "GUI.Hud.RegisterCamera(): Provided game object "..tostring(gameObject).." has no camera component." )
+    end
+    local pixelsToUnits = gameObject.camera:GetPixelsToUnits()
+    local screenSize = CS.Screen.GetSize()
+    local originGO = CS.CreateGameObject( "Hud Origin for camera "..gameObject:GetName(), gameObject )
+    originGO.transform:SetLocalPosition( Vector3:New(
+        -screenSize.x * pixelsToUnits / 2,
+        screenSize.y * pixelsToUnits / 2,
+        0
+    ) )
+    -- the originGO is now at the top-left corner of the camera's frustum
+    -- 06/06/2014: what happens with perspective cameras ?
+    gameObject.hudOriginGO = originGO
+end
+
+-- Deprecated since v1.5.0.
+-- Use Camera.WorldToScreenPoint() or Camera.Project() instead.
+function GUI.Hud.ToHudPosition()
+    error("GUI.Hud.ToHudPosition() is deprecated since v1.5.0. Use Camera.WorldToScreenPoint() or Camera.Project() instead.")
+end
+
+--- Make sure that the components of the provided Vector2 are numbers and in pixel,
 -- instead of strings or in percentage or relative to the screensize.
--- @param position (Vector2) The position.
+-- @param vector (Vector2) The vector2.
+-- @param camera (Camera) [optional] The reference camera used to convert from pixels to units. Only needed when the vector's components are in units.
 -- @return (Vector2) The fixed position.
-function GUI.Hud.FixPosition( position )
-    return Vector2.New( 
-        GUI.Hud.ToPixel( position.x, "x" ),
-        GUI.Hud.ToPixel( position.y, "y" )
-    )
+function Vector2.EnsureNumberPixel( vector, camera )
+    vector.x = GUI.ToPixel( vector.x, "x", camera )
+    vector.y = GUI.ToPixel( vector.y, "y", camera )
+    return vector 
 end
 
 --- Creates a new Hud component instance.
@@ -149,8 +163,8 @@ end
 -- @param hud (Hud) The hud component.
 -- @param position (Vector2) The position as a Vector2.
 function GUI.Hud.SetPosition(hud, position)
-    position = GUI.Hud.FixPosition( position )
     local newPosition = hud.camera.hudOriginGO.transform:GetPosition() +
+    position:EnsureNumberPixel( hud.cameraGO.camera )
     Vector3:New(
         position.x * hud.camera:GetPixelsToUnits(),
         -position.y * hud.camera:GetPixelsToUnits(),
@@ -173,8 +187,8 @@ end
 -- @param hud (Hud) The hud component.
 -- @param position (Vector2) The position as a Vector2.
 function GUI.Hud.SetLocalPosition(hud, position)
-    position = GUI.Hud.FixPosition( position )
     local parent = hud.gameObject.parent or hud.camera.hudOriginGO
+    position:EnsureNumberPixel( hud.cameraGO.camera )
     local newPosition = parent.transform:GetPosition() +
     Vector3:New(
         position.x * hud.camera:GetPixelsToUnits(),
