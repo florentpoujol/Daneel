@@ -23,6 +23,7 @@ function Behavior:Awake()
             cursorBlinkInterval = self.cursorBlinkInterval,
         }
         
+        self.characterRange = string.trim( self.characterRange )
         if self.characterRange ~= "" then
             params.characterRange = self.characterRange
         end

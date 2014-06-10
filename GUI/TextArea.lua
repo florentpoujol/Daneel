@@ -14,6 +14,7 @@ font string ""
 text string ""
 alignment string ""
 opacity number 1.0
+cameraName string ""
 /PublicProperties]]
 
 function Behavior:Awake()
@@ -29,6 +30,11 @@ function Behavior:Awake()
             if string.trim( self[ prop ] ) ~= "" then
                 params[ prop ] = self[ prop ]
             end
+        end
+
+        self.cameraName = string.trim( self.cameraName )
+        if self.cameraName ~= "" then
+            params.cameraGO = GameObject.Get( self.cameraName )
         end
 
         GUI.TextArea.New( self.gameObject, params )

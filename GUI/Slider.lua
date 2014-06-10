@@ -10,6 +10,7 @@ maxValue number 100
 length string "5"
 axis string "x"
 value string "0%"
+cameraName string ""
 /PublicProperties]]
 
 function Behavior:Awake()
@@ -21,12 +22,19 @@ function Behavior:Awake()
             self.value = "0%"
         end
 
+        local cameraGO = nil
+        self.cameraName = string.trim( self.cameraName )
+        if self.cameraName ~= "" then
+            cameraGO = GameObject.Get( self.cameraName )
+        end
+
         GUI.Slider.New( self.gameObject, { 
             minValue = self.minValue,
             maxValue = self.maxValue,
             length = self.length,
             axis = self.axis,
             value = self.value,
+            cameraGO = cameraGO
         } )
     end
 end

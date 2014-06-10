@@ -11,10 +11,17 @@ minLength string "0"
 maxLength string "5"
 height string "1"
 value string "100%"
+cameraName string ""
 /PublicProperties]]
 
 function Behavior:Awake()
     if self.gameObject.progressBar == nil then
+        local cameraGO = nil
+        self.cameraName = string.trim( self.cameraName )
+        if self.cameraName ~= "" then
+            cameraGO = GameObject.Get( self.cameraName )
+        end
+
         GUI.ProgressBar.New( self.gameObject, { 
             minValue = self.minValue,
             maxValue = self.maxValue,
@@ -22,6 +29,7 @@ function Behavior:Awake()
             maxLength = self.maxLength,
             height = self.height,
             value = self.value,
+            cameraGO = cameraGO
         })
     end
 end
