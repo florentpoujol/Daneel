@@ -21,12 +21,15 @@ local _p = { "params", t }
 --- Convert the provided value (a length) in a number expressed in scene unit.
 -- The provided value may be suffixed with "px" (pixels) or "u" (scene units).
 -- @param value (string or number) The value to convert.
--- @param camera (Camera) [optional] The reference camera used to convert from pixels to units. Only needed when the value is in pixels.
+-- @param camera (Camera or GameObject) [optional] The reference camera used to convert from pixels to units. Only needed when the value is in pixels.
 -- @return (number) The converted value, expressed in scene units.
 function GUI.ToSceneUnit( value, camera )
     if type( value ) == "string" then
         value = value:trim()
         if value:find( "px" ) then
+            if camera ~= nil and getmetatable( camera ) == GameObject then
+                camera = camera.camera      
+            end
             if camera == nil then
                 error( "GUI.ToSceneUnit(value, camera) : Can't convert the value '"..value.."' from pixels to scene units because no camera component has been passed as argument.")
             end
@@ -47,11 +50,12 @@ end
 -- @param camera (Camera) [optional] The reference camera used to convert from pixels to units. Only needed when the value is in units.
 -- @return (number) The converted value, expressed in pixels.
 function GUI.ToPixel( value, screenSide, camera )
-    if type( screenSide ) == "table" then
-        camera = screenSide
-        screenSide = nil
-    end
     if type( value ) == "string" then
+        if type( screenSide ) == "table" then
+            camera = screenSide
+            screenSide = nil
+        end
+
         value = value:trim()
         local screenSize = CS.Screen.GetSize()
 
@@ -81,14 +85,19 @@ function GUI.ToPixel( value, screenSide, camera )
     return value
 end
 
+-- Find the first parent game object with a camera component and set it in place in the params argument.
+-- @param params (table) A table of parameters.
+-- @param gameObject (GameObject) The child game object.
+-- @param errorHead (string) [optional] The name of the function that call getCameraGO().
 local function getCameraGO( params, gameObject, errorHead )
     if params.cameraGO == nil then
         params.cameraGO = gameObject:GetInAncestors( function( go ) if go.camera ~= nil then return true end end )
-        if params.cameraGO == nil then
+        if params.cameraGO == nil and errorHead ~= nil then
             error(errorHead..": The "..tostring(gameObject).." isn't a child of a game object with a camera component and no camera game object is passed via the 'params' argument.")
         end
     end
 end
+
 
 ----------------------------------------------------------------------------------
 -- Hud
@@ -485,6 +494,7 @@ function GUI.ProgressBar.New( gameObject, params )
     progressBar.value = nil -- remove the property to allow to use the dynamic getter/setter
     setmetatable( progressBar, GUI.ProgressBar )
     params = params or {}
+    getCameraGO( params, gameObject )
     if params.value == nil then
         params.value = GUI.Config.progressBar.value
     end
@@ -523,8 +533,8 @@ function GUI.ProgressBar.SetValue(progressBar, value)
     local oldValue = value
     value = math.clamp(value, minVal, maxVal)
 
-    progressBar.minLength = GUI.ToSceneUnit(progressBar.minLength)
-    progressBar.maxLength = GUI.ToSceneUnit(progressBar.maxLength)
+    progressBar.minLength = GUI.ToSceneUnit( progressBar.minLength, progressBar.cameraGO )
+    progressBar.maxLength = GUI.ToSceneUnit( progressBar.maxLength, progressBar.cameraGO )
     local currentValue = progressBar:GetValue()
 
     if value ~= currentValue then
@@ -533,7 +543,7 @@ function GUI.ProgressBar.SetValue(progressBar, value)
         end
         percentageOfProgress = (value - minVal) / (maxVal - minVal)
 
-        progressBar.height = GUI.ToSceneUnit(progressBar.height)
+        progressBar.height = GUI.ToSceneUnit( progressBar.height, progressBar.cameraGO )
 
         local newLength = (progressBar.maxLength - progressBar.minLength) * percentageOfProgress + progressBar.minLength
         local currentScale = progressBar.gameObject.transform:GetLocalScale()
@@ -605,7 +615,8 @@ GUI.ProgressBar.GetProgress = GUI.ProgressBar.GetValue
 -- @param height (number or string) Get the height in pixel or scene unit.
 function GUI.ProgressBar.SetHeight( progressBar, height )
     local currentScale = progressBar.gameObject.transform:GetLocalScale()
-    progressBar.gameObject.transform:SetLocalScale( Vector3:New( currentScale.x, GUI.ToSceneUnit( height ), currentScale.z ) )
+    local height = GUI.ToSceneUnit( height, progressBar.cameraGO )
+    progressBar.gameObject.transform:SetLocalScale( Vector3:New( currentScale.x, height, currentScale.z ) )
 end
 
 --- Get the height of the progress bar (the local scale's y component).
@@ -730,7 +741,7 @@ function GUI.Slider.SetValue( slider, value )
     end
     percentage = (value - minVal) / (maxVal - minVal)
 
-    slider.length = GUI.ToSceneUnit( slider.length, slider.cameraGO.camera )
+    slider.length = GUI.ToSceneUnit( slider.length, slider.cameraGO )
 
     local direction = -Vector3:Left()
     if slider.axis == "y" then
@@ -981,6 +992,8 @@ function GUI.TextArea.New( gameObject, params )
         textArea.textRuler = gameObject:CreateComponent( "TextRenderer" ) 
     end
     textArea.textRuler:SetText( "" )
+    params = params or {}
+    getCameraGO( params, gameObject )
     textArea:Set( table.merge( GUI.Config.textArea, params ) )
     return textArea
 end
@@ -1139,7 +1152,7 @@ end
 -- @param textArea (TextArea) The textArea component.
 -- @param areaWidth (number or string) [optional] The area width in scene units or in pixels as a string suffixed with "px".
 function GUI.TextArea.SetAreaWidth( textArea, areaWidth )
-    areaWidth = math.clamp( GUI.ToSceneUnit( areaWidth ), 0, 999 )   
+    areaWidth = math.clamp( GUI.ToSceneUnit( areaWidth, textArea.cameraGO ), 0, 999 )   
     if textArea.AreaWidth ~= areaWidth then
         textArea.AreaWidth = areaWidth
         if #textArea.lineGOs > 0 then
@@ -1198,7 +1211,7 @@ end
 -- @param textArea (TextArea) The textArea component.
 -- @param lineHeight (number or string) The line height in scene units or in pixels as a string suffixed with "px".
 function GUI.TextArea.SetLineHeight( textArea, lineHeight )
-    local lineHeight = GUI.ToSceneUnit( lineHeight )
+    local lineHeight = GUI.ToSceneUnit( lineHeight, textArea.cameraGO )
     if textArea.LineHeight ~= lineHeight then
         textArea.LineHeight = lineHeight
         if #textArea.lineGOs > 0 then
