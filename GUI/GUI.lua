@@ -69,10 +69,10 @@ function GUI.ToPixel( value, screenSide, camera )
             value = screenSize[ screenSide ] + tonumber( value )
 
         elseif value:find( "u" ) then
-            if GUI.Config.cameraGO == nil then
-                error( "GUI.Hud.ToPixel( value[, screenSide] ) : Can't convert the value '"..value.."' from scene units to pixels because the HUD camera has not been found (the game object with name '"..GUI.Config.cameraName.."' (value of 'cameraName' in the config)).")
+            if camera == nil then
+                error( "GUI.ToPixel(value, camera) : Can't convert the value '"..value.."' from pixels to scene units because no camera component has been passed as argument.")
             end
-            value = tonumber( value:sub( 0, #value-1) ) / GUI.pixelsToUnits
+            value = tonumber( value:sub( 0, #value-1) ) / camera:GetPixelsToUnits()
 
         else
             value = tonumber( value )
@@ -163,11 +163,11 @@ end
 -- @param hud (Hud) The hud component.
 -- @param position (Vector2) The position as a Vector2.
 function GUI.Hud.SetPosition(hud, position)
-    local newPosition = hud.camera.hudOriginGO.transform:GetPosition() +
     position:EnsureNumberPixel( hud.cameraGO.camera )
+    local newPosition = hud.cameraGO.hudOriginGO.transform:GetPosition() +
     Vector3:New(
-        position.x * hud.camera:GetPixelsToUnits(),
-        -position.y * hud.camera:GetPixelsToUnits(),
+        position.x * hud.cameraGO.camera:GetPixelsToUnits(),
+        -position.y * hud.cameraGO.camera:GetPixelsToUnits(),
         0
     )
     newPosition.z = hud.gameObject.transform:GetPosition().z
@@ -178,8 +178,8 @@ end
 -- @param hud (Hud) The hud component.
 -- @return (Vector2) The position.
 function GUI.Hud.GetPosition(hud)
-    local position = hud.gameObject.transform:GetPosition() - hud.camera.hudOriginGO.transform:GetPosition()
-    position = position / hud.camera:GetPixelsToUnits()
+    local position = hud.gameObject.transform:GetPosition() - hud.cameraGO.hudOriginGO.transform:GetPosition()
+    position = position / hud.cameraGO.camera:GetPixelsToUnits()
     return Vector2.New(math.round(position.x), math.round(-position.y))
 end
 
@@ -187,12 +187,12 @@ end
 -- @param hud (Hud) The hud component.
 -- @param position (Vector2) The position as a Vector2.
 function GUI.Hud.SetLocalPosition(hud, position)
-    local parent = hud.gameObject.parent or hud.camera.hudOriginGO
     position:EnsureNumberPixel( hud.cameraGO.camera )
+    local parent = hud.gameObject.parent or hud.cameraGO.hudOriginGO
     local newPosition = parent.transform:GetPosition() +
     Vector3:New(
-        position.x * hud.camera:GetPixelsToUnits(),
-        -position.y * hud.camera:GetPixelsToUnits(),
+        position.x * hud.cameraGO.camera:GetPixelsToUnits(),
+        -position.y * hud.cameraGO.camera:GetPixelsToUnits(),
         0
     )
     newPosition.z = hud.gameObject.transform:GetPosition().z
@@ -203,9 +203,9 @@ end
 -- @param hud (Hud) The hud component.
 -- @return (Vector2) The position.
 function GUI.Hud.GetLocalPosition(hud)
-    local parent = hud.gameObject.parent or hud.camera.hudOriginGO
+    local parent = hud.gameObject.parent or hud.cameraGO.hudOriginGO
     local position = hud.gameObject.transform:GetPosition() - parent.transform:GetPosition()
-    position = position / hud.camera:GetPixelsToUnits()
+    position = position / hud.cameraGO.camera:GetPixelsToUnits()
     return Vector2.New(math.round(position.x), math.round(-position.y))
 end
 
@@ -213,7 +213,7 @@ end
 -- @param hud (Hud) The hud component.
 -- @param layer (number) The layer (a postive number).
 function GUI.Hud.SetLayer(hud, layer)
-    local originLayer = hud.camera.hudOriginGO.transform:GetPosition().z
+    local originLayer = hud.cameraGO.hudOriginGO.transform:GetPosition().z
     local currentPosition = hud.gameObject.transform:GetPosition()
     hud.gameObject.transform:SetPosition( Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer) )
 end
@@ -222,7 +222,7 @@ end
 -- @param hud (Hud) The hud component.
 -- @return (number) The layer (with one decimal).
 function GUI.Hud.GetLayer(hud)
-    local originLayer = hud.camera.hudOriginGO.transform:GetPosition().z
+    local originLayer = hud.cameraGO.hudOriginGO.transform:GetPosition().z
     return math.round( originLayer - hud.gameObject.transform:GetPosition().z, 1 )
 end
 
@@ -230,7 +230,7 @@ end
 -- @param hud (Hud) The hud component.
 -- @param layer (number) The layer (a postiv number).
 function GUI.Hud.SetLocalLayer(hud, layer)
-    local parent = hud.gameObject.parent or hud.camera.hudOriginGO
+    local parent = hud.gameObject.parent or hud.cameraGO.hudOriginGO
     local originLayer = parent.transform:GetPosition().z
     local currentPosition = hud.gameObject.transform:GetPosition()
     hud.gameObject.transform:SetPosition( Vector3:New(currentPosition.x, currentPosition.y, originLayer-layer) )
@@ -240,7 +240,7 @@ end
 -- @param hud (Hud) The hud component.
 -- @return (number) The layer (with one decimal).
 function GUI.Hud.GetLocalLayer(hud)
-    local parent = hud.gameObject.parent or hud.camera.hudOriginGO
+    local parent = hud.gameObject.parent or hud.cameraGO.hudOriginGO
     local originLayer = parent.transform:GetPosition().z
     return math.round( originLayer - hud.gameObject.transform:GetPosition().z, 1 )
 end
