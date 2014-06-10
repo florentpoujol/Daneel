@@ -4,7 +4,7 @@
 -- Last modified for v1.5.0
 -- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 
-GUI = { pixelsToUnits = 0 }
+GUI = {}
 
 -- debug info
 local s = "string"
@@ -139,6 +139,7 @@ end
 -- @return (Hud) The hud component.
 function GUI.Hud.New( gameObject, params )
     params = params or {}
+    getCameraGO( params, gameObject, "GUI.Hud.New()" )
     if params.cameraGO == nil then
         params.cameraGO = gameObject:GetInAncestors( function( go ) if go.camera ~= nil then return true end end )
         if params.cameraGO == nil then
@@ -149,11 +150,9 @@ function GUI.Hud.New( gameObject, params )
     hud.gameObject = gameObject
     gameObject.hud = hud
     hud.id = Daneel.Utilities.GetId()
-    print(params.cameraGO)
     if params.cameraGO.camera.hudOriginGO == nil then
         GUI.Hud.RegisterCamera( params.cameraGO )
     end
-    hud.camera = params.cameraGO.camera
     hud:Set( table.merge( GUI.Config.hud, params ) )
     return hud
 end
@@ -271,6 +270,10 @@ GUI.Toggle.__index = GUI.Toggle
 -- @param params (table) [optional] A table of parameters.
 -- @return (Toggle) The new component.
 function GUI.Toggle.New( gameObject, params )
+    if Daneel.modules.MouseInput == nil then
+        error( "GUI.Toggle.New(): The 'Mouse Input' module is missing from your project. It is required for the player to interact with the GUI.Toggle, GUI.Input and GUI.Slider components." )
+    end
+
     local toggle = table.copy( GUI.Config.toggle )
     toggle.defaultText = toggle.text
     toggle.text = nil
@@ -460,8 +463,8 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["GUI.Toggle.SetText"] =    { _toggle, { "text", s } },
     ["GUI.Toggle.GetText"] =    { _toggle },
     ["GUI.Toggle.Check"] =      { _toggle, { "state", defaultValue = true }, { "forceUpdate", defaultValue = false } },
-    ["GUI.Toggle.SetGtoup"] =   { _toggle, { "group", s, isOptional = true } },
-    ["GUI.Toggle.GetGtoup"] =   { _toggle },
+    ["GUI.Toggle.SetGroup"] =   { _toggle, { "group", s, isOptional = true } },
+    ["GUI.Toggle.GetGroup"] =   { _toggle },
 } )
 
 
@@ -650,9 +653,10 @@ GUI.Slider.__index = GUI.Slider
 -- @param params (table) [optional] A table of parameters.
 -- @return (Slider) The new component.
 function GUI.Slider.New( gameObject, params )
-    local errorHead = "GUI.Slider.New( gameObject[, params] ) : "
-    if GUI.Config.cameraGO == nil then
-        error( errorHead.."Can't create a Slider component because the HUD camera has not been found (the game object with name '"..GUI.Config.cameraName.."' (value of 'cameraName' in the config)).")
+    params = params or {}
+    getCameraGO( params, gameObject, "GUI.Slider.New()" )
+    if Daneel.modules.MouseInput == nil then
+        error( "GUI.Slider.New(): The 'Mouse Input' module is missing from your project. It is required for the player to interact with the GUI.Toggle, GUI.Input and GUI.Slider components." )
     end
 
     local slider = table.copy( GUI.Config.slider )
@@ -677,7 +681,7 @@ function GUI.Slider.New( gameObject, params )
             positionDelta = Vector3:New( 0, -mouseDelta.y, 0, 0 )
         end
 
-        gameObject.transform:Move( positionDelta * GUI.pixelsToUnits )
+        gameObject.transform:Move( positionDelta * slider.cameraGO.camera:GetPixelsToUnits() )
 
         local goPosition = gameObject.transform:GetPosition()
         local parentPosition = slider.parent.transform:GetPosition()
@@ -692,8 +696,7 @@ function GUI.Slider.New( gameObject, params )
             Daneel.Event.Fire( slider, "OnUpdate", slider )
         end
     end
-
-    params = params or {}
+    
     if params.value == nil then
         params.value = GUI.Config.slider.value
     end
@@ -727,7 +730,7 @@ function GUI.Slider.SetValue( slider, value )
     end
     percentage = (value - minVal) / (maxVal - minVal)
 
-    slider.length = GUI.ToSceneUnit( slider.length )
+    slider.length = GUI.ToSceneUnit( slider.length, slider.cameraGO.camera )
 
     local direction = -Vector3:Left()
     if slider.axis == "y" then
@@ -781,6 +784,10 @@ GUI.Input.__index = GUI.Input
 -- @param params (table) [optional] A table of parameters.
 -- @return (Input) The new component.
 function GUI.Input.New( gameObject, params )
+    if Daneel.modules.MouseInput == nil then
+        error( "GUI.Input.New(): The 'Mouse Input' module is missing from your project. It is required for the player to interact with the GUI.Toggle, GUI.Input and GUI.Slider components." )
+    end
+
     params = params or {}
     local input = table.merge( GUI.Config.input, params )
     input.gameObject = gameObject
@@ -948,7 +955,7 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["GUI.Input.New"] =          { _go, _op },
     ["GUI.Input.Focus"] =        { _input, { "focus", defaultValue = true } },
     ["GUI.Input.UpdateCursor"] = { _input },
-    ["GUI.Input.UpdateText"] =   { _input, { "text", s }, { "replaceText", defaultValue = true } },
+    ["GUI.Input.Update"] =   { _input, { "text", s }, { "replaceText", defaultValue = true } },
 } )
 
 
@@ -1411,57 +1418,7 @@ end
 GUI.Config = GUI.DefaultConfig()
 
 function GUI.Load()
-    if Daneel.modules.MouseInput == nil and Daneel.Config.debug.enableDebug then
-        print( "GUI.Load() : Your project seems to lack the 'Mouse Input' module. It is required for the player to interact with the GUI.Toggle, GUI.Input and GUI.Slider components." )
-    end
-
-    --- Update the gameObject's scale to make the text appear the provided width.
-    -- Overwrite TextRenderer.SetTextWith() from the Core.
-    -- @param textRenderer (TextRenderer) The textRenderer.
-    -- @param width (number or string) The text's width in scene units or pixels.
-    function TextRenderer.SetTextWidth( textRenderer, width )
-        Daneel.Debug.StackTrace.BeginFunction("TextRenderer.SetTextWidth", textRenderer, width)
-        local errorHead = "TextRenderer.SetTextWidth( textRenderer, width ) : "
-        Daneel.Debug.CheckArgType(textRenderer, "textRenderer", "TextRenderer", errorHead)
-        local argType = Daneel.Debug.CheckArgType(width, "width", {"number", "string"}, errorHead)
-
-        if argType == "string" then
-            width = GUI.ToSceneUnit( width )
-        end
-
-        local widthScaleRatio = textRenderer:GetTextWidth() / textRenderer.gameObject.transform:GetScale()
-        textRenderer.gameObject.transform:SetScale( width / widthScaleRatio )
-        Daneel.Debug.StackTrace.EndFunction()
-    end
-
     if Daneel.modules.Tween then
         table.mergein( Tween.Config.propertiesByComponentName, GUI.Config.propertiesByComponentName )
-    end
-end
-
-function GUI.Awake()
-    -- get the smaller side of the screen (usually screenSize.y, the height)
-    local screenSize = CS.Screen.GetSize()
-    local smallSideSize = screenSize.y
-    if screenSize.x < screenSize.y then
-        smallSideSize = screenSize.x
-    end
-
-    GUI.Config.cameraGO = GameObject.Get( GUI.Config.cameraName )
-
-    if GUI.Config.cameraGO ~= nil then
-        -- The orthographic scale value (in units) is equivalent to the smallest side size of the screen (in pixel)
-        -- pixelsToUnits (in units/pixels) is the correspondance between screen pixels and scene units
-        GUI.pixelsToUnits = GUI.Config.cameraGO.camera:GetOrthographicScale() / smallSideSize
-
-        GUI.Config.originGO = CS.CreateGameObject( "HUD Origin" )
-        GUI.Config.originGO:SetParent( GUI.Config.cameraGO )
-
-        GUI.Config.originGO.transform:SetLocalPosition( Vector3:New(
-            -screenSize.x * GUI.pixelsToUnits / 2,
-            screenSize.y * GUI.pixelsToUnits / 2,
-            0
-        ) )
-        -- the HUD Origin is now at the top-left corner of the screen
     end
 end
