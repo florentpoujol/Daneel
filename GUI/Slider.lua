@@ -1,7 +1,7 @@
 -- Slider.lua
 -- Scripted behavior for GUI.Slider component.
 --
--- Last modified for v1.3.0
+-- Last modified for v1.5.0
 -- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 
 --[[PublicProperties

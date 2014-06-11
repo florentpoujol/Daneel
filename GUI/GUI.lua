@@ -108,9 +108,9 @@ GUI.Hud.__index = GUI.Hud -- __index will be rewritted when Daneel loads (in Dan
 
 --- Creates a "Hud Origin" child used for positioning hud components.
 -- @param gameObject (GameObject) The game object with a camera component.
-function GUI.Hud.RegisterCamera( gameObject )
+function GUI.Hud.CreateOriginGO( gameObject )
     if gameObject.camera == nil then
-        error( "GUI.Hud.RegisterCamera(): Provided game object "..tostring(gameObject).." has no camera component." )
+        error( "GUI.Hud.CreateOriginGO(): Provided game object "..tostring(gameObject).." has no camera component." )
     end
     local pixelsToUnits = gameObject.camera:GetPixelsToUnits()
     local screenSize = CS.Screen.GetSize()
@@ -149,19 +149,14 @@ end
 function GUI.Hud.New( gameObject, params )
     params = params or {}
     getCameraGO( params, gameObject, "GUI.Hud.New()" )
-    if params.cameraGO == nil then
-        params.cameraGO = gameObject:GetInAncestors( function( go ) if go.camera ~= nil then return true end end )
-        if params.cameraGO == nil then
-            error("GUI.Hud.New(): The "..tostring(gameObject).." isn't a child of a game object with a camera component and no camera game object is passed via the 'params' argument.")
-        end
-    end
     local hud = setmetatable( {}, GUI.Hud )
     hud.gameObject = gameObject
     gameObject.hud = hud
     hud.id = Daneel.Utilities.GetId()
-    if params.cameraGO.camera.hudOriginGO == nil then
-        GUI.Hud.RegisterCamera( params.cameraGO )
+    if params.cameraGO.hudOriginGO == nil then
+        GUI.Hud.CreateOriginGO( params.cameraGO )
     end
+    hud.cameraGO = params.cameraGO
     hud:Set( table.merge( GUI.Config.hud, params ) )
     return hud
 end
@@ -255,7 +250,7 @@ end
 
 local _hud = { "hud", "Hud" }
 table.mergein( Daneel.functionsDebugInfo, {
-    ["GUI.Hud.RegisterCamera"] =    { _go },
+    ["GUI.Hud.CreateOriginGO"] =    { _go },
     ["GUI.Hud.New"] =               { _go, _op },
     ["GUI.Hud.SetPosition"] =       { _hud, { "position", v2 } },
     ["GUI.Hud.GetPosition"] =       { _hud },
