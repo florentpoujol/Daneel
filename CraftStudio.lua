@@ -1265,10 +1265,11 @@ function GameObject.Set( gameObject, params )
                 end
 
                 if component == nil then
-                    component = gameObject:AddComponent( componentType )
+                    component = gameObject:AddComponent( componentType, componentParams )
+                else
+                    component:Set( componentParams )
                 end
 
-                component:Set( componentParams )
                 table.removevalue( params, componentParams )
             end
         end
@@ -1527,23 +1528,22 @@ function GameObject.AddComponent( gameObject, componentType, params )
         if defaultComponentParams ~= nil then
             params = table.merge( defaultComponentParams, params )
         end
+        if params ~= nil then
+            component:Set(params)
+        end
 
     else
         -- custom component type
         local componentObject = Daneel.Config.componentObjects[ componentType ]
 
         if componentObject ~= nil and type( componentObject.New ) == "function" then
-            component = componentObject.New( gameObject )
+            component = componentObject.New( gameObject, params )
         else
             if Daneel.Config.debug.enableDebug then
                 error( errorHead.."Custom component of type '"..componentType.."' does not provide a New() function; Can't create the component." )
             end
             return
         end
-    end
-
-    if params ~= nil and component ~= nil then
-        component:Set( params )
     end
 
     Daneel.Event.Fire( gameObject, "OnNewComponent", component )
