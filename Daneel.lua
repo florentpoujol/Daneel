@@ -835,12 +835,6 @@ end
 Daneel.Event = {
     events = {}, -- emptied when a new scene is loaded in CraftStudio.LoadScene()
     persistentEvents = {}, -- not emptied
-    globalEventNames = {
-        "^On(.+)ButtonJustPressed$",
-        "^On(.+)ButtonJustReleased$",
-        "^On(.+)ButtonDown$",
-        "OnSceneLoad"
-    }
 }
 
 local EventNamesTestedForHotKeys = {} -- Event names are keys, value is true.
@@ -1039,10 +1033,8 @@ function GameObject.On( gameObject, eventName, _function )
         eventName = "On"..eventName
     end
     gameObject[ eventName ] = _function
+    Daneel.Event.Listen( eventName, _function )
     Daneel.Event.Fire( "GameObject.On", gameObject, eventName, _function )
-    if table.containsvalue( Daneel.Event.globalEventNames, eventName ) then
-        Daneel.Event.Listen( eventName, _function )
-    end
 end
 
 table.mergein( Daneel.functionsDebugInfo, {
