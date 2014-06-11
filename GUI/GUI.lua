@@ -1351,10 +1351,7 @@ function GUI.DefaultConfig()
         originGO = nil, -- "parent" gameObject for global hud positioning, created at runtime in DaneelModuleGUIAwake
 
         -- Default GUI components settings
-        hud = {
-            localPosition = setmetatable({x=0,y=0}, Vector2),
-            layer = 1,
-        },
+        hud = {},
 
         toggle = {
             isChecked = false, -- false = unchecked, true = checked
