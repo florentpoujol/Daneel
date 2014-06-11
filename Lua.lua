@@ -346,7 +346,7 @@ function table.mergein( ... )
         if #arg > 0 then
             table.print( arg )
             msg = "table.mergein(): First argument is nil. Other arguments are shown above."
-        else
+        end
         error( msg )
     end
     for i, t in ipairs( arg ) do
