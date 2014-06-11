@@ -387,8 +387,10 @@ end
 -- @param state (boolean) [default=true] The new state of the toggle.
 -- @param forceUpdate (boolean) [default=false] Tell whether to force the updating of the state.
 function GUI.Toggle.Check( toggle, state, forceUpdate )
-    state = state or true
-    if forceUpdate or toggle.isChecked ~= state then
+    if state == nil then
+        state = true
+    end
+    if forceUpdate == true or toggle.isChecked ~= state then
         local text = nil
         if toggle.gameObject.textRenderer ~= nil then
             text = toggle:GetText()
@@ -887,7 +889,9 @@ end
 -- @param input (Input) The input component.
 -- @param focus (boolean) [default=true] The new focus.
 function GUI.Input.Focus( input, focus )
-    focus = focus or true
+    if focus == nil then
+        focus = true
+    end
     if input.isFocused ~= focus then
         input.isFocused = focus
         local text = string.trim( input.gameObject.textRenderer:GetText() )
@@ -907,7 +911,7 @@ function GUI.Input.Focus( input, focus )
     end
 end
 
---- Update the cursor of the input.
+--- Update the position and opacity of the input's cursor.
 -- @param input (Input) The input component.
 function GUI.Input.UpdateCursor( input )
     if input.cursorGO ~= nil then
@@ -919,9 +923,9 @@ function GUI.Input.UpdateCursor( input )
             end
             input.cursorGO.transform:SetLocalPosition( Vector3:New( length, 0, 0 ) )
         end
-        local opacity = 1
-        if not input.isFocused then
-            opacity = 0
+        local opacity = 0
+        if input.isFocused then
+            opacity = 1
         end
         input.cursorGO.modelRenderer:SetOpacity( opacity )
         input.cursorGO.tweener.isPaused = not input.isFocused
@@ -938,7 +942,7 @@ function GUI.Input.Update( input, text, replaceText )
         --return
     --end
     local oldText = input.gameObject.textRenderer:GetText()
-    if replaceText == false then
+    if not replaceText then -- nil or false
         text = oldText .. text
     end
     if #text > input.maxLength then
@@ -961,7 +965,7 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["GUI.Input.New"] =          { _go, _op },
     ["GUI.Input.Focus"] =        { _input, { "focus", defaultValue = true } },
     ["GUI.Input.UpdateCursor"] = { _input },
-    ["GUI.Input.Update"] =   { _input, { "text", s }, { "replaceText", defaultValue = true } },
+    ["GUI.Input.Update"] =       { _input, { "text", s }, { "replaceText", defaultValue = false } },
 } )
 
 
