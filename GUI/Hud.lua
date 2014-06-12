@@ -42,7 +42,8 @@ function Behavior:Awake()
         -- allow the gameObject to stay at the position defined in the scene
         local currentPos =  self.gameObject.transform:GetPosition()
         if params.cameraGO ~= nil and params.position == nil and params.localPosition == nil then
-            params.position = cameraGO.camera:WorldToScreenPoint( currentPos )
+            local position = params.cameraGO.camera:WorldToScreenPoint( currentPos ) -- vector3
+            params.position = Vector2.New( position.x, position.y )
         end
         if params.layer == nil and params.localLayer == nil then
             params.layer = -currentPos.z
