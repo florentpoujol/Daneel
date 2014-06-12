@@ -85,17 +85,16 @@ function GUI.ToPixel( value, screenSide, camera )
     return value
 end
 
--- Find the first parent game object with a camera component and set it in place in the params argument.
--- @param params (table) A table of parameters.
+-- Find the first parent with a camera component.
 -- @param gameObject (GameObject) The child game object.
--- @param errorHead (string) [optional] The name of the function that call getCameraGO().
-local function getCameraGO( params, gameObject, errorHead )
-    if params.cameraGO == nil then
-        params.cameraGO = gameObject:GetInAncestors( function( go ) if go.camera ~= nil then return true end end )
-        if params.cameraGO == nil and errorHead ~= nil then
-            error(errorHead..": The "..tostring(gameObject).." isn't a child of a game object with a camera component and no camera game object is passed via the 'params' argument.")
-        end
+-- @param errorHead (string) [optional] The name of the function that call getCameraGO(). If set, will return an error when the parent isn't found.
+-- @return (GameObject) The camera game object, or nil.
+local function getCameraGO( gameObject, errorHead )
+    local cameraGO = gameObject:GetInAncestors( function( go ) if go.camera ~= nil then return true end end )
+    if cameraGO == nil and errorHead ~= nil then
+        error(errorHead..": The "..tostring(gameObject).." isn't a child of a game object with a camera component and no camera game object is passed via the 'params' argument.")
     end
+    return cameraGO
 end
 
 
@@ -147,16 +146,15 @@ end
 -- @param params (table) [optional] A table of parameters.
 -- @return (Hud) The hud component.
 function GUI.Hud.New( gameObject, params )
-    params = params or {}
-    getCameraGO( params, gameObject, "GUI.Hud.New()" )
     local hud = setmetatable( {}, GUI.Hud )
     hud.gameObject = gameObject
     gameObject.hud = hud
     hud.id = Daneel.Utilities.GetId()
-    if params.cameraGO.hudOriginGO == nil then
-        GUI.Hud.CreateOriginGO( params.cameraGO )
+    params = params or {}
+    hud.cameraGO = params.cameraGO or getCameraGO( gameObject, "GUI.Hud.New()" )
+    if hud.cameraGO.hudOriginGO == nil then
+        GUI.Hud.CreateOriginGO( hud.cameraGO )
     end
-    hud.cameraGO = params.cameraGO
     hud:Set( table.merge( GUI.Config.hud, params ) )
     return hud
 end
@@ -491,10 +489,10 @@ function GUI.ProgressBar.New( gameObject, params )
     progressBar.value = nil -- remove the property to allow to use the dynamic getter/setter
     setmetatable( progressBar, GUI.ProgressBar )
     params = params or {}
-    getCameraGO( params, gameObject )
     if params.value == nil then
         params.value = GUI.Config.progressBar.value
     end
+    progressBar.cameraGO = params.cameraGO or getCameraGO( gameObject )
     progressBar:Set( params )
     gameObject.progressBar = progressBar
     return progressBar
@@ -661,8 +659,7 @@ GUI.Slider.__index = GUI.Slider
 -- @param params (table) [optional] A table of parameters.
 -- @return (Slider) The new component.
 function GUI.Slider.New( gameObject, params )
-    params = params or {}
-    getCameraGO( params, gameObject, "GUI.Slider.New()" )
+    
     if Daneel.modules.MouseInput == nil then
         error( "GUI.Slider.New(): The 'Mouse Input' module is missing from your project. It is required for the player to interact with the GUI.Toggle, GUI.Input and GUI.Slider components." )
     end
@@ -705,6 +702,8 @@ function GUI.Slider.New( gameObject, params )
         end
     end
     
+    params = params or {}
+    slider.cameraGO = params.cameraGO or getCameraGO( gameObject, "GUI.Slider.New()" )
     if params.value == nil then
         params.value = GUI.Config.slider.value
     end
@@ -992,7 +991,7 @@ function GUI.TextArea.New( gameObject, params )
     end
     textArea.textRuler:SetText( "" )
     params = params or {}
-    getCameraGO( params, gameObject )
+    textArea.cameraGO = params.cameraGO or getCameraGO( gameObject )
     textArea:Set( table.merge( GUI.Config.textArea, params ) )
     return textArea
 end
