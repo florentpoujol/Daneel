@@ -738,7 +738,7 @@ Vector3.__tostring = function( vector )
     end
 end
 
--- Returns a new Vector3.
+--- Returns a new Vector3.
 -- @params x (number, Vector3 or Vector2) [optional] The vector's x component.
 -- @params y (number or Vector2) [optional] The vector's y component.
 -- @params z (number) [optional] The vector's z component.
@@ -767,7 +767,7 @@ function Vector3.New( x, y, z, z2 )
     return setmetatable( { x=x, y=y, z=z }, Vector3 )
 end
 
--- Returns the length of the provided vector
+--- Returns the length of the provided vector
 -- @param vector (Vector3) The vector.
 -- @return (number) The length.
 function Vector3.GetLength( vector )
@@ -1415,6 +1415,22 @@ function GameObject.GetChildren( gameObject, recursive, includeSelf )
     return allChildren
 end
 
+--- Get all descendants of the game object, sorted by name.
+-- If several descendant have the same name, only the last one will be found in the returned table.
+-- @param gameObject (GameObject) The game object.
+-- @param recursive (boolean) [default=false] Look for all descendants instead of just the first generation.
+-- @param includeSelf (boolean) [default=false] Include the game object in the children.
+-- @return (table) The children.
+function GameObject.GetChildrenByName( gameObject, recursive, includeSelf )
+    local childrenArray = gameObject:GetChildren( recursive, includeSelf )
+    local childrenByName = {}
+    for i=1, #childrenArray do
+        local child = childrenArray[i]
+        childrenByName[ child:GetName() ] = child
+    end
+    return childrenByName
+end
+
 GameObject.oSendMessage = GameObject.SendMessage
 
 --- Search the ancestors of the provided game object. It returns the game object that match the condition in the search function.
@@ -1743,10 +1759,11 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["GameObject.Get"] =         { { "name", { s, "GameObject" } }, { "errorIfGameObjectNotFound", defaultValue = false } },
     ["GameObject.Destroy"] =     { _go },
 
-    ["GameObject.SetParent"] =   { _go, { "parentNameOrInstance", { s, "GameObject" }, isOptional = true }, { "keepLocalTransform", defaultValue = false } },
-    ["GameObject.GetChild"] =    { _go, { "name", s, isOptional = true }, { "recursive", defaultValue = false } },
-    ["GameObject.GetChildren"] = { _go, { "recursive", defaultValue = false }, { "includeSelf", defaultValue = false } },
-    ["GameObject.GetInAncestors"] = { _go, { "searchFunction", "function" } },
+    ["GameObject.SetParent"] =          { _go, { "parentNameOrInstance", { s, "GameObject" }, isOptional = true }, { "keepLocalTransform", defaultValue = false } },
+    ["GameObject.GetChild"] =           { _go, { "name", s, isOptional = true }, { "recursive", defaultValue = false } },
+    ["GameObject.GetChildren"] =        { _go, { "recursive", defaultValue = false }, { "includeSelf", defaultValue = false } },
+    ["GameObject.GetChildrenByName"] =  { _go, { "recursive", defaultValue = false }, { "includeSelf", defaultValue = false } },
+    ["GameObject.GetInAncestors"] =     { _go, { "searchFunction", "function" } },
 
     ["GameObject.SendMessage"] =      { _go, { "functionName", s }, { "data", t, isOptional = true } },
     ["GameObject.BroadcastMessage"] = { _go, { "functionName", s }, { "data", t, isOptional = true } },
