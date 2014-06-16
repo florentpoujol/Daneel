@@ -59,19 +59,21 @@ functionsDebugInfo[ "Draw.LineRenderer.Set" ] = { _l, _p }
 -- @param line (LineRenderer) The line renderer.
 -- @param params (table) A table of parameters.
 function Draw.LineRenderer.Set( line, params )
-    if params.endPosition and (params.length or params.direction) then
-        if Daneel.Config.debug.enableDebug then
-            local text = "Draw.LineRenderer.Set( line, params ) : The 'endPosition' property is set."
-            if params.length then
-                text = text.." The 'length' property with value '"..tostring( params.length ).."' has been ignored."
+    if params.endPosition then
+        if params.length or params.direction then
+            if Daneel.Config.debug.enableDebug then
+                local text = "Draw.LineRenderer.Set( line, params ) : The 'endPosition' property is set with value "..tostring(params.endPosition)
+                if params.length then
+                    text = text.." The 'length' property with value '"..tostring( params.length ).."' has been ignored."
+                end
+                if params.direction then
+                    text = text.." The 'direction' property with value '"..tostring( params.direction ).."' has been ignored."
+                end
+                print( text )
             end
-            if params.direction then
-                text = text.." The 'direction' property with value '"..tostring( params.direction ).."' has been ignored."
-            end
-            print( text )
+            params.length = nil
+            params.direction = nil
         end
-        params.length = nil
-        params.direction = nil
     end
 
     local draw = false

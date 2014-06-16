@@ -12,13 +12,7 @@ function Behavior:Start()
     r = go.hud.position
     if r ~= Vector2.New(100) then
         print("GUI.Hud 1", r )
-    end
-    
-    r = go.hud.layer
-    if r ~= GUI.Config.hud.layer then
-        print("GUI.Hud 2", r )
-    end
-    
+    end 
     
     go = GameObject.Get( "HUD 11" )
     r = go.hud.localLayer
