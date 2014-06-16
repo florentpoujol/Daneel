@@ -97,7 +97,7 @@ function Tween.Tweener.New(target, property, endValue, duration, onCompleteCallb
 
     if 
         targetType == "number" or targetType == "string" or 
-        (mt == Vector2 or mt == Vector3)
+        mt == Vector2 or mt == Vector3
     then
         -- constructor n°2
         params = onCompleteCallback
@@ -258,12 +258,15 @@ function Tween.Tweener.Complete( tweener )
     tweener.isCompleted = true
     local endValue = tweener.endValue
     if tweener.loopType == "yoyo" then
-        if
-            (tweener.loops % 2 == 0 and tweener.completedLoops % 2 == 0) or -- endValue must be original startValue (because of even number of loops) | current X to Y loop, 
-            (tweener.loops % 2 ~= 0 and tweener.completedLoops % 2 ~= 0) -- endValue must be the original endValue but the current loop is Y to X, so endValue and startValue are inversed
-        then
+        if tweener.loops % 2 == 0 and tweener.completedLoops % 2 == 0 then -- endValue must be original startValue (because of even number of loops) | current X to Y loop, 
+            endValue = tweener.startValue
+        elseif tweener.loops % 2 ~= 0 and tweener.completedLoops % 2 ~= 0 then -- endValue must be the original endValue but the current loop is Y to X, so endValue and startValue are inversed
             endValue = tweener.startValue
         end
+        -- Condition done this way so Luamin does mess it.
+        -- Original condition was :
+        -- if (tweener.loops % 2 == 0 and tweener.completedLoops % 2 == 0) or
+        --    (tweener.loops % 2 ~= 0 and tweener.completedLoops % 2 ~= 0) then
     end
     if tweener.target ~= nil then
         SetTweenerProperty( tweener, endValue )
@@ -278,6 +281,13 @@ function Tween.Tweener.Complete( tweener )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
+-- Tell whether the provided game object has been destroyed.
+-- @param gameObject (GameObject) The game object.
+-- @return (boolean)
+local function isGameObjectDestroyed( gameObject )
+    return gameObject.isDestroyed == true or gameObject.inner == nil
+end
+
 -- Tell whether the tweener's target has been destroyed.
 -- @param tweener (Tween.Tweener) The tweener.
 -- @return (boolean)
@@ -286,11 +296,12 @@ function Tween.Tweener.IsTargetDestroyed( tweener )
         if tweener.target.isDestroyed then
             return true
         end
-        if tweener.target.gameObject ~= nil and (tweener.target.gameObject.isDestroyed or tweener.target.gameObject.inner == nil) then
+        if tweener.target.gameObject ~= nil and isGameObjectDestroyed( tweener.target.gameObject ) then 
+            -- isGameObjectDestroyed() is used here so that Luamin doesn't mess up the condition.
             return true
         end
     end
-    if tweener.gameObject ~= nil and (tweener.gameObject.isDestroyed or tweener.gameObject.inner == nil) then
+    if tweener.gameObject ~= nil and isGameObjectDestroyed( tweener.gameObject ) then
         return true
     end
     return false
@@ -619,8 +630,8 @@ end -- end Tween.Update
 local function resolveTarget( gameObject, property )
     local component = nil
     if 
-        (property == "position" or property == "localPosition") and
-        Daneel.modules.GUI ~= nil and gameObject.hud ~= nil
+        Daneel.modules.GUI ~= nil and gameObject.hud ~= nil and
+        property == "position" or property == "localPosition"
         -- 02/06/2014 - This is bad, this code should be handled by the GUI module itself
         -- but I have no idea how to properly set that up easily
         -- Plus I really should test the type of the endValue instead (in case it's a Vector3 for instance beacuse the user whants to work on the transform and not the hud)

@@ -314,7 +314,7 @@ function Daneel.Utilities.ToNumber( data )
     return tonumber2( data )
 end
 
-local buttonExists = {} -- Button names are in key, existance (false or true) is in value
+local buttonExists = {} -- Button names are keys, existence (false or true) is value
 
 --- Tell whether the provided button name exists amongst the Game Controls, or not.
 -- If the button name does not exists, it will print an error in the Runtime Report but it won't kill the script that called the function.
@@ -333,7 +333,7 @@ end
 
 Daneel.Utilities.id = 0
 
---- Returns an interger greater than 0 and incremented by 1 from the last time the funciton was called.
+--- Returns an integer greater than 0 and incremented by 1 from the last time the function was called.
 -- If an object is provided, returns the object's id (if no id is found, it is set).
 -- @param object (table) [optional] An object.
 -- @return (number) The id.
@@ -884,10 +884,10 @@ function Daneel.Event.Listen( eventName, functionOrObject, isPersistent )
                 end
             end
 
-            -- check that the persisten listener is not a game object or a component (that are always destroyed when the scene loads)
+            -- check that the persistent listener is not a game object or a component (that are always destroyed when the scene loads)
             if isPersistent and listenerType == "table" then
                 local mt = getmetatable( functionOrObject )
-                if mt ~= nil and (mt == GameObject or table.containsvalue( Daneel.Config.componentObjects, mt )) then
+                if mt ~= nil and mt == GameObject or table.containsvalue( Daneel.Config.componentObjects, mt ) then
                     if Daneel.Config.debug.enableDebug then
                         print( errorHead.."Game objects and components can't be persistent listeners", functionOrObject )
                     end
@@ -989,7 +989,11 @@ function Daneel.Event.Fire( object, eventName, ... )
 
         else -- an object
             local mt = getmetatable( listener )
-            if listener.isDestroyed ~= true or (mt == GameObject and listener.inner ~= nil)  then -- ensure that the event is not fired on a dead game object or component
+            local listenerIsAlive = not listener.isDestroyed
+            if mt == GameObject and listener.inner == nil then
+                listenerIsAlive = false
+            end
+            if listenerIsAlive then -- ensure that the event is not fired on a dead game object or component
                 local message = eventName
 
                 -- look for the value of the EventName property on the object
@@ -1317,7 +1321,7 @@ function Daneel.Load()
         end
     end
 
-    CS.IsWebPlayer = ( type( Camera.ProjectionMode.Orthographic ) == "number" ) -- "userdata" in native runtimes
+    CS.IsWebPlayer = type( Camera.ProjectionMode.Orthographic ) == "number" -- "userdata" in native runtimes
 
     Daneel.Debug.StackTrace.BeginFunction( "Daneel.Load" )
 
@@ -1357,7 +1361,7 @@ end -- end Daneel.Load()
 -- Runtime
 
 -- luadoc stop
-function Behavior:Awake()
+function Behavior.Awake( self )
     if self.debugTry == true then
         CraftStudio.Destroy( self )
         self.testFunction()
@@ -1403,7 +1407,7 @@ function Behavior:Awake()
     Daneel.Debug.StackTrace.EndFunction()
 end
 
-function Behavior:Start()
+function Behavior.Start( self )
     if self.debugTry then
         return
     end
@@ -1426,7 +1430,7 @@ function Behavior:Start()
     Daneel.Debug.StackTrace.EndFunction()
 end
 
-function Behavior:Update()
+function Behavior.Update( self )
     if self.debugTry then
         return
     end

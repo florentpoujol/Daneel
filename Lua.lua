@@ -107,14 +107,19 @@ end
 -- @param s (string) The string.
 -- @return (string) The string.
 function string.ucfirst( s )
-    return ( s:gsub( "^%l", string.upper ) )
+    local r = s:gsub( "^%l", string.upper ) 
+    return r
+    -- Original code was : return ( s:gsub( "^%u", string.lower ) )
+    -- It has been changed because Luamin removes the parenthesis which makes the function return all the values
+    -- returned by gsub() instead of just the one the function must return
 end
 
 --- Turn the first letter of the string lowercase.
 -- @param s (string) The string.
 -- @return (string) The string.
 function string.lcfirst( s )
-    return ( s:gsub( "^%u", string.lower ) )
+    local r = s:gsub( "^%u", string.lower )
+    return r
 end
 
 --- Split the provided string in several chunks, using the provided delimiter.
@@ -188,7 +193,8 @@ end
 -- @param chunk (string) The searched chunk.
 -- @return (boolean) True or false.
 function string.startswith( s, chunk )
-    return ( s:sub( 1, #chunk ) == chunk )
+    local r = s:sub( 1, #chunk ) == chunk
+    return r
 end
 
 --- Tell whether the provided string ends by the provided chunk or not.
@@ -196,28 +202,32 @@ end
 -- @param chunk (string) The searched chunk.
 -- @return (boolean) True or false.
 function string.endswith( s, chunk )
-    return ( s:sub( #s - #chunk + 1, #s ) == chunk )
+    local r = s:sub( #s - #chunk + 1, #s ) == chunk
+    return r
 end
 
 --- Removes the white spaces at the beginning of the provided string.
 -- @param s (string) The string.
 -- @return (string) The trimmed string.
 function string.trimstart( s )
-    return ( s:gsub( "^%s+", "" ) )
+    local r = s:gsub( "^%s+", "" )
+    return r
 end
 
 --- Removes the white spaces at the end of the provided string.
 -- @param s (string) The string.
 -- @return (string) The trimmed string.
 function string.trimend( s )
-    return ( s:gsub( "%s+$", "" ) )
+    local r = s:gsub( "%s+$", "" )
+    return r
 end
 
 --- Removes the white spaces at the beginning and the end of the provided string.
 -- @param s (string) The string.
 -- @return (string) The trimmed string.
 function string.trim(s)
-    return ( s:gsub( "^%s+", "" ):gsub( "%s+$", "" ) )
+    local r = s:gsub( "^%s+", "" ):gsub( "%s+$", "" )
+    return r
 end
 
 

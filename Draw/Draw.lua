@@ -377,12 +377,15 @@ end
 functionsDebugInfo[ "Draw.CircleRenderer.SetModel" ] = { _c, { "model", {"string", "Model"}, isOptional = true } }
 --- Sets the circle renderer segment's model.
 -- @param circle (CircleRenderer) The circle renderer.
--- @param model (string or Model) The segment's model name or asset.
+-- @param model (string or Model) [optional] The segment's model name or asset, or nil.
 function Draw.CircleRenderer.SetModel( circle, model )
     if 
-        ( type( model ) == "string" and circle._model ~= nil and circle._model:GetPath() == model ) or
-        circle._model ~= model
+        circle._model ~= model -- always true when model is of type string
     then
+        if type( model ) == "sting" and circle._model ~= nil and circle._model:GetPath() == model then
+            -- prevent setting the model if it is already set to this model's path
+            return
+        end
         if model ~= nil then
             circle._model = Asset.Get( model, "Model", true )
         else

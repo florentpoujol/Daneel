@@ -536,7 +536,10 @@ function GUI.ProgressBar.SetValue(progressBar, value)
         if value ~= oldValue and Daneel.Config.debug.enableDebug then
             print(errorHead.." WARNING : value with value '"..oldValue.."' is out of its boundaries : min='"..minVal.."', max='"..maxVal.."'")
         end
-        percentageOfProgress = (value - minVal) / (maxVal - minVal)
+        local diff = maxVal - minVal -- Luamin removes parenthesis at the end of expression. 
+        -- Calculation of percentageOfProgress would fail if it was done like this: (value - minVal) / (maxVal - minVal)
+        -- because it would hev been shortened to (v-min)/max-min instead of (v-min)/(max-min)
+        percentageOfProgress = (value - minVal) / diff
 
         progressBar.height = GUI.ToSceneUnit( progressBar.height, progressBar.cameraGO )
 
@@ -575,7 +578,8 @@ function GUI.ProgressBar.UpdateValue( progressBar, value, fireEvent )
     end
 
     if percentageOfProgress == nil then
-        percentageOfProgress = (value - minVal) / (maxVal - minVal)
+        local diff = maxVal - minVal
+        percentageOfProgress = (value - minVal) / diff
     end
     percentageOfProgress = math.clamp( percentageOfProgress, 0.0, 1.0 )
 
@@ -595,7 +599,8 @@ GUI.ProgressBar.UpdateProgress = GUI.ProgressBar.UpdateValue
 -- @return (number) The value.
 function GUI.ProgressBar.GetValue(progressBar, getAsPercentage)
     local scale = math.round( progressBar.gameObject.transform:GetLocalScale().x, 2 )
-    local value = (scale - progressBar.minLength) / (progressBar.maxLength - progressBar.minLength)
+    local diff = progressBar.maxLength - progressBar.minLength
+    local value = (scale - progressBar.minLength) / diff
     if getAsPercentage == true then
         value = value * 100
     else
@@ -690,10 +695,9 @@ function GUI.Slider.New( gameObject, params )
 
         local goPosition = gameObject.transform:GetPosition()
         local parentPosition = slider.parent.transform:GetPosition()
-        if
-            (slider.axis == "x" and goPosition.x < parentPosition.x) or
-            (slider.axis == "y" and goPosition.y < parentPosition.y)
-        then
+        if slider.axis == "x" and goPosition.x < parentPosition.x then
+            slider:SetValue( slider.minValue )
+        elseif slider.axis == "y" and goPosition.y < parentPosition.y then -- Conditions done like this because of Luamin
             slider:SetValue( slider.minValue )
         elseif slider:GetValue() > slider.maxValue then
             slider:SetValue( slider.maxValue )
@@ -735,7 +739,8 @@ function GUI.Slider.SetValue( slider, value )
     if value ~= oldValue and Daneel.Config.debug.enableDebug then
         print( errorHead .. "WARNING : Argument 'value' with value '" .. oldValue .. "' is out of its boundaries : min='" .. minVal .. "', max='" .. maxVal .. "'" )
     end
-    percentage = (value - minVal) / (maxVal - minVal)
+    local diff = maxVal - minVal
+    percentage = (value - minVal) / diff
 
     slider.length = GUI.ToSceneUnit( slider.length, slider.cameraGO )
 

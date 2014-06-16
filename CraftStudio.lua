@@ -442,7 +442,10 @@ function Camera.GetPixelsToUnits( camera )
         return camera:GetOrthographicScale() / smallestSideSize
     else -- perspective
         -- UnitsToPixels (px) = BaseDist * SSS (px) = 0.5 * SSS / tan( FOV / 2 )
-        return math.tan( math.rad( camera:GetFOV() / 2 ) ) / ( 0.5 * smallestSideSize )
+        return math.tan( math.rad( camera:GetFOV() / 2 ) ) / smallestSideSize * 2
+        -- Original expression was as below. Has been changed to remove the parenthesis so that luamin 
+        -- doesn't mess with the calculation by removing the parenthesis itself without changing the values.
+        -- return math.tan( math.rad( camera:GetFOV() / 2 ) ) / ( 0.5 * smallestSideSize )
     end
 end
 
@@ -1416,7 +1419,7 @@ function GameObject.GetChildren( gameObject, recursive, includeSelf )
 end
 
 --- Get all descendants of the game object, sorted by name.
--- If several descendant have the same name, only the last one will be found in the returned table.
+-- If several descendants have the same name, only the last one will be found in the returned table.
 -- @param gameObject (GameObject) The game object.
 -- @param recursive (boolean) [default=false] Look for all descendants instead of just the first generation.
 -- @param includeSelf (boolean) [default=false] Include the game object in the children.
@@ -1744,8 +1747,6 @@ function GameObject.HasTag( gameObject, tag, atLeastOneTag )
             end
         end
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
     return hasTags
 end
 
