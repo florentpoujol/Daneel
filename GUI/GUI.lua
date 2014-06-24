@@ -1336,7 +1336,7 @@ table.mergein( Daneel.functionsDebugInfo, {
     ["GUI.TextArea.GetVerticalAlignment"] = { _ta },
     ["GUI.TextArea.SetFont"] =              { _ta, { "font", { s, "Font" } } },
     ["GUI.TextArea.GetFont"] =              { _ta },
-    ["GUI.TextArea.SetAlignment"] =         { _ta, { "alignment", { s, "unserdata", n } } },
+    ["GUI.TextArea.SetAlignment"] =         { _ta, { "alignment", { s, "userdata", n } } },
     ["GUI.TextArea.GetAlignment"] =         { _ta },
     ["GUI.TextArea.SetOpacity"] =           { _ta, { "opacity", n } },
     ["GUI.TextArea.GetOpacity"] =           { _ta },
