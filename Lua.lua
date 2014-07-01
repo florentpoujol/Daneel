@@ -230,6 +230,17 @@ function string.trim(s)
     return r
 end
 
+--- Reverse the order of the characters in a string ("abcd" becomes "dcba").
+-- @param s (string) The string.
+-- @return (string) The reversed string.
+function string.reverse( s )
+    local ns = ""
+    for i=#s, 1, -1 do
+        ns = ns..s:sub(i,i)
+    end
+    return ns
+end
+
 
 ----------------------------------------------------------------------------------
 -- table

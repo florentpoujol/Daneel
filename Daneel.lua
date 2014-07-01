@@ -175,6 +175,7 @@ table.mergein( Daneel.functionsDebugInfo, {
         { "delimiter", s },
         { "delimiterIsPattern", b, defaultValue = false },
     },
+    ["string.reverse"] = { _s },
 
     ["table.print"] = {}, -- just for the stacktrace
     ["table.merge"] = {},
