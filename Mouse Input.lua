@@ -121,10 +121,7 @@ function Behavior:Update()
             self.lastLeftClickFrame = self.frameCount
         end
 
-        local ray = nil
-        if mouseIsMoving then
-            ray = self.gameObject.camera:CreateRay( CS.Input.GetMousePosition() )
-        end
+        local ray = self.gameObject.camera:CreateRay( CS.Input.GetMousePosition() )
         local reindex = true
         
         for i, tag in pairs( self.tags ) do
@@ -134,23 +131,22 @@ function Behavior:Update()
                 for i, gameObject in pairs( gameObjects ) do
                     if gameObject.inner ~= nil then
                         
-                        if mouseIsMoving then
-                            if ray:IntersectsGameObject( gameObject ) then
-                                -- the mouse pointer is over the gameObject
-                                if not gameObject.isMouseOver then
-                                    gameObject.isMouseOver = true
-                                    Daneel.Event.Fire( gameObject, "OnMouseEnter", gameObject )
-                                end
-
-                            elseif gameObject.isMouseOver then
-                                -- the gameObject was still hovered the last frame
-                                gameObject.isMouseOver = false
-                                Daneel.Event.Fire( gameObject, "OnMouseExit", gameObject )
+                        local raycastHit = ray:IntersectsGameObject( gameObject )
+                        if raycastHit ~= nil then
+                            -- the mouse pointer is over the gameObject
+                            if not gameObject.isMouseOver then
+                                gameObject.isMouseOver = true
+                                Daneel.Event.Fire( gameObject, "OnMouseEnter", gameObject )
                             end
+
+                        elseif gameObject.isMouseOver then
+                            -- the gameObject was still hovered the last frame
+                            gameObject.isMouseOver = false
+                            Daneel.Event.Fire( gameObject, "OnMouseExit", gameObject )
                         end
                         
                         if gameObject.isMouseOver then
-                            Daneel.Event.Fire( gameObject, "OnMouseOver", gameObject )
+                            Daneel.Event.Fire( gameObject, "OnMouseOver", gameObject, raycastHit )
 
                             if leftMouseJustPressed then
                                 Daneel.Event.Fire( gameObject, "OnClick", gameObject )
