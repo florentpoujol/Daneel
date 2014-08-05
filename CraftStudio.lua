@@ -74,13 +74,6 @@ function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
 
     Daneel.Debug.CheckOptionalArgType( errorIfAssetNotFound, "errorIfAssetNotFound", "boolean", errorHead )
 
-    -- check if assetPath is a script alias
-    local scriptAlias = assetPath
-    if Daneel.Config.scriptPaths[ scriptAlias ] ~= nil then
-        assetPath = Daneel.Config.scriptPaths[ scriptAlias ]
-        assetType = "Script"
-    end
-
     -- get asset
     local asset = nil
     if assetType == nil then
@@ -1142,16 +1135,6 @@ function GameObject.__index( gameObject, key )
         return GameObject[ key ]
     end
 
-    -- maybe the key is a script alias
-    local path = Daneel.Config.scriptPaths[ key ]
-    if path ~= nil then
-        local behavior = gameObject:GetScriptedBehavior( path )
-        if behavior ~= nil then
-            rawset( gameObject, key, behavior )
-            return behavior
-        end
-    end
-
     if type( key ) == "string" then
         -- or the name of a getter
         local ucKey = string.ucfirst( key )
@@ -1280,25 +1263,9 @@ function GameObject.Set( gameObject, params )
 
     -- all other keys/values
     for key, value in pairs( params ) do
-
-        -- if key is a script alias or a script path
-        if Daneel.Config.scriptPaths[key] ~= nil or table.containsvalue( Daneel.Config.scriptPaths, key ) then
-            local scriptPath = key
-            if Daneel.Config.scriptPaths[key] ~= nil then
-                scriptPath = Daneel.Config.scriptPaths[key]
-            end
-
-            local component = gameObject:GetScriptedBehavior( scriptPath )
-            if component == nil then
-                component = gameObject:AddComponent( scriptPath )
-            end
-
-            component:Set(value)
-
-        elseif key == "tags"  then
+        if key == "tags"  then
             gameObject:RemoveTag()
             gameObject:AddTag( value )
-
         else
             gameObject[key] = value
         end
@@ -1502,7 +1469,7 @@ end
 
 --- Add a component to the game object and optionally initialize it.
 -- @param gameObject (GameObject) The game object.
--- @param componentType (string or Script) The component type, or script asset, path or alias (can't be Transform or ScriptedBehavior).
+-- @param componentType (string or Script) The component type, or script asset or path (can't be Transform or ScriptedBehavior).
 -- @param params (string, Script or table) [optional] A table of parameters to initialize the new component with or, if componentType is 'ScriptedBehavior', the mandatory script name or asset.
 -- @return (mixed) The component.
 function GameObject.AddComponent( gameObject, componentType, params )
@@ -1536,7 +1503,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
             return
         elseif componentType == "ScriptedBehavior" then
             if Daneel.Config.debug.enableDebug then
-                print( errorHead.."To add a scripted behavior, pass the script asset, path or alias instead of 'ScriptedBehavior' as argument 'componentType'." )
+                print( errorHead.."To add a scripted behavior, pass the script asset or path instead of 'ScriptedBehavior' as argument 'componentType'." )
             end
             return
         end
@@ -1578,7 +1545,7 @@ GameObject.oGetScriptedBehavior = GameObject.GetScriptedBehavior
 
 --- Get the first component of the provided type attached to the game object.
 -- @param gameObject (GameObject) The game object.
--- @param componentType (string or Script) The component type, or script asset, path or alias.
+-- @param componentType (string or Script) The component type, or script asset or path.
 -- @return (One of the component types) The component instance, or nil if none is found.
 function GameObject.GetComponent( gameObject, componentType )
     local errorHead = "GameObject.GetComponent( gameObject, componentType ) : "

@@ -1140,19 +1140,6 @@ function Daneel.DefaultConfig()
 
         ----------------------------------------------------------------------------------
 
-        -- List of the Scripts paths as values and optionally the script alias as the keys.
-        -- Ie :
-        -- "fully-qualified Script path"
-        -- or
-        -- alias = "fully-qualified Script path"
-        --
-        -- Setting a script path here allow you to  :
-        -- * Use the dynamic getters and setters
-        -- * Use component:Set() (for scripted behaviors)
-        -- * Use component:GetId() (for scripted behaviors)
-        -- * If you defined aliases, dynamically access the scripted behavior on the game object via its alias
-        scriptPaths = {},
-
         -- Default CraftStudio's components settings (except Transform)
         -- textRenderer = { font = "MyFont" },
 
@@ -1287,24 +1274,6 @@ function Daneel.Load()
 
         assetObject["__tostring"] = function( asset )
             return  assetType .. ": " .. Daneel.Utilities.GetId( asset ) .. ": '" .. Map.GetPathInPackage( asset ) .. "'"
-        end
-    end
-
-    -- ScriptAlias
-    for alias, path in pairs( Daneel.Config.scriptPaths ) do
-        local script = CraftStudio.FindAsset( path, "Script" )
-
-        if script ~= nil then
-            Daneel.Utilities.AllowDynamicGettersAndSetters( script, { Script, Component } )
-
-            script["__tostring"] = function( scriptedBehavior )
-                return "ScriptedBehavior: " .. Daneel.Utilities.GetId( scriptedBehavior ) .. ": '" .. path .. "'"
-            end
-        else
-            Daneel.Config.scriptPaths[ alias ] = nil
-            if Daneel.Config.debug.enableDebug then
-                print( "Daneel.Load() : item with key '" .. alias .. "' and value '" .. path .. "' in 'Daneel.Config.scriptPaths' ('DaneelUserConfig()'') is not a valid script path." )
-            end
         end
     end
 
