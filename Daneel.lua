@@ -838,8 +838,6 @@ Daneel.Event = {
     persistentEvents = {}, -- not emptied
 }
 
-local EventNamesTestedForHotKeys = {} -- Event names are keys, value is true.
-
 --- Make the provided function or object listen to the provided event(s).
 -- The function will be called whenever the provided event will be fired.
 -- @param eventName (string or table) The event name (or names in a table).
@@ -864,27 +862,6 @@ function Daneel.Event.Listen( eventName, functionOrObject, isPersistent )
             not table.containsvalue( Daneel.Event.events[ eventName ], functionOrObject ) and
             not table.containsvalue( Daneel.Event.persistentEvents[ eventName ], functionOrObject )
         then
-            -- check for hotkeys (button names in the event name)
-            if not EventNamesTestedForHotKeys[ eventName ] then
-                EventNamesTestedForHotKeys[ eventName ] = true
-
-                local a,a, buttonName = eventName:find( "^On(.+)ButtonJustPressed$" )
-                if buttonName == nil then
-                    a,a, buttonName = eventName:find( "^On(.+)ButtonJustReleased$" )
-                end
-                if buttonName == nil then
-                    a,a, buttonName = eventName:find( "^On(.+)ButtonDown$" )
-                end
-
-                if buttonName ~= nil then
-                    if Daneel.Utilities.ButtonExists( buttonName ) then
-                        table.insert( Daneel.Config.hotKeys, buttonName )
-                    elseif Daneel.Config.debug.enableDebug then
-                        print( errorHead .. "You tried to listen to the '" .. eventName .. "' event but the '" .. buttonName .. "' button does not exists in the Game Controls." )
-                    end
-                end
-            end
-
             -- check that the persistent listener is not a game object or a component (that are always destroyed when the scene loads)
             if isPersistent and listenerType == "table" then
                 local mt = getmetatable( functionOrObject )
@@ -1138,13 +1115,8 @@ function Daneel.DefaultConfig()
             enableStackTrace = false, -- Enable/disable the Stack Trace.
         },
 
-        ----------------------------------------------------------------------------------
-
         -- Default CraftStudio's components settings (except Transform)
         -- textRenderer = { font = "MyFont" },
-
-        hotKeys = {}, -- button names that throws events On[ButtonName]JustPressed...
-        -- filled in Daneel.Event.Listen
 
         objects = {
             GameObject = GameObject,
@@ -1400,22 +1372,6 @@ function Behavior.Update( self )
     Daneel.Time.time = Daneel.Time.time + Daneel.Time.deltaTime
 
     Daneel.Time.frameCount = Daneel.Time.frameCount + 1
-
-    -- HotKeys
-    -- fire an event whenever a registered button is pressed
-    for i, buttonName in pairs( Daneel.Config.hotKeys ) do
-        if CraftStudio.Input.WasButtonJustPressed( buttonName ) then
-            Daneel.Event.Fire( "On"..buttonName.."ButtonJustPressed" )
-        end
-
-        if CraftStudio.Input.IsButtonDown( buttonName ) then
-            Daneel.Event.Fire( "On"..buttonName.."ButtonDown" )
-        end
-
-        if CraftStudio.Input.WasButtonJustReleased( buttonName ) then
-            Daneel.Event.Fire( "On"..buttonName.."ButtonJustReleased" )
-        end
-    end
 
     -- Update modules
     for i, func in ipairs( Daneel.moduleUpdateFunctions ) do
