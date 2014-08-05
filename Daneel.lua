@@ -213,25 +213,26 @@ table.mergein( Daneel.functionsDebugInfo, {
 
 Daneel.Utilities = {}
 
---- Make sure that the case of the provided name is correct by checking it against the values in the provided set.
--- @param name (string) The name to check the case of.
--- @param set (string or table) A single value or a table of values to check the name against.
-function Daneel.Utilities.CaseProof( name, set )
+--- Make sure that the case of the provided string is correct by checking it against the values in the provided set.
+-- @param s (string) The string to check the case of.
+-- @param set (string or table) A single value or a table of values to check the string against.
+-- @return (string) The string with the corrected case.
+function Daneel.Utilities.CaseProof( s, set )
     if type( set ) == "string" then
         set = { set }
     end
-    local lname = name:lower()
+    local ls = s:lower()
     for i, item in pairs( set ) do
-        if lname == item:lower() then
-            name = item
+        if ls == item:lower() then
+            s = item
             break
         end
     end
-    return name
+    return s
 end
 
 --- Replace placeholders in the provided string with their corresponding provided replacements.
--- The placeholders are any pice of string prefixed by a semicolon.
+-- The placeholders are any piece of string prefixed by a semicolon.
 -- @param string (string) The string.
 -- @param replacements (table) The placeholders and their replacements ( { placeholder = "replacement", ... } ).
 -- @return (string) The string.
@@ -310,10 +311,7 @@ function Daneel.Utilities.AllowDynamicGettersAndSetters( Object, ancestors )
 end
 
 -- Deprecated since v1.5.0
--- Alias of tonumber2()
-function Daneel.Utilities.ToNumber( data )
-    return tonumber2( data )
-end
+Daneel.Utilities.ToNumber = tonumber2
 
 local buttonExists = {} -- Button names are keys, existence (false or true) is value
 
@@ -1107,7 +1105,6 @@ table.mergein( Daneel.functionsDebugInfo, {
 ----------------------------------------------------------------------------------
 -- Config, loading
 
--- Config - Loading
 function Daneel.DefaultConfig()
     local config = {
         debug = {
@@ -1155,21 +1152,6 @@ function Daneel.DefaultConfig()
     return config
 end
 Daneel.Config = Daneel.DefaultConfig()
-
-
--- Enables the dynamic accessors on the components
--- write the __tostring function
-function Daneel.SetComponents( components )
-    for componentType, componentObject in pairs( components ) do
-        Daneel.Utilities.AllowDynamicGettersAndSetters( componentObject, { Component } )
-
-        if componentType ~= "ScriptedBehavior" then
-            componentObject["__tostring"] = function( component )
-                return componentType .. ": " .. component:GetId()
-            end
-        end
-    end
-end
 
 
 -- load Daneel at the start of the game
@@ -1225,7 +1207,17 @@ function Daneel.Load()
 
     table.mergein( Daneel.Config.objects, Daneel.Config.componentObjects, Daneel.Config.assetObjects )
 
-    Daneel.SetComponents( Daneel.Config.componentObjects )
+    -- Enable nice printing + dynamic access of getters/setters on components
+    for componentType, componentObject in pairs( Daneel.Config.componentObjects ) do
+        Daneel.Utilities.AllowDynamicGettersAndSetters( componentObject, { Component } )
+
+        if componentType ~= "ScriptedBehavior" then
+            componentObject["__tostring"] = function( component )
+                return componentType .. ": " .. component:GetId()
+            end
+        end
+    end
+
     table.mergein( Daneel.Config.componentTypes, table.getkeys( Daneel.Config.componentObjects ) )
 
     if Daneel.Config.debug.enableDebug then
@@ -1239,7 +1231,7 @@ function Daneel.Load()
         end
     end
 
-    -- enable nice printing + dynamic acces of getters/setters on assets
+    -- Enable nice printing + dynamic access of getters/setters on assets
     for assetType, assetObject in pairs( Daneel.Config.assetObjects ) do
         table.insert( Daneel.Config.assetTypes, assetType )
         Daneel.Utilities.AllowDynamicGettersAndSetters( assetObject, { Asset } )
@@ -1374,7 +1366,7 @@ function Behavior.Update( self )
     Daneel.Time.frameCount = Daneel.Time.frameCount + 1
 
     -- Update modules
-    for i, func in ipairs( Daneel.moduleUpdateFunctions ) do
-        func()
+    for i=1, #Daneel.moduleUpdateFunctions do
+        Daneel.moduleUpdateFunctions[i]()
     end
 end
