@@ -1029,22 +1029,8 @@ function Daneel.Event.Fire( object, eventName, ... )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Register a game object to listen a particular event.
--- @param gameObject (GameObject) The game object.
--- @param eventName (string) The event name.
--- @param _function (function) The function to call when the event is fired at the game object.
-function GameObject.On( gameObject, eventName, _function )
-    if not string.startswith( eventName, "On" ) then
-        eventName = "On"..eventName
-    end
-    gameObject[ eventName ] = _function
-    Daneel.Event.Listen( eventName, _function )
-    Daneel.Event.Fire( "GameObject.On", gameObject, eventName, _function )
-end
-
 table.mergein( Daneel.functionsDebugInfo, {
     ["Daneel.Event.Listen"] = { { "eventName", { s, t } }, { "functionOrObject", {t, f, u} }, { "isPersistent", defaultValue = false } },
-    ["GameObject.On"] = { { "gameObject", "GameObject" }, { "eventName", s }, { "_function", f } },
 } )
 
 
