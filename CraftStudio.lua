@@ -33,11 +33,11 @@ Asset = {}
 Asset.__index = Asset
 setmetatable( Asset, { __call = function(Object, ...) return Object.Get(...) end } )
 
-local assetPathTypes = { "string" }
+local assetPathTypes = table.merge( "string", Daneel.Config.assetTypes ) -- Allow the assetPath argument to be an asset or the asset path (string)
 --- Alias of CraftStudio.FindAsset( assetPath[, assetType] ).
 -- Get the asset of the specified name and type.
 -- The first argument may be an asset object, so that you can check if a variable was an asset object or name (and get the corresponding object).
--- @param assetPath (string or one of the asset type) The fully-qualified asset name or asset object.
+-- @param assetPath (string or any asset type) The fully-qualified asset name or asset object.
 -- @param assetType [optional] (string) The asset type as a case-insensitive string.
 -- @param errorIfAssetNotFound [default=false] Throw an error if the asset was not found (instead of returning nil).
 -- @return (One of the asset type) The asset, or nil if none is found.
@@ -51,11 +51,6 @@ function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
         return nil
     end
 
-    if #assetPathTypes == 1 then
-        assetPathTypes = table.merge( assetPathTypes, Daneel.Config.assetTypes )
-        -- the assetPath can be an asset or the asset path (string)
-        -- this is done here because there is no garantee that Daneel.Config.assetTypes will already exist in the global scope
-    end
     local argType = Daneel.Debug.CheckArgType( assetPath, "assetPath", assetPathTypes, errorHead )
     
     if assetType ~= nil then
@@ -64,7 +59,7 @@ function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
     end
 
     -- just return the asset if assetPath is already an object
-    if table.containsvalue( Daneel.Config.assetTypes, argType ) then
+    if argType ~= "string" then
         if assetType ~= nil and argType ~= assetType then
             error( errorHead.."Provided asset '"..assetPath.."' has a different type '"..argType.."' than the provided 'assetType' argument '"..assetType.."'." )
         end
@@ -94,14 +89,14 @@ end
 
 --- Returns the path of the provided asset.
 -- Alias of Map.GetPathInPackage().
--- @param asset (One of the asset types) The asset instance.
+-- @param asset (any asset type) The asset instance.
 -- @return (string) The fully-qualified asset path.
 function Asset.GetPath( asset )
     return Map.GetPathInPackage( asset )
 end
 
 --- Returns the name of the provided asset.
--- @param asset (One of the asset types) The asset instance.
+-- @param asset (any asset type) The asset instance.
 -- @return (string) The name (the last segment of the fully-qualified path).
 function Asset.GetName( asset )
     local name = rawget( asset, "name" )
@@ -127,7 +122,7 @@ Component = {}
 Component.__index = Component
 
 --- Apply the content of the params argument to the provided component.
--- @param component (any component's type) The component.
+-- @param component (any component type) The component.
 -- @param params (table) A table of parameters to set the component with.
 function Component.Set( component, params )
     for key, value in pairs( params ) do
