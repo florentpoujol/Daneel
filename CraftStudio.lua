@@ -574,14 +574,7 @@ table.mergein( Daneel.functionsDebugInfo, {
 Vector2 = {}
 Vector2.__index = Vector2
 setmetatable( Vector2, { __call = function(Object, ...) return Object.New(...) end } )
-
-Daneel.modules.Vector2 = {
-    DefaultConfig = {
-        objects = {
-            Vector2 = Vector2
-        }
-    }
-}
+Daneel.Config.objects.Vector2 = Vector2
 
 function Vector2.__tostring(vector2)
     return "Vector2: { x="..vector2.x..", y="..vector2.y.." }"
@@ -858,7 +851,7 @@ setmetatable( Ray, { __call = function(Object, ...) return Object:New(...) end }
 --- Check the collision of the ray against the provided set of game objects.
 -- @param ray (Ray) The ray.
 -- @param gameObjects (table) The set of game objects to cast the ray against.
--- @param sortByDistance [default=false] (boolean) Sort the raycastHit by increasing distance in the returned table.
+-- @param sortByDistance (boolean) [default=false] Sort the raycastHit by increasing distance in the returned table.
 -- @return (table) A table of RaycastHits (will be empty if the ray didn't intersects anything).
 function Ray.Cast( ray, gameObjects, sortByDistance )
     local hits = {}
@@ -876,10 +869,10 @@ function Ray.Cast( ray, gameObjects, sortByDistance )
     return hits
 end
 
---- Check if the ray intersect the specified game object.
+--- Check if the ray intersects the specified game object.
 -- @param ray (Ray) The ray.
 -- @param gameObjectNameOrInstance (string or GameObject) The game object instance or name.
--- @return (RaycastHit) A raycastHit with the if there was a collision, or nil.
+-- @return (RaycastHit) A raycastHit if there was a collision, or nil.
 function Ray.IntersectsGameObject( ray, gameObjectNameOrInstance )
     local gameObject = GameObject.Get( gameObjectNameOrInstance, true )
     local raycastHit = nil
@@ -1112,7 +1105,6 @@ end
 ----------------------------------------------------------------------------------
 -- GAMEOBJECT
 
-
 setmetatable( GameObject, { __call = function(Object, ...) return Object.New(...) end } )
 
 -- returns something like "GameObject: 123456789: 'MyName'"
@@ -1217,41 +1209,23 @@ function GameObject.Set( gameObject, params )
 
     -- components
     for i, componentType in pairs( Daneel.Config.componentTypes ) do
-        local component = nil
-
-        if componentType ~= "ScriptedBehavior" then
-            componentType = componentType:lower()
-
-            -- check if params has a key for that component
-            local componentParams = nil
-            for key, value in pairs( params ) do
-                if key:lower() == componentType then
-                    componentParams = value
-                    Daneel.Debug.CheckArgType( componentParams, "params."..key, "table", errorHead )
-                    break
-                end
-            end
+        if componentType ~= "ScriptedBehavior" and componentType ~= "Transform" then
+            local lcComponentType = string.lcfirst( componentType )
+            local componentParams = params[ lcComponentType ]
 
             if componentParams ~= nil then
-                -- check if gameObject has a key for that component
-                for key, value in pairs( gameObject ) do
-                    if key:lower() == componentType then
-                        component = value
-                        break
-                    end
-                end
+                params[ lcComponentType ] = nil
+                Daneel.Debug.CheckArgType( componentParams, "params."..lcComponentType, "table", errorHead )
 
+                local component = gameObject[ lcComponentType ]
                 if component == nil then -- can work for built-in components when their property on the game object has been unset for some reason
                     component = gameObject:GetComponent( componentType )
                 end
-
                 if component == nil then
                     component = gameObject:AddComponent( componentType, componentParams )
                 else
                     component:Set( componentParams )
                 end
-
-                table.removevalue( params, componentParams )
             end
         end
     end
@@ -1280,13 +1254,14 @@ function GameObject.Get( name, errorIfGameObjectNotFound )
     if getmetatable(name) == GameObject then
         return name
     end
+
     local errorHead = "GameObject.Get( name[, errorIfGameObjectNotFound] ) : "
-    local gameObject = nil
     local names = string.split( name, "." )
-    gameObject = CraftStudio.FindGameObject( names[1] )
+    local gameObject = CraftStudio.FindGameObject( names[1] )
     if gameObject == nil and errorIfGameObjectNotFound == true then
         error( errorHead.."GameObject with name '" .. names[1] .. "' (from '" .. name .. "') was not found." )
     end
+
     if gameObject ~= nil then
         local originalName = name
         local fullName = table.remove( names, 1 )
@@ -1350,7 +1325,6 @@ function GameObject.GetChild( gameObject, name, recursive )
         local names = string.split( name, "." )
         for i, name in ipairs( names ) do
             gameObject = gameObject:FindChild( name, recursive )
-
             if gameObject == nil then
                 break
             end
@@ -1545,10 +1519,12 @@ GameObject.oGetScriptedBehavior = GameObject.GetScriptedBehavior
 function GameObject.GetComponent( gameObject, componentType )
     local errorHead = "GameObject.GetComponent( gameObject, componentType ) : "
     componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead, componentType )
+    
     local lcComponentType = componentType
     if type( componentType ) == "string" then
         lcComponentType = string.lcfirst( componentType )
     end
+    
     local component = nil
     if lcComponentType ~= "scriptedBehavior" then
         component = gameObject[ lcComponentType ]
