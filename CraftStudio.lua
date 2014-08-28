@@ -765,6 +765,32 @@ function Vector3.GetSqrLength( vector )
   return vector.x ^ 2 + vector.y ^ 2 + vector.z ^ 2
 end
 
+--- Returns a string representation of the vector's component's values.
+-- ie: For a vector {-6.5,10,2.1}, the returned string would be "-6.5 10 2.1".
+-- Such string can be converted back to a vector with string.tovector()
+-- @param vector (Vector3) The vector.
+-- @return (string) The string.
+function Vector3.ToString( vector )
+    return vector.x.." "..vector.y.." "..vector.z
+end
+
+--- Convert a string representation of a vector component's values to a Vector3 or a Vector2.
+-- ie: For a string "-6.5 10 2.1", the returned vector would be {-6.5, 10, 2.1}.
+-- Such string can be created from a Vector3 with with Vector3.ToString()
+-- @param sVector (string) The vector as a string, each component's value being separated by a space.
+-- @return (Vector3 or vector2) The vector.
+function string.tovector( sVector )
+    local vector = Vector3:New(0)
+    local keys = { "z", "y", "x" }
+    for match in string.gmatch( sVector, "[0-9.-]+" ) do
+        vector[ table.remove( keys ) ] = tonumber(match)
+    end
+    if table.remove( keys ) == "z" then
+        setmetatable( vector, Vector2 )
+        vector.z = nil
+    end
+    return vector
+end
 
 table.mergein( Daneel.functionsDebugInfo, {
     ["Vector2.New"] = { { "x", { s, n, t, v2 } }, { "y", { s, n }, isOptional = true } },
@@ -782,6 +808,8 @@ table.mergein( Daneel.functionsDebugInfo, {
 
     ["Vector3.GetLength"] = { { "vector", v3 } },
     ["Vector3.GetSqrLength"] = { { "vector", v3 } },
+    ["Vector3.ToString"] = { { "vector", v3 } },
+    ["string.tovector"] = { { "sVector", s } },
 } )
 
 ----------------------------------------------------------------------------------
