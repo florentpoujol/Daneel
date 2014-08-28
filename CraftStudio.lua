@@ -927,6 +927,14 @@ RaycastHit.__index = RaycastHit
 setmetatable( RaycastHit, { __call = function(Object, ...) return Object.New(...) end } )
 Daneel.Config.objects.RaycastHit = RaycastHit
 
+-- Allow to access the "hitLocation" property on raycastHits for backward compatibility.
+-- The property has been renamed "hitPosition" since v1.5.0.
+RaycastHit.__index = function( raycastHit, key )
+    if key == "hitLocation" then
+        return raycastHit.hitPosition
+    end
+end
+
 function RaycastHit.__tostring( instance )
     local msg = "RaycastHit: { "
     local first = true
@@ -1015,13 +1023,13 @@ Ray.oIntersectsPlane = Ray.IntersectsPlane
 -- @param ray (Ray) The ray.
 -- @param plane (Plane) The plane.
 -- @param returnRaycastHit (boolean) [default=false] Tell if the hit infos must be returned as a raycastHit.
--- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance' and 'hitLocation' properties (if any).
+-- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance' and 'hitPosition' properties (if any).
 function Ray.IntersectsPlane( ray, plane, returnRaycastHit )
     local distance = Ray.oIntersectsPlane( ray, plane )
     if returnRaycastHit and distance ~= nil then
         return RaycastHit.New({
             distance = distance,
-            hitLocation = ray.position + ray.direction * distance,
+            hitPosition = ray.position + ray.direction * distance,
             hitObject = plane,
         })
     end
@@ -1034,7 +1042,7 @@ Ray.oIntersectsModelRenderer = Ray.IntersectsModelRenderer
 -- @param ray (Ray) The ray.
 -- @param modelRenderer (ModelRenderer) The modelRenderer.
 -- @param returnRaycastHit (boolean) [default=false] Tell if the hit infos must be returned as a raycastHit.
--- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance', 'normal' and 'hitLocation' properties (if any).
+-- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance', 'normal' and 'hitPosition' properties (if any).
 -- @return (Vector3) If 'returnRaycastHit' argument is false : the normal of the hit face, or nil
 function Ray.IntersectsModelRenderer( ray, modelRenderer, returnRaycastHit )
     local distance, normal = Ray.oIntersectsModelRenderer( ray, modelRenderer )
@@ -1042,7 +1050,7 @@ function Ray.IntersectsModelRenderer( ray, modelRenderer, returnRaycastHit )
         return RaycastHit.New({
             distance = distance,
             normal = normal,
-            hitLocation = ray.position + ray.direction * distance,
+            hitPosition = ray.position + ray.direction * distance,
             hitObject = modelRenderer,
             gameObject = modelRenderer.gameObject,
         })
@@ -1054,9 +1062,9 @@ Ray.oIntersectsMapRenderer = Ray.IntersectsMapRenderer
 
 -- Check if the ray intersects the provided mapRenderer.
 -- @param ray (Ray) The ray.
--- @param mapRenderer (MapRenderer) The mapRenderer.
+-- @param mapRenderer (MapRenderer) The map renderer.
 -- @param returnRaycastHit (boolean) [default=false] Tell if the hit infos must be returned as a raycastHit.
--- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance', 'normal', 'hitBlockLocation', 'adjacentBlockLocation' and 'hitLocation' properties (if any).
+-- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance', 'normal', 'hitBlockLocation', 'adjacentBlockLocation' and 'hitPosition' properties (if any).
 -- @return (Vector3) If 'returnRaycastHit' argument is false : the normal of the hit face, or nil
 -- @return (Vector3) If 'returnRaycastHit' argument is false : the location of the block hit, or nil
 -- @return (Vector3) If 'returnRaycastHit' argument is false : the location of the adjacent block, or nil
@@ -1074,7 +1082,7 @@ function Ray.IntersectsMapRenderer( ray, mapRenderer, returnRaycastHit )
             normal = normal,
             hitBlockLocation = hitBlockLocation,
             adjacentBlockLocation = adjacentBlockLocation,
-            hitLocation = ray.position + ray.direction * distance,
+            hitPosition = ray.position + ray.direction * distance,
             hitObject = mapRenderer,
             gameObject = mapRenderer.gameObject,
         })
@@ -1088,7 +1096,7 @@ Ray.oIntersectsTextRenderer = Ray.IntersectsTextRenderer
 -- @param ray (Ray) The ray.
 -- @param textRenderer (TextRenderer) The textRenderer.
 -- @param returnRaycastHit (boolean) [default=false] Tell if the hit infos must be returned as a raycastHit.
--- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance', 'normal' and 'hitLocation' properties (if any).
+-- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance', 'normal' and 'hitPosition' properties (if any).
 -- @return (Vector3) If 'returnRaycastHit' argument is false : the normal of the hit face, or nil
 function Ray.IntersectsTextRenderer( ray, textRenderer, returnRaycastHit )
     local distance, normal = Ray.oIntersectsTextRenderer( ray, textRenderer )
@@ -1096,7 +1104,7 @@ function Ray.IntersectsTextRenderer( ray, textRenderer, returnRaycastHit )
         return RaycastHit.New({
             distance = distance,
             normal = normal,
-            hitLocation = ray.position + ray.direction * distance,
+            hitPosition = ray.position + ray.direction * distance,
             hitObject = textRenderer,
             gameObject = textRenderer.gameObject,
         })
