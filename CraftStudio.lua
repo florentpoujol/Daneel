@@ -157,7 +157,7 @@ table.mergein( Daneel.functionsDebugInfo, {
 
 
 ----------------------------------------------------------------------------------
--- fix for Map.GetPathInPackage() that returns an error when the asset was dynamically loaded
+-- Map
 
 Map.oGetPathInPackage = Map.GetPathInPackage
 
@@ -174,11 +174,72 @@ Map.oLoadFromPackage = Map.LoadFromPackage
 function Map.LoadFromPackage( path, callback )
     Map.oLoadFromPackage( path, function( map )
         if map ~= nil then
+            --fix for Map.GetPathInPackage() that returns an error when the asset was dynamically loaded
             rawset( map, "path", path )
             map.isDynamicallyLoaded = true
         end
         callback( map )
     end )
+end
+
+Map.oGetBlockIDAt = Map.GetBlockIDAt
+
+--- Returns A block ID between 0-254 if a block exists at the given location (all valid block IDs are in the range 0-254),
+-- otherwise f there is no block at the given location then it will return Map.EmptyBlockID (which has a value of 255).
+-- @param map (Map) The map.
+-- @param x (number or Vector3) The location's x component, or the location as a Vector3.
+-- @param y (number) [optional] The location's y component. Should be nil if the "x" argument is a Vector3.
+-- @param z (number) [optional] The location's z component. Should be nil if the "x" argument is a Vector3.
+-- @return (number) The block ID.
+function Map.GetBlockIDAt( map, x, y, z )
+    if type( x ) == "table" then
+        z = x.z
+        y = x.y
+        x = x.x
+    end
+    return Map.oGetBlockIDAt( map, x, y, z )
+end
+
+Map.oGetBlockOrientationAt = Map.GetBlockOrientationAt
+
+--- Returns The block orientation of the block at the specified location, 
+-- otherwise if there is no block at the given location it will return Map.BlockOrientation.North.
+-- @param map (Map) The map.
+-- @param x (number or Vector3) The location's x component, or the location as a Vector3.
+-- @param y (number) [optional] The location's y component. Should be nil if the "x" argument is a Vector3.
+-- @param z (number) [optional] The location's z component. Should be nil if the "x" argument is a Vector3.
+-- @return (Map.BlockOrientation) The block orientation.
+function Map.GetBlockOrientationAt( map, x, y, z )
+    if type( x ) == "table" then
+        z = x.z
+        y = x.y
+        x = x.x
+    end
+    return Map.GetBlockOrientationAt( map, x, y, z )
+end
+
+Map.oSetBlockAt = Map.SetBlockAt
+
+--- Sets a block's ID and block orientation at the given location on the map.
+-- @param map (Map) The map.
+-- @param x (number or Vector3) The location's x component, or the location as a Vector3.
+-- @param y (number) [optional] The location's y component. Must have the value of the "id" argument if the "x" argument is a Vector3.
+-- @param z (number) [optional] The location's z component. Must have the value of the optional "orientation" argument  if the "x" argument is a Vector3.
+-- @param id (number) The block ID.
+-- @param orientation (Map.BlockOrientation) [optional] The block orientation.
+function Map.SetBlockAt( map, x, y, z, id, orientation )
+    if type( x ) == "table" then
+        id = y
+        orientation = z
+        z = x.z
+        y = x.y
+        x = x.x
+    end
+    if orientation == nil then
+        Map.oSetBlockAt( map, x, y, z, id )
+    else
+        Map.oSetBlockAt( map, x, y, z, id, orientation )
+    end
 end
 
 
