@@ -1547,6 +1547,49 @@ function GameObject.BroadcastMessage(gameObject, functionName, data)
     end
 end
 
+--- Display or hide the game object. Act on the renderer's opacity or the transform's local scale.
+-- Sets the "isDisplayed" property to true on the game object.
+-- @param gameObject (GameObject) The game object.
+-- @param value (boolean, number or Vector3) [default=true] Tell whether to display or hide the game object (as a boolean), or the opacity (as a number) or the local scale (as a Vector3).
+-- @param forceUseLocalScale (boolean) [default=false] Tell whether to force to use the local scale (true) even on a game object that has a renderer component, or not.
+function GameObject.Display( gameObject, value, forceUseLocalScale )
+    local display = false
+    if value and value ~= 0 and value ~= Vector3:New(0,0,0) then -- true or non 0 value
+        display = true
+    end
+
+    local valueType = type(value)
+    if valueType == "boolean" then
+        value = nil
+    end  
+
+    local renderer = gameObject.textRenderer or gameObject.modelRenderer or gameObject.mapRenderer
+
+    if valueType ~= "table" and not forceUseLocalScale and renderer ~= nil then
+        if not display and renderer.displayOpacity == nil then
+            renderer.displayOpacity = renderer:GetOpacity()
+        end
+        if display then
+            value = value or renderer.displayOpacity or 1
+        else
+            value = value or 0
+        end
+        renderer:SetOpacity( value )
+    else
+        if not display and gameObject.transform.displayLocalScale == nil then
+            gameObject.transform.displayLocalScale = gameObject.transform:GetLocalScale()
+        end
+        if display then
+            value = value or gameObject.transform.displayLocalScale or Vector3:New(1)
+        else
+            value = value or Vector3:New(0,0,0)
+        end
+        gameObject.transform:SetLocalScale( gameObject.transform.displayLocalScale )
+    end
+
+    gameObject.isDisplayed = display 
+end
+
 
 ----------------------------------------------------------------------------------
 -- Add components
