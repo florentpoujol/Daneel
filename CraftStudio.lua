@@ -343,6 +343,23 @@ function MapRenderer.Set( mapRenderer, params )
     Component.Set( mapRenderer, params )
 end
 
+--- Dynamically loads a new version of the provided map renderer's map and sets it as the map renderer new map.
+-- @param mapRenderer (MapRenderer) The map renderer.
+-- @param callback (function) [optional] The callback function to be called when the new map has been loaded. The new map is pased as first and only argument.
+function MapRenderer.LoadNewMap( mapRenderer, callback )
+    local map = mapRenderer:GetMap()
+    if map ~= nil then
+        Map.LoadFromPackage( Map.GetPathInPackage( map ), function( map )
+            mapRenderer:SetMap( map )
+            if callback ~= nil then
+                callback( map )
+            end
+        end )
+    elseif Daneel.Config.debug.enableDebug == true then
+        print("ERROR: MapRenderer.LoadNewMap(): No map is set on the provided map renderer. Can't load new map.")
+    end
+end
+
 
 ----------------------------------------------------------------------------------
 -- TextRenderer
@@ -552,6 +569,7 @@ table.mergein( Daneel.functionsDebugInfo, {
     },
     ["MapRenderer.SetTileSet"] = { { "mapRenderer", "MapRenderer" }, { "tileSetNameOrAsset", { s, "TileSet" } } },
     ["MapRenderer.Set"] =        { { "mapRenderer", "MapRenderer" }, _p },
+    ["MapRenderer.LoadNewMap"] = { { "mapRenderer", "MapRenderer" }, { "callback", "function", isOptional = true } },
 
     ["TextRenderer.SetFont"] =      { { "textRenderer", "TextRenderer" }, { "fontNameOrAsset", { s, "Font" } } },
     ["TextRenderer.SetAlignment"] = { { "textRenderer", "TextRenderer" }, { "alignment", {s, "userdata", n} } }, -- number because enum returns a number in the webplayer
