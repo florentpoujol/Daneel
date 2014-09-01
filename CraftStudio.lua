@@ -850,6 +850,11 @@ end
 -- @param vector (Vector3) The vector.
 -- @return (string) The string.
 function Vector3.ToString( vector )
+    for i, comp in pairs({"x", "y", "z"}) do
+        if tostring(vector[comp]) == "-0" then
+            vector[comp] = 0
+        end
+    end
     return vector.x.." "..vector.y.." "..vector.z
 end
 
