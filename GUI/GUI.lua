@@ -135,10 +135,11 @@ end
 -- @param vector (Vector2) The vector2.
 -- @param camera (Camera) [optional] The reference camera used to convert from pixels to units. Only needed when the vector's components are in units.
 -- @return (Vector2) The fixed position.
-function Vector2.EnsureNumberPixel( vector, camera )
-    vector.x = GUI.ToPixel( vector.x, "x", camera )
-    vector.y = GUI.ToPixel( vector.y, "y", camera )
-    return vector 
+function Vector2.ToPixel( vector, camera )
+    return Vector2.New(
+        GUI.ToPixel( vector.x, "x", camera ),
+        GUI.ToPixel( vector.y, "y", camera )
+    )
 end
 
 --- Creates a new Hud component instance.
@@ -164,7 +165,7 @@ end
 -- @param hud (Hud) The hud component.
 -- @param position (Vector2) The position as a Vector2.
 function GUI.Hud.SetPosition(hud, position)
-    position:EnsureNumberPixel( hud.cameraGO.camera )
+    position = position:ToPixel( hud.cameraGO.camera )
     local newPosition = hud.cameraGO.hudOriginGO.transform:GetPosition() +
     Vector3:New(
         position.x * hud.cameraGO.camera:GetPixelsToUnits(),
@@ -188,7 +189,7 @@ end
 -- @param hud (Hud) The hud component.
 -- @param position (Vector2) The position as a Vector2.
 function GUI.Hud.SetLocalPosition(hud, position)
-    position:EnsureNumberPixel( hud.cameraGO.camera )
+    position = position:ToPixel( hud.cameraGO.camera )
     local parent = hud.gameObject.parent or hud.cameraGO.hudOriginGO
     local newPosition = parent.transform:GetPosition() +
     Vector3:New(
