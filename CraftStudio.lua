@@ -1559,7 +1559,7 @@ end
 -- @param forceUseLocalScale (boolean) [default=false] Tell whether to force to use the local scale (true) even on a game object that has a renderer component, or not.
 function GameObject.Display( gameObject, value, forceUseLocalScale )
     local display = false
-    if value and value ~= 0 and value ~= Vector3:New(0,0,0) then -- true or non 0 value
+    if value ~= false and value ~= 0 and value ~= Vector3:New(0,0,0) then -- true or non 0 value
         display = true
     end
 
@@ -1589,7 +1589,7 @@ function GameObject.Display( gameObject, value, forceUseLocalScale )
         else
             value = value or Vector3:New(0,0,0)
         end
-        gameObject.transform:SetLocalScale( gameObject.transform.displayLocalScale )
+        gameObject.transform:SetLocalScale( value )
     end
 
     gameObject.isDisplayed = display 
