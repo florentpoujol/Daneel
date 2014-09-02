@@ -146,7 +146,7 @@ function Component.GetId( component )
     return Daneel.Utilities.GetId( component )
 end
 
-table.mergein( Daneel.functionsDebugInfo, {
+table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["Asset.Get"] = { { "assetPath" }, { "assetType", isOptional = true }, { "errorIfAssetNotFound", defaultValue = false } },
     ["Asset.GetPath"] = { { "asset", Daneel.Config.assetTypes } },
     ["Asset.GetName"] = { { "asset", Daneel.Config.assetTypes } },
@@ -612,7 +612,7 @@ function Camera.Project( camera, position )
 end
 
 
-table.mergein( Daneel.functionsDebugInfo, {
+table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["Transform.SetLocalScale"] = { { "transform", "Transform" }, { "number", { n, v3 } } },
     ["Transform.SetScale"] =      { { "transform", "Transform" }, { "number", { n, v3 } } },
     ["Transform.GetScale"] =      { { "transform", "Transform" } },
@@ -876,7 +876,7 @@ function string.tovector( sVector )
     return vector
 end
 
-table.mergein( Daneel.functionsDebugInfo, {
+table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["Vector2.New"] = { { "x", { s, n, t, v2 } }, { "y", { s, n }, isOptional = true } },
     ["Vector2.GetLength"] = { { "vector", v2 } },
     ["Vector2.GetSqrLength"] = { { "vector", v2 } },
@@ -954,7 +954,7 @@ function RaycastHit.__tostring( instance )
     return msg.." }"
 end
 
-Daneel.functionsDebugInfo["RaycastHit.New"] = { { "params", defaultValue = {} } }
+Daneel.Debug.functionArgumentsInfo["RaycastHit.New"] = { { "params", defaultValue = {} } }
 --- Create a new RaycastHit
 -- @return (RaycastHit) The raycastHit.
 function RaycastHit.New( params )
@@ -1181,7 +1181,7 @@ end
 local _ray = { "ray", "Ray" }
 local _returnraycasthit = { "returnRaycastHit", defaultValue = false }
 
-table.mergein( Daneel.functionsDebugInfo, {
+table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["Ray.Cast"] =                    { _ray, { "gameObjects", t }, { "sortByDistance", defaultValue = false } },
     ["Ray.IntersectsGameObject"] =    { _ray, { "gameObjectNameOrInstance", { s, go } }, _returnraycasthit },
     ["Ray.IntersectsPlane"] =         { _ray, { "plane", "Plane" }, _returnraycasthit },
@@ -1854,7 +1854,7 @@ end
 local _t = { "tag", {"string", "table"} }
 local _go = { "gameObject", "GameObject" }
 
-table.mergein( Daneel.functionsDebugInfo, {
+table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["GameObject.New"] =         { { "name", { s, "Scene" } }, { "params", t, isOptional = true } },
     ["GameObject.Instantiate"] = { { "name", s }, { "sceneNameOrAsset", { s, "Scene" } }, { "params", t, isOptional = true } },
     ["GameObject.Set"] =         { _go, _p },

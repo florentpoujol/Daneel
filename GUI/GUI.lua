@@ -248,7 +248,7 @@ function GUI.Hud.GetLocalLayer(hud)
 end
 
 local _hud = { "hud", "Hud" }
-table.mergein( Daneel.functionsDebugInfo, {
+table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["GUI.Hud.CreateOriginGO"] =    { _go },
     ["GUI.Hud.New"] =               { _go, _op },
     ["GUI.Hud.SetPosition"] =       { _hud, { "position", v2 } },
@@ -462,7 +462,7 @@ function GUI.Toggle.Set( toggle, params )
 end
 
 local _toggle = { "toggle", "Toggle" }
-table.mergein( Daneel.functionsDebugInfo, {
+table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["GUI.Toggle.New"] =        { _go, _op },
     ["GUI.Toggle.Set"] =        { _toggle, _p },
     ["GUI.Toggle.SetText"] =    { _toggle, { "text", s } },
@@ -644,7 +644,7 @@ function GUI.ProgressBar.Set( progressBar, params )
 end
 
 local _pb = { "progressBar", "ProgressBar" }
-table.mergein( Daneel.functionsDebugInfo, {
+table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["GUI.ProgressBar.New"] =       { _go, _op },
     ["GUI.ProgressBar.Set"] =       { _pb, _p },
     ["GUI.ProgressBar.SetValue"] =  { _pb, { "value", { s, n } } },
@@ -962,7 +962,7 @@ end
 
 local _slider = { "slider", "Slider" }
 local _input = { "input", "Input" }
-table.mergein( Daneel.functionsDebugInfo, {
+table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["GUI.Slider.New"] =       { _go, _op },
     ["GUI.Slider.Set"] =       { _slider, _p },
     ["GUI.Slider.SetValue"] =  { _slider, { "value", { s, n } } },
@@ -1319,7 +1319,7 @@ function GUI.TextArea.GetOpacity( textArea )
 end
 
 local _ta = { "textArea", "TextArea" }
-table.mergein( Daneel.functionsDebugInfo, {
+table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["GUI.TextArea.New"] =                  { { "gameObject", go }, { "params", t, isOptional = true } },
     ["GUI.TextArea.Set"] =                  { _ta, _p },
     ["GUI.TextArea.SetText"] =              { _ta, { "text", s } },

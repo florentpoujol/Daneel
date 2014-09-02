@@ -8,13 +8,11 @@ Daneel = {}
 
 Daneel.modules = { moduleNames = {} }
 setmetatable( Daneel.modules, {
-    __newindex = function( _, moduleName, moduleObject ) -- _ argument is Daneel.modules object
+    __newindex = function( _, moduleName, moduleObject ) -- "_" argument is Daneel.modules object
         table.insert( Daneel.modules.moduleNames, moduleName )
         rawset( Daneel.modules, moduleName, moduleObject )
     end
 } )
-
-Daneel.functionsDebugInfo = {}
 
 
 ----------------------------------------------------------------------------------
@@ -136,76 +134,6 @@ function table.getlength( t, keyType )
     end
     return length
 end
-
-
--- debug info
-local s = "string"
-local b = "boolean"
-local n = "number"
-local t = "table"
-local f = "function"
-local u = "userdata"
-local _s = { "s", s }
-local _t = { "t", t }
-
-table.mergein( Daneel.functionsDebugInfo, {
-    ["math.isinteger"] = { { "number" } },
-    ["math.lerp"] = {
-        { "a", n },
-        { "b", n },
-        { "factor", n },
-        { "easing", s, isOptional = true }
-    },
-    ["math.warpangle"] = { { "angle", n } },
-    ["math.round"] = {
-        { "value", n },
-        { "decimal", n, isOptional = true }
-    },
-    ["tonumber2"] = { { "data" } },
-
-    ["string.totable"] = { _s },
-    ["string.ucfirst"] = { _s },
-    ["string.lcfirst"] = { _s },
-    ["string.trimstart"] = { _s },
-    ["string.trimend"] = { _s },
-    ["string.trim"] = { _s },
-    ["string.endswith"] = { _s, { "chunk", s } },
-    ["string.startswith"] = { _s, { "chunk", s } },
-    ["string.split"] = { _s,
-        { "delimiter", s },
-        { "delimiterIsPattern", b, defaultValue = false },
-    },
-    ["string.reverse"] = { _s },
-
-    ["table.print"] = {}, -- just for the stacktrace
-    ["table.merge"] = {},
-    ["table.mergein"] = {},
-    ["table.getkeys"] = { _t },
-    ["table.getvalues"] = { _t },
-    ["table.reverse"] = { _t },
-    ["table.reindex"] = { _t },
-    ["table.getvalue"] = { _t, { "keys", s } },
-    ["table.setvalue"] = { _t, { "keys", s } },
-    ["table.getkey"] = { _t, { "value" } },
-    ["table.copy"] = { _t, { "recursive", b, defaultValue = false } },
-    ["table.containsvalue"] = { _t, { "value" }, { "ignoreCase", b, defaultValue = false } },
-    ["table.isarray"] = { _t, { "strict", b, defaultValue = true } },
-    ["table.shift"] = { _t, { "returnKey", b, defaultValue = false } },
-    ["table.getlength"] = { _t, { "keyType", s, isOptional = true } },
-    ["table.havesamecontent"] = { { "table1", t }, { "table2", t } },
-    ["table.combine"] = { _t,
-        { "values", "table" },
-        { "returnFalseIfNotSameLength", b, isOptional = true }
-    },
-    ["table.removevalue"] = { _t,
-        { "value" },
-        { "maxRemoveCount", n, isOptional = true }
-    },
-    ["table.sortby"] = { _t,
-        { "property", s },
-        { "orderBy", s, isOptional = true },
-    },
-} )
 
 
 ----------------------------------------------------------------------------------
@@ -365,17 +293,86 @@ Daneel.Cache = {
     GetId = Daneel.Utilities.GetId
 }
 
-table.mergein( Daneel.functionsDebugInfo, {
-    ["Daneel.Utilities.CaseProof"] = { { "name", s }, { "set", { s, t } } },
-    ["Daneel.Utilities.ReplaceInString"] = { { "string", s }, { "replacements", t } },
-    ["Daneel.Utilities.ButtonExists"] = { { "buttonName", s } }
-} )
-
 
 ----------------------------------------------------------------------------------
 -- Debug
 
 Daneel.Debug = {}
+
+-- error reporting info
+local s = "string"
+local b = "boolean"
+local n = "number"
+local t = "table"
+local f = "function"
+local u = "userdata"
+local _s = { "s", s }
+local _t = { "t", t }
+
+Daneel.Debug.functionArgumentsInfo = {
+    ["math.isinteger"] = { { "number" } },
+    ["math.lerp"] = {
+        { "a", n },
+        { "b", n },
+        { "factor", n },
+        { "easing", s, isOptional = true }
+    },
+    ["math.warpangle"] = { { "angle", n } },
+    ["math.round"] = {
+        { "value", n },
+        { "decimal", n, isOptional = true }
+    },
+    ["tonumber2"] = { { "data" } },
+    ["math.clamp"] = { { "value", n }, { "min", n }, { "max", n } },
+
+    ["string.totable"] = { _s },
+    ["string.ucfirst"] = { _s },
+    ["string.lcfirst"] = { _s },
+    ["string.trimstart"] = { _s },
+    ["string.trimend"] = { _s },
+    ["string.trim"] = { _s },
+    ["string.endswith"] = { _s, { "chunk", s } },
+    ["string.startswith"] = { _s, { "chunk", s } },
+    ["string.split"] = { _s,
+        { "delimiter", s },
+        { "delimiterIsPattern", b, defaultValue = false },
+    },
+    ["string.reverse"] = { _s },
+
+    ["table.print"] = {}, -- just for the stacktrace
+    ["table.merge"] = {},
+    ["table.mergein"] = {},
+    ["table.getkeys"] = { _t },
+    ["table.getvalues"] = { _t },
+    ["table.reverse"] = { _t },
+    ["table.reindex"] = { _t },
+    ["table.getvalue"] = { _t, { "keys", s } },
+    ["table.setvalue"] = { _t, { "keys", s } },
+    ["table.getkey"] = { _t, { "value" } },
+    ["table.copy"] = { _t, { "recursive", b, defaultValue = false } },
+    ["table.containsvalue"] = { _t, { "value" }, { "ignoreCase", b, defaultValue = false } },
+    ["table.isarray"] = { _t, { "strict", b, defaultValue = true } },
+    ["table.shift"] = { _t, { "returnKey", b, defaultValue = false } },
+    ["table.getlength"] = { _t, { "keyType", s, isOptional = true } },
+    ["table.havesamecontent"] = { { "table1", t }, { "table2", t } },
+    ["table.combine"] = { _t,
+        { "values", "table" },
+        { "returnFalseIfNotSameLength", b, isOptional = true }
+    },
+    ["table.removevalue"] = { _t,
+        { "value" },
+        { "maxRemoveCount", n, isOptional = true }
+    },
+    ["table.sortby"] = { _t,
+        { "property", s },
+        { "orderBy", s, isOptional = true },
+    },
+
+    ["Daneel.Utilities.CaseProof"] = { { "name", s }, { "set", { s, t } } },
+    ["Daneel.Utilities.ReplaceInString"] = { { "string", s }, { "replacements", t } },
+    ["Daneel.Utilities.ButtonExists"] = { { "buttonName", s } }
+}
+
 
 --- Check the provided argument's type against the provided type(s) and display error if they don't match.
 -- @param argument (mixed) The argument to check.
@@ -1004,7 +1001,7 @@ function Daneel.Event.Fire( object, eventName, ... )
     Daneel.Debug.StackTrace.EndFunction()
 end
 
-table.mergein( Daneel.functionsDebugInfo, {
+table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["Daneel.Event.Listen"] = { { "eventName", { s, t } }, { "functionOrObject", {t, f, u} }, { "isPersistent", defaultValue = false } },
 } )
 
@@ -1096,7 +1093,7 @@ function Daneel.Storage.Load( name, defaultValue, callback )
     return value
 end
 
-table.mergein( Daneel.functionsDebugInfo, {
+table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["Daneel.Storage.Save"] = { { "name", s }, { "data", isOptional = true }, { "callback", "function", isOptional = true } },
     ["Daneel.Storage.Load"] = { { "name", s }, { "defaultValue", isOptional = true }, { "callback", "function", isOptional = true } }
 } )
@@ -1226,7 +1223,7 @@ function Daneel.Load()
         end
 
         -- overload functions with debug (error reporting + stacktrace)
-        for funcName, data in pairs( Daneel.functionsDebugInfo ) do
+        for funcName, data in pairs( Daneel.Debug.functionArgumentsInfo ) do
             Daneel.Debug.RegisterFunction( funcName, data )
         end
     end

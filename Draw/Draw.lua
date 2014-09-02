@@ -431,7 +431,7 @@ end
 
 ----------------------------------------------------------------------------------
 
-table.mergein( Daneel.functionsDebugInfo, functionsDebugInfo )
+table.mergein( Daneel.Debug.functionArgumentsInfo, functionsDebugInfo )
 
 function Draw.DefaultConfig()
     local config = {
