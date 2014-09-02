@@ -88,6 +88,17 @@ function tonumber2( data )
     return number
 end
 
+--- Return the value clamped between min and max.
+-- @param value (number) The value.
+-- @param min (number) The minimal value.
+-- @param max (number) The maximal value.
+-- @return (number) The new value.
+function math.clamp( value, min, max )
+    value = math.max( value, min )
+    value = math.min( value, max )
+    return value
+end
+
 
 ----------------------------------------------------------------------------------
 -- string
