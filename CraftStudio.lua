@@ -877,7 +877,7 @@ function string.tovector( sVector )
 end
 
 table.mergein( Daneel.Debug.functionArgumentsInfo, {
-    ["Vector2.New"] = { { "x", { s, n, t, v2 } }, { "y", { s, n }, isOptional = true } },
+    ["Vector2.New"] = { { "x", { s, n, t, v2, v3 } }, { "y", { s, n }, isOptional = true } },
     ["Vector2.GetLength"] = { { "vector", v2 } },
     ["Vector2.GetSqrLength"] = { { "vector", v2 } },
     ["Vector2.Normalized"] = { { "vector", v2 } },
