@@ -30,7 +30,7 @@ function Behavior:Awake()
             local props = {"font", "text", "alignment", "opacity"}
             for i, prop in pairs( props ) do
                 local funcName = "Get"..string.ucfirst( prop )
-                params[ prop ] = self.gameObject.textRenderer[ funcName ]()
+                params[ prop ] = self.gameObject.textRenderer[ funcName ]( self.gameObject.textRenderer )
             end
         end
 
