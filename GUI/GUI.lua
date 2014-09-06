@@ -1055,11 +1055,11 @@ function GUI.TextArea.SetText( textArea, text )
                     if textArea.textRuler:GetTextWidth( newLine ) * textAreaScale.x > areaWidth then
                         if char == " " then
                             table.insert( lines, newLine:sub( 1, #newLine-1 ) )
-                            newLine = ""
+                            newLine = char
                         else
                             -- the end of the line is inside a word
                             -- go backward to find the first space char and cut the line there
-                            local word = char
+                            local word = ""
                             for k = #newLine, 1, -1 do
                                 local wordLetter = newLine:sub(k,k)
                                 if wordLetter == " " then
