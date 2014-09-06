@@ -1046,16 +1046,15 @@ function GUI.TextArea.SetText( textArea, text )
             local line = tempLines[i]
 
             if textArea.textRuler:GetTextWidth( line ) * textAreaScale.x > areaWidth then
-                line = string.totable( line )
-                local newLine = {}
+                local newLine = ""
 
-                for j, char in ipairs( line ) do
-                    table.insert( newLine, char )
+                for j = 1, #line do
+                    local char = line:sub(j,j)
+                    newLine = newLine..char
 
-                    if textArea.textRuler:GetTextWidth( table.concat( newLine ) ) * textAreaScale.x > areaWidth then
-                        table.remove( newLine )
-                        table.insert( lines, table.concat( newLine ) )
-                        newLine = { char }
+                    if textArea.textRuler:GetTextWidth( newLine ) * textAreaScale.x > areaWidth then
+                        table.insert( lines, newLine:sub( 1, #newLine-1 ) )
+                        newLine = char
 
                         if not textArea.WordWrap then
                             newLine = nil
@@ -1065,7 +1064,7 @@ function GUI.TextArea.SetText( textArea, text )
                 end
 
                 if newLine ~= nil then
-                    table.insert( lines, table.concat( newLine ) )
+                    table.insert( lines, newLine )
                 end
             else
                 table.insert( lines, line )
