@@ -915,14 +915,30 @@ function CraftStudio.Input.GetMouseDelta()
     return setmetatable( CraftStudio.Input.oGetMouseDelta(), Vector2 )
 end
 
+CraftStudio.Screen.oSetSize = CraftStudio.Screen.SetSize
+
+--- Sets the size of the screen, in pixels.
+-- @params x (number or table) The width of the screen or a table containing the width and height as x and and y components.
+-- @params y (number) [optional] The height of the screen (has no effect when the "x" argument is a table).
+function CraftStudio.Screen.SetSize( x, y )
+    if type( x ) == "table" then
+        y = x.y
+        x = x.x
+    end
+    CraftStudio.Screen.oSetSize( x, y )
+    CraftStudio.Screen.GetSize() -- reset aspect ratio. Done after SetSize() so that the aspecty ratio doesn't change if the window is not rezisable
+end
+
 CraftStudio.Screen.oGetSize = CraftStudio.Screen.GetSize
 
 --- Return the size of the screen, in pixels.
 -- @return (Vector2) The screen's size.
 function CraftStudio.Screen.GetSize()
-    return setmetatable( CraftStudio.Screen.oGetSize(), Vector2 )
+    local screenSize = CraftStudio.Screen.oGetSize()
+    CraftStudio.Screen.aspectRatio = screenSize.x / screenSize.y
+    return setmetatable( screenSize, Vector2 )
 end
-
+CraftStudio.Screen.GetSize() -- set aspect ratio
 
 ----------------------------------------------------------------------------------
 -- RaycastHit
