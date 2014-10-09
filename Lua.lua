@@ -343,10 +343,69 @@ function table.print(t)
     end
     
     for key, value in func(t) do
+        if type(key) == "string" then
+            key = '"'..key..'"'
+        end
+        if type(value) == "string" then
+            value = '"'..value..'"'
+        end
         print(key, value)
     end
 
     print("~~~~~ table.print("..tostring(t)..") ~~~~~ End ~~~~~")
+end
+
+local knownKeysByPrintedTable = {} -- [ table ] = key
+
+--- Recursively print all key/value pairs within the provided table.
+-- Fully prints the tables that have no metatable found as values.
+-- @param t (table) The table to print.
+-- @param level (string) [default=""] The string to prepend to the printed lines. Should be empty or nil unless called from table.rprint().
+function table.rprint( t, level )
+    level = level or ""
+
+    if t == nil then
+        print(level.."table.rprint( t ) : Provided table is nil.")
+        return
+    end
+
+    if level == "" then
+        print("~~~~~ table.rprint("..tostring(t)..") ~~~~~ Start ~~~~~")
+    end
+
+    local func = pairs
+    if table.getlength(t) == 0 then
+        print(level, "Table is empty.")
+    elseif table.isarray(t) then
+        func = ipairs -- just to be sure that the entries are printed in order
+    end
+    
+    for key, value in func(t) do
+        if type(key) == "string" then
+            key = '"'..key..'"'
+        end
+        if type(value) == "string" then
+            value = '"'..value..'"'
+        end
+
+        if type( value ) == "table" and getmetatable( value ) == nil then
+            local knownKey = knownKeysByPrintedTable[ value ]
+            if knownKey ~= nil then
+                print(level..tostring(key), "Already printed table with key "..knownKey..": "..tostring(value) )
+            else
+                knownKeysByPrintedTable[ value ] = key
+                print(level..tostring(key), value)
+                table.rprint( value, level.."| - - - ")
+            end
+        else
+            print(level..tostring(key), value)
+        end
+    end
+
+    if level == "" then
+        print("~~~~~ table.rprint("..tostring(t)..") ~~~~~ End ~~~~~")
+        knownKeysByPrintedTable = {}
+    end
 end
 
 --- Merge two or more tables into one new table.
