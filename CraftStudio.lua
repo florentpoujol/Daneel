@@ -628,11 +628,11 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
         { "mapNameOrAsset", { s, "Map" }, isOptional = true },
         { "replaceTileSet", defaultValue = true },
     },
-    ["MapRenderer.SetTileSet"] = { { "mapRenderer", "MapRenderer" }, { "tileSetNameOrAsset", { s, "TileSet" } } },
+    ["MapRenderer.SetTileSet"] = { { "mapRenderer", "MapRenderer" }, { "tileSetNameOrAsset", { s, "TileSet" }, isOptional = true } },
     ["MapRenderer.Set"] =        { { "mapRenderer", "MapRenderer" }, _p },
     ["MapRenderer.LoadNewMap"] = { { "mapRenderer", "MapRenderer" }, { "callback", "function", isOptional = true } },
 
-    ["TextRenderer.SetFont"] =      { { "textRenderer", "TextRenderer" }, { "fontNameOrAsset", { s, "Font" } } },
+    ["TextRenderer.SetFont"] =      { { "textRenderer", "TextRenderer" }, { "fontNameOrAsset", { s, "Font" }, isOptional = true } },
     ["TextRenderer.SetAlignment"] = { { "textRenderer", "TextRenderer" }, { "alignment", {s, "userdata", n} } }, -- number because enum returns a number in the webplayer
     ["TextRenderer.SetTextWidth"] = { { "textRenderer", "TextRenderer" }, { "width", n } },
 
