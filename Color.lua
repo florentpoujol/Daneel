@@ -1,14 +1,13 @@
 -- Color.lua
--- Contains the Color object.
+-- Contains the Color object and the color solver.
 --
 -- Last modified for v1.5.0
 -- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 
-
 Color = {}
 
 ColorMT = {
-    __call = function(Object, ...) return Object.New(...) end,
+    __call = function(Object, ...) return Object.New(...) end, -- Allow to call Color.New() by writing Color()
 
     __index = function( object, key )
         -- allow to get new Color instance from colors in the Color.colorsByname table by writing "Color.blue", "Color.red", ...
@@ -53,19 +52,32 @@ function Color.__newindex( color, key, value )
 end
 
 function Color.__tostring(color)
-    return "Color: { r="..color._r..", g="..color._g..", b="..color._b..", hex="..color:GetHex().." }"
+    local s = "Color: { r="..color._r..", g="..color._g..", b="..color._b..", hex="..color:GetHex()
+    local name = color:GetName()
+    if name ~= nil then
+        s = s..", name='"..name.."'"
+    end
+    return s.." }"
 end
 
---- Create a new color.
-
+--- Create a new color object.
+-- @param r (number, Color, table, Vector3 or string) The color's red component or a table with r,g,b / x,y,z / 1,2,3 components, or a color name or an hexadecimal color.
+-- @param g (number) [optional] The color's green component.
+-- @param b (number) [optional] The color's blue component.
 -- @return (Color) The color object.
 function Color.New(r, g, b)
     local color = setmetatable({}, Color)
 
     if type( r ) == "string" and g == nil then
-        color:SetHex( r )
+        local colorFromName = Color[r] -- r is a color name
+        if colorFromName ~= nil then
+            return colorFromName
+        else -- r is a hexadecimal color
+            color:SetHex( r )
+        end
     else
         if type( r ) == "table" then
+            -- I don't check for the metatable in order to allow to pass table without them, no necessarily strict Color or Vector3 object
             if r.r ~= nil then -- Color style
                 g = r.g
                 b = r.b
@@ -79,11 +91,10 @@ function Color.New(r, g, b)
                 b = r[3]
                 r = r[1]
             end
-        else
-
+        end
         color.r = r or 0
-        color.g = g or color.r
-        color.b = b or color.g
+        color.g = g or color._r
+        color.b = b or color._g
     end
 
     return color
@@ -92,6 +103,7 @@ end
 --------------------
 
 Color.colorsByName = {
+    -- values can be array, Color or hex color
     red = {255,0,0},
     green = {0,255,0},
     blue = {0,0,255},
@@ -105,12 +117,18 @@ Color.colorsByName = {
     gray = {50,50,50},
     grey = {50,50,50}, -- English spelling
 }
+-- More color/names : https://github.com/franks42/colors-rgb.lua/blob/master/colors-rgb.lua
+-- Note that some of these colors can't be displayed by the current algorithm.
 
 --- Return the name of the color, provided it can be found in the `Color.colorsByName` object.
 -- @param color (Color) The color object.
 -- @return (string) The color's name or nil.
 function Color.GetName( color )
     for name, colorArray in pairs( Color.colorsByName ) do
+        if type( colorArray ) == "string" then
+            colorArray = { Color.HexToRGB( colorArray ) }
+        end
+
         if color._r == colorArray[1] and color._g == colorArray[2] and color._b == colorArray[3] then
             return name
         end
@@ -120,28 +138,36 @@ end
 --------------------
 
 --- Convert the provided color object to an array.
--- Allow loop on a color's components in order.
+-- Allow to loop on the color's components in order.
 -- @param color (Color) The color object.
 -- @return (table) The color as array.
 function Color.ToArray( color )
-    return { color.r, color.g, color.b }
+    return { color._r, color._g, color._b }
 end
 
 --- Convert the provided color object to a table with "r", "g", "b" keys.
--- Allow to loop on a color's components.
+-- Allow to loop on the color's components.
 -- @param color (Color) The color object.
 -- @return (table) The color as table with "r", "g", "b" keys.
 function Color.ToRGB( color )
-    return { r = color.r, g = color.g, b = color.b }
+    return { r = color._r, g = color._g, b = color._b }
 end
 
---- Returns a string representation of the color's components.
+--- Convert the provided color object to a Vector3.
+-- This can be needed because the component's values of a Vector3 are not clamped between 0 and 255.
+-- @param color (Color) The color object.
+-- @return (Vector3) The color as a Vector3 with "x", "y", "z" keys.
+function Color.ToVector3( color )
+    return Vector3:New( color._r, color._g, color._b )
+end
+
+--- Returns a string representation of the color's components, each component being separated y a space.
 -- ie: For a color { 10, 250, 128 }, the returned string would be "10 250 128".
 -- Such string can be converted back to a color object with string.tocolor()
 -- @param color (Color) The color obejct.
 -- @return (string) The string.
 function Color.ToString( color )
-    return color.r.." "..color.g.." "..color.b
+    return color._r.." "..color._g.." "..color._b
 end
 
 --- Convert a string representation of a color component's values to a Color object.
@@ -152,7 +178,7 @@ end
 function string.tocolor( sColor )
     local color = Color.New(0)
     local comps = { "b", "g", "r" }
-    for match in string.gmatch( sColor, "[0-9.-]+" ) do
+    for match in string.gmatch( sColor, "[0-9]+" ) do
         color[ table.remove( comps ) ] = tonumber(match)
     end
     return color
@@ -161,10 +187,10 @@ end
 --------------------
 
 --- Return the hexadecimal representation of the provided color or r, g, b components.
--- Only return the 6 characters of the color's components, so you may want to add "#" or "0x" yourself.
--- @param r (number, Color, table or Vector3) The Red component of the color or a table with r,g,b / x,y,z / 1,2,3 components.
--- @param g (number) [optional] The green component of the color.
--- @param b (number) [optional] The blue component of the color.
+-- Only return the 6 characters of the component's values, so you may want to prefix it with "#" or "0x" yourself.
+-- @param r (number, Color, table, Vector3 or string) The color's red component or a table with r,g,b / x,y,z / 1,2,3 components, or a color name or an hexadecimal color.
+-- @param g (number) [optional] The color's green component.
+-- @param b (number) [optional] The color's blue component.
 function Color.RGBToHex( r, g, b )
     -- From : https://gist.github.com/marceloCodget/3862929    
     local colorArray = Color.New( r, g, b ):ToArray()
@@ -187,20 +213,20 @@ function Color.RGBToHex( r, g, b )
          
         hexadecimal = hexadecimal .. hex
     end
-     
+    
     return hexadecimal
 end
 
 --- Return the color's hexadecimal representation.
--- Only return the 6 characters of the color's components, so you may want to add "#" or "0x" yourself.
+-- Only return the 6 characters of the component's values, so you may want to prefix it with "#" or "0x" yourself.
 -- @param color (Color) The color object.
 -- @return (string) The color's hexadecimal representation.
 function Color.GetHex( color )
-    return Color.RGBToHex( color._r, color._g, color._b )
+    return Color.RGBToHex( color )
 end
 
 --- Convert an hexadecimal color into its RGB components.
--- @param hex (string) The hexadecimal color. May be prefixed by "#", "0x", "0X" or nothing
+-- @param hex (string) The hexadecimal color. May be prefixed by "#", "0x", "0X" or nothing.
 -- @return (number) The color's red component.
 -- @return (number) The color's green component.
 -- @return (number) The color's blue component.
@@ -216,8 +242,8 @@ end
 function Color.SetHex( color, hex )
     local rgb = { Color.HexToRGB( hex ) }
     local comps = { "r", "g", "b" }
-    for i, value in ipairs( rgb ) do
-        color[ comps[i] ] = value
+    for i=1, 3 do
+        color[ comps[i] ] = rgb[i]
     end
 end
 
@@ -228,7 +254,7 @@ end
 -- @return (number) The value of the color (between 0 and 1).
 function Color.GetHSV( color )
     -- Code adapted from rgbToHsv() : https://github.com/EmmanuelOga/columns/blob/master/utils/color.lua
-    local r, g, b = color.r / 255, color.g / 255, color.b /255
+    local r, g, b = color._r / 255, color._g / 255, color._b /255
     local max, min = math.max(r, g, b), math.min(r, g, b)
     local h, s, v
     v = max
@@ -265,7 +291,7 @@ end
 -- @param b (Color) The right member.
 -- @return (boolean) True if the same components of the two colors are equal (a.r=b.r, a.g=b.g and a.b=b.b)
 function Color.__eq(a, b)
-    return (a.r == b.r and a.g == b.g and a.b == b.b)
+    return (a._r == b._r and a._g == b._g and a._b == b._b)
 end
 
 --- Allow to add two Color objects by using the + operator.
@@ -274,7 +300,7 @@ end
 -- @param b (Color) The right member.
 -- @return (Color) The new color object.
 function Color.__add( a, b )
-    return Color.New( a.r + b.r, a.g + b.g, a.b + b.b )
+    return Color.New( a._r + b._r, a._g + b._g, a._b + b._b )
 end  
 
 --- Allow to substract two Color objects by using the - operator.
@@ -283,7 +309,7 @@ end
 -- @param b (Color) The right member.
 -- @return (Color) The new color object.
 function Color.__sub( a, b )
-    return Color.New( a.r - b.r, a.g - b.g, a.b - b.b )
+    return Color.New( a._r - b._r, a._g - b._g, a._b - b._b )
 end
 
 --- Allow to multiply two Color object or a Color object and a number by using the * operator.
@@ -291,21 +317,21 @@ end
 -- @param b (Color or number) The right member.
 -- @return (Color) The new color object.
 function Color.__mul( a, b )
-    local new = Color.New(0)
+    local color = Color.New(0)
     if type(a) == "table" and type(b) == "number" then
-        new.r = a.r * b
-        new.g = a.g * b
-        new.b = a.b * b
+        color.r = a._r * b
+        color.g = a._g * b
+        color.b = a._b * b
     elseif type(a) == "number" and type(b) == "table" then
-        new.r = a * b.r
-        new.g = a * b.g
-        new.b = a * b.b
+        color.r = a * b._r
+        color.g = a * b._g
+        color.b = a * b._b
     elseif type(a) == "table" and type(b) == "table" then
-        new.r = a.r * b.r
-        new.g = a.g * b.g
-        new.b = a.b * b.b
+        color.r = a._r * b._r
+        color.g = a._g * b._g
+        color.b = a._b * b._b
     end
-    return new
+    return color
 end
 
 --- Allow to divide two Color objects or a Color object and a number by using the / operator.
@@ -313,21 +339,21 @@ end
 -- @param b (Color or number) The denominator. Can't be equal to 0.
 -- @return (Color) The new color object.
 function Color.__div( a, b )
-    local new = Color.New(0)
+    local color = Color.New(0)
     if type(a) == "table" and type(b) == "number" then
-        new.r = a.r / b
-        new.g = a.g / b
-        new.b = a.b / b
+        color.r = a._r / b
+        color.g = a._g / b
+        color.b = a._b / b
     elseif type(a) == "number" and type(b) == "table" then
-        new.r = a / b.r
-        new.g = a / b.g
-        new.b = a / b.b
+        color.r = a / b._r
+        color.g = a / b._g
+        color.b = a / b._b
     elseif type(a) == "table" and type(b) == "table" then
-        new.r = a.r / b.r
-        new.g = a.g / b.g
-        new.b = a.b / b.b
+        color.r = a._r / b._r
+        color.g = a._g / b._g
+        color.b = a._b / b._b
     end
-    return new
+    return color
 end
    
 ----------------------------------------------------------------------------------
@@ -350,11 +376,15 @@ end
 -- We can create 2295 (255*2*3+255*3) colors
 
 -- The generator can create colors where :
--- One of the component is equal to 0 or 255 and the other components are apart and equidistant from 128
+-- One of the component is equal to 0 or 255 and the mean of the other components is 128 (they are apart and equidistant from 128)
 -- ie : (255, 50, 200) (128, 0, 128) (170, 85, 0)
 -- or
--- Two components are equal and the third one is apart and equidistant from 128
+-- Two components are equal and the third one is apart and equidistant from 128 ((max + min)/2 = 128)
 -- ie : (153, 102, 153) (51, 51, 204)
+-- or
+-- one comp = 0, other comp = 255, on
+-- or
+-- a plain color (R, g, b, c, m, y, black, w) with saturation or value diminished
 
 
 -- circle : one comp = 0, other are equidistant
@@ -374,43 +404,13 @@ end
 -- value = 0   > rgb coords goes toward the smallest coords
 -- value correspond to the smallest component value
 
-
-Coler.modelsFolder = "Colors/" -- to be edited by the user if he wants another folder
-Color.modelsByColorName = {}
-
-function Color.GetModel( color )
-    local name = color:GetName()
-    local model = Color.modelsByColorName[ name ]
-
-    if model == nil then
-        if not string.endswith( Color.modelsFolder, "/" ) then -- let's be fool-proof
-            Color.modelsFolder = Color.modelsFolder.."/"
-        end
-
-        local path = Color.modelsFolder..name
-        model = CS.FindAsset( path, "Model" )
-        
-        path = Color.modelsFolder..string.ucfirst(name) -- let's be a little more fool-proof
-        model = CS.FindAsset( path, "Model" )
-
-        if model == nil then
-            print("Color.GetModel(): Could not find model at path '"..path.."' for ", color)
-            return
-        end
-
-        Color.modelsByColorName[ name ] = model
-    end
-
-    return model
-end
-
 -- Calculate the opacity of the front model.
 -- @param Bc (color) The back color.
 -- @param Fc (color) The front color.
 -- @param Tc (color) The target color.
--- @return (number) The front opacity (Fo).
+-- @return (number) The front opacity.
 local function getFrontOpacity( Bc, Fc, Tc )
-    local Fo = nil
+    local Fo = 0
 
     -- Find the component for which the back and front color haven't the same value
     -- because it would cause a division by zero in the opacity's calculation
@@ -432,14 +432,17 @@ local function getFrontOpacity( Bc, Fc, Tc )
     return Fo
 end
 
--- main algorithm
+--- Find the Back and Front color and the Front opacity needed to render the provided Target color.
+-- @param Tc (color) The target color.
+-- @return (Color) The back color.
+-- @return (Color) The front color, or nil.
+-- @return (number) The front opacity.
 function Color.Resolve( Tc )
     local Bc = Color.New(0)
     local Fc = Color.New(0)
     local Fo = 0
-    local Ic, Mc, Mo -- Intermediate color, modifier color, modifier opacity
 
-    for comp, value in pairs( color:ToRGB() ) do
+    for comp, value in pairs( Tc:ToRGB() ) do
         if value ~= 255 and value >= 127.5 then
             Bc[comp] = 255
             Fc[comp] = 0
@@ -458,364 +461,184 @@ function Color.Resolve( Tc )
 
     if Fc ~= nil then
         Fo = getFrontOpacity( Bc, Fc, Tc )
-
-        Ic = Color.New( ( Fc:ToVector3() - Bc:ToVector3() ) * Fo + Bc:ToVector3() )
+        local Ic = Color.New( ( Fc:ToVector3() - Bc:ToVector3() ) * Fo + Bc:ToVector3() )
         
         if Ic ~= Tc then
             -- the Tc color can't be achieved with only two levels of color
             -- a thrid one is needed
-
+            print("Color.Resolve(): Sorry, can't resolve ", Tc )
+            print("Color.Resolve(): Getting instead ", Ic )
         end
     end
-    print("get colors", Bc, Fc, Fo)
-    
-    ----------
 
-    print("Tc = ", Tc )
-    return Bc, Fc, Fo, Mo, Fo
+    return Bc, Fc, Fo
+end
+
+--- Set the color of the provided model or text renderer.
+-- @param renderer (ModelRenderer or TextRenderer) The renderer.
+-- @param r (number, Color or string) The color's red component, a color object, a color as hexadecimal string or a color name that can be found in the Color.colorsByName table.
+-- @param g (number) [optional] The color's green component.
+-- @param b (number) [optional] The color's blue component.
+local function setColor( renderer, r, g, b )
+    local rendererType = "ModelRenderer"
+    local assetType = "Model"
+    local assetSetterFunction = ModelRenderer.SetModel
+    local mt = getmetatable( renderer )
+    if mt == TextRenderer then
+        rendererType = "TextRenderer"
+        assetType = "Font"
+        assetSetterFunction = TextRenderer.SetFont
+    end
+    local lcRendererType = string.lcfirst( rendererType )
+
+    --
+    local color = Color.New( r, g, b )
+    local Bc, Fc, Fo = color:Resolve()
+    
+    --
+    local backRndr = renderer
+    assetSetterFunction( backRndr, Bc:GetAsset( assetType ) )
+    
+    --
+    local gameObject = renderer.gameObject
+    local frontRndr = gameObject[ "front"..rendererType ]
+    if frontRndr == nil and Fc ~= nil then
+        frontRndr = gameObject:CreateComponent( rendererType )
+        gameObject[ lcRendererType ] = backRndr
+        gameObject[ "front"..rendererType ] = frontRndr
+
+        if rendererType == "TextRenderer" then
+            frontRndr:SetAlignment( renderer:GetAlignment() )
+        end
+    end
+
+    if frontRndr ~= nil then
+        if Fc ~= nil then
+            assetSetterFunction( frontRndr, Fc:GetAsset( assetType ) ) 
+        end
+
+        frontRndr:SetOpacity( Fo )
+    end
 end
 
 --- Set the color of the provided model renderer.
 -- @param modelRenderer (ModelRenderer) The model renderer.
--- @param r (number, Color or string) The color's red component, a color object or a color as hexadecimal string.
+-- @param r (number, Color or string) The color's red component, a color object, a color as hexadecimal string or a color name that can be found in the Color.colorsByName table.
 -- @param g (number) [optional] The color's green component.
 -- @param b (number) [optional] The color's blue component.
 function ModelRenderer.SetColor( modelRenderer, r, g, b )
-    local color = Color.New( r, g, b )
-    local Bc, Fc, Fo, Mc, Mo = color:Resolve()
-    
-    local gameObject = modelRenderer.gameObject
-    if gameObject.modelRenderers == nil then
-        gameObject.modelRenderers = { modelRenderer }
-    end 
+    setColor( modelRenderer, r, g, b )
+end
 
+--- Set the color of the provided text renderer.
+-- @param textRenderer (textRenderer) The text renderer.
+-- @param r (number, Color or string) The color's red component, a color object, a color as hexadecimal string or a color name that can be found in the Color.colorsByName table.
+-- @param g (number) [optional] The color's green component.
+-- @param b (number) [optional] The color's blue component.
+function TextRenderer.SetColor( textRenderer, r, g, b )
+    setColor( textRenderer, r, g, b )
+end
+
+local oSetText = TextRenderer.SetText
+function TextRenderer.SetText( textRenderer, text )
+    oSetText( textRenderer, text )
+    
+    local frontRndr = textRenderer.gameObject.frontTextRenderer
+    if frontRndr ~= nil then
+        oSetText( frontRndr, text )
+    end
+end
+
+local oSetAlignment = TextRenderer.SetAlignment
+function TextRenderer.SetAlignment( textRenderer, alignment )
+    oSetAlignment( textRenderer, alignment )
+    
+    local frontRndr = textRenderer.gameObject.frontTextRenderer
+    if frontRndr ~= nil then
+        oSetAlignment( frontRndr, alignment )
+    end
+end
+
+
+local function getColor( renderer )
+    local rendererType = "ModelRenderer"
+    local assetType = "Model"
+    local assetSetterFunction = ModelRenderer.SetModel
+    local mt = getmetatable( renderer )
+    if mt == TextRenderer then
+        rendererType = "TextRenderer"
+        assetType = "Font"
+        assetSetterFunction = TextRenderer.SetFont
+    end
+    local lcRendererType = string.lcfirst( rendererType )
+
+    
+    
     --
-    local backRndr = modelRenderer
-    backRndr:SetModel( Bc:GetModel() )
-
+    local backRndr = renderer
+    assetSetterFunction( backRndr, Bc:GetAsset( assetType ) )
+    
     --
-    local frontRndr = gameObject.modelRenderers[2]
-    if frontRndr == nil then
-        frontRndr = modelRenderer.gameObject:CreateComponent("ModelRenderer")
-        gameObject.modelRenderer = backRndr
-        table.insert( gameObject.modelRenderers, frontRndr )
+    local gameObject = renderer.gameObject
+    local frontRndr = gameObject[ "front"..rendererType ]
+    if frontRndr == nil and Fc ~= nil then
+        frontRndr = gameObject:CreateComponent( rendererType )
+        gameObject[ lcRendererType ] = backRndr
+        gameObject[ "front"..rendererType ] = frontRndr
+
+        if rendererType == "TextRenderer" then
+            frontRndr:SetAlignement( renderer:GetAlignement() )
+        end
     end
 
-    frontRndr:SetModel( ColorGenerator.Config.modelsByColor[ Fc ] )
-    frontRndr:SetOpacity( Fo )
-
-    --
-    local modRndr = gameObject.modelRenderers[3] -- modifier (saturation/value) (white/black)
-    if Mc ~= nil then
-        if modRndr == nil then
-            modRndr = modelRenderer.gameObject:CreateComponent("ModelRenderer")
-            gameObject.modelRenderer = backRndr
-            table.insert( gameObject.modelRenderers, frontRndr )
+    if frontRndr ~= nil then
+        if Fc ~= nil then
+            assetSetterFunction( frontRndr, Fc:GetAsset( assetType ) ) 
         end
 
-        modRndr:SetModel( ColorGenerator.Config.modelsByColor[ Mc ] )
-        modRndr:SetOpacity( Mo )
-    elseif modRndr ~= nil then
-        modRndr:SetOpacity(0)
+        frontRndr:SetOpacity( Fo )
     end
 end
 
 
---[[
-function Color.Resolve( color )
-    local Bc = Color.New(0)
-    local Fc = Color.New(0)
-    local Fo = 1.0
+--------------------
 
-    local Ic = Color.New( color ) -- intermediate color (result of the front and back colors)
+Color.colorAssetsFolder = "Colors/" -- to be edited by the user if he wants another folder
+
+Color.modelsByColorName = {}
+Color.fontsByColorName = {}
+
+--- Get the asset (Model or Font) corresponding to the provided color
+-- Normally, the provided color can only be Red, Green, Blue, Magenta, Yellow, Cyan, Black or White.
+-- @param color (Color) The color object.
+-- @param assetType (string) The asset type ("Model" or "Font")
+-- @return (Model or Font) The asset, or nil.
+function Color.GetAsset( color, assetType )
+    local name = color:GetName()
+    local lcAssetType = string.lower( assetType )
+    local assetsByColorName = Color[ lcAssetType.."sByColorName" ]
+    local asset = assetsByColorName[ name ]
+
+    if asset == nil then
+        if not string.endswith( Color.colorAssetsFolder, "/" ) then -- let's be fool-proof
+            Color.colorAssetsFolder = Color.colorAssetsFolder.."/"
+        end
+
+        local path = Color.colorAssetsFolder..name
+        asset = CS.FindAsset( path, assetType )
         
-    local Mc = Color.New(0) -- modifier color
-    local Mo = 0 --  modifier opacity
+        if asset == nil then
+            path = Color.colorAssetsFolder..string.ucfirst(name) -- let's be a little more fool-proof
+            asset = CS.FindAsset( path, assetType )
+        end
 
-    local Rc = Color.New( color ) -- Result color
-    
-    local RComp = nil -- remarquable component ("r", "g", or "b", not a game object's component)
-    
+        if asset == nil then
+            print("Color.GetAsset(): Could not find asset of type '"..assetType.."' at path '"..path.."' for ", color)
+            return
+        end
 
-    local function getOpacity(Bc, Fc, Rc) -- args are of type numbers
-        return math.round( (Rc - Bc) / (Fc - Bc), 3 )
+        assetsByColorName[ name ] = asset
     end
 
-
-    local function GetModifierInfo( Rc, RComp, Ic, Mc, Mo)
-    
-        local mean = ((Rc.r + Rc.g + Rc.b - Rc[RComp]) / 2)
-        if Rc[RComp] == 255 then
-            Mc = Color.white
-        else
-            Mc = Color.black
-        end
-            
-        if 
-            (Rc[RComp] == 255 and mean > 127.5)
-            or
-            (Rc[RComp] == 0 and mean < 127.5)            
-        then
-            
-            
-            -- calculate Ic
-                -- calculate color that must be generated by the back and front models
-                local lowestCompValue = 256
-                for comp, value in pairs( Rc:ToRGB() ) do
-                    if comp ~= RComp and lowestCompValue > value then
-                        lowestCompValue = value
-                    end
-                end 
-                -- can't use math.min( Rc.r, Rc.g, Rc.b ) because don't work when Rc[RComp] == 0
-    
-                -- calculate offset of the component's values from the mean
-                local offsetFromMean = mean - lowestCompValue
-    
-                -- calculate offset of the component's values from the mean
-                -- by unit of mean from 255 or 0
-                local unitOffset = offsetFromMean / math.abs( Rc[RComp] - mean )
-                -- denominator is 
-                -- (255 - mean) when Rc[RComp] == 255
-                -- (mean)       when Rc[RComp] == 0               
-    
-                -- calculate new offset at mean = 128
-                local newOffset = unitOffset * 128
-    
-                -- calculate new component values at mean = 128
-                local newHighestCompValue = 128 + newOffset
-                local newLowestCompValue = 128 - newOffset
-                
-                -- adjust Ic with these new values
-                for comp, value in pairs( Ic:ToRGB() ) do
-                    if comp ~= RComp then
-                        if value > mean then
-                            Ic[comp] = newHighestCompValue
-                        else
-                            Ic[comp] = newLowestCompValue
-                        end
-                    end
-                end
-                  
-            -- calculate the color saturation
-            if Rc[RComp] == 255 then
-                local RcSat = Rc:GetSaturation()
-                local IcSat = Ic:GetSaturation()
-                if RcSat > IcSat then
-                    print("error, color system can't display this color", RcSat, IcSat)
-                end
-            else
-                local RcValue = Rc:GetValue()
-                local IcValue = Ic:GetValue()
-                if RcValue > IcValue then
-                    print("error, color system can't display this color", RcSat, IcSat)
-                end
-            end
-
-            local _Bc = Ic.r
-            local _Fc = Mc.r
-            local _Rc = Rc.r
-            if RComp == "r" then
-                _Bc = Ic.g
-                _Fc = Mc.g
-                _Rc = Rc.g
-            end
-            print( "Mo", _Bc, _Fc, _Rc )
-            Mo = getOpacity( _Bc, _Fc, _Rc )
-        else
-            print("error 2, color system can't display this color", mean, Rc)
-        end
-        
-        print("modifier info:", Ic, Mc, Mo)
-        return Ic, Mc, Mo
-    end
-
-
-    --
-    if Ic:AreTwoComponentsEqual() then
-        
-        RComp = Rc:GetLoneComponent()
-        Bc[RComp] = 255
-        Fc[RComp] = 0
-
-        -- need the modifier
-        --Ic, Mc, Mo = GetModifierInfo( Rc, RComp, Ic, Mc, Mo )
-
-        if RComp == "r" then
-            Bc.g = 0
-            Bc.b = 0
-            -- Red
-
-            Fc.g = 255
-            Fc.b = 255
-            -- Cyan
-
-            Fo = getOpacity(0, 255, Ic.g)
-        elseif RComp == "g" then
-            Bc.r = 0
-            Bc.b = 0
-            -- Green
-
-            Fc.r = 255
-            Fc.b = 255
-            -- Magenta
-
-            Fo = getOpacity(0, 255, Ic.r)
-        elseif RComp == "b" then
-            Bc.r = 0
-            Bc.g = 0
-            -- Blue
-
-            Fc.r = 255
-            Fc.g = 255
-            -- Yellow
-
-            Fo = getOpacity(0, 255, Ic.r)
-        end
-
-    else
-
-        RComp = Rc:GetFirstComponentEqualTo(0)
-        if RComp ~= nil then
-            Bc[RComp] = 0
-            Fc[RComp] = 0
-        else
-            RComp = Rc:GetFirstComponentEqualTo(255)
-            Bc[RComp] = 255
-            Fc[RComp] = 255
-        end
-
-
-        -- need the modifier
-        Ic, Mc, Mo = GetModifierInfo( Rc, RComp, Ic, Mc, Mo )
-        
-        if RComp == "r" then
-            Bc.g = 255
-            Bc.b = 0
-            -- Yellow (255) or Green (0)
-
-            Fc.g = 0
-            Fc.b = 255
-            -- Magenta or Blue
-
-            Fo = getOpacity(255, 0, Ic.g)
-
-        elseif RComp == "g" then
-            Bc.r = 255
-            Bc.b = 0
-            -- Yellow or Red
-
-            Fc.r = 0
-            Fc.b = 255
-            -- Cyan or Blue
-
-            Fo = getOpacity(255, 0, Ic.r)
-
-        elseif RComp == "b" then
-            Bc.r = 255
-            Bc.g = 0
-            -- Magenta or Red
-
-            Fc.r = 0
-            Fc.g = 255
-            -- Cyan or Green
-
-            Fo = getOpacity(255, 0, Ic.r)
-        end
-    
-    end 
-    
-    Bc = Bc:GetName()
-    Fc = Fc:GetName()
-    Mc = Mc:GetName()
-
-
-    print(Bc, Fc, Fo, Mc, Mo)
-
-    -- returns the names of the models to use, and the front opacity
-    return Bc, Fc, Fo, Mc, Mo
-end]]
-
-
-----------------------------------------------------------------------------------
--- Extension of the Color object for the color solver
-
---- Return the name of first component (in the r,g,b order) that has the provided value.
--- @param color (Color) The color.
--- @param value (number) The value to search in the color's components.
--- @return (string) The component name or nil.
-function Color.GetFirstComponentEqualTo(color, value) -- IsOneComponentEqualTo
-    for i, component in ipairs({"r", "g", "b"}) do
-        if value == color[ component ] then
-            return component
-        end
-    end
-    return nil
-end
-
---- Tell whether at least two components have the same value.
--- @param color (Color) The color.
--- @return (boolean) True if at least two components have the same value, or false.
-function Color.AreTwoComponentsEqual(color)
-    if color.r == color.g or color.r == color.b or color.g == color.b then
-        return true
-    end
-    return false
-end
-
---- Return the name of the component that has not the same value as the two others (which are equal).
--- @param color (Color) The color.
--- @return (string) The component's name.
-function Color.GetLoneComponent(color)
-    if color.r == color.g then
-        if color.r == color.b then
-            return nil
-        end
-        return "b"
-    elseif color.r == color.b then
-        return "g"
-    elseif color.g == color.b then
-        return "r"
-    end
-    return nil
-end
-
-function Color.GetOtherComp( comp )
-    if comp == "r" then
-        return "g"
-    end
-    return "r"
-end
-
-function Color.GetLowestComponent(color)
-    local value = 256
-    local name = nil
-    local comps = {"r", "g", "b"}
-    local array = color:ToArray()
-    for i=1, 3 do 
-        local val = array[i]
-        if val < value then
-            name = comps[i]
-            value = val
-        end
-    end
-    return value, name
-end
-
-function Color.GetHighestComponent(color)
-    local value = -1
-    local name = nil
-    local comps = {"r", "g", "b"}
-    local array = color:ToArray()
-    for i=1, 3 do 
-        local val = array[i]
-        if val > value then
-            name = comps[i]
-            value = val
-        end
-    end
-    return value, name
-end
-
-function Color.ToVector3( color )
-    return Vector3:New( color.r, color.g, color.b )
+    return asset
 end
