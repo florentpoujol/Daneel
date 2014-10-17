@@ -1149,7 +1149,7 @@ function Daneel.DefaultConfig()
     return config
 end
 Daneel.Config = Daneel.DefaultConfig()
-
+Daneel.Config.assetTypes = table.getkeys( Daneel.Config.assetObjects ) -- needed in the CraftStudio script before Daneel is loaded
 
 -- load Daneel at the start of the game
 function Daneel.Load()
@@ -1230,7 +1230,6 @@ function Daneel.Load()
 
     -- Enable nice printing + dynamic access of getters/setters on assets
     for assetType, assetObject in pairs( Daneel.Config.assetObjects ) do
-        table.insert( Daneel.Config.assetTypes, assetType )
         Daneel.Utilities.AllowDynamicGettersAndSetters( assetObject, { Asset } )
 
         assetObject["__tostring"] = function( asset )
