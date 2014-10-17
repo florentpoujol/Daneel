@@ -461,50 +461,58 @@ function Color.Resolve( Tc )
 
     if Fc ~= nil then
         Fo = getFrontOpacity( Bc, Fc, Tc )
-        local Ic = Color.New( ( Fc:ToVector3() - Bc:ToVector3() ) * Fo + Bc:ToVector3() )
+        -- actual color
+        local Ac = Color.New( ( Fc:ToVector3() - Bc:ToVector3() ) * Fo + Bc:ToVector3() )
         
-        if Ic ~= Tc then
+        if Ac ~= Tc then
             -- the Tc color can't be achieved with only two levels of color
             -- a thrid one is needed
             print("Color.Resolve(): Sorry, can't resolve ", Tc )
-            print("Color.Resolve(): Getting instead ", Ic )
+            print("Color.Resolve(): Getting instead ", Ac )
         end
     end
 
     return Bc, Fc, Fo
 end
 
---- Set the color of the provided model or text renderer.
+--------------------
+
+-- Set the color of the provided model or text renderer.
 -- @param renderer (ModelRenderer or TextRenderer) The renderer.
 -- @param r (number, Color or string) The color's red component, a color object, a color as hexadecimal string or a color name that can be found in the Color.colorsByName table.
 -- @param g (number) [optional] The color's green component.
 -- @param b (number) [optional] The color's blue component.
 local function setColor( renderer, r, g, b )
-    local rendererType = "ModelRenderer"
-    local assetType = "Model"
-    local assetSetterFunction = ModelRenderer.SetModel
+    local rendererType, assetType, assetSetterFunction, assetGetterFunction
     local mt = getmetatable( renderer )
-    if mt == TextRenderer then
+    if mt == ModelRenderer then
+        rendererType = "ModelRenderer"
+        assetType = "Model"
+        assetSetterFunction = ModelRenderer.SetModel
+        assetGetterFunction = ModelRenderer.GetModel
+    elseif mt == TextRenderer then
         rendererType = "TextRenderer"
         assetType = "Font"
         assetSetterFunction = TextRenderer.SetFont
+        assetGetterFunction = TextRenderer.GetFont
     end
-    local lcRendererType = string.lcfirst( rendererType )
 
-    --
     local color = Color.New( r, g, b )
     local Bc, Fc, Fo = color:Resolve()
     
-    --
-    local backRndr = renderer
-    assetSetterFunction( backRndr, Bc:GetAsset( assetType ) )
+    -- back
+    local newAsset = Bc:GetAsset( assetType )
+    local oldAsset = assetGetterFunction( renderer )
+    if oldAsset ~= newAsset then
+        assetSetterFunction( renderer, newAsset )
+    end
     
-    --
+    -- front
     local gameObject = renderer.gameObject
     local frontRndr = gameObject[ "front"..rendererType ]
     if frontRndr == nil and Fc ~= nil then
         frontRndr = gameObject:CreateComponent( rendererType )
-        gameObject[ lcRendererType ] = backRndr
+        gameObject[ string.lcfirst( rendererType ) ] = renderer
         gameObject[ "front"..rendererType ] = frontRndr
 
         if rendererType == "TextRenderer" then
@@ -514,10 +522,18 @@ local function setColor( renderer, r, g, b )
 
     if frontRndr ~= nil then
         if Fc ~= nil then
-            assetSetterFunction( frontRndr, Fc:GetAsset( assetType ) ) 
+            local newAsset = Fc:GetAsset( assetType )
+            local oldAsset = assetGetterFunction( frontRndr )
+            if oldAsset ~= newAsset then 
+                -- setting a new Font asset everytime the function was called make the test project actually lag
+                -- setting big Font asset seems very slow
+                assetSetterFunction( frontRndr, newAsset )
+            end
         end
-
-        frontRndr:SetOpacity( Fo )
+        
+        if Fo ~= frontRndr:GetOpacity() then
+            frontRndr:SetOpacity( Fo )
+        end
     end
 end
 
@@ -559,47 +575,71 @@ function TextRenderer.SetAlignment( textRenderer, alignment )
     end
 end
 
+--------------------
 
+-- Get the color of the provided model or text renderer.
+-- @param renderer (ModelRenderer or TextRenderer) The model or text renderer.
+-- @return Rc (Color) The result/rendered color (the one you see).
+-- @return Bc (Color) The back color.
+-- @return Fc (Color) The front color.
+-- @return Fo (number) The front opacity.
 local function getColor( renderer )
-    local rendererType = "ModelRenderer"
-    local assetType = "Model"
-    local assetSetterFunction = ModelRenderer.SetModel
+    local rendererType, assetGetterFunction
     local mt = getmetatable( renderer )
-    if mt == TextRenderer then
+    if mt == ModelRenderer then
+        rendererType = "ModelRenderer"
+        assetGetterFunction = ModelRenderer.GetModel
+    elseif mt == TextRenderer then
         rendererType = "TextRenderer"
-        assetType = "Font"
-        assetSetterFunction = TextRenderer.SetFont
+        assetGetterFunction = TextRenderer.GetFont
     end
-    local lcRendererType = string.lcfirst( rendererType )
+    
+    local Bc, Fc, Rc
+    local Fo = 0
 
+    -- back
+    local asset = assetGetterFunction( renderer )
+    if asset ~= nil then
+        Bc = Color[ asset:GetName() ]
+    end
     
-    
-    --
-    local backRndr = renderer
-    assetSetterFunction( backRndr, Bc:GetAsset( assetType ) )
-    
-    --
+    -- front
     local gameObject = renderer.gameObject
     local frontRndr = gameObject[ "front"..rendererType ]
-    if frontRndr == nil and Fc ~= nil then
-        frontRndr = gameObject:CreateComponent( rendererType )
-        gameObject[ lcRendererType ] = backRndr
-        gameObject[ "front"..rendererType ] = frontRndr
-
-        if rendererType == "TextRenderer" then
-            frontRndr:SetAlignement( renderer:GetAlignement() )
-        end
-    end
-
     if frontRndr ~= nil then
-        if Fc ~= nil then
-            assetSetterFunction( frontRndr, Fc:GetAsset( assetType ) ) 
+        local asset = assetGetterFunction( frontRndr ) 
+        if asset ~= nil then
+            Fc = Color[ asset:GetName() ]
         end
-
-        frontRndr:SetOpacity( Fo )
+        Fo = frontRndr:GetOpacity()
     end
+
+    if Bc ~= nil and Fc ~= nil then
+        Rc = Color.New( ( Fc:ToVector3() - Bc:ToVector3() ) * Fo + Bc:ToVector3() )
+    end
+
+    return Rc, Bc, Fc, Fo
 end
 
+--- Get the color of the provided model renderer.
+-- @param modelRenderer (ModelRenderer) The model renderer.
+-- @return Rc (Color) The result/renderer color (the one you see).
+-- @return Bc (Color) The back color.
+-- @return Fc (Color) The front color.
+-- @return Fo (number) The front opacity.
+function ModelRenderer.GetColor( modelRenderer )
+    return getColor( modelRenderer )
+end
+
+--- Get the color of the provided text renderer.
+-- @param textRenderer (textRenderer) The text renderer.
+-- @return Rc (Color) The result/renderer color (the one you see).
+-- @return Bc (Color) The back color.
+-- @return Fc (Color) The front color.
+-- @return Fo (number) The front opacity.
+function TextRenderer.GetColor( textRenderer )
+    return getColor( textRenderer )
+end
 
 --------------------
 
