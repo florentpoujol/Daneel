@@ -1,5 +1,5 @@
 -- GUI.lua
--- Module adding the GUI components and Vector2 object
+-- Module adding the GUI components
 --
 -- Last modified for v1.5.0
 -- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
@@ -860,6 +860,7 @@ function GUI.Input.New( gameObject, params )
 
     gameObject.input = input
     gameObject:AddTag( "guiComponent" )
+    gameObject:AddTag( "gui_input" )
 
     local backgroundGO = gameObject:GetChild( "Background" )
     if backgroundGO ~= nil then
@@ -868,26 +869,49 @@ function GUI.Input.New( gameObject, params )
             backgroundGO:AddTag( "guiComponent" )
         end
     end
-    
-    input.OnLeftMouseButtonJustPressed = function()
-        local focus = gameObject.isMouseOver -- click on the text
-        if focus ~= true and input.focusOnBackgroundClick and input.backgroundGO ~= nil then
-            focus = input.backgroundGO.isMouseOver
-        end
-        if focus == nil then
-            focus = false
-        end
-        input:Focus( focus )
-    end
-    Daneel.Event.Listen( "OnLeftMouseButtonJustPressed", input )
 
-    input.OnValidateInputButtonJustPressed = function()
-        if input.isFocused then
-            Daneel.Event.Fire( input, "OnValidate", input )
+    return input
+end
+
+GUI.Input.Module = {}
+Daneel.modules.GUIInput = GUI.Input.Module
+-- the module object can't be GUI.Input because it already has an Update() function
+
+-- Called from [Daneel/Update] every frames
+function GUI.Input.Module.Update() 
+    if CS.Input.WasButtonJustReleased( "LeftMouse" ) then
+        local inputGOs = GameObject.GetWithTag( "gui_input" )
+        local inputToFocus = nil
+
+        for i, inputGO in pairs( inputGOs ) do
+            local input = inputGO.input
+
+            local isMouseOver = inputGO.isMouseOver -- click on the text
+            if isMouseOver ~= true and input.focusOnBackgroundClick and input.backgroundGO ~= nil then
+                isMouseOver = input.backgroundGO.isMouseOver -- click on the background
+            end
+            if isMouseOver == true then
+                inputToFocus = input
+            else
+                input:Focus(false)
+            end
+        end
+
+        if inputToFocus ~= nil then
+            inputToFocus:Focus(true)
         end
     end
-    Daneel.Event.Listen( "OnValidateInputButtonJustPressed", input )
-    return input
+
+    if CS.Input.WasButtonJustReleased( "ValidateInput" ) then
+        local inputGOs = GameObject.GetWithTag( "gui_input" )
+        for i, inputGO in pairs( inputGOs ) do
+            local input = inputGO.input
+            if input.isFocused then
+                Daneel.Event.Fire( input, "OnValidate", input )
+                break
+            end
+        end
+    end
 end
 
 --- Set the focused state of the input.
@@ -943,9 +967,6 @@ end
 -- @param text (string) The text (often just one character) to add to the current text.
 -- @param replaceText (boolean) [default=false] Tell whether the provided text should be added (false) or replace (true) the current text.
 function GUI.Input.Update( input, text, replaceText )
-    --if not type( input ) == "table" or not input.isFocused then  -- 10/06/2014 : when would input not be a table ?
-        --return
-    --end
     local oldText = input.gameObject.textRenderer:GetText()
     if not replaceText then -- nil or false
         text = oldText .. text
