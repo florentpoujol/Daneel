@@ -1,0 +1,6 @@
+How to minify Daneel's files:
+
+- Install Node Js
+- Install Luamin ( https://github.com/mathiasbynens/luamin )
+- Copy/paste "minify_daneel.js" in the same folder as Luamin, or another one if Luamin is installed globally.    
+- Launch a Node Js cmd prompt, nagivate to the where "minify_daneel.js" is then run it with "node minify_daneel"
