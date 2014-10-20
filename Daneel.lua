@@ -141,24 +141,6 @@ end
 
 Daneel.Utilities = {}
 
---- Make sure that the case of the provided string is correct by checking it against the values in the provided set.
--- @param s (string) The string to check the case of.
--- @param set (string or table) A single value or a table of values to check the string against.
--- @return (string) The string with the corrected case.
-function Daneel.Utilities.CaseProof( s, set )
-    if type( set ) == "string" then
-        set = { set }
-    end
-    local ls = s:lower()
-    for i, item in pairs( set ) do
-        if ls == item:lower() then
-            s = item
-            break
-        end
-    end
-    return s
-end
-
 --- Replace placeholders in the provided string with their corresponding provided replacements.
 -- The placeholders are any piece of string prefixed by a semicolon.
 -- @param string (string) The string.
@@ -338,6 +320,7 @@ Daneel.Debug.functionArgumentsInfo = {
         { "delimiterIsPattern", b, defaultValue = false },
     },
     ["string.reverse"] = { _s },
+    ["string.fixcase"] = { _s, { "set", { s, t } } },
 
     ["table.print"] = {}, -- just for the stacktrace
     ["table.merge"] = {},
@@ -368,7 +351,6 @@ Daneel.Debug.functionArgumentsInfo = {
         { "orderBy", s, isOptional = true },
     },
 
-    ["Daneel.Utilities.CaseProof"] = { { "name", s }, { "set", { s, t } } },
     ["Daneel.Utilities.ReplaceInString"] = { { "string", s }, { "replacements", t } },
     ["Daneel.Utilities.ButtonExists"] = { { "buttonName", s } }
 }

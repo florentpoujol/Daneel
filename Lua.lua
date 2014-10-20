@@ -252,6 +252,22 @@ function string.reverse( s )
     return ns
 end
 
+--- Make sure that the case of the provided string is correct by checking it against the values in the provided set.
+-- @param s (string) The string to check the case of.
+-- @param set (string or table) A single value or a table of values to check the string against.
+-- @return (string) The string with the corrected case.
+function string.fixcase( s, set )
+    if type( set ) == "string" then
+        set = { set }
+    end
+    local ls = s:lower()
+    for i=1, #set do
+        local item = set[i]
+        if ls == item:lower() then
+            return item
+        end
+    end
+end
 
 ----------------------------------------------------------------------------------
 -- table
