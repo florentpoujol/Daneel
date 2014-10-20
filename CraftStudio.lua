@@ -1568,47 +1568,52 @@ function GameObject.BroadcastMessage(gameObject, functionName, data)
     end
 end
 
---- Display or hide the game object. Act on the renderer's opacity or the transform's local scale.
--- Sets the "isDisplayed" property to true on the game object.
+--- Display or hide the game object. Act on the renderer's opacity or the transform's local position.
+-- Sets the "isDisplayed" property to true or false and fire the "OnDisplay" event on the game object.
 -- @param gameObject (GameObject) The game object.
--- @param value (boolean, number or Vector3) [default=true] Tell whether to display or hide the game object (as a boolean), or the opacity (as a number) or the local scale (as a Vector3).
--- @param forceUseLocalScale (boolean) [default=false] Tell whether to force to use the local scale (true) even on a game object that has a renderer component, or not.
-function GameObject.Display( gameObject, value, forceUseLocalScale )
+-- @param value (boolean, number or Vector3) [default=true] Tell whether to display or hide the game object (as a boolean), or the opacity (as a number) or the local position (as a Vector3).
+-- @param forceUseLocalPosition (boolean) [default=false] Tell whether to force to axt on the game object's local position even when it possess a renderer.
+function GameObject.Display( gameObject, value, forceUseLocalPosition )
     local display = false
-    if value ~= false and value ~= 0 and value ~= Vector3:New(0,0,0) then -- true or non 0 value
+    if value ~= false and value ~= 0 then -- nil, true or non 0 value
         display = true
     end
 
     local valueType = type(value)
     if valueType == "boolean" then
         value = nil
+    elseif valueType == "number" and forceUseLocalPosition == true then
+        value = Vector3:New(value)
+        valueType = "table"
     end  
 
+    --
     local renderer = gameObject.textRenderer or gameObject.modelRenderer or gameObject.mapRenderer
-
-    if valueType ~= "table" and not forceUseLocalScale and renderer ~= nil then
-        if not display and renderer.displayOpacity == nil then
-            renderer.displayOpacity = renderer:GetOpacity()
+    
+    if renderer ~= nil and forceUseLocalPosition ~= true and valueType == "number" then
+        if not display and gameObject.displayOpacity == nil then
+            gameObject.displayOpacity = renderer:GetOpacity()
         end
         if display then
-            value = value or renderer.displayOpacity or 1
+            value = value or gameObject.displayOpacity or 1
         else
             value = value or 0
         end
         renderer:SetOpacity( value )
     else
-        if not display and gameObject.transform.displayLocalScale == nil then
-            gameObject.transform.displayLocalScale = gameObject.transform:GetLocalScale()
+        if not display and gameObject.displayLocalPosition == nil then
+            gameObject.displayLocalPosition = gameObject.transform:GetLocalPosition()
         end
         if display then
-            value = value or gameObject.transform.displayLocalScale or Vector3:New(1)
+            value = value or gameObject.displayLocalPosition or Vector3:New(1)
         else
-            value = value or Vector3:New(0,0,0)
+            value = value or Vector3:New(0,0,999)
         end
-        gameObject.transform:SetLocalScale( value )
+        gameObject.transform:SetLocalPosition( value )
     end
 
     gameObject.isDisplayed = display 
+    Daneel.Event.Fire( gameObject, "OnDisplay", gameObject )
 end
 
 

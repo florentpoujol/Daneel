@@ -141,6 +141,9 @@ end
 
 Daneel.Utilities = {}
 
+-- Deprecated since v1.5.0
+Daneel.Utilities.CaseProof = string.fixcase
+
 --- Replace placeholders in the provided string with their corresponding provided replacements.
 -- The placeholders are any piece of string prefixed by a semicolon.
 -- @param string (string) The string.
