@@ -33,7 +33,7 @@ Asset = {}
 Asset.__index = Asset
 setmetatable( Asset, { __call = function(Object, ...) return Object.Get(...) end } )
 
-local assetPathTypes = table.merge( "string", Daneel.Config.assetTypes ) -- Allow the assetPath argument to be an asset or the asset path (string)
+local assetPathTypes = table.merge( { "string" }, Daneel.Config.assetTypes ) -- Allow the assetPath argument to be an asset or the asset path (string)
 --- Alias of CraftStudio.FindAsset( assetPath[, assetType] ).
 -- Get the asset of the specified name and type.
 -- The first argument may be an asset object, so that you can check if a variable was an asset object or name (and get the corresponding object).
