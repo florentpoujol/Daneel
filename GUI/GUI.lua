@@ -1460,7 +1460,7 @@ function GUI.DefaultConfig()
             hud = {"position", "localPosition", "layer", "localLayer"},
             progressBar = {"value", "height"},
             slider = {"value"},
-            textArea = {"areaWidth", "lineHeight", "opacity"},
+            textArea = {"text", "areaWidth", "lineHeight", "opacity"},
         }
     }
 

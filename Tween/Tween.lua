@@ -503,19 +503,17 @@ end
 Tween.Config = Tween.DefaultConfig()
 
 function Tween.Awake()
-    if Tween.Config.componentNamesByProperty == nil then
-        -- In Awake() to let other modules update Tween.Config.componentNamesByProperty from their Load() function
-        -- Actually this should be done automatically (without things to set up in the config) by looking up the functions on the components' objects
-        local t = {}
-        for compName, properties in pairs( Tween.Config.propertiesByComponentName ) do
-            for i=1, #properties do
-                local property = properties[i]
-                t[ property ] = t[ property ] or {}
-                table.insert( t[ property ], compName )
-            end
+    -- In Awake() to let other modules update Tween.Config.propertiesByComponentName from their Load() function
+    -- Actually this should be done automatically (without things to set up in the config) by looking up the functions on the components' objects
+    local t = {}
+    for compName, properties in pairs( Tween.Config.propertiesByComponentName ) do
+        for i=1, #properties do
+            local property = properties[i]
+            t[ property ] = t[ property ] or {}
+            table.insert( t[ property ], compName )
         end
-        Tween.Config.componentNamesByProperty = t
     end
+    Tween.Config.componentNamesByProperty = t
 
     -- destroy and sanitize the tweeners when the scene loads
     for id, tweener in pairs( Tween.Tweener.tweeners ) do
@@ -630,13 +628,15 @@ end -- end Tween.Update
 local function resolveTarget( gameObject, property )
     local component = nil
     if 
-        Daneel.modules.GUI ~= nil and gameObject.hud ~= nil and
-        property == "position" or property == "localPosition"
+        (property == "position" or property == "localPosition") and -- let the parenthesis at the beginning of the condition, or they will be removed by Luamin !
+        GUI ~= nil and GUI.Hud ~= nil and gameObject.hud ~= nil
         -- 02/06/2014 - This is bad, this code should be handled by the GUI module itself
         -- but I have no idea how to properly set that up easily
         -- Plus I really should test the type of the endValue instead (in case it's a Vector3 for instance beacuse the user whants to work on the transform and not the hud)
     then
         component = gameObject.hud
+    elseif property == "text" and GUI ~= nil and GUI.TextArea ~= nil and gameObject.textArea ~= nil then
+        component = gameObject.textArea
     else
         local compNames = Tween.Config.componentNamesByProperty[ property ]
         if compNames ~= nil then
