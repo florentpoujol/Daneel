@@ -384,7 +384,9 @@ end
 -- or
 -- one comp = 0, other comp = 255, on
 -- or
--- a plain color (R, g, b, c, m, y, black, w) with saturation or value diminished
+-- a plain color (R, g, b, c, m, y, w) with saturation or value diminished
+-- or
+-- one comp = 255 or 0
 
 
 -- circle : one comp = 0, other are equidistant
@@ -681,4 +683,83 @@ function Color.GetAsset( color, assetType )
     end
 
     return asset
+end
+
+----------------------------------------------------------------------------------
+
+Color.Pattern = {
+    DesaturedPlainColor = 1,
+    DeValuedPlainColor = 2,
+    Any0255 = 3, -- one comp = 0, other comp = 255, other comp may have any value
+
+    -- These names are dumb... (FIXME)
+    ["21128"] = 4, -- Two components are equal and the third one is apart and equidistant from 128 (their mean is 128 ((max + min)/2 = 128)) : ie : (153, 102, 153) (51, 51, 204)
+    ["0128"] = 5, -- One of the component is equal to 0 or 255 and the two others are apart and equidistant from 128 (their mean is 128 ((max + min)/2 = 128))   ie : (255, 50, 200) (128, 0, 128) (170, 85,
+}
+
+Color.PatternsById = {}
+for name, id in pairs( Color.Pattern ) do
+    Color.PatternsById[ id ] = name
+end
+
+--- Returns a random color, optional of the provided pattern.
+-- @param (number or Color.Patterns) [optional] The color pattern.
+-- @return (Color) The color.
+function Color.GetRandom( pattern )
+    -- sekect pattern
+    pattern = pattern or math.random( #Color.PatternsById )
+    
+    local plainColors = table.copy( Color.colorsByName )
+    plainColors.grey = nil
+    plainColors.gray = nil
+    plainColors.black = nil    
+    plainColors = table.getvalues( plainColors )
+    -- plainColors contains r, g, b, y, c, m, w
+    
+    local color = Color.New(0)
+    if pattern == 1 then
+        -- desat plain color
+        local baseColor = Color.New( plainColors[ math.random( #plainColors ) ] )
+        color = baseColor + Color.New( math.random( 0, 255 )  ) -- this move the components which where at 0 closer to 255
+
+    elseif pattern == 2 then
+        -- devalue plain color
+        local baseColor = Color.New( plainColors[ math.random( #plainColors ) ] )
+        color = baseColor - Color.New( math.random( 0, 255 ) ) -- this move the components which where at 0 closer to 255
+    
+    elseif pattern == 3 then
+        -- 0, 255, any | 0, any, 255 | 255, 0, any | 255, any, 0 | any, 0, 255 | any, 255, 0
+        local values = { 0, 255, math.random( 0, 255 ) }
+        for i=1, 3 do
+            color[i] = table.remove( values, math.random( #values ) )
+        end
+    
+    elseif pattern == 4 then  
+        -- Two components are equal and the third one is apart and equidistant from 128 (their mean is 128 ((max + min)/2 = 128)) : ie : (153, 102, 153) (51, 51, 204)
+        local min = math.random(0, 128)
+        local max = 255 - min
+        local other = min
+        if math.random(2) == 1 then
+            other = max
+        end
+        local values = { min, max, other }
+        for i=1, 3 do
+            color[i] = table.remove( values, math.random( #values ) )
+        end
+    
+    elseif pattern == 5 then
+        -- One of the component is equal to 0 or 255 and the two others are apart and equidistant from 128 (their mean is 128 ((max + min)/2 = 128))   ie : (255, 50, 200) (128, 0, 128) (170, 85,
+        local min = math.random(0, 128)
+        local max = 255 - min
+        local other = 0
+        if math.random(2) == 1 then
+            other = 255
+        end
+        local values = { min, max, other }
+        for i=1, 3 do
+            color[i] = table.remove( values, math.random( #values ) )
+        end
+    end
+    
+    return color
 end
