@@ -814,7 +814,7 @@ end
 -- Event
 
 Daneel.Event = {
-    events = {}, -- emptied when a new scene is loaded in CraftStudio.LoadScene()
+    events = {}, -- listeners by events - emptied when a new scene is loaded in CraftStudio.LoadScene()
     persistentEvents = {}, -- not emptied
 }
 
@@ -952,26 +952,19 @@ function Daneel.Event.Fire( object, eventName, ... )
                 listenerIsAlive = false
             end
             if listenerIsAlive then -- ensure that the event is not fired on a dead game object or component
-                local message = eventName
-
                 -- look for the value of the EventName property on the object
-                local funcOrMessage = rawget( listener, eventName )
+                local func = rawget( listener, eventName )
                 -- Using rawget() prevent a 'Behavior function' to be called as a regular function when the listener is a ScriptedBehavior
                 -- because the function exists on the Script object and not on the ScriptedBehavior (the listener),
                 -- in which case rawget() returns nil
 
-                local _type = type( funcOrMessage )
-                if _type == "function" or _type == "userdata" then
-                    if funcOrMessage( unpack( arg ) ) == false then
-                        table.insert( listenersToBeRemoved, listener )
-                    end
-                elseif _type == "string" then
-                    message = funcOrMessage
+                if func ~= nil and func( unpack( arg ) ) == false then
+                    table.insert( listenersToBeRemoved, listener )
                 end
 
-                -- always try to send the message, even when funcOrMessage was a function
+                -- always try to send the message, even when func was a function
                 if mt == GameObject then
-                    listener:SendMessage( message, arg )
+                    listener:SendMessage( eventName, arg )
                 end
             end
         end
