@@ -31,7 +31,7 @@ function Color.__index( color, key )
         key = comps[key]
     end
 
-    if key == "r" or key == "g" or key == "b" then
+    if key == "r" or key == "g" or key == "b" or key == "a" then
         return color[ "_"..key ]
     end
 
@@ -46,13 +46,15 @@ function Color.__newindex( color, key, value )
 
     if key == "r" or key == "g" or key == "b" then
         color["_"..key] = math.round( math.clamp( tonumber( value ), 0, 255 ) )
+    elseif key == "a" then
+        color["_a"] = math.clamp( tonumber( value ), 0, 1 )
     else
         rawset( color, key, value )
     end
 end
 
 function Color.__tostring(color)
-    local s = "Color: { r="..color._r..", g="..color._g..", b="..color._b..", hex="..color:GetHex()
+    local s = "Color: { r="..color._r..", g="..color._g..", b="..color._b..", a="..color._a.." hex="..color:GetHex()
     local name = color:GetName()
     if name ~= nil then
         s = s..", name='"..name.."'"
@@ -64,8 +66,9 @@ end
 -- @param r (number, Color, table, Vector3 or string) The color's red component or a table with r,g,b / x,y,z / 1,2,3 components, or a color name or an hexadecimal color.
 -- @param g (number) [optional] The color's green component.
 -- @param b (number) [optional] The color's blue component.
+-- @param a (number) [optional] The color's alpha component (between 0 and 1).
 -- @return (Color) The color object.
-function Color.New(r, g, b)
+function Color.New(r, g, b, a)
     local color = setmetatable({}, Color)
 
     if type( r ) == "string" and g == nil then
@@ -81,14 +84,16 @@ function Color.New(r, g, b)
             if r.r ~= nil then -- Color style
                 g = r.g
                 b = r.b
+                a = r.a
                 r = r.r
             elseif r.x ~= nil then -- Vector3 style
                 g = r.y
                 b = r.z
                 r = r.x
-            elseif #r == 3 then -- array style
+            elseif #r == 3 or #r == 4 then -- array style
                 g = r[2]
                 b = r[3]
+                a = r[4]
                 r = r[1]
             end
         end
@@ -96,6 +101,8 @@ function Color.New(r, g, b)
         color.g = g or color._r
         color.b = b or color._g
     end
+
+    color.a = a or 1
 
     return color
 end
@@ -142,15 +149,20 @@ end
 -- @param color (Color) The color object.
 -- @return (table) The color as array.
 function Color.ToArray( color )
-    return { color._r, color._g, color._b }
+    return { color._r, color._g, color._b, color._a }
 end
 
 --- Convert the provided color object to a table with "r", "g", "b" keys.
 -- Allow to loop on the color's components.
 -- @param color (Color) The color object.
+-- @param includeAlpha (boolean) [default=false] Tell whether to include the color's alpha component in the returned table.
 -- @return (table) The color as table with "r", "g", "b" keys.
-function Color.ToRGB( color )
-    return { r = color._r, g = color._g, b = color._b }
+function Color.ToRGB( color, includeAlpha )
+    local t = { r = color._r, g = color._g, b = color._b }
+    if includeAlpha == true then
+        t.a = color._a
+    end
+    return t
 end
 
 --- Convert the provided color object to a Vector3.
@@ -484,7 +496,8 @@ end
 -- @param r (number, Color or string) The color's red component, a color object, a color as hexadecimal string or a color name that can be found in the Color.colorsByName table.
 -- @param g (number) [optional] The color's green component.
 -- @param b (number) [optional] The color's blue component.
-local function setColor( renderer, r, g, b )
+-- @param a (number) [optional] The color's alpha component.
+local function setColor( renderer, r, g, b, a )
     local rendererType, assetType, assetSetterFunction, assetGetterFunction
     local mt = getmetatable( renderer )
     if mt == ModelRenderer then
@@ -499,8 +512,19 @@ local function setColor( renderer, r, g, b )
         assetGetterFunction = TextRenderer.GetFont
     end
 
-    local color = Color.New( r, g, b )
+    local color = Color.New( r, g, b, a )
     local Bc, Fc, Fo = color:Resolve()
+
+    local gameObject = renderer.gameObject
+    local frontRndr = gameObject[ "front"..rendererType ]
+
+    if color.a == 0 then
+        renderer:SetOpacity( 0 )
+        if frontRndr ~= nil then
+            frontRndr:SetOpacity( 0 )
+        end
+        return
+    end
     
     -- back
     local newAsset = Bc:GetAsset( assetType )
@@ -508,10 +532,9 @@ local function setColor( renderer, r, g, b )
     if oldAsset ~= newAsset then
         assetSetterFunction( renderer, newAsset )
     end
+    renderer:SetOpacity( color.a )
     
     -- front
-    local gameObject = renderer.gameObject
-    local frontRndr = gameObject[ "front"..rendererType ]
     if frontRndr == nil and Fc ~= nil then
         frontRndr = gameObject:CreateComponent( rendererType )
         gameObject[ string.lcfirst( rendererType ) ] = renderer
@@ -534,7 +557,7 @@ local function setColor( renderer, r, g, b )
         end
         
         if Fo ~= frontRndr:GetOpacity() then
-            frontRndr:SetOpacity( Fo )
+            frontRndr:SetOpacity( Fo * color.a )
         end
     end
 end
@@ -544,8 +567,8 @@ end
 -- @param r (number, Color or string) The color's red component, a color object, a color as hexadecimal string or a color name that can be found in the Color.colorsByName table.
 -- @param g (number) [optional] The color's green component.
 -- @param b (number) [optional] The color's blue component.
-function ModelRenderer.SetColor( modelRenderer, r, g, b )
-    setColor( modelRenderer, r, g, b )
+function ModelRenderer.SetColor( modelRenderer, r, g, b, a )
+    setColor( modelRenderer, r, g, b, a )
 end
 
 --- Set the color of the provided text renderer.
@@ -553,8 +576,8 @@ end
 -- @param r (number, Color or string) The color's red component, a color object, a color as hexadecimal string or a color name that can be found in the Color.colorsByName table.
 -- @param g (number) [optional] The color's green component.
 -- @param b (number) [optional] The color's blue component.
-function TextRenderer.SetColor( textRenderer, r, g, b )
-    setColor( textRenderer, r, g, b )
+function TextRenderer.SetColor( textRenderer, r, g, b, a )
+    setColor( textRenderer, r, g, b, a )
 end
 
 local oSetText = TextRenderer.SetText
@@ -598,6 +621,7 @@ local function getColor( renderer )
     
     local Bc, Fc, Rc
     local Fo = 0
+    local a = renderer:GetOpacity()
 
     -- back
     local asset = assetGetterFunction( renderer )
@@ -613,11 +637,16 @@ local function getColor( renderer )
         if asset ~= nil then
             Fc = Color[ asset:GetName() ]
         end
-        Fo = frontRndr:GetOpacity()
+        Fo = frontRndr:GetOpacity() / a        
     end
 
-    if Bc ~= nil and Fc ~= nil then
-        Rc = Color.New( ( Fc:ToVector3() - Bc:ToVector3() ) * Fo + Bc:ToVector3() )
+    if Bc ~= nil then
+        if Fc ~= nil then
+            Rc = Color.New( ( Fc:ToVector3() - Bc:ToVector3() ) * Fo + Bc:ToVector3() )
+        else
+            Rc = Bc
+        end
+        Rc.a = a
     end
 
     return Rc, Bc, Fc, Fo
