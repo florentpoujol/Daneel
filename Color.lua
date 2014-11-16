@@ -583,14 +583,12 @@ function TextRenderer.SetAlignment( textRenderer, alignment )
     end
 end
 
---------------------
+----------------------------------------------------------------------------------
+-- get color
 
 -- Get the color of the provided model or text renderer.
 -- @param renderer (ModelRenderer or TextRenderer) The model or text renderer.
 -- @return Rc (Color) The result/rendered color (the one you see).
--- @return Bc (Color) The back color.
--- @return Fc (Color) The front color.
--- @return Fo (number) The front opacity.
 local function getColor( renderer )
     local rendererType, assetGetterFunction
     local mt = getmetatable( renderer )
@@ -601,26 +599,27 @@ local function getColor( renderer )
         rendererType = "TextRenderer"
         assetGetterFunction = TextRenderer.GetFont
     end
-    
+
     local Bc, Fc, Rc
     local Fo = 0
-    local a = renderer:GetOpacity()
+    local a = 1
 
     -- back
     local asset = assetGetterFunction( renderer )
     if asset ~= nil then
         Bc = Color[ asset:GetName() ]
+        a = renderer:GetOpacity()
     end
-    
+
     -- front
     local gameObject = renderer.gameObject
     local frontRndr = gameObject[ "front"..rendererType ]
-    if frontRndr ~= nil then
-        local asset = assetGetterFunction( frontRndr ) 
+    if frontRndr ~= nil and Bc ~= nil then
+        local asset = assetGetterFunction( frontRndr )
         if asset ~= nil then
             Fc = Color[ asset:GetName() ]
         end
-        Fo = frontRndr:GetOpacity() / a        
+        Fo = frontRndr:GetOpacity() / a
     end
 
     if Bc ~= nil then
@@ -632,15 +631,12 @@ local function getColor( renderer )
         Rc.a = a
     end
 
-    return Rc, Bc, Fc, Fo
+    return Rc
 end
 
 --- Get the color of the provided model renderer.
 -- @param modelRenderer (ModelRenderer) The model renderer.
 -- @return Rc (Color) The result/renderer color (the one you see).
--- @return Bc (Color) The back color.
--- @return Fc (Color) The front color.
--- @return Fo (number) The front opacity.
 function ModelRenderer.GetColor( modelRenderer )
     return getColor( modelRenderer )
 end
@@ -648,9 +644,6 @@ end
 --- Get the color of the provided text renderer.
 -- @param textRenderer (textRenderer) The text renderer.
 -- @return Rc (Color) The result/renderer color (the one you see).
--- @return Bc (Color) The back color.
--- @return Fc (Color) The front color.
--- @return Fo (number) The front opacity.
 function TextRenderer.GetColor( textRenderer )
     return getColor( textRenderer )
 end
