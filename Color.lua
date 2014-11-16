@@ -476,15 +476,13 @@ function Color.Resolve( Tc )
     return Bc, Fc, Fo, Rc
 end
 
---------------------
+----------------------------------------------------------------------------------
+-- set color
 
 -- Set the color of the provided model or text renderer.
 -- @param renderer (ModelRenderer or TextRenderer) The renderer.
--- @param r (number, Color or string) The color's red component, a color object, a color as hexadecimal string or a color name that can be found in the Color.colorsByName table.
--- @param g (number) [optional] The color's green component.
--- @param b (number) [optional] The color's blue component.
--- @param a (number) [optional] The color's alpha component.
-local function setColor( renderer, r, g, b, a )
+-- @param color (Color) The color instance.
+local function setColor( renderer, color )
     local rendererType, assetType, assetSetterFunction, assetGetterFunction
     local mt = getmetatable( renderer )
     if mt == ModelRenderer then
@@ -499,33 +497,23 @@ local function setColor( renderer, r, g, b, a )
         assetGetterFunction = TextRenderer.GetFont
     end
 
-    local color = Color.New( r, g, b, a )
     local Bc, Fc, Fo = color:Resolve()
 
     local gameObject = renderer.gameObject
-    local frontRndr = gameObject[ "front"..rendererType ]
+    local frontRndr = gameObject.frontColorRenderer
 
-    if color.a == 0 then
-        renderer:SetOpacity( 0 )
-        if frontRndr ~= nil then
-            frontRndr:SetOpacity( 0 )
-        end
-        return
-    end
-    
     -- back
     local newAsset = Bc:GetAsset( assetType )
     local oldAsset = assetGetterFunction( renderer )
     if oldAsset ~= newAsset then
         assetSetterFunction( renderer, newAsset )
     end
-    renderer:SetOpacity( color.a )
-    
+
     -- front
     if frontRndr == nil and Fc ~= nil then
         frontRndr = gameObject:CreateComponent( rendererType )
         gameObject[ string.lcfirst( rendererType ) ] = renderer
-        gameObject[ "front"..rendererType ] = frontRndr
+        gameObject.frontColorRenderer = frontRndr
 
         if rendererType == "TextRenderer" then
             frontRndr:SetAlignment( renderer:GetAlignment() )
@@ -542,11 +530,11 @@ local function setColor( renderer, r, g, b, a )
                 assetSetterFunction( frontRndr, newAsset )
             end
         end
-        
-        if Fo ~= frontRndr:GetOpacity() then
-            frontRndr:SetOpacity( Fo * color.a )
-        end
+
+        frontRndr:SetOpacity( Fo )
     end
+
+    renderer:SetOpacity( color._a )
 end
 
 --- Set the color of the provided model renderer.
@@ -566,8 +554,8 @@ end
 local oSetText = TextRenderer.SetText
 function TextRenderer.SetText( textRenderer, text )
     oSetText( textRenderer, text )
-    
-    local frontRndr = textRenderer.gameObject.frontTextRenderer
+
+    local frontRndr = textRenderer.gameObject.frontColorRenderer
     if frontRndr ~= nil then
         oSetText( frontRndr, text )
     end
@@ -576,8 +564,8 @@ end
 local oSetAlignment = TextRenderer.SetAlignment
 function TextRenderer.SetAlignment( textRenderer, alignment )
     oSetAlignment( textRenderer, alignment )
-    
-    local frontRndr = textRenderer.gameObject.frontTextRenderer
+
+    local frontRndr = textRenderer.gameObject.frontColorRenderer
     if frontRndr ~= nil then
         oSetAlignment( frontRndr, alignment )
     end
