@@ -11,10 +11,9 @@ ColorMT = {
 
     __index = function( object, key )
         -- allow to get new Color instance from colors in the Color.colorsByname table by writing "Color.blue", "Color.red", ...
-        for name, colorArray in pairs( Color.colorsByName ) do
-            if key == name then
-                return Color.New( colorArray )
-            end
+        local colorArray = Color.colorsByName[ key:lower() ]
+        if colorArray ~= nil then
+            return Color.New( colorArray )
         end
     end
 }
@@ -22,30 +21,17 @@ ColorMT = {
 setmetatable(Color, ColorMT)
 
 function Color.__index( color, key )
-    if Color[ key ] ~= nil then
-        return Color[ key ]
-    end
-
-    if key == 1 or key == 2 or key == 3 then
-        local comps = {"r", "g", "b"}
-        key = comps[key]
-    end
-
-    if key == "r" or key == "g" or key == "b" or key == "a" then
-        return color[ "_"..key ]
-    end
-
-    return rawget( color, key )
+    local comps = {"r", "g", "b", "a"}
+    key = comps[key] or key -- if key was == 1, 2, 3 or 4; key is now r, g, b, or a
+    return Color[ key ] or color[ "_"..key ] or rawget( color, key )
 end
 
 function Color.__newindex( color, key, value )
-    if key == 1 or key == 2 or key == 3 then
-        local comps = {"r", "g", "b"}
-        key = comps[key]
-    end
+    local comps = {"r", "g", "b", "a"}
+    key = comps[key] or key -- if key was == 1, 2, 3 or 4; key is now r, g, b, or a
 
     if key == "r" or key == "g" or key == "b" then
-        color["_"..key] = math.round( math.clamp( tonumber( value ), 0, 255 ) )
+        color["_"..key] = math.round( math.clamp( tonumber( value ), 0, 255 ), 0 )
     elseif key == "a" then
         color["_a"] = math.clamp( tonumber( value ), 0, 1 )
     else
@@ -54,7 +40,7 @@ function Color.__newindex( color, key, value )
 end
 
 function Color.__tostring(color)
-    local s = "Color: { r="..color._r..", g="..color._g..", b="..color._b..", a="..color._a.." hex="..color:GetHex()
+    local s = "Color: { r="..color._r..", g="..color._g..", b="..color._b..", a="..color._a..", hex="..color:GetHex()
     local name = color:GetName()
     if name ~= nil then
         s = s..", name='"..name.."'"
@@ -147,9 +133,14 @@ end
 --- Convert the provided color object to an array.
 -- Allow to loop on the color's components in order.
 -- @param color (Color) The color object.
+-- @param includeAlpha (boolean) [default=false] Tell whether to include the color's alpha component in the returned table.
 -- @return (table) The color as array.
-function Color.ToArray( color )
-    return { color._r, color._g, color._b, color._a }
+function Color.ToArray( color, includeAlpha )
+    local t = { color._r, color._g, color._b }
+    if includeAlpha == true then
+        table.insert( t, color._a )
+    end
+    return t
 end
 
 --- Convert the provided color object to a table with "r", "g", "b" keys.
@@ -204,28 +195,29 @@ end
 -- @param g (number) [optional] The color's green component.
 -- @param b (number) [optional] The color's blue component.
 function Color.RGBToHex( r, g, b )
-    -- From : https://gist.github.com/marceloCodget/3862929    
+    -- From : https://gist.github.com/marceloCodget/3862929
     local colorArray = Color.New( r, g, b ):ToArray()
     local hexadecimal = ""
-     
-    for key, value in ipairs(colorArray) do
+
+    for key=1, 3 do
+        local value = colorArray[key]
         local hex = ''
-        
+
         while value > 0 do
             local index = math.fmod(value, 16) + 1
             value = math.floor(value / 16)
-            hex = string.sub('0123456789ABCDEF', index, index) .. hex   
+            hex = string.sub('0123456789ABCDEF', index, index) .. hex
         end
-         
+
         if string.len(hex) == 0 then
             hex = '00'
         elseif string.len(hex) == 1 then
             hex = '0' .. hex
         end
-         
+
         hexadecimal = hexadecimal .. hex
     end
-    
+
     return hexadecimal
 end
 
@@ -271,8 +263,8 @@ function Color.GetHSV( color )
     local h, s, v
     v = max
     local d = max - min
-    
-    if max == 0 then 
+
+    if max == 0 then
         s = 0
     else
         s = d / max
@@ -286,9 +278,9 @@ function Color.GetHSV( color )
             if g < b then
                 h = h + 6
             end
-        elseif max == g then 
+        elseif max == g then
             h = (b - r) / d + 2
-        elseif max == b then 
+        elseif max == b then
             h = (r - g) / d + 4
         end
         h = h / 6
@@ -313,7 +305,7 @@ end
 -- @return (Color) The new color object.
 function Color.__add( a, b )
     return Color.New( a._r + b._r, a._g + b._g, a._b + b._b )
-end  
+end
 
 --- Allow to substract two Color objects by using the - operator.
 -- Ie : color1 - color2
@@ -367,7 +359,7 @@ function Color.__div( a, b )
     end
     return color
 end
-   
+
 ----------------------------------------------------------------------------------
 
 -- Bc : Back color
@@ -408,7 +400,7 @@ end
 
 
 -- white model change the saturation    opa = 0.5 > sat =      opa = 0.3  sat = 70
--- black model change   opa = 0.3 sat = 
+-- black model change   opa = 0.3 sat =
 
 -- sat = 0   > rgb coords goes toward the highmost coords
 -- sat correspond to the smallest component value
@@ -424,26 +416,24 @@ end
 -- @param Tc (color) The target color.
 -- @return (number) The front opacity.
 local function getFrontOpacity( Bc, Fc, Tc )
-    local Fo = 0
-
     -- Find the component for which the back and front color haven't the same value
     -- because it would cause a division by zero in the opacity's calculation
     local comp = nil
     local comps = { "r", "g", "b" }
-    for i, _comp in ipairs( comps ) do
+    for i=1, 3 do
+        local _comp = comps[i]
         if Fc[_comp] ~= Bc[_comp] then
             comp = _comp
             break
         end
     end
-    
+
     if comp ~= nil then
-        Fo = math.round( (Tc[comp] - Bc[comp]) / (Fc[comp] - Bc[comp]), 3 )
+        return math.round( (Tc[comp] - Bc[comp]) / (Fc[comp] - Bc[comp]), 3 )
     else
-        print("getFrontOpacity(): can't calculate opacity because no suitable component was found", Bc, Fc, Tc)
+        print("Color: getFrontOpacity(): can't calculate opacity because no suitable component was found", Bc, Fc, Tc) 
+        return 1
     end
-    
-    return Fo
 end
 
 --- Find the Back and Front color and the Front opacity needed to render the provided Target color.
@@ -451,11 +441,10 @@ end
 -- @return (Color) The back color.
 -- @return (Color) The front color, or nil.
 -- @return (number) The front opacity.
+-- @return (Color) The result color. Will be different from Tc when the system can't render Tc.
 function Color.Resolve( Tc )
     local Bc = Color.New(0)
     local Fc = Color.New(0)
-    local Fo = 0
-
     for comp, value in pairs( Tc:ToRGB() ) do
         if value ~= 255 and value >= 127.5 then
             Bc[comp] = 255
@@ -468,25 +457,23 @@ function Color.Resolve( Tc )
             Fc[comp] = value
         end
     end
-    
     if Fc == Bc then
         Fc = nil
     end
 
+    local Rc = Bc -- result/rendered color
+    local Fo = 0
     if Fc ~= nil then
         Fo = getFrontOpacity( Bc, Fc, Tc )
-        -- actual color
-        local Ac = Color.New( ( Fc:ToVector3() - Bc:ToVector3() ) * Fo + Bc:ToVector3() )
-        
-        if Ac ~= Tc then
-            -- the Tc color can't be achieved with only two levels of color
-            -- a thrid one is needed
-            print("Color.Resolve(): Sorry, can't resolve ", Tc )
-            print("Color.Resolve(): Getting instead ", Ac )
+        Rc = Color.New( ( Fc:ToVector3() - Bc:ToVector3() ) * Fo + Bc:ToVector3() )
+
+        if Rc ~= Tc then
+            -- the Tc color can't be achieved with only two levels of color, a thrid one is needed
+            print("Color.Resolve(): Sorry, can't resolve target color [1], getting [2] instead", Tc, Rc )
         end
     end
 
-    return Bc, Fc, Fo
+    return Bc, Fc, Fo, Rc
 end
 
 --------------------
@@ -549,7 +536,7 @@ local function setColor( renderer, r, g, b, a )
         if Fc ~= nil then
             local newAsset = Fc:GetAsset( assetType )
             local oldAsset = assetGetterFunction( frontRndr )
-            if oldAsset ~= newAsset then 
+            if oldAsset ~= newAsset then
                 -- setting a new Font asset everytime the function was called make the test project actually lag
                 -- setting big Font asset seems very slow
                 assetSetterFunction( frontRndr, newAsset )
@@ -564,20 +551,16 @@ end
 
 --- Set the color of the provided model renderer.
 -- @param modelRenderer (ModelRenderer) The model renderer.
--- @param r (number, Color or string) The color's red component, a color object, a color as hexadecimal string or a color name that can be found in the Color.colorsByName table.
--- @param g (number) [optional] The color's green component.
--- @param b (number) [optional] The color's blue component.
-function ModelRenderer.SetColor( modelRenderer, r, g, b, a )
-    setColor( modelRenderer, r, g, b, a )
+-- @param color (Color) The color instance.
+function ModelRenderer.SetColor( modelRenderer, color )
+    setColor( modelRenderer, color )
 end
 
 --- Set the color of the provided text renderer.
 -- @param textRenderer (textRenderer) The text renderer.
--- @param r (number, Color or string) The color's red component, a color object, a color as hexadecimal string or a color name that can be found in the Color.colorsByName table.
--- @param g (number) [optional] The color's green component.
--- @param b (number) [optional] The color's blue component.
-function TextRenderer.SetColor( textRenderer, r, g, b, a )
-    setColor( textRenderer, r, g, b, a )
+-- @param color (Color) The color instance.
+function TextRenderer.SetColor( textRenderer, color )
+    setColor( textRenderer, color )
 end
 
 local oSetText = TextRenderer.SetText
@@ -697,7 +680,7 @@ function Color.GetAsset( color, assetType )
 
         local path = Color.colorAssetsFolder..name
         asset = CS.FindAsset( path, assetType )
-        
+
         if asset == nil then
             path = Color.colorAssetsFolder..string.ucfirst(name) -- let's be a little more fool-proof
             asset = CS.FindAsset( path, assetType )
@@ -715,6 +698,7 @@ function Color.GetAsset( color, assetType )
 end
 
 ----------------------------------------------------------------------------------
+-- random
 
 Color.Pattern = {
     DesaturedPlainColor = 1,
@@ -737,14 +721,14 @@ end
 function Color.GetRandom( pattern )
     -- sekect pattern
     pattern = pattern or math.random( #Color.PatternsById )
-    
+
     local plainColors = table.copy( Color.colorsByName )
     plainColors.grey = nil
     plainColors.gray = nil
-    plainColors.black = nil    
+    plainColors.black = nil
     plainColors = table.getvalues( plainColors )
     -- plainColors contains r, g, b, y, c, m, w
-    
+
     local color = Color.New(0)
     if pattern == 1 then
         -- desat plain color
@@ -755,15 +739,15 @@ function Color.GetRandom( pattern )
         -- devalue plain color
         local baseColor = Color.New( plainColors[ math.random( #plainColors ) ] )
         color = baseColor - Color.New( math.random( 0, 255 ) ) -- this move the components which where at 0 closer to 255
-    
+
     elseif pattern == 3 then
         -- 0, 255, any | 0, any, 255 | 255, 0, any | 255, any, 0 | any, 0, 255 | any, 255, 0
         local values = { 0, 255, math.random( 0, 255 ) }
         for i=1, 3 do
             color[i] = table.remove( values, math.random( #values ) )
         end
-    
-    elseif pattern == 4 then  
+
+    elseif pattern == 4 then
         -- Two components are equal and the third one is apart and equidistant from 128 (their mean is 128 ((max + min)/2 = 128)) : ie : (153, 102, 153) (51, 51, 204)
         local min = math.random(0, 128)
         local max = 255 - min
@@ -775,7 +759,7 @@ function Color.GetRandom( pattern )
         for i=1, 3 do
             color[i] = table.remove( values, math.random( #values ) )
         end
-    
+
     elseif pattern == 5 then
         -- One of the component is equal to 0 or 255 and the two others are apart and equidistant from 128 (their mean is 128 ((max + min)/2 = 128))   ie : (255, 50, 200) (128, 0, 128) (170, 85,
         local min = math.random(0, 128)
@@ -789,6 +773,6 @@ function Color.GetRandom( pattern )
             color[i] = table.remove( values, math.random( #values ) )
         end
     end
-    
+
     return color
 end
