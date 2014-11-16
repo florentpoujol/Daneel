@@ -648,7 +648,31 @@ function TextRenderer.GetColor( textRenderer )
     return getColor( textRenderer )
 end
 
---------------------
+----------------------------------------------------------------------------------
+-- set opacity
+
+-- Set the opacity of the back and front model or text renderer.
+-- @param renderer (ModelRenderer or TextRenderer) The (back) model or text renderer.
+-- @param opacity (number) The opacity.
+local function setOpacity( renderer, opacity )
+    local a = renderer:GetOpacity() -- back opacity, also the alpha "a" component of the rendered color (if renderer is the "back" rendeer)
+    renderer:oSetOpacity( opacity )
+
+    local frontRndr = renderer.gameObject.frontColorRenderer
+    if frontRndr ~= nil and renderer ~= frontRndr then
+        local Fo = frontRndr:GetOpacity()
+        frontRndr:oSetOpacity( Fo / a * opacity )
+    end
+end
+
+ModelRenderer.oSetOpacity = ModelRenderer.SetOpacity
+ModelRenderer.SetOpacity = setOpacity
+
+TextRenderer.oSetOpacity = TextRenderer.SetOpacity
+TextRenderer.SetOpacity = setOpacity
+
+----------------------------------------------------------------------------------
+-- color assets
 
 Color.colorAssetsFolder = "Colors/" -- to be edited by the user if he wants another folder
 
