@@ -478,12 +478,50 @@ function Color.Resolve( Tc )
 end
 
 ----------------------------------------------------------------------------------
+-- asset
+
+Color.colorAssetsFolder = "Colors/" -- to be edited by the user if he wants another folder
+
+-- Get the asset (Model or Font) corresponding to the provided color.
+-- The color must have been set in the Color.colorsByName table.
+-- @param color (Color) The color object.
+-- @param assetType (string) The asset type ("Model" or "Font")
+-- @param assetFolder (string) [optional] The asset folder to get the asset from.
+-- @return (Model or Font) The asset, or nil.
+function Color._getAsset( color, assetType, assetFolder )
+    if not string.endswith( Color.colorAssetsFolder, "/" ) then -- let's be fool-proof
+        Color.colorAssetsFolder = Color.colorAssetsFolder.."/"
+    end
+    assetFolder = assetFolder or Color.colorAssetsFolder
+
+    local name = color:GetName() -- name may be nil !
+    if name == nil then
+        if Daneel.Config.debug.enableDebug == true then
+            print("Color._getAsset(): Can't find the name of the provided color", color, "It must be set in the Color.colorsByName table.")
+        end
+        return nil
+    end
+
+    local path = assetFolder..name
+    local asset = CS.FindAsset( path, assetType )
+    if asset == nil then
+        path = assetFolder..string.ucfirst(name) -- let's be a little more fool-proof
+        asset = CS.FindAsset( path, assetType )
+    end
+
+    if asset == nil and Daneel.Config.debug.enableDebug == true then
+        print("Color._getAsset(): Could not find asset of type '"..assetType.."' at path '"..path.."' for ", color)
+    end
+    return asset
+end
+
+----------------------------------------------------------------------------------
 -- set color
 
 -- Set the color of the provided model or text renderer.
 -- @param renderer (ModelRenderer or TextRenderer) The renderer.
 -- @param color (Color) The color instance.
-local function setColor( renderer, color )
+function Color._setColor( renderer, color )
     local rendererType, assetType, assetSetterFunction, assetGetterFunction
     local mt = getmetatable( renderer )
     if mt == ModelRenderer then
@@ -504,8 +542,13 @@ local function setColor( renderer, color )
     local frontRndr = gameObject.frontColorRenderer
 
     -- back
-    local newAsset = Bc:GetAsset( assetType )
+    local assetFolder = nil
     local oldAsset = assetGetterFunction( renderer )
+    if oldAsset ~= nil then
+        assetFolder = oldAsset:GetPath():gsub(oldAsset.name, "") -- with trailing slash
+    end
+
+    local newAsset = Bc:_getAsset( assetType, assetFolder )
     if oldAsset ~= newAsset then
         assetSetterFunction( renderer, newAsset )
     end
@@ -525,7 +568,7 @@ local function setColor( renderer, color )
         frontRndr.Fo = Fo
 
         if Fc ~= nil then
-            local newAsset = Fc:GetAsset( assetType )
+            local newAsset = Fc:_getAsset( assetType, assetFolder )
             local oldAsset = assetGetterFunction( frontRndr )
             if oldAsset ~= newAsset then
                 -- setting a new Font asset everytime the function was called make the test project actually lag
@@ -542,14 +585,14 @@ end
 -- @param modelRenderer (ModelRenderer) The model renderer.
 -- @param color (Color) The color instance.
 function ModelRenderer.SetColor( modelRenderer, color )
-    setColor( modelRenderer, color )
+    Color._setColor( modelRenderer, color )
 end
 
 --- Set the color of the provided text renderer.
 -- @param textRenderer (textRenderer) The text renderer.
 -- @param color (Color) The color instance.
 function TextRenderer.SetColor( textRenderer, color )
-    setColor( textRenderer, color )
+    Color._setColor( textRenderer, color )
 end
 
 local oSetText = TextRenderer.SetText
@@ -578,7 +621,7 @@ end
 -- Set the opacity of the back and front model or text renderer.
 -- @param renderer (ModelRenderer or TextRenderer) The (back) model or text renderer.
 -- @param opacity (number) The opacity.
-local function setOpacity( renderer, opacity )
+function Color._setOpacity( renderer, opacity )
     local a = renderer:GetOpacity() -- back opacity, also the alpha "a" component of the rendered color (if renderer is the "back" rendeer)
     renderer:oSetOpacity( opacity )
 
@@ -590,10 +633,10 @@ local function setOpacity( renderer, opacity )
 end
 
 ModelRenderer.oSetOpacity = ModelRenderer.SetOpacity
-ModelRenderer.SetOpacity = setOpacity
+ModelRenderer.SetOpacity = Color._setOpacity
 
 TextRenderer.oSetOpacity = TextRenderer.SetOpacity
-TextRenderer.SetOpacity = setOpacity
+TextRenderer.SetOpacity = Color._setOpacity
 
 ----------------------------------------------------------------------------------
 -- get color
@@ -601,7 +644,7 @@ TextRenderer.SetOpacity = setOpacity
 -- Get the color of the provided model or text renderer.
 -- @param renderer (ModelRenderer or TextRenderer) The model or text renderer.
 -- @return Rc (Color) The result/rendered color (the one you see).
-local function getColor( renderer )
+function Color._getColor( renderer )
     local rendererType, assetGetterFunction
     local mt = getmetatable( renderer )
     if mt == ModelRenderer then
@@ -613,25 +656,24 @@ local function getColor( renderer )
     end
 
     local Bc, Fc, Rc
-    local Fo = 0
-    local a = 1
+    local Fo = 1
+    local a = renderer:GetOpacity()
 
     -- back
     local asset = assetGetterFunction( renderer )
     if asset ~= nil then
         Bc = Color[ asset:GetName() ]
-        a = renderer:GetOpacity()
     end
 
     -- front
     local gameObject = renderer.gameObject
     local frontRndr = gameObject[ "front"..rendererType ]
     if frontRndr ~= nil and Bc ~= nil then
+        Fo = frontRndr.Fo or 1
         local asset = assetGetterFunction( frontRndr )
         if asset ~= nil then
             Fc = Color[ asset:GetName() ]
         end
-        Fo = frontRndr:GetOpacity() / a
     end
 
     if Bc ~= nil then
@@ -650,57 +692,14 @@ end
 -- @param modelRenderer (ModelRenderer) The model renderer.
 -- @return Rc (Color) The result/renderer color (the one you see).
 function ModelRenderer.GetColor( modelRenderer )
-    return getColor( modelRenderer )
+    return Color._getColor( modelRenderer )
 end
 
 --- Get the color of the provided text renderer.
 -- @param textRenderer (textRenderer) The text renderer.
 -- @return Rc (Color) The result/renderer color (the one you see).
 function TextRenderer.GetColor( textRenderer )
-    return getColor( textRenderer )
-end
-
-----------------------------------------------------------------------------------
--- color assets
-
-Color.colorAssetsFolder = "Colors/" -- to be edited by the user if he wants another folder
-
-Color.modelsByColorName = {}
-Color.fontsByColorName = {}
-
---- Get the asset (Model or Font) corresponding to the provided color
--- Normally, the provided color can only be Red, Green, Blue, Magenta, Yellow, Cyan, Black or White.
--- @param color (Color) The color object.
--- @param assetType (string) The asset type ("Model" or "Font")
--- @return (Model or Font) The asset, or nil.
-function Color.GetAsset( color, assetType )
-    local name = color:GetName()
-    local lcAssetType = string.lower( assetType )
-    local assetsByColorName = Color[ lcAssetType.."sByColorName" ]
-    local asset = assetsByColorName[ name ]
-
-    if asset == nil then
-        if not string.endswith( Color.colorAssetsFolder, "/" ) then -- let's be fool-proof
-            Color.colorAssetsFolder = Color.colorAssetsFolder.."/"
-        end
-
-        local path = Color.colorAssetsFolder..name
-        asset = CS.FindAsset( path, assetType )
-
-        if asset == nil then
-            path = Color.colorAssetsFolder..string.ucfirst(name) -- let's be a little more fool-proof
-            asset = CS.FindAsset( path, assetType )
-        end
-
-        if asset == nil then
-            print("Color.GetAsset(): Could not find asset of type '"..assetType.."' at path '"..path.."' for ", color)
-            return
-        end
-
-        assetsByColorName[ name ] = asset
-    end
-
-    return asset
+    return Color._getColor( textRenderer )
 end
 
 ----------------------------------------------------------------------------------
