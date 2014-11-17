@@ -21,26 +21,24 @@ ColorMT = {
 setmetatable(Color, ColorMT)
 
 function Color.__index( color, key )
-    local comps = {"r", "g", "b", "a"}
-    key = comps[key] or key -- if key was == 1, 2, 3 or 4; key is now r, g, b, or a
+    local comps = {"r", "g", "b"}
+    key = comps[key] or key -- if key was == 1, 2 or 3; key is now r, g or b
     return Color[ key ] or color[ "_"..key ] or rawget( color, key )
 end
 
 function Color.__newindex( color, key, value )
-    local comps = {"r", "g", "b", "a"}
-    key = comps[key] or key -- if key was == 1, 2, 3 or 4; key is now r, g, b, or a
+    local comps = {"r", "g", "b"}
+    key = comps[key] or key 
 
     if key == "r" or key == "g" or key == "b" then
         color["_"..key] = math.round( math.clamp( tonumber( value ), 0, 255 ), 0 )
-    elseif key == "a" then
-        color["_a"] = math.clamp( tonumber( value ), 0, 1 )
     else
         rawset( color, key, value )
     end
 end
 
 function Color.__tostring(color)
-    local s = "Color: { r="..color._r..", g="..color._g..", b="..color._b..", a="..color._a..", hex="..color:GetHex()
+    local s = "Color: { r="..color._r..", g="..color._g..", b="..color._b..", hex="..color:GetHex()
     local name = color:GetName()
     if name ~= nil then
         s = s..", name='"..name.."'"
@@ -52,11 +50,9 @@ end
 -- @param r (number, Color, table, Vector3 or string) The color's red component or a table with r,g,b / x,y,z / 1,2,3 components, or a color name or an hexadecimal color.
 -- @param g (number) [optional] The color's green component.
 -- @param b (number) [optional] The color's blue component.
--- @param a (number) [optional] The color's alpha component (between 0 and 1).
 -- @return (Color) The color object.
-function Color.New(r, g, b, a)
+function Color.New(r, g, b)
     local color = setmetatable({}, Color)
-
     if type( r ) == "string" and g == nil then
         local colorFromName = Color[r] -- r is a color name
         if colorFromName ~= nil then
@@ -70,16 +66,14 @@ function Color.New(r, g, b, a)
             if r.r ~= nil then -- Color style
                 g = r.g
                 b = r.b
-                a = r.a
                 r = r.r
             elseif r.x ~= nil then -- Vector3 style
                 g = r.y
                 b = r.z
                 r = r.x
-            elseif #r == 3 or #r == 4 then -- array style
+            elseif #r == 3 then -- array style
                 g = r[2]
                 b = r[3]
-                a = r[4]
                 r = r[1]
             end
         end
@@ -87,9 +81,6 @@ function Color.New(r, g, b, a)
         color.g = g or color._r
         color.b = b or color._g
     end
-
-    color.a = a or 1
-
     return color
 end
 
@@ -133,27 +124,17 @@ end
 --- Convert the provided color object to an array.
 -- Allow to loop on the color's components in order.
 -- @param color (Color) The color object.
--- @param includeAlpha (boolean) [default=false] Tell whether to include the color's alpha component in the returned table.
 -- @return (table) The color as array.
-function Color.ToArray( color, includeAlpha )
-    local t = { color._r, color._g, color._b }
-    if includeAlpha == true then
-        table.insert( t, color._a )
-    end
-    return t
+function Color.ToArray( color )
+    return { color._r, color._g, color._b }
 end
 
 --- Convert the provided color object to a table with "r", "g", "b" keys.
 -- Allow to loop on the color's components.
 -- @param color (Color) The color object.
--- @param includeAlpha (boolean) [default=false] Tell whether to include the color's alpha component in the returned table.
 -- @return (table) The color as table with "r", "g", "b" keys.
-function Color.ToRGB( color, includeAlpha )
-    local t = { r = color._r, g = color._g, b = color._b }
-    if includeAlpha == true then
-        t.a = color._a
-    end
-    return t
+function Color.ToRGB( color )
+    return { r = color._r, g = color._g, b = color._b }
 end
 
 --- Convert the provided color object to a Vector3.
@@ -472,7 +453,6 @@ function Color.Resolve( Tc )
             print("Color.Resolve(): Sorry, can't resolve target color [1], getting [2] instead", Tc, Rc )
         end
     end
-    Rc.a = Tc.a
 
     return Bc, Fc, Fo, Rc
 end
@@ -565,8 +545,6 @@ function Color._setColor( renderer, color )
     end
 
     if frontRndr ~= nil then
-        frontRndr.Fo = Fo
-
         if Fc ~= nil then
             local newAsset = Fc:_getAsset( assetType, assetFolder )
             local oldAsset = assetGetterFunction( frontRndr )
@@ -576,9 +554,10 @@ function Color._setColor( renderer, color )
                 assetSetterFunction( frontRndr, newAsset )
             end
         end
-    end
 
-    renderer:SetOpacity( color._a )
+        frontRndr.Fo = Fo
+        frontRndr:SetOpacity( Fo * renderer:GetOpacity() )
+    end
 end
 
 --- Set the color of the provided model renderer.
@@ -622,13 +601,11 @@ end
 -- @param renderer (ModelRenderer or TextRenderer) The (back) model or text renderer.
 -- @param opacity (number) The opacity.
 function Color._setOpacity( renderer, opacity )
-    local a = renderer:GetOpacity() -- back opacity, also the alpha "a" component of the rendered color (if renderer is the "back" rendeer)
     renderer:oSetOpacity( opacity )
-
     local frontRndr = renderer.gameObject.frontColorRenderer
     if frontRndr ~= nil and renderer ~= frontRndr then
         local Fo = frontRndr.Fo or 1
-        frontRndr:oSetOpacity( Fo  * opacity )
+        frontRndr:oSetOpacity( Fo * opacity )
     end
 end
 
@@ -656,8 +633,6 @@ function Color._getColor( renderer )
     end
 
     local Bc, Fc, Rc
-    local Fo = 1
-    local a = renderer:GetOpacity()
 
     -- back
     local asset = assetGetterFunction( renderer )
@@ -666,8 +641,8 @@ function Color._getColor( renderer )
     end
 
     -- front
-    local gameObject = renderer.gameObject
-    local frontRndr = gameObject[ "front"..rendererType ]
+    local frontRndr = renderer.gameObject.frontColorRenderer
+    local Fo = 1
     if frontRndr ~= nil and Bc ~= nil then
         Fo = frontRndr.Fo or 1
         local asset = assetGetterFunction( frontRndr )
@@ -682,9 +657,7 @@ function Color._getColor( renderer )
         else
             Rc = Bc
         end
-        Rc.a = a
     end
-
     return Rc
 end
 
