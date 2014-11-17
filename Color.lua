@@ -472,6 +472,7 @@ function Color.Resolve( Tc )
             print("Color.Resolve(): Sorry, can't resolve target color [1], getting [2] instead", Tc, Rc )
         end
     end
+    Rc.a = Tc.a
 
     return Bc, Fc, Fo, Rc
 end
@@ -521,6 +522,8 @@ local function setColor( renderer, color )
     end
 
     if frontRndr ~= nil then
+        frontRndr.Fo = Fo
+
         if Fc ~= nil then
             local newAsset = Fc:GetAsset( assetType )
             local oldAsset = assetGetterFunction( frontRndr )
@@ -530,8 +533,6 @@ local function setColor( renderer, color )
                 assetSetterFunction( frontRndr, newAsset )
             end
         end
-
-        frontRndr:SetOpacity( Fo )
     end
 
     renderer:SetOpacity( color._a )
@@ -570,6 +571,29 @@ function TextRenderer.SetAlignment( textRenderer, alignment )
         oSetAlignment( frontRndr, alignment )
     end
 end
+
+----------------------------------------------------------------------------------
+-- set opacity
+
+-- Set the opacity of the back and front model or text renderer.
+-- @param renderer (ModelRenderer or TextRenderer) The (back) model or text renderer.
+-- @param opacity (number) The opacity.
+local function setOpacity( renderer, opacity )
+    local a = renderer:GetOpacity() -- back opacity, also the alpha "a" component of the rendered color (if renderer is the "back" rendeer)
+    renderer:oSetOpacity( opacity )
+
+    local frontRndr = renderer.gameObject.frontColorRenderer
+    if frontRndr ~= nil and renderer ~= frontRndr then
+        local Fo = frontRndr.Fo or 1
+        frontRndr:oSetOpacity( Fo  * opacity )
+    end
+end
+
+ModelRenderer.oSetOpacity = ModelRenderer.SetOpacity
+ModelRenderer.SetOpacity = setOpacity
+
+TextRenderer.oSetOpacity = TextRenderer.SetOpacity
+TextRenderer.SetOpacity = setOpacity
 
 ----------------------------------------------------------------------------------
 -- get color
@@ -635,29 +659,6 @@ end
 function TextRenderer.GetColor( textRenderer )
     return getColor( textRenderer )
 end
-
-----------------------------------------------------------------------------------
--- set opacity
-
--- Set the opacity of the back and front model or text renderer.
--- @param renderer (ModelRenderer or TextRenderer) The (back) model or text renderer.
--- @param opacity (number) The opacity.
-local function setOpacity( renderer, opacity )
-    local a = renderer:GetOpacity() -- back opacity, also the alpha "a" component of the rendered color (if renderer is the "back" rendeer)
-    renderer:oSetOpacity( opacity )
-
-    local frontRndr = renderer.gameObject.frontColorRenderer
-    if frontRndr ~= nil and renderer ~= frontRndr then
-        local Fo = frontRndr:GetOpacity()
-        frontRndr:oSetOpacity( Fo / a * opacity )
-    end
-end
-
-ModelRenderer.oSetOpacity = ModelRenderer.SetOpacity
-ModelRenderer.SetOpacity = setOpacity
-
-TextRenderer.oSetOpacity = TextRenderer.SetOpacity
-TextRenderer.SetOpacity = setOpacity
 
 ----------------------------------------------------------------------------------
 -- color assets
