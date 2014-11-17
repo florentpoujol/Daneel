@@ -84,8 +84,6 @@ function Color.New(r, g, b)
     return color
 end
 
---------------------
-
 Color.colorsByName = {
     -- values can be array, Color or hex color
     red = {255,0,0},
@@ -119,7 +117,8 @@ function Color.GetName( color )
     end
 end
 
---------------------
+--------------------------------------------------------------------------------
+-- Object format conversion
 
 --- Convert the provided color object to an array.
 -- Allow to loop on the color's components in order.
@@ -148,7 +147,7 @@ end
 --- Returns a string representation of the color's components, each component being separated y a space.
 -- ie: For a color { 10, 250, 128 }, the returned string would be "10 250 128".
 -- Such string can be converted back to a color object with string.tocolor()
--- @param color (Color) The color obejct.
+-- @param color (Color) The color object.
 -- @return (string) The string.
 function Color.ToString( color )
     return color._r.." "..color._g.." "..color._b
@@ -168,7 +167,8 @@ function string.tocolor( sColor )
     return color
 end
 
---------------------
+--------------------------------------------------------------------------------
+-- Hex / HSV / RGB conversion
 
 --- Return the hexadecimal representation of the provided color or r, g, b components.
 -- Only return the 6 characters of the component's values, so you may want to prefix it with "#" or "0x" yourself.
@@ -226,9 +226,8 @@ end
 -- @param hex (string) The color's hexadecimal representation.
 function Color.SetHex( color, hex )
     local rgb = { Color.HexToRGB( hex ) }
-    local comps = { "r", "g", "b" }
     for i=1, 3 do
-        color[ comps[i] ] = rgb[i]
+        color[i] = rgb[i]
     end
 end
 
@@ -269,7 +268,8 @@ function Color.GetHSV( color )
     return h, s, v
 end
 
---------------------
+--------------------------------------------------------------------------------
+-- Operator functions
 
 --- Allow to check for the equality between two Color objects using the == comparison operator.
 -- @param a (Color) The left member.
@@ -288,7 +288,7 @@ function Color.__add( a, b )
     return Color.New( a._r + b._r, a._g + b._g, a._b + b._b )
 end
 
---- Allow to substract two Color objects by using the - operator.
+--- Allow to subtract two Color objects by using the - operator.
 -- Ie : color1 - color2
 -- @param a (Color) The left member.
 -- @param b (Color) The right member.
@@ -342,88 +342,24 @@ function Color.__div( a, b )
 end
 
 ----------------------------------------------------------------------------------
+-- Solver
 
--- Bc : Back color
--- Fc : Front color
--- Fo : Front opacity (back opacity is always 1)
--- Tc : Target color, the one we see
-
--- Relations :
--- Bc = ( Fc * Fo - Tc ) / ( Fo - 1 )
--- Fc = ( Tc - Bc ) / Fo + Bc
--- Fo = ( Tc - Bc ) / ( Fc - Bc )
--- Tc = ( Fc - Bc ) * Fo + Bc
-
--- if Bc = 0 then Tc = 255 * Fo
--- if Bc = 255 then Tc = Fc
-
--- With a set of 6 predetermined colors Red, Green, Blue, Magenta, Cyan, Yellow
--- We can create 2295 (255*2*3+255*3) colors
-
--- The generator can create colors where :
--- One of the component is equal to 0 or 255 and the mean of the other components is 128 (they are apart and equidistant from 128)
--- ie : (255, 50, 200) (128, 0, 128) (170, 85, 0)
--- or
--- Two components are equal and the third one is apart and equidistant from 128 ((max + min)/2 = 128)
--- ie : (153, 102, 153) (51, 51, 204)
--- or
--- one comp = 0, other comp = 255, on
--- or
--- a plain color (R, g, b, c, m, y, w) with saturation or value diminished
--- or
--- one comp = 255 or 0
-
-
--- circle : one comp = 0, other are equidistant
--- hexagon : cyan-magenta-yellow = one comp = 255, others are equidistant
--- calque 3 :    two color equal, other equidistant
--- star : one or two at 255, othe is moving    only saturation is moving
-
-
--- white model change the saturation    opa = 0.5 > sat =      opa = 0.3  sat = 70
--- black model change   opa = 0.3 sat =
-
--- sat = 0   > rgb coords goes toward the highmost coords
--- sat correspond to the smallest component value
--- sat = 100 - lowest comp / highest comp * 100
--- or (max - min ) / max  if min and max are on 0-1 range
-
--- value = 0   > rgb coords goes toward the smallest coords
--- value correspond to the smallest component value
-
--- Calculate the opacity of the front model.
--- @param Bc (color) The back color.
--- @param Fc (color) The front color.
--- @param Tc (color) The target color.
--- @return (number) The front opacity.
-local function getFrontOpacity( Bc, Fc, Tc )
-    -- Find the component for which the back and front color haven't the same value
-    -- because it would cause a division by zero in the opacity's calculation
-    local comp = nil
-    local comps = { "r", "g", "b" }
-    for i=1, 3 do
-        local _comp = comps[i]
-        if Fc[_comp] ~= Bc[_comp] then
-            comp = _comp
-            break
-        end
-    end
-
-    if comp ~= nil then
-        return math.round( (Tc[comp] - Bc[comp]) / (Fc[comp] - Bc[comp]), 3 )
-    else
-        print("Color: getFrontOpacity(): can't calculate opacity because no suitable component was found", Bc, Fc, Tc) 
-        return 1
-    end
-end
-
---- Find the Back and Front color and the Front opacity needed to render the provided Target color.
+-- Find the Back and Front color and the Front opacity needed to render the provided Target color.
 -- @param Tc (color) The target color.
 -- @return (Color) The back color.
 -- @return (Color) The front color, or nil.
 -- @return (number) The front opacity.
 -- @return (Color) The result color. Will be different from Tc when the system can't render Tc.
-function Color.Resolve( Tc )
+function Color._resolve( Tc )
+    -- Back color       
+    -- Bc = ( Fc * Fo - Tc ) / ( Fo - 1 )
+    -- Front color
+    -- Fc = ( Tc - Bc ) / Fo + Bc
+    -- Front Opacity
+    -- Fo = ( Tc - Bc ) / ( Fc - Bc ) 
+    -- Target color
+    -- Tc = ( Fc - Bc ) * Fo + Bc
+
     local Bc = Color.New(0)
     local Fc = Color.New(0)
     for comp, value in pairs( Tc:ToRGB() ) do
@@ -445,20 +381,47 @@ function Color.Resolve( Tc )
     local Rc = Bc -- result/rendered color
     local Fo = 0
     if Fc ~= nil then
-        Fo = getFrontOpacity( Bc, Fc, Tc )
+        Fo = Color._getFrontOpacity( Bc, Fc, Tc )
         Rc = Color.New( ( Fc:ToVector3() - Bc:ToVector3() ) * Fo + Bc:ToVector3() )
 
         if Rc ~= Tc then
             -- the Tc color can't be achieved with only two levels of color, a thrid one is needed
-            print("Color.Resolve(): Sorry, can't resolve target color [1], getting [2] instead", Tc, Rc )
+            print("Color._resolve(): Sorry, can't resolve target color [1], getting [2] instead", Tc, Rc )
         end
     end
 
     return Bc, Fc, Fo, Rc
 end
 
-----------------------------------------------------------------------------------
--- asset
+-- Calculate the opacity of the front renderer.
+-- @param Bc (color) The back color.
+-- @param Fc (color) The front color.
+-- @param Tc (color) The target color.
+-- @return (number) The front opacity.
+function Color._getFrontOpacity( Bc, Fc, Tc )
+    -- Find the component for which the back and front color haven't the same value
+    -- because it would cause a division by zero in the opacity's calculation
+    local comp = nil
+    local comps = { "r", "g", "b" }
+    for i=1, 3 do
+        local _comp = comps[i]
+        if Fc[_comp] ~= Bc[_comp] then
+            comp = _comp
+            break
+        end
+    end
+
+    if comp ~= nil then
+        -- Fo = ( Tc - Bc ) / ( Fc - Bc ) 
+        return math.round( (Tc[comp] - Bc[comp]) / (Fc[comp] - Bc[comp]), 3 )
+    else
+        print("Color._getFrontOpacity(): can't calculate opacity because no suitable component was found", Bc, Fc, Tc) 
+        return 1
+    end
+end
+
+--------------------------------------------------------------------------------
+-- Asset
 
 Color.colorAssetsFolder = "Colors/" -- to be edited by the user if he wants another folder
 
@@ -495,8 +458,8 @@ function Color._getAsset( color, assetType, assetFolder )
     return asset
 end
 
-----------------------------------------------------------------------------------
--- set color
+--------------------------------------------------------------------------------
+-- Set color
 
 -- Set the color of the provided model or text renderer.
 -- @param renderer (ModelRenderer or TextRenderer) The renderer.
@@ -549,7 +512,7 @@ function Color._setColor( renderer, color )
             local newAsset = Fc:_getAsset( assetType, assetFolder )
             local oldAsset = assetGetterFunction( frontRndr )
             if oldAsset ~= newAsset then
-                -- setting a new Font asset everytime the function was called make the test project actually lag
+                -- setting a new Font asset every time the function was called make the test project actually lag
                 -- setting big Font asset seems very slow
                 assetSetterFunction( frontRndr, newAsset )
             end
@@ -594,9 +557,6 @@ function TextRenderer.SetAlignment( textRenderer, alignment )
     end
 end
 
-----------------------------------------------------------------------------------
--- set opacity
-
 -- Set the opacity of the back and front model or text renderer.
 -- @param renderer (ModelRenderer or TextRenderer) The (back) model or text renderer.
 -- @param opacity (number) The opacity.
@@ -615,8 +575,8 @@ ModelRenderer.SetOpacity = Color._setOpacity
 TextRenderer.oSetOpacity = TextRenderer.SetOpacity
 TextRenderer.SetOpacity = Color._setOpacity
 
-----------------------------------------------------------------------------------
--- get color
+--------------------------------------------------------------------------------
+-- Get color
 
 -- Get the color of the provided model or text renderer.
 -- @param renderer (ModelRenderer or TextRenderer) The model or text renderer.
@@ -675,8 +635,8 @@ function TextRenderer.GetColor( textRenderer )
     return Color._getColor( textRenderer )
 end
 
-----------------------------------------------------------------------------------
--- random
+--------------------------------------------------------------------------------
+-- Random
 
 Color.Pattern = {
     DesaturedPlainColor = 1,
