@@ -479,7 +479,7 @@ function Color._setColor( renderer, color )
         assetGetterFunction = TextRenderer.GetFont
     end
 
-    local Bc, Fc, Fo = color:Resolve()
+    local Bc, Fc, Fo = color:_resolve()
 
     local gameObject = renderer.gameObject
     local frontRndr = gameObject.frontColorRenderer
