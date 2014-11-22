@@ -102,6 +102,10 @@ Color.colorsByName = {
 -- More color/names : https://github.com/franks42/colors-rgb.lua/blob/master/colors-rgb.lua
 -- Note that some of these colors can't be displayed by the current algorithm.
 
+for name, colorArray in pairs( Color.colorsByName ) do
+    Color.colorsByName[name] = Color.New(colorArray)
+end
+
 --- Return the name of the color, provided it can be found in the `Color.colorsByName` object.
 -- @param color (Color) The color object.
 -- @return (string) The color's name or nil.
