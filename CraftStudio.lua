@@ -1154,7 +1154,7 @@ CraftStudio.oLoadScene = CraftStudio.LoadScene
 -- @param sceneNameOrAsset (string or Scene) The scene name or asset.
 function CraftStudio.LoadScene( sceneNameOrAsset )
     local scene = Asset.Get( sceneNameOrAsset, "Scene", true )
-    Daneel.Event.Fire( "OnSceneLoad", scene )
+    Daneel.Event.Fire( "OnNewSceneWillLoad", scene )
     Daneel.Event.events = {} -- do this here to make sure that any events that might be fired from OnSceneLoad-catching function are indeed fired
     Scene.current = scene
     CraftStudio.oLoadScene( scene )
