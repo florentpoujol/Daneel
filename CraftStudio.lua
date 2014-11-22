@@ -787,6 +787,19 @@ function Vector2.__eq(a, b)
     return ((a.x == b.x) and (a.y == b.y))
 end
 
+--- Returns a string representation of the vector's component's values.
+-- ie: For a vector {-6.5,10}, the returned string would be "-6.5 10".
+-- Such string can be converted back to a vector with string.tovector()
+-- @param vector (Vector2) The vector.
+-- @return (string) The string.
+function Vector2.ToString( vector )
+    for i, comp in pairs({"x", "y"}) do
+        if tostring(vector[comp]) == "-0" then
+            vector[comp] = 0
+        end
+    end
+    return vector.x.." "..vector.y
+end
 
 ----------------------------------------------------------------------------------
 -- Vector3
@@ -860,14 +873,19 @@ end
 
 --- Convert a string representation of a vector component's values to a Vector3 or a Vector2.
 -- ie: For a string "-6.5 10 2.1", the returned vector would be {-6.5, 10, 2.1}.
--- Such string can be created from a Vector3 with with Vector3.ToString()
+-- Such string can be created from a vector2 or Vector3 with Vector2.ToString() or Vector3.ToString().
 -- @param sVector (string) The vector as a string, each component's value being separated by a space.
 -- @return (Vector3 or vector2) The vector.
 function string.tovector( sVector )
     local vector = Vector3:New(0)
     local keys = { "z", "y", "x" }
     for match in string.gmatch( sVector, "[0-9.-]+" ) do
-        vector[ table.remove( keys ) ] = tonumber(match)
+        local comp = table.remove( keys )
+        if comp ~= nil then
+            vector[ comp ] = tonumber(match)
+        else
+            break
+        end
     end
     if table.remove( keys ) == "z" then
         setmetatable( vector, Vector2 )
