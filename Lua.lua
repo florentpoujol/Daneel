@@ -614,7 +614,7 @@ end
 -- Ie for this series of nested table : table1.table2.table3.fooBar <br>
 -- table.getvalue( table1, "table2.table3.fooBar" ) would return the value of the 'fooBar' key in the 'table3' table <br>
 -- table.getvalue( table1, "table2.table3" ) would return the value of 'table3' <br>
--- table.getvalue( table1, "table2.table3.Foo" ) would return nul because the 'table3' has no 'Foo' key <br>
+-- table.getvalue( table1, "table2.table3.Foo" ) would return nil because the 'table3' has no 'Foo' key <br>
 -- table.getvalue( table1, "table2.Foo.Bar.Lorem.Ipsum" ) idem <br>
 -- @param t (table) The table.
 -- @param keys (string) The chain of keys to looks for as a string, each keys separated by a dot.
