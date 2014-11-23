@@ -11,7 +11,7 @@ $indexUrl   is the absolute url of the root folder
         <meta name="keywords" content="Daneel, CraftStudio, framework, game, Lua, library">
         <meta name="robots" content="index,follow">
 
-        <title><?php echo $pageTitle; ?> - Daneel2 : a framework for CraftStudio</title>
+        <title><?php echo $pageTitle; ?> - Daneel : a framework for CraftStudio</title>
 
         <link rel="stylesheet" type="text/css" href="<?php echo $indexUrl; ?>/assets/css/style_v35.css">
         <link rel="stylesheet" type="text/css" href="<?php echo $indexUrl; ?>/assets/css/daneeldoc.css">

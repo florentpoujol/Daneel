@@ -2,14 +2,14 @@
 -- Update the TextRenderer or GUI.TextArea component on the game object with the localized string whose key is provided.
 -- Allow to register the game object for the localized text to be updated when the language changes.
 --
--- Last modified for v1.3.0
+-- Last modified for v1.5.0
 -- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 
 Lang = {
-    lines = {},
-    gameObjectsToUpdate = {},
+    dictionariesByLanguage = { english = {} },
     cache = {},
-    doNotCallUpdate = true -- tell Daneel not to call Update() when the module is loaded
+    gameObjectsToUpdate = {},
+    doNotCallUpdate = true, -- let here ! Read in Daneel.Load() to not include Lang.Update() to the list of functions to be called every frames.
 }
 
 Daneel.modules.Lang = Lang
@@ -23,25 +23,27 @@ function Lang.DefaultConfig()
         keyNotFound = "langkeynotfound", -- Value returned when a language key is not found
     }
 end
+Lang.Config = Lang.DefaultConfig()
 
 function Lang.Load()
     local defaultLanguage = nil
 
-    for key, value in pairs( _G ) do
-        if key:find( "^Lang%u" ) ~= nil and type( value ) == "function" then
-            local language = (key:gsub( "Lang", "" ))
-            local language = language:lower()
-            if language ~= "userconfig" then
-                Lang.lines[ language ] = value()
+    for lang, dico in pairs( Lang.dictionariesByLanguage ) do
+        local llang = lang:lower()
+        if llang ~= lang then
+            Lang.dictionariesByLanguage[ llang ] = dico
+            Lang.dictionariesByLanguage[ lang ] = nil
+        end
 
-                if defaultLanguage == nil then
-                    defaultLanguage = language
-                end
-            end
+        if defaultLanguage == nil then
+            defaultLanguage = llang
         end
     end
 
-    if defaultLanguage == nil then -- no language function found
+    if defaultLanguage == nil then -- no dictionary found
+        if Daneel.Config.debug.enableDebug == true then
+            error("Lang.Load(): No dictionary found in Lang.dictionariesByLanguage !")
+        end
         return
     end
     
@@ -62,8 +64,7 @@ function Lang.Start()
     end
 end
 
-
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 --- Get the localized line identified by the provided key.
 -- @param key (string) The language key.
@@ -74,10 +75,6 @@ function Lang.Get( key, replacements )
         return Lang.cache[ key ]
     end
 
-    Daneel.Debug.StackTrace.BeginFunction( "Lang.Get", key, replacements )
-    local errorHead = "Lang.Get( key[, replacements] ) : "
-    Daneel.Debug.CheckArgType( key, "key", "string", errorHead )
-
     local currentLanguage = Lang.Config.current
     local defaultLanguage = Lang.Config.default
     local searchInDefault = Lang.Config.searchInDefault
@@ -85,89 +82,78 @@ function Lang.Get( key, replacements )
 
     local keys = string.split( key, "." )
     local language = currentLanguage
-    if Lang.lines[ keys[1]:lower() ] then
+    if Lang.dictionariesByLanguage[ keys[1] ] ~= nil then
         language = table.remove( keys, 1 )
-        language = language:lower()
     end
     
     local noLangKey = table.concat( keys, "." ) -- rebuilt the key, but without the language
     local fullKey = language .. "." .. noLangKey 
     if replacements == nil and Lang.cache[ fullKey ] ~= nil then
-        Daneel.Debug.StackTrace.EndFunction()
         return Lang.cache[ fullKey ]
     end
 
-    local lines = Lang.lines[ language ]
-    if lines == nil then
-        error( errorHead.."Language '"..language.."' does not exists" )
+    local dico = Lang.dictionariesByLanguage[ language ]
+    local errorHead = "Lang.Get(key[, replacements]): "
+    if dico == nil then
+        error( errorHead.."Language '"..language.."' does not exists", key, fullKey )
     end
 
-    for i, _key in ipairs(keys) do
-        if lines[_key] == nil then
-            -- key was not found
+    for i=1, #keys do
+        local _key = keys[i]
+        if dico[_key] == nil then
+            -- key was not found in this language
             -- search for it in the default language
-            if language ~= defaultLanguage and searchInDefault == true then
+            if searchInDefault == true and language ~= defaultLanguage then
                 cache = false
-                lines = Lang.Get( defaultLanguage.."."..noLangKey, replacements )
+                dico = Lang.Get( defaultLanguage.."."..noLangKey, replacements )
             else -- already default language or don't want to search in
-                lines = Lang.Config.keyNotFound
+                dico = Lang.Config.keyNotFound or "keynotfound"
             end
 
             break
         end
-        lines = lines[ _key ]
+        dico = dico[ _key ]
+        -- dico is now a nested table in the dictionary, or a searched string (or the keynotfound string)
     end
 
-    -- lines should be the searched string by now
-    local line = lines
+    -- dico should be the searched (or keynotfound) string by now
+    local line = dico
     if type( line ) ~= "string" then
-        error( errorHead.."Localization key '"..key.."' does not lead to a string but to : '"..tostring(line).."'." )
+        error( errorHead.."Localization key '"..key.."' does not lead to a string but to : '"..tostring(line).."'.", key, fullKey )
     end
 
     -- process replacements
     if replacements ~= nil then
         line = Daneel.Utilities.ReplaceInString( line, replacements )
-    elseif cache and line ~= Lang.Config.keyNotFound then
+    elseif cache == true and line ~= Lang.Config.keyNotFound then
         Lang.cache[ key ] = line -- ie: "greetings.welcome"
         Lang.cache[ fullKey ] = line -- ie: "english.greetings.welcome"
     end
 
-    Daneel.Debug.StackTrace.EndFunction()
     return line
 end
 
 --- Register a game object to update its text renderer whenever the language will be updated by Lang.Update().
 -- @param gameObject (GameObject) The gameObject.
 -- @param key (string) The language key.
--- @param replacements (table) [optional] The placeholders and their replacements (has no effect when the 'key' argument is a function).
+-- @param replacements (table) [optional] The placeholders and their replacements.
 function Lang.RegisterForUpdate( gameObject, key, replacements )
-    Daneel.Debug.StackTrace.BeginFunction( "Lang.RegisterForUpdate", gameObject, key, replacements )
-    local errorHead = "Lang.RegisterForUpdate( gameObject, key[, replacements] ) : "
-    Daneel.Debug.CheckArgType( gameObject, "gameObject", "GameObject", errorHead )
-    Daneel.Debug.CheckArgType( key, "key", "string", errorHead)
-    Daneel.Debug.CheckOptionalArgType( replacements, "replacements", "table", errorHead )
-
     Lang.gameObjectsToUpdate[gameObject] = {
         key = key,
         replacements = replacements,
     }
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
---- Update the current language and the text of all game objects that have registered via Lang.RegisterForUpdate().
--- Updates the text renderer or text area component.
+--- Update the current language and the text of all game objects that have registered via Lang.RegisterForUpdate(). <br>
 -- Fire the OnLangUpdate event.
 -- @param language (string) The new current language.
 function Lang.Update( language )
-    Daneel.Debug.StackTrace.BeginFunction( "Lang.Update", language )
-    local errorHead = "Lang.Update( language ) : "
-    Daneel.Debug.CheckArgType( language, "language", "string", errorHead )
-    language = Daneel.Debug.CheckArgValue( language, "language", table.getkeys( Lang.lines ), errorHead )
+    language = Daneel.Debug.CheckArgValue( language, "language", table.getkeys( Lang.dictionariesByLanguage ), errorHead )
     
     Lang.cache = {} -- ideally only the items that do not begins by a language name should be deleted
     Lang.Config.current = language
     for gameObject, data in pairs( Lang.gameObjectsToUpdate ) do
-        if gameObject.inner == nil then
+        if gameObject.inner == nil or gameObject.isDestroyed == true then
             Lang.gameObjectsToUpdate[ gameObject ] = nil
         else
             local text = Lang.Get( data.key, data.replacements )
@@ -178,34 +164,16 @@ function Lang.Update( language )
                 gameObject.textRenderer:SetText( text )
             
             elseif Daneel.Config.debug.enableDebug then
-                print( "WARNING : " .. errorHead .. tostring( gameObject ) .. " does not have a TextRenderer or GUI.TextArea component." )
+                print( "Lang.Update(language): WARNING : "..tostring( gameObject ).." has no TextRenderer or GUI.TextArea component." )
             end
         end
     end
 
     Daneel.Event.Fire( "OnLangUpdate" )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
-
-----------------------------------------------------------------------------------
--- runtime
-
---[[PublicProperties
-key string ""
-registerForUpdate boolean false
-/PublicProperties]]
-
-function Behavior:Start()
-    if string.trim( self.key ) ~= "" then
-        if self.gameObject.textArea ~= nil then
-            self.gameObject.textArea:SetText( Lang.Get( self.key ) )
-        elseif self.gameObject.textRenderer ~= nil then
-            self.gameObject.textRenderer:SetText( Lang.Get( self.key ) )
-        end
-
-        if self.registerForUpdate then
-            Lang.RegisterForUpdate( self.gameObject, self.key )
-        end
-    end
-end
+table.mergein( Daneel.Debug.functionArgumentsInfo, {
+    ["Lang.Get"] = { { "key", "string" }, { "replacements", "table", isOptional = true } },
+    ["Lang.RegisterForUpdate"] = { { "gameObject", "GameObject" }, { "key", "string" }, { "replacements", "table", isOptional = true } },
+    ["Lang.Update"] = { { "language", "string" } },
+} )

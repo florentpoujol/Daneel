@@ -13,7 +13,7 @@ The `Lang` object allows you to easily localize any strings in your game.
 <a name="setup"></a>
 ## Setup and configuration
 
-The `Lang` object exposes some configuration variables. Set any of them via a `Lang.UserConfig()` global variable that return a table :
+The `Lang` object exposes some configuration variables. Set any of them via a `Lang.UserConfig` table or function that return a table :
 
     function Lang.UserConfig()
         return {
@@ -27,32 +27,27 @@ The `Lang` object exposes some configuration variables. Set any of them via a `L
     end
 
 Each of the localized strings (the lines) are identified by a key, unique across all languages. The keys must not contains dot and the first-level keys must not be any of the languages name.  
-The key/line pairs for each languages must be set in a table returned by a global function which name follows the template : `Lang[Languagename]()` (The first letter of the language must be uppercase).
 
-    function Lang.UserConfig()
-        return {
-            default = "english", -- case-insensitive
-            current = "EnGlIsH",
+The key/line pairs for each languages must be set in a table as value of the language name in the `Lang.dictionariesByLanguage` object.
+
+    Lang.UserConfig = {
+        default = "english", -- lower case
+        current = "french", 
+    }
+
+    Lang.dictionariesByLanguage.english = { -- names in lower case too
+        key = "value",
+
+        greetings = { -- you may nest the key/line pairs.
+            welcome = "Welcome !", 
         }
-    end
+    }
 
-    function LangEnglish()
-        return {
-            key = "value",
-
-            greetings = { -- you may nest the key/line pairs.
-                welcome = "Welcome !", 
-            }
+    Lang.dictionariesByLanguage.french = {
+        greetings = { 
+            welcome = "Bienvenu !",
         }
-    end
-
-    function LangFrench()
-        return {
-            greetings = { 
-                welcome = "Bienvenu !",
-            }
-        }
-    end
+    }
 
 
 <a name="retrieving-a-line"></a>
@@ -79,36 +74,34 @@ If a key is not found in a particular language, it is searched for in the defaul
 
 Your localized strings may contains placeholders that are meant to be replaced with other values before being displayed.  
 A placeholder is a sequence of any characters prefixed with a semicolon.  
-You may pass a placeholder/replacement table as the second parameter of `Get()`.
+You may pass a placeholder/replacement table as the second parameter of `Lang.Get()`.
     
-    function LangEnglish()
-        return {
-            welcome = "Welcome :playername, have a nice play !"
-        }
-    end
+    Lang.dictionariesByLanguage.english = {
+        welcome = "Welcome :playername, have a nice play !"
+    }
 
     Lang.Get( "welcome" ) -- returns "Welcome :playername, have a nice play !"
     Lang.Get( "welcome", { playername = "John" } ) -- returns "Welcome John, have a nice play !"
 
-Note that any strings, not just the localized strings, may benefits from the placeholder/replacement with `Daneel.Utilities.ReplaceInString(string, replacements)` (in this case, the placeholders are not prefixed by a semicolon).
+Note that any strings, not just the localized strings, may benefits from the placeholder/replacement with `Daneel.Utilities.ReplaceInString(string, replacements)`.
 
 
 <a name="updating-the-language"></a>
 ## Updating the language
 
-You may register the game objects that display a text via a `TextRenderer` or `GUI.TextArea` ([see the GUI script](/docs/gui#textarea)) with `Lang.RegisterForUpdate(gameObject, key[, replacements])`, or listen to the `OnLangUpdate` event in order to automatically update the languages lines when the current language is modified.
+You may register the game objects that display a text via a `TextRenderer` or `GUI.TextArea` ([see the GUI script](/docs/gui#textarea)) with `Lang.RegisterForUpdate(gameObject, key[, replacements])`, or listen to the `OnLangUpdate` global event in order to automatically update the languages lines when the current language is modified.
 
-Call `Lang.Update(language)` with the new current language as argument to update the current language and fire the `OnLangUpdate` event.  
-Get the current language at any time via `Lang.Config.current`.
+Call `Lang.Update(language)` with the new current language as argument to update the current language and fire the `OnLangUpdate` global event.  
+You can get the current language at any time via the `Lang.Config.current` property.
 
     gameObject.textRenderer.text = Lang.Get( "welcome" )
     Lang.RegisterForUpdate( gameObject, "welcome" )
 
     print( gameObject.textRenderer.text ) -- "Welcome :playername, have a nice play !"
-    Lang.Update( "French" )
+    Lang.Update( "french" ) -- Always use lower case language name
     print( gameObject.textRenderer.text ) -- "Bienvenu :playername, bon jeu !"
 
-    -- just listen to the OnLangUpdate event to update something else than a TextRenderer or a TextArea
+    -- Just listen to the OnLangUpdate event to update something else than a TextRenderer or a GUI.TextArea
     -- in this example, the text of a GUI.Toggle component
     Daneel.Event.Listen( "OnLangUpdate", function()
         gameObject.toggle.text = Lang.Get( "Whatever" )
@@ -118,8 +111,7 @@ Get the current language at any time via `Lang.Config.current`.
 <a name="scene"></a>
 ## Working in the scene editor
 
-The `Lang` script may be added as a scripted behavior on any game object to update its `TextRenderer` (or `TextArea`) when the scene loads and optionally to register the game object for update.
-
+The `Lang Behavior` script may be added as a scripted behavior on any game object to update its text renderer or text area (`GUI.TextArea`) when the scene loads and optionally to register the game object for update.
 
 <a name="function-reference"></a>
 ## Function reference
