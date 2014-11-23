@@ -704,6 +704,10 @@ function Daneel.Debug.RegisterFunction( name, argsData )
                 elseif funcArgs[ i ] == nil and not arg.isOptional then
                     error( errorHead.."Argument '"..arg.name.."' is nil." )
                 end
+
+                if arg.value ~= nil then
+                    funcArgs[ i ] = Daneel.Debug.CheckArgValue( funcArgs[ i ], arg.name, arg.value, errorHead, arg.defaultValue )
+                end
             end
 
             local returnValues = { originalFunction( unpack( funcArgs ) ) } -- use unpack here to take into account the values that may have been modified by CheckOptionalArgType()
