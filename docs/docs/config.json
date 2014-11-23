@@ -1,0 +1,25 @@
+{
+    "markdownFilesPath": "files",
+    "defaultPath": "home",
+    "useModRewrite": true,
+    "rewriteExtensions": [ "md", "html", "php" ],
+    "redirect": {
+        "core/time": "daneel#time-object",
+
+        "core/dynamic-getters-and-setters": "daneel/dynamic-getters-and-setters",
+        "core/debugging": "daneel/debugging",
+        "core/events": "daneel/events",
+        "creatingmodules": "daneel/modules",
+        "creatingcomponents": "daneel/modules",
+        "core/functionreference": "daneel/function-reference",
+
+        "core/mass-setting": "craftstudio/mass-setting",
+        "core/api-extension": "craftstudio",
+
+        "modules/gui": "gui",
+        "modules/lang": "lang",
+        "modules/mouseinput": "mouse-inputs",
+        "modules/triggers": "triggers",
+        "modules/tween": "tween"
+    }
+}

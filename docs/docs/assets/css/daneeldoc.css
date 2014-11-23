@@ -1,0 +1,94 @@
+
+body {
+    font-size: 11pt;
+}
+
+.wrapper {
+    width: 1000px;
+    margin-bottom: 0px;
+}
+
+.wrapper>header {
+    background: none;
+    padding-bottom: 20px;
+}
+
+
+header #right-header {
+    float: right;
+    margin-top: -30px;
+    margin-bottom: -25px;
+}
+
+header #right-header #download {
+    font-size: 1.7em;
+}
+header #right-header #github {
+    font-size: 1em;
+}
+
+header #download small {
+    font-size: 0.7em;
+}
+
+
+header .logo {
+    float: left;
+    margin: 10px;
+    margin-top: -10px;
+    margin-right: 20px;
+}
+
+header h1 {
+    
+}
+
+header h3 {
+    font-weight: normal;
+    margin-left: 150px;
+}
+
+header .clearfloat {
+    clear: both;
+}
+
+.sidebar {
+    width: 19%;
+}
+
+.content {
+    width: 78%;
+}
+
+footer {
+    clear: both;
+    color: rgb(200,200,200);
+    margin-top: 20px;
+}
+
+.alert-info {
+    border : 1px solid rgb(100,200,255);
+    border-radius: 5px;
+    background-color: rgba(100,200,255, 0.5);
+    padding: 5px;
+}
+
+.alert-warning {
+    border : 1px solid rgb(255,100,100);
+    border-radius: 5px;
+    background-color: rgba(255,100,100, 0.5);
+    padding: 5px;
+}
+
+
+.function_list .name {
+    width: 375px;
+    /*--overflow: auto;*/
+    /*background-color: rgb(240,240,240);*/
+}
+
+#toTop
+{
+    top: inherit;
+    bottom: 1.2em;
+}

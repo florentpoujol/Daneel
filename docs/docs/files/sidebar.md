@@ -1,0 +1,25 @@
+- [Home](/docs/home)
+- [Setup](/docs/setup)
+- [Changelog](/docs/changelog)
+- [Example Projects](/docs/example-projects)
+- [FAQ / Tutorial](/docs/faq-tutorial)
+
+---
+### Features by script :
+
+- [Lua](/docs/lua)
+- [Daneel](/docs/daneel)
+    - [Debugging](/docs/daneel/debugging)
+    - [Events](/docs/daneel/events)
+    - [Modules](/docs/daneel/modules)
+    - [Function Reference](/docs/daneel/function-reference)
+- [CraftStudio](/docs/craftstudio)
+    - [Mass-setting](/docs/craftstudio/mass-setting)
+    - [Function Reference](/docs/craftstudio/function-reference)
+- [GUI](/docs/gui)
+- [Tween](/docs/tween)
+- [Mouse Input](/docs/mouse-input)
+- [Color](/docs/color)
+- [Draw](/docs/draw)
+- [Lang](/docs/lang)
+- [Trigger](/docs/trigger)
