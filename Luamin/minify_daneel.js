@@ -12,9 +12,9 @@ var fileNames = [
     "Daneel",
     "CraftStudio",
     "GUI/GUI",
-    "Draw/Draw",
+    "Draw",
     "Color",
-    "Tween/Tween",
+    "Tween",
 ]; // let the Tween script at the end of the array
 
 var completeFilePath = writeRoot+"DaneelComplete.lua"
