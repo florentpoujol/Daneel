@@ -1,12 +1,10 @@
 # Draw
 
-The `Draw` script introduces a series of game object components and scripted behaviors 
-
+The `Draw` script introduces a series of game object components.
 
 - [Line Renderer](#line-renderer)
 - [Circle Renderer](#circle-renderer)
 - [Function reference](#function-reference)
-
 
 <a name="line-renderer"></a>
 ## Line Renderer
