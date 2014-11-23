@@ -29,14 +29,6 @@ Or leave a support topic in CraftStudio's community forums :
 - [French forum](http://www.craftstudio.fr/forum/viewforum.php?f=4)
 
 
-## Repo structure
-
-The main `.lua` files are in the `framework` folder.  
-The scripts at the root of the folder are 'global' and don't need to be added as scripted behavior on game objects (contrary to the one found in the `scripted behaviors` folder).
-
-The `daneelcomplete/DaneelComplete.lua` script (and its minified version) is an aggregation of all the 'global' scripts at the root of the `framework` folder.  
-
-
 ## Licence
 
 Daneel is published under the MIT license.
@@ -62,3 +54,14 @@ ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
 ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+## Repo structure
+
+The main `.lua` files are in the `framework` folder.  
+The scripts at the root of the folder are 'global' and don't need to be added as scripted behavior on game objects (contrary to the one found in the `scripted behaviors` folder).
+
+The `daneelcomplete/DaneelComplete.lua` script (and its minified version) is an aggregation of all the 'global' scripts at the root of the `framework` folder.  
+
+The `docs` folder contains the documentation website.  
+The actual documentation content is in the `docs/docs/files` folder.
