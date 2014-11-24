@@ -1,5 +1,5 @@
 -- Mouse Input Behavior.lua
--- Enable mouse interactions with game objects when added to a game object with a camera component.
+-- Scripted behavior to add a MouseInput component while in the scene editor.
 --
 -- Last modified for v1.5.0
 -- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.

@@ -12,7 +12,7 @@ function Behavior:Awake()
         print( "Asset.Get 2", r )
     end
 
-    local daneelScriptPath = "Daneel v1.4.0/Daneel"
+    local daneelScriptPath = "Daneel v1.5.0/Daneel"
     local script = CS.FindAsset( daneelScriptPath, "Script" )
     local daneelScriptName = script.name
 
@@ -366,22 +366,11 @@ function Behavior:Awake()
     -- test scripted behavior
     go = GameObject.Get("Perspective Camera")
     local sb = go:GetScriptedBehavior( daneelScriptPath )
-    
-    if sb == nil then -- Daneel has been late loaded
-        go = GameObject.Get( "Daneel Late Load" )
-        sb = go:GetScriptedBehavior( daneelScriptPath )
-    end
-    
+        
     r = go:GetScriptedBehavior( Asset( daneelScriptPath ) )
     if r ~= sb then 
         print( "GetScriptedBehavior 1", r )
     end
-    
-    r = go:GetScriptedBehavior( "daneel" )
-    if r ~= sb then
-        print( "GetScriptedBehavior 2", r )
-    end
-    
     
     -----
 
@@ -428,8 +417,9 @@ function Behavior:Awake()
     
     
     -----
-    local path = "Daneel v1.4.0/Tests/NewBehavior"
+    local path = "Daneel v1.5.0/Tests/NewBehavior"
     
+    -- go the the "Sliders"game object
     -- script asset
     r = false
     local c = go:AddComponent(Asset(path), {
@@ -473,12 +463,7 @@ function Behavior:Awake()
     if r ~= sb then
         print( "gameObject:GetComponent 4", r )
     end
-    
-    r = go:GetComponent( "newScript" )
-    if r ~= sb  then
-        print( "gameObject:GetComponent 5", r )
-    end
-        
+
     --
     local sb = go:GetScriptedBehavior( Asset.Get(path) )
     if sb == nil then
@@ -490,11 +475,6 @@ function Behavior:Awake()
         print( "gameObject:GetScriptedBehavior 2", r )
     end
     
-    r = go:GetScriptedBehavior( "newScript" )
-    if r ~= sb  then
-        print( "gameObject:GetScriptedBehavior 3", r )
-    end
-
 
     -----
     -- tags

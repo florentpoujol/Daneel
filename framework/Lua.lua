@@ -267,6 +267,7 @@ function string.fixcase( s, set )
             return item
         end
     end
+    return s -- in case no match is found the set
 end
 
 ----------------------------------------------------------------------------------
@@ -701,8 +702,8 @@ end
 -- @return (table) The new table.
 function table.reverse( t )
     local newTable = {}
-    for i, v in ipairs( t ) do
-        table.insert( newTable, 1, v )
+    for i=1, #t do
+        table.insert( newTable, 1, t[i] )
     end
     return newTable
 end
@@ -717,10 +718,8 @@ function table.shift( t, returnKey )
     local value = nil
     if table.isarray( t ) then
         if #t > 0 then
-            value = table.removevalue( t, 1 )
-            if value ~= nil then -- should always be ~= nil if #t > 0
-                key = 1
-            end
+            key = 1
+            value = table.remove( t, 1 )
         end
     else
         for k,v in pairs( t ) do
@@ -732,7 +731,7 @@ function table.shift( t, returnKey )
             t[ key ] = nil  
         end
     end
-    if returnKey then
+    if returnKey == true then
         return key, value
     else
         return value

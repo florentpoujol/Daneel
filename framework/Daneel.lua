@@ -86,11 +86,6 @@ function string.split( s, delimiter, delimiterIsPattern )
     return chunks
 end
 
--- Deprecated since v1.4.0
-function table.deepmerge( ... )
-    return table.merge( ..., true )
-end
-
 function table.print(t)
     if t == nil then
         print("table.print( t ) : Provided table is nil.")

@@ -1,7 +1,6 @@
 -- Lang Behavior.lua
--- Update the TextRenderer or GUI.TextArea component on the game object with the localized string whose key is provided.
--- Allow to register the game object for the localized text to be updated when the language changes.
---
+-- Scripted behavior to enable the features of the Lang module while in the scene editor.
+-- 
 -- Last modified for v1.5.0
 -- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
 

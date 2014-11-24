@@ -148,7 +148,7 @@ end
 -- Fire the OnLangUpdate event.
 -- @param language (string) The new current language.
 function Lang.Update( language )
-    language = Daneel.Debug.CheckArgValue( language, "language", table.getkeys( Lang.dictionariesByLanguage ), errorHead )
+    language = Daneel.Debug.CheckArgValue( language, "language", table.getkeys( Lang.dictionariesByLanguage ), "Lang.Update(language): " )
     
     Lang.cache = {} -- ideally only the items that do not begins by a language name should be deleted
     Lang.Config.current = language

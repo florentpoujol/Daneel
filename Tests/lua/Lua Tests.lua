@@ -19,6 +19,29 @@ function Behavior:Awake()
         print("math.isinteger '5'")
     end
     
+    --
+    r = math.lerp( 0,1,0.5)
+    if r ~= 0.5 then
+        print("math.lerp 1", r )
+    end
+    
+    r = math.lerp( 50,150,0.75)
+    if r ~= 125 then
+        print("math.lerp 2", r )
+    end
+    
+    --
+    r = math.warpangle( 90 )
+    if r ~= 90 then
+        print("math.warpangle 1", r )
+    end
+    
+    r = math.warpangle( -285 )
+    if r ~= 75 then
+        print("math.warpangle 2", r )
+    end
+    
+    --
     if math.round( 150.2 ) ~= 150 then
         print("math.round 150.2")
     end
@@ -35,7 +58,41 @@ function Behavior:Awake()
         print( "math.round( 1.123456789, 5 )" )
     end
     
+    --
+    r = tonumber2( "123 foo" )
+    if r ~= 123 then
+        print( "tonumber2 1", r )
+    end
+    
+    r = tonumber2( "foo 123.5" )
+    if r ~= 123.5 then
+        print( "tonumber2 2", r )
+    end
+    
+    r = tonumber2( "bar 123.00 foo" )
+    if r ~= 123 then
+        print( "tonumber2 3", r )
+    end
+    
+    --
+    r = math.clamp( -52, 0, 50 )
+    if r ~= 0 then
+        print( "math.clamp 1", r )
+    end
+    
+    r = math.clamp( -52, -85.2, -10.0 )
+    if r ~= -52 then
+        print( "math.clamp 1", r )
+    end 
+    
+    r = math.clamp( 52, 22, 40 )
+    if r ~= 40 then
+        print( "math.clamp 1", r )
+    end 
+    
+    
     ---------------------
+    -- string
     
     local s = nil
     local r = string.totable( "123" )
@@ -186,6 +243,34 @@ function Behavior:Awake()
     if r ~= "text" then
         print( "string.trim", r )
     end
+    
+    --
+    r = string.reverse( "123456" )
+    if r ~= "654321" then
+        print("string.reverse 1", r)
+    end
+    
+    r = string.reverse( "aJfv 5Y-)c3" )
+    if r ~= "3c)-Y5 vfJa" then
+        print("string.reverse 2", r)
+    end
+    
+    --
+    r = string.fixcase( "sTrInG", {} )
+    if r ~= "sTrInG" then
+        print( "string.fixcase 1", r )
+    end
+    
+    r = string.fixcase( "sTrInG", { "string" } )
+    if r ~= "string" then
+        print( "string.fixcase 2", r )
+    end
+    
+    r = string.fixcase( "StrInG", "String" )
+    if r ~= "String" then
+        print( "string.fixcase 3", r )
+    end
+    
 
     --------------------------------------------------
     -- table
@@ -351,5 +436,84 @@ function Behavior:Awake()
     if not table.havesamecontent( r, rt ) then
         print( "tabl.reverse 1", r )
         table.print( r )
+    end
+    
+    --
+    r = table.isarray({})
+    if r ~= true then
+        print("table.isarray 1", r)
+    end
+    
+    r = table.isarray( { 1, 2, 3})
+    if r ~= true then
+        print("table.isarray 2", r)
+    end
+    r = table.isarray( { 1, 2, 3}, false)
+    if r ~= true then
+        print("table.isarray 3", r)
+    end
+    
+    r = table.isarray( { 1, 2, [4] = 4 }, true)
+    if r ~= false then
+        print("table.isarray 4", r)
+    end
+    
+    r = table.isarray( { 1, 2, 3, key = "value" })
+    if r ~= false then
+        print("table.isarray 5", r)
+    end
+    
+    --
+    local a = { 1,"2",3 }
+    local t = { key1 = "value1", key2 = "value2" }
+    
+
+    r = table.shift( a )
+    if r ~= 1 then
+        print("table.shift 1", r)
+    end
+
+    local r, r2 = table.shift( a, true )
+    if r ~= 1 or r2 ~= "2" then
+        print("table.shift 2", r, r2)
+    end
+    
+    r = table.shift( t )
+    if r ~= "value1" then
+        print("table.shift 3", r)
+    end
+    
+    r, r2 = table.shift( t, true )
+    if r ~= "key2" or r2 ~= "value2" then
+        print("table.shift 4", r, r2)
+    end
+    
+    --
+    local a = { 1, 2, [4] = 3, [6] = 4 }
+    local a = table.reindex( a )
+    r = table.isarray( a )
+    if r ~= true and #a ~= 4 then
+        print("table.reindex 1", r)
+    end
+    
+    --
+    t = {}
+    
+    table.insertonce( t, 1 )
+    table.insertonce( t, 1 )
+    table.insertonce( t, 1 )
+    if #t > 1 then
+        print("table insertonce 1", #t)
+        table.print(t)
+    end
+    
+    table.insertonce( t, 2 )
+    table.insertonce( t, 3 )
+    
+    table.insertonce( t, 2, "value1" )
+    table.insertonce( t, 2, "value1" )
+    if #t ~= 4 or t[2] ~= "value1" then
+        print("table insertonce 2", #t)
+        table.print(t)
     end
 end

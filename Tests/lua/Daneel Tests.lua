@@ -187,7 +187,7 @@ function Behavior:Awake()
     self.gameObject.OnTestEvent = function( ... )
         print( "OnTestEvent event fired at gameObject, catched by anonymous function", self.gameObject, ... )
     end
-    self.gameObject.OnOtherTestEvent = "NewMessageName"
+    self.gameObject:AddEventListener("OnOtherTestEvent", function(...) self:NewMessageName({...}) end )
     
     Daneel.Event.StopListen( "OnThirdEvent", self.gameObject )
     
