@@ -14,7 +14,6 @@ local v2 = "Vector2"
 local v3 = "Vector3"
 local _p = { "params", t }
 
-
 setmetatable( Vector3, { __call = function(Object, ...) return Object:New(...) end } )
 setmetatable( Quaternion, { __call = function(Object, ...) return Object:New(...) end } )
 setmetatable( Plane, { __call = function(Object, ...) return Object:New(...) end } )
@@ -24,7 +23,6 @@ Plane.__tostring = function( p )
     return "Plane: { normal="..tostring(p.normal)..", distance="..tostring(p.distance).." }"
     -- tostring() to prevent a "p.normal is not defined" error
 end
-
 
 ----------------------------------------------------------------------------------
 -- Assets
@@ -114,7 +112,6 @@ function Asset.GetId( asset )
     return Daneel.Utilities.GetId( asset )
 end
 
-
 ----------------------------------------------------------------------------------
 -- Component ("mother" object of components)
 
@@ -176,7 +173,6 @@ function Map.LoadFromPackage( path, callback )
         if map ~= nil then
             --fix for Map.GetPathInPackage() that returns an error when the asset was dynamically loaded
             rawset( map, "path", path )
-            map.isDynamicallyLoaded = true
         end
         callback( map )
     end )
@@ -242,7 +238,6 @@ function Map.SetBlockAt( map, x, y, z, id, orientation )
     end
 end
 
-
 ----------------------------------------------------------------------------------
 -- Transform
 
@@ -293,6 +288,8 @@ function Transform.WorldToLocal( transform, position )
     if go == nil then
         go = CS.CreateGameObject( "WorldToLocal", transform.gameObject )
         transform.worldToLocalGO = go
+    else
+        go:SetParent( transform.gameObject )
     end
     go.transform:SetPosition( position )
     return go.transform:GetLocalPosition()
@@ -307,11 +304,12 @@ function Transform.LocalToWorld( transform, position )
     if go == nil then
         go = CS.CreateGameObject( "WorldToLocal", transform.gameObject )
         transform.worldToLocalGO = go
+    else
+        go:SetParent( transform.gameObject )
     end
     go.transform:SetLocalPosition( position )
     return go.transform:GetPosition()
 end
-
 
 ----------------------------------------------------------------------------------
 -- ModelRenderer

@@ -52,7 +52,7 @@ function Behavior:Awake()
     end
     
     -----
-    print( "~~~~~ Transform Scale ~~~~~" )
+    print( "~~~~~ Transform ~~~~~" )
     local go = GameObject.Get( "LocalScale" )
     local child = GameObject.Get( "LocalScale.LocalScaleChild" )
     
@@ -63,6 +63,30 @@ function Behavior:Awake()
     go.textRenderer.text = math.round( go.transform.localScale.x, 1 ) .. " ".. math.round( go.transform.scale.x, 1 )
     child.textRenderer.text = math.round( child.transform.localScale.x, 1 ) .. " ".. math.round( child.transform.scale.x, 1 )
     
+    --
+    local worldGO = GameObject.Get("World")
+    local localGO = GameObject.Get("World.Local")
+    
+    r = worldGO.transform:WorldToLocal( worldGO.transform.position )
+    if r ~= Vector3(0) then
+        print("transform:WorldToLocal 1", r, worldGO.transform.position)
+    end
+    
+    r = worldGO.transform:WorldToLocal( localGO.transform.position ) -- Vector3(-8.5,0,-6)
+    if r ~= localGO.transform.localPosition then
+        print("transform:WorldToLocal 2", r, localGO.transform.position, localGO.transform.localPosition)
+    end
+    
+    r = worldGO.transform:LocalToWorld( Vector3(0) )
+    if r ~= worldGO.transform.position then
+        print("transform:LocalToWorld 1", r, worldGO.transform.position)
+    end
+    
+    r = worldGO.transform:LocalToWorld( localGO.transform.localPosition )
+    if r ~= localGO.transform.position then
+        print("transform:LocalToWorld 2", r, localGO.transform.position)
+    end
+
     ------
     print( "~~~~~ ModelRenderer ~~~~~" )
     

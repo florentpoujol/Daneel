@@ -285,7 +285,7 @@ function Behavior:Update()
     if frameCount == 0 then
         print("~~~~~ Daneel.Time ~~~~~")
     end
-    if frameCount < 10 then
+    if frameCount < 6 then
         print( "Time            ", Daneel.Time.time, Daneel.Time.deltaTime, Daneel.Time.timeScale )
         print( "real time     ", Daneel.Time.realTime, Daneel.Time.realDeltaTime )
         print( "framecount", Daneel.Time.frameCount )

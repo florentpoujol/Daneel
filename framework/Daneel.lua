@@ -130,7 +130,6 @@ function table.getlength( t, keyType )
     return length
 end
 
-
 ----------------------------------------------------------------------------------
 -- Utilities
 
@@ -237,7 +236,6 @@ function Daneel.Utilities.ButtonExists( buttonName )
     return buttonExists[ buttonName ]
 end
 
-
 Daneel.Utilities.id = 0
 
 --- Returns an integer greater than 0 and incremented by 1 from the last time the function was called.
@@ -272,7 +270,6 @@ end
 Daneel.Cache = {
     GetId = Daneel.Utilities.GetId
 }
-
 
 ----------------------------------------------------------------------------------
 -- Debug
@@ -352,7 +349,6 @@ Daneel.Debug.functionArgumentsInfo = {
     ["Daneel.Utilities.ReplaceInString"] = { { "string", s }, { "replacements", t } },
     ["Daneel.Utilities.ButtonExists"] = { { "buttonName", s } }
 }
-
 
 --- Check the provided argument's type against the provided type(s) and display error if they don't match.
 -- @param argument (mixed) The argument to check.
@@ -720,7 +716,6 @@ function Daneel.Debug.RegisterFunction( name, argsData )
     end
 end
 
-
 ----------------------------------------------------------------------------------
 -- StackTrace
 
@@ -803,7 +798,6 @@ function Daneel.Debug.StackTrace.Print()
         end
     end
 end
-
 
 ----------------------------------------------------------------------------------
 -- Event
@@ -1049,7 +1043,6 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["GameObject.RemoveEventListener"] = { { "gameObject", "GameObject" }, { "eventName", s }, { "listener", { f, u }, isOptional = true } },
 } )
 
-
 ----------------------------------------------------------------------------------
 -- Time
 
@@ -1063,7 +1056,6 @@ Daneel.Time = {
 
     frameCount = 0,
 }
-
 
 ----------------------------------------------------------------------------------
 -- Storage
@@ -1141,7 +1133,6 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["Daneel.Storage.Save"] = { { "name", s }, { "data", isOptional = true }, { "callback", "function", isOptional = true } },
     ["Daneel.Storage.Load"] = { { "name", s }, { "defaultValue", isOptional = true }, { "callback", "function", isOptional = true } }
 } )
-
 
 ----------------------------------------------------------------------------------
 -- Config, loading
@@ -1315,7 +1306,6 @@ function Daneel.Load()
 
     Daneel.Debug.StackTrace.EndFunction()
 end -- end Daneel.Load()
-
 
 ----------------------------------------------------------------------------------
 -- Runtime
