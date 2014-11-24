@@ -815,9 +815,9 @@ Vector3.__tostring = function( vector )
 end
 
 --- Returns a new Vector3.
--- @params x (number, Vector3 or Vector2) [optional] The vector's x component.
--- @params y (number or Vector2) [optional] The vector's y component.
--- @params z (number) [optional] The vector's z component.
+-- @param x (number, Vector3 or Vector2) [optional] The vector's x component.
+-- @param y (number or Vector2) [optional] The vector's y component.
+-- @param z (number) [optional] The vector's z component.
 function Vector3.New( x, y, z, z2 )
     if x == Vector3 then -- when called like Vector3:New( x, y, z )
         x = y
@@ -936,8 +936,8 @@ end
 CraftStudio.Screen.oSetSize = CraftStudio.Screen.SetSize
 
 --- Sets the size of the screen, in pixels.
--- @params x (number or table) The width of the screen or a table containing the width and height as x and and y components.
--- @params y (number) [optional] The height of the screen (has no effect when the "x" argument is a table).
+-- @param x (number or table) The width of the screen or a table containing the width and height as x and and y components.
+-- @param y (number) [optional] The height of the screen (has no effect when the "x" argument is a table).
 function CraftStudio.Screen.SetSize( x, y )
     if type( x ) == "table" then
         y = x.y

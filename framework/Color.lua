@@ -658,7 +658,7 @@ for name, id in pairs( Color.Pattern ) do
 end
 
 --- Returns a random color, optional of the provided pattern.
--- @param (number or Color.Patterns) [optional] The color pattern.
+-- @param pattern (number or Color.Patterns) [optional] The color pattern.
 -- @return (Color) The color.
 function Color.GetRandom( pattern )
     -- sekect pattern
