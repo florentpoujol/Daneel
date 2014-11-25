@@ -1,4 +1,4 @@
--- Mouse Input Behavior.lua
+-- Mouse Input.lua
 -- Scripted behavior to add a MouseInput component while in the scene editor.
 --
 -- Last modified for v1.5.0

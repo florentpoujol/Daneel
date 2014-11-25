@@ -1,4 +1,4 @@
--- Lang Behavior.lua
+-- Lang.lua
 -- Scripted behavior to enable the features of the Lang module while in the scene editor.
 -- 
 -- Last modified for v1.5.0

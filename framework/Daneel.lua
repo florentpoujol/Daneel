@@ -1400,3 +1400,375 @@ function Behavior.Update( self )
         Daneel.moduleUpdateFunctions[i]()
     end
 end
+
+--------------------------------------------------------------------------------
+-- Mouse Input component
+-- Enable mouse interactions with game objects when added to a game object with a camera component.
+
+MouseInput = { 
+    buttonExists = { LeftMouse = false, RightMouse = false, WheelUp = false, WheelDown = false },
+    
+    frameCount = 0,
+    lastLeftClickFrame = 0,
+
+    components = {}, -- array of mouse input components
+}
+Daneel.modules.MouseInput = MouseInput
+
+MouseInput.DefaultConfig = {
+    doubleClickDelay = 20, -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
+
+    mouseInput = {
+        tags = {}
+    },
+
+    componentObjects = {
+        MouseInput = MouseInput,
+    },
+}
+MouseInput.Config = MouseInput.DefaultConfig
+
+function MouseInput.Load()
+    for buttonName, _ in pairs( MouseInput.buttonExists ) do
+        MouseInput.buttonExists[ buttonName ] = Daneel.Utilities.ButtonExists( buttonName )
+    end
+
+    MouseInput.lastLeftClickFrame = -MouseInput.Config.doubleClickDelay
+end
+
+-- Loop on the MouseInput.components.
+-- Works with the game objects that have at least one of the component's tag.
+-- Check the position of the mouse against these game objects.
+-- Fire events accordingly.
+function MouseInput.Update()
+    MouseInput.frameCount = MouseInput.frameCount + 1
+    
+    local mouseDelta = CS.Input.GetMouseDelta()
+    local mouseIsMoving = false
+    if mouseDelta.x ~= 0 or mouseDelta.y ~= 0 then
+        mouseIsMoving = true
+    end
+
+    local leftMouseJustPressed = false
+    local leftMouseDown = false
+    local leftMouseJustReleased = false
+    if MouseInput.buttonExists.LeftMouse then
+        leftMouseJustPressed = CS.Input.WasButtonJustPressed( "LeftMouse" )
+        leftMouseDown = CS.Input.IsButtonDown( "LeftMouse" )
+        leftMouseJustReleased = CS.Input.WasButtonJustReleased( "LeftMouse" )
+    end
+
+    local rightMouseJustPressed = false
+    if MouseInput.buttonExists.RightMouse then
+        rightMouseJustPressed = CS.Input.WasButtonJustPressed( "RightMouse" )
+    end
+
+    local wheelUpJustPressed = false
+    if MouseInput.buttonExists.WheelUp then
+        wheelUpJustPressed = CS.Input.WasButtonJustPressed( "WheelUp" )
+    end
+
+    local wheelDownJustPressed = false
+    if MouseInput.buttonExists.WheelDown then
+        wheelDownJustPressed = CS.Input.WasButtonJustPressed( "WheelDown" )
+    end
+    
+    if 
+        mouseIsMoving == true or
+        leftMouseJustPressed == true or 
+        leftMouseDown == true or
+        leftMouseJustReleased == true or 
+        rightMouseJustPressed == true or
+        wheelUpJustPressed == true or
+        wheelDownJustPressed == true
+    then
+        local doubleClick = false
+        if leftMouseJustPressed then
+            doubleClick = ( MouseInput.frameCount <= MouseInput.lastLeftClickFrame + MouseInput.Config.doubleClickDelay )   
+            MouseInput.lastLeftClickFrame = MouseInput.frameCount
+        end
+
+        local reindexComponents = false
+        local reindexGameObjects = false
+
+        for i=1, #MouseInput.components do
+            local component = MouseInput.components[i]
+            local mi_gameObject = component.gameObject -- mouse input game object
+
+            if mi_gameObject.inner ~= nil and not mi_gameObject.isDestroyed and mi_gameObject.camera ~= nil then
+                local ray = mi_gameObject.camera:CreateRay( CS.Input.GetMousePosition() )
+                
+                for j=1, #component.tags do
+                    local tag = component.tags[j]
+                    local gameObjects = GameObject.Tags[ tag ]
+                    if gameObjects ~= nil then
+
+                        for k=1, #gameObjects do
+                            local gameObject = gameObjects[k]
+                            -- gameObject is the game object whose position is checked against the raycasthit
+                            if gameObject.inner ~= nil and not gameObject.isDestroyed then
+                                
+                                local raycastHit = ray:IntersectsGameObject( gameObject )
+                                if raycastHit ~= nil then
+                                    -- the mouse pointer is over the gameObject
+                                    if not gameObject.isMouseOver then
+                                        gameObject.isMouseOver = true
+                                        Daneel.Event.Fire( gameObject, "OnMouseEnter", gameObject )
+                                    end
+
+                                elseif gameObject.isMouseOver == true then
+                                    -- the gameObject was still hovered the last frame
+                                    gameObject.isMouseOver = false
+                                    Daneel.Event.Fire( gameObject, "OnMouseExit", gameObject )
+                                end
+                                
+                                if gameObject.isMouseOver == true then
+                                    Daneel.Event.Fire( gameObject, "OnMouseOver", gameObject, raycastHit )
+
+                                    if leftMouseJustPressed == true then
+                                        Daneel.Event.Fire( gameObject, "OnClick", gameObject )
+
+                                        if doubleClick == true then
+                                            Daneel.Event.Fire( gameObject, "OnDoubleClick", gameObject )
+                                        end
+                                    end
+
+                                    if leftMouseDown == true and mouseIsMoving == true then
+                                        Daneel.Event.Fire( gameObject, "OnDrag", gameObject )
+                                    end
+
+                                    if leftMouseJustReleased == true then
+                                        Daneel.Event.Fire( gameObject, "OnLeftClickReleased", gameObject )
+                                    end
+
+                                    if rightMouseJustPressed == true then
+                                        Daneel.Event.Fire( gameObject, "OnRightClick", gameObject )
+                                    end
+
+                                    if wheelUpJustPressed == true then
+                                        Daneel.Event.Fire( gameObject, "OnWheelUp", gameObject )
+                                    end
+                                    if wheelDownJustPressed == true then
+                                        Daneel.Event.Fire( gameObject, "OnWheelDown", gameObject )
+                                    end
+                                end
+                            else 
+                                -- gameObject is dead
+                                gameObjects[ i ] = nil
+                                reindexGameObjects = true
+                            end
+                        end -- for gameObjects with current tag
+
+                        if reindexGameObjects == true then
+                            GameObject.Tags[ tag ] = table.reindex( gameObjects )
+                            reindexGameObjects = false
+                        end
+                    end -- if some game objects have this tag
+                end -- for component.tags
+            else
+                -- this component's game object is dead or has no camera component
+                MouseInput.components[i] = nil
+                reindexComponents = true
+            end -- gameObject is alive
+        end -- for MouseInput.components
+
+        if reindexComponents == true then
+            table.reindex( MouseInput.components )
+        end
+    end -- if mouseIsMoving, ...
+end -- MouseInput.Update() 
+
+--- Create a new MouseInput component.
+-- @param gameObject (GameObject) The game object.
+-- @param params (table) A table of parameters.
+-- @return (MouseInput) The new component.
+function MouseInput.New( gameObject, params )
+    if gameObject.camera == nil then
+        error( "MouseInput.New(gameObject, params) : "..tostring(gameObject).." has no Camera component." )
+        return
+    end
+
+    local component = table.copy( MouseInput.Config.mouseInput )
+    component.gameObject = gameObject
+    gameObject.mouseInput = component
+    setmetatable( component, MouseInput )  
+    component:Set(params or {})
+
+    table.insert( MouseInput.components, component )
+    return component
+end
+
+--------------------------------------------------------------------------------
+-- Language - Localization
+
+Lang = {
+    dictionariesByLanguage = { english = {} },
+    cache = {},
+    gameObjectsToUpdate = {},
+    doNotCallUpdate = true, -- let that here ! It's read in Daneel.Load() to not include Lang.Update() to the list of functions to be called every frames.
+}
+
+Daneel.modules.Lang = Lang
+
+function Lang.DefaultConfig()
+    return {
+        default = nil, -- Default language
+        current = nil, -- Current language
+        searchInDefault = true, -- Tell whether Lang.Get() search a line key in the default language 
+        -- when it is not found in the current language before returning the value of keyNotFound
+        keyNotFound = "langkeynotfound", -- Value returned when a language key is not found
+    }
+end
+Lang.Config = Lang.DefaultConfig()
+
+function Lang.Load()
+    local defaultLanguage = nil
+
+    for lang, dico in pairs( Lang.dictionariesByLanguage ) do
+        local llang = lang:lower()
+        if llang ~= lang then
+            Lang.dictionariesByLanguage[ llang ] = dico
+            Lang.dictionariesByLanguage[ lang ] = nil
+        end
+
+        if defaultLanguage == nil then
+            defaultLanguage = llang
+        end
+    end
+
+    if defaultLanguage == nil then -- no dictionary found
+        if Daneel.Config.debug.enableDebug == true then
+            error("Lang.Load(): No dictionary found in Lang.dictionariesByLanguage !")
+        end
+        return
+    end
+    
+    if Lang.Config.default == nil then
+        Lang.Config.default = defaultLanguage
+    end
+    Lang.Config.default = Lang.Config.default:lower()
+
+    if Lang.Config.current == nil then
+        Lang.Config.current = Lang.Config.default
+    end
+    Lang.Config.current = Lang.Config.current:lower()
+end
+
+function Lang.Start() 
+    if Lang.Config.current ~= nil then
+        Lang.Update( Lang.Config.current )
+    end
+end
+
+--- Get the localized line identified by the provided key.
+-- @param key (string) The language key.
+-- @param replacements (table) [optional] The placeholders and their replacements.
+-- @return (string) The line.
+function Lang.Get( key, replacements )
+    if replacements == nil and Lang.cache[ key ] ~= nil then
+        return Lang.cache[ key ]
+    end
+
+    local currentLanguage = Lang.Config.current
+    local defaultLanguage = Lang.Config.default
+    local searchInDefault = Lang.Config.searchInDefault
+    local cache = true
+
+    local keys = string.split( key, "." )
+    local language = currentLanguage
+    if Lang.dictionariesByLanguage[ keys[1] ] ~= nil then
+        language = table.remove( keys, 1 )
+    end
+    
+    local noLangKey = table.concat( keys, "." ) -- rebuilt the key, but without the language
+    local fullKey = language .. "." .. noLangKey 
+    if replacements == nil and Lang.cache[ fullKey ] ~= nil then
+        return Lang.cache[ fullKey ]
+    end
+
+    local dico = Lang.dictionariesByLanguage[ language ]
+    local errorHead = "Lang.Get(key[, replacements]): "
+    if dico == nil then
+        error( errorHead.."Language '"..language.."' does not exists", key, fullKey )
+    end
+
+    for i=1, #keys do
+        local _key = keys[i]
+        if dico[_key] == nil then
+            -- key was not found in this language
+            -- search for it in the default language
+            if searchInDefault == true and language ~= defaultLanguage then
+                cache = false
+                dico = Lang.Get( defaultLanguage.."."..noLangKey, replacements )
+            else -- already default language or don't want to search in
+                dico = Lang.Config.keyNotFound or "keynotfound"
+            end
+
+            break
+        end
+        dico = dico[ _key ]
+        -- dico is now a nested table in the dictionary, or a searched string (or the keynotfound string)
+    end
+
+    -- dico should be the searched (or keynotfound) string by now
+    local line = dico
+    if type( line ) ~= "string" then
+        error( errorHead.."Localization key '"..key.."' does not lead to a string but to : '"..tostring(line).."'.", key, fullKey )
+    end
+
+    -- process replacements
+    if replacements ~= nil then
+        line = Daneel.Utilities.ReplaceInString( line, replacements )
+    elseif cache == true and line ~= Lang.Config.keyNotFound then
+        Lang.cache[ key ] = line -- ie: "greetings.welcome"
+        Lang.cache[ fullKey ] = line -- ie: "english.greetings.welcome"
+    end
+
+    return line
+end
+
+--- Register a game object to update its text renderer whenever the language will be updated by Lang.Update().
+-- @param gameObject (GameObject) The gameObject.
+-- @param key (string) The language key.
+-- @param replacements (table) [optional] The placeholders and their replacements.
+function Lang.RegisterForUpdate( gameObject, key, replacements )
+    Lang.gameObjectsToUpdate[gameObject] = {
+        key = key,
+        replacements = replacements,
+    }
+end
+
+--- Update the current language and the text of all game objects that have registered via Lang.RegisterForUpdate(). <br>
+-- Fire the OnLangUpdate event.
+-- @param language (string) The new current language.
+function Lang.Update( language )
+    language = Daneel.Debug.CheckArgValue( language, "language", table.getkeys( Lang.dictionariesByLanguage ), "Lang.Update(language): " )
+    
+    Lang.cache = {} -- ideally only the items that do not begins by a language name should be deleted
+    Lang.Config.current = language
+    for gameObject, data in pairs( Lang.gameObjectsToUpdate ) do
+        if gameObject.inner == nil or gameObject.isDestroyed == true then
+            Lang.gameObjectsToUpdate[ gameObject ] = nil
+        else
+            local text = Lang.Get( data.key, data.replacements )
+            
+            if gameObject.textArea ~= nil then
+                gameObject.textArea:SetText( text )
+            elseif gameObject.textRenderer ~= nil then
+                gameObject.textRenderer:SetText( text )
+            
+            elseif Daneel.Config.debug.enableDebug then
+                print( "Lang.Update(language): WARNING : "..tostring( gameObject ).." has no TextRenderer or GUI.TextArea component." )
+            end
+        end
+    end
+
+    Daneel.Event.Fire( "OnLangUpdate" )
+end
+
+table.mergein( Daneel.Debug.functionArgumentsInfo, {
+    ["Lang.Get"] = { { "key", "string" }, { "replacements", "table", isOptional = true } },
+    ["Lang.RegisterForUpdate"] = { { "gameObject", "GameObject" }, { "key", "string" }, { "replacements", "table", isOptional = true } },
+    ["Lang.Update"] = { { "language", "string" } },
+} )
+
