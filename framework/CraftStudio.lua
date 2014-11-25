@@ -1253,6 +1253,60 @@ function CraftStudio.Input.ToggleMouseLock()
     end
 end
 
+----------------------------------------------------------------------------------
+-- Storage
+
+CraftStudio.Storage.oSave = CraftStudio.Storage.Save
+--- Store locally on the computer the provided data under the provided identifier.
+-- @param identifier (string) The identifier of the data.
+-- @param data (mixed) The data to store. May be nil.
+-- @param callback (function) [optional] The function called when the save has completed. The potential error (as a string) is passed to the callback first and only argument (nil if no error).
+function CraftStudio.Storage.Save( identifier, data, callback )
+    if data ~= nil and type( data ) ~= "table" then
+        data = {
+            value = data,
+            isSavedByDaneel = true
+        }
+    end
+    CraftStudio.Storage.oSave( identifier, data, function( _error )
+        if _error ~= nil and Daneel.Config.debug.enableDebug == true then
+            table.print( data )
+            print( "CS.Storage.Save( identifier, data[, callback] ) : Error saving with identifier, data (printed above) and error : ", identifier, _error.message )
+        end
+        if callback ~= nil then
+            callback( _error )
+        end
+    end )
+end
+
+CraftStudio.Storage.oLoad = CraftStudio.Storage.Load
+--- Load data stored locally on the computer under the provided identifier. The load operation may not be instantaneous.
+-- @param identifier (string) The identifier of the data.
+-- @param defaultValue (mixed) [optional] The value that is returned if no data (and no error) is found.
+-- @param callback (function) The function called when the data is loaded. The the potential error (nil if no error) and data (of mixed type) are passed as first and second argument, respectively.
+function CraftStudio.Storage.Load( identifier, defaultValue, callback )
+    if callback == nil and type( defaultValue ) == "function" then
+        callback = defaultValue
+        defaultValue = nil
+    end
+    CraftStudio.Storage.oLoad( identifier, function( _error, data )
+        if _error ~= nil and Daneel.Config.debug.enableDebug == true then
+            print( "CS.Storage.Load( identifier[, defaultValue], callback ) : Error loading with identifier, default value and error", identifier, defaultValue, _error.message )
+        end
+        if data ~= nil and data.value ~= nil and data.isSavedByDaneel == true then
+            data = data.value
+        end
+        if _error == nil and data == nil then
+            data = defaultValue
+        end
+        callback( _error, data )
+    end )
+end
+
+table.mergein( Daneel.Debug.functionArgumentsInfo, {
+    ["CraftStudio.Storage.Save"] = { { "identifier", s }, { "data", isOptional = true }, { "callback", "function", isOptional = true } },
+    ["CraftStudio.Storage.Load"] = { { "identifier", s }, { "defaultValue", isOptional = true }, { "callback", "function", isOptional = true } }
+} )
 
 ----------------------------------------------------------------------------------
 -- GAMEOBJECT

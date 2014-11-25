@@ -1058,83 +1058,6 @@ Daneel.Time = {
 }
 
 ----------------------------------------------------------------------------------
--- Storage
-
-Daneel.Storage = {}
-
---- Store locally on the computer the provided data under the provided name.
--- @param name (string) The name of the data.
--- @param data (mixed) The data to store. May be nil.
--- @param callback (function) [optional] The function called when the save has completed. The potential error (as a string) is passed to the callback first and only argument (nil if no error).
-function Daneel.Storage.Save( name, data, callback )
-    if data ~= nil and type( data ) ~= "table" then
-        data = {
-            value = data,
-            isSavedByDaneel = true
-        }
-    end
-    CS.Storage.Save( name, data, function( error )
-        if error ~= nil then
-            if Daneel.Config.debug.enableDebug then
-                print( "Daneel.Storage.Save( name, data[, callback] ) : Error saving with name, data and error : ", name, data, error.message )
-            end
-        end
-
-        if callback ~= nil then
-            if error == nil then
-                error = {}
-            end
-            callback( error.message )
-        end
-    end )
-end
-
---- Load data stored locally on the computer under the provided name. The load operation may not be instantaneous.
--- The function will return the queried value (or defaultValue) if it completes right away, otherwise it returns nil.
--- @param name (string) The name of the data.
--- @param defaultValue (mixed) [optional] The value that is returned if no data is found.
--- @param callback (function) [optional] The function called when the data is loaded. The value and the potential error (as a string) (ni if no error) are passed as first and second argument, respectively.
--- @return (mixed) The data.
-function Daneel.Storage.Load( name, defaultValue, callback )
-    if callback == nil and type( defaultValue ) == "function" then
-        callback = defaultValue
-        defaultValue = nil
-    end
-    local value = nil
-    CS.Storage.Load( name, function( error, data )
-        if error ~= nil then
-            if Daneel.Config.debug.enableDebug then
-                print( "Daneel.Storage.Load( name[, defaultValue, callback] ) : Error loading with name, default value and error", name, defaultValue, error.message )
-            end
-            data = nil
-        end
-
-        value = defaultValue
-
-        if data ~= nil then
-            if type( data ) == "table" and data.value ~= nil and data.isSavedByDaneel then
-                value = data.value
-            else
-                value = data
-            end
-        end
-
-        if callback ~= nil then
-            if error == nil then
-                error = {}
-            end
-            callback( value, error.message )
-        end
-    end )
-    return value
-end
-
-table.mergein( Daneel.Debug.functionArgumentsInfo, {
-    ["Daneel.Storage.Save"] = { { "name", s }, { "data", isOptional = true }, { "callback", "function", isOptional = true } },
-    ["Daneel.Storage.Load"] = { { "name", s }, { "defaultValue", isOptional = true }, { "callback", "function", isOptional = true } }
-} )
-
-----------------------------------------------------------------------------------
 -- Config, loading
 
 function Daneel.DefaultConfig()
@@ -1771,4 +1694,3 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["Lang.RegisterForUpdate"] = { { "gameObject", "GameObject" }, { "key", "string" }, { "replacements", "table", isOptional = true } },
     ["Lang.Update"] = { { "language", "string" } },
 } )
-
