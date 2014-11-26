@@ -1,11 +1,4 @@
-# CraftStudio's API extension
 
-The `CraftStudio` script adds new objects, new functions on existing objects and sometimes allow to pass different argument types and new arguments on existing functions. 
-
-- [Mass-setting](/docs/craftstudio/mass-setting)
-- [Function Reference](/docs/craftstudio/function-reference)
-
----
 
 - [Using objects as functions to create instances](#objects-as-function)
 - [Game objects](#game-objects)
@@ -19,14 +12,6 @@ The `CraftStudio` script adds new objects, new functions on existing objects and
 - [Input](#input)
 - [Screen](#screen)
 
-
-<a name="objects-as-function"></a>
-## Using objects as functions to create instances
-
-You may create instances of `GameObject`, `Vector3`, `Quaternion`, `Plane`, `Ray` and `RaycastHit` without the `New()` function, just by using the object as if it was a function :
-
-    Vector3( 10 ) -- same as  Vector3:New( 10 )
-    GameObject( "MyObject" ) -- same as GameObject.New( "MyObject" ) or CS.CreateGameObject( "MyObject" )
 
 
 <a name="game-objects"></a>
@@ -109,7 +94,7 @@ The alignment of a `TextRenderer` may be set with the `"left"`, `"center"` or `"
 <a name="destroying-objects"></a>
 ## Destroying objects
 
-All destroyed objects (with `object:Destroy()` or `CS.Destroy()`) gets the `isDestroyed` property set to `true` and the `OnDestroy` event fired at.
+All destroyed objects (with `object:Destroy()` or `CS.Destroy()`) gets the `isDestroyed` property set to `true` and the `OnDestroy` local event fired at.
 
 
 <a name="asset"></a>
@@ -137,7 +122,7 @@ Get an asset name with `asset:GetName()`. The name is the last segment of the pa
 ## Scene
 
 Load a scene with `Scene.Load()`, append a scene with `Scene.Append()`.  
-Loading a scene fires the global event `OnSceneLoad` before the scene is actually loaded.  
+Loading a scene fires the global event `OnNewSceneWillLoad` before the scene is actually loaded.  
 The `Scene.current` property holds the current scene's asset (it isn't set for the first scene).
 
 
@@ -163,5 +148,13 @@ You may toggle the locked state of the mouse with the `CS.Input.ToggleMouseLock(
 <a name="screen"></a>
 ## Screen
 
-`CraftStudio.Screen.aspectRatio` is the screen's aspect ratio.
+`CS.Screen.aspectRatio` is the screen's aspect ratio.
+
+
+
+
+<a name="webplayer"></a>
+## Webplayer
+
+The `CS.IsWebPlayer` property is `true` when the game runs in the web player (`false` otherwise).
 

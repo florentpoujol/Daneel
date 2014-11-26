@@ -11,10 +11,11 @@ This module introduce the `MouseInput` component that enables interactions throu
 <a name="setup"></a>
 ## Setup
 
-Add a mouse input component on a game object that already has a camera component with `gameObject:AddComponent("MouseInput"[, params])`or `MouseInput.new( gameObject[, params])`.
+Add a mouse input component on a game object that already has a camera component with `gameObject:AddComponent("MouseInput"[, params])`or `MouseInput.New( gameObject[, params])`.  
+When you are in the scene editor, you can add the `MouseInput` scripted behavior instead.
 
-To define which game objects each component works with (which game objects are checked agaisnt the position of the mouse cursor), fill the `tags` table on the component to the tag(s) the game object have.  
-When doing so from the scene editor, using the `Mouse Input Behavior` scripted behavior, you can concatenate several tags with a coma in the `tags` field.
+To define which game objects each component works with (which game objects are checked against the position of the mouse cursor), fill the `tags` table on the component to the tag(s) the game object have.  
+In the scene editor, you can concatenate several tags with a coma in the `tags` field.
 
 Then setup a `"LeftMouse"`, `"RightMouse"`, `"WheelUp"` and `"WheelDown"` button in your game controls (in the `Administration > Game Controls` tab).  
 Not setting one of these buttons will throw an harmless error message in the Runtime Report when the game loads. You may setup a button and not bind it to any key to prevent it.

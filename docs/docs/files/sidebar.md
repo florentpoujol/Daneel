@@ -5,21 +5,32 @@
 - [FAQ / Tutorial](/docs/faq-tutorial)
 
 ---
-### Features by script :
 
-- [Lua](/docs/lua)
-- [Daneel](/docs/daneel)
-    - [Debugging](/docs/daneel/debugging)
-    - [Events](/docs/daneel/events)
-    - [Modules](/docs/daneel/modules)
-    - [Function Reference](/docs/daneel/function-reference)
-- [CraftStudio](/docs/craftstudio)
-    - [Mass-setting](/docs/craftstudio/mass-setting)
-    - [Function Reference](/docs/craftstudio/function-reference)
-- [GUI](/docs/gui)
-- [Tween](/docs/tween)
-- [Mouse Input](/docs/mouse-input)
+- [Full function reference](/docs/function-reference)
+
+---
+### Base Features
+
+- [Extension of Lua base libraries](/docs/lua)
+- [Base features](/docs/base-features)
+	- [Debugging](/docs/debugging)
+	- [Events](/docs/events)
+	- [Modules](/docs/modules)
+	- [Tween](/docs/tween)
+- [Miscellaneous features](/docs/craftstudio)
 - [Color](/docs/color)
-- [Draw](/docs/draw)
 - [Lang](/docs/lang)
+
+---
+### Components
+
+- [MouseInput](/docs/mouse-input)
 - [Trigger](/docs/trigger)
+- [GUI](/docs/gui)
+- [Draw](/docs/draw)
+
+---
+### Other features
+
+
+
