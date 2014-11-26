@@ -343,7 +343,62 @@ function Behavior:Awake()
     go:Destroy()
 
 
-    --------
+    --------------------------------------------------------------
+    print("~~~~~ Storage ~~~~~")
+    
+    CS.Storage.Save( "Player Name", "Foo Bar", function(error) 
+        if error ~= nil then
+            print( "Storage.Save 1", error.message )
+        end
+    end )
+
+    CS.Storage.Save( "Player Name", "John Doe", function(error) 
+        if error ~= nil then
+            print( "Storage.Save 2", error.message )
+        end
+    end )
+
+    local data = { 42, foo = "bar" }
+    CS.Storage.Save( "Some Data", data, function(error) 
+        if error ~= nil then
+            print( "Storage.Save 3", error.message )
+        end
+    end )
+
+    CS.Storage.Load( "Player Name", "Florent", function( e, data )
+        if data ~= "John Doe" then
+            print( "Storage.Load 1" )
+        end
+    end )
+
+    -- test default value
+    CS.Storage.Load( "Player Name2", "Florent", function( e, data )
+        if data ~= "Florent" then
+            print( "Storage.Load 2" )
+        end
+    end )
+
+    CS.Storage.Load( "Some Data", function( e, _data )
+        if not table.havesamecontent( _data, data ) then
+            print( "Storage.Load 3" )
+            table.print( _data )
+        end
+    end )
+    
+    CS.Storage.Save( "Some Data", nil, function(error) 
+        if error ~= nil then
+            print( "Storage.Save 4", error.message )
+        end
+    end )
+
+    CS.Storage.Load( "Some Data", nil, function( e, data ) 
+        if e ~= nil or data ~= nil then
+            print( "Storage.Load 4", e, data )
+        end
+    end )
+    
+
+    --------------------------------------------------------------------------------
     -- Game objects
     
     print("~~~~~~ GameObject ~~~~~~")
