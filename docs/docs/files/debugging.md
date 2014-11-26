@@ -8,7 +8,7 @@ Because it may sometimes helps you locate the actual source of an error, you may
 - [Error reporting](#error-reporting)
 - [Stack Trace](#stack-trace)
 - [Data Types](#data-types)
-- [Setting up debugging for you functions](#setup)
+- [Setting up error reporting for you functions](#setup-error-reportingp)
 
 
 <a name="error-reporting"></a>
@@ -85,8 +85,8 @@ You may also set the objects table in the default config of modules.
     end
 
 
-<a name="setup"></a>
-## Setting up debugging for your functions
+<a name="setup-error-reporting"></a>
+## Setting up error reporting for your functions
 
 You can use the functions in the `Daneel.Debug` object to setup stack trace and error reporting in your own scripts.  
 Be sure to [check the function reference](../daneel/function-reference) and the example below to learn how to use them.

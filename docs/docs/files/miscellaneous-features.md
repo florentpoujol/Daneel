@@ -1,18 +1,16 @@
 
-
-- [Using objects as functions to create instances](#objects-as-function)
-- [Game objects](#game-objects)
-    - [Getting game objects](#getting-game-objects)
-    - [Tags](#tags)
+   
+- [Asset](#asset)
 - [Components](#components)
 - [Destroying objects](#destroying-objects)
-- [Asset](#asset)
-- [Scene](#scene)
-- [Raycasting](#raycasting)
+- [Game objects](#game-objects)
+    - [Getting game objects](#getting-game-objects)
 - [Input](#input)
+- [Raycasting](#raycasting)
+- [Scene](#scene)
 - [Screen](#screen)
-
-
+- [Time object](#time-object)
+- [Web Player](#webplayer)
 
 <a name="game-objects"></a>
 ## Game objects
@@ -27,7 +25,7 @@ Send a message to a game object and all of its descendants with `gameObject:Broa
 <a name="getting-game-objects"></a>
 ### Getting game objects
 
-Get a game object with `GameObject.Get(name)` and get a child with `gameObject:GetChild([name, recursive])`. The `name` argument in `GetChild()` is optional so that writing `gameObject.child` returns the first child (if any) of the game object (thanks to the [dynamic getters and setters](/docs/daneel/dynamic-getters-and-setters)).   
+Get a game object with `GameObject.Get(name)` and get a child with `gameObject:GetChild([name, recursive])`. The `name` argument in `GetChild()` is optional so that writing `gameObject.child` returns the first child (if any) of the game object.   
 The `name` argument in these functions may be a hierarchy of game objects (several names separated by dots). The functions will return the lowest child in the hierarchy (the last name) that has the specified ancestry.  
 
 With `GameObject.Get()`, the hierarchy must be continuous but you may skip levels with `GetChild()` when the `recursive` argument is `true`.
@@ -52,8 +50,6 @@ With `GameObject.Get()`, the hierarchy must be continuous but you may skip level
     gameObject:GetChild( "Map.Background.Model" )
     gameObject:GetChild( "Map.Model", true )
     gameObject:GetChild( "Model", true )
-
-
 
 
 <a name="components"></a>
@@ -157,4 +153,40 @@ You may toggle the locked state of the mouse with the `CS.Input.ToggleMouseLock(
 ## Webplayer
 
 The `CS.IsWebPlayer` property is `true` when the game runs in the web player (`false` otherwise).
+
+
+
+<a name="time-object"></a>
+## Time Object
+
+The Time object provides several properties that lets you keep track of time.  
+
+- Daneel.Time.frameCount
+
+The number of frames since the game started.
+
+- Daneel.Time.realTime
+
+The time in seconds -since the game started- at which the last frame started. Not affected by the time scale.
+
+- Daneel.Time.realDeltaTime
+
+The time in second it took for the last frame to complete. Not affected by the time scale.  
+Multipling a speed 'per second' by `realDeltaTime` (or `deltaTime`) effectively turns it into a speed 'per frame'.
+
+- Daneel.Time.time
+
+The time in seconds -since the game started- at which the last frame started.  
+Unlike the real time, the time is affected by the time scale. That means that it may increase or decrease and may be superior or inferior to the real time.
+
+- Daneel.Time.deltaTime
+
+The variation of `Daneel.Time.time` since the last frame. It may be inferior, equal or superior to zero.  
+
+- Daneel.Time.timeScale
+
+The scale at which the time is passing.  
+This affect directly `Daneel.Time.deltaTime` (deltaTime = realDeltaTime * timeScale) and thus the rate at which `Daneel.Time.time` increase or decrease.
+
+When the time scale has a negative value, `Daneel.Time.deltaTime` also has a negative value and `Daneel.Time.time` decreases.
 

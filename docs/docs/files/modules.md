@@ -1,7 +1,7 @@
 # Modules
 
 A module is a particular object that Daneel works with when it is loaded and during runtime.  
-Modules can be used to [create custom components](#components).
+Modules can be used to create custom components.
 
 - [Registering a module](#registering)
 - [Configurationn](#config)

@@ -6,7 +6,7 @@ Require the `CraftStudio` script.
 - [Configuration](#configuration)
 - [Tweener](#tweener)
 - [Timer](#timer)
-- [Helper functions](#helper-functions)
+- [GameObject helper functions](#helper-functions)
 - [Function reference](#function-reference)
 
 <a name="configuration"></a>

@@ -6,20 +6,19 @@
 
 ---
 
-- [Full function reference](/docs/function-reference)
+- [Function reference](/docs/function-reference)  
 
 ---
-### Base Features
+### Features
 
-- [Extension of Lua base libraries](/docs/lua)
-- [Base features](/docs/base-features)
-	- [Debugging](/docs/debugging)
-	- [Events](/docs/events)
-	- [Modules](/docs/modules)
-	- [Tween](/docs/tween)
-- [Miscellaneous features](/docs/craftstudio)
-- [Color](/docs/color)
-- [Lang](/docs/lang)
+- [Core features](/docs/core-features)  
+- [Events](/docs/events)
+- [Debugging](/docs/debugging)
+- [Tween](/docs/tween)
+- [Miscellaneous features](/docs/miscellaneous-features)  
+- [Color](/docs/color)  
+- [Lang](/docs/lang)  
+- [Modules](/docs/modules)
 
 ---
 ### Components
@@ -29,8 +28,6 @@
 - [GUI](/docs/gui)
 - [Draw](/docs/draw)
 
----
-### Other features
 
 
 
