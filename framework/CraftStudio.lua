@@ -1365,33 +1365,35 @@ end
 ----------------------------------------------------------------------------------
 
 --- Create a new game object and optionally initialize it.
--- When the first argument is a scene name or asset, the scene may contains only one top-level game object.
--- If it's not the case, the function won't return any game object yet some may have been created (depending on the behavior of CS.AppendScene()).
--- @param name (string or Scene) The game object name or scene name or scene asset.
--- @param params (table) [optional] A table with parameters to initialize the new game object with.
+-- @param name (string) The game object name.
+-- @param params (table or GameObject) [optional] A table with parameters to initialize the new game object with, or the parent gameO object to attach to.
 -- @return (GameObject) The new game object.
 function GameObject.New( name, params )
     local gameObject = nil
-    local scene = Asset.Get( name, "Scene" ) -- scene will be nil if name is a sting istead of a scene path
-    if scene ~= nil then
-        gameObject = CraftStudio.AppendScene( scene )
+    if params ~= nil and getmetatable( params ) == GameObject then
+        gameObject = CraftStudio.CreateGameObject( name, params )
     else
         gameObject = CraftStudio.CreateGameObject( name )
     end
-    if params ~= nil and gameObject ~= nil then
+    if params ~= nil then
         gameObject:Set(params)
     end
     return gameObject
 end
 
 --- Create a new game object with the content of the provided scene and optionally initialize it.
--- @param gameObjectName (string) The game object name.
+-- @param name (string) The game object name.
 -- @param sceneNameOrAsset (string or Scene) The scene name or scene asset.
--- @param params (table) [optional] A table with parameters to initialize the new game object with.
+-- @param params (table or GameObject) [optional] A table with parameters to initialize the new game object with, or the parent gameO object to attach to..
 -- @return (GameObject) The new game object.
-function GameObject.Instantiate(gameObjectName, sceneNameOrAsset, params)
+function GameObject.Instantiate(name, sceneNameOrAsset, params)
     local scene = Asset.Get(sceneNameOrAsset, "Scene", true)
-    local gameObject = CraftStudio.Instantiate(gameObjectName, scene)
+    local gameObject = nil
+    if params ~= nil and getmetatable( params ) == GameObject then
+        gameObject = CraftStudio.Instantiate( name, scene, params )
+    else
+        gameObject = CraftStudio.Instantiate( name, scene )
+    end
     if params ~= nil then
         gameObject:Set( params )
     end
@@ -1947,8 +1949,8 @@ local _t = { "tag", {"string", "table"} }
 local _go = { "gameObject", "GameObject" }
 
 table.mergein( Daneel.Debug.functionArgumentsInfo, {
-    ["GameObject.New"] =         { { "name", { s, "Scene" } }, { "params", t, isOptional = true } },
-    ["GameObject.Instantiate"] = { { "name", s }, { "sceneNameOrAsset", { s, "Scene" } }, { "params", t, isOptional = true } },
+    ["GameObject.New"] =         { { "name", s }, { "params", { t, "GameObject" }, isOptional = true } },
+    ["GameObject.Instantiate"] = { { "name", s }, { "sceneNameOrAsset", { s, "Scene" } }, { "params", { t, "GameObject" }, isOptional = true } },
     ["GameObject.Set"] =         { _go, _p },
     ["GameObject.Get"] =         { { "name", { s, "GameObject" } }, { "errorIfGameObjectNotFound", defaultValue = false } },
     ["GameObject.Destroy"] =     { _go },
