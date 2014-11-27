@@ -1,9 +1,9 @@
 # Setup
 
 - [Installation](#installation)
-- [How to update](#update)
-- [Configuration](#configuration)
 - [Loading](#loading)
+- [Configuration](#configuration)
+- [How to update](#update)
 
 
 <a name="installation"></a>
@@ -11,31 +11,49 @@
 
 [Download Daneel's package](/download/Daneel_v1.4.0.zip) 
 
-Extract the `.cspack` then import in your project the scripts you need (`Lua` and `Daneel` are mandatory).   
-A folder `Daneel v1.5.0` must have been created in the list of scripts assets. Make sure that the folder is at the top of the list and that the two top-most scripts in the folder are `Lua` and `Daneel` (in this order).
+Extract the `.cspack` then import in your project the `Daneel` script and whatever other scripts you may need.  
+Except for the `Daneel` script, they are all optionnal. They are scripted behaviors used to add features to game objects while in the scene editor. 
 
-![How to setup Daneel in the scripts list](img/scripts-hyerarchy.png "How to setup Daneel in the scripts list")
+A folder `Daneel v1.5.0` must have been created in the list of scripts assets. Make sure that the folder is at the top of the list.
 
 You can also add the template project to your server.  
 Put the file `Daneel v1.5.0 Template.zip` (inside the `.zip` you just downloaded) in `CraftStudio/CraftStudioServer/Templates` (do not unzip the content).  
 Whenever you create a new project, you can now select `Daneel v1.5.0` from the project template dropdown list.   
 The template will add all the scripts as well as five game controls `"LeftMouse"`, `"RightMouse"`, `"WheelUp"`, `"WheelDown"` and `"ValidateInput"`.
 
-### DaneelComplete
-
-The `DaneelComplete` script is a bundle of the following scripts (in this order) : `Lua`, `Daneel`, `CraftStudio`, `GUI`, `Draw`, `Color` and `Tween`.  
-You can include this single script in your project instead of the seven aforementioned ones. 
-
 ### Using Daneel in the Web Player
 
 If your project is targeted for the webplayer, you need to use the provided `player.html` file instead of the one created when you export your game.
 
-If you use Daneel a lot, you may want to replace this file directly in `CraftStudio\CraftStudioRuntime\Web` so that you don't have to do it every time you export.
+The `Daneel.min` script that you may find in Daneel's `.cspack` is a minified version of Daneel's main script.  
+It makes the game load and run slightly faster and is required if you want your game to load in the webplayer (the non minified version is too big, it just doesn't load in the webplayer).
 
-You can perfectly use this modified file with projects that don't use Daneel.
+<a name="loading"></a>
+## Loading
 
-The `DaneelComplete.min` script is a minified version of `DaneelComplete`.  
-It makes the game load and run slightly faster and is required if you want your game to load in the webplayer (`DaneelComplete` is too big, it just doesn't load in the webplayer).
+Loading Daneel means adding the `Daneel` script as a scripted behavior on a game object at the top of the hierarchy in every of your "main" scenes, the ones that are meant to be levels or menus for instance (a scene that you would load with `CS.LoadScene()`, not the scenes meant to be instantiated several times or inside other scenes).  
+
+![Loading Daneel](img/loading_daneel.jpg)
+
+<a name="configuration"></a>
+## Configuration
+
+Daneel and some [modules](/docs/modules) expose configuration properties. User configuration may be set by setting up a `Daneel.UserConfig()` function  that returns a table.
+
+Any existing key/value pairs in the user configuration overrides (or completes) the default value that can be found in `Daneel.DefaultConfig()`.  
+At runtime, the configuration can be found in the `Daneel.Config` tables.
+
+Ie :
+
+    function Daneel.UserConfig()
+        return {
+            debug = {
+                enableDebug = true, -- override the default value for that conf key
+                -- enabledStackTrace is not set in the user config, so its value will stay at its default (false)
+            },
+        }
+    end
+
 
 <a name="update"></a>
 ## How to update
@@ -66,50 +84,3 @@ Rename your user config global functions (if you did set up some of them) from `
 Finally, rename the `updateInterval` property of the `Mouse Input` script to `OnMouseOverInterval`.
 
 
-<a name="configuration"></a>
-## Configuration
-
-Daneel and some modules expose configuration variables. User configuration may be set by setting up a table or a function that returns a table as the value of the `UserConfig` key on the `Daneel` (or any module) object.
-
-Any existing key/value pairs in the user configuration overrides (or completes) the default value that can be found in `Daneel.DefaultConfig()` (or `[ModuleName].DefaultConfig()`).
-
-At runtime, the configuration can be found in the `Daneel.Config` (or `[ModuleName].Config`) tables.
-
-Ie :
-
-    Daneel.UserConfig = {
-        debug = {
-            enableDebug = true, -- override the default value for that conf key
-            -- enabledStackTrace is not set in the user config, so its value will stay at its default (false)
-        },
-
-        textRenderer = {
-            font = "Russo One",
-            alignment = "left",
-        }
-    }
-
-    -- OR
-
-    function Daneel.UserConfig()
-        return {
-            debug = {
-                enableDebug = true, -- override the default value for that conf key
-                -- enabledStackTrace is not set in the user config, so its value will stay at its default (false)
-            },
-
-            textRenderer = {
-                font = "Russo One",
-                alignment = "left",
-            }
-        }
-    end
-    
-
-
-<a name="loading"></a>
-## Loading
-
-Loading Daneel means adding the `Daneel` script (or `DaneelComplete`) as a scripted behavior on a game object at the top of the hierarchy in every of your scenes that are meant to be levels or menus for instance (a scene that you would load with `CS.LoadScene()`, not the scenes meant to be instantiated several times or inside other scenes).  
-
-![Loading Daneel](img/loading_daneel.jpg)

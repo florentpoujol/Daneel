@@ -1,4 +1,4 @@
-# Debugging
+# Debug
 
 For an easy debugging during development, Daneel provides extensive error reporting, a stack trace and several usefull functions. Debugging is turned off by default, so be sure to set the value of the `debug.enableDebug` variable in the config to `true` to turn it on.    
 Be advised that having the debug enabled seriously lowers the performances, so be sure to disable debug before exporting your game.

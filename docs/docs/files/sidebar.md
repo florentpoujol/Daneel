@@ -1,24 +1,26 @@
 - [Home](/docs/home)
-- [Setup](/docs/setup)
 - [Changelog](/docs/changelog)
 - [Example Projects](/docs/example-projects)
 - [FAQ / Tutorial](/docs/faq-tutorial)
 
 ---
 
+- [Setup](/docs/setup)
 - [Function reference](/docs/function-reference)  
 
 ---
-### Features
 
-- [Core features](/docs/core-features)  
-- [Events](/docs/events)
-- [Debugging](/docs/debugging)
-- [Tween](/docs/tween)
 - [Miscellaneous features](/docs/miscellaneous-features)  
+- [Modules](/docs/modules)
+
+---
+### Objects
+
+- [Event](/docs/event)
+- [Debug](/docs/debug)
+- [Tween](/docs/tween)
 - [Color](/docs/color)  
 - [Lang](/docs/lang)  
-- [Modules](/docs/modules)
 
 ---
 ### Components

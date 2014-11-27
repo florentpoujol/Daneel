@@ -1,7 +1,7 @@
 # Modules
 
 A module is a particular object that Daneel works with when it is loaded and during runtime.  
-Modules can be used to create custom components.
+Modules are mostly used to provide user configuration and create custom components.
 
 - [Registering a module](#registering)
 - [Configurationn](#config)
@@ -17,21 +17,18 @@ Registering a module is no difficult than adding the module name and object to t
     ModuleObject = {}
     Daneel.modules.ModuleName = ModuleObject
 
-Modules are loaded in the same order as they are added in the `Daneel.modules` object.
-
 
 <a name="config"></a>
 ## Configuration
 
 The first point of a module is to expose some configuration that can be overridden by the user.
 
-The module object may provide a `DefaultConfig` key which value is a table or a function that returns a table (the default config).  
-Users may create on the module object a `UserConfig` table or function that returns a table (the user config) containing only the configuration key/values they want to override.
+The module object may provide a `ModuleObject.DefaultConfig()` function that returns a table (the default config).  
+In a similar way, users may setup a `ModuleObject.UserConfig()` function that returns a table (the user config) containing only the configuration key/values they want to override.
 
 Upon loading, Daneel will merge the user config into the default config and put the resulting object in the `Config` property on the module object.
 
 Daneel's config is set before the module's config, so the `Daneel.Config` property is accessible.
-
 
     function ModuleObject.DefaultConfig()
         return {
@@ -47,14 +44,15 @@ Daneel's config is set before the module's config, so the `Daneel.Config` proper
     -- you may set the default value for the Config property, it will be overridden when Daneel loads
     ModuleObject.Config = ModuleObject.DefaultConfig()
 
+    function ModuleObject.UserConfig()
+        return {
+            key2 = {
+                key = "user value" -- this value will override the default value set in the default config
+            },
 
-    ModuleObject.UserConfig = {
-        key2 = {
-            key = "user value" -- this value will override the default value set in the default config
-        },
-
-        userKey = "user value",
-    }
+            userKey = "user value",
+        }
+    end
 
     -- Upon loading, the ModuleObject.Config object has this content :
 
@@ -99,7 +97,6 @@ The `Daneel` and `CraftStudio` scripts provide these properties to components (b
 
 But component also have these requirement :
 
-- Are created through a module and thus require Daneel to be loaded.
 - Component objects must provide a `New()` function that accept the game object as first argument and returns the component instance.
 - Component objects must be the metatable of the component instances.
 - The component instances must be accessible on the game object through a property named after the component's type with the first letter lowercase. Ie : `gameObject.modelRenderer`, `gameObject.progressBar`.
@@ -109,29 +106,31 @@ And optionnaly (but strongly recommended) :
 - The component constructor (the `New()` function) should allow for a second `params` argument of type table that override the default component params set in the module config.
 - The game object should be accessible on the component instance through a `gameObject` property.
 
+A typical (and minimal) component constructor looks like this :
+
+    MyComponent = {}
+
+    --- Create a new MyComponent component.
+    -- @param gameObject (GameObject) The game object.
+    -- @param params (table) [optional] A table of parameters.
+    -- @return (MyComponent) The new component.
+    function MyComponent.New( gameObject, params )
+        local component = setmetatable( {}, MyComponent )
+        
+        component.gameObject = gameObject
+        gameObject.myComponent = component
+
+        if params ~= nil then
+            component:Set( params )
+        end
+        return component
+    end
 
 You register a component by setting a `componentObjects` property in a module default config.
     
-    ComponentObject = {}
-    ComponentObject.__index = ComponentObject
-
-    -- This is a template for a component constructor
-    function ComponentObject.New( gameObject, params )
-        local instance = setmetatable( {}, ComponentObject )
-        instance.gameObject = gameObject
-        gameObject.componentType = instance
-        instance:Set( table.merge( ModuleObject.Config.componentType, params ) ) -- not necessarily done at the end of the function
-        return instance
-    end 
 
     function ModuleObject.DefaultConfig()
         return {
-            -- default component properties (overridable by the user config)
-            componentType = {
-                property = value,
-                -- ...
-            },
-
             -- register the object as a component
             componentObjects = {
                 ComponentType = ComponentObject,

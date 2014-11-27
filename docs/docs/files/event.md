@@ -1,4 +1,4 @@
-# Events
+# Event
 
 Events are a way to call functions or send messages, whenever something happens during runtime, with or without the need for the script that fires an event to be aware of all the receivers.
 
