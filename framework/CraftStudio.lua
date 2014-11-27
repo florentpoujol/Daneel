@@ -931,6 +931,31 @@ function CraftStudio.Input.GetMouseDelta()
     return setmetatable( CraftStudio.Input.oGetMouseDelta(), Vector2 )
 end
 
+CraftStudio.Input.isMouseLocked = false
+
+CraftStudio.Input.oLockMouse = CraftStudio.Input.LockMouse
+function CraftStudio.Input.LockMouse()
+    CraftStudio.Input.isMouseLocked = true
+    CraftStudio.Input.oLockMouse()
+end
+
+CraftStudio.Input.oUnlockMouse = CraftStudio.Input.UnlockMouse
+function CraftStudio.Input.UnlockMouse()
+    CraftStudio.Input.isMouseLocked = false
+    CraftStudio.Input.oUnlockMouse()
+end
+
+--- Toggle the locked state of the mouse, which can be accessed via the CraftStudio.Input.isMouseLocked property.
+function CraftStudio.Input.ToggleMouseLock()
+    if CraftStudio.Input.isMouseLocked == true then
+        CraftStudio.Input.UnlockMouse()
+    else
+        CraftStudio.Input.LockMouse()
+    end
+end
+
+--------------------------------------------------------------------------------
+
 CraftStudio.Screen.oSetSize = CraftStudio.Screen.SetSize
 
 --- Sets the size of the screen, in pixels.
@@ -1228,30 +1253,6 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["CraftStudio.Destroy"] = { { "object" } },
 } )
 
-----------------------------------------------------------------------------------
-
-CraftStudio.Input.isMouseLocked = false
-
-CraftStudio.Input.oLockMouse = CraftStudio.Input.LockMouse
-function CraftStudio.Input.LockMouse()
-    CraftStudio.Input.isMouseLocked = true
-    CraftStudio.Input.oLockMouse()
-end
-
-CraftStudio.Input.oUnlockMouse = CraftStudio.Input.UnlockMouse
-function CraftStudio.Input.UnlockMouse()
-    CraftStudio.Input.isMouseLocked = false
-    CraftStudio.Input.oUnlockMouse()
-end
-
---- Toggle the locked state of the mouse, which can be accessed via the CraftStudio.Input.isMouseLocked property.
-function CraftStudio.Input.ToggleMouseLock()
-    if CraftStudio.Input.isMouseLocked then
-        CraftStudio.Input.UnlockMouse()
-    else
-        CraftStudio.Input.LockMouse()
-    end
-end
 
 ----------------------------------------------------------------------------------
 -- Storage
