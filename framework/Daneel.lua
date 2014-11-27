@@ -1114,12 +1114,9 @@ function Daneel.Load()
     Daneel.isLoading = true
 
     -- load Daneel config
-    local userConfig = Daneel.UserConfig
-    if type( userConfig ) == "function" then
-        userConfig = userConfig()
-    end
-    if userConfig ~= nil then
-        table.mergein( Daneel.Config, userConfig, true )
+    local userConfig = nil
+    if Daneel.UserConfig ~= nil then
+        table.mergein( Daneel.Config, Daneel.UserConfig(), true )
     end
 
     -- load modules config
@@ -1130,22 +1127,15 @@ function Daneel.Load()
             module.isConfigLoaded = true
 
             if module.Config == nil then
-                local config = module.DefaultConfig
-                if type( config ) == "function" then
-                    config = config()
+                if module.DefaultConfig ~= nil then
+                    module.Config = module.DefaultConfig()
+                else
+                    module.Config = {}
                 end
-                if config == nil then
-                    config = {}
-                end
-                module.Config = config
             end
 
-            local userConfig = module.UserConfig
-            if type( userConfig ) == "function" then
-                userConfig = userConfig()
-            end
-            if userConfig ~= nil then
-                table.mergein( module.Config, userConfig, true )
+            if module.UserConfig ~= nil then
+                table.mergein( module.Config, module.UserConfig(), true )
             end
 
             if module.Config.objects ~= nil then
@@ -1337,18 +1327,20 @@ MouseInput = {
 }
 Daneel.modules.MouseInput = MouseInput
 
-MouseInput.DefaultConfig = {
-    doubleClickDelay = 20, -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
+function MouseInput.DefaultConfig()
+    return {
+        doubleClickDelay = 20, -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
 
-    mouseInput = {
-        tags = {}
-    },
+        mouseInput = {
+            tags = {}
+        },
 
-    componentObjects = {
-        MouseInput = MouseInput,
-    },
-}
-MouseInput.Config = MouseInput.DefaultConfig
+        componentObjects = {
+            MouseInput = MouseInput,
+        },
+    }
+end
+MouseInput.Config = MouseInput.DefaultConfig()
 
 function MouseInput.Load()
     for buttonName, _ in pairs( MouseInput.buttonExists ) do
@@ -1502,7 +1494,7 @@ end -- MouseInput.Update()
 
 --- Create a new MouseInput component.
 -- @param gameObject (GameObject) The game object.
--- @param params (table) A table of parameters.
+-- @param params (table) [optional] A table of parameters.
 -- @return (MouseInput) The new component.
 function MouseInput.New( gameObject, params )
     if gameObject.camera == nil then
@@ -1703,19 +1695,21 @@ Trigger = {
 }
 Daneel.modules.Trigger = Trigger
 
-Trigger.DefaultConfig = {
-    trigger = {
-        range = 1,
-        updateInterval = 0,
-        tags = {},
-        gameObjectsInRangeLastUpdate = {},
-    },
+function Trigger.DefaultConfig()
+    return {
+        trigger = {
+            range = 1,
+            updateInterval = 0,
+            tags = {},
+            gameObjectsInRangeLastUpdate = {},
+        },
 
-    componentObjects = {
-        Trigger = Trigger,
-    },
-}
-Trigger.Config = Trigger.DefaultConfig
+        componentObjects = {
+            Trigger = Trigger,
+        },
+    }
+end
+Trigger.Config = Trigger.DefaultConfig()
 
 function Trigger.Update()
     Trigger.frameCount = Trigger.frameCount + 1
@@ -1787,7 +1781,7 @@ end
 
 --- Create a new Trigger component.
 -- @param gameObject (GameObject) The game object.
--- @param params (table) A table of parameters.
+-- @param params (table) [optional] A table of parameters.
 -- @return (Trigger) The new component.
 function Trigger.New( gameObject, params )
     local trigger = table.copy( Trigger.Config.trigger )
