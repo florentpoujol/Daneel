@@ -1705,56 +1705,33 @@ function GameObject.AddComponent( gameObject, componentType, params )
 
     if Daneel.Config.componentObjects[ componentType ] == nil then
         -- componentType is not one of the component types
-        -- it may be a script path, alias or asset
+        -- it may be a script path, asset
         local script = Asset.Get( componentType, "Script" )
         if script == nil then
-            if Daneel.Config.debug.enableDebug then
-                error( errorHead.."Provided component type '"..tostring(componentType).."' in not one of the component types, nor a script asset, path or alias." )
-            end
-            return
+            error( errorHead.."Provided component type '"..tostring(componentType).."' is not one of the component types, nor a script asset or path." )
         end
-
-        if params == nil then
-            params = {}
-        end
-        component = gameObject:CreateScriptedBehavior( script, params )
-        params = nil
+        component = gameObject:CreateScriptedBehavior( script, params or {} )
 
     elseif Daneel.DefaultConfig().componentObjects[ componentType ] ~= nil then
         -- built-in component type
         if componentType == "Transform" then
-            if Daneel.Config.debug.enableDebug then
-                print( errorHead.."Can't add a transform component because gameObjects may only have one transform." )
-            end
-            return
+            error( errorHead.."Can't add a transform component because game objects may only have one transform." )
         elseif componentType == "ScriptedBehavior" then
-            if Daneel.Config.debug.enableDebug then
-                print( errorHead.."To add a scripted behavior, pass the script asset or path instead of 'ScriptedBehavior' as argument 'componentType'." )
-            end
-            return
+            error( errorHead.."To add a scripted behavior, pass the script asset or path instead of 'ScriptedBehavior' as the 'componentType' argument." )
         end
 
         component = gameObject:CreateComponent( componentType )
-
-        local defaultComponentParams = Daneel.Config[ string.lcfirst( componentType ) ]
-        if defaultComponentParams ~= nil then
-            params = table.merge( defaultComponentParams, params )
-        end
         if params ~= nil then
             component:Set(params)
         end
 
-    else
-        -- custom component type
+    else -- custom component type
         local componentObject = Daneel.Config.componentObjects[ componentType ]
-
-        if componentObject ~= nil and type( componentObject.New ) == "function" then
+        -- component object is never nil since componentType's value is checked at the beginning
+        if type( componentObject.New ) == "function" then
             component = componentObject.New( gameObject, params )
         else
-            if Daneel.Config.debug.enableDebug then
-                error( errorHead.."Custom component of type '"..componentType.."' does not provide a New() function; Can't create the component." )
-            end
-            return
+            error( errorHead.."Can't create custom component of type '"..componentType.."' because the component object does not provide a New() function." )
         end
     end
 

@@ -1068,9 +1068,7 @@ function Daneel.DefaultConfig()
             enableStackTrace = false, -- Enable/disable the Stack Trace.
         },
 
-        -- Default CraftStudio's components settings (except Transform)
-        -- textRenderer = { font = "MyFont" },
-
+        -- this table define the object's type names, returned by Daneel.Debug.GetType()
         objects = {
             GameObject = GameObject,
             Vector3 = Vector3,
