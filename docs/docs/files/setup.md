@@ -25,8 +25,7 @@ The template will add all the scripts as well as five game controls `"LeftMouse"
 
 If your project is targeted for the webplayer, you need to use the provided `player.html` file instead of the one created when you export your game.
 
-The `Daneel.min` script that you may find in Daneel's `.cspack` is a minified version of Daneel's main script.  
-It makes the game load and run slightly faster and is required if you want your game to load in the webplayer (the non minified version is too big, it just doesn't load in the webplayer).
+You also must use Daneel's minified script `Daneel.min` instead of `Daneel`, that you also find in Daneel's `.cspack`, as the non minified script is just too big to load at all in the webplayer.
 
 <a name="loading"></a>
 ## Loading
@@ -62,15 +61,16 @@ __DO NOT delete a script used as scripted behavior__ because you would loose the
 
 Your only choice to update a scripted behavior is to replace the old code by copy/pasting the new one. You also need to change the properties manually (if they have changed).
 
-The script used as scripted behavior are : `Daneel` (or `DaneelComplete`), `Mouse Input`, `Trigger`, `Lang`, `Tweener`, `Timer`, plus all components scripted behavior : `Hud`, `ProgressBar`, `LineRenderer` ... 
+Note that all scripts in v1.5.0 are scripted behaviors.
 
-You can safely delete the scripts that are not scripted behaviors and replace them by the new version imported from a `.cspack`.
-
-[Read the changelog](changelog) to have an overview of what's new and what has changed.
+[Read the changelog](changelog) to have an overview of what's new and what has changed since the last version.
 
 ### From v1.4.0
 
-New file : `Color`
+In v1.4.0, the script that _are not_ scripted behaviors are : `Lua`, `CraftStudio`, `Tween`, `GUI` and `Draw`.  
+You can safely delete these scripts as they are now all included in the sole `Daneel` script.
+
+Now you have to manually update the remaining scripts : `Daneel`, `Tags`, `MouseInput`, `Trigger`, `Lang` and the GUI component's scripted behaviors.
 
 ### From v1.3.0
 

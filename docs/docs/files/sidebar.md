@@ -4,14 +4,12 @@
 - [FAQ / Tutorial](/docs/faq-tutorial)
 
 ---
+### Documentation
 
 - [Setup](/docs/setup)
-- [Function reference](/docs/function-reference)  
-
----
-
-- [Miscellaneous features](/docs/miscellaneous-features)  
+- [Features](/docs/features)  
 - [Modules](/docs/modules)
+- [Function reference](/docs/function-reference)  
 
 ---
 ### Objects

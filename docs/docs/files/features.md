@@ -1,6 +1,8 @@
-# Miscellaneous features
+# Features
 
-This page presents some of the features deemed as the most important ones to be aware of.
+This page presents the features provided by the framework.
+
+Be sure to also explore the [function reference](/docs/function-reference) to find out and have detailed info about all the functions you can use.
 
 <table class="page-menu">
 	<tr>
@@ -38,20 +40,7 @@ This page presents some of the features deemed as the most important ones to be 
 	</tr>
 </table>
 
-
 <!--
-- [Asset](#asset)
-- [Components](#components)
-- [Destroying objects](#destroying-objects)
-- [Game objects](#game-objects)
-    - [Getting game objects](#getting-game-objects)
-- [Input](#input)
-- [Raycasting](#raycasting)
-- [Scene](#scene)
-- [Screen](#screen)
-- [Time object](#time-object)
-- [Web Player](#webplayer)
-
 - [Extension of Lua base libraries](/#extension-lua-libraries) 
 - [Dynamic functions](#dynamic-functions)
 - [Using objects as functions to create instances](#objects-as-function)
@@ -63,6 +52,17 @@ This page presents some of the features deemed as the most important ones to be 
 - [Events](#events)
 - [Modules](#modules)
 - [Tween](#tween)
+- [Asset](#asset)
+- [Components](#components)
+- [Destroying objects](#destroying-objects)
+- [Game objects](#game-objects)
+    - [Getting game objects](#getting-game-objects)
+- [Input](#input)
+- [Raycasting](#raycasting)
+- [Scene](#scene)
+- [Screen](#screen)
+- [Time object](#time-object)
+- [Web Player](#webplayer)
 -->
 
 <a name="extension-lua-libraries"></a>
@@ -71,6 +71,53 @@ This page presents some of the features deemed as the most important ones to be 
 Daneel introduce a lot of new functions in Lua's standard `math`, `string` and `table` libraries.  
 All these functions are pure Lua and are not dependent on Daneel or CraftStudio so you can use them in any Lua project.  
 [You can check them out on Daneel's GitHub repo](https://github.com/florentpoujol/Daneel/blob/master/framework/Lua.lua).
+
+Some noteworthy functions :
+
+- `table.containsvalue( t, value )` tell if the table contains the value.
+- `table.removevalue( t, value )` remove all occurrences of the value in the table.
+- `table.getvalue( t, "foo.bar.whatever" )` search inside a hierarchy of tables.
+- `string.split( s, delimiter )` splits the string in several chunks.
+- `string.trim( s )` remove the white spaces at the beginning and end of a string.
+- `string.ucfirst( s )` and `string.lcfirst( s )` change the case of the first letter to uppercase or lowercase, respectively.
+- `table.print( t )` and `table.printr( t )` (r for recursive) beautifully prints the content of the table (see examples below).
+- `table.merge( t1, t2 )` merge (with optional recursion) several tables together. `table.mergein( t1, t2 )` does it inside the first table as argument.
+
+Ie :
+
+	local t1 = { 1, 2, key = "value" }
+	local t2 = { 3, key = "other value", otherKey = "value" }
+	table.mergein( t1, t2 )
+	
+	table.print( t1 ) -- this print in the Runtime Report :
+	~~~~~ table.print(table: 080A3C88) ~~~~~ Start ~~~~~
+	1	3
+	2	2
+	key	other value
+	otherKey	value
+	~~~~~ table.print(table: 080A3C88) ~~~~~ End ~~~~~
+
+	t1.t1 = t1
+	t1.t2 = {
+		1, key = "value", t1 = t1,
+		t3 = { otherKey = 1, 2 }
+	}
+
+	table.printr( t1 ) -- this print in the Runtime Report :
+	~~~~~ table.printr(table: 080A3C88) ~~~~~ Start ~~~~~
+	1	3
+	2	2
+	"t2"	table: 082C85A0
+	| - - - 1	1
+	| - - - "t3"	table: 081B8330
+	| - - - | - - - 1	2
+	| - - - | - - - "otherKey"	1
+	| - - - "key"	"value"
+	| - - - "t1"	Table currently being printed: table: 080A3C88
+	"t1"	Table currently being printed: table: 080A3C88
+	"key"	"other value"
+	"otherKey"	"value"
+	~~~~~ table.printr(table: 080A3C88) ~~~~~ End ~~~~~
 
 
 <a name="dynamic-functions"></a>
@@ -232,7 +279,7 @@ With `GameObject.Get()`, the hierarchy must be continuous but you may skip level
 
 You may call `component:Set(params)`, `component:Destroy()` and `component:GetId()` on any components, built-in (`Transform`, `ModelRenderer`, ...) or custom ones (`GUI.Hud`, `Trigger`, ...).
 
-Custom components are components that are not introduced by CraftStudio. Learn how to create them [through Daneel's modules](/docs/modules).
+Custom components are components that are not introduced by CraftStudio. Learn how to create them [through modules](/docs/modules).
 
 `transform:GetScale()`, `transform:SetScale()` may be used to get/set the game object's global scale.  
 The global or local scale may be set as a `number` instead of a `Vector3`.

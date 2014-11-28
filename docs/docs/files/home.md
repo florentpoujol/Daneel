@@ -61,7 +61,7 @@ Extension of Lua's built-in `table`, `string` and `math` libraries :
     table.containsvalue( t, v )
     table.removevalue( t, v )
     table.mergein( t1, t2 )
-    table.print( t ) -- and table.rprint( t )
+    table.print( t ) -- and table.printr( t ) for recursively printing tables as value
     table.getvalue( t, "foo.bar" )
     ...
 
