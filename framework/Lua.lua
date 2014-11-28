@@ -377,17 +377,17 @@ local knownKeysByPrintedTable = {} -- [ table ] = key
 --- Recursively print all key/value pairs within the provided table.
 -- Fully prints the tables that have no metatable found as values.
 -- @param t (table) The table to print.
--- @param level (string) [default=""] The string to prepend to the printed lines. Should be empty or nil unless called from table.rprint().
-function table.rprint( t, level )
+-- @param level (string) [default=""] The string to prepend to the printed lines. Should be empty or nil unless called from table.printr().
+function table.printr( t, level )
     level = level or ""
 
     if t == nil then
-        print(level.."table.rprint( t ) : Provided table is nil.")
+        print(level.."table.printr( t ) : Provided table is nil.")
         return
     end
 
     if level == "" then
-        print("~~~~~ table.rprint("..tostring(t)..") ~~~~~ Start ~~~~~")
+        print("~~~~~ table.printr("..tostring(t)..") ~~~~~ Start ~~~~~")
     end
 
     local func = pairs
@@ -412,7 +412,7 @@ function table.rprint( t, level )
             else
                 knownKeysByPrintedTable[ value ] = key
                 print(level..tostring(key), value)
-                table.rprint( value, level.."| - - - ")
+                table.printr( value, level.."| - - - ")
             end
         else
             print(level..tostring(key), value)
@@ -420,7 +420,7 @@ function table.rprint( t, level )
     end
 
     if level == "" then
-        print("~~~~~ table.rprint("..tostring(t)..") ~~~~~ End ~~~~~")
+        print("~~~~~ table.printr("..tostring(t)..") ~~~~~ End ~~~~~")
         knownKeysByPrintedTable = {}
     end
 end
