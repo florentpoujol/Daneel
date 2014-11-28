@@ -373,6 +373,7 @@ function table.print(t)
 end
 
 local knownKeysByPrintedTable = {} -- [ table ] = key
+local currentlyPrintedTable = nil
 
 --- Recursively print all key/value pairs within the provided table.
 -- Fully prints the tables that have no metatable found as values.
@@ -387,8 +388,11 @@ function table.printr( t, level )
     end
 
     if level == "" then
-        print("~~~~~ table.printr("..tostring(t)..") ~~~~~ Start ~~~~~")
-    end
+        print("~~~~~ table.printr("..tostring(t)..") ~~~~~ Start ~~~~~")       
+        if currentlyPrintedTable == nil then
+          currentlyPrintedTable = t
+        end
+    end   
 
     local func = pairs
     if table.getlength(t) == 0 then
@@ -407,7 +411,9 @@ function table.printr( t, level )
 
         if type( value ) == "table" and getmetatable( value ) == nil then
             local knownKey = knownKeysByPrintedTable[ value ]
-            if knownKey ~= nil then
+            if value == currentlyPrintedTable then
+                print(level..tostring(key), "Table currently being printed: "..tostring(value) )
+            elseif knownKey ~= nil then
                 print(level..tostring(key), "Already printed table with key "..knownKey..": "..tostring(value) )
             else
                 knownKeysByPrintedTable[ value ] = key
@@ -422,6 +428,7 @@ function table.printr( t, level )
     if level == "" then
         print("~~~~~ table.printr("..tostring(t)..") ~~~~~ End ~~~~~")
         knownKeysByPrintedTable = {}
+        currentlyPrintedTable = nil
     end
 end
 
