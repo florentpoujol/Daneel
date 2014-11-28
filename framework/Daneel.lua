@@ -466,8 +466,8 @@ function Daneel.Debug.GetType( object, luaTypeOnly )
                 return "ScriptedBehavior"
             end
 
-            if Daneel.Config.objects ~= nil then
-                for type, object in pairs( Daneel.Config.objects ) do
+            if Daneel.Config.objectsByType ~= nil then
+                for type, object in pairs( Daneel.Config.objectsByType ) do
                     if mt == object then
                         return type
                     end
@@ -548,7 +548,7 @@ function Daneel.Debug.GetNameFromValue(value)
     if value == nil then
         error(errorHead.." Argument 'value' is nil.")
     end
-    local result = table.getkey(Daneel.Config.objects, value)
+    local result = table.getkey(Daneel.Config.objectsByType, value)
     if result == nil then
         result = table.getkey(_G, value)
     end
@@ -834,7 +834,7 @@ function Daneel.Event.Listen( eventName, functionOrObject, isPersistent )
             -- check that the persistent listener is not a game object or a component (that are always destroyed when the scene loads)
             if isPersistent and listenerType == "table" then
                 local mt = getmetatable( functionOrObject )
-                if mt ~= nil and mt == GameObject or table.containsvalue( Daneel.Config.componentObjects, mt ) then
+                if mt ~= nil and mt == GameObject or table.containsvalue( Daneel.Config.componentObjectsByType, mt ) then
                     if Daneel.Config.debug.enableDebug then
                         print( errorHead.."Game objects and components can't be persistent listeners", functionOrObject )
                     end
@@ -1069,7 +1069,7 @@ function Daneel.DefaultConfig()
         },
 
         -- this table define the object's type names, returned by Daneel.Debug.GetType()
-        objects = {
+        objectsByType = {
             GameObject = GameObject,
             Vector3 = Vector3,
             Quaternion = Quaternion,
@@ -1077,7 +1077,7 @@ function Daneel.DefaultConfig()
             Ray = Ray,
         },
 
-        componentObjects = {
+        componentObjectsByType = {
             ScriptedBehavior = ScriptedBehavior,
             ModelRenderer = ModelRenderer,
             MapRenderer = MapRenderer,
@@ -1089,7 +1089,7 @@ function Daneel.DefaultConfig()
         },
         componentTypes = {},
 
-        assetObjects = {
+        assetObjectsByType = {
             Script = Script,
             Model = Model,
             ModelAnimation = ModelAnimation,
@@ -1106,7 +1106,7 @@ function Daneel.DefaultConfig()
     return config
 end
 Daneel.Config = Daneel.DefaultConfig()
-Daneel.Config.assetTypes = table.getkeys( Daneel.Config.assetObjects ) -- needed in the CraftStudio script before Daneel is loaded
+Daneel.Config.assetTypes = table.getkeys( Daneel.Config.assetObjectsByType ) -- needed in the CraftStudio script before Daneel is loaded
 
 -- load Daneel at the start of the game
 function Daneel.Load()
@@ -1138,21 +1138,21 @@ function Daneel.Load()
                 table.mergein( module.Config, module.UserConfig(), true )
             end
 
-            if module.Config.objects ~= nil then
-                table.mergein( Daneel.Config.objects, module.Config.objects )
+            if module.Config.objectsByType ~= nil then
+                table.mergein( Daneel.Config.objectsByType, module.Config.objectsByType )
             end
 
-            if module.Config.componentObjects ~= nil then
-                table.mergein( Daneel.Config.componentObjects, module.Config.componentObjects )
-                table.mergein( Daneel.Config.objects, module.Config.componentObjects )
+            if module.Config.componentObjectsByType ~= nil then
+                table.mergein( Daneel.Config.componentObjectsByType, module.Config.componentObjectsByType )
+                table.mergein( Daneel.Config.objectsByType, module.Config.componentObjectsByType )
             end
         end
     end
 
-    table.mergein( Daneel.Config.objects, Daneel.Config.componentObjects, Daneel.Config.assetObjects )
+    table.mergein( Daneel.Config.objectsByType, Daneel.Config.componentObjectsByType, Daneel.Config.assetObjectsByType )
 
     -- Enable nice printing + dynamic access of getters/setters on components
-    for componentType, componentObject in pairs( Daneel.Config.componentObjects ) do
+    for componentType, componentObject in pairs( Daneel.Config.componentObjectsByType ) do
         Daneel.Utilities.AllowDynamicGettersAndSetters( componentObject, { Component } )
 
         if componentType ~= "ScriptedBehavior" then
@@ -1162,7 +1162,7 @@ function Daneel.Load()
         end
     end
 
-    table.mergein( Daneel.Config.componentTypes, table.getkeys( Daneel.Config.componentObjects ) )
+    table.mergein( Daneel.Config.componentTypes, table.getkeys( Daneel.Config.componentObjectsByType ) )
 
     if Daneel.Config.debug.enableDebug then
         if Daneel.Config.debug.enableStackTrace then
@@ -1176,7 +1176,7 @@ function Daneel.Load()
     end
 
     -- Enable nice printing + dynamic access of getters/setters on assets
-    for assetType, assetObject in pairs( Daneel.Config.assetObjects ) do
+    for assetType, assetObject in pairs( Daneel.Config.assetObjectsByType ) do
         Daneel.Utilities.AllowDynamicGettersAndSetters( assetObject, { Asset } )
 
         assetObject["__tostring"] = function( asset )

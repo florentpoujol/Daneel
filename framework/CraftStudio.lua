@@ -651,7 +651,7 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
 Vector2 = {}
 Vector2.__index = Vector2
 setmetatable( Vector2, { __call = function(Object, ...) return Object.New(...) end } )
-Daneel.Config.objects.Vector2 = Vector2
+Daneel.Config.objectsByType.Vector2 = Vector2
 
 function Vector2.__tostring(vector2)
     return "Vector2: { x="..vector2.x..", y="..vector2.y.." }"
@@ -987,7 +987,7 @@ CraftStudio.Screen.GetSize() -- set aspect ratio
 RaycastHit = {}
 RaycastHit.__index = RaycastHit
 setmetatable( RaycastHit, { __call = function(Object, ...) return Object.New(...) end } )
-Daneel.Config.objects.RaycastHit = RaycastHit
+Daneel.Config.objectsByType.RaycastHit = RaycastHit
 
 -- Allow to access the "hitLocation" property on raycastHits for backward compatibility.
 -- The property has been renamed "hitPosition" since v1.5.0.
@@ -1703,7 +1703,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
     componentType = Daneel.Debug.CheckArgValue( componentType, "componentType", Daneel.Config.componentTypes, errorHead, componentType )
     local component = nil
 
-    if Daneel.Config.componentObjects[ componentType ] == nil then
+    if Daneel.Config.componentObjectsByType[ componentType ] == nil then
         -- componentType is not one of the component types
         -- it may be a script path, asset
         local script = Asset.Get( componentType, "Script" )
@@ -1712,7 +1712,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
         end
         component = gameObject:CreateScriptedBehavior( script, params or {} )
 
-    elseif Daneel.DefaultConfig().componentObjects[ componentType ] ~= nil then
+    elseif Daneel.DefaultConfig().componentObjectsByType[ componentType ] ~= nil then
         -- built-in component type
         if componentType == "Transform" then
             error( errorHead.."Can't add a transform component because game objects may only have one transform." )
@@ -1726,7 +1726,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
         end
 
     else -- custom component type
-        local componentObject = Daneel.Config.componentObjects[ componentType ]
+        local componentObject = Daneel.Config.componentObjectsByType[ componentType ]
         -- component object is never nil since componentType's value is checked at the beginning
         if type( componentObject.New ) == "function" then
             component = componentObject.New( gameObject, params )
@@ -1764,9 +1764,9 @@ function GameObject.GetComponent( gameObject, componentType )
         component = gameObject[ lcComponentType ]
     end
     if component == nil then
-        if Daneel.DefaultConfig().componentObjects[ componentType ] ~= nil then
+        if Daneel.DefaultConfig().componentObjectsByType[ componentType ] ~= nil then
             component = GameObject.oGetComponent( gameObject, componentType )
-        elseif Daneel.Config.componentObjects[ componentType ] == nil then -- not a custom component either
+        elseif Daneel.Config.componentObjectsByType[ componentType ] == nil then -- not a custom component either
             local script = Asset.Get( componentType, "Script", true ) -- componentType is the script path or asset
             component = GameObject.oGetScriptedBehavior( gameObject, script )
         end
