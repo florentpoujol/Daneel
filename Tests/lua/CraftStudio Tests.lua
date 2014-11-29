@@ -427,14 +427,7 @@ function Behavior:Awake()
     then
         print( "GameObject.New 1", r )
     end
-    
-    
-    r = GameObject( "Prefab")
-    
-    if r.name ~= "PrefabGameObject" then
-        print( "GameObject.New 2", r )
-    end
-    
+        
     r = GameObject.Instantiate( "NewGO", Asset("MultiPrefab") )
     
     if #r.children ~= 2 and r.children[2].name ~= "Object2" then

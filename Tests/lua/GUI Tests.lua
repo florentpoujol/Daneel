@@ -120,17 +120,24 @@ function Behavior:Start()
 
     print( "~~~~~ GUI.TextArea ~~~~~" )
     
+    go = GameObject.Get( "TextArea 1" )
+    go.textArea.text = "abcdefghijkl1;abcdefghijkl2"
+    
+    go = GameObject.Get( "TextArea 2" )
+    go.textArea.text = [[abcdefghijkl1\nabcdefghijkl2]]
+    
     go = GameObject.Get( "TextArea 3" )
     
     go:AddComponent( "TextArea", {
         font = "Calibri",
         alignment = "RiGhT",        
-        lineHeight = 2,
+        lineHeight = 0.2,
         verticalAlignment = "bOtToM",
+        newLine = "<br>",
 
         areaWidth = 7,
         wordWrap = true,
-        text = "abcdefghijkl<br>abcdefghijkl"
+        text = "abcdefghijkl1<br>abcdefghijkl2"
     } )
 end
 

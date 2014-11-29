@@ -449,7 +449,7 @@ function Draw.DefaultConfig()
             model = nil, -- model name or asset
         },
         
-        componentObjects = {
+        componentObjectsByType = {
             LineRenderer = Draw.LineRenderer,
             CircleRenderer = Draw.CircleRenderer,
         },

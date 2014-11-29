@@ -478,7 +478,7 @@ function Tween.DefaultConfig()
             frameCount = 0,
         },
     
-        objects = {
+        objectsByType = {
             ["Tween.Tweener"] = Tween.Tweener,
         },
 

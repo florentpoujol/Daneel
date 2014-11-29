@@ -1446,7 +1446,7 @@ function GUI.DefaultConfig()
             opacity = nil,
         },
 
-        componentObjects = {
+        componentObjectsByType = {
             Hud = GUI.Hud,
             Toggle = GUI.Toggle,
             ProgressBar = GUI.ProgressBar,

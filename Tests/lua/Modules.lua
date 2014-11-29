@@ -1,27 +1,24 @@
 
-function LangUserConfig()
+function Lang.UserConfig()
     return {
         default = "french",
     }
 end
 
-function LangEnglish()
-    return {
-        
-        greetings = {
-            welcome = "Welcome :playername !"
-        }
+Lang.dictionariesByLanguage.english = {
+    greetings = {
+        welcome = "Welcome :playername !"
     }
-end
+}
 
-function LangFrench()
-    return {
-        gamename = "Nom du jeu",
-        greetings = {
-            welcome = "Bienvenu :playername !"
-        }
+Lang.dictionariesByLanguage.french =
+{
+    gamename = "Nom du jeu",
+    greetings = {
+        welcome = "Bienvenu :playername !"
     }
-end
+}
+
 
 function Behavior:Awake()
     print( "~~~~~ Lang ~~~~~" )
@@ -29,25 +26,25 @@ function Behavior:Awake()
     
        
     Lang.Config.searchInDefault = true
-    r = Lang.Get("English.gamename")
-    if r ~= Lang.lines[ Lang.Config.default ].gamename then
+    r = Lang.Get("english.gamename")
+    if r ~= Lang.dictionariesByLanguage[ Lang.Config.default ].gamename then
         print( "Lang.Get 1", r )
     end
     
     Lang.Config.searchInDefault = false
-    r = Lang.Get("English.gamename")
+    r = Lang.Get("english.gamename")
     if r ~= Lang.Config.keyNotFound then
         print( "Lang.Get 1.5", r )
     end
     
-    r = Lang.Get("French.gamename")
-    if r ~= Lang.lines.french.gamename then
+    r = Lang.Get("french.gamename")
+    if r ~= Lang.dictionariesByLanguage.french.gamename then
         print( "Lang.Get 2", r )
     end
     
     
     r = Lang.Get("greetings.welcome")
-    if r ~= Lang.lines[ Lang.Config.current ].greetings.welcome then
+    if r ~= Lang.dictionariesByLanguage[ Lang.Config.current ].greetings.welcome then
         print( "Lang.Get 3", r )
     end
     
@@ -57,21 +54,21 @@ function Behavior:Awake()
     end
     
     r = Lang.Get("greetings.welcome", { playername = "John" } )
-    if r ~= Lang.lines[ Lang.Config.current ].greetings.welcome:gsub( ":playername", "John" ) then
+    if r ~= Lang.dictionariesByLanguage[ Lang.Config.current ].greetings.welcome:gsub( ":playername", "John" ) then
         print( "Lang.Get 5", r )
     end
     
-    r = Lang.Get("English.greetings.welcome", { playername = "Max" } )
-    if r ~= Lang.lines.english.greetings.welcome:gsub( ":playername", "Max" ) then
+    r = Lang.Get("english.greetings.welcome", { playername = "Max" } )
+    if r ~= Lang.dictionariesByLanguage.english.greetings.welcome:gsub( ":playername", "Max" ) then
         print( "Lang.Get 6", r )
     end
     
     self.gameObject.textRenderer.text = "initial text"
     Lang.RegisterForUpdate( self.gameObject, "greetings.welcome", { playername = "Charlie" } )
     
-    Lang.Update( "English" )
+    Lang.Update( "english" )
     r = self.gameObject.textRenderer.text
-    if r ~= Lang.lines.english.greetings.welcome:gsub( ":playername", "Charlie" ) then
+    if r ~= Lang.dictionariesByLanguage.english.greetings.welcome:gsub( ":playername", "Charlie" ) then
         print( "Lang.Get 7", r )
     end
 

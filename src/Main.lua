@@ -1335,7 +1335,7 @@ function MouseInput.DefaultConfig()
             tags = {}
         },
 
-        componentObjects = {
+        componentObjectsByType = {
             MouseInput = MouseInput,
         },
     }
@@ -1704,7 +1704,7 @@ function Trigger.DefaultConfig()
             gameObjectsInRangeLastUpdate = {},
         },
 
-        componentObjects = {
+        componentObjectsByType = {
             Trigger = Trigger,
         },
     }
