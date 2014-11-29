@@ -54,7 +54,6 @@ local function SetTweenerProperty(tweener, value)
     end
 end
 
-
 ----------------------------------------------------------------------------------
 -- Tweener
 
@@ -385,7 +384,6 @@ function Tween.Tweener.Update(tweener, deltaDuration) -- the deltaDuration argum
     Daneel.Debug.StackTrace.EndFunction()
 end
 
-
 ----------------------------------------------------------------------------------
 -- Timer
 
@@ -434,7 +432,6 @@ function Tween.Timer.New( duration, callback, isInfiniteLoop, params )
     Daneel.Debug.StackTrace.EndFunction()
     return tweener
 end
-
 
 ----------------------------------------------------------------------------------
 -- Config - Loading
@@ -617,7 +614,6 @@ function Tween.Update()
     end -- end for tweeners
 end -- end Tween.Update
 
-
 ----------------------------------------------------------------------------------
 -- GameObject
 
@@ -674,24 +670,6 @@ function GameObject.Animate( gameObject, property, endValue, duration, onComplet
     end
     return Tween.Tweener.New( component, property, endValue, duration, onCompleteCallback, params )   
 end
-
---- Creates an animation (a tweener) with the provided parameters and destroy the game object when the tweener has completed.
--- @param gameObject (GameObject) The game object.
--- @param property (string) The name of the property to animate.
--- @param endValue (number, Vector2, Vector3 or string) The value the property should have at the end of the duration.
--- @param duration (number) The time (in seconds) or frame it should take for the property to reach endValue.
--- @param params (table) [optional] A table of parameters.
--- @return (Tweener) The tweener.
-function GameObject.AnimateAndDestroy( gameObject, property, endValue, duration, params )
-    local component = nil
-    if params ~= nil and params.target ~= nil then
-        component = params.target
-    else
-        component = resolveTarget( gameObject, property )
-    end
-    return Tween.Tweener.New( component, property, endValue, duration, function() gameObject:Destroy() end, params )   
-end
-
 
 ----------------------------------------------------------------------------------
 -- Easing equations
