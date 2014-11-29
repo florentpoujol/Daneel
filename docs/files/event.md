@@ -77,7 +77,7 @@ Functions added via `AddEventListener()` are added in a `listenersByEvent` dicti
 Optionally, you can also set a function as the value of a property with the same name as the event. (ie : `object.OnFooBar` for an event named `"OnFooBar"`).
 
 Note that game objects have the following shortcuts : `GameObject.AddEventListener( eventname, listenerFunction )`, `GameObject.RemoveEventListener( eventname, listenerFunction )`, `GameObject.FireEvent( eventname )`.  
-When the object is also a `GameObject` the message of the same name as the event is also always sent.  
+When the object is also a `GameObject` the message of the same name as the event is sent.  
     
     local func = function() 
         print("Left click pressed on ", self.gameObject)
@@ -118,7 +118,7 @@ Here the list of all events fired by Daneel :
 
 Global events :
 
-- `OnNewSceneWillLoad` (fired **before** a scene is loaded, receive the scene asset as first argument)
+- `OnNewSceneWillLoad` fired by `CS.LoadScene()` or `Scene.Load()` **before** a scene is loaded, receive the scene asset as first argument.
 
 Local events fired at game objects :
 

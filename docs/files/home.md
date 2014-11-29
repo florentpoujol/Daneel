@@ -3,7 +3,11 @@
 
 # Daneel
 
-Daneel is a scripting framework written in [Lua](http://www.lua.org) for [CraftStudio][] that bring new functionalities, extend and render more flexible to use the API as well as sweeten and shorten the code you write.
+Daneel is a scripting framework for [CraftStudio][] that aim to :
+
+- bring __all new__ functionalities,
+- __extend__ and render __more flexible__ to use CraftStudio's API,
+- __sweeten and shorten__ the code you write.
 
 Daneel never deprecate anything from the current CraftStudio's API which remains usable in its entirety [as described in the scripting reference][CSscriptingreference] on the official wiki.  
 Daneel mostly add new objects, new functions on existing objects and sometimes allow to pass different argument types and new arguments on existing functions.
@@ -12,15 +16,15 @@ Daneel mostly add new objects, new functions on existing objects and sometimes a
 <a name="overview"></a>
 ## Overview
 
-Call getters and setters as if they were variable :
+Call getters and setters as if they were properties :
     
     self.gameObject.name -- same as self.gameObject:GetName()
     self.gameObject.name = "new name" -- same as self.gameObject:SetName("new name")
 
-    -- this also works on components, assets as well as on some scripted behaviors :
+    -- this also works on components and assets
     self.gameObject.mapRenderer.map = Asset.Get( "folder/map name", "Map" )
     
-Various extensions (new functions or new arguments) of the base API :
+Various extensions (new functions, different argument's types or all new arguments) of the base API :
     
     GameObject.New( name, params )
     gameObject:AddComponent( type, params )
@@ -28,7 +32,6 @@ Various extensions (new functions or new arguments) of the base API :
     GameObject.Get( name ) -- 'name' may be a hierarchy of object "Parent.Child.GrandChild"
     
     Asset.Get( path, type )
-    Asset.GetPath( asset ) -- or asset:GetPath() or asset.path
     
     -- set assets using the asset name instead of the asset object :
     gameObject.modelRenderer:SetModel( "Folder/Model" )
@@ -36,9 +39,8 @@ Various extensions (new functions or new arguments) of the base API :
     
     -- create instances of objects without writing the New() function
     Vector3( 0, 1, 2 ) -- same as Vector3:New( 0, 1, 2 )
-    GameObject( "MyObject" ) -- same as GameObject.New( name ) or CS.CreateGameObject( name )
     
-    -- create component, set variables or call setters in mass on game objects and components :
+    -- create component, set properties or call setters in mass on game objects and components :
     gameObject:Set( {
         parent = "my parent name",
 
@@ -54,9 +56,9 @@ Categories and group game objects with tags :
 
     -- Get all game objects that have one or several tag(s) :
     local airborneEnemies = GameObject.GetWithTag( {"enemies", "airborne"} )
-    local allEnenmies = GameObject.Tags.enemies
+    local allEnenmies = GameObject.GetWithTag( "enemies" )
 
-Extension of Lua's built-in `table`, `string` and `math` libraries :
+Extension of Lua's standard `table`, `string` and `math` libraries :
 
     table.containsvalue( t, v )
     table.removevalue( t, v )
@@ -76,11 +78,8 @@ Manage code with events :
     Daneel.Event.Listen( "EventName", self.gameObject )
     Daneel.Event.Fire( "EventName" ) -- fires the "EventName" global event on its listeners
 
-    Daneel.Event.Fire( object, "EventName" ) -- fires the EventName event on the object only
-    -- try to call the "EventName" function on the object and send the "EventName" message if the object is a game object
-
     self.gameObject:AddEventListener( "EventName", function( arg1, arg2 ) ... end )
-    self.gameObject:FireEvent( "EventName", arg1, arg2 )
+    self.gameObject:FireEvent( "EventName", arg1, arg2 ) -- also send the "EventName" message on the game object
 
 
 Enable mouse input events :
@@ -113,7 +112,7 @@ Easily create animations and timers with tweeners.
     } )
 
     -- fade out animation in 0.5 second with callback function when the animation has completed
-    self.gameObject:Animate( "opacity", 0, 0.5, function(go) --[[ ... ]] end )
+    self.gameObject:Animate( "opacity", 0, 0.5, function(go) ... end )
 
 Set thousands of colors on models and texts renderers.
 
@@ -124,9 +123,9 @@ Set thousands of colors on models and texts renderers.
 
 Detect closeness between game objets with triggers :
 
-    self.gameObject.OnTriggerEnter( trigger )
+    self.gameObject:AddEventListener( "OnTriggerEnter", function( trigger )
         print( "The game object of name '"..self.gameObject.name.."' just reach the trigger of name '"..trigger.name.."'." )
-    end
+    end )
 
 Keep track of time :
 

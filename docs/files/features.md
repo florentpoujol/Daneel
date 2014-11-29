@@ -1,8 +1,8 @@
 # Features
 
-This page presents the features provided by the framework.
-
-Be sure to also explore the [function reference](/docs/function-reference) to find out and have detailed info about all the functions you can use.
+This page presents some of the features provided by the framework.  
+Be sure to also read the pages dedicated to _objects_ and _components_.  
+And make sure you explored the _[function reference](/docs/function-reference)_ to find out and have detailed info about all the functions you can use.
 
 <table class="page-menu">
 	<tr>
@@ -14,12 +14,12 @@ Be sure to also explore the [function reference](/docs/function-reference) to fi
 				<li><a href="#instances-id">Instances-id</a></li>
 				<li><a href="#printing-out-instances">Printing out instances</a></li>
 				<li><a href="#mass-setting">Mass-setting</a></li>
-				<li><a href="#debugging">Debugging</a></li>
 				<li><a href="#events">Events</a></li>
 			</ul>
 		</td>
 		<td>
 			<ul>
+				<li><a href="#debugging">Debugging</a></li>
 				<li><a href="#tween">Tween</a></li>
 				<li><a href="#gameobjects">Game objects</a></li>
 				<li><a href="#components">Components</a></li>
@@ -192,18 +192,18 @@ Note that with `gameObject:Set()`, components that are set but don't exists yet 
 Ie: in the example above, if the game object hadn't a model renderer, it would be created before being set.
 
 
-<a name="events"></a>
-## Events
-
-Events are at the core of the communication between many systems introduced by Daneel.   
-Learn how they work on the [event page](/docs/event).
-
-
 <a name="debugging"></a>
 ## Debugging
 
 Daneel provides extensive error reporting for all its functions.  
 Learn more about this on the [debugging page](/docs/debug).
+
+
+<a name="events"></a>
+## Events
+
+Events are at the core of the communication between many systems introduced by Daneel.   
+Learn how they work on the [event page](/docs/event).
 
 
 <a name="tween"></a>
@@ -281,11 +281,11 @@ You may call `component:Set(params)`, `component:Destroy()` and `component:GetId
 
 Custom components are components that are not introduced by CraftStudio. Learn how to create them [through modules](/docs/modules).
 
-`transform:GetScale()`, `transform:SetScale()` may be used to get/set the game object's global scale.  
-The global or local scale may be set as a `number` instead of a `Vector3`.
+The framework introduce a total of nine new components :
 
-You may scale a `TextRenderer` based on the desired text's length (in scene units) with `textRenderer:SetTextWidth()`.  
-The alignment of a `TextRenderer` may be set with the `"left"`, `"center"` or `"right"` values as case-insensitive strings, instead of a `TextRenderer.Alignment` enumeration.
+- [`MouseInput`](/docs/mouse-input) enables you to easily make game objects react to mouse inputs.
+- [`Trigger`](/docs/trigger) enables you to implement distance-based behaviors between game objects.
+- The [`GUI`](/docs/gui) components will come handy when you are about to create a HUD and other UI elements (text input, multi-line text, progress bar, toggle button, ...).
 
 
 <a name="destroying-objects"></a>

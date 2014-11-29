@@ -1,52 +1,17 @@
 # Tween
 
 The `Tween` object allows you to create and manipulate `Tweeners` and `Timers`.  
-Require the `CraftStudio` script.  
 
-- [Configuration](#configuration)
 - [Tweener](#tweener)
 - [Timer](#timer)
-- [GameObject helper functions](#helper-functions)
-- [Function reference](#function-reference)
-
-<a name="configuration"></a>
-## Configuration
-
-You may update the default tweener properties via a `Tween.UserConfig()` global variable.
-
-	function Tween.UserConfig()
-		return {
-			-- tweeners default parameters
-			tweener = {
-	            isEnabled = true, -- a disabled tweener won't update and the function like Play(), Pause(), Complete(), Destroy() will have no effect
-	            isPaused = false,
-
-	            delay = 0.0, -- delay before the tweener starts (in the same time unit as the duration (durationType))
-	            duration = 0.0, -- time or frames the tween (or one loop) should take (in durationType unit)
-	            durationType = "time", -- the unit of time for delay, duration, elapsed and fullElapsed. Can be "time", "realTime" or "frame"
-
-	            startValue = nil, -- it will be the current value of the target's property
-	            endValue = 0.0,
-
-	            loops = 0, -- number of loops to perform (-1 = infinite)
-	            loopType = "simple", -- type of loop. Can be "simple" (X to Y, repeat), "yoyo" (X to Y, Y to X, repeat)
-	            
-	            easeType = "linear", -- type of easing, check the doc or the end of the "Daneel/Tween" script for all possible values
-	            
-	            isRelative = false, -- If false, tween the value TO endValue. If true, tween the value BY endValue.
-
-	            destroyOnComplete = true, -- tell wether to destroy the tweener (true) when it completes
-	            destroyOnSceneLoad = true, -- tell wether to destroy the tweener (true) when a new scene is loaded
-	        }
-	    }
-	end
+- [Game object animation](#gameobject-animate)
 
 <a name="tweener"></a>
 ## Tween.Tweener
 
 `Tweener`s are objects that interpolate a value or the property of an object from a `startValue` to an `endValue` during a `duration`, optionally using an `easing` equation.  
 
-Tweeners can work with `number`, `Vector2`, `Vector3` as well as text (`string`) (it display the text one letter at a time).  
+Tweeners can work with `number`, `Vector2`, `Vector3` and `string` (it display the text one letter at a time).  
 
 The "property" may be virtual in that it just need to match the name of a couple of getter/setter (ie : `"position"` for `transform:Get/SetPosition()`). 
 
@@ -58,7 +23,7 @@ Create a tweener using one of the following constructors :
 
 ### Parameters
 
-The properties of a tweener you can set are described below. Except or the ones that are arguments of the contructors, they are all optionnals. Their default value may be changed via the config as explained above.  
+The properties of a tweener you can set are described below. Except for the ones that are arguments of the contructors, they are all optionnals.  
 Like for game objects and components, you may mass-set properties on tweeners during their creation or afterward via `tweener:Set({params})`.
 
 - `target` (table) : Any object or table that has the specified property (or corresponding getter/setter).
@@ -66,16 +31,16 @@ Like for game objects and components, you may mass-set properties on tweeners du
 - `startValue` (number, Vector2, Vector3 or string) : The value to starts the tweener at. If not set, it will be set at the current value of the target's property.
 - `endValue` (number, Vector2, Vector3 or string) : The value to ends the tweener at.
 - `duration` (number) : The time or frames the tweener (one loop, actually) should take (in `durationType` units).
-- `durationType` (string) : The unit of time for `delay`, `duration`, `elapsed` and `fullElapsed`. Can be `"time"`, `"realTime"` or `"frame"`. If set to `"time"`, the tweener is tied to [the time scale](/docs/daneel#time-object).
-- `isEnabled` (boolean) : A disabled tweener won't update and the functions like `Play()`, `Pause()`, `Complete()`, `Destroy()` will have no effect.
-- `isPaused` (boolean) : A paused tweener doesn't update.
-- `delay` (number) : The delay before the tweener starts (in `durationType` unit). The delay do not updates when the tweener is paussed. 
-- `loops` (number) : The number of loops to run. Set to `-1` for an infinite loop. Tweeners always run at least one loop, so a value of 0 or 1 does not make any differences.
-- `loopType` (string) : The type of the loop. Possible values are `"simple"` (X to Y, and repeat) or `"yoyo"` (X to Y the first loop, then Y to X the next loop, and repeat)
-- `isRelative` (boolean) : Tell wether `endValue` is an absolute value or is relative to `startValue`. If false, tween the value TO endValue. If true, tween the value BY endValue.
-- `destroyOnComplete` (boolean) : Tell wether to destroy the tweener when it completes. You may reuse non-destroyed tweeners by restarting them with the `Restart()` function.
-- `destroyOnSceneLoad` (boolean) : Tell wether to destroy the tweener when a new scene is loaded
-- `easeType` (string) : The type of easing to apply to the value. This will impact how the value change over time. Possible values are :
+- `durationType` (string) [default="time"] : The unit of time for `delay`, `duration`, `elapsed` and `fullElapsed`. Can be `"time"`, `"realTime"` or `"frame"`. If set to `"time"`, the tweener is tied to [the time scale](/docs/features#time-object).
+- `isEnabled` (boolean) [true]: A disabled tweener won't update and the functions like `Play()`, `Pause()`, `Complete()`, `Destroy()` will have no effect.
+- `isPaused` (boolean) [false] : A paused tweener doesn't update.
+- `delay` (number) [0] : The delay before the tweener starts (in `durationType` unit). The delay do not updates when the tweener is paussed. 
+- `loops` (number) [1] : The number of loops to run. Set to `-1` for an infinite loop. Tweeners always run at least one loop, so a value of 0 or 1 does not make any differences.
+- `loopType` (string) ["simple"] : The type of the loop. Possible values are `"simple"` (X to Y, and repeat) or `"yoyo"` (X to Y the first loop, then Y to X the next loop, and repeat)
+- `isRelative` (boolean) [false] : Tell wether `endValue` is an absolute value or is relative to `startValue`. If false, tween the value TO endValue. If true, tween the value BY endValue.
+- `destroyOnComplete` (boolean) [true] : Tell wether to destroy the tweener when it completes. You may reuse non-destroyed tweeners by restarting them with the `Restart()` function.
+- `destroyOnSceneLoad` (boolean) [true] : Tell wether to destroy the tweener when a new scene is loaded
+- `easeType` (string) ["linear"] : The type of easing to apply to the value. This will impact how the value change over time. Possible values are :
 	- linear
 	- inQuad, outQuad, inOutQuad, outInQuad
 	- inCubic, outCubic, inOutCubic, outInCubic
@@ -104,7 +69,7 @@ Other properties :
 Easing functions impact how the tweener's value change over time.
 They can be divided into several big families:
 
-- linear is the default interpolation. It’s the simplest easing function.
+- `linear` is the default interpolation. It’s the simplest easing function.
 - `quad`, `cubic`, `quart`, `quint`, `expo`, `sine` and `circ` are all "smooth" curves that will make transitions look natural.
 - The `elastic` family simulates inertia in the easing, like an elastic gum.
 - The `back` family starts by moving the interpolation slightly "backwards" before moving it forward.
@@ -218,25 +183,17 @@ You may customize the tweener (time unit, paused state, etc...) via the optional
 		end
 	})
 
-<a name="helper-functions"></a>
-## Helper functions
+<a name="gameobject-animate"></a>
+## Game object animations
 
-To easily works with tweeners and game objects, the Tween module also adds the two following functions :
-
-- `GameObject.Animate(gameObject, property, endValue, duration[, onCompleteCallback, params])`
-- `GameObject.AnimateAndDestroy()`
-
-`AnimateAndDestroy()` is the same  as `Animate()` but automatically destroy the game object when the tweener completes. This behavior is overridden if you set the OnComplete callback yourself.
+To easily works with tweeners and game objects, you can use the following function : `GameObject.Animate(gameObject, property, endValue, duration[, onCompleteCallback, params])`.
 
 Ie : 
 
     self.gameObject:Animate( "opacity", 0, 1, function() self.gameObject:Destroy() end )
     -- this fades the opacity of the game object's (model, map or text) renderer to 0 in 1 second then destroy the game object
 
-    -- this does the same:
-    self.gameObject:AnimateAndDestroy("opacity", 0, 1)
-
-This also works with the components introduced by modules :
+This also works with custom components :
     
     -- The Hud component introduced by the GUI module :
     local slideInTweener = self.gameObject:Animate("localPosition", Vector2(10,0), 1, { easeType = "inElastic" })
@@ -253,340 +210,3 @@ Remember that the "property" may be virtual in that it just need to match the na
 - `"position"` for `transform:Get/SetPosition()`, also works for the hud component.
 - `"text"` for `textRenderer:Get/SetText()`. __Doesn't automatically work__ for text areas, you have to specify the target (the text area component) via the `params` table.
 - ...
-
-
-<a name="function-reference"></a>
-## Function Reference
-
-<table class="function_list">
-    
-        <tr>
-            <td class="name"><a href="#GameObject.Animate">GameObject.Animate</a>( gameObject, property, endValue, duration, onCompleteCallback, params )</td>
-            <td class="summary">Creates an animation (a tweener) with the provided parameters.</td>
-        </tr>
-    
-        <tr>
-            <td class="name"><a href="#GameObject.AnimateAndDestroy">GameObject.AnimateAndDestroy</a>( gameObject, property, endValue, duration, params )</td>
-            <td class="summary">Creates an animation (a tweener) with the provided parameters and destroy the game object when the tweener has completed.</td>
-        </tr>
-    
-        <tr>
-            <td class="name"><a href="#Tween.Timer.New">Tween.Timer.New</a>( duration, callback, isInfiniteLoop, params )</td>
-            <td class="summary">Creates a new tweener via one of the two allowed constructors : <br> Timer.New(duration, OnCompleteCallback[, params]) <br> Timer.New(duration, OnLoopCompleteCallback, true[, params]) <br> </td>
-        </tr>
-    
-        <tr>
-            <td class="name"><a href="#Tween.Tweener.Complete">Tween.Tweener.Complete</a>( tweener )</td>
-            <td class="summary">Complete the tweener fire the OnComple event.</td>
-        </tr>
-    
-        <tr>
-            <td class="name"><a href="#Tween.Tweener.Destroy">Tween.Tweener.Destroy</a>( tweener )</td>
-            <td class="summary">Destroy the tweener.</td>
-        </tr>
-    
-        <tr>
-            <td class="name"><a href="#Tween.Tweener.New">Tween.Tweener.New</a>( target, property, endValue, duration, onCompleteCallback, params )</td>
-            <td class="summary">Creates a new tweener via one of the three allowed constructors : <br> Tweener.New(target, property, endValue, duration[, params]) <br> Tweener.New(startValue, endValue, duration[, params]) <br> Tweener.New(params) </td>
-        </tr>
-    
-        <tr>
-            <td class="name"><a href="#Tween.Tweener.Pause">Tween.Tweener.Pause</a>( tweener )</td>
-            <td class="summary">Pause the tweener and fire the OnPause event.</td>
-        </tr>
-    
-        <tr>
-            <td class="name"><a href="#Tween.Tweener.Play">Tween.Tweener.Play</a>( tweener )</td>
-            <td class="summary">Unpause the tweener and fire the OnPlay event.</td>
-        </tr>
-    
-        <tr>
-            <td class="name"><a href="#Tween.Tweener.Restart">Tween.Tweener.Restart</a>( tweener )</td>
-            <td class="summary">Completely restart the tweener.</td>
-        </tr>
-    
-        <tr>
-            <td class="name"><a href="#Tween.Tweener.Update">Tween.Tweener.Update</a>( tweener, deltaDuration )</td>
-            <td class="summary">Update the tweener's value based on the tweener's elapsed property.</td>
-        </tr>
-    
-</table>
-
-<dl class="function">
-    
-        
-<dt><a name="GameObject.Animate"></a><h3>GameObject.Animate( gameObject, property, endValue, duration, onCompleteCallback, params )</h3></dt>
-<dd>
-Creates an animation (a tweener) with the provided parameters.
-<br><br>
-
-    <strong>Parameters:</strong>
-    <ul>
-        
-        <li>
-          gameObject 
-        </li>
-        
-        <li>
-          property (string) The name of the property to animate.
-        </li>
-        
-        <li>
-          endValue (number, Vector2, Vector3 or string) The value the property should have at the end of the duration.
-        </li>
-        
-        <li>
-          duration (number) The time (in seconds) or frame it should take for the property to reach endValue.
-        </li>
-        
-        <li>
-          onCompleteCallback (function) [optional] The function to execute when the tweener has completed.
-        </li>
-        
-        <li>
-          params (table) [optional] A table of parameters.
-        </li>
-        
-    </ul>
-
-
-    <strong>Return value:</strong>
-    <ul>(Tweener) The tweener.</ul>
-
-</dd>
-<hr>
-    
-        
-<dt><a name="GameObject.AnimateAndDestroy"></a><h3>GameObject.AnimateAndDestroy( gameObject, property, endValue, duration, params )</h3></dt>
-<dd>
-Creates an animation (a tweener) with the provided parameters and destroy the game object when the tweener has completed.
-<br><br>
-
-    <strong>Parameters:</strong>
-    <ul>
-        
-        <li>
-          gameObject (GameObject) The game object.
-        </li>
-        
-        <li>
-          property (string) The name of the property to animate.
-        </li>
-        
-        <li>
-          endValue (number, Vector2, Vector3 or string) The value the property should have at the end of the duration.
-        </li>
-        
-        <li>
-          duration (number) The time (in seconds) or frame it should take for the property to reach endValue.
-        </li>
-        
-        <li>
-          params (table) [optional] A table of parameters.
-        </li>
-        
-    </ul>
-
-
-    <strong>Return value:</strong>
-    <ul>(Tweener) The tweener.</ul>
-
-</dd>
-<hr>
-    
-        
-<dt><a name="Tween.Timer.New"></a><h3>Tween.Timer.New( duration, callback, isInfiniteLoop, params )</h3></dt>
-<dd>
-Creates a new tweener via one of the two allowed constructors : <br> Timer.New(duration, OnCompleteCallback[, params]) <br> Timer.New(duration, OnLoopCompleteCallback, true[, params]) <br>
-<br><br>
-
-    <strong>Parameters:</strong>
-    <ul>
-        
-        <li>
-          duration (number) The time or frame it should take for the timer or one loop to complete.
-        </li>
-        
-        <li>
-          callback (function or userdata) The function that gets called when the OnComplete or OnLoopComplete event are fired.
-        </li>
-        
-        <li>
-          isInfiniteLoop [optional default=false] (boolean) Tell wether the timer loops indefinitely.
-        </li>
-        
-        <li>
-          params [optional] (table) A table of parameters.
-        </li>
-        
-    </ul>
-
-
-    <strong>Return value:</strong>
-    <ul>(Tweener) The tweener.</ul>
-
-</dd>
-<hr>
-    
-        
-<dt><a name="Tween.Tweener.Complete"></a><h3>Tween.Tweener.Complete( tweener )</h3></dt>
-<dd>
-Complete the tweener fire the OnComple event.
-<br><br>
-
-    <strong>Parameters:</strong>
-    <ul>
-        
-        <li>
-          tweener (Tween.Tweener) The tweener.
-        </li>
-        
-    </ul>
-
-
-</dd>
-<hr>
-    
-        
-<dt><a name="Tween.Tweener.Destroy"></a><h3>Tween.Tweener.Destroy( tweener )</h3></dt>
-<dd>
-Destroy the tweener.
-<br><br>
-
-    <strong>Parameters:</strong>
-    <ul>
-        
-        <li>
-          tweener (Tween.Tweener) The tweener.
-        </li>
-        
-    </ul>
-
-
-</dd>
-<hr>
-    
-        
-<dt><a name="Tween.Tweener.New"></a><h3>Tween.Tweener.New( target, property, endValue, duration, onCompleteCallback, params )</h3></dt>
-<dd>
-Creates a new tweener via one of the three allowed constructors : <br> Tweener.New(target, property, endValue, duration[, params]) <br> Tweener.New(startValue, endValue, duration[, params]) <br> Tweener.New(params)
-<br><br>
-
-    <strong>Parameters:</strong>
-    <ul>
-        
-        <li>
-          target (table) An object.
-        </li>
-        
-        <li>
-          property (string) The name of the propertty to animate.
-        </li>
-        
-        <li>
-          endValue (number) The value the property should have at the end of the duration.
-        </li>
-        
-        <li>
-          duration (number) The time or frame it should take for the property to reach endValue.
-        </li>
-        
-        <li>
-          onCompleteCallback (function) [optional] The function to execute when the tweener has completed.
-        </li>
-        
-        <li>
-          params (table) [optional] A table of parameters.
-        </li>
-        
-    </ul>
-
-
-    <strong>Return value:</strong>
-    <ul>(Tweener) The Tweener.</ul>
-
-</dd>
-<hr>
-    
-        
-<dt><a name="Tween.Tweener.Pause"></a><h3>Tween.Tweener.Pause( tweener )</h3></dt>
-<dd>
-Pause the tweener and fire the OnPause event.
-<br><br>
-
-    <strong>Parameters:</strong>
-    <ul>
-        
-        <li>
-          tweener (Tween.Tweener) The tweener.
-        </li>
-        
-    </ul>
-
-
-</dd>
-<hr>
-    
-        
-<dt><a name="Tween.Tweener.Play"></a><h3>Tween.Tweener.Play( tweener )</h3></dt>
-<dd>
-Unpause the tweener and fire the OnPlay event.
-<br><br>
-
-    <strong>Parameters:</strong>
-    <ul>
-        
-        <li>
-          tweener (Tween.Tweener) The tweener.
-        </li>
-        
-    </ul>
-
-
-</dd>
-<hr>
-    
-        
-<dt><a name="Tween.Tweener.Restart"></a><h3>Tween.Tweener.Restart( tweener )</h3></dt>
-<dd>
-Completely restart the tweener.
-<br><br>
-
-    <strong>Parameters:</strong>
-    <ul>
-        
-        <li>
-          tweener (Tween.Tweener) The tweener.
-        </li>
-        
-    </ul>
-
-
-</dd>
-<hr>
-    
-        
-<dt><a name="Tween.Tweener.Update"></a><h3>Tween.Tweener.Update( tweener, deltaDuration )</h3></dt>
-<dd>
-Update the tweener's value based on the tweener's elapsed property. Fire the OnUpdate event. This allows the tweener to fast-forward to a certain time.
-<br><br>
-
-    <strong>Parameters:</strong>
-    <ul>
-        
-        <li>
-          tweener (Tween.Tweener) The tweener.
-        </li>
-        
-        <li>
-          deltaDuration [optional] (number) <strong>Only used internaly.</strong> If nil, the tweener's value will be updated based on the current value of tweener.elapsed.
-        </li>
-        
-    </ul>
-
-
-</dd>
-<hr>
-    
-</dl>
-

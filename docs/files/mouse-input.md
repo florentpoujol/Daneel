@@ -6,7 +6,6 @@ This module introduce the `MouseInput` component that enables interactions throu
 - [Mouse events](#mouse-events)
 - [Click events](#click-events)
 - [Wheel events](#wheel-events)
-- [Function Reference](#function-reference)
 
 <a name="setup"></a>
 ## Setup
@@ -51,6 +50,3 @@ You can update this value at runtime via the `MouseInput.Config.doubleClickDelay
 
 If you did setup a `"WheelUp"` and `"WheelDown"` button in you game controls, the `OnWheelUp` and `OnWheelDown` events will be fired at the hovered game objects whenever the mouse wheel is rolled up or down.  
 "Wheel up" is rolling the wheel toward you.
-
-<a name="function-reference"></a>
-## Function Reference

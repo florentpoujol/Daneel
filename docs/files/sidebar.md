@@ -27,7 +27,3 @@
 - [Trigger](/docs/trigger)
 - [GUI](/docs/gui)
 - [Draw](/docs/draw)
-
-
-
-
