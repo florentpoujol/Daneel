@@ -1,6 +1,6 @@
 /*
-Concatenate several files of Daneel in a big "DaneelComplete.lua" file 
-then minify it in "DaneelComplete.min.lua".
+Concatenate the files at the root of the "src" folder in a big "build/Daneel.lua" file 
+then minify it in "build/Daneel.min.lua".
 
 How to use :
 
@@ -13,21 +13,21 @@ var luamin = require("luamin")
 var fs = require("fs")
 
 var root = "F:/Development/CraftStudio/Daneel/";
-var readRoot = root+"framework/";
-var writeRoot = root+"daneelcomplete/";
+var readRoot = root+"src/";
+var writeRoot = root+"build/";
 
 var fileNames = [
     "Lua",
-    "Daneel",
+    "Main",
     "CraftStudio",
-    "GUI/GUI",
+    "GUI",
     "Draw",
     "Color",
     "Tween",
 ]; // let the Tween script at the end of the array
 
-var completeFilePath = writeRoot+"DaneelComplete.lua"
-var completeMinFilePath = writeRoot+"DaneelComplete.min.lua"
+var completeFilePath = writeRoot+"Daneel.lua"
+var completeMinFilePath = writeRoot+"Daneel.min.lua"
 
 var fileIndex = -1;
 var sDate = "-- Generated on "+ new Date().toString() +"\n";
