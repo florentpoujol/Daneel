@@ -9,7 +9,8 @@
 <a name="installation"></a>
 ## Installation 
 
-[Download Daneel's package](/download/Daneel_v1.4.0.zip) 
+[Download Daneel's package](/download/Daneel_v1.5.0.zip).  
+Alternatively, you can find Daneel [on GitHub](https://github.com/florentpoujol/Daneel) and [on CraftStudio itself](http://open.craftstud.io/176.31.207.61:4406/814c0d79-558d-4df6-aed3-ee6956b87c73).
 
 Extract the `.cspack` then import in your project the `Daneel` script and whatever other scripts you may need.  
 Except for the `Daneel` script, they are all optionnal. They are scripted behaviors used to add features to game objects while in the scene editor. 
