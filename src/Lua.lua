@@ -57,15 +57,28 @@ function math.warpangle( angle )
     return angle
 end
 
---- Return the value rounded to the closest integer or decimal.
--- @param value (number) The value.
+--- Round the value to the closest integer or decimal.
+-- @param value (number) The value to round.
 -- @param decimal (number) [default=0] The decimal at which to round the value.
--- @return (number) The new value.
+-- @return (number) The rounded value.
 function math.round( value, decimal )
     if decimal ~= nil then
         value = math.floor( (value * 10^decimal) + 0.5) / (10^decimal)
     else
         value = math.floor( value + 0.5 )
+    end
+    return value
+end
+
+--- Trucate the value to the provided decimal.
+-- @param value (number) The value to truncate.
+-- @param decimal (number) [default=0] The decimal at which to truncate the value.
+-- @return (number) The truncated value.
+function math.truncate( value, decimal )
+    if decimal ~= nil then
+        value = math.floor( (value * 10^decimal) ) / (10^decimal)
+    else
+        value = math.floor( value )
     end
     return value
 end
@@ -98,7 +111,6 @@ function math.clamp( value, min, max )
     value = math.min( value, max )
     return value
 end
-
 
 ----------------------------------------------------------------------------------
 -- string

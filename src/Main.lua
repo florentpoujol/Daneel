@@ -295,10 +295,8 @@ Daneel.Debug.functionArgumentsInfo = {
         { "easing", s, isOptional = true }
     },
     ["math.warpangle"] = { { "angle", n } },
-    ["math.round"] = {
-        { "value", n },
-        { "decimal", n, isOptional = true }
-    },
+    ["math.round"] = { { "value", n }, { "decimal", n, isOptional = true } },
+    ["math.truncate"] = { { "value", n }, { "decimal", n, isOptional = true } },
     ["tonumber2"] = { { "data" } },
     ["math.clamp"] = { { "value", n }, { "min", n }, { "max", n } },
 
