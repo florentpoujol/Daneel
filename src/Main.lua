@@ -1331,10 +1331,6 @@ function MouseInput.DefaultConfig()
     return {
         doubleClickDelay = 20, -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
 
-        mouseInput = {
-            tags = {}
-        },
-
         componentObjectsByType = {
             MouseInput = MouseInput,
         },
@@ -1412,8 +1408,8 @@ function MouseInput.Update()
             if mi_gameObject.inner ~= nil and not mi_gameObject.isDestroyed and mi_gameObject.camera ~= nil then
                 local ray = mi_gameObject.camera:CreateRay( CS.Input.GetMousePosition() )
                 
-                for j=1, #component.tags do
-                    local tag = component.tags[j]
+                for j=1, #component._tags do
+                    local tag = component._tags[j]
                     local gameObjects = GameObject.Tags[ tag ]
                     if gameObjects ~= nil then
 
@@ -1478,7 +1474,7 @@ function MouseInput.Update()
                             reindexGameObjects = false
                         end
                     end -- if some game objects have this tag
-                end -- for component.tags
+                end -- for component._tags
             else
                 -- this component's game object is dead or has no camera component
                 MouseInput.components[i] = nil
@@ -1490,7 +1486,7 @@ function MouseInput.Update()
             table.reindex( MouseInput.components )
         end
     end -- if mouseIsMoving, ...
-end -- MouseInput.Update() 
+end -- end MouseInput.Update() 
 
 --- Create a new MouseInput component.
 -- @param gameObject (GameObject) The game object.
@@ -1502,15 +1498,279 @@ function MouseInput.New( gameObject, params )
         return
     end
 
-    local component = table.copy( MouseInput.Config.mouseInput )
+    local component = { _tags = {} }
     component.gameObject = gameObject
     gameObject.mouseInput = component
     setmetatable( component, MouseInput )  
-    component:Set(params or {})
+    if params ~= nil then
+        component:Set( params )
+    end
 
     table.insert( MouseInput.components, component )
     return component
 end
+
+--- Set tag(s) of the game objects the component works with.
+-- @param mouseInput (MouseInput) The mouse input component.
+-- @param tags (string or table) The tag(s) of the game objects the component works with.
+function MouseInput.SetTags( mouseInput, tags )
+    if type( tags ) == "string" then
+        tags = {tags}
+    end
+    mouseInput._tags = tags
+end
+
+--- Return the tag(s) of the game objects the component works with.
+-- @param mouseInput (MouseInput) The mouse input component.
+-- @return (table) The tag(s) of the game objects the component works with.
+function MouseInput.GetTags( mouseInput )
+    return mouseInput._tags
+end
+
+local _mo = { "mouseInput", "MouseInput" }
+table.mergein( Daneel.Debug.functionArgumentsInfo, {
+    ["MouseInput.New"] = { _go, { "params", "table", isOptional = true } },
+    ["MouseInput.SetTags"] = { _mo, { "tags", { s, t } } },
+    ["MouseInput.GetTags"] = { _mo },
+} )
+
+--------------------------------------------------------------------------------
+-- Trigger component
+
+Trigger = {
+    frameCount = 0,
+    triggerComponents = {},
+}
+Daneel.modules.Trigger = Trigger
+
+function Trigger.DefaultConfig()
+    return {
+        componentObjectsByType = {
+            Trigger = Trigger,
+        },
+    }
+end
+Trigger.Config = Trigger.DefaultConfig()
+
+function Trigger.Update()
+    Trigger.frameCount = Trigger.frameCount + 1
+    local reindexComponents = false
+
+    for i=1, #Trigger.triggerComponents do
+        local trigger = Trigger.triggerComponents[i]
+        local triggerGameObject = trigger.gameObject
+
+        if triggerGameObject.inner ~= nil and not triggerGameObject.isDestroyed then
+            if trigger._updateInterval > 1 and Trigger.frameCount % trigger._updateInterval == 0 then
+                local triggerPosition = triggerGameObject.transform:GetPosition()
+                
+                for j=1, #trigger._tags do
+                    local tag = trigger._tags[j]
+                    local gameObjects = GameObject.Tags[ tag ]
+                    if gameObjects ~= nil then
+
+                        for k=1, #gameObjects do
+                            local gameObject = gameObjects[k]
+                            -- gameObject is the game object whose position is checked against the trigger's
+                            if gameObject.inner ~= nil and not gameObject.isDestroyed and gameObject ~= triggerGameObject then    
+
+                                local gameObjectIsInRange = trigger:IsGameObjectInRange( gameObject, triggerPosition )
+                                local gameObjectWasInRange = table.containsvalue( trigger.gameObjectsInRangeLastUpdate, gameObject )
+
+                                if gameObjectIsInRange then
+                                    if gameObjectWasInRange then
+                                        -- already in this trigger
+                                        Daneel.Event.Fire( gameObject, "OnTriggerStay", triggerGameObject )
+                                        Daneel.Event.Fire( triggerGameObject, "OnTriggerStay", gameObject )
+                                    else
+                                        -- just entered the trigger
+                                        table.insert( trigger.gameObjectsInRangeLastUpdate, gameObject )
+                                        Daneel.Event.Fire( gameObject, "OnTriggerEnter", triggerGameObject )
+                                        Daneel.Event.Fire( triggerGameObject, "OnTriggerEnter", gameObject )
+                                    end
+                                elseif gameObjectWasInRange then
+                                    -- was in the trigger, but not anymore
+                                    table.removevalue( trigger.gameObjectsInRangeLastUpdate, gameObject )
+                                    Daneel.Event.Fire( gameObject, "OnTriggerExit", triggerGameObject )
+                                    Daneel.Event.Fire( triggerGameObject, "OnTriggerExit", gameObject )
+                                end
+                            else 
+                                -- gameObject is dead
+                                gameObjects[ i ] = nil
+                                reindexGameObjects = true
+                            end
+                        end -- for gameObjects with current tag
+
+                        if reindexGameObjects == true then
+                            GameObject.Tags[ tag ] = table.reindex( gameObjects )
+                            reindexGameObjects = false
+                        end
+                    end -- if some game objects have this tag
+                end -- for component._tags
+            end -- it's time to update this trigger
+        else
+            -- this component's game object is dead
+            Trigger.triggerComponents[i] = nil
+            reindexComponents = true
+        end -- game object is alive
+    end -- for Trigger.triggerComponents
+
+    if reindexComponents == true then
+        table.reindex( Trigger.triggerComponents )
+    end
+end
+
+--- Create a new Trigger component.
+-- @param gameObject (GameObject) The game object.
+-- @param params (table) [optional] A table of parameters.
+-- @return (Trigger) The new component.
+function Trigger.New( gameObject, params )
+    local trigger = {
+        _range = 1,
+        _updateInterval = 2,
+        _tags = {},
+        gameObjectsInRangeLastUpdate = {},
+    }
+    trigger.gameObject = gameObject
+    gameObject.trigger = trigger
+    setmetatable( trigger, Trigger )
+    if params ~= nil then
+        trigger:Set( params )
+    end
+    return trigger
+end
+
+--- Set tag(s) of the game objects the component works with.
+-- @param trigger (Trigger) The trigger component.
+-- @param tags (string or table) The tag(s) of the game objects the component works with.
+function Trigger.SetTags( trigger, tags )
+    if type( tags ) == "string" then
+        tags = {tags}
+    end
+    trigger._tags = tags
+end
+
+--- Return the tag(s) of the game objects the component works with.
+-- @param trigger (Trigger) The trigger component.
+-- @return (table) The tag(s) of the game objects the component works with.
+function Trigger.GetTags( trigger )
+    return trigger._tags
+end
+
+--- Set the range of the trigger.
+-- @param trigger (Trigger) The trigger component.
+-- @param range (number) The range of the trigger. Must be >= 0. Set to 0 to use the trigger's map or model as area.
+function Trigger.SetRange( trigger, range )
+    trigger._range = math.clamp( range, 0, 9999 )
+end
+
+--- Get the range of the trigger.
+-- @param trigger (Trigger) The trigger component.
+-- @return (number) The range of the trigger.
+function Trigger.GetRange( trigger )
+    return trigger._range
+end
+
+--- Set the interval (in frames) at which the trigger is automatically updated.
+-- A value < 1 will prevent the trigger to be automatically updated.
+-- @param trigger (Trigger) The trigger component.
+-- @param updateInterval (number) The update interval in frames. Must be >= 0
+function Trigger.SetUpdateInterval( trigger, updateInterval )
+    trigger._updateInterval = math.clamp( updateInterval, 0, 9999 )
+end
+
+--- Get the interval (in frames) at which the trigger is automatically updated.
+-- @param trigger (Trigger) The trigger component.
+-- @return (number) The update interval (in frames) of the trigger.
+function Trigger.GetUpdateInterval( trigger )
+    return trigger._updateInterval
+end
+
+--- Get the gameObjets that are within range of that trigger.
+-- @param trigger (Trigger) The trigger component.
+-- @return (table) The list of the gameObjects in range (empty if none in range).
+function Trigger.GetGameObjectsInRange( trigger )
+    local triggerPosition = self.gameObject.transform:GetPosition() 
+    local gameObjectsInRange = {}
+    for i=1, #trigger._tags do
+        local gameObjects = GameObject.GetWithTag( trigger._tags[i] )
+        for j=1, #gameObjects do
+            local gameObject = gameObjets[j]
+            if 
+                gameObject ~= trigger.gameObject and
+                trigger:IsGameObjectInRange( gameObject, triggerPosition )
+            then
+                table.insertonce( gameObjectsInRange, gameObject )
+            end
+        end
+    end
+    return gameObjectsInRange
+end
+
+--- Tell whether the provided game object is in range of the trigger.
+-- @param trigger (Trigger) The trigger component.
+-- @param gameObject (GameObject) The gameObject.
+-- @param triggerPosition (Vector3) [optional] The trigger's current position.
+-- @return (boolean) True or false.
+function Trigger.IsGameObjectInRange( trigger, gameObject, triggerPosition )
+    local errorHead = "Behavior:IsGameObjectInRange( gameObject[, triggerPosition] )"
+    local triggerGameObject = trigger.gameObject
+    if triggerPosition == nil then
+        triggerPosition = triggerGameObject.transform:GetPosition()
+    end 
+
+    local gameObjectIsInTrigger = false
+    local directionToGameObject = gameObject.transform:GetPosition() - triggerPosition
+    local sqrDistanceToGameObject = directionToGameObject:SqrLength()
+
+    if trigger._range > 0 and sqrDistanceToGameObject <= trigger._range ^ 2 then
+        gameObjectIsInTrigger = true
+
+    elseif trigger._range <= 0 then
+        if trigger.ray == nil then
+            trigger.ray = Ray.New( Vector3.New(0), Vector3.New(0) )
+        end
+        local ray = trigger.ray
+        ray.position = triggerPosition
+        ray.direction = directionToGameObject -- ray from the trigger to the game object
+        
+        local distanceToTriggerAsset = nil -- distance to trigger model or map
+        if triggerGameObject.modelRenderer ~= nil then
+            distanceToTriggerAsset = ray:IntersectsModelRenderer( triggerGameObject.modelRenderer )
+        elseif triggerGameObject.mapRenderer ~= nil then
+            distanceToTriggerAsset = ray:IntersectsMapRenderer( triggerGameObject.mapRenderer )
+        end
+
+        -- if the gameObject has a model or map, replace the distance to the game object with the distance to the asset
+        if gameObject.modelRenderer ~= nil then
+            sqrDistanceToGameObject = ray:IntersectsModelRenderer( gameObject.modelRenderer ) ^ 2
+        elseif gameObject.mapRenderer ~= nil then
+            sqrDistanceToGameObject = ray:IntersectsMapRenderer( gameObject.mapRenderer ) ^ 2
+        end
+
+        if distanceToTriggerAsset ~= nil and sqrDistanceToGameObject <= distanceToTriggerAsset ^ 2 then
+            -- distance from the trigger to the game object is inferior to the distance from the trigger to the trigger's model or map
+            -- that means the GO is inside of the model/map
+            -- the ray goes through the GO origin before intersecting the asset 
+            gameObjectIsInTrigger = true
+        end
+    end
+
+    return gameObjectIsInTrigger
+end
+
+local _trigger = { "trigger", "Trigger" }
+table.mergein( Daneel.Debug.functionArgumentsInfo, {
+    ["Trigger.New"] = { _go, { "params", "table", isOptional = true } },
+    ["Trigger.SetTags"] = { _trigger, { "tags", { s, t } } },
+    ["Trigger.GetTags"] = { _trigger },
+    ["Trigger.SetRange"] = { _trigger, { "range", n } },
+    ["Trigger.GetRange"] = { _trigger },
+    ["Trigger.SetUpdateInterval"] = { _trigger, { "updateInterval", n } },
+    ["Trigger.GetUpdateInterval"] = { _trigger },
+    ["Trigger.GetGameObjectsInRange"] = { _trigger },
+    ["Trigger.IsGameObjectInRange"] = { _trigger, _go, { "triggerPosition", "Vector3", isOptional = true } },
+} )
 
 --------------------------------------------------------------------------------
 -- Language - Localization
@@ -1684,190 +1944,4 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["Lang.Get"] = { { "key", "string" }, { "replacements", "table", isOptional = true } },
     ["Lang.RegisterForUpdate"] = { _go, { "key", "string" }, { "replacements", "table", isOptional = true } },
     ["Lang.Update"] = { { "language", "string" } },
-} )
-
---------------------------------------------------------------------------------
--- Trigger component
-
-Trigger = {
-    frameCount = 0,
-    triggerComponents = {},
-}
-Daneel.modules.Trigger = Trigger
-
-function Trigger.DefaultConfig()
-    return {
-        trigger = {
-            range = 1,
-            updateInterval = 0,
-            tags = {},
-            gameObjectsInRangeLastUpdate = {},
-        },
-
-        componentObjectsByType = {
-            Trigger = Trigger,
-        },
-    }
-end
-Trigger.Config = Trigger.DefaultConfig()
-
-function Trigger.Update()
-    Trigger.frameCount = Trigger.frameCount + 1
-    local reindexComponents = false
-
-    for i=1, #Trigger.triggerComponents do
-        local trigger = Trigger.triggerComponents[i]
-        local triggerGameObject = trigger.gameObject
-
-        if triggerGameObject.inner ~= nil and not triggerGameObject.isDestroyed then
-            if trigger.updateInterval > 1 and Trigger.frameCount % trigger.updateInterval == 0 then
-                local triggerPosition = triggerGameObject.transform:GetPosition()
-                
-                for j=1, #trigger.tags do
-                    local tag = trigger.tags[j]
-                    local gameObjects = GameObject.Tags[ tag ]
-                    if gameObjects ~= nil then
-
-                        for k=1, #gameObjects do
-                            local gameObject = gameObjects[k]
-                            -- gameObject is the game object whose position is checked against the trigger's
-                            if gameObject.inner ~= nil and not gameObject.isDestroyed and gameObject ~= triggerGameObject then    
-
-                                local gameObjectIsInRange = trigger:IsGameObjectInRange( gameObject, triggerPosition )
-                                local gameObjectWasInRange = table.containsvalue( trigger.gameObjectsInRangeLastUpdate, gameObject )
-
-                                if gameObjectIsInRange then
-                                    if gameObjectWasInRange then
-                                        -- already in this trigger
-                                        Daneel.Event.Fire( gameObject, "OnTriggerStay", triggerGameObject )
-                                        Daneel.Event.Fire( triggerGameObject, "OnTriggerStay", gameObject )
-                                    else
-                                        -- just entered the trigger
-                                        table.insert( trigger.gameObjectsInRangeLastUpdate, gameObject )
-                                        Daneel.Event.Fire( gameObject, "OnTriggerEnter", triggerGameObject )
-                                        Daneel.Event.Fire( triggerGameObject, "OnTriggerEnter", gameObject )
-                                    end
-                                elseif gameObjectWasInRange then
-                                    -- was in the trigger, but not anymore
-                                    table.removevalue( trigger.gameObjectsInRangeLastUpdate, gameObject )
-                                    Daneel.Event.Fire( gameObject, "OnTriggerExit", triggerGameObject )
-                                    Daneel.Event.Fire( triggerGameObject, "OnTriggerExit", gameObject )
-                                end
-                            else 
-                                -- gameObject is dead
-                                gameObjects[ i ] = nil
-                                reindexGameObjects = true
-                            end
-                        end -- for gameObjects with current tag
-
-                        if reindexGameObjects == true then
-                            GameObject.Tags[ tag ] = table.reindex( gameObjects )
-                            reindexGameObjects = false
-                        end
-                    end -- if some game objects have this tag
-                end -- for component.tags
-            end -- it's time to update this trigger
-        else
-            -- this component's game object is dead
-            Trigger.triggerComponents[i] = nil
-            reindexComponents = true
-        end -- game object is alive
-    end -- for Trigger.triggerComponents
-
-    if reindexComponents == true then
-        table.reindex( Trigger.triggerComponents )
-    end
-end
-
---- Create a new Trigger component.
--- @param gameObject (GameObject) The game object.
--- @param params (table) [optional] A table of parameters.
--- @return (Trigger) The new component.
-function Trigger.New( gameObject, params )
-    local trigger = table.copy( Trigger.Config.trigger )
-    trigger.gameObject = gameObject
-    gameObject.trigger = trigger
-    setmetatable( trigger, Trigger )  
-    trigger:Set(table.mergeparams or {})
-    return trigger
-end
-
---- Get the gameObjets that are within range of that trigger.
--- @param trigger (Trigger) The trigger component.
--- @return (table) The list of the gameObjects in range (empty if none in range).
-function Trigger.GetGameObjectsInRange( trigger )
-    local triggerPosition = self.gameObject.transform:GetPosition() 
-    local gameObjectsInRange = {}
-    for i=1, #trigger.tags do
-        local gameObjects = GameObject.GetWithTag( trigger.tags[i] )
-        for j=1, #gameObjects do
-            local gameObject = gameObjets[j]
-            if 
-                gameObject ~= trigger.gameObject and
-                trigger:IsGameObjectInRange( gameObject, triggerPosition )
-            then
-                table.insertonce( gameObjectsInRange, gameObject )
-            end
-        end
-    end
-    return gameObjectsInRange
-end
-
---- Tell whether the provided game object is in range of the trigger.
--- @param trigger (Trigger) The trigger component.
--- @param gameObject (GameObject) The gameObject.
--- @param triggerPosition (Vector3) [optional] The trigger's current position.
--- @return (boolean) True or false.
-function Trigger.IsGameObjectInRange( trigger, gameObject, triggerPosition )
-    local errorHead = "Behavior:IsGameObjectInRange( gameObject[, triggerPosition] )"
-    local triggerGameObject = trigger.gameObject
-    if triggerPosition == nil then
-        triggerPosition = triggerGameObject.transform:GetPosition()
-    end 
-
-    local gameObjectIsInTrigger = false
-    local directionToGameObject = gameObject.transform:GetPosition() - triggerPosition
-    local sqrDistanceToGameObject = directionToGameObject:SqrLength()
-
-    if trigger.range > 0 and sqrDistanceToGameObject <= trigger.range ^ 2 then
-        gameObjectIsInTrigger = true
-
-    elseif trigger.range <= 0 then
-        if trigger.ray == nil then
-            trigger.ray = Ray.New( Vector3.New(0), Vector3.New(0) )
-        end
-        local ray = trigger.ray
-        ray.position = triggerPosition
-        ray.direction = directionToGameObject -- ray from the trigger to the game object
-        
-        local distanceToTriggerAsset = nil -- distance to trigger model or map
-        if triggerGameObject.modelRenderer ~= nil then
-            distanceToTriggerAsset = ray:IntersectsModelRenderer( triggerGameObject.modelRenderer )
-        elseif triggerGameObject.mapRenderer ~= nil then
-            distanceToTriggerAsset = ray:IntersectsMapRenderer( triggerGameObject.mapRenderer )
-        end
-
-        -- if the gameObject has a model or map, replace the distance to the game object with the distance to the asset
-        if gameObject.modelRenderer ~= nil then
-            sqrDistanceToGameObject = ray:IntersectsModelRenderer( gameObject.modelRenderer ) ^ 2
-        elseif gameObject.mapRenderer ~= nil then
-            sqrDistanceToGameObject = ray:IntersectsMapRenderer( gameObject.mapRenderer ) ^ 2
-        end
-
-        if distanceToTriggerAsset ~= nil and sqrDistanceToGameObject <= distanceToTriggerAsset ^ 2 then
-            -- distance from the trigger to the game object is inferior to the distance from the trigger to the trigger's model or map
-            -- that means the GO is inside of the model/map
-            -- the ray goes through the GO origin before intersecting the asset 
-            gameObjectIsInTrigger = true
-        end
-    end
-
-    return gameObjectIsInTrigger
-end
-
-local _trigger = { "trigger", "Trigger" }
-table.mergein( Daneel.Debug.functionArgumentsInfo, {
-    ["Trigger.New"] = { _go, { "params", "table", isOptional = true } },
-    ["Trigger.GetGameObjectsInRange"] = { _trigger },
-    ["Trigger.IsGameObjectInRange"] = { _trigger, _go, { "triggerPosition", "Vector3", isOptional = true } },
 } )
