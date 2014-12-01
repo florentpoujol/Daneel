@@ -1578,19 +1578,19 @@ function Trigger.Update()
                                 if gameObjectIsInRange then
                                     if gameObjectWasInRange then
                                         -- already in this trigger
-                                        Daneel.Event.Fire( gameObject, "OnTriggerStay", triggerGameObject )
-                                        Daneel.Event.Fire( triggerGameObject, "OnTriggerStay", gameObject )
+                                        Daneel.Event.Fire( gameObject, "OnTriggerStay", gameObject, triggerGameObject )
+                                        Daneel.Event.Fire( triggerGameObject, "OnTriggerStay", triggerGameObject, gameObject )
                                     else
                                         -- just entered the trigger
                                         table.insert( trigger.gameObjectsInRangeLastUpdate, gameObject )
-                                        Daneel.Event.Fire( gameObject, "OnTriggerEnter", triggerGameObject )
-                                        Daneel.Event.Fire( triggerGameObject, "OnTriggerEnter", gameObject )
+                                        Daneel.Event.Fire( gameObject, "OnTriggerEnter", gameObject, triggerGameObject )
+                                        Daneel.Event.Fire( triggerGameObject, "OnTriggerEnter", triggerGameObject, gameObject )
                                     end
                                 elseif gameObjectWasInRange then
                                     -- was in the trigger, but not anymore
                                     table.removevalue( trigger.gameObjectsInRangeLastUpdate, gameObject )
-                                    Daneel.Event.Fire( gameObject, "OnTriggerExit", triggerGameObject )
-                                    Daneel.Event.Fire( triggerGameObject, "OnTriggerExit", gameObject )
+                                    Daneel.Event.Fire( gameObject, "OnTriggerExit", gameObject, triggerGameObject )
+                                    Daneel.Event.Fire( triggerGameObject, "OnTriggerExit", triggerGameObject, gameObject )
                                 end
                             else 
                                 -- gameObject is dead
@@ -1625,7 +1625,7 @@ end
 function Trigger.New( gameObject, params )
     local trigger = {
         _range = 1,
-        _updateInterval = 2,
+        _updateInterval = 5,
         _tags = {},
         gameObjectsInRangeLastUpdate = {},
     }
