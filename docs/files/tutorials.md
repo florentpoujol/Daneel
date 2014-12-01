@@ -8,10 +8,8 @@
 - How to allow players to enter their name (GUI.Input)
 
 <a name="animate"></a>
+
 ## How to animate game objects
-
-To animate game objects, [you need the Tween module](/docs/tween), so you just need to add the Tween script in your project.
-
 By animations, we mean something like rotating, sliding, fading whole game objects or hierarchy of game objects.  
 Something that is not possible (or suitable) to do with model animations.
 
@@ -20,8 +18,7 @@ Something that is not possible (or suitable) to do with model animations.
 - a black screen that fades out or in (becomes transparent/opaque) at the beginning or end of a level.
 - ...
 
-For that purpose, the Tween module provides the `GameObject.Animate()` function that you might find handy.
-
+The `GameObject.Animate()` function is there to easily fulfill that purpose.  
 Its four first arguments are `gameObject, property, endValue, duration`. It's less complicated than it seems.
 
 The function will change the value of the specified property of one of the game object's component during the specified duration, toward the specified value.
@@ -74,7 +71,8 @@ For instance in the following scenario (a door that open/close), the door can't 
         end
     end
 
-The `Animate()` function returns an object of type `Tween.Tweener`. You can learn more about tweeners, the objects that actually handle the animation on the [Tween](/tween#tweener) page.
+
+The `Animate()` function returns an object of type `Tween.Tweener`. You can learn more about tweeners, the objects that actually handle the animation on the [Tween](/docs/tween#tweener) page.
 
 
 <a name="timer"></a>

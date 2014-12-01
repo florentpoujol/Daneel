@@ -1,7 +1,4 @@
 - [Home](/docs/home)
-- [Changelog](/docs/changelog)
-- [Example Projects](/docs/example-projects)
-- [FAQ / Tutorial](/docs/faq-tutorial)
 
 ---
 ### Documentation
@@ -10,6 +7,9 @@
 - [Features](/docs/features)  
 - [Modules](/docs/modules)
 - [Function reference](/docs/function-reference)  
+- [Tutorials](/docs/tutorials)  
+- [Example Projects](/docs/example-projects)
+- [Changelog](/docs/changelog)
 
 ---
 ### Objects
