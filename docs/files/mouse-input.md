@@ -13,7 +13,7 @@ This module introduce the `MouseInput` component that enables interactions throu
 Add a mouse input component on a game object that already has a camera component with `gameObject:AddComponent("MouseInput"[, params])`or `MouseInput.New( gameObject[, params])`.  
 When you are in the scene editor, you can add the `MouseInput` scripted behavior instead.
 
-To define which game objects each component works with (which game objects are checked against the position of the mouse cursor), fill the `tags` table on the component to the tag(s) the game object have.  
+Set some tag(s) on the game objects the component works with (which game objects are checked against the position of the mouse cursor), then pass them as argument of the `mouseInput:SetTags( { "tags" } )` function.
 In the scene editor, you can concatenate several tags with a coma in the `tags` field.
 
 Then setup a `"LeftMouse"`, `"RightMouse"`, `"WheelUp"` and `"WheelDown"` button in your game controls (in the `Administration > Game Controls` tab).  
@@ -38,12 +38,13 @@ Note that a game object may be considered hovered by the mouse even if it's not 
 The `OnClick` (for a single left click (the LeftMouse button was pressed)), `OnDoubleClick` (for a double left click), `OnLeftClickReleased` (the LeftMouse button was released) and `OnRightClick` (the RightMouse button was pressed) events are fired at a game object when the click happens while the mouse hovers the game object.  
 
 A double click is two left clicks separated by no more than 20 frames (1/3 of a second).  
-You can update this value at runtime via the `MouseInput.Config.doubleClickDelay` variable (a number of frames) or by setting the `MouseInput.UserConfig()` table (or function that return a table) with `doubleClickDelay` as key and a number as value. 
+You can update this value at runtime via the `MouseInput.Config.doubleClickDelay` property (a number of frames) or by setting the `MouseInput.UserConfig()` function to return a table with `doubleClickDelay` as key and a number as value. 
 
-	MouseInput.UserConfig = {
-		doubleClickDelay = 20, -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
-	}
-
+	function MouseInput.UserConfig()
+		return {
+			doubleClickDelay = 20, -- Maximum number of frames between two clicks of the left mouse button to be considered as a double click
+		}
+	end
 
 <a name="wheel-events"></a>
 ## Wheel events

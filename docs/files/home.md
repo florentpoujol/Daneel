@@ -119,12 +119,13 @@ Set thousands of colors on models and texts renderers.
     self.gameObject.modelRenderer.color = Color( 255, 150, 0 ) -- some orange
     print(self.gameObject.modelRenderer.color.hex) -- prints "FF9600"
 
-    self.gameObject.textRenderer.color = Color.red
+    self.gameObject.textRenderer.color = "5555AA" -- also work with the name of some colors (ie: "red")
+
 
 Detect closeness between game objets with triggers :
 
-    self.gameObject:AddEventListener( "OnTriggerEnter", function( trigger )
-        print( "The game object of name '"..self.gameObject.name.."' just reach the trigger of name '"..trigger.name.."'." )
+    self.gameObject:AddEventListener( "OnTriggerEnter", function( go, triggerGO )
+        print( "The game object of name '"..go.name.."' just reach the trigger of name '"..triggerGO.name.."'." )
     end )
 
 Keep track of time :
@@ -133,17 +134,9 @@ Keep track of time :
     Daneel.Time.timeScale -- ratio at which the time flows
     ...
 
-
 Localize strings :
 
     self.gameObject.textRenderer.text = Lang.Get( "ui.buttons.exitgame" )
     Lang.RegisterForUpdate( self.gameObject, "ui.buttons.exitgame" )
 
     Lang.Update( "french" )
-
-
-Some noteworthy conventions are also followed throughtout the framework :
-
-- Every getter functions are called `GetSomething()` instead of `FindSomething()`.
-- Every object and function names are pascal-cased, except for functions added to Lua's standard libraries which are all lower-case.
-- Every time an argument has to be an asset or component type, it is case insensitive.

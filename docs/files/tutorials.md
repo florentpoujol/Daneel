@@ -1,15 +1,14 @@
-# FAQ / Tutorial
+# Tutorials
 
-
-- [How to animate game objects](#animate)
-- [How to create timers](#timer)
+- [How to animate game objects](#animate-game-objects)
+- [How to use timers](#timer)
 - [How to know if an object is close to another object, or inside an area](#trigger)
 - How to create a clickable button with mouse over effects. (Mouse inputs, Tags)
 - How to allow players to enter their name (GUI.Input)
 
-<a name="animate"></a>
-
+<a name="animate-game-objects"></a>
 ## How to animate game objects
+
 By animations, we mean something like rotating, sliding, fading whole game objects or hierarchy of game objects.  
 Something that is not possible (or suitable) to do with model animations.
 
@@ -76,23 +75,21 @@ The `Animate()` function returns an object of type `Tween.Tweener`. You can lear
 
 
 <a name="timer"></a>
-## How to create timers
-
-As for animating game objects, [you need the Tween module](/docs/tween) to create timers, so just add the Tween script in your project.
+## How to use timers
 
 A timer as one goal : executing something (a function) after some time has passed.
 
 Create a timer with the `New()` function on the `Tween.Timer` object :
 
-    Tween.Timer.New( time, whatToDo )
-
-For convenience, you can also omit to use explicitely the `New()` function :
-
-    Tween.Timer( time, whatToDo )
+    local timer = Tween.Timer.New( time, whatToDo )
+    -- or you can also omit to use explicitely the `New()` function :
+    local timer = Tween.Timer( time, whatToDo )
 
 The `time` parameter is the time in seconds (a number) it will take for the timer to complete.
 
 The `whatToDo` parameter is a function that will be executed when the timer completes.
+
+An object of type `Tween.Tweener` is returned, so you have as much control over timers than you have over tweeners.
 
     Tween.Timer( 2, function()
         self.gameObject:Destroy()
@@ -108,12 +105,6 @@ Pass `true` as the third parameter (after the function) :
     end, true )
 
 This code would give 2 health to the player every seconds
-
-The `New()` function returns an object (of type `Tween.Tweener`) so that you can manipulate the timer later on :
-
-    local timer = Tween.Timer( 10*60, function()
-        print( "The eggs are cooked !" )
-    end )
 
 Timers count time backward, so you may check the `value` or `elapsed` properties on the timer object to know how many time remains, or has passed, respectively.
     
@@ -133,12 +124,16 @@ Timers count time backward, so you may check the `value` or `elapsed` properties
 <a name="trigger"></a>
 ## How to know if an object is close to another object, or inside an area
 
-You can [use a trigger](/docs/trigger) .
-It require that you have the CraftStudio script and the Trigger scripted behavior in your project.
+You must [use a trigger component](/docs/trigger).
 
 Imagine you have an NPC and you want to "activate" it when the player is close enough (ie: an enemy start chasing the player or an character start talking to it).
 
+The player game object has a "player" tag.
+
+
 Add the Trigger script as a scripted behavior on your NPC. Then you have to set the trigger's public properties :
+
+
 
 First the `tags` property :  
 Tags are a way to label or group game objects. Several game object may have the same tag, they are then part of the same (virtual) group.

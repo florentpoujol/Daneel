@@ -1,6 +1,6 @@
 # Example Projects
 
-There is no official exampleprojectsmple project but pretty much all my games made with CraftStudio use Daneel in some extends.  
+There is no official example project but pretty much all my games made with CraftStudio use Daneel in some extends.  
 You can find many of them on GitHub and/or on CraftStudio directly :
 
 ## Made with v1.4.0
