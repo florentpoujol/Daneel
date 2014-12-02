@@ -24,7 +24,7 @@ Plane.__tostring = function( p )
     -- tostring() to prevent a "p.normal is not defined" error
 end
 
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- Assets
 
 Asset = {}
@@ -112,7 +112,7 @@ function Asset.GetId( asset )
     return Daneel.Utilities.GetId( asset )
 end
 
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- Component ("mother" object of components)
 
 Component = {}
@@ -153,11 +153,10 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
 } )
 
 
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- Map
 
 Map.oGetPathInPackage = Map.GetPathInPackage
-
 function Map.GetPathInPackage( asset )
     local path = rawget( asset, "path" )
     if path == nil then
@@ -167,7 +166,6 @@ function Map.GetPathInPackage( asset )
 end
 
 Map.oLoadFromPackage = Map.LoadFromPackage
-
 function Map.LoadFromPackage( path, callback )
     Map.oLoadFromPackage( path, function( map )
         if map ~= nil then
@@ -179,7 +177,6 @@ function Map.LoadFromPackage( path, callback )
 end
 
 Map.oGetBlockIDAt = Map.GetBlockIDAt
-
 --- Returns A block ID between 0-254 if a block exists at the given location (all valid block IDs are in the range 0-254),
 -- otherwise f there is no block at the given location then it will return Map.EmptyBlockID (which has a value of 255).
 -- @param map (Map) The map.
@@ -197,7 +194,6 @@ function Map.GetBlockIDAt( map, x, y, z )
 end
 
 Map.oGetBlockOrientationAt = Map.GetBlockOrientationAt
-
 --- Returns The block orientation of the block at the specified location, 
 -- otherwise if there is no block at the given location it will return Map.BlockOrientation.North.
 -- @param map (Map) The map.
@@ -215,7 +211,6 @@ function Map.GetBlockOrientationAt( map, x, y, z )
 end
 
 Map.oSetBlockAt = Map.SetBlockAt
-
 --- Sets a block's ID and block orientation at the given location on the map.
 -- @param map (Map) The map.
 -- @param x (number or Vector3) The location's x component, or the location as a Vector3.
@@ -238,11 +233,10 @@ function Map.SetBlockAt( map, x, y, z, id, orientation )
     end
 end
 
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- Transform
 
 Transform.oSetLocalScale = Transform.SetLocalScale
-
 --- Set the transform's local scale.
 -- @param transform (Transform) The transform component.
 -- @param scale (number or Vector3) The global scale.
@@ -311,11 +305,10 @@ function Transform.LocalToWorld( transform, position )
     return go.transform:GetPosition()
 end
 
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- ModelRenderer
 
 ModelRenderer.oSetModel = ModelRenderer.SetModel
-
 --- Attach the provided model to the provided modelRenderer.
 -- @param modelRenderer (ModelRenderer) The modelRenderer.
 -- @param modelNameOrAsset (string or Model) [optional] The model name or asset, or nil.
@@ -328,7 +321,6 @@ function ModelRenderer.SetModel( modelRenderer, modelNameOrAsset )
 end
 
 ModelRenderer.oSetAnimation = ModelRenderer.SetAnimation
-
 --- Set the specified animation for the modelRenderer's current model.
 -- @param modelRenderer (ModelRenderer) The modelRenderer.
 -- @param animationNameOrAsset (string or ModelAnimation) [optional] The animation name or asset, or nil.
@@ -355,12 +347,10 @@ function ModelRenderer.Set( modelRenderer, params )
     Component.Set( modelRenderer, params )
 end
 
-
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- MapRenderer
 
 MapRenderer.oSetMap = MapRenderer.SetMap
-
 --- Attach the provided map to the provided map renderer.
 -- @param mapRenderer (MapRenderer) The map renderer.
 -- @param mapNameOrAsset (string or Map) [optional] The map name or asset, or nil.
@@ -378,7 +368,6 @@ function MapRenderer.SetMap( mapRenderer, mapNameOrAsset, replaceTileSet )
 end
 
 MapRenderer.oSetTileSet = MapRenderer.SetTileSet
-
 --- Set the specified tileSet for the mapRenderer's map.
 -- @param mapRenderer (MapRenderer) The mapRenderer.
 -- @param tileSetNameOrAsset (string or TileSet) [optional] The tileSet name or asset, or nil.
@@ -415,16 +404,14 @@ function MapRenderer.LoadNewMap( mapRenderer, callback )
             end
         end )
     elseif Daneel.Config.debug.enableDebug == true then
-        print("ERROR: MapRenderer.LoadNewMap(): No map is set on the provided map renderer. Can't load new map.")
+        error("MapRenderer.LoadNewMap(): No map is set on the provided map renderer. Can't load new map.")
     end
 end
 
-
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- TextRenderer
 
 TextRenderer.oSetFont = TextRenderer.SetFont
-
 --- Set the provided font to the provided text renderer.
 -- @param textRenderer (TextRenderer) The text renderer.
 -- @param fontNameOrAsset (string or Font) [optional] The font name or asset, or nil.
@@ -437,7 +424,6 @@ function TextRenderer.SetFont( textRenderer, fontNameOrAsset )
 end
 
 TextRenderer.oSetAlignment = TextRenderer.SetAlignment
-
 --- Set the text's alignment.
 -- @param textRenderer (TextRenderer) The textRenderer.
 -- @param alignment (string or TextRenderer.Alignment) The alignment. Values (case-insensitive when of type string) may be "left", "center", "right", TextRenderer.Alignment.Left, TextRenderer.Alignment.Center or TextRenderer.Alignment.Right.
@@ -462,12 +448,10 @@ function TextRenderer.SetTextWidth( textRenderer, width )
     textRenderer.gameObject.transform:SetScale( width / widthScaleRatio )
 end
 
-
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- Camera
 
 Camera.oSetProjectionMode = Camera.SetProjectionMode
-
 --- Sets the camera projection mode.
 -- @param camera (Camera) The camera.
 -- @param projectionMode (string or Camera.ProjectionMode) The projection mode. Possible values are "perspective", "orthographic" (as a case-insensitive string), Camera.ProjectionMode.Perspective or Camera.ProjectionMode.Orthographic.
@@ -587,7 +571,6 @@ function Camera.WorldToScreenPoint( camera, position )
 end
 
 Camera.oGetFOV = Camera.GetFOV
-
 --- Returns the FOV of the provided perspective camera (rounded to the second digit after the coma).
 -- @param camera (Camera) The Camera component.
 -- @return (number) The FOV
@@ -600,7 +583,6 @@ Camera.GetFov = Camera.GetFOV
 Camera.SetFov = Camera.SetFOV
 
 Camera.oProject = Camera.Project
-
 --- Projects a 3D space position to a 2D screen position.
 -- @param camera (Camera) The camera component.
 -- @param position (Vector3) The position.
@@ -608,7 +590,6 @@ Camera.oProject = Camera.Project
 function Camera.Project( camera, position )
     return setmetatable( Camera.oProject( camera, position ), Vector2 )
 end
-
 
 table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["Transform.SetLocalScale"] = { { "transform", "Transform" }, { "number", { n, v3 } } },
@@ -644,8 +625,7 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["Camera.GetFOV"] =  { { "camera", "Camera" } },
 } )
 
-
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- Vector2
 
 Vector2 = {}
@@ -658,8 +638,8 @@ function Vector2.__tostring(vector2)
 end
 
 --- Creates a new Vector2 intance.
--- @param x (number, string or Vector2) The vector's x component.
--- @param y [optional] (number or string) The vector's y component. If nil, will be equal to x.
+-- @param x (number, table or Vector2) The vector's x component, or a table that contains "x" and "y" components.
+-- @param y (number) [optional] The vector's y component. If nil, will be equal to x.
 -- @return (Vector2) The new instance.
 function Vector2.New(x, y)
     local vector = setmetatable( { x = x, y = y }, Vector2 )
@@ -799,7 +779,7 @@ function Vector2.ToString( vector )
     return vector.x.." "..vector.y
 end
 
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- Vector3
 
 Vector3.tostringRoundValue = 3
@@ -912,10 +892,9 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["string.tovector"] = { { "sVector", s } },
 } )
 
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 CraftStudio.Input.oGetMousePosition = CraftStudio.Input.GetMousePosition
-
 --- Return the mouse position on screen coordinates {x, y}
 -- @return (Vector2) The on-screen mouse position.
 function CraftStudio.Input.GetMousePosition()
@@ -923,7 +902,6 @@ function CraftStudio.Input.GetMousePosition()
 end
 
 CraftStudio.Input.oGetMouseDelta = CraftStudio.Input.GetMouseDelta
-
 --- Return the mouse delta (the variation of position) since the last frame.
 -- Positive x is right, positive y is bottom.
 -- @return (Vector2) The position's delta.
@@ -957,7 +935,6 @@ end
 --------------------------------------------------------------------------------
 
 CraftStudio.Screen.oSetSize = CraftStudio.Screen.SetSize
-
 --- Sets the size of the screen, in pixels.
 -- @param x (number or table) The width of the screen or a table containing the width and height as x and and y components.
 -- @param y (number) [optional] The height of the screen (has no effect when the "x" argument is a table).
@@ -971,7 +948,6 @@ function CraftStudio.Screen.SetSize( x, y )
 end
 
 CraftStudio.Screen.oGetSize = CraftStudio.Screen.GetSize
-
 --- Return the size of the screen, in pixels.
 -- @return (Vector2) The screen's size.
 function CraftStudio.Screen.GetSize()
@@ -981,7 +957,7 @@ function CraftStudio.Screen.GetSize()
 end
 CraftStudio.Screen.GetSize() -- set aspect ratio
 
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- RaycastHit
 
 RaycastHit = {}
@@ -1019,8 +995,7 @@ function RaycastHit.New( params )
     return setmetatable( params, RaycastHit )
 end
 
-
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- Ray
 
 setmetatable( Ray, { __call = function(Object, ...) return Object:New(...) end } )
@@ -1080,7 +1055,6 @@ function Ray.IntersectsGameObject( ray, gameObjectNameOrInstance )
 end
 
 Ray.oIntersectsPlane = Ray.IntersectsPlane
-
 -- Check if the ray intersects the provided plane and returns the distance of intersection or a raycastHit.
 -- @param ray (Ray) The ray.
 -- @param plane (Plane) The plane.
@@ -1099,7 +1073,6 @@ function Ray.IntersectsPlane( ray, plane, returnRaycastHit )
 end
 
 Ray.oIntersectsModelRenderer = Ray.IntersectsModelRenderer
-
 -- Check if the ray intersects the provided modelRenderer.
 -- @param ray (Ray) The ray.
 -- @param modelRenderer (ModelRenderer) The modelRenderer.
@@ -1121,7 +1094,6 @@ function Ray.IntersectsModelRenderer( ray, modelRenderer, returnRaycastHit )
 end
 
 Ray.oIntersectsMapRenderer = Ray.IntersectsMapRenderer
-
 -- Check if the ray intersects the provided mapRenderer.
 -- @param ray (Ray) The ray.
 -- @param mapRenderer (MapRenderer) The map renderer.
@@ -1153,7 +1125,6 @@ function Ray.IntersectsMapRenderer( ray, mapRenderer, returnRaycastHit )
 end
 
 Ray.oIntersectsTextRenderer = Ray.IntersectsTextRenderer
-
 -- Check if the ray intersects the provided textRenderer.
 -- @param ray (Ray) The ray.
 -- @param textRenderer (TextRenderer) The textRenderer.
@@ -1174,8 +1145,7 @@ function Ray.IntersectsTextRenderer( ray, textRenderer, returnRaycastHit )
     return distance, normal
 end
 
-
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- Scene
 
 --- Alias of CraftStudio.LoadScene().
@@ -1188,7 +1158,6 @@ function Scene.Load( sceneNameOrAsset )
 end
 
 CraftStudio.oLoadScene = CraftStudio.LoadScene
-
 --- Schedules loading the specified scene after the current tick (1/60th of a second) has completed.
 -- When the new scene is loaded, all of the current scene's game objects will be removed.
 -- Calling this function doesn't immediately stops the calling function. As such, you might want to add a return statement afterwards.
@@ -1217,11 +1186,9 @@ function Scene.Append( sceneNameOrAsset, parentNameOrInstance )
     return CraftStudio.AppendScene( scene, parent )
 end
 
-
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 CraftStudio.oDestroy = CraftStudio.Destroy
-
 --- Removes the specified game object (and all of its descendants) or the specified component from its game object.
 -- You can also optionally specify a dynamically loaded asset for unloading (See Map.LoadFromPackage ).
 -- Sets the 'isDestroyed' property to 'true' and fires the 'OnDestroy' event on the object.
@@ -1253,8 +1220,7 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["CraftStudio.Destroy"] = { { "object" } },
 } )
 
-
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- Storage
 
 CraftStudio.Storage.oSave = CraftStudio.Storage.Save
@@ -1309,7 +1275,7 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["CraftStudio.Storage.Load"] = { { "identifier", s }, { "defaultValue", isOptional = true }, { "callback", "function", isOptional = true } }
 } )
 
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- GAMEOBJECT
 
 setmetatable( GameObject, { __call = function(Object, ...) return Object.New(...) end } )
@@ -1328,7 +1294,6 @@ function GameObject.__index( gameObject, key )
     if GameObject[ key ] ~= nil then
         return GameObject[ key ]
     end
-
     if type( key ) == "string" then
         -- or the name of a getter
         local ucKey = string.ucfirst( key )
@@ -1339,7 +1304,6 @@ function GameObject.__index( gameObject, key )
             end
         end
     end
-
     return nil
 end
 
@@ -1361,8 +1325,7 @@ function GameObject.__newindex( gameObject, key, value )
     rawset( gameObject, key, value )
 end
 
-
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 --- Create a new game object and optionally initialize it.
 -- @param name (string) The game object name.
@@ -1450,8 +1413,7 @@ function GameObject.Set( gameObject, params )
     end
 end
 
-
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- Miscellaneous
 
 --- Alias of CraftStudio.FindGameObject(name).
@@ -1498,7 +1460,6 @@ function GameObject.GetId( gameObject )
 end
 
 GameObject.oSetParent = GameObject.SetParent
-
 --- Set the game object's parent.
 -- Optionaly carry over the game object's local transform instead of the global one.
 -- @param gameObject (GameObject) The game object.
@@ -1544,7 +1505,6 @@ function GameObject.GetChild( gameObject, name, recursive )
 end
 
 GameObject.oGetChildren = GameObject.GetChildren
-
 --- Get all descendants of the game object.
 -- @param gameObject (GameObject) The game object.
 -- @param recursive (boolean) [default=false] Look for all descendants instead of just the first generation.
@@ -1563,24 +1523,6 @@ function GameObject.GetChildren( gameObject, recursive, includeSelf )
     return allChildren
 end
 
---- Get all descendants of the game object, sorted by name.
--- If several descendants have the same name, only the last one will be found in the returned table.
--- @param gameObject (GameObject) The game object.
--- @param recursive (boolean) [default=false] Look for all descendants instead of just the first generation.
--- @param includeSelf (boolean) [default=false] Include the game object in the children.
--- @return (table) The children.
-function GameObject.GetChildrenByName( gameObject, recursive, includeSelf )
-    local childrenArray = gameObject:GetChildren( recursive, includeSelf )
-    local childrenByName = {}
-    for i=1, #childrenArray do
-        local child = childrenArray[i]
-        childrenByName[ child:GetName() ] = child
-    end
-    return childrenByName
-end
-
-GameObject.oSendMessage = GameObject.SendMessage
-
 --- Search the ancestors of the provided game object. It returns the game object that match the condition in the search function.
 -- The search function receive a game object as the only argument.
 -- The search function must return true in order for GetInAncestors() to return the searched game object.
@@ -1598,6 +1540,7 @@ function GameObject.GetInAncestors( gameObject, searchFunction )
     return parent:GetInAncestors( searchFunction )
 end
 
+GameObject.oSendMessage = GameObject.SendMessage
 --- Tries to call a method with the provided name on all the scriptedBehaviors attached to the game object.
 -- The data argument can be nil or a table you want the method to receive as its first (and only) argument.
 -- If none of the scripteBehaviors attached to the game object or its children have a method matching the provided name, nothing happens.
@@ -1625,19 +1568,6 @@ function GameObject.SendMessage(gameObject, functionName, data)
         end
     else
         GameObject.oSendMessage( gameObject, functionName, data )
-    end
-end
-
---- Tries to call a method with the provided name on all the scriptedBehaviors attached to the game object or any of its descendants.
--- The data argument can be nil or a table you want the method to receive as its first (and only) argument.
--- If none of the scripteBehaviors attached to the game object or its children have a method matching the provided name, nothing happens.
--- @param gameObject (GameObject) The game object.
--- @param functionName (string) The method name.
--- @param data (table) [optional] The data to pass along the method call.
-function GameObject.BroadcastMessage(gameObject, functionName, data)
-    local allGos = gameObject:GetChildren(true, true) -- the game object + all of its children
-    for i, go in ipairs(allGos) do
-        go:SendMessage(functionName, data)
     end
 end
 
@@ -1689,9 +1619,23 @@ function GameObject.Display( gameObject, value, forceUseLocalPosition )
     Daneel.Event.Fire( gameObject, "OnDisplay", gameObject )
 end
 
+--- Destroy the game object at the end of this frame.
+-- @param gameObject (GameObject) The game object.
+function GameObject.Destroy( gameObject )
+    for i, go in pairs( gameObject:GetChildren( true, true ) ) do -- recursive, include self
+        go:RemoveTag()
+    end
+    for key, value in pairs( gameObject ) do
+        if key ~= "inner" and type( value ) == "table" then -- in the Webplayer inner is a regular object, considered of type table and not userdata
+            Daneel.Event.Fire( value, "OnDestroy", value )
+        end
+    end
+    gameObject._name = gameObject:GetName() -- used by GameObject.__tostring()
+    CraftStudio.Destroy( gameObject )
+end
 
-----------------------------------------------------------------------------------
--- Add components
+--------------------------------------------------------------------------------
+-- Components
 
 --- Add a component to the game object and optionally initialize it.
 -- @param gameObject (GameObject) The game object.
@@ -1739,13 +1683,7 @@ function GameObject.AddComponent( gameObject, componentType, params )
     return component
 end
 
-
-----------------------------------------------------------------------------------
--- Get components
-
 GameObject.oGetComponent = GameObject.GetComponent
-GameObject.oGetScriptedBehavior = GameObject.GetScriptedBehavior
-
 --- Get the first component of the provided type attached to the game object.
 -- @param gameObject (GameObject) The game object.
 -- @param componentType (string or Script) The component type, or script asset or path.
@@ -1774,6 +1712,7 @@ function GameObject.GetComponent( gameObject, componentType )
     return component
 end
 
+GameObject.oGetScriptedBehavior = GameObject.GetScriptedBehavior
 --- Get the provided scripted behavior instance attached to the game object.
 -- @param gameObject (GameObject) The game object.
 -- @param scriptNameOrAsset (string or Script) The script name or asset.
@@ -1783,31 +1722,16 @@ function GameObject.GetScriptedBehavior( gameObject, scriptNameOrAsset )
     return GameObject.oGetScriptedBehavior( gameObject, script )
 end
 
-
-----------------------------------------------------------------------------------
--- Destroy game object
-
---- Destroy the game object at the end of this frame.
--- @param gameObject (GameObject) The game object.
-function GameObject.Destroy( gameObject )
-    for i, go in pairs( gameObject:GetChildren( true, true ) ) do -- recursive, include self
-        go:RemoveTag()
-    end
-    for key, value in pairs( gameObject ) do
-        if key ~= "inner" and type( value ) == "table" then -- in the Webplayer inner is a regular object, considered of type table and not userdata
-            Daneel.Event.Fire( value, "OnDestroy", value )
-        end
-    end
-    gameObject._name = gameObject:GetName() -- used by GameObject.__tostring()
-    CraftStudio.Destroy( gameObject )
-end
-
-
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- Tags
 
 GameObject.Tags = {}
--- GameObject.Tags is emptied in Tag.Awake() below
+
+Daneel.modules.Tags = {
+    Awake = function()
+        GameObject.Tags = {}
+    end
+}
 
 --- Returns the game object(s) that have all the provided tag(s).
 -- @param tag (string or table) One or several tag(s) (as a string or table of strings).
@@ -1951,10 +1875,3 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["GameObject.RemoveTag"] =  { _go, { "tag", {"string", "table"}, isOptional = true } },
     ["GameObject.HasTag"] =     { _go, _t, { "atLeastOneTag", defaultValue = false } },
 } )
-
-
-Daneel.modules.Tags = {
-    Awake = function()
-        GameObject.Tags = {}
-    end
-}
