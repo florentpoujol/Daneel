@@ -36,14 +36,11 @@ The `OnTriggerExit` event is fired at a game object and the trigger the frame it
 Each of these events pass along the game object it is fired at as first argument and trigger game object or the checked game object as second argument.
 
     -- In a scripted behavior attached to a game object whose proximity is checked by a trigger:
-    function Behavior:OnTriggerEnter( data )
-        local go = data[1] -- in this context, go == self.gameObject
-        local triggerGO = data[2]
-        print( "The game object of name '"..go.name.."' just reach the trigger of name '"..triggerGO.name.."'." )
+    function Behavior:OnTriggerEnter( triggerGO )
+        print( "The game object of name '"..self.gameObject.name.."' just reach the trigger of name '"..triggerGO.name.."'." )
     end
 
-    function Behavior:OnTriggerStay( data )
-        local triggerGO = data[2]
+    function Behavior:OnTriggerStay( triggerGO )
         if CraftStudio.Input.WasButtonJustRealeased( "Fire" ) then
             print( "The 'Fire' button was just released while the game object of name '"..self.gameObject.name.."' is inside the trigger of name '"..triggerGO.name.."'." )
         end

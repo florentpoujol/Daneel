@@ -3,8 +3,8 @@
 - [How to animate game objects](#animate-game-objects)
 - [How to use timers](#timer)
 - [How to know if an object is close to another object, or inside an area](#trigger)
-- How to create a clickable button with mouse over effects. (Mouse inputs, Tags)
-- How to allow players to enter their name (GUI.Input)
+- How to create a clickable button with mouse over effects.
+- How to allow players to enter their name
 
 <a name="animate-game-objects"></a>
 ## How to animate game objects
@@ -126,38 +126,63 @@ Timers count time backward, so you may check the `value` or `elapsed` properties
 
 You must [use a trigger component](/docs/trigger).
 
-Imagine you have an NPC and you want to "activate" it when the player is close enough (ie: an enemy start chasing the player or an character start talking to it).
+Imagine you have an NPC and you want to do something when the player is close enough (ie: an enemy start chasing the player or a character start talking to it).
 
-The player game object has a "player" tag.
+First, as this is the player that will be the trigger, you have to set tags on the other objects.  For instance, set the `"enemy"` tag on the enemies entities.
+
+Then add a trigger component to your player game object, via `playerGO:AddComponent("Trigger")`, or add the `Trigger` scripted behavior on the player's game object in the scene editor.
+
+Now you have to configure the trigger.  
+First, tell him which game objects he should works with, which game objects the trigger component should check the distance from the game object it is on.  
+Remember you set a `"enemy"` tag on your enemies. Now pass this tag to the `trigger:SetTags()` function.
+    
+    -- self.gameObject is the player game object, the one with the trigger component
+
+    self.gameObject.trigger:SetTags( "enemy" )
+    -- this also works:
+    self.gameObject.trigger.tags = "enemy"
+
+    -- you can set several tags at the same time
+    self.gameObject.trigger:SetTags( { "enemy", "NPC" } )
+    self.gameObject.trigger.tags = { "enemy", "NPC" }
 
 
-Add the Trigger script as a scripted behavior on your NPC. Then you have to set the trigger's public properties :
+Then set its range, this is the distance in scene units from the player at which the enemy will be activated.  
+Let's set a range of 5 units :
+    
+    self.gameObject.trigger:SetRange( 5 )
+    -- or 
+    self.gameObject.trigger.range = 5
 
+You could also have set your trigger via the `params` argument of the `AddComponent()` function or via the scripted behavior's public properties.
 
+    self.gameObject:AddComponent( "Trigger", {
+        tags = "enemy",
+        range = 5
+    } )
 
-First the `tags` property :  
-Tags are a way to label or group game objects. Several game object may have the same tag, they are then part of the same (virtual) group.
+Now the trigger will check every 6 frames (10 times per second) the distance at which are the enemies from the player and send events to those who just entered or just left, or stayed inside the area.
 
-In our case, the player object would have the `"player"` tag for instance.  
-Set `player` in the trigger's Tags field, so that the trigger works with the game object that has this tag (our player).
-Again, several game object may have the same tag, and the trigger may also work with several tags.
+For instance, the `OnTriggerEnter` event is fired at the trigger game object as well as on the checked game object when it just entered the area.
 
-Then set the `range` public property to the distance at which the NPC must detect the player.  
-From this point, the script will automatically checks for the distance between the NPC and the player.
+[Check out the event page](/docs/event) to learn the different ways to catch an event.  
+In our case we will suppose that the enemy game object has a scripted behavior with a public function `OnTriggerEnter()`. This function will be called whenever the game object enters the player's area.
 
-When the player and the NPC gets close enough, the `OnTriggerEnter` [event](/docs/events) is fired at the trigger and at the player.
+    -- In a scripted behavior on the enemy
+    function Behavior:OnTriggerEnter( triggerGO )
+        -- (maybe check that the trigger game object is the player, if you have several entities with a trigger)
+        if triggerGO == PlayerGO then
+            -- now you know that this enemy is close to the player
 
-That means that any `OnTriggerEnter()` function that exist in a scripted behavior on the NPC or player wil be called.
-
-    function Behavior:OnTriggerEnter( playerGameObject )
-
+            self:DoSomething()
+        end
     end
 
+From the `OnTriggerEnter()` function, you can now do something (like start chasing the player, or deal damage, for instance).  
+In the same way you can stop any behavior when the two objects become too far apart by catching the `OnTriggerExit` event.
 
-
-
-Sometimes, using the `range` public property is not apropriate, because it actually create a spherical shape, whose range is the radius, and you want more control over the shape of the area.
-
-The solution is to shape the model with a model
-
-lke the finish line of a race
+    function Behavior:OnTriggerExit( triggerGO )
+        if triggerGO == PlayerGO then
+            -- stop doing something because the player is now too far
+        end
+    end
