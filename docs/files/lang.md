@@ -30,11 +30,13 @@ Each of the localized strings (the lines) are identified by a key, unique across
 
 The key/line pairs for each languages must be set in a table as value of the language name in the `Lang.dictionariesByLanguage` object.
 
-    Lang.UserConfig = {
-        default = "english", -- lower case
-        current = "french", 
-    }
-
+    function Lang.UserConfig()
+        return {
+            default = "english", -- lower case
+            current = "french", 
+        }
+    end
+    
     Lang.dictionariesByLanguage.english = { -- names in lower case too
         key = "value",
 
