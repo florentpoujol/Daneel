@@ -89,15 +89,11 @@ Color.colorsByName = {
     red = {255,0,0},
     green = {0,255,0},
     blue = {0,0,255},
-
     yellow = {255,255,0},
     cyan = {0,255,255},
     magenta = {255,0,255},
-
     white = {255,255,255},
     black = {0,0,0},
-    gray = {50,50,50},
-    grey = {50,50,50}, -- English spelling
 }
 -- More color/names : https://github.com/franks42/colors-rgb.lua/blob/master/colors-rgb.lua
 -- Note that some of these colors can't be displayed by the current algorithm.
@@ -665,8 +661,6 @@ function Color.GetRandom( pattern )
     pattern = pattern or math.random( #Color.PatternsById )
 
     local plainColors = table.copy( Color.colorsByName )
-    plainColors.grey = nil
-    plainColors.gray = nil
     plainColors.black = nil
     plainColors = table.getvalues( plainColors )
     -- plainColors contains r, g, b, y, c, m, w
