@@ -1859,11 +1859,9 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["GameObject.SetParent"] =          { _go, { "parentNameOrInstance", { s, "GameObject" }, isOptional = true }, { "keepLocalTransform", defaultValue = false } },
     ["GameObject.GetChild"] =           { _go, { "name", s, isOptional = true }, { "recursive", defaultValue = false } },
     ["GameObject.GetChildren"] =        { _go, { "recursive", defaultValue = false }, { "includeSelf", defaultValue = false } },
-    ["GameObject.GetChildrenByName"] =  { _go, { "recursive", defaultValue = false }, { "includeSelf", defaultValue = false } },
     ["GameObject.GetInAncestors"] =     { _go, { "searchFunction", "function" } },
 
     ["GameObject.SendMessage"] =      { _go, { "functionName", s }, { "data", t, isOptional = true } },
-    ["GameObject.BroadcastMessage"] = { _go, { "functionName", s }, { "data", t, isOptional = true } },
 
     ["GameObject.AddComponent"] =        { _go, { "componentType", { s, "Script" } }, { "params", t, isOptional = true } },
     ["GameObject.GetComponent"] =        { _go, { "componentType", { s, "Script" } } },
