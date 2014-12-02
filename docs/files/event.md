@@ -77,7 +77,6 @@ Functions added via `AddEventListener()` are added in a `listenersByEvent` dicti
 Optionally, you can also set a function as the value of a property with the same name as the event. (ie : `object.OnFooBar` for an event named `"OnFooBar"`).
 
 Note that game objects have the following shortcuts : `GameObject.AddEventListener( eventname, listenerFunction )`, `GameObject.RemoveEventListener( eventname, listenerFunction )`, `GameObject.FireEvent( eventname )`.  
-When the object is also a `GameObject` the message of the same name as the event is sent.  
     
     local func = function() 
         print("Left click pressed on ", self.gameObject)
@@ -110,6 +109,32 @@ When the object is also a `GameObject` the message of the same name as the event
     -- This prints "Click !" and "Click2 !".
     -- Since the object is not a game object, no message is sent.
     
+When the object is also a `GameObject` the message of the same name as the event is sent.  
+In that case the event's arguments are bundled in a table passed as the message's first and only argument with these conditions :
+
+- the game object the message is sent on is not passed when it is the event's first argument (because it's readily available in behavior's public functions),
+- if a table is the only remaining argument, is is passed directly, instead of being bundled in another table.
+
+Some example :
+
+    -- 1)
+    Daneel.Event.Fire( gameObject, "OnEvent", gameObject, 1, 2 ) -- two arguments in addition of the game object
+    funtion Behavior:OnEvent( data )
+        -- data contains 1 and 2 as first and seconds argument, respectively
+    end
+
+    -- 2)
+    Daneel.Event.Fire( gameObject, "OnEvent", gameObject, gameObject.transform, 2 ) -- two arguments in addition of the game object
+    funtion Behavior:OnEvent( data )
+        -- data contains the transform component and 2 as first and seconds argument, respectively
+    end
+
+    -- 3)
+    Daneel.Event.Fire( gameObject, "OnEvent", gameObject, gameObject.transform ) -- a table as single additional argument
+    funtion Behavior:OnEvent( transform )
+        -- the transform argument is already the transform component
+    end
+
 
 <a name="daneels-events"></a>
 ## Daneel's events

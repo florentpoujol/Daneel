@@ -961,6 +961,15 @@ function Daneel.Event.Fire( object, eventName, ... )
 
                 -- always try to send the message if the object is a game object
                 if mt == GameObject then
+                    local go = arg[1]
+                    if go == listener then
+                        -- don't send the first argument when it is the listener game
+                        table.remove( arg, 1 )
+                    end
+                    if #arg == 1 and type( arg[1] ) == "table" then
+                        -- directly send the table if there is no other argument
+                        arg = arg[1]
+                    end
                     listener:SendMessage( eventName, arg )
                 end
             end
