@@ -113,25 +113,31 @@ When the object is also a `GameObject` the message of the same name as the event
 In that case the event's arguments are bundled in a table passed as the message's first and only argument with these conditions :
 
 - the game object the message is sent on is not passed when it is the event's first argument (because it's readily available in behavior's public functions),
-- if a table is the only remaining argument, is is passed directly, instead of being bundled in another table.
+- if a table is the only (remaining) argument, is is passed directly, instead of being bundled in another table.
 
 Some example :
 
     -- 1)
     Daneel.Event.Fire( gameObject, "OnEvent", gameObject, 1, 2 ) -- two arguments in addition of the game object
-    funtion Behavior:OnEvent( data )
+    function Behavior:OnEvent( data )
         -- data contains 1 and 2 as first and seconds argument, respectively
     end
 
     -- 2)
     Daneel.Event.Fire( gameObject, "OnEvent", gameObject, gameObject.transform, 2 ) -- two arguments in addition of the game object
-    funtion Behavior:OnEvent( data )
+    function Behavior:OnEvent( data )
         -- data contains the transform component and 2 as first and seconds argument, respectively
     end
 
     -- 3)
     Daneel.Event.Fire( gameObject, "OnEvent", gameObject, gameObject.transform ) -- a table as single additional argument
-    funtion Behavior:OnEvent( transform )
+    function Behavior:OnEvent( transform )
+        -- the transform argument is already the transform component
+    end
+
+    -- 4)
+    Daneel.Event.Fire( gameObject, "OnEvent", gameObject.transform )
+    function Behavior:OnEvent( transform )
         -- the transform argument is already the transform component
     end
 
