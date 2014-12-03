@@ -283,6 +283,7 @@ local n = "number"
 local t = "table"
 local f = "function"
 local u = "userdata"
+local v3 = "Vector3"
 local _s = { "s", s }
 local _t = { "t", t }
 
@@ -343,10 +344,28 @@ Daneel.Debug.functionArgumentsInfo = {
         { "property", s },
         { "orderBy", s, isOptional = true },
     },
-
-    ["Daneel.Utilities.ReplaceInString"] = { { "string", s }, { "replacements", t } },
-    ["Daneel.Utilities.ButtonExists"] = { { "buttonName", s } }
 }
+
+local _transform = { "transform", "Transform" }
+table.mergein( Daneel.Debug.functionArgumentsInfo, {
+    ["Daneel.Utilities.ReplaceInString"] = { { "string", s }, { "replacements", t } },
+    ["Daneel.Utilities.ButtonExists"] = { { "buttonName", s } },
+
+    ["Transform.SetPosition"] =             { _transform, { "position", v3 } },
+    ["Transform.SetLocalPosition"] =        { _transform, { "position", v3 } },
+    ["Transform.SetEulerAngles"] =          { _transform, { "angles", v3 } },
+    ["Transform.SetLocalEulerAngles"] =     { _transform, { "angles", v3 } },
+    ["Transform.RotateEulerAngles"] =       { _transform, { "angles", v3 } },
+    ["Transform.RotateLocalEulerAngles"] =  { _transform, { "angles", v3 } },
+    ["Transform.Move"] =            { _transform, { "offset", v3 } },
+    ["Transform.MoveLocal"] =       { _transform, { "offset", v3 } },
+    ["Transform.MoveOriented"] =    { _transform, { "offset", v3 } },
+    ["Transform.LookAt"] =          { _transform, { "target", v3 } },
+    ["Transform.SetOrientation"] =      { _transform, { "orientation", "Quaternion" } },
+    ["Transform.SetLocalOrientation"] = { _transform, { "orientation", "Quaternion" } },
+    ["Transform.Rotate"] =              { _transform, { "orientation", "Quaternion" } },
+    ["Transform.RotateLocal"] =         { _transform, { "orientation", "Quaternion" } },
+} )
 
 --- Check the provided argument's type against the provided type(s) and display error if they don't match.
 -- @param argument (mixed) The argument to check.

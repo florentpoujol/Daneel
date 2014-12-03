@@ -622,7 +622,8 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["Camera.GetBaseDistance"] =     { { "camera", "Camera" } },
     ["Camera.IsPositionInFrustum"] = { { "camera", "Camera" }, { "position", v3 } },
     ["Camera.WorldToScreenPoint"] =  { { "camera", "Camera" }, { "position", v3 } },
-    ["Camera.GetFOV"] =  { { "camera", "Camera" } },
+    ["Camera.GetFOV"] =              { { "camera", "Camera" } },
+    ["Camera.Project"] =             { { "camera", "Camera" }, { "position", v3 } }
 } )
 
 --------------------------------------------------------------------------------
