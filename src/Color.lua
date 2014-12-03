@@ -38,10 +38,10 @@ function Color.__newindex( color, key, value )
 end
 
 function Color.__tostring(color)
-    local s = "Color: { r="..color._r..", g="..color._g..", b="..color._b..", hex="..color:GetHex()
+    local s = "Color: { r="..color._r..", g="..color._g..", b="..color._b..", hex=\""..color:GetHex().."\""
     local name = color:GetName()
     if name ~= nil then
-        s = s..", name='"..name.."'"
+        s = s..", name=\""..name.."\""
     end
     return s.." }"
 end
@@ -438,11 +438,8 @@ function Color._getAsset( color, assetType, assetFolder )
     assetFolder = assetFolder or Color.colorAssetsFolder
 
     local name = color:GetName() -- name may be nil !
-    if name == nil then
-        if Daneel.Config.debug.enableDebug == true then
-            print("Color._getAsset(): Can't find the name of the provided color", color, "It must be set in the Color.colorsByName table.")
-        end
-        return nil
+    if name == nil and Daneel.Config.debug.enableDebug == true then
+        error("Color._getAsset(): Can't find the name of the provided color", color, "The color must be set in the Color.colorsByName table.")
     end
 
     local path = assetFolder..name
@@ -453,7 +450,7 @@ function Color._getAsset( color, assetType, assetFolder )
     end
 
     if asset == nil and Daneel.Config.debug.enableDebug == true then
-        print("Color._getAsset(): Could not find asset of type '"..assetType.."' at path '"..path.."' for ", color)
+        error("Color._getAsset(): Could not find asset of type '"..assetType.."' at path '"..path.."' for ", color)
     end
     return asset
 end
