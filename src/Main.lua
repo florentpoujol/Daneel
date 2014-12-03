@@ -1410,8 +1410,7 @@ function MouseInput.Update()
         end
 
         local reindexComponents = false
-        local reindexGameObjects = false
-
+        
         for i=1, #MouseInput.components do
             local component = MouseInput.components[i]
             local mi_gameObject = component.gameObject -- mouse input game object
@@ -1421,70 +1420,57 @@ function MouseInput.Update()
                 
                 for j=1, #component._tags do
                     local tag = component._tags[j]
-                    local gameObjects = GameObject.Tags[ tag ]
-                    if gameObjects ~= nil then
+                    local gameObjects = GameObject.GetWithTag( tag )
 
-                        for k=1, #gameObjects do
-                            local gameObject = gameObjects[k]
-                            -- gameObject is the game object whose position is checked against the raycasthit
-                            if gameObject.inner ~= nil and not gameObject.isDestroyed then
-                                
-                                local raycastHit = ray:IntersectsGameObject( gameObject )
-                                if raycastHit ~= nil then
-                                    -- the mouse pointer is over the gameObject
-                                    if not gameObject.isMouseOver then
-                                        gameObject.isMouseOver = true
-                                        Daneel.Event.Fire( gameObject, "OnMouseEnter", gameObject )
-                                    end
-
-                                elseif gameObject.isMouseOver == true then
-                                    -- the gameObject was still hovered the last frame
-                                    gameObject.isMouseOver = false
-                                    Daneel.Event.Fire( gameObject, "OnMouseExit", gameObject )
-                                end
-                                
-                                if gameObject.isMouseOver == true then
-                                    Daneel.Event.Fire( gameObject, "OnMouseOver", gameObject, raycastHit )
-
-                                    if leftMouseJustPressed == true then
-                                        Daneel.Event.Fire( gameObject, "OnClick", gameObject )
-
-                                        if doubleClick == true then
-                                            Daneel.Event.Fire( gameObject, "OnDoubleClick", gameObject )
-                                        end
-                                    end
-
-                                    if leftMouseDown == true and mouseIsMoving == true then
-                                        Daneel.Event.Fire( gameObject, "OnDrag", gameObject )
-                                    end
-
-                                    if leftMouseJustReleased == true then
-                                        Daneel.Event.Fire( gameObject, "OnLeftClickReleased", gameObject )
-                                    end
-
-                                    if rightMouseJustPressed == true then
-                                        Daneel.Event.Fire( gameObject, "OnRightClick", gameObject )
-                                    end
-
-                                    if wheelUpJustPressed == true then
-                                        Daneel.Event.Fire( gameObject, "OnWheelUp", gameObject )
-                                    end
-                                    if wheelDownJustPressed == true then
-                                        Daneel.Event.Fire( gameObject, "OnWheelDown", gameObject )
-                                    end
-                                end
-                            else 
-                                -- gameObject is dead
-                                gameObjects[ i ] = nil
-                                reindexGameObjects = true
+                    for k=1, #gameObjects do
+                        local gameObject = gameObjects[k]
+                        -- gameObject is the game object whose position is checked against the raycasthit
+                            
+                        local raycastHit = ray:IntersectsGameObject( gameObject )
+                        if raycastHit ~= nil then
+                            -- the mouse pointer is over the gameObject
+                            if not gameObject.isMouseOver then
+                                gameObject.isMouseOver = true
+                                Daneel.Event.Fire( gameObject, "OnMouseEnter", gameObject )
                             end
-                        end -- for gameObjects with current tag
 
-                        if reindexGameObjects == true then
-                            GameObject.Tags[ tag ] = table.reindex( gameObjects )
-                            reindexGameObjects = false
+                        elseif gameObject.isMouseOver == true then
+                            -- the gameObject was still hovered the last frame
+                            gameObject.isMouseOver = false
+                            Daneel.Event.Fire( gameObject, "OnMouseExit", gameObject )
                         end
-                    end -- if some game objects have this tag
+                        
+                        if gameObject.isMouseOver == true then
+                            Daneel.Event.Fire( gameObject, "OnMouseOver", gameObject, raycastHit )
+
+                            if leftMouseJustPressed == true then
+                                Daneel.Event.Fire( gameObject, "OnClick", gameObject )
+
+                                if doubleClick == true then
+                                    Daneel.Event.Fire( gameObject, "OnDoubleClick", gameObject )
+                                end
+                            end
+
+                            if leftMouseDown == true and mouseIsMoving == true then
+                                Daneel.Event.Fire( gameObject, "OnDrag", gameObject )
+                            end
+
+                            if leftMouseJustReleased == true then
+                                Daneel.Event.Fire( gameObject, "OnLeftClickReleased", gameObject )
+                            end
+
+                            if rightMouseJustPressed == true then
+                                Daneel.Event.Fire( gameObject, "OnRightClick", gameObject )
+                            end
+
+                            if wheelUpJustPressed == true then
+                                Daneel.Event.Fire( gameObject, "OnWheelUp", gameObject )
+                            end
+                            if wheelDownJustPressed == true then
+                                Daneel.Event.Fire( gameObject, "OnWheelDown", gameObject )
+                            end
+                        end
+                    end -- for gameObjects with current tag
                 end -- for component._tags
             else
                 -- this component's game object is dead or has no camera component
@@ -1581,46 +1567,35 @@ function Trigger.Update()
                 
                 for j=1, #trigger._tags do
                     local tag = trigger._tags[j]
-                    local gameObjects = GameObject.Tags[ tag ]
-                    if gameObjects ~= nil then
+                    local gameObjects = GameObject.GetWithTag( tag )
 
-                        for k=1, #gameObjects do
-                            local gameObject = gameObjects[k]
-                            -- gameObject is the game object whose position is checked against the trigger's
-                            if gameObject.inner ~= nil and not gameObject.isDestroyed and gameObject ~= triggerGameObject then    
+                    for k=1, #gameObjects do
+                        local gameObject = gameObjects[k]
+                        -- gameObject is the game object whose position is checked against the trigger's
+                        if gameObject ~= triggerGameObject then    
 
-                                local gameObjectIsInRange = trigger:IsGameObjectInRange( gameObject, triggerPosition )
-                                local gameObjectWasInRange = table.containsvalue( trigger.gameObjectsInRangeLastUpdate, gameObject )
+                            local gameObjectIsInRange = trigger:IsGameObjectInRange( gameObject, triggerPosition )
+                            local gameObjectWasInRange = table.containsvalue( trigger.gameObjectsInRangeLastUpdate, gameObject )
 
-                                if gameObjectIsInRange then
-                                    if gameObjectWasInRange then
-                                        -- already in this trigger
-                                        Daneel.Event.Fire( gameObject, "OnTriggerStay", gameObject, triggerGameObject )
-                                        Daneel.Event.Fire( triggerGameObject, "OnTriggerStay", triggerGameObject, gameObject )
-                                    else
-                                        -- just entered the trigger
-                                        table.insert( trigger.gameObjectsInRangeLastUpdate, gameObject )
-                                        Daneel.Event.Fire( gameObject, "OnTriggerEnter", gameObject, triggerGameObject )
-                                        Daneel.Event.Fire( triggerGameObject, "OnTriggerEnter", triggerGameObject, gameObject )
-                                    end
-                                elseif gameObjectWasInRange then
-                                    -- was in the trigger, but not anymore
-                                    table.removevalue( trigger.gameObjectsInRangeLastUpdate, gameObject )
-                                    Daneel.Event.Fire( gameObject, "OnTriggerExit", gameObject, triggerGameObject )
-                                    Daneel.Event.Fire( triggerGameObject, "OnTriggerExit", triggerGameObject, gameObject )
+                            if gameObjectIsInRange then
+                                if gameObjectWasInRange then
+                                    -- already in this trigger
+                                    Daneel.Event.Fire( gameObject, "OnTriggerStay", gameObject, triggerGameObject )
+                                    Daneel.Event.Fire( triggerGameObject, "OnTriggerStay", triggerGameObject, gameObject )
+                                else
+                                    -- just entered the trigger
+                                    table.insert( trigger.gameObjectsInRangeLastUpdate, gameObject )
+                                    Daneel.Event.Fire( gameObject, "OnTriggerEnter", gameObject, triggerGameObject )
+                                    Daneel.Event.Fire( triggerGameObject, "OnTriggerEnter", triggerGameObject, gameObject )
                                 end
-                            else 
-                                -- gameObject is dead
-                                gameObjects[ i ] = nil
-                                reindexGameObjects = true
+                            elseif gameObjectWasInRange then
+                                -- was in the trigger, but not anymore
+                                table.removevalue( trigger.gameObjectsInRangeLastUpdate, gameObject )
+                                Daneel.Event.Fire( gameObject, "OnTriggerExit", gameObject, triggerGameObject )
+                                Daneel.Event.Fire( triggerGameObject, "OnTriggerExit", triggerGameObject, gameObject )
                             end
-                        end -- for gameObjects with current tag
-
-                        if reindexGameObjects == true then
-                            GameObject.Tags[ tag ] = table.reindex( gameObjects )
-                            reindexGameObjects = false
                         end
-                    end -- if some game objects have this tag
+                    end -- for gameObjects with current tag
                 end -- for component._tags
             end -- it's time to update this trigger
         else

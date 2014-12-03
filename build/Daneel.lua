@@ -2057,7 +2057,7 @@ function Behavior.Awake( self )
         return
     end
     Daneel.isAwake = true
-    Daneel.Event.Listen( "OnSceneLoad", function() Daneel.isAwake = false end )
+    Daneel.Event.Listen( "OnNewSceneWillLoad", function() Daneel.isAwake = false end )
 
     Daneel.Load()
     Daneel.Debug.StackTrace.messages = {}
@@ -2158,6 +2158,10 @@ function MouseInput.Load()
     MouseInput.lastLeftClickFrame = -MouseInput.Config.doubleClickDelay
 end
 
+function MouseInput.Awake()
+    MouseInput.components = {}
+end
+
 -- Loop on the MouseInput.components.
 -- Works with the game objects that have at least one of the component's tag.
 -- Check the position of the mouse against these game objects.
@@ -2222,70 +2226,57 @@ function MouseInput.Update()
                 
                 for j=1, #component._tags do
                     local tag = component._tags[j]
-                    local gameObjects = GameObject.Tags[ tag ]
-                    if gameObjects ~= nil then
+                    local gameObjects = GameObject.GetWithTag( tag )
 
-                        for k=1, #gameObjects do
-                            local gameObject = gameObjects[k]
-                            -- gameObject is the game object whose position is checked against the raycasthit
-                            if gameObject.inner ~= nil and not gameObject.isDestroyed then
-                                
-                                local raycastHit = ray:IntersectsGameObject( gameObject )
-                                if raycastHit ~= nil then
-                                    -- the mouse pointer is over the gameObject
-                                    if not gameObject.isMouseOver then
-                                        gameObject.isMouseOver = true
-                                        Daneel.Event.Fire( gameObject, "OnMouseEnter", gameObject )
-                                    end
-
-                                elseif gameObject.isMouseOver == true then
-                                    -- the gameObject was still hovered the last frame
-                                    gameObject.isMouseOver = false
-                                    Daneel.Event.Fire( gameObject, "OnMouseExit", gameObject )
-                                end
-                                
-                                if gameObject.isMouseOver == true then
-                                    Daneel.Event.Fire( gameObject, "OnMouseOver", gameObject, raycastHit )
-
-                                    if leftMouseJustPressed == true then
-                                        Daneel.Event.Fire( gameObject, "OnClick", gameObject )
-
-                                        if doubleClick == true then
-                                            Daneel.Event.Fire( gameObject, "OnDoubleClick", gameObject )
-                                        end
-                                    end
-
-                                    if leftMouseDown == true and mouseIsMoving == true then
-                                        Daneel.Event.Fire( gameObject, "OnDrag", gameObject )
-                                    end
-
-                                    if leftMouseJustReleased == true then
-                                        Daneel.Event.Fire( gameObject, "OnLeftClickReleased", gameObject )
-                                    end
-
-                                    if rightMouseJustPressed == true then
-                                        Daneel.Event.Fire( gameObject, "OnRightClick", gameObject )
-                                    end
-
-                                    if wheelUpJustPressed == true then
-                                        Daneel.Event.Fire( gameObject, "OnWheelUp", gameObject )
-                                    end
-                                    if wheelDownJustPressed == true then
-                                        Daneel.Event.Fire( gameObject, "OnWheelDown", gameObject )
-                                    end
-                                end
-                            else 
-                                -- gameObject is dead
-                                gameObjects[ i ] = nil
-                                reindexGameObjects = true
+                    for k=1, #gameObjects do
+                        local gameObject = gameObjects[k]
+                        -- gameObject is the game object whose position is checked against the raycasthit
+                            
+                        local raycastHit = ray:IntersectsGameObject( gameObject )
+                        if raycastHit ~= nil then
+                            -- the mouse pointer is over the gameObject
+                            if not gameObject.isMouseOver then
+                                gameObject.isMouseOver = true
+                                Daneel.Event.Fire( gameObject, "OnMouseEnter", gameObject )
                             end
-                        end -- for gameObjects with current tag
 
-                        if reindexGameObjects == true then
-                            GameObject.Tags[ tag ] = table.reindex( gameObjects )
-                            reindexGameObjects = false
+                        elseif gameObject.isMouseOver == true then
+                            -- the gameObject was still hovered the last frame
+                            gameObject.isMouseOver = false
+                            Daneel.Event.Fire( gameObject, "OnMouseExit", gameObject )
                         end
-                    end -- if some game objects have this tag
+                        
+                        if gameObject.isMouseOver == true then
+                            Daneel.Event.Fire( gameObject, "OnMouseOver", gameObject, raycastHit )
+
+                            if leftMouseJustPressed == true then
+                                Daneel.Event.Fire( gameObject, "OnClick", gameObject )
+
+                                if doubleClick == true then
+                                    Daneel.Event.Fire( gameObject, "OnDoubleClick", gameObject )
+                                end
+                            end
+
+                            if leftMouseDown == true and mouseIsMoving == true then
+                                Daneel.Event.Fire( gameObject, "OnDrag", gameObject )
+                            end
+
+                            if leftMouseJustReleased == true then
+                                Daneel.Event.Fire( gameObject, "OnLeftClickReleased", gameObject )
+                            end
+
+                            if rightMouseJustPressed == true then
+                                Daneel.Event.Fire( gameObject, "OnRightClick", gameObject )
+                            end
+
+                            if wheelUpJustPressed == true then
+                                Daneel.Event.Fire( gameObject, "OnWheelUp", gameObject )
+                            end
+                            if wheelDownJustPressed == true then
+                                Daneel.Event.Fire( gameObject, "OnWheelDown", gameObject )
+                            end
+                        end
+                    end -- for gameObjects with current tag
                 end -- for component._tags
             else
                 -- this component's game object is dead or has no camera component
@@ -2295,7 +2286,7 @@ function MouseInput.Update()
         end -- for MouseInput.components
 
         if reindexComponents == true then
-            table.reindex( MouseInput.components )
+            MouseInput.components = table.reindex( MouseInput.components )
         end
     end -- if mouseIsMoving, ...
 end -- end MouseInput.Update() 
@@ -2364,6 +2355,10 @@ function Trigger.DefaultConfig()
 end
 Trigger.Config = Trigger.DefaultConfig()
 
+function Trigger.Awake()
+    Trigger.triggerComponents = {}
+end
+
 function Trigger.Update()
     Trigger.frameCount = Trigger.frameCount + 1
     local reindexComponents = false
@@ -2428,7 +2423,7 @@ function Trigger.Update()
     end -- for Trigger.triggerComponents
 
     if reindexComponents == true then
-        table.reindex( Trigger.triggerComponents )
+        Trigger.triggerComponents = table.reindex( Trigger.triggerComponents )
     end
 end
 
