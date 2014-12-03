@@ -667,35 +667,27 @@ end
 function Daneel.Debug.RegisterFunction( name, argsData )
     if not Daneel.Config.debug.enableDebug then return end
 
-    local includeInStackTrace = true
-    if not Daneel.Config.debug.enableStackTrace then
-        includeInStackTrace = false
-    elseif argsData.includeInStackTrace ~= nil then
-        includeInStackTrace = argsData.includeInStackTrace
-    end
-
-    local originalFunction = nil
+    local originalFunction = table.getvalue( _G, name )
     local originalFunctionName = name
     
-    local script = argsData.script -- asset. if set the function is a public behavior function
+    local script = argsData.script -- script asset. If set, the function is a public behavior function
     if script ~= nil then
         originalFunction = script[ name ]
         name = script:GetPath()..":"..name -- "Folder/ScriptName:FunctionName"
-    else
-        originalFunction = table.getvalue( _G, name )
     end
 
-    local errorHead = name.."( "
-    for i, arg in ipairs( argsData ) do
-        if arg.name == nil then arg.name = arg[1] end
-        errorHead = errorHead..arg.name..", "
-    end
-
-    errorHead = errorHead:sub( 1, #errorHead-2 ) -- removes the last coma+space
-    errorHead = errorHead.." ) : "
-
-    --
     if originalFunction ~= nil then
+        local includeInStackTrace = argsData.includeInStackTrace or Daneel.Config.debug.enableStackTrace
+
+        local errorHead = name.."( "
+        for i, arg in ipairs( argsData ) do
+            if arg.name == nil then arg.name = arg[1] end
+            errorHead = errorHead..arg.name..", "
+        end
+
+        errorHead = errorHead:sub( 1, #errorHead-2 ) -- removes the last coma+space
+        errorHead = errorHead.." ) : "
+
         local newFunction = function( ... )
             local funcArgs = { ... }
 
