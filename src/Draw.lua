@@ -14,10 +14,11 @@ local n = "number"
 local t = "table"
 local v = "Vector3"
 local _go = { "gameObject", "GameObject" }
-local _p = { "params", t, defaultValue = {} }
+local _op = { "params", t, isOptional = true }
+local _p = { "params", t }
 local _l = { "line", "LineRenderer"}
 local _c = { "circle", "CircleRenderer"}
-local _d = { "draw", b, defaultValue = true }
+local _d = { "draw", b, isOptional = true }
 
 
 ----------------------------------------------------------------------------------
@@ -25,10 +26,10 @@ local _d = { "draw", b, defaultValue = true }
 
 Draw.LineRenderer = {}
 
-functionsDebugInfo[ "Draw.LineRenderer.New" ] = { _go, _p }
+functionsDebugInfo[ "Draw.LineRenderer.New" ] = { _go, _op }
 --- Creates a new LineRenderer component.
 -- @param gameObject (GameObject) The game object.
--- @param params (table) A table of parameters.
+-- @param params (table) [optional] A table of parameters.
 -- @return (LineRenderer) The new component.
 function Draw.LineRenderer.New( gameObject, params )
     local line = {
@@ -115,7 +116,7 @@ function Draw.LineRenderer.SetEndPosition( line, endPosition, draw )
     line._endPosition = endPosition
     line._direction = (line._endPosition - line.origin)
     line._length = line._direction:Length()
-    if draw == nil or draw then
+    if draw == nil or draw == true then
         line:Draw()
     end
 end
@@ -137,7 +138,7 @@ functionsDebugInfo[ "Draw.LineRenderer.SetLength" ] = { _l, { "length", n }, _d 
 function Draw.LineRenderer.SetLength( line, length, draw )
     line._length = length
     line._endPosition = line.origin + line._direction * length
-    if draw == nil or draw then
+    if draw == nil or draw == true then
         line:Draw()
     end
 end
@@ -150,8 +151,8 @@ function Draw.LineRenderer.GetLength( line )
     return line._length
 end
 
-functionsDebugInfo[ "Draw.LineRenderer.SetWidth" ] = { _l, { "direction", v },
-    { "useDirectionAsLength", b, defaultValue = false }, _d
+functionsDebugInfo[ "Draw.LineRenderer.SetDirection" ] = { _l, { "direction", v },
+    { "useDirectionAsLength", b, isOptional = true }, _d
 }
 --- Set the line renderer's direction.
 -- It also updates line renderer's end position.
@@ -161,11 +162,11 @@ functionsDebugInfo[ "Draw.LineRenderer.SetWidth" ] = { _l, { "direction", v },
 -- @param draw (boolean) [default=true] Tell whether to re-draw immediately the line renderer.
 function Draw.LineRenderer.SetDirection( line, direction, useDirectionAsLength, draw )
     line._direction = direction:Normalized()
-    if useDirectionAsLength then
+    if useDirectionAsLength == true then
         line._length = direction:Length()
     end
     line._endPosition = line.origin + line._direction * line._length
-    if draw == nil or draw then
+    if draw == nil or draw == true then
         line:Draw()
     end
 end
@@ -185,7 +186,7 @@ functionsDebugInfo[ "Draw.LineRenderer.SetWidth" ] = { _l, { "width", n }, _d }
 -- @param draw (boolean) [default=true] Tell whether to re-draw immediately the line renderer.
 function Draw.LineRenderer.SetWidth( line, width, draw )
     line._width = width
-    if draw == nil or draw then
+    if draw == nil or draw == true then
         line:Draw()
     end
 end
@@ -203,10 +204,10 @@ end
 
 Draw.CircleRenderer = {}
 
-functionsDebugInfo[ "Draw.CircleRenderer.New" ] = { _go, _p }
+functionsDebugInfo[ "Draw.CircleRenderer.New" ] = { _go, _op }
 --- Creates a new circle renderer component.
 -- @param gameObject (GameObject) The game object.
--- @param params (table) A table of parameters.
+-- @param params (table) [optional] A table of parameters.
 -- @return (CircleRenderer) The new component.
 function Draw.CircleRenderer.New( gameObject, params )   
     local circle = {
@@ -221,6 +222,7 @@ function Draw.CircleRenderer.New( gameObject, params )
     circle._endPosition = circle.origin
     gameObject.circleRenderer = circle
 
+    params = params or {}
     -- allow to set the circle renderer's model via a model renderer 
     if params.model == nil and gameObject.modelRenderer ~= nil then
         params.model = gameObject.modelRenderer:GetModel()
@@ -316,7 +318,7 @@ functionsDebugInfo[ "Draw.CircleRenderer.SetRadius" ] = { _c, { "radius", n }, _
 -- @param draw (boolean) [default=true] Tell whether to re-draw immediately the circle renderer.
 function Draw.CircleRenderer.SetRadius( circle, radius, draw )
     circle._radius = radius
-    if draw == nil or draw then
+    if draw == nil or draw == true then
         circle:Draw()
     end
 end
@@ -338,7 +340,7 @@ function Draw.CircleRenderer.SetSegmentCount( circle, count, draw )
     if count < 3 then count = 3 end
     if circle._segmentCount ~= count then
         circle._segmentCount = count
-        if draw == nil or draw then
+        if draw == nil or draw == true then
             circle:Draw()
         end
     end

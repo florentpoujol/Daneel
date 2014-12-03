@@ -311,7 +311,7 @@ Daneel.Debug.functionArgumentsInfo = {
     ["string.startswith"] = { _s, { "chunk", s } },
     ["string.split"] = { _s,
         { "delimiter", s },
-        { "delimiterIsPattern", b, defaultValue = false },
+        { "delimiterIsPattern", b, isOptional = true },
     },
     ["string.reverse"] = { _s },
     ["string.fixcase"] = { _s, { "set", { s, t } } },
@@ -326,10 +326,10 @@ Daneel.Debug.functionArgumentsInfo = {
     ["table.getvalue"] = { _t, { "keys", s } },
     ["table.setvalue"] = { _t, { "keys", s } },
     ["table.getkey"] = { _t, { "value" } },
-    ["table.copy"] = { _t, { "recursive", b, defaultValue = false } },
-    ["table.containsvalue"] = { _t, { "value" }, { "ignoreCase", b, defaultValue = false } },
-    ["table.isarray"] = { _t, { "strict", b, defaultValue = true } },
-    ["table.shift"] = { _t, { "returnKey", b, defaultValue = false } },
+    ["table.copy"] = { _t, { "recursive", b, isOptional = true } },
+    ["table.containsvalue"] = { _t, { "value" }, { "ignoreCase", b, isOptional = true } },
+    ["table.isarray"] = { _t, { "strict", b, isOptional = true } },
+    ["table.shift"] = { _t, { "returnKey", b, isOptional = true } },
     ["table.getlength"] = { _t, { "keyType", s, isOptional = true } },
     ["table.havesamecontent"] = { { "table1", t }, { "table2", t } },
     ["table.combine"] = { _t,
@@ -874,7 +874,7 @@ function Daneel.Event.Listen( eventName, functionOrObject, isPersistent )
             not table.containsvalue( Daneel.Event.persistentEvents[ eventName ], functionOrObject )
         then
             -- check that the persistent listener is not a game object or a component (that are always destroyed when the scene loads)
-            if isPersistent and listenerType == "table" then
+            if isPersistent == true and listenerType == "table" then
                 local mt = getmetatable( functionOrObject )
                 if mt ~= nil and mt == GameObject or table.containsvalue( Daneel.Config.componentObjectsByType, mt ) then
                     if Daneel.Config.debug.enableDebug then
@@ -885,7 +885,7 @@ function Daneel.Event.Listen( eventName, functionOrObject, isPersistent )
             end
 
             local eventList = Daneel.Event.events
-            if isPersistent then
+            if isPersistent == true then
                 eventList = Daneel.Event.persistentEvents
             end
 
@@ -1087,7 +1087,7 @@ end
 
 local _go = { "gameObject", "GameObject" }
 table.mergein( Daneel.Debug.functionArgumentsInfo, {
-    ["Daneel.Event.Listen"] = { { "eventName", { s, t } }, { "functionOrObject", {t, f, u} }, { "isPersistent", defaultValue = false } },
+    ["Daneel.Event.Listen"] = { { "eventName", { s, t } }, { "functionOrObject", {t, f, u} }, { "isPersistent", b, isOptional = true } },
     ["GameObject.FireEvent"] = { _go, { "eventName", s } },
     ["Daneel.Event.AddEventListener"] = { { "object", "table" }, { "eventName", s }, { "listener", { f, u } } },
     ["GameObject.AddEventListener"] =   { _go, { "eventName", s }, { "listener", { f, u } } },

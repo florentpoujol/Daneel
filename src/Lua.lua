@@ -155,7 +155,7 @@ end
 function string.split( s, delimiter, delimiterIsPattern )
     local chunks = {}
     
-    if delimiterIsPattern then
+    if delimiterIsPattern == true then
         local delimiterStartIndex, delimiterEndIndex = s:find( delimiter )
 
         if delimiterStartIndex ~= nil then
@@ -290,19 +290,20 @@ end
 -- @param recursive (boolean) [default=false] Tell whether to also copy the tables found as value (true), or just leave the same table as value (false).
 -- @return (table) The copied table.
 function table.copy( t, recursive )
+    recursive = recursive or false
     local newTable = {}
     if table.isarray( t ) then
         -- not sure if it's really necessary to use ipairs() instead of pairs() for arrays
         -- but better be safe than sorry
         for key, value in ipairs( t ) do
-            if type( value ) == "table" and recursive then
+            if type( value ) == "table" and recursive == true then
                 value = table.copy( value, recursive )
             end
             table.insert( newTable, value )
         end
     else
         for key, value in pairs( t ) do
-            if type( value ) == "table" and recursive then
+            if type( value ) == "table" and recursive == true then
                 value = table.copy( value, recursive )
             end
             newTable[ key ] = value
@@ -320,11 +321,11 @@ function table.containsvalue( t, value, ignoreCase )
     if value == nil then
         return false
     end
-    if ignoreCase and type( value ) == 'string' then
+    if ignoreCase == true and type( value ) == 'string' then
         value = value:lower()
     end
     for key, _value in pairs(t) do
-        if ignoreCase and type( _value ) == "string" then
+        if ignoreCase == true and type( _value ) == "string" then
             _value = _value:lower()
         end
         if value == _value then
@@ -710,7 +711,7 @@ function table.isarray( t, strict )
             return false
         end
     end
-    if strict == nil or strict then
+    if strict == nil or strict == true then
         return (entriesCount == #t)
     end  
     return true

@@ -65,8 +65,6 @@ function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
     end
     -- else assetPath is always an actual asset path as a string
 
-    Daneel.Debug.CheckOptionalArgType( errorIfAssetNotFound, "errorIfAssetNotFound", "boolean", errorHead )
-
     -- get asset
     local asset = nil
     if assetType == nil then
@@ -75,7 +73,7 @@ function Asset.Get( assetPath, assetType, errorIfAssetNotFound )
         asset = CraftStudio.FindAsset( assetPath, assetType )
     end
 
-    if asset == nil and errorIfAssetNotFound then
+    if asset == nil and errorIfAssetNotFound == true then
         if assetType == nil then
             assetType = "asset"
         end
@@ -144,11 +142,11 @@ function Component.GetId( component )
 end
 
 table.mergein( Daneel.Debug.functionArgumentsInfo, {
-    ["Asset.Get"] = { { "assetPath" }, { "assetType", isOptional = true }, { "errorIfAssetNotFound", defaultValue = false } },
+    ["Asset.Get"] = { { "assetPath" }, { "assetType", isOptional = true }, { "errorIfAssetNotFound", "boolean", isOptional = true } },
     ["Asset.GetPath"] = { { "asset", Daneel.Config.assetTypes } },
     ["Asset.GetName"] = { { "asset", Daneel.Config.assetTypes } },
 
-    ["Component.Set"] = { { "component", Daneel.Config.componentTypes }, { "params", defaultValue = {} } },
+    ["Component.Set"] = { { "component", Daneel.Config.componentTypes }, { "params", "table" } },
     ["Component.Destroy"] = { { "component", Daneel.Config.componentTypes } },
 } )
 
@@ -605,7 +603,7 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["MapRenderer.SetMap"] = {
         { "mapRenderer", "MapRenderer" },
         { "mapNameOrAsset", { s, "Map" }, isOptional = true },
-        { "replaceTileSet", defaultValue = true },
+        { "replaceTileSet", "boolean", isOptional = true },
     },
     ["MapRenderer.SetTileSet"] = { { "mapRenderer", "MapRenderer" }, { "tileSetNameOrAsset", { s, "TileSet" }, isOptional = true } },
     ["MapRenderer.Set"] =        { { "mapRenderer", "MapRenderer" }, _p },
@@ -988,12 +986,11 @@ function RaycastHit.__tostring( instance )
     return msg.." }"
 end
 
-Daneel.Debug.functionArgumentsInfo["RaycastHit.New"] = { { "params", defaultValue = {} } }
+Daneel.Debug.functionArgumentsInfo["RaycastHit.New"] = { { "params", "table", isOptional = true } }
 --- Create a new RaycastHit
 -- @return (RaycastHit) The raycastHit.
 function RaycastHit.New( params )
-    if params == nil then params = {} end
-    return setmetatable( params, RaycastHit )
+    return setmetatable( params or {}, RaycastHit )
 end
 
 --------------------------------------------------------------------------------
@@ -1063,7 +1060,7 @@ Ray.oIntersectsPlane = Ray.IntersectsPlane
 -- @return (number or RaycastHit) The distance of intersection (if any) or a raycastHit with the 'distance' and 'hitPosition' properties (if any).
 function Ray.IntersectsPlane( ray, plane, returnRaycastHit )
     local distance = Ray.oIntersectsPlane( ray, plane )
-    if returnRaycastHit and distance ~= nil then
+    if returnRaycastHit == true and distance ~= nil then
         return RaycastHit.New({
             distance = distance,
             hitPosition = ray.position + ray.direction * distance,
@@ -1082,7 +1079,7 @@ Ray.oIntersectsModelRenderer = Ray.IntersectsModelRenderer
 -- @return (Vector3) If 'returnRaycastHit' argument is false : the normal of the hit face, or nil
 function Ray.IntersectsModelRenderer( ray, modelRenderer, returnRaycastHit )
     local distance, normal = Ray.oIntersectsModelRenderer( ray, modelRenderer )
-    if returnRaycastHit and distance ~= nil then
+    if returnRaycastHit == true and distance ~= nil then
         return RaycastHit.New({
             distance = distance,
             normal = normal,
@@ -1111,7 +1108,7 @@ function Ray.IntersectsMapRenderer( ray, mapRenderer, returnRaycastHit )
     if adjacentBlockLocation ~= nil then
         setmetatable( adjacentBlockLocation, Vector3 )
     end
-    if returnRaycastHit and distance ~= nil then
+    if returnRaycastHit == true and distance ~= nil then
         return RaycastHit.New({
             distance = distance,
             normal = normal,
@@ -1134,7 +1131,7 @@ Ray.oIntersectsTextRenderer = Ray.IntersectsTextRenderer
 -- @return (Vector3) If 'returnRaycastHit' argument is false : the normal of the hit face, or nil
 function Ray.IntersectsTextRenderer( ray, textRenderer, returnRaycastHit )
     local distance, normal = Ray.oIntersectsTextRenderer( ray, textRenderer )
-    if returnRaycastHit and distance ~= nil then
+    if returnRaycastHit == true and distance ~= nil then
         return RaycastHit.New({
             distance = distance,
             normal = normal,
@@ -1204,10 +1201,10 @@ function CraftStudio.Destroy( object )
 end
 
 local _ray = { "ray", "Ray" }
-local _returnraycasthit = { "returnRaycastHit", defaultValue = false }
+local _returnraycasthit = { "returnRaycastHit", "boolean", isOptional = true }
 
 table.mergein( Daneel.Debug.functionArgumentsInfo, {
-    ["Ray.Cast"] =                    { _ray, { "gameObjects", t }, { "sortByDistance", defaultValue = false } },
+    ["Ray.Cast"] =                    { _ray, { "gameObjects", t }, { "sortByDistance", "boolean", isOptional = true } },
     ["Ray.IntersectsGameObject"] =    { _ray, { "gameObjectNameOrInstance", { s, go } }, _returnraycasthit },
     ["Ray.IntersectsPlane"] =         { _ray, { "plane", "Plane" }, _returnraycasthit },
     ["Ray.IntersectsModelRenderer"] = { _ray, { "modelRenderer", "ModelRenderer" }, _returnraycasthit },
@@ -1513,12 +1510,12 @@ GameObject.oGetChildren = GameObject.GetChildren
 -- @return (table) The children.
 function GameObject.GetChildren( gameObject, recursive, includeSelf )
     local allChildren = GameObject.oGetChildren( gameObject )
-    if recursive then
+    if recursive == true then
         for i, child in ipairs( table.copy( allChildren ) ) do
             allChildren = table.merge( allChildren, child:GetChildren( true ) )
         end
     end
-    if includeSelf then
+    if includeSelf == true then
         table.insert( allChildren, 1, gameObject )
     end
     return allChildren
@@ -1854,12 +1851,12 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["GameObject.New"] =         { { "name", s }, { "params", { t, "GameObject" }, isOptional = true } },
     ["GameObject.Instantiate"] = { { "name", s }, { "sceneNameOrAsset", { s, "Scene" } }, { "params", { t, "GameObject" }, isOptional = true } },
     ["GameObject.Set"] =         { _go, _p },
-    ["GameObject.Get"] =         { { "name", { s, "GameObject" } }, { "errorIfGameObjectNotFound", defaultValue = false } },
+    ["GameObject.Get"] =         { { "name", { s, "GameObject" } }, { "errorIfGameObjectNotFound", "boolean", isOptional = true } },
     ["GameObject.Destroy"] =     { _go },
 
-    ["GameObject.SetParent"] =          { _go, { "parentNameOrInstance", { s, "GameObject" }, isOptional = true }, { "keepLocalTransform", defaultValue = false } },
-    ["GameObject.GetChild"] =           { _go, { "name", s, isOptional = true }, { "recursive", defaultValue = false } },
-    ["GameObject.GetChildren"] =        { _go, { "recursive", defaultValue = false }, { "includeSelf", defaultValue = false } },
+    ["GameObject.SetParent"] =          { _go, { "parentNameOrInstance", { s, "GameObject" }, isOptional = true }, { "keepLocalTransform", "boolean", isOptional = true } },
+    ["GameObject.GetChild"] =           { _go, { "name", s, isOptional = true }, { "recursive", "boolean", isOptional = true } },
+    ["GameObject.GetChildren"] =        { _go, { "recursive", "boolean", isOptional = true }, { "includeSelf", "boolean", isOptional = true } },
     ["GameObject.GetInAncestors"] =     { _go, { "searchFunction", "function" } },
 
     ["GameObject.SendMessage"] =      { _go, { "functionName", s }, { "data", t, isOptional = true } },
@@ -1872,5 +1869,5 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["GameObject.GetTags"] =    { _go },
     ["GameObject.AddTag"] =     { _go, _t },
     ["GameObject.RemoveTag"] =  { _go, { "tag", {"string", "table"}, isOptional = true } },
-    ["GameObject.HasTag"] =     { _go, _t, { "atLeastOneTag", defaultValue = false } },
+    ["GameObject.HasTag"] =     { _go, _t, { "atLeastOneTag", "boolean", isOptional = true } },
 } )

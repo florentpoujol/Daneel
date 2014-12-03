@@ -15,7 +15,7 @@ local go = "GameObject"
 local v2 = "Vector2"
 local v3 = "Vector3"
 local _go = { "gameObject", go }
-local _op = { "params", t, defaultValue = {} }
+local _op = { "params", t, isOptional = true }
 local _p = { "params", t }
 
 --- Convert the provided value (a length) in a number expressed in scene unit.
@@ -466,7 +466,7 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["GUI.Toggle.Set"] =        { _toggle, _p },
     ["GUI.Toggle.SetText"] =    { _toggle, { "text", s } },
     ["GUI.Toggle.GetText"] =    { _toggle },
-    ["GUI.Toggle.Check"] =      { _toggle, { "state", defaultValue = true }, { "forceUpdate", defaultValue = false } },
+    ["GUI.Toggle.Check"] =      { _toggle, { "state", b, isOptional = true }, { "forceUpdate", b, isOptional = true } },
     ["GUI.Toggle.SetGroup"] =   { _toggle, { "group", s, isOptional = true } },
     ["GUI.Toggle.GetGroup"] =   { _toggle },
 } )
@@ -647,7 +647,7 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["GUI.ProgressBar.New"] =       { _go, _op },
     ["GUI.ProgressBar.Set"] =       { _pb, _p },
     ["GUI.ProgressBar.SetValue"] =  { _pb, { "value", { s, n } } },
-    ["GUI.ProgressBar.GetValue"] =  { _pb, { "getAsPercentage", defaultValue = false } },
+    ["GUI.ProgressBar.GetValue"] =  { _pb, { "getAsPercentage", b, isOptional = true } },
     ["GUI.ProgressBar.SetHeight"] = { _pb, { "height", { s, n } } },
     ["GUI.ProgressBar.GetHeight"] = { _pb },
 } )
@@ -986,11 +986,11 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["GUI.Slider.New"] =       { _go, _op },
     ["GUI.Slider.Set"] =       { _slider, _p },
     ["GUI.Slider.SetValue"] =  { _slider, { "value", { s, n } } },
-    ["GUI.Slider.GetValue"] =  { _slider, { "getAsPercentage", defaultValue = false } },
+    ["GUI.Slider.GetValue"] =  { _slider, { "getAsPercentage", b, isOptional = true } },
     ["GUI.Input.New"] =          { _go, _op },
-    ["GUI.Input.Focus"] =        { _input, { "focus", defaultValue = true } },
+    ["GUI.Input.Focus"] =        { _input, { "focus", b, isOptional = true } },
     ["GUI.Input.UpdateCursor"] = { _input },
-    ["GUI.Input.Update"] =       { _input, { "text", s }, { "replaceText", defaultValue = false } },
+    ["GUI.Input.Update"] =       { _input, { "text", s }, { "replaceText", b, isOptional = true } },
 } )
 
 
@@ -1002,7 +1002,7 @@ GUI.TextArea.__index = GUI.TextArea
 
 --- Creates a new TextArea component.
 -- @param gameObject (GameObject) The game object.
--- @param params (table) A table of parameters.
+-- @param params (table) [optional] A table of parameters.
 -- @return (TextArea) The new component.
 function GUI.TextArea.New( gameObject, params )
     local textArea = {}
@@ -1192,8 +1192,9 @@ end
 -- Must be strictly positive to have an effect.
 -- Set as a negative value, 0 or nil to remove the limitation.
 -- @param textArea (TextArea) The textArea component.
--- @param areaWidth (number or string) [optional] The area width in scene units or in pixels as a string suffixed with "px".
+-- @param areaWidth (number or string) [default=0] The area width in scene units or in pixels as a string suffixed with "px".
 function GUI.TextArea.SetAreaWidth( textArea, areaWidth )
+    areaWidth = areaWidth or 0
     areaWidth = math.clamp( GUI.ToSceneUnit( areaWidth, textArea.cameraGO ), 0, 999 )   
     if textArea.AreaWidth ~= areaWidth then
         textArea.AreaWidth = areaWidth
@@ -1215,6 +1216,7 @@ end
 -- @param textArea (TextArea) The textArea component.
 -- @param wordWrap (boolean) [default=false] Cut the line when false, or creates new additional lines with the remaining text when true.
 function GUI.TextArea.SetWordWrap( textArea, wordWrap )
+    wordWrap = wordWrap or false
     if textArea.WordWrap ~= wordWrap then
         textArea.WordWrap = wordWrap
         if #textArea.lineGOs > 0 then
@@ -1358,14 +1360,14 @@ end
 
 local _ta = { "textArea", "TextArea" }
 table.mergein( Daneel.Debug.functionArgumentsInfo, {
-    ["GUI.TextArea.New"] =                  { { "gameObject", go }, { "params", t, isOptional = true } },
+    ["GUI.TextArea.New"] =                  { { "gameObject", go }, _op },
     ["GUI.TextArea.Set"] =                  { _ta, _p },
     ["GUI.TextArea.SetText"] =              { _ta, { "text", s } },
     ["GUI.TextArea.GetText"] =              { _ta },
-    ["GUI.TextArea.AddLine"] =              { _ta, { "line", s }, { "prepend", defaultValue = false } },
-    ["GUI.TextArea.SetAreaWidth"] =         { _ta, { "areaWidth", { s, n }, defaultValue = 0 } },
+    ["GUI.TextArea.AddLine"] =              { _ta, { "line", s }, { "prepend", b, isOptional = true } },
+    ["GUI.TextArea.SetAreaWidth"] =         { _ta, { "areaWidth", { s, n }, isOptional = true } },
     ["GUI.TextArea.GetAreaWidth"] =         { _ta },
-    ["GUI.TextArea.SetWordWrap"] =          { _ta, { "wordWrap", defaultValue = false } },
+    ["GUI.TextArea.SetWordWrap"] =          { _ta, { "wordWrap", b, isOptional = true} },
     ["GUI.TextArea.GetWordWrap"] =          { _ta },
     ["GUI.TextArea.SetNewLine"] =           { _ta, { "newLine", s } },
     ["GUI.TextArea.GetNewLine"] =           { _ta },
