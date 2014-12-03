@@ -1353,6 +1353,10 @@ function MouseInput.Load()
     MouseInput.lastLeftClickFrame = -MouseInput.Config.doubleClickDelay
 end
 
+function MouseInput.Awake()
+    MouseInput.components = {}
+end
+
 -- Loop on the MouseInput.components.
 -- Works with the game objects that have at least one of the component's tag.
 -- Check the position of the mouse against these game objects.
@@ -1490,7 +1494,7 @@ function MouseInput.Update()
         end -- for MouseInput.components
 
         if reindexComponents == true then
-            table.reindex( MouseInput.components )
+            MouseInput.components = table.reindex( MouseInput.components )
         end
     end -- if mouseIsMoving, ...
 end -- end MouseInput.Update() 
@@ -1559,6 +1563,10 @@ function Trigger.DefaultConfig()
 end
 Trigger.Config = Trigger.DefaultConfig()
 
+function Trigger.Awake()
+    Trigger.triggerComponents = {}
+end
+
 function Trigger.Update()
     Trigger.frameCount = Trigger.frameCount + 1
     local reindexComponents = false
@@ -1623,7 +1631,7 @@ function Trigger.Update()
     end -- for Trigger.triggerComponents
 
     if reindexComponents == true then
-        table.reindex( Trigger.triggerComponents )
+        Trigger.triggerComponents = table.reindex( Trigger.triggerComponents )
     end
 end
 
