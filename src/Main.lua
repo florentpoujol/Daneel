@@ -1252,7 +1252,7 @@ function Behavior.Awake( self )
         return
     end
     Daneel.isAwake = true
-    Daneel.Event.Listen( "OnSceneLoad", function() Daneel.isAwake = false end )
+    Daneel.Event.Listen( "OnNewSceneWillLoad", function() Daneel.isAwake = false end )
 
     Daneel.Load()
     Daneel.Debug.StackTrace.messages = {}

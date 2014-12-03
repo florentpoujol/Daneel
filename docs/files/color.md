@@ -5,7 +5,7 @@ The `Color` object allows to set thousands of color to model and text renderers 
 - [Color instances](#color-instances)
 - [Named colors](#named-colors)
 - [Thousands of colors](#thousands-of-colors)
-- [Usage](#Usage)
+- [Usage](#usage)
 
 
 <a name="color-instances"></a>
@@ -25,7 +25,7 @@ Instances of the `Color` object allow you to hold a color information as RGB key
 	color[1] == color.r
 
 
-<a name="name-colors"></a>
+<a name="named-colors"></a>
 ## Named colors
 
 You can extends the `Color.colorsByName` dictionary to give name to predetermined colors. Keys are the color name, values are the color objects.  
