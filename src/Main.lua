@@ -674,6 +674,17 @@ function Daneel.Debug.RegisterFunction( name, argsData )
         includeInStackTrace = argsData.includeInStackTrace
     end
 
+    local originalFunction = nil
+    local originalFunctionName = name
+    
+    local script = argsData.script -- asset. if set the function is a public behavior function
+    if script ~= nil then
+        originalFunction = script[ name ]
+        name = script:GetPath()..":"..name -- "Folder/ScriptName:FunctionName"
+    else
+        originalFunction = table.getvalue( _G, name )
+    end
+
     local errorHead = name.."( "
     for i, arg in ipairs( argsData ) do
         if arg.name == nil then arg.name = arg[1] end
@@ -684,8 +695,6 @@ function Daneel.Debug.RegisterFunction( name, argsData )
     errorHead = errorHead.." ) : "
 
     --
-    local originalFunction = table.getvalue( _G, name )
-
     if originalFunction ~= nil then
         local newFunction = function( ... )
             local funcArgs = { ... }
@@ -727,9 +736,33 @@ function Daneel.Debug.RegisterFunction( name, argsData )
             return unpack( returnValues )
         end
 
-        table.setvalue( _G, name, newFunction )
+        if script ~= nil then
+            script[ originalFunctionName ] = newFunction
+        else
+            table.setvalue( _G, name, newFunction )
+        end
     else
         print( "Daneel.Debug.RegisterFunction() : Function with name '"..name.."' was not found in the global table _G." )
+    end
+end
+
+--- Register all functions of a scripted behavior to be included in the stacktrace.
+-- Within a script, the 'Behavior' variable is the script asset.
+-- @param script (Script) The script asset.
+function Daneel.Debug.RegisterScript( script )
+    if type( script ) ~= "table" or getmetatable( script ) ~= Script then
+        error("Daneel.Debug.SetupScript(script): Provided argument is not a script asset. Within a script, the 'Behavior' variable is the script asset.")
+    end
+    local infos = Daneel.Debug.functionArgumentsInfo
+    local forbiddenNames = { "Update", "inner" }
+    for name, func in pairs( script ) do
+        if 
+            not name:startswith("__") and
+            not table.containsvalue( forbiddenNames, name ) and
+            infos[name] == nil
+        then
+            infos[name] = { script = script }
+        end
     end
 end
 
