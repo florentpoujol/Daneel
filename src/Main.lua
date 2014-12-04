@@ -684,6 +684,12 @@ function Daneel.Debug.RegisterFunction( name, argsData )
             script.toStringIsSet = true
             -- __tostring() already exists on each scripted behavior but does not seems to do much
         end
+
+        -- make sure that the first argument is the ScriptedBehavior instance      
+        local firstArg = argsData[1]
+        if firstArg == nil or firstArg[2] ~= "ScriptedBehavior" then
+            table.insert( argsData, 1, { name = "self", type = "ScriptedBehavior" } )
+        end
     end
 
     if originalFunction ~= nil then
@@ -703,14 +709,6 @@ function Daneel.Debug.RegisterFunction( name, argsData )
 
             if includeInStackTrace then
                 Daneel.Debug.StackTrace.BeginFunction( name, ... )
-            end
-
-            if script ~= nil then
-                -- make sure that the first argument is the ScriptedBehavior instance
-                local firstArg = argsData[1]
-                if firstArg[2] ~= "ScriptedBehavior" then
-                    table.insert( argsData, 1, { name = "self", type = "ScriptedBehavior" } )
-                end
             end
 
             for i, arg in ipairs( argsData ) do
@@ -765,6 +763,9 @@ function Daneel.Debug.RegisterScript( script )
     end
     local infos = Daneel.Debug.functionArgumentsInfo
     local forbiddenNames = { "Update", "inner" }
+    -- Awake, Start and Update are never included in the stacktrace anyway because CraftStudio
+    -- keeps the reference to the function first set in the script.
+    -- Overloading it at runtime has no effect.
     for name, func in pairs( script ) do
         if 
             not name:startswith("__") and
