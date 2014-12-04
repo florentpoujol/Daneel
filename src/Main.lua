@@ -1215,6 +1215,16 @@ function Daneel.Load()
 
     table.mergein( Daneel.Config.componentTypes, table.getkeys( Daneel.Config.componentObjectsByType ) )
 
+    -- Enable nice printing + dynamic access of getters/setters on assets
+    for assetType, assetObject in pairs( Daneel.Config.assetObjectsByType ) do
+        Daneel.Utilities.AllowDynamicGettersAndSetters( assetObject, { Asset } )
+
+        assetObject["__tostring"] = function( asset )
+            return  assetType .. ": " .. Daneel.Utilities.GetId( asset ) .. ": '" .. Map.GetPathInPackage( asset ) .. "'"
+        end
+    end
+
+    -- setup error reporting + stack trace
     if Daneel.Config.debug.enableDebug then
         if Daneel.Config.debug.enableStackTrace then
             Daneel.Debug.SetNewError()
@@ -1223,15 +1233,6 @@ function Daneel.Load()
         -- overload functions with debug (error reporting + stacktrace)
         for funcName, data in pairs( Daneel.Debug.functionArgumentsInfo ) do
             Daneel.Debug.RegisterFunction( funcName, data )
-        end
-    end
-
-    -- Enable nice printing + dynamic access of getters/setters on assets
-    for assetType, assetObject in pairs( Daneel.Config.assetObjectsByType ) do
-        Daneel.Utilities.AllowDynamicGettersAndSetters( assetObject, { Asset } )
-
-        assetObject["__tostring"] = function( asset )
-            return  assetType .. ": " .. Daneel.Utilities.GetId( asset ) .. ": '" .. Map.GetPathInPackage( asset ) .. "'"
         end
     end
 
