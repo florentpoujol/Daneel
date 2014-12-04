@@ -93,3 +93,11 @@ footer {
     top: inherit;
     bottom: 1.2em;
 }
+
+
+#dev-warning {
+    border: 2px solid red;
+    background: rgba(255,0,0,0.1);
+    padding:5px;
+    margin:5px;
+}

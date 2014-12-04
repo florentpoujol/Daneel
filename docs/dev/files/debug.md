@@ -2,7 +2,7 @@
 
 For an easier debugging during development, Daneel provides extensive, flexible and easy to setup error reporting, and a stack trace.
 
-Debugging is turned off by default, so be sure to enable it via [Daneel's user config](/docs/setup#configuration) :
+Debugging is turned off by default, so be sure to enable it via [Daneel's user config](setup#configuration) :
 
     function Daneel.UserConfig()
         return {
@@ -31,7 +31,7 @@ For instance, passing a `Vector2` instead of a `Vector3` to `transform:SetPositi
 <a name="setup-error-reporting"></a>
 ### Setting up error reporting for your functions
 
-Be sure to [check the function reference](/docs/function-reference) to learn about all the functions of the `Daneel.Debug` object you can use to setup error reporting in your scripts.
+Be sure to [check the function reference](function-reference) to learn about all the functions of the `Daneel.Debug` object you can use to setup error reporting in your scripts.
 
 The simplest way to setup error reporting is to set information about the function's arguments in the `Daneel.Debug.functionArgumentsInfo` table.  
 Ie:

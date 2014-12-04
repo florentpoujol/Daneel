@@ -1,6 +1,6 @@
 # Mass-setting
 
-The `Set(params)` function that you may call on game objects, components and [tweeners](/docs/tween) accept a `params` argument of type table which allow to set variables or call setters in mass.  
+The `Set(params)` function that you may call on game objects, components and [tweeners](tween) accept a `params` argument of type table which allow to set variables or call setters in mass.  
 Mass-setting is used by every functions that have a `params` argument.
 
     gameObject:Set({

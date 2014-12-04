@@ -97,7 +97,7 @@ Set the layer via `hud:SetLayer(layer)` and `hud:SetLocalLayer(layer)` and get i
 ## Toggle
 
 The `Toggle` component allows you to create check boxes or radio buttons.  
-Interaction with the mouse are allowed by the [Mouse Input](/docs/mouse-input) script.
+Interaction with the mouse are allowed by the [MouseInput](mouse-input) component.
 
 When the toggle uses a `TextRenderer`, it adds some additional (and optional) text (the 'check mark') to the TextRender's text to display the toggle's state. You may set the check mark for both state via the `checkedMark` and `uncheckedMark` properties.  
 Use `toggle:GetText()` and `toggle:SetText(text)` to get and set the toggle's text without bothering with the check mark (it will be added/stripped automatically).
@@ -217,13 +217,15 @@ The first column is the approximate number of progress bars updated per frame at
 
 The slider component lets the user set a value by dragging a handle displayed on the hud with the mouse.
 
-Interaction with the mouse are allowed by the [Mouse Input](/docs/mouse-input) script.
+Interaction with the mouse are allowed by the [MouseInput](mouse-input) component.
 
 As said in the "Working with pixels and cameras" paragraph, the game object hosting a slider component must
 
 - be a child of a game object with a camera component, or
 - have a game object with a camera component set as the value of a `cameraGO` property in the component's properties when creating the component
 
+`
+    
     gameObject:AddComponent( "Slider", {
         minValue = 0, 
         maxValue = 500,
@@ -256,7 +258,7 @@ The handle (the thing that is displayed and that the user drags with the mouse) 
 ## Input
 
 The `Input` component creates a field where users can write text. The game object needs to have a `TextRenderer` component as well.  
-Interaction with the mouse are allowed by the [Mouse Inputs](/docs/mouse-input) script.
+Interaction with the mouse are allowed by the [MouseInput](mouse-input) component.
 
 As said in the "Working with pixels and cameras" paragraph, the game object hosting a hud component must
 
@@ -345,7 +347,7 @@ GameObject( "text area", {
 
 </pre></code>
         </td>
-        <td><img src="../img/textarea_example_1.jpg" alt="textarea_example_1" ></td>
+        <td><img src="img/textarea_example_1.jpg" alt="textarea_example_1" ></td>
         
     </tr>
     <tr>
@@ -371,7 +373,7 @@ GameObject( "text area", {
 
 </code></pre>
         </td>
-        <td><img src="../img/textarea_example_2.jpg" alt="textarea_example_2" ></td>
+        <td><img src="img/textarea_example_2.jpg" alt="textarea_example_2" ></td>
     </tr>
 
     <tr>
@@ -401,6 +403,6 @@ line4]],
 
 </code></pre>
         </td>
-        <td><img src="../img/textarea_example_3.jpg" alt="textarea_example_3" ></td>
+        <td><img src="img/textarea_example_3.jpg" alt="textarea_example_3" ></td>
     </tr>
 </table>

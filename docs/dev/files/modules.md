@@ -91,7 +91,7 @@ The `Daneel` and `CraftStudio` scripts provide these properties to components (b
 
 - Can be created via `gameObject:AddComponent( componentType[, params] )`.
 - Can be created/mass-set via `gameObject:Set( { componentType = {} } )`.
-- Getters and setters of the component [can be accessed dynamically](/docs/daneel/dynamic-getters-and-setters).
+- Getters and setters of the component [can be accessed dynamically](features#dynamic-functions).
 - Extend the `Component` object : you can call `component:GetId()`, `component:Set(params)` and `component:Destroy()`.
 - `Daneel.Debug.GetType()` returns the component type whenever passed a component instance.
 

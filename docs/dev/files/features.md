@@ -2,7 +2,7 @@
 
 This page presents some of the features provided by the framework.  
 Be sure to also read the pages dedicated to _objects_ and _components_.  
-And make sure you explored the _[function reference](/docs/function-reference)_ to find out and have detailed info about all the functions you can use.
+And make sure you explored the _[function reference](function-reference)_ to find out and have detailed info about all the functions you can use.
 
 <table class="page-menu">
 	<tr>
@@ -24,7 +24,7 @@ And make sure you explored the _[function reference](/docs/function-reference)_ 
 				<li><a href="#gameobjects">Game objects</a></li>
 				<li><a href="#components">Components</a></li>
 				<li><a href="#destroying-objects">Destroying objects</a></li>
-				<li><a href="#assets">Assets</a></li>
+				<li><a href="#asset">Asset</a></li>
 			</ul>
 		</td>
 		<td>
@@ -70,7 +70,7 @@ And make sure you explored the _[function reference](/docs/function-reference)_ 
 
 Daneel introduce a lot of new functions in Lua's standard `math`, `string` and `table` libraries.  
 All these functions are pure Lua and are not dependent on Daneel or CraftStudio so you can use them in any Lua project.  
-[You can check them out on Daneel's GitHub repo](https://github.com/florentpoujol/Daneel/blob/master/framework/Lua.lua).
+[You can check them out on Daneel's GitHub repo](https://github.com/florentpoujol/Daneel/blob/develop/src/Lua.lua).
 
 Some noteworthy functions :
 
@@ -151,7 +151,7 @@ You may create instances of `GameObject`, `Vector3`, `Vector2`, `Quaternion`, `P
 <a name="instances-id"></a>
 ## Instances Id
 
-Game objects, components and other object instances (like [tweeners](/docs/tween)) have a unique Id that you can get via `instance:GetId()`.   
+Game objects, components and other object instances (like [tweeners](tween)) have a unique Id that you can get via `instance:GetId()`.   
 Data objects like `Vector3` don't have ids.
 
 If you need to generate such unique Id, `Daneel.Utilities.GetId()` returns a strictly positive integer incremented every times.
@@ -172,7 +172,7 @@ You can use `Daneel.Debug.ToRawString()` to bypass this behavior and return the 
 <a name="mass-setting"></a>
 ## Mass-setting
 
-The `Set(params)` function that you may call on game objects, components and a few other object ([tweeners](/docs/tween) for instance) accept a `params` argument of type table which allow to set properties or call setters in mass.  
+The `Set(params)` function that you may call on game objects, components and a few other object ([tweeners](tween) for instance) accept a `params` argument of type table which allow to set properties or call setters in mass.  
 Mass-setting is used by every functions that have a `params` argument.
 
     self.gameObject.textRenderer:Set({
@@ -192,25 +192,23 @@ Note that with `gameObject:Set()`, components that are set but don't exists yet 
 Ie: in the example above, if the game object hadn't a model renderer, it would be created before being set.
 
 
-<a name="debugging"></a>
-## Debugging
-
-Daneel provides extensive error reporting for all its functions.  
-Learn more about this on the [debugging page](/docs/debug).
-
-
 <a name="events"></a>
 ## Events
 
 Events are at the core of the communication between many systems introduced by Daneel.   
-Learn how they work on the [event page](/docs/event).
+Learn how they work on the [event page](event).
 
+<a name="debugging"></a>
+## Debugging
+
+Daneel provides extensive error reporting for all its functions.  
+Learn more about this on the [debugging page](debug).
 
 <a name="tween"></a>
 ## Tween
 
 The Tween object allow you to create timers as well as tweeners that enables you to automate the animation of object properties.  
-Learn more about this on the [Tween page](/docs/tween).
+Learn more about this on the [Tween page](tween).
 
 Example of animation :
 
@@ -227,7 +225,7 @@ Add a component on a game object with `gameObject:AddComponent(componentType[, p
 
 Send a message to a game object and all of its descendants with `gameObject:BroadcastMessage()`.
 
-The `GameObject` object has been extended with many functions, check out the [function reference](/docs/function-reference) to learn about all of them.
+The `GameObject` object has been extended with many functions, check out the [function reference](function-reference) to learn about all of them.
 
 <a name="gameobject-tags"></a>
 ### Tags
@@ -279,13 +277,13 @@ With `GameObject.Get()`, the hierarchy must be continuous but you may skip level
 
 You may call `component:Set(params)`, `component:Destroy()` and `component:GetId()` on any components, built-in (`Transform`, `ModelRenderer`, ...) or custom ones (`GUI.Hud`, `Trigger`, ...).
 
-Custom components are components that are not introduced by CraftStudio. Learn how to create them [through modules](/docs/modules).
+Custom components are components that are not introduced by CraftStudio. Learn how to create them [through modules](modules).
 
 The framework introduce a total of nine new components :
 
-- [`MouseInput`](/docs/mouse-input) enables you to easily make game objects react to mouse inputs.
-- [`Trigger`](/docs/trigger) enables you to implement distance-based behaviors between game objects.
-- The [`GUI`](/docs/gui) components will come handy when you are about to create a HUD and other UI elements (text input, multi-line text, progress bar, toggle button, ...).
+- [`MouseInput`](mouse-input) enables you to easily make game objects react to mouse inputs.
+- [`Trigger`](trigger) enables you to implement distance-based behaviors between game objects.
+- The [`GUI`](gui) components will come handy when you are about to create a HUD and other UI elements (text input, multi-line text, progress bar, toggle button, ...).
 
 
 <a name="destroying-objects"></a>

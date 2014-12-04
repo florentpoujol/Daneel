@@ -7,8 +7,6 @@ The `Lang` object allows you to easily localize any strings in your game.
 - [Placeholders and Replacements](#placeholders-and-replacements)
 - [Updating the language](#updating-the-language)
 - [Working in the scene editor](#scene)
-- [Function reference](#function-reference)
-
 
 <a name="setup"></a>
 ## Setup and configuration
@@ -91,7 +89,7 @@ Note that any strings, not just the localized strings, may benefits from the pla
 <a name="updating-the-language"></a>
 ## Updating the language
 
-You may register the game objects that display a text via a `TextRenderer` or `GUI.TextArea` ([see the GUI script](/docs/gui#textarea)) with `Lang.RegisterForUpdate(gameObject, key[, replacements])`, or listen to the `OnLangUpdate` global event in order to automatically update the languages lines when the current language is modified.
+You may register the game objects that display a text via a `TextRenderer` or `GUI.TextArea` ([see the GUI script](gui#textarea)) with `Lang.RegisterForUpdate(gameObject, key[, replacements])`, or listen to the `OnLangUpdate` global event in order to automatically update the languages lines when the current language is modified.
 
 Call `Lang.Update(language)` with the new current language as argument to update the current language and fire the `OnLangUpdate` global event.  
 You can get the current language at any time via the `Lang.Config.current` property.

@@ -31,7 +31,7 @@ Like for game objects and components, you may mass-set properties on tweeners du
 - `startValue` (number, Vector2, Vector3 or string) : The value to starts the tweener at. If not set, it will be set at the current value of the target's property.
 - `endValue` (number, Vector2, Vector3 or string) : The value to ends the tweener at.
 - `duration` (number) : The time or frames the tweener (one loop, actually) should take (in `durationType` units).
-- `durationType` (string) [default="time"] : The unit of time for `delay`, `duration`, `elapsed` and `fullElapsed`. Can be `"time"`, `"realTime"` or `"frame"`. If set to `"time"`, the tweener is tied to [the time scale](/docs/features#time-object).
+- `durationType` (string) [default="time"] : The unit of time for `delay`, `duration`, `elapsed` and `fullElapsed`. Can be `"time"`, `"realTime"` or `"frame"`. If set to `"time"`, the tweener is tied to [the time scale](features#time-object).
 - `isEnabled` (boolean) [true]: A disabled tweener won't update and the functions like `Play()`, `Pause()`, `Complete()`, `Destroy()` will have no effect.
 - `isPaused` (boolean) [false] : A paused tweener doesn't update.
 - `delay` (number) [0] : The delay before the tweener starts (in `durationType` unit). The delay do not updates when the tweener is paussed. 

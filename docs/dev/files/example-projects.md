@@ -8,7 +8,7 @@ You can find many of them on GitHub and/or on CraftStudio directly :
 Most of the projects include bits of code that you can officially find in v1.5.0.
 
 - Linked Colours, a puzzle game where you have to connect all the dots of colours together to complete the level, made for LD #30 : [Check out on GitHub](https://github.com/florentpoujol/Linked-Colours) or [join in CraftStudio](http://open.craftstud.io/176.31.207.61:4406/fa234b85-7cd5-4a62-bab0-9038516ded38)
-- Silhouettes, a game about building a structure to match silhouettes : [Check out on GitHub](https://github.com/florentpoujol/Silhouettes).
+- Silhouettes, a WIP game about building a structure to match silhouettes : [Check out on GitHub](https://github.com/florentpoujol/Silhouettes).
 - Project FPS : [Check out on GitHub](https://github.com/florentpoujol/CraftStudio-Project-FPS).
 - Crafty Bird, a flappy brid clone : [Check out on GitHub](https://github.com/florentpoujol/crafty-bird) or [join in CraftStudio](http://open.craftstud.io/176.31.207.61:4406/e8420306-5095-48e6-976d-7c6a0485da5b).
 - Snake Driller, made for LD #29 : [Check out on GitHub](https://github.com/florentpoujol/Snake-Driller-LD29) or [join in CraftStudio](http://open.craftstud.io/176.31.207.61:4406/9e98bcad-450d-4db8-8a3b-defa62fe5b46).

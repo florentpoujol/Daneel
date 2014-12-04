@@ -203,7 +203,7 @@ jQuery.extend( jQuery.easing,
 $(document).ready(function() {
 	$().UItoTop({ easingType: 'easeOutQuart' });
 	if ($('#docs-sidebar').length ) {
-		$.get('/docs/sidebar', function(data) {
+		$.get('/dev/sidebar', function(data) {
 			$('.sidebar ul.toc').before(data);
 			$('.sidebar ul.toc').hide();
 			var url = document.location.href;

@@ -71,13 +71,13 @@ For instance in the following scenario (a door that open/close), the door can't 
     end
 
 
-The `Animate()` function returns an object of type `Tween.Tweener`. You can learn more about tweeners, the objects that actually handle the animation on the [Tween](/docs/tween#tweener) page.
+The `Animate()` function returns an object of type `Tween.Tweener`. You can learn more about tweeners, the objects that actually handle the animation on the [Tween](tween#tweener) page.
 
 
 <a name="timer"></a>
 ## How to use timers
 
-A timer as one goal : executing something (a function) after some time has passed.
+[A timer](tween#timer) as one goal : executing something (a function) after some time has passed.
 
 Create a timer with the `New()` function on the `Tween.Timer` object :
 
@@ -124,7 +124,7 @@ Timers count time backward, so you may check the `value` or `elapsed` properties
 <a name="trigger"></a>
 ## How to know if an object is close to another object, or inside an area
 
-You must [use a trigger component](/docs/trigger).
+You must [use a trigger component](trigger).
 
 Imagine you have an NPC and you want to do something when the player is close enough (ie: an enemy start chasing the player or a character start talking to it).
 
@@ -165,7 +165,7 @@ Now the trigger will check every 6 frames (10 times per second) the distance at 
 
 For instance, the `OnTriggerEnter` event is fired at the trigger game object as well as on the checked game object when it just entered the area.
 
-[Check out the event page](/docs/event) to learn the different ways to catch an event.  
+[Check out the event page](event) to learn the different ways to catch an event.  
 In our case we will suppose that the enemy game object has a scripted behavior with a public function `OnTriggerEnter()`. This function will be called whenever the game object enters the player's area.
 
     -- In a scripted behavior on the enemy

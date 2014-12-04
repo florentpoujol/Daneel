@@ -23,8 +23,6 @@ $indexUrl   is the absolute url of the root folder
             <header>
                 <div id="right-header">
                     <p id="download">
-                        <a href="/download/Daneel_v1.5.0.zip" title="Download the last version of Daneel">Download</a> <br>
-                        <small>v1.5.0</small>
                     </p>
 
                     <p id="github">
@@ -41,6 +39,10 @@ $indexUrl   is the absolute url of the root folder
                 <h3>A framework for <a href="http://craftstud.io">CraftStudio</a></h3>
                 <div class="clearfloat"></div>
             </header>
+
+            <div id="dev-warning">
+                This is the documentation the the in-development version. <a href="../docs" >Click here to check out the doc of the current, released version.</a>
+            </div>
             
             <div role="main" class="main">
                 <aside class="sidebar">
