@@ -673,7 +673,17 @@ function Daneel.Debug.RegisterFunction( name, argsData )
     local script = argsData.script -- script asset. If set, the function is a public behavior function
     if script ~= nil then
         originalFunction = script[ name ]
-        name = script:GetPath()..":"..name -- "Folder/ScriptName:FunctionName"
+        local scriptPath = script:GetPath()
+        name = scriptPath..":"..name -- "Folder/ScriptName:FunctionName"      
+
+        if not script.toStringIsSet then
+            script.__tostring = function( sb )
+                local id = Daneel.Utilities.GetId( sb ) or "[no id]"
+                return "ScriptedBehavior: "..id..": '"..scriptPath.."'"
+            end
+            script.toStringIsSet = true
+            -- __tostring() already exists on each scripted behavior but does not seems to do much
+        end
     end
 
     if originalFunction ~= nil then
@@ -734,7 +744,7 @@ function Daneel.Debug.RegisterFunction( name, argsData )
             table.setvalue( _G, name, newFunction )
         end
     else
-        print( "Daneel.Debug.RegisterFunction() : Function with name '"..name.."' was not found in the global table _G." )
+        print( "Daneel.Debug.RegisterFunction() : Function with name '"..name.."' was not found." )
     end
 end
 
