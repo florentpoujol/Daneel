@@ -705,6 +705,14 @@ function Daneel.Debug.RegisterFunction( name, argsData )
                 Daneel.Debug.StackTrace.BeginFunction( name, ... )
             end
 
+            if script ~= nil then
+                -- make sure that the first argument is the ScriptedBehavior instance
+                local firstArg = argsData[1]
+                if firstArg[2] ~= "ScriptedBehavior" then
+                    table.insert( argsData, 1, { name = "self", type = "ScriptedBehavior" } )
+                end
+            end
+
             for i, arg in ipairs( argsData ) do
                 if arg.type == nil then
                     arg.type = arg[2]
