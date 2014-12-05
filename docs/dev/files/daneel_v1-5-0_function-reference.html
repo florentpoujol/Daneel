@@ -205,6 +205,16 @@
 		</tr>
 	
 		<tr>
+			<td class="name"><a href="#CraftStudio.Storage.Load">CraftStudio.Storage.Load</a>( identifier, defaultValue, callback )</td>
+			<td class="summary">Load data stored locally on the computer under the provided identifier.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#CraftStudio.Storage.Save">CraftStudio.Storage.Save</a>( identifier, data, callback )</td>
+			<td class="summary">Store locally on the computer the provided data under the provided identifier.</td>
+		</tr>
+	
+		<tr>
 			<td class="name"><a href="#Daneel.Debug.CheckArgType">Daneel.Debug.CheckArgType</a>( argument, argumentName, expectedArgumentTypes, p_errorHead )</td>
 			<td class="summary">Check the provided argument's type against the provided type(s) and display error if they don't match.</td>
 		</tr>
@@ -232,6 +242,16 @@
 		<tr>
 			<td class="name"><a href="#Daneel.Debug.RegisterFunction">Daneel.Debug.RegisterFunction</a>( name, argsData )</td>
 			<td class="summary">Overload a function to call debug functions before and after it is itself called.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Debug.RegisterObject">Daneel.Debug.RegisterObject</a>( objectName )</td>
+			<td class="summary">Register all functions of an object to be included in the stacktrace.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Debug.RegisterScript">Daneel.Debug.RegisterScript</a>( script )</td>
+			<td class="summary">Register all functions of a scripted behavior to be included in the stacktrace.</td>
 		</tr>
 	
 		<tr>
@@ -287,16 +307,6 @@
 		<tr>
 			<td class="name"><a href="#Daneel.Event.StopListen">Daneel.Event.StopListen</a>( eventName, functionOrObject )</td>
 			<td class="summary">Make the provided function or object to stop listen to the provided event(s).</td>
-		</tr>
-	
-		<tr>
-			<td class="name"><a href="#Daneel.Storage.Load">Daneel.Storage.Load</a>( name, defaultValue, callback )</td>
-			<td class="summary">Load data stored locally on the computer under the provided name.</td>
-		</tr>
-	
-		<tr>
-			<td class="name"><a href="#Daneel.Storage.Save">Daneel.Storage.Save</a>( name, data, callback )</td>
-			<td class="summary">Store locally on the computer the provided data under the provided name.</td>
 		</tr>
 	
 		<tr>
@@ -735,16 +745,6 @@
 		</tr>
 	
 		<tr>
-			<td class="name"><a href="#GameObject.AnimateAndDestroy">GameObject.AnimateAndDestroy</a>( gameObject, property, endValue, duration, params )</td>
-			<td class="summary">Creates an animation (a tweener) with the provided parameters and destroy the game object when the tweener has completed.</td>
-		</tr>
-	
-		<tr>
-			<td class="name"><a href="#GameObject.BroadcastMessage">GameObject.BroadcastMessage</a>( gameObject, functionName, data )</td>
-			<td class="summary">Tries to call a method with the provided name on all the scriptedBehaviors attached to the game object or any of its descendants.</td>
-		</tr>
-	
-		<tr>
 			<td class="name"><a href="#GameObject.Destroy">GameObject.Destroy</a>( gameObject )</td>
 			<td class="summary">Destroy the game object at the end of this frame.</td>
 		</tr>
@@ -772,11 +772,6 @@
 		<tr>
 			<td class="name"><a href="#GameObject.GetChildren">GameObject.GetChildren</a>( gameObject, recursive, includeSelf )</td>
 			<td class="summary">Get all descendants of the game object.</td>
-		</tr>
-	
-		<tr>
-			<td class="name"><a href="#GameObject.GetChildrenByName">GameObject.GetChildrenByName</a>( gameObject, recursive, includeSelf )</td>
-			<td class="summary">Get all descendants of the game object, sorted by name.</td>
 		</tr>
 	
 		<tr>
@@ -815,7 +810,7 @@
 		</tr>
 	
 		<tr>
-			<td class="name"><a href="#GameObject.Instantiate">GameObject.Instantiate</a>( gameObjectName, sceneNameOrAsset, params )</td>
+			<td class="name"><a href="#GameObject.Instantiate">GameObject.Instantiate</a>( name, sceneNameOrAsset, params )</td>
 			<td class="summary">Create a new game object with the content of the provided scene and optionally initialize it.</td>
 		</tr>
 	
@@ -847,6 +842,21 @@
 		<tr>
 			<td class="name"><a href="#GameObject.SetParent">GameObject.SetParent</a>( gameObject, parentNameOrInstance, keepLocalTransform )</td>
 			<td class="summary">Set the game object's parent.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Lang.Get">Lang.Get</a>( key, replacements )</td>
+			<td class="summary">Get the localized line identified by the provided key.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Lang.RegisterForUpdate">Lang.RegisterForUpdate</a>( gameObject, key, replacements )</td>
+			<td class="summary">Register a game object to update its text renderer whenever the language will be updated by Lang.Update().</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Lang.Update">Lang.Update</a>( language )</td>
+			<td class="summary">Update the current language and the text of all game objects that have registered via Lang.RegisterForUpdate().</td>
 		</tr>
 	
 		<tr>
@@ -907,6 +917,21 @@
 		<tr>
 			<td class="name"><a href="#ModelRenderer.SetModel">ModelRenderer.SetModel</a>( modelRenderer, modelNameOrAsset )</td>
 			<td class="summary">Attach the provided model to the provided modelRenderer.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#MouseInput.GetTags">MouseInput.GetTags</a>( mouseInput )</td>
+			<td class="summary">Return the tag(s) of the game objects the component works with.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#MouseInput.New">MouseInput.New</a>( gameObject, params )</td>
+			<td class="summary">Create a new MouseInput component.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#MouseInput.SetTags">MouseInput.SetTags</a>( mouseInput, tags )</td>
+			<td class="summary">Set tag(s) of the game objects the component works with.</td>
 		</tr>
 	
 		<tr>
@@ -982,6 +1007,51 @@
 		<tr>
 			<td class="name"><a href="#Transform.WorldToLocal">Transform.WorldToLocal</a>( transform, position )</td>
 			<td class="summary">Transform a global position to a position local to this transform.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Trigger.GetGameObjectsInRange">Trigger.GetGameObjectsInRange</a>( trigger )</td>
+			<td class="summary">Get the gameObjets that are within range of that trigger.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Trigger.GetRange">Trigger.GetRange</a>( trigger )</td>
+			<td class="summary">Get the range of the trigger.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Trigger.GetTags">Trigger.GetTags</a>( trigger )</td>
+			<td class="summary">Return the tag(s) of the game objects the component works with.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Trigger.GetUpdateInterval">Trigger.GetUpdateInterval</a>( trigger )</td>
+			<td class="summary">Get the interval (in frames) at which the trigger is automatically updated.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Trigger.IsGameObjectInRange">Trigger.IsGameObjectInRange</a>( trigger, gameObject, triggerPosition )</td>
+			<td class="summary">Tell whether the provided game object is in range of the trigger.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Trigger.New">Trigger.New</a>( gameObject, params )</td>
+			<td class="summary">Create a new Trigger component.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Trigger.SetRange">Trigger.SetRange</a>( trigger, range )</td>
+			<td class="summary">Set the range of the trigger.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Trigger.SetTags">Trigger.SetTags</a>( trigger, tags )</td>
+			<td class="summary">Set tag(s) of the game objects the component works with.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Trigger.SetUpdateInterval">Trigger.SetUpdateInterval</a>( trigger, updateInterval )</td>
+			<td class="summary">Set the interval (in frames) at which the trigger is automatically updated.</td>
 		</tr>
 	
 		<tr>
@@ -1136,7 +1206,12 @@
 	
 		<tr>
 			<td class="name"><a href="#math.round">math.round</a>( value, decimal )</td>
-			<td class="summary">Return the value rounded to the closest integer or decimal.</td>
+			<td class="summary">Round the value to the closest integer or decimal.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#math.truncate">math.truncate</a>( value, decimal )</td>
+			<td class="summary">Trucate the value to the provided decimal.</td>
 		</tr>
 	
 		<tr>
@@ -1285,6 +1360,11 @@
 		</tr>
 	
 		<tr>
+			<td class="name"><a href="#table.printr">table.printr</a>( t, level )</td>
+			<td class="summary">Recursively print all key/value pairs within the provided table.</td>
+		</tr>
+	
+		<tr>
 			<td class="name"><a href="#table.reindex">table.reindex</a>( t )</td>
 			<td class="summary">Turn the provided table (with only integer keys) in a proper sequence (with consecutive integer key beginning at 1).</td>
 		</tr>
@@ -1297,11 +1377,6 @@
 		<tr>
 			<td class="name"><a href="#table.reverse">table.reverse</a>( t )</td>
 			<td class="summary">Reverse the order of the provided table's values.</td>
-		</tr>
-	
-		<tr>
-			<td class="name"><a href="#table.rprint">table.rprint</a>( t, level )</td>
-			<td class="summary">Recursively print all key/value pairs within the provided table.</td>
 		</tr>
 	
 		<tr>
@@ -1720,7 +1795,7 @@ Returns a random color, optional of the provided pattern.
 	<ul>
 		
 		<li>
-		  pattern 
+		  pattern (number or Color.Patterns) [optional] The color pattern.
 		</li>
 		
 	</ul>
@@ -2221,11 +2296,65 @@ Sets the size of the screen, in pixels.
 	<ul>
 		
 		<li>
-		  x 
+		  x (number or table) The width of the screen or a table containing the width and height as x and and y components.
 		</li>
 		
 		<li>
-		  y 
+		  y (number) [optional] The height of the screen (has no effect when the "x" argument is a table).
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="CraftStudio.Storage.Load"></a><h3>CraftStudio.Storage.Load( identifier, defaultValue, callback )</h3></dt>
+<dd>
+Load data stored locally on the computer under the provided identifier. The load operation may not be instantaneous.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  identifier (string) The identifier of the data.
+		</li>
+		
+		<li>
+		  defaultValue (mixed) [optional] The value that is returned if no data (and no error) is found.
+		</li>
+		
+		<li>
+		  callback (function) The function called when the data is loaded. The the potential error (nil if no error) and data (of mixed type) are passed as first and second argument, respectively.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="CraftStudio.Storage.Save"></a><h3>CraftStudio.Storage.Save( identifier, data, callback )</h3></dt>
+<dd>
+Store locally on the computer the provided data under the provided identifier.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  identifier (string) The identifier of the data.
+		</li>
+		
+		<li>
+		  data (mixed) The data to store. May be nil.
+		</li>
+		
+		<li>
+		  callback (function) [optional] The function called when the save has completed. The potential error (as a string) is passed to the callback first and only argument (nil if no error).
 		</li>
 		
 	</ul>
@@ -2400,6 +2529,44 @@ Overload a function to call debug functions before and after it is itself called
 		
 		<li>
 		  argsData (table) Mostly the list of arguments. may contains the 'includeInStackTrace' key.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Debug.RegisterObject"></a><h3>Daneel.Debug.RegisterObject( objectName )</h3></dt>
+<dd>
+Register all functions of an object to be included in the stacktrace.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  objectName (string or table) The object's name or object.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Debug.RegisterScript"></a><h3>Daneel.Debug.RegisterScript( script )</h3></dt>
+<dd>
+Register all functions of a scripted behavior to be included in the stacktrace. Within a script, the 'Behavior' variable is the script asset.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  script (Script) The script asset.
 		</li>
 		
 	</ul>
@@ -2628,63 +2795,6 @@ Make the provided function or object to stop listen to the provided event(s).
 		
 		<li>
 		  functionOrObject (function, string or GameObject) The function, or the game object name or instance.
-		</li>
-		
-	</ul>
-
-
-</dd>
-<hr>
-	
-		
-<dt><a name="Daneel.Storage.Load"></a><h3>Daneel.Storage.Load( name, defaultValue, callback )</h3></dt>
-<dd>
-Load data stored locally on the computer under the provided name. The load operation may not be instantaneous. The function will return the queried value (or defaultValue) if it completes right away, otherwise it returns nil.
-<br><br>
-
-	<strong>Parameters:</strong>
-	<ul>
-		
-		<li>
-		  name (string) The name of the data.
-		</li>
-		
-		<li>
-		  defaultValue (mixed) [optional] The value that is returned if no data is found.
-		</li>
-		
-		<li>
-		  callback (function) [optional] The function called when the data is loaded. The value and the potential error (as a string) (ni if no error) are passed as first and second argument, respectively.
-		</li>
-		
-	</ul>
-
-
-	<strong>Return value:</strong>
-	<ul>(mixed) The data.</ul>
-
-</dd>
-<hr>
-	
-		
-<dt><a name="Daneel.Storage.Save"></a><h3>Daneel.Storage.Save( name, data, callback )</h3></dt>
-<dd>
-Store locally on the computer the provided data under the provided name.
-<br><br>
-
-	<strong>Parameters:</strong>
-	<ul>
-		
-		<li>
-		  name (string) The name of the data.
-		</li>
-		
-		<li>
-		  data (mixed) The data to store. May be nil.
-		</li>
-		
-		<li>
-		  callback (function) [optional] The function called when the save has completed. The potential error (as a string) is passed to the callback first and only argument (nil if no error).
 		</li>
 		
 	</ul>
@@ -2929,7 +3039,7 @@ Creates a new circle renderer component.
 		</li>
 		
 		<li>
-		  params (table) A table of parameters.
+		  params (table) [optional] A table of parameters.
 		</li>
 		
 	</ul>
@@ -3208,7 +3318,7 @@ Creates a new LineRenderer component.
 		</li>
 		
 		<li>
-		  params (table) A table of parameters.
+		  params (table) [optional] A table of parameters.
 		</li>
 		
 	</ul>
@@ -4182,7 +4292,7 @@ Creates a new TextArea component.
 		</li>
 		
 		<li>
-		  params (table) A table of parameters.
+		  params (table) [optional] A table of parameters.
 		</li>
 		
 	</ul>
@@ -4254,7 +4364,7 @@ Set the component's area width (maximum line length). Must be strictly positive 
 		</li>
 		
 		<li>
-		  areaWidth (number or string) [optional] The area width in scene units or in pixels as a string suffixed with "px".
+		  areaWidth (number or string) [default=0] The area width in scene units or in pixels as a string suffixed with "px".
 		</li>
 		
 	</ul>
@@ -4769,71 +4879,6 @@ Creates an animation (a tweener) with the provided parameters.
 <hr>
 	
 		
-<dt><a name="GameObject.AnimateAndDestroy"></a><h3>GameObject.AnimateAndDestroy( gameObject, property, endValue, duration, params )</h3></dt>
-<dd>
-Creates an animation (a tweener) with the provided parameters and destroy the game object when the tweener has completed.
-<br><br>
-
-	<strong>Parameters:</strong>
-	<ul>
-		
-		<li>
-		  gameObject (GameObject) The game object.
-		</li>
-		
-		<li>
-		  property (string) The name of the property to animate.
-		</li>
-		
-		<li>
-		  endValue (number, Vector2, Vector3 or string) The value the property should have at the end of the duration.
-		</li>
-		
-		<li>
-		  duration (number) The time (in seconds) or frame it should take for the property to reach endValue.
-		</li>
-		
-		<li>
-		  params (table) [optional] A table of parameters.
-		</li>
-		
-	</ul>
-
-
-	<strong>Return value:</strong>
-	<ul>(Tweener) The tweener.</ul>
-
-</dd>
-<hr>
-	
-		
-<dt><a name="GameObject.BroadcastMessage"></a><h3>GameObject.BroadcastMessage( gameObject, functionName, data )</h3></dt>
-<dd>
-Tries to call a method with the provided name on all the scriptedBehaviors attached to the game object or any of its descendants. The data argument can be nil or a table you want the method to receive as its first (and only) argument. If none of the scripteBehaviors attached to the game object or its children have a method matching the provided name, nothing happens.
-<br><br>
-
-	<strong>Parameters:</strong>
-	<ul>
-		
-		<li>
-		  gameObject (GameObject) The game object.
-		</li>
-		
-		<li>
-		  functionName (string) The method name.
-		</li>
-		
-		<li>
-		  data (table) [optional] The data to pass along the method call.
-		</li>
-		
-	</ul>
-
-
-</dd>
-<hr>
-	
-		
 <dt><a name="GameObject.Destroy"></a><h3>GameObject.Destroy( gameObject )</h3></dt>
 <dd>
 Destroy the game object at the end of this frame.
@@ -4966,36 +5011,6 @@ Alias of GameObject.FindChild(). Find the first game object's child with the pro
 <dt><a name="GameObject.GetChildren"></a><h3>GameObject.GetChildren( gameObject, recursive, includeSelf )</h3></dt>
 <dd>
 Get all descendants of the game object.
-<br><br>
-
-	<strong>Parameters:</strong>
-	<ul>
-		
-		<li>
-		  gameObject (GameObject) The game object.
-		</li>
-		
-		<li>
-		  recursive (boolean) [default=false] Look for all descendants instead of just the first generation.
-		</li>
-		
-		<li>
-		  includeSelf (boolean) [default=false] Include the game object in the children.
-		</li>
-		
-	</ul>
-
-
-	<strong>Return value:</strong>
-	<ul>(table) The children.</ul>
-
-</dd>
-<hr>
-	
-		
-<dt><a name="GameObject.GetChildrenByName"></a><h3>GameObject.GetChildrenByName( gameObject, recursive, includeSelf )</h3></dt>
-<dd>
-Get all descendants of the game object, sorted by name. If several descendants have the same name, only the last one will be found in the returned table.
 <br><br>
 
 	<strong>Parameters:</strong>
@@ -5197,7 +5212,7 @@ Tell whether the provided game object has all (or at least one of) the provided 
 <hr>
 	
 		
-<dt><a name="GameObject.Instantiate"></a><h3>GameObject.Instantiate( gameObjectName, sceneNameOrAsset, params )</h3></dt>
+<dt><a name="GameObject.Instantiate"></a><h3>GameObject.Instantiate( name, sceneNameOrAsset, params )</h3></dt>
 <dd>
 Create a new game object with the content of the provided scene and optionally initialize it.
 <br><br>
@@ -5206,7 +5221,7 @@ Create a new game object with the content of the provided scene and optionally i
 	<ul>
 		
 		<li>
-		  gameObjectName (string) The game object name.
+		  name (string) The game object name.
 		</li>
 		
 		<li>
@@ -5214,7 +5229,7 @@ Create a new game object with the content of the provided scene and optionally i
 		</li>
 		
 		<li>
-		  params (table) [optional] A table with parameters to initialize the new game object with.
+		  params (table or GameObject) [optional] A table with parameters to initialize the new game object with, or the parent gameO object to attach to..
 		</li>
 		
 	</ul>
@@ -5229,18 +5244,18 @@ Create a new game object with the content of the provided scene and optionally i
 		
 <dt><a name="GameObject.New"></a><h3>GameObject.New( name, params )</h3></dt>
 <dd>
-Create a new game object and optionally initialize it. When the first argument is a scene name or asset, the scene may contains only one top-level game object. If it's not the case, the function won't return any game object yet some may have been created (depending on the behavior of CS.AppendScene()).
+Create a new game object and optionally initialize it.
 <br><br>
 
 	<strong>Parameters:</strong>
 	<ul>
 		
 		<li>
-		  name (string or Scene) The game object name or scene name or scene asset.
+		  name (string) The game object name.
 		</li>
 		
 		<li>
-		  params (table) [optional] A table with parameters to initialize the new game object with.
+		  params (table or GameObject) [optional] A table with parameters to initialize the new game object with, or the parent gameO object to attach to.
 		</li>
 		
 	</ul>
@@ -5371,6 +5386,78 @@ Set the game object's parent. Optionaly carry over the game object's local trans
 		
 		<li>
 		  keepLocalTransform (boolean) [default=false] Carry over the game object's local transform instead of the global one.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Lang.Get"></a><h3>Lang.Get( key, replacements )</h3></dt>
+<dd>
+Get the localized line identified by the provided key.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  key (string) The language key.
+		</li>
+		
+		<li>
+		  replacements (table) [optional] The placeholders and their replacements.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The line.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Lang.RegisterForUpdate"></a><h3>Lang.RegisterForUpdate( gameObject, key, replacements )</h3></dt>
+<dd>
+Register a game object to update its text renderer whenever the language will be updated by Lang.Update().
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The gameObject.
+		</li>
+		
+		<li>
+		  key (string) The language key.
+		</li>
+		
+		<li>
+		  replacements (table) [optional] The placeholders and their replacements.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Lang.Update"></a><h3>Lang.Update( language )</h3></dt>
+<dd>
+Update the current language and the text of all game objects that have registered via Lang.RegisterForUpdate(). <br> Fire the OnLangUpdate event.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  language (string) The new current language.
 		</li>
 		
 	</ul>
@@ -5688,6 +5775,77 @@ Attach the provided model to the provided modelRenderer.
 		
 		<li>
 		  modelNameOrAsset (string or Model) [optional] The model name or asset, or nil.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="MouseInput.GetTags"></a><h3>MouseInput.GetTags( mouseInput )</h3></dt>
+<dd>
+Return the tag(s) of the game objects the component works with.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  mouseInput (MouseInput) The mouse input component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The tag(s) of the game objects the component works with.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="MouseInput.New"></a><h3>MouseInput.New( gameObject, params )</h3></dt>
+<dd>
+Create a new MouseInput component.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  params (table) [optional] A table of parameters.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(MouseInput) The new component.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="MouseInput.SetTags"></a><h3>MouseInput.SetTags( mouseInput, tags )</h3></dt>
+<dd>
+Set tag(s) of the game objects the component works with.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  mouseInput (MouseInput) The mouse input component.
+		</li>
+		
+		<li>
+		  tags (string or table) The tag(s) of the game objects the component works with.
 		</li>
 		
 	</ul>
@@ -6054,6 +6212,219 @@ Transform a global position to a position local to this transform.
 <hr>
 	
 		
+<dt><a name="Trigger.GetGameObjectsInRange"></a><h3>Trigger.GetGameObjectsInRange( trigger )</h3></dt>
+<dd>
+Get the gameObjets that are within range of that trigger.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  trigger (Trigger) The trigger component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The list of the gameObjects in range (empty if none in range).</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Trigger.GetRange"></a><h3>Trigger.GetRange( trigger )</h3></dt>
+<dd>
+Get the range of the trigger.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  trigger (Trigger) The trigger component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The range of the trigger.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Trigger.GetTags"></a><h3>Trigger.GetTags( trigger )</h3></dt>
+<dd>
+Return the tag(s) of the game objects the component works with.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  trigger (Trigger) The trigger component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The tag(s) of the game objects the component works with.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Trigger.GetUpdateInterval"></a><h3>Trigger.GetUpdateInterval( trigger )</h3></dt>
+<dd>
+Get the interval (in frames) at which the trigger is automatically updated.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  trigger (Trigger) The trigger component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The update interval (in frames) of the trigger.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Trigger.IsGameObjectInRange"></a><h3>Trigger.IsGameObjectInRange( trigger, gameObject, triggerPosition )</h3></dt>
+<dd>
+Tell whether the provided game object is in range of the trigger.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  trigger (Trigger) The trigger component.
+		</li>
+		
+		<li>
+		  gameObject (GameObject) The gameObject.
+		</li>
+		
+		<li>
+		  triggerPosition (Vector3) [optional] The trigger's current position.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(boolean) True or false.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Trigger.New"></a><h3>Trigger.New( gameObject, params )</h3></dt>
+<dd>
+Create a new Trigger component.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  params (table) [optional] A table of parameters.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Trigger) The new component.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Trigger.SetRange"></a><h3>Trigger.SetRange( trigger, range )</h3></dt>
+<dd>
+Set the range of the trigger.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  trigger (Trigger) The trigger component.
+		</li>
+		
+		<li>
+		  range (number) The range of the trigger. Must be >= 0. Set to 0 to use the trigger's map or model as area.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Trigger.SetTags"></a><h3>Trigger.SetTags( trigger, tags )</h3></dt>
+<dd>
+Set tag(s) of the game objects the component works with.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  trigger (Trigger) The trigger component.
+		</li>
+		
+		<li>
+		  tags (string or table) The tag(s) of the game objects the component works with.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Trigger.SetUpdateInterval"></a><h3>Trigger.SetUpdateInterval( trigger, updateInterval )</h3></dt>
+<dd>
+Set the interval (in frames) at which the trigger is automatically updated. A value < 1 will prevent the trigger to be automatically updated.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  trigger (Trigger) The trigger component.
+		</li>
+		
+		<li>
+		  updateInterval (number) The update interval in frames. Must be >= 0
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
 <dt><a name="Tween.Timer.New"></a><h3>Tween.Timer.New( duration, callback, isInfiniteLoop, params )</h3></dt>
 <dd>
 Creates a new tweener via one of the two allowed constructors : <br> Timer.New(duration, OnCompleteCallback[, params]) <br> Timer.New(duration, OnLoopCompleteCallback, true[, params]) <br>
@@ -6301,11 +6672,11 @@ Creates a new Vector2 intance.
 	<ul>
 		
 		<li>
-		  x (number, string or Vector2) The vector's x component.
+		  x (number, table or Vector2) The vector's x component, or a table that contains "x" and "y" components.
 		</li>
 		
 		<li>
-		  y [optional] (number or string) The vector's y component. If nil, will be equal to x.
+		  y (number) [optional] The vector's y component. If nil, will be equal to x.
 		</li>
 		
 	</ul>
@@ -6638,15 +7009,15 @@ Returns a new Vector3.
 	<ul>
 		
 		<li>
-		  x 
+		  x (number, Vector3 or Vector2) [optional] The vector's x component.
 		</li>
 		
 		<li>
-		  y 
+		  y (number or Vector2) [optional] The vector's y component.
 		</li>
 		
 		<li>
-		  z 
+		  z (number) [optional] The vector's z component.
 		</li>
 		
 		<li>
@@ -6793,14 +7164,14 @@ Returns the value resulting of the linear interpolation between value a and b by
 		
 <dt><a name="math.round"></a><h3>math.round( value, decimal )</h3></dt>
 <dd>
-Return the value rounded to the closest integer or decimal.
+Round the value to the closest integer or decimal.
 <br><br>
 
 	<strong>Parameters:</strong>
 	<ul>
 		
 		<li>
-		  value (number) The value.
+		  value (number) The value to round.
 		</li>
 		
 		<li>
@@ -6811,7 +7182,33 @@ Return the value rounded to the closest integer or decimal.
 
 
 	<strong>Return value:</strong>
-	<ul>(number) The new value.</ul>
+	<ul>(number) The rounded value.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="math.truncate"></a><h3>math.truncate( value, decimal )</h3></dt>
+<dd>
+Trucate the value to the provided decimal.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  value (number) The value to truncate.
+		</li>
+		
+		<li>
+		  decimal (number) [default=0] The decimal at which to truncate the value.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The truncated value.</ul>
 
 </dd>
 <hr>
@@ -7526,6 +7923,29 @@ Print all key/value pairs within the provided table.
 <hr>
 	
 		
+<dt><a name="table.printr"></a><h3>table.printr( t, level )</h3></dt>
+<dd>
+Recursively print all key/value pairs within the provided table. Fully prints the tables that have no metatable found as values.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  t (table) The table to print.
+		</li>
+		
+		<li>
+		  level (string) [default=""] The string to prepend to the printed lines. Should be empty or nil unless called from table.printr().
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
 <dt><a name="table.reindex"></a><h3>table.reindex( t )</h3></dt>
 <dd>
 Turn the provided table (with only integer keys) in a proper sequence (with consecutive integer key beginning at 1).
@@ -7595,29 +8015,6 @@ Reverse the order of the provided table's values.
 
 	<strong>Return value:</strong>
 	<ul>(table) The new table.</ul>
-
-</dd>
-<hr>
-	
-		
-<dt><a name="table.rprint"></a><h3>table.rprint( t, level )</h3></dt>
-<dd>
-Recursively print all key/value pairs within the provided table. Fully prints the tables that have no metatable found as values.
-<br><br>
-
-	<strong>Parameters:</strong>
-	<ul>
-		
-		<li>
-		  t (table) The table to print.
-		</li>
-		
-		<li>
-		  level (string) [default=""] The string to prepend to the printed lines. Should be empty or nil unless called from table.rprint().
-		</li>
-		
-	</ul>
-
 
 </dd>
 <hr>

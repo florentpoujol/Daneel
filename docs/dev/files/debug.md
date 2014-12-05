@@ -114,7 +114,7 @@ This also works for any behavior functions you set in the `functionArgumentsInfo
 
 If you want all your functions script's to be easily included in the stack trace, you can just pass the script asset to the `Daneel.Debug.RegisterScript(scriptAsset)` function __at the end of the script__.
 
-Note that because of CrafStudio's inner working, the `Awake()`, `Start()` and `Update()` functions can't be included automatically in the stacktrace.  
+Note that because of CrafStudio's inner working, the `Awake()` functions can't be included automatically in the stacktrace.  
 You can however include it manually in two ways :
 
 With `Daneel.Debug.StackTrace.BeginFunction(functionName)` and `EndFunction()`,
@@ -135,6 +135,9 @@ Or like this (provided that the script has been registered via `Daneel.Debug.Reg
 
         ...
     end
+
+You can also include quickly many functions in the stack trace by passing the object they are nested in to the `Daneel.Debug.RegisterObject(object)` function.
+
 
 <a name="data-types"></a>
 ## Data types
