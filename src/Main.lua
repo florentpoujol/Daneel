@@ -751,21 +751,69 @@ end
 -- Within a script, the 'Behavior' variable is the script asset.
 -- @param script (Script) The script asset.
 function Daneel.Debug.RegisterScript( script )
+    if not Daneel.Config.debug.enableDebug then return end
+
     if type( script ) ~= "table" or getmetatable( script ) ~= Script then
         error("Daneel.Debug.SetupScript(script): Provided argument is not a script asset. Within a script, the 'Behavior' variable is the script asset.")
     end
     local infos = Daneel.Debug.functionArgumentsInfo
     local forbiddenNames = { "Update", "inner" }
-    -- Awake, Start and Update are never included in the stacktrace anyway because CraftStudio
+    -- Awake, is never included in the stacktrace anyway because CraftStudio
     -- keeps the reference to the function first set in the script.
     -- Overloading it at runtime has no effect.
+    -- 05/12/2014 It isn't the case for Start()
+
+    local scriptPath = Map.GetPathInPackage( script )
     for name, func in pairs( script ) do
+        local fullName = scriptPath.."."..name
         if 
             not name:startswith("__") and
             not table.containsvalue( forbiddenNames, name ) and
-            infos[name] == nil
+            infos[fullName] == nil
         then
-            infos[name] = { script = script }
+            infos[fullName] = { script = script }
+        end
+    end
+end
+
+--- Register all functions of an object to be included in the stacktrace.
+-- @param objectName (string or table) The object's name or object.
+function Daneel.Debug.RegisterObject( objectName )
+    if not Daneel.Config.debug.enableDebug then return end
+    
+    local originalArgument = objectName
+    local object = nil
+    
+    if type(objectName) == "table" then
+        object = objectName
+        objectName = Daneel.Debug.GetNameFromValue( object )
+    else
+        object = table.getvalue(Daneel.Config.objectsByType, objectName)
+        if object == nil then
+            object = table.getvalue(_G, objectName)
+        end
+    end
+        
+    if object == nil or objectName == nil then
+        print("Daneel.Debug.RegisterObject(): object or name not found", originalArgument, objectName, object)
+        return
+    end
+    
+    local infos = Daneel.Debug.functionArgumentsInfo
+    local forbiddenNames = { "Load", "DefaultConfig", "UserConfig", "Awake", "Start", "Update", "New", "inner", "GetId", "GetName" }
+    
+    for name, func in pairs( object ) do
+        if type( func ) == "function" or type( func ) == "userdata" then
+            local fullName = objectName.."."..name
+            
+            if 
+                not name:startswith("__") and
+                not name:startswith("o") and
+                not table.containsvalue( forbiddenNames, name ) and
+                infos[fullName] == nil
+            then 
+                infos[fullName] = {}
+            end
         end
     end
 end
