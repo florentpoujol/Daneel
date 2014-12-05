@@ -14,7 +14,6 @@ setmetatable( Daneel.modules, {
     end
 } )
 
-
 ----------------------------------------------------------------------------------
 -- Some Lua functions are overridden here with some Daneel-specific stuffs
 
@@ -672,9 +671,12 @@ function Daneel.Debug.RegisterFunction( name, argsData )
     
     local script = argsData.script -- script asset. If set, the function is a public behavior function
     if script ~= nil then
-        originalFunction = script[ name ]
-        local scriptPath = script:GetPath()
-        name = scriptPath..":"..name -- "Folder/ScriptName:FunctionName"      
+        -- name is "Folder/ScriptName.FunctionName"
+        local nameChunks = string.split( name, "." )
+        local scriptPath = nameChunks[1]
+        local funcName = nameChunks[2]
+        originalFunctionName = funcName
+        originalFunction = script[ funcName ]  
 
         if not script.toStringIsSet then
             script.__tostring = function( sb )
@@ -712,16 +714,11 @@ function Daneel.Debug.RegisterFunction( name, argsData )
             end
 
             for i, arg in ipairs( argsData ) do
-                if arg.type == nil then
-                    arg.type = arg[2]
-                    if arg.type == nil and arg.defaultValue ~= nil then
-                        arg.type = type( arg.defaultValue )
-                    end
-                end
+                arg.type = arg.type or arg[2]
 
                 if arg.type ~= nil then
-                    if arg.defaultValue ~= nil or arg.isOptional == true then
-                        funcArgs[ i ] = Daneel.Debug.CheckOptionalArgType( funcArgs[ i ], arg.name, arg.type, errorHead, arg.defaultValue )
+                    if arg.isOptional == true then 
+                        Daneel.Debug.CheckOptionalArgType( funcArgs[ i ], arg.name, arg.type, errorHead )
                     else
                         Daneel.Debug.CheckArgType( funcArgs[ i ], arg.name, arg.type, errorHead )
                     end
@@ -729,14 +726,10 @@ function Daneel.Debug.RegisterFunction( name, argsData )
                 elseif funcArgs[ i ] == nil and not arg.isOptional then
                     error( errorHead.."Argument '"..arg.name.."' is nil." )
                 end
-
-                if arg.value ~= nil then
-                    funcArgs[ i ] = Daneel.Debug.CheckArgValue( funcArgs[ i ], arg.name, arg.value, errorHead, arg.defaultValue )
-                end
             end
-
-            local returnValues = { originalFunction( unpack( funcArgs ) ) } -- use unpack here to take into account the values that may have been modified by CheckOptionalArgType()
-
+            
+            local returnValues = { originalFunction( ... ) }
+            
             if includeInStackTrace then
                 Daneel.Debug.StackTrace.EndFunction()
             end
@@ -750,7 +743,7 @@ function Daneel.Debug.RegisterFunction( name, argsData )
             table.setvalue( _G, name, newFunction )
         end
     else
-        print( "Daneel.Debug.RegisterFunction() : Function with name '"..name.."' was not found." )
+        print( "Daneel.Debug.RegisterFunction(): Function with name '"..name.."' was not found." )
     end
 end
 
