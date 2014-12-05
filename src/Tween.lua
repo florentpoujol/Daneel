@@ -184,51 +184,31 @@ end
 -- Should not be used after the tweener has been created.
 -- That's why it is not in the function reference.
 function Tween.Tweener.Set(tweener, params)
-    Daneel.Debug.StackTrace.BeginFunction("Tween.Tweener.Set", tweener, params)
-    local errorHead = "Tween.Tweener.Set(tweener, params) : "
-    Daneel.Debug.CheckArgType(tweener, "tweener", "Tween.Tweener", errorHead)
-
     for key, value in pairs(params) do
         tweener[key] = value
     end
-    Daneel.Debug.StackTrace.EndFunction()
-    return tweener
 end
 
 --- Unpause the tweener and fire the OnPlay event.
 -- @param tweener (Tween.Tweener) The tweener.
 function Tween.Tweener.Play(tweener)
     if tweener.isEnabled == false then return end
-    Daneel.Debug.StackTrace.BeginFunction("Tween.Tweener.Play", tweener)
-    local errorHead = "Tween.Tweener.Play(tweener) : "
-    Daneel.Debug.CheckArgType(tweener, "tweener", "Tween.Tweener", errorHead)
-
     tweener.isPaused = false
     Daneel.Event.Fire(tweener, "OnPlay", tweener)
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Pause the tweener and fire the OnPause event.
 -- @param tweener (Tween.Tweener) The tweener.
 function Tween.Tweener.Pause(tweener)
     if tweener.isEnabled == false then return end
-    Daneel.Debug.StackTrace.BeginFunction("Tween.Tweener.Pause", tweener)
-    local errorHead = "Tween.Tweener.Pause(tweener) : "
-    Daneel.Debug.CheckArgType(tweener, "tweener", "Tween.Tweener", errorHead)
-
     tweener.isPaused = true
     Daneel.Event.Fire(tweener, "OnPause", tweener)
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Completely restart the tweener.
 -- @param tweener (Tween.Tweener) The tweener.
 function Tween.Tweener.Restart(tweener)
     if tweener.isEnabled == false then return end
-    Daneel.Debug.StackTrace.BeginFunction("Tween.Tweener.Restart", tweener)
-    local errorHead = "Tween.Tweener.Restart(tweener) : "
-    Daneel.Debug.CheckArgType(tweener, "tweener", "Tween.Tweener", errorHead)
-
     tweener.elapsed = 0
     tweener.fullElapsed = 0
     tweener.elapsedDelay = 0
@@ -243,17 +223,12 @@ function Tween.Tweener.Restart(tweener)
         SetTweenerProperty(tweener, startValue)
     end
     tweener.value = startValue
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Complete the tweener fire the OnComple event.
 -- @param tweener (Tween.Tweener) The tweener.
 function Tween.Tweener.Complete( tweener )
     if tweener.isEnabled == false or tweener.loops == -1 then return end
-    Daneel.Debug.StackTrace.BeginFunction( "Tween.Tweener.Complete", tweener )
-    local errorHead = "Tween.Tweener.Complete( tweener ) : "
-    Daneel.Debug.CheckArgType( tweener, "tweener", "Tween.Tweener", errorHead )
-
     tweener.isCompleted = true
     local endValue = tweener.endValue
     if tweener.loopType == "yoyo" then
@@ -270,14 +245,11 @@ function Tween.Tweener.Complete( tweener )
     if tweener.target ~= nil then
         SetTweenerProperty( tweener, endValue )
     end
-    tweener.value = endValue
-    
+    tweener.value = endValue   
     Daneel.Event.Fire( tweener, "OnComplete", tweener )
     if tweener.destroyOnComplete then
         tweener:Destroy()
     end
-
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 -- Tell whether the provided game object has been destroyed.
@@ -309,18 +281,12 @@ end
 --- Destroy the tweener.
 -- @param tweener (Tween.Tweener) The tweener.
 function Tween.Tweener.Destroy( tweener )
-    Daneel.Debug.StackTrace.BeginFunction( "Tween.Tweener.Destroy", tweener )
-    local errorHead = "Tween.Tweener.Destroy( tweener ) : "
-    Daneel.Debug.CheckArgType( tweener, "tweener", "Tween.Tweener", errorHead )
-
     tweener.isEnabled = false
     tweener.isPaused = true
     tweener.target = nil
     tweener.duration = 0
-
     Tween.Tweener.tweeners[ tweener.id ] = nil
     CraftStudio.Destroy( tweener )
-    Daneel.Debug.StackTrace.EndFunction()
 end
 
 --- Update the tweener's value based on the tweener's elapsed property.
@@ -330,10 +296,6 @@ end
 -- @param deltaDuration [optional] (number) <strong>Only used internaly.</strong> If nil, the tweener's value will be updated based on the current value of tweener.elapsed.
 function Tween.Tweener.Update(tweener, deltaDuration) -- the deltaDuration argument is only used from the Tween.Update() function
     if tweener.isEnabled == false then return end
-    Daneel.Debug.StackTrace.BeginFunction("Tween.Tweener.Update", tweener, deltaDuration)
-    local errorHead = "Tween.Tweener.Update(tweener[, deltaDuration]) : "
-    Daneel.Debug.CheckArgType(tweener, "tweener", "Tween.Tweener", errorHead)
-    Daneel.Debug.CheckArgType(deltaDuration, "deltaDuration", "number", errorHead)
 
     if Tween.Ease[tweener.easeType] == nil then
         if Daneel.Config.debug.enableDebug then
@@ -381,8 +343,19 @@ function Tween.Tweener.Update(tweener, deltaDuration) -- the deltaDuration argum
     tweener.value = value
 
     Daneel.Event.Fire(tweener, "OnUpdate", tweener)
-    Daneel.Debug.StackTrace.EndFunction()
 end
+
+local _t = { "tweener", "Tween.Tweener" }
+table.mergein( Daneel.Debug.functionArgumentsInfo, {
+    ["Tween.Tweener.Set"] = { _t, { "params", "table" } },
+    ["Tween.Tweener.Play"] = { _t },
+    ["Tween.Tweener.Pause"] = { _t },
+    ["Tween.Tweener.Restart"] = { _t },
+    ["Tween.Tweener.Complete"] = { _t },
+    ["Tween.Tweener.IsTargetDestroyed"] = { _t },
+    ["Tween.Tweener.Destroy"] = { _t },
+    ["Tween.Tweener.Update"] = { _t, { "deltaDuration", "number" } },
+} )
 
 ----------------------------------------------------------------------------------
 -- Timer
@@ -390,7 +363,6 @@ end
 Tween.Timer = {}
 Tween.Timer.__index = Tween.Tweener
 setmetatable( Tween.Timer, { __call = function(Object, ...) return Object.New(...) end } )
-
 
 --- Creates a new tweener via one of the two allowed constructors : <br>
 -- Timer.New(duration, OnCompleteCallback[, params]) <br>
@@ -670,6 +642,13 @@ function GameObject.Animate( gameObject, property, endValue, duration, onComplet
     end
     return Tween.Tweener.New( component, property, endValue, duration, onCompleteCallback, params )   
 end
+
+Daneel.Debug.functionArgumentsInfo["GameObject.Animate"] = {
+    { "gameObject", "GameObject" },
+    { "property", "string" },
+    { "endValue", { "string", "number", "Vector2", "Vector3" } },
+    { "duration", "number" },
+}
 
 ----------------------------------------------------------------------------------
 -- Easing equations
