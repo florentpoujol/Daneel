@@ -780,7 +780,7 @@ end
 -- @param objectName (string or table) The object's name or object.
 function Daneel.Debug.RegisterObject( objectName )
     if not Daneel.Config.debug.enableDebug then return end
-    
+
     local originalArgument = objectName
     local object = nil
     
