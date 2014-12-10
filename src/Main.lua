@@ -1456,8 +1456,8 @@ function MouseInput.Awake()
     MouseInput.components = {}
 end
 
---- Update one (when specified), or all, MouseInput component(s).
--- when a component is passed as argument, the update is forced. It happens even if the mouse doesn't move and no button input happens.
+--- Update the specified MouseInput component or update all components when no argument is passed.
+-- When the component is specified, the update is forced. It happens even if the mouse doesn't move and no button input happens.
 -- @param mouseInput (MouseInput) [optional] The MouseInput component to update.
 function MouseInput.Update( mouseInput )
     local forceUpdate = false
@@ -1584,7 +1584,7 @@ function MouseInput.Update( mouseInput )
                 components[i] = nil
                 reindexComponents = true
             end -- gameObject is alive
-        end -- for MouseInput.components
+        end -- for components
 
         if reindexComponents == true and mouseInput == nil then
             MouseInput.components = table.reindex( components )
@@ -1642,7 +1642,6 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
 -- Trigger component
 
 Trigger = {
-    frameCount = 0,
     components = {},
 }
 Daneel.modules.Trigger = Trigger
@@ -1661,7 +1660,6 @@ function Trigger.Awake()
 end
 
 function Trigger.Update()
-    Trigger.frameCount = Trigger.frameCount + 1
     local reindexComponents = false
 
     for i=1, #Trigger.components do
@@ -1669,7 +1667,7 @@ function Trigger.Update()
         local triggerGameObject = trigger.gameObject
 
         if triggerGameObject.inner ~= nil and not triggerGameObject.isDestroyed then
-            if trigger._updateInterval > 1 and Trigger.frameCount % trigger._updateInterval == 0 then
+            if trigger._updateInterval > 1 and Daneel.Time.frameCount % trigger._updateInterval == 0 then
                 local triggerPosition = triggerGameObject.transform:GetPosition()
                 
                 for j=1, #trigger._tags do
