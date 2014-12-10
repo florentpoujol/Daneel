@@ -1,4 +1,4 @@
--- Generated on Fri Dec 05 2014 17:05:29 GMT+0100 (Paris, Madrid)
+-- Generated on Wed Dec 10 2014 17:13:39 GMT+0100 (Paris, Madrid)
 -- Lua.lua
 -- Contains extensions of Lua's libraries.
 -- All functions in this file are totally independant from Daneel or CraftStudio, they can be reused in any Lua application.
@@ -1466,9 +1466,9 @@ function Daneel.Debug.Try( _function )
 end
 
 --- Overload a function to call debug functions before and after it is itself called.
--- Called from Daneel.Load()
+-- Do not call before Daneel is loaded as it won't run even if debug is enabled in the user config.
 -- @param name (string) The function name
--- @param argsData (table) Mostly the list of arguments. may contains the 'includeInStackTrace' key.
+-- @param argsData (table) The parameters of the functions.
 function Daneel.Debug.RegisterFunction( name, argsData )
     if not Daneel.Config.debug.enableDebug then return end
 
@@ -1557,8 +1557,6 @@ end
 -- Within a script, the 'Behavior' variable is the script asset.
 -- @param script (Script) The script asset.
 function Daneel.Debug.RegisterScript( script )
-    if not Daneel.Config.debug.enableDebug then return end
-
     if type( script ) ~= "table" or getmetatable( script ) ~= Script then
         error("Daneel.Debug.SetupScript(script): Provided argument is not a script asset. Within a script, the 'Behavior' variable is the script asset.")
     end
@@ -1583,25 +1581,26 @@ function Daneel.Debug.RegisterScript( script )
 end
 
 --- Register all functions of an object to be included in the stacktrace.
--- @param objectName (string or table) The object's name or object.
-function Daneel.Debug.RegisterObject( objectName )
-    if not Daneel.Config.debug.enableDebug then return end
-
-    local originalArgument = objectName
-    local object = nil
+-- The following function name are always excluded from the stacktrace and debug :
+-- "Load", "DefaultConfig", "UserConfig", "Awake", "Start", "Update", "New", "inner", "GetId", "GetName"
+-- Plus function names that begins by "__" or "o".
+-- @param object (table or string) The object, or object's name.
+function Daneel.Debug.RegisterObject( object )
+    local originalArgument = object
+    local objectName = nil
     
-    if type(objectName) == "table" then
-        object = objectName
-        objectName = Daneel.Debug.GetNameFromValue( object )
-    else
-        object = table.getvalue(Daneel.Config.objectsByType, objectName)
+    if type(object) == "string" then
+        objectName = object
+        object = table.getvalue( Daneel.Config.objectsByType, objectName )
         if object == nil then
-            object = table.getvalue(_G, objectName)
+            object = table.getvalue( _G, objectName )
         end
+    else
+        objectName = Daneel.Debug.GetNameFromValue( object )
     end
         
     if object == nil or objectName == nil then
-        print("Daneel.Debug.RegisterObject(): object or name not found", originalArgument, objectName, object)
+        print("Daneel.Debug.RegisterObject(): object or name not found", originalArgument, object, objectName)
         return
     end
     
@@ -2237,10 +2236,7 @@ end
 
 MouseInput = { 
     buttonExists = { LeftMouse = false, RightMouse = false, WheelUp = false, WheelDown = false },
-    
-    frameCount = 0,
     lastLeftClickFrame = 0,
-
     components = {}, -- array of mouse input components
 }
 Daneel.modules.MouseInput = MouseInput
@@ -2260,20 +2256,25 @@ function MouseInput.Load()
     for buttonName, _ in pairs( MouseInput.buttonExists ) do
         MouseInput.buttonExists[ buttonName ] = Daneel.Utilities.ButtonExists( buttonName )
     end
-
-    MouseInput.lastLeftClickFrame = -MouseInput.Config.doubleClickDelay
 end
 
 function MouseInput.Awake()
     MouseInput.components = {}
 end
 
--- Loop on the MouseInput.components.
--- Works with the game objects that have at least one of the component's tag.
--- Check the position of the mouse against these game objects.
--- Fire events accordingly.
-function MouseInput.Update()
-    MouseInput.frameCount = MouseInput.frameCount + 1
+--- Update the specified MouseInput component or update all components when no argument is passed.
+-- When the component is specified, the update is forced. It happens even if the mouse doesn't move and no button input happens.
+-- @param mouseInput (MouseInput) [optional] The MouseInput component to update.
+function MouseInput.Update( mouseInput )
+    local forceUpdate = false
+    local components = MouseInput.components
+    if mouseInput ~= nil then
+        forceUpdate = true
+        components = { mouseInput }
+    end
+    if #components == 0 then
+        return
+    end
     
     local mouseDelta = CS.Input.GetMouseDelta()
     local mouseIsMoving = false
@@ -2306,6 +2307,7 @@ function MouseInput.Update()
     end
     
     if 
+        forceUpdate == true or
         mouseIsMoving == true or
         leftMouseJustPressed == true or 
         leftMouseDown == true or
@@ -2316,14 +2318,14 @@ function MouseInput.Update()
     then
         local doubleClick = false
         if leftMouseJustPressed then
-            doubleClick = ( MouseInput.frameCount <= MouseInput.lastLeftClickFrame + MouseInput.Config.doubleClickDelay )   
-            MouseInput.lastLeftClickFrame = MouseInput.frameCount
+            doubleClick = ( Daneel.Time.frameCount <= MouseInput.lastLeftClickFrame + MouseInput.Config.doubleClickDelay )   
+            MouseInput.lastLeftClickFrame = Daneel.Time.frameCount
         end
 
         local reindexComponents = false
         
-        for i=1, #MouseInput.components do
-            local component = MouseInput.components[i]
+        for i=1, #components do
+            local component = components[i]
             local mi_gameObject = component.gameObject -- mouse input game object
 
             if mi_gameObject.inner ~= nil and not mi_gameObject.isDestroyed and mi_gameObject.camera ~= nil then
@@ -2385,16 +2387,16 @@ function MouseInput.Update()
                 end -- for component._tags
             else
                 -- this component's game object is dead or has no camera component
-                MouseInput.components[i] = nil
+                components[i] = nil
                 reindexComponents = true
             end -- gameObject is alive
-        end -- for MouseInput.components
+        end -- for components
 
-        if reindexComponents == true then
-            MouseInput.components = table.reindex( MouseInput.components )
+        if reindexComponents == true and mouseInput == nil then
+            MouseInput.components = table.reindex( components )
         end
     end -- if mouseIsMoving, ...
-end -- end MouseInput.Update() 
+end -- end MouseInput.Update()
 
 --- Create a new MouseInput component.
 -- @param gameObject (GameObject) The game object.
@@ -2446,8 +2448,7 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
 -- Trigger component
 
 Trigger = {
-    frameCount = 0,
-    triggerComponents = {},
+    components = {},
 }
 Daneel.modules.Trigger = Trigger
 
@@ -2461,19 +2462,18 @@ end
 Trigger.Config = Trigger.DefaultConfig()
 
 function Trigger.Awake()
-    Trigger.triggerComponents = {}
+    Trigger.components = {}
 end
 
 function Trigger.Update()
-    Trigger.frameCount = Trigger.frameCount + 1
     local reindexComponents = false
 
-    for i=1, #Trigger.triggerComponents do
-        local trigger = Trigger.triggerComponents[i]
+    for i=1, #Trigger.components do
+        local trigger = Trigger.components[i]
         local triggerGameObject = trigger.gameObject
 
         if triggerGameObject.inner ~= nil and not triggerGameObject.isDestroyed then
-            if trigger._updateInterval > 1 and Trigger.frameCount % trigger._updateInterval == 0 then
+            if trigger._updateInterval > 1 and Daneel.Time.frameCount % trigger._updateInterval == 0 then
                 local triggerPosition = triggerGameObject.transform:GetPosition()
                 
                 for j=1, #trigger._tags do
@@ -2511,13 +2511,13 @@ function Trigger.Update()
             end -- it's time to update this trigger
         else
             -- this component's game object is dead
-            Trigger.triggerComponents[i] = nil
+            Trigger.components[i] = nil
             reindexComponents = true
         end -- game object is alive
-    end -- for Trigger.triggerComponents
+    end -- for Trigger.components
 
     if reindexComponents == true then
-        Trigger.triggerComponents = table.reindex( Trigger.triggerComponents )
+        Trigger.components = table.reindex( Trigger.components )
     end
 end
 
@@ -2538,6 +2538,7 @@ function Trigger.New( gameObject, params )
     if params ~= nil then
         trigger:Set( params )
     end
+    table.insert( Trigger.components, trigger )
     return trigger
 end
 
@@ -2587,16 +2588,16 @@ function Trigger.GetUpdateInterval( trigger )
     return trigger._updateInterval
 end
 
---- Get the gameObjets that are within range of that trigger.
+--- Get the gameObjects that are within range of that trigger.
 -- @param trigger (Trigger) The trigger component.
 -- @return (table) The list of the gameObjects in range (empty if none in range).
 function Trigger.GetGameObjectsInRange( trigger )
-    local triggerPosition = self.gameObject.transform:GetPosition() 
+    local triggerPosition = trigger.gameObject.transform:GetPosition() 
     local gameObjectsInRange = {}
     for i=1, #trigger._tags do
         local gameObjects = GameObject.GetWithTag( trigger._tags[i] )
         for j=1, #gameObjects do
-            local gameObject = gameObjets[j]
+            local gameObject = gameObjects[j]
             if 
                 gameObject ~= trigger.gameObject and
                 trigger:IsGameObjectInRange( gameObject, triggerPosition )
@@ -3438,6 +3439,20 @@ function Camera.Project( camera, position )
     return setmetatable( Camera.oProject( camera, position ), Vector2 )
 end
 
+--------------------------------------------------------------------------------
+-- Sound
+
+Sound.oPlay = Sound.Play
+--- Play the specified sound.
+-- @param soundAssetOrPath (Sound or string) The sound asset or path.
+-- @param volume (number) [default=1] The sound's volume between 0 and 1.
+-- @param pitch (number) [default=0] The sound's pitch between -1 and 1.
+-- @param pan (number) [default=0] The sound's pan (left/right positioning) between -1 and 1.
+function Sound.Play( soundAssetOrPath, volume, pitch, pan )
+    local sound = Asset.Get( soundAssetOrPath, "Sound", true )
+    sound:oPlay( volume, pitch, pan )
+end
+
 table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["Transform.SetLocalScale"] = { { "transform", "Transform" }, { "number", { n, v3 } } },
     ["Transform.SetScale"] =      { { "transform", "Transform" }, { "number", { n, v3 } } },
@@ -3470,7 +3485,9 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["Camera.IsPositionInFrustum"] = { { "camera", "Camera" }, { "position", v3 } },
     ["Camera.WorldToScreenPoint"] =  { { "camera", "Camera" }, { "position", v3 } },
     ["Camera.GetFOV"] =              { { "camera", "Camera" } },
-    ["Camera.Project"] =             { { "camera", "Camera" }, { "position", v3 } }
+    ["Camera.Project"] =             { { "camera", "Camera" }, { "position", v3 } },
+
+    ["Sound.Play"] = { { "soundAssetOrPath", { "Sound", s } }, { "volume", n, isOptional = true }, { "pitch", n, isOptional = true }, { "pan", n, isOptional = true } }
 } )
 
 --------------------------------------------------------------------------------
@@ -6114,7 +6131,6 @@ Daneel.modules.GUI = GUI
 
 function GUI.DefaultConfig()
     local config = {
-        cameraName = "HUD Camera",  -- Name of the gameObject who has the orthographic camera used to render the HUD
         cameraGO = nil, -- the corresponding GameObject, set at runtime
         originGO = nil, -- "parent" gameObject for global hud positioning, created at runtime in DaneelModuleGUIAwake
 

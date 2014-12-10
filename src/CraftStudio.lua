@@ -597,7 +597,7 @@ Sound.oPlay = Sound.Play
 -- @param soundAssetOrPath (Sound or string) The sound asset or path.
 -- @param volume (number) [default=1] The sound's volume between 0 and 1.
 -- @param pitch (number) [default=0] The sound's pitch between -1 and 1.
--- @param pan (number) [default=1] The sound's pan (left/right positioning) between -1 and 1.
+-- @param pan (number) [default=0] The sound's pan (left/right positioning) between -1 and 1.
 function Sound.Play( soundAssetOrPath, volume, pitch, pan )
     local sound = Asset.Get( soundAssetOrPath, "Sound", true )
     sound:oPlay( volume, pitch, pan )
