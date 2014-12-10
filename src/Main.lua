@@ -1430,10 +1430,7 @@ end
 
 MouseInput = { 
     buttonExists = { LeftMouse = false, RightMouse = false, WheelUp = false, WheelDown = false },
-    
-    frameCount = 0,
     lastLeftClickFrame = 0,
-
     components = {}, -- array of mouse input components
 }
 Daneel.modules.MouseInput = MouseInput
@@ -1453,20 +1450,25 @@ function MouseInput.Load()
     for buttonName, _ in pairs( MouseInput.buttonExists ) do
         MouseInput.buttonExists[ buttonName ] = Daneel.Utilities.ButtonExists( buttonName )
     end
-
-    MouseInput.lastLeftClickFrame = -MouseInput.Config.doubleClickDelay
 end
 
 function MouseInput.Awake()
     MouseInput.components = {}
 end
 
--- Loop on the MouseInput.components.
--- Works with the game objects that have at least one of the component's tag.
--- Check the position of the mouse against these game objects.
--- Fire events accordingly.
-function MouseInput.Update()
-    MouseInput.frameCount = MouseInput.frameCount + 1
+--- Update one (when specified), or all, MouseInput component(s).
+-- when a component is passed as argument, the update is forced. It happens even if the mouse doesn't move and no button input happens.
+-- @param mouseInput (MouseInput) [optional] The MouseInput component to update.
+function MouseInput.Update( mouseInput )
+    local forceUpdate = false
+    local components = MouseInput.components
+    if mouseInput ~= nil then
+        forceUpdate = true
+        components = { mouseInput }
+    end
+    if #components == 0 then
+        return
+    end
     
     local mouseDelta = CS.Input.GetMouseDelta()
     local mouseIsMoving = false
@@ -1499,6 +1501,7 @@ function MouseInput.Update()
     end
     
     if 
+        forceUpdate == true or
         mouseIsMoving == true or
         leftMouseJustPressed == true or 
         leftMouseDown == true or
@@ -1509,14 +1512,14 @@ function MouseInput.Update()
     then
         local doubleClick = false
         if leftMouseJustPressed then
-            doubleClick = ( MouseInput.frameCount <= MouseInput.lastLeftClickFrame + MouseInput.Config.doubleClickDelay )   
-            MouseInput.lastLeftClickFrame = MouseInput.frameCount
+            doubleClick = ( Daneel.Time.frameCount <= MouseInput.lastLeftClickFrame + MouseInput.Config.doubleClickDelay )   
+            MouseInput.lastLeftClickFrame = Daneel.Time.frameCount
         end
 
         local reindexComponents = false
         
-        for i=1, #MouseInput.components do
-            local component = MouseInput.components[i]
+        for i=1, #components do
+            local component = components[i]
             local mi_gameObject = component.gameObject -- mouse input game object
 
             if mi_gameObject.inner ~= nil and not mi_gameObject.isDestroyed and mi_gameObject.camera ~= nil then
@@ -1578,16 +1581,16 @@ function MouseInput.Update()
                 end -- for component._tags
             else
                 -- this component's game object is dead or has no camera component
-                MouseInput.components[i] = nil
+                components[i] = nil
                 reindexComponents = true
             end -- gameObject is alive
         end -- for MouseInput.components
 
-        if reindexComponents == true then
-            MouseInput.components = table.reindex( MouseInput.components )
+        if reindexComponents == true and mouseInput == nil then
+            MouseInput.components = table.reindex( components )
         end
     end -- if mouseIsMoving, ...
-end -- end MouseInput.Update() 
+end -- end MouseInput.Update()
 
 --- Create a new MouseInput component.
 -- @param gameObject (GameObject) The game object.
