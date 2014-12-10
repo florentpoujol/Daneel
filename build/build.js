@@ -71,7 +71,7 @@ function main() {
 
     if (fileToReadName === undefined) {
         // no more files to read, time to minify
-        console.log( "Aggregation of the files completed" );
+        /*console.log( "Aggregation of the files completed" );
         
         fs.readFile( completeFilePath, "utf8", function(err, data) {
             if (err) {
@@ -98,7 +98,7 @@ function main() {
 
                 console.log("Complete min file written.");
             } );
-        } );
+        } );*/
     }
     else {
         // read a file and append it to the complete file

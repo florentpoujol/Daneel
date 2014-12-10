@@ -11,10 +11,10 @@
 
 [Get the in development version](https://github.com/florentpoujol/Daneel/tree/develop) on the `develop` branch on Daneel's repo on GitHub.
 
-Copy and paste the `build/Daneel.lua` (or its minified version) in a script at the top of the script's hierarchy.  
+Copy and paste the `build/Daneel.lua` in a script at the top of the script's hierarchy.  
 
 Be advised that upon pasting the script's content, __CraftStudio will freeze for several dozens seconds__.  
-Don't worry, this is expected due to the big size of the script (even the minified version). CraftStudio will unfreeze on its own.
+Don't worry, this is expected due to the big size of the script. CraftStudio will unfreeze on its own.
 
 You can also get some scripted behaviors helpers in the `src/scripted behaviors` folder that allows you to adds features or components while working in the scene editor.
 
@@ -22,7 +22,6 @@ You can also get some scripted behaviors helpers in the `src/scripted behaviors`
 
 If your project is targeted for the webplayer, you need to use the provided `webplayer/player.html` file instead of the one created when you export your game.
 
-You also must use Daneel's minified script `build/Daneel.min.lua`, as the non minified script is just too big to load at all in the webplayer.
 
 <a name="loading"></a>
 ## Loading
