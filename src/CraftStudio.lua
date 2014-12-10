@@ -589,6 +589,20 @@ function Camera.Project( camera, position )
     return setmetatable( Camera.oProject( camera, position ), Vector2 )
 end
 
+--------------------------------------------------------------------------------
+-- Sound
+
+Sound.oPlay = Sound.Play
+--- Play the specified sound.
+-- @param soundAssetOrPath (Sound or string) The sound asset or path.
+-- @param volume (number) [default=1] The sound's volume between 0 and 1.
+-- @param pitch (number) [default=0] The sound's pitch between -1 and 1.
+-- @param pan (number) [default=1] The sound's pan (left/right positioning) between -1 and 1.
+function Sound.Play( soundAssetOrPath, volume, pitch, pan )
+    local sound = Asset.Get( soundAssetOrPath, "Sound", true )
+    sound:oPlay( volume, pitch, pan )
+end
+
 table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["Transform.SetLocalScale"] = { { "transform", "Transform" }, { "number", { n, v3 } } },
     ["Transform.SetScale"] =      { { "transform", "Transform" }, { "number", { n, v3 } } },
@@ -621,7 +635,9 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
     ["Camera.IsPositionInFrustum"] = { { "camera", "Camera" }, { "position", v3 } },
     ["Camera.WorldToScreenPoint"] =  { { "camera", "Camera" }, { "position", v3 } },
     ["Camera.GetFOV"] =              { { "camera", "Camera" } },
-    ["Camera.Project"] =             { { "camera", "Camera" }, { "position", v3 } }
+    ["Camera.Project"] =             { { "camera", "Camera" }, { "position", v3 } },
+
+    ["Sound.Play"] = { { "soundAssetOrPath", { "Sound", s } }, { "volume", n, isOptional = true }, { "pitch", n, isOptional = true }, { "pan", n, isOptional = true } }
 } )
 
 --------------------------------------------------------------------------------
