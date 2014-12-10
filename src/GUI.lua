@@ -1391,7 +1391,6 @@ Daneel.modules.GUI = GUI
 
 function GUI.DefaultConfig()
     local config = {
-        cameraName = "HUD Camera",  -- Name of the gameObject who has the orthographic camera used to render the HUD
         cameraGO = nil, -- the corresponding GameObject, set at runtime
         originGO = nil, -- "parent" gameObject for global hud positioning, created at runtime in DaneelModuleGUIAwake
 
