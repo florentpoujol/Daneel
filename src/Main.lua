@@ -1641,7 +1641,7 @@ table.mergein( Daneel.Debug.functionArgumentsInfo, {
 
 Trigger = {
     frameCount = 0,
-    triggerComponents = {},
+    components = {},
 }
 Daneel.modules.Trigger = Trigger
 
@@ -1655,15 +1655,15 @@ end
 Trigger.Config = Trigger.DefaultConfig()
 
 function Trigger.Awake()
-    Trigger.triggerComponents = {}
+    Trigger.components = {}
 end
 
 function Trigger.Update()
     Trigger.frameCount = Trigger.frameCount + 1
     local reindexComponents = false
 
-    for i=1, #Trigger.triggerComponents do
-        local trigger = Trigger.triggerComponents[i]
+    for i=1, #Trigger.components do
+        local trigger = Trigger.components[i]
         local triggerGameObject = trigger.gameObject
 
         if triggerGameObject.inner ~= nil and not triggerGameObject.isDestroyed then
@@ -1705,13 +1705,13 @@ function Trigger.Update()
             end -- it's time to update this trigger
         else
             -- this component's game object is dead
-            Trigger.triggerComponents[i] = nil
+            Trigger.components[i] = nil
             reindexComponents = true
         end -- game object is alive
-    end -- for Trigger.triggerComponents
+    end -- for Trigger.components
 
     if reindexComponents == true then
-        Trigger.triggerComponents = table.reindex( Trigger.triggerComponents )
+        Trigger.components = table.reindex( Trigger.components )
     end
 end
 
@@ -1732,6 +1732,7 @@ function Trigger.New( gameObject, params )
     if params ~= nil then
         trigger:Set( params )
     end
+    table.insert( Trigger.components, trigger )
     return trigger
 end
 
@@ -1781,16 +1782,16 @@ function Trigger.GetUpdateInterval( trigger )
     return trigger._updateInterval
 end
 
---- Get the gameObjets that are within range of that trigger.
+--- Get the gameObjects that are within range of that trigger.
 -- @param trigger (Trigger) The trigger component.
 -- @return (table) The list of the gameObjects in range (empty if none in range).
 function Trigger.GetGameObjectsInRange( trigger )
-    local triggerPosition = self.gameObject.transform:GetPosition() 
+    local triggerPosition = trigger.gameObject.transform:GetPosition() 
     local gameObjectsInRange = {}
     for i=1, #trigger._tags do
         local gameObjects = GameObject.GetWithTag( trigger._tags[i] )
         for j=1, #gameObjects do
-            local gameObject = gameObjets[j]
+            local gameObject = gameObjects[j]
             if 
                 gameObject ~= trigger.gameObject and
                 trigger:IsGameObjectInRange( gameObject, triggerPosition )
