@@ -660,9 +660,9 @@ function Daneel.Debug.Try( _function )
 end
 
 --- Overload a function to call debug functions before and after it is itself called.
--- Called from Daneel.Load()
+-- Do not call before Daneel is loaded as it won't run even if debug is enabled in the user config.
 -- @param name (string) The function name
--- @param argsData (table) Mostly the list of arguments. may contains the 'includeInStackTrace' key.
+-- @param argsData (table) The parameters of the functions.
 function Daneel.Debug.RegisterFunction( name, argsData )
     if not Daneel.Config.debug.enableDebug then return end
 
@@ -751,8 +751,6 @@ end
 -- Within a script, the 'Behavior' variable is the script asset.
 -- @param script (Script) The script asset.
 function Daneel.Debug.RegisterScript( script )
-    if not Daneel.Config.debug.enableDebug then return end
-
     if type( script ) ~= "table" or getmetatable( script ) ~= Script then
         error("Daneel.Debug.SetupScript(script): Provided argument is not a script asset. Within a script, the 'Behavior' variable is the script asset.")
     end
@@ -777,25 +775,26 @@ function Daneel.Debug.RegisterScript( script )
 end
 
 --- Register all functions of an object to be included in the stacktrace.
--- @param objectName (string or table) The object's name or object.
-function Daneel.Debug.RegisterObject( objectName )
-    if not Daneel.Config.debug.enableDebug then return end
-
-    local originalArgument = objectName
-    local object = nil
+-- The following function name are always excluded from the stacktrace and debug :
+-- "Load", "DefaultConfig", "UserConfig", "Awake", "Start", "Update", "New", "inner", "GetId", "GetName"
+-- Plus function names that begins by "__" or "o".
+-- @param object (table or string) The object, or object's name.
+function Daneel.Debug.RegisterObject( object )
+    local originalArgument = object
+    local objectName = nil
     
-    if type(objectName) == "table" then
-        object = objectName
-        objectName = Daneel.Debug.GetNameFromValue( object )
-    else
-        object = table.getvalue(Daneel.Config.objectsByType, objectName)
+    if type(object) == "string" then
+        objectName = object
+        object = table.getvalue( Daneel.Config.objectsByType, objectName )
         if object == nil then
-            object = table.getvalue(_G, objectName)
+            object = table.getvalue( _G, objectName )
         end
+    else
+        objectName = Daneel.Debug.GetNameFromValue( object )
     end
         
     if object == nil or objectName == nil then
-        print("Daneel.Debug.RegisterObject(): object or name not found", originalArgument, objectName, object)
+        print("Daneel.Debug.RegisterObject(): object or name not found", originalArgument, object, objectName)
         return
     end
     
