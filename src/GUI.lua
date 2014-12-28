@@ -59,18 +59,21 @@ function GUI.ToPixel( value, screenSide, camera )
         value = value:trim()
         local screenSize = CS.Screen.GetSize()
 
-        if value:find( "px" ) then
+        if value:find( "s" ) and screenSide ~= nil then  -- ie: "s-50"  =  "screenSize.x - 50px"
+            value = value:sub( 2 ) -- removes the "s" at the beginning
+            if value == "" then -- value was just "s"
+                value = 0
+             else
+                value = GUI.ToPixel(value, screenSide, camera)
+            end
+            value = screenSize[ screenSide ] + tonumber( value )
+            
+        elseif value:find( "px" ) then
             value = tonumber( value:sub( 0, #value-2) )
 
         elseif value:find( "%", 1, true ) and screenSide ~= nil then
             value = screenSize[ screenSide ] * tonumber( value:sub( 0, #value-1) ) / 100
 
-        elseif value:find( "s" ) and screenSide ~= nil then  -- ie: "s-50"  =  "screenSize.x - 50px"
-            value = value:sub( 2 ) -- removes the "s" at the beginning
-            if value == "" then -- value was just "s"
-                value = 0
-            end
-            value = screenSize[ screenSide ] + tonumber( value )
         elseif value:find( "u" ) then
             if camera == nil then
                 error( "GUI.ToPixel(value, camera) : Can't convert the value '"..value.."' from pixels to scene units because no camera component has been passed as argument.")
