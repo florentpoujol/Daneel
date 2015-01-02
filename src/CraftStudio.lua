@@ -600,7 +600,7 @@ Sound.oPlay = Sound.Play
 -- @param pan (number) [default=0] The sound's pan (left/right positioning) between -1 and 1.
 function Sound.Play( soundAssetOrPath, volume, pitch, pan )
     local sound = Asset.Get( soundAssetOrPath, "Sound", true )
-    sound:oPlay( volume, pitch, pan )
+    sound:oPlay( volume or 1, pitch or 0, pan or 0 )
 end
 
 table.mergein( Daneel.Debug.functionArgumentsInfo, {
