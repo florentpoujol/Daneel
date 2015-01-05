@@ -57,7 +57,7 @@ end
 ----------------------------------------------------------------------------------
 -- Tweener
 
-Tween.Tweener = { tweeners = {} }
+Tween.Tweener = { newTweeners = {}, tweeners = {} }
 Tween.Tweener.__index = Tween.Tweener
 setmetatable(Tween.Tweener, { __call = function(Object, ...) return Object.New(...) end })
 
@@ -175,7 +175,7 @@ function Tween.Tweener.New(target, property, endValue, duration, onCompleteCallb
         tweener.endValue = #tweener.endStringValue
     end
     
-    Tween.Tweener.tweeners[tweener.id] = tweener
+    Tween.Tweener.newTweeners[tweener.id] = tweener
     Daneel.Debug.StackTrace.EndFunction()
     return tweener
 end
@@ -485,6 +485,8 @@ function Tween.Awake()
     Tween.Config.componentNamesByProperty = t
 
     -- destroy and sanitize the tweeners when the scene loads
+    table.mergein( Tween.Tweener.tweeners, Tween.Tweener.newTweeners )
+    Tween.Tweener.newTweeners = {}
     for id, tweener in pairs( Tween.Tweener.tweeners ) do
         if tweener.destroyOnSceneLoad then
             tweener:Destroy()
@@ -493,6 +495,9 @@ function Tween.Awake()
 end
 
 function Tween.Update()
+    table.mergein( Tween.Tweener.tweeners, Tween.Tweener.newTweeners )
+    Tween.Tweener.newTweeners = {}
+
     for id, tweener in pairs( Tween.Tweener.tweeners ) do
         if tweener:IsTargetDestroyed() then
             tweener:Destroy()
