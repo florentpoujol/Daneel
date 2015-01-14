@@ -653,7 +653,7 @@ function Vector2.__tostring(vector2)
 end
 
 --- Creates a new Vector2 intance.
--- @param x (number, table or Vector2) The vector's x component, or a table that contains "x" and "y" components.
+-- @param x (number, table, Vector2 or Vector3) The vector's x component, or a table that contains "x" and "y" components.
 -- @param y (number) [optional] The vector's y component. If nil, will be equal to x.
 -- @return (Vector2) The new instance.
 function Vector2.New(x, y)
