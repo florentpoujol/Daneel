@@ -284,7 +284,9 @@ function Transform.WorldToLocal( transform, position )
         go:SetParent( transform.gameObject )
     end
     go.transform:SetPosition( position )
-    return go.transform:GetLocalPosition()
+    local position = go.transform:GetLocalPosition()
+    go:SetParent( nil )
+    return position
 end
 
 --- Transform a position local to this transform to a global position.
@@ -300,7 +302,9 @@ function Transform.LocalToWorld( transform, position )
         go:SetParent( transform.gameObject )
     end
     go.transform:SetLocalPosition( position )
-    return go.transform:GetPosition()
+    local position = go.transform:GetPosition()
+    go:SetParent( nil )
+    return position
 end
 
 --------------------------------------------------------------------------------
