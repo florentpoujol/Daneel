@@ -271,21 +271,20 @@ function Transform.GetScale(transform)
     return scale
 end
 
+local worldToLocalGO = nil
+
 --- Transform a global position to a position local to this transform.
 -- @param transform (Transform) The transform component.
 -- @param position (Vector3) The global position.
 -- @return (Vector3) The local position corresponding to the provided global position.
 function Transform.WorldToLocal( transform, position )
-    local go = transform.worldToLocalGO
-    if go == nil then
-        go = CS.CreateGameObject( "WorldToLocal", transform.gameObject )
-        transform.worldToLocalGO = go
-    else
-        go:SetParent( transform.gameObject )
+    if worldToLocalGO == nil or worldToLocalGO.inner == nil then
+        worldToLocalGO = CS.CreateGameObject( "WorldToLocal" )
     end
-    go.transform:SetPosition( position )
-    local position = go.transform:GetLocalPosition()
-    go:SetParent( nil )
+    worldToLocalGO:SetParent( transform.gameObject )
+    worldToLocalGO.transform:SetPosition( position )
+    position = worldToLocalGO.transform:GetLocalPosition()
+    worldToLocalGO:SetParent( nil )
     return position
 end
 
@@ -294,16 +293,13 @@ end
 -- @param position (Vector3) The local position.
 -- @return (Vector3) The global position corresponding to the provided local position.
 function Transform.LocalToWorld( transform, position )
-    local go = transform.worldToLocalGO
-    if go == nil then
-        go = CS.CreateGameObject( "WorldToLocal", transform.gameObject )
-        transform.worldToLocalGO = go
-    else
-        go:SetParent( transform.gameObject )
+    if worldToLocalGO == nil or worldToLocalGO.inner == nil then
+        worldToLocalGO = CS.CreateGameObject( "WorldToLocal" )
     end
-    go.transform:SetLocalPosition( position )
-    local position = go.transform:GetPosition()
-    go:SetParent( nil )
+    worldToLocalGO:SetParent( transform.gameObject )
+    worldToLocalGO.transform:SetLocalPosition( position )
+    position = worldToLocalGO.transform:GetPosition()
+    worldToLocalGO:SetParent( nil )
     return position
 end
 
