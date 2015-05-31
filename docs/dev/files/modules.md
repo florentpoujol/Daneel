@@ -87,7 +87,7 @@ As with regular scripts, `Awake()` and `Start()` are called in sequence at the b
 
 A component is a specialized object that works closely with a game object (game object are said to be composed of components), modifying its properties and purpose.
 
-The `Daneel` and `CraftStudio` scripts provide these properties to components (built-in and custom ones) :
+Daneel provide these properties to components (built-in and custom ones) :
 
 - Can be created via `gameObject:AddComponent( componentType[, params] )`.
 - Can be created/mass-set via `gameObject:Set( { componentType = {} } )`.

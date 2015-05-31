@@ -43,11 +43,7 @@
                 <h3>A framework for <a href="http://craftstud.io">CraftStudio</a></h3>
                 <div class="clearfloat"></div>
             </header>
-
-            <div id="dev-warning">
-                This is the documentation the the in-development version. <a href="../docs" >Click here to check out the doc of the current, released version.</a>
-            </div>
-            
+           
             <div role="main" class="main">
                 <aside class="sidebar">
                     <?php echo GetHtmlFromMarkdownFile( 'files/sidebar.md' ); ?>

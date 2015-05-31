@@ -9,11 +9,11 @@
 <a name="installation"></a>
 ## Installation 
 
-[Get the in development version](https://github.com/florentpoujol/Daneel/tree/develop) on the `develop` branch on Daneel's repo on GitHub.
+[Get Daneel on GitHub](https://github.com/florentpoujol/Daneel).
 
-Copy and paste the `build/Daneel.lua` in a script at the top of the script's hierarchy.  
+Copy and paste the `build/Daneel.lua` (or its minified version) in a script at the top of the script's hierarchy.  
 
-Be advised that upon pasting the script's content, __CraftStudio will freeze for several dozens seconds__.  
+Be advised that upon pasting the script's content, __CraftStudio will freeze for several dozens of seconds__.  
 Don't worry, this is expected due to the big size of the script. CraftStudio will unfreeze on its own.
 
 You can also get some scripted behaviors helpers in the `src/scripted behaviors` folder that allows you to adds features or components while working in the scene editor.

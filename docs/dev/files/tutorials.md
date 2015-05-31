@@ -3,8 +3,6 @@
 - [How to animate game objects](#animate-game-objects)
 - [How to use timers](#timer)
 - [How to know if an object is close to another object, or inside an area](#trigger)
-- How to create a clickable button with mouse over effects.
-- How to allow players to enter their name
 
 <a name="animate-game-objects"></a>
 ## How to animate game objects
