@@ -385,22 +385,37 @@ function table.print(t)
     print("~~~~~ table.print("..tostring(t)..") ~~~~~ End ~~~~~")
 end
 
-local knownKeysByPrintedTable = {} -- [ table ] = key
+local knownKeysByPrintedTable = {}
 local currentlyPrintedTable = nil
 
 --- Recursively print all key/value pairs within the provided table.
 -- Fully prints the tables that have no metatable found as values.
 -- @param t (table) The table to print.
--- @param level (string) [default=""] The string to prepend to the printed lines. Should be empty or nil unless called from table.printr().
-function table.printr( t, level )
-    level = level or ""
+-- @param maxLevel (number) [default=10] The max recursive level. Clamped between 1 and 10.
+-- @param reprint (boolean) [default=false] Tell whether to print again the content of already printed table. If false a message "Already printed table with key" will be displayed as the table's value. /!\ See above for warning when maxLevel argument is -1.
+-- @param currentLevel (number) [default=1] Should only be set when called recursively.
+function table.printr( t, maxLevel, reprint, currentLevel  )
+    maxLevel = math.clamp( maxLevel or 10, 1, 10 )
+    if reprint == nil then
+        reprint = false
+    end
+    currentLevel = currentLevel or 1
+    local sLevel = string.rep( "| - - - ", currentLevel-1 ) -- string level
 
     if t == nil then
         print(level.."table.printr( t ) : Provided table is nil.")
         return
     end
 
-    if level == "" then
+    if currentLevel == 1 then
+        for i=1, #t do
+            local value = t[i]
+            if type( value ) == "table" and getmetatable( value ) == nil then
+                --knownKeysByPrintedTable[ value ] = i
+            end
+        end
+    
+    
         print("~~~~~ table.printr("..tostring(t)..") ~~~~~ Start ~~~~~")       
         if currentlyPrintedTable == nil then
           currentlyPrintedTable = t
@@ -421,24 +436,34 @@ function table.printr( t, level )
         if type(value) == "string" then
             value = '"'..value..'"'
         end
-
+        --knownKeysByPrintedTable = {}
         if type( value ) == "table" and getmetatable( value ) == nil then
-            local knownKey = knownKeysByPrintedTable[ value ]
+            local knownKey = nil
+            if reprint == false then
+                knownKey = knownKeysByPrintedTable[ value ]
+            end
+            
             if value == currentlyPrintedTable then
-                print(level..tostring(key), "Table currently being printed: "..tostring(value) )
+                print(sLevel..tostring(key), "Table currently being printed: "..tostring(value) )
             elseif knownKey ~= nil then
-                print(level..tostring(key), "Already printed table with key "..knownKey..": "..tostring(value) )
+                print(sLevel..tostring(key), "Already printed table with key "..knownKey..": "..tostring(value) )
+                
+            elseif currentLevel <= maxLevel then
+                if reprint == false then
+                    knownKeysByPrintedTable[ value ] = key
+                end
+                print(sLevel..tostring(key), value, "#"..table.getlength(value))
+                
+                table.printr( value, maxLevel, reprint, currentLevel + 1)
             else
-                knownKeysByPrintedTable[ value ] = key
-                print(level..tostring(key), value)
-                table.printr( value, level.."| - - - ")
+                print(sLevel..tostring(key), value, "#"..table.getlength(value))
             end
         else
-            print(level..tostring(key), value)
+            print(sLevel..tostring(key), value)
         end
     end
 
-    if level == "" then
+    if currentLevel == 1 then
         print("~~~~~ table.printr("..tostring(t)..") ~~~~~ End ~~~~~")
         knownKeysByPrintedTable = {}
         currentlyPrintedTable = nil
