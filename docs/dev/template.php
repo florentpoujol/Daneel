@@ -1,8 +1,9 @@
-<!--
-$pageTitle  is the CamelCased name of the file
-$filePath   is the relative file path
-$indexUrl   is the absolute url of the root folder
--->
+<?php
+// $pageTitle  is the CamelCased name of the file
+// $filePath   is the relative file path
+// $indexUrl   is the absolute url of the root index.php  ends by "index.php"
+// $indexPath  is the absolute url of the root folder (doesn't end with a slash)
+?>
 <html>
     <head>       
         <meta charset="utf-8">
@@ -13,9 +14,12 @@ $indexUrl   is the absolute url of the root folder
 
         <title><?php echo $pageTitle; ?> - Daneel : a framework for CraftStudio</title>
 
-        <link rel="stylesheet" type="text/css" href="<?php echo $indexUrl; ?>/assets/css/style_v35.css">
-        <link rel="stylesheet" type="text/css" href="<?php echo $indexUrl; ?>/assets/css/daneeldoc.css">
-        <script language="javascript" type="text/javascript" src="<?php echo $indexUrl; ?>/assets/js/modernizr-2.5.3.min.js"></script>
+        <?php
+        // using indexPath is necessary for when mod_rewite is active and the whaned file is in a subfolder. ie: "features/whatever"
+        ?>
+        <link rel="stylesheet" type="text/css" href="<?php echo $indexPath; ?>/assets/css/style_v35.css">
+        <link rel="stylesheet" type="text/css" href="<?php echo $indexPath; ?>/assets/css/daneeldoc.css">
+        <script language="javascript" type="text/javascript" src="<?php echo $indexPath; ?>/assets/js/modernizr-2.5.3.min.js"></script>
     </head>
     <body onload="prettyPrint()">
 
@@ -28,12 +32,12 @@ $indexUrl   is the absolute url of the root folder
                     <p id="github">
                         <a href="https://github.com/florentpoujol/Daneel" title="Daneel on GitHub">
                             Daneel on GitHub 
-                            <img src="<?php echo $indexUrl; ?>/assets/img/github_logo_empty.png" alt="logo GitHub">
+                            <img src="<?php echo $indexPath; ?>/assets/img/github_logo_empty.png" alt="logo GitHub">
                         </a>
                     </p>
                 </div>
 
-                <img src="<?php echo $indexUrl; ?>/img/Daneel_logo_nobackground.png" alt="Daneel logo" height="75px" class="logo">
+                <img src="<?php echo $indexPath; ?>/img/Daneel_logo_nobackground.png" alt="Daneel logo" height="75px" class="logo">
 
                 <h1>Daneel</h1>
                 <h3>A framework for <a href="http://craftstud.io">CraftStudio</a></h3>
@@ -66,9 +70,9 @@ $indexUrl   is the absolute url of the root folder
         </div>
 
         <script language="javascript" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-        <script language="javascript" type="text/javascript" src="<?php echo $indexUrl; ?>/assets/js/prettify.js"></script>
-        <script language="javascript" type="text/javascript" src="<?php echo $indexUrl; ?>/assets/js/lang-lua.js"></script>
-        <script language="javascript" type="text/javascript" src="<?php echo $indexUrl; ?>/assets/js/scroll.js"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo $indexPath; ?>/assets/js/prettify.js"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo $indexPath; ?>/assets/js/lang-lua.js"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo $indexPath; ?>/assets/js/scroll.js"></script>
 
         <?php
         if ( strpos( $indexUrl, "localhost" ) === false )

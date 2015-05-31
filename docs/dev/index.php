@@ -30,10 +30,14 @@ $queryString = trim( $_SERVER["QUERY_STRING"], "/" ); // GET part, after index.p
 // This the path of the file the user want to read
 // ie : file1/file2
 
-$folder = str_replace( $queryString, "", $_SERVER["REQUEST_URI"] ); // request uri is the full string after the domain name. $folder begins and ends by a slash
-$indexUrl = "http://".$_SERVER['HTTP_HOST'].$folder;
+$relFilePath = str_replace( $queryString, "", $_SERVER["REQUEST_URI"] ); 
+// request uri is the full string after the domain name.  ie:  /folder1/index.php?home
+// $relFilePath is the path (begins by a slash) after the domain name, up until the file name . ie: /folder1/index.php
 
-if ( !$useModRewrite )
+$indexUrl = "http://".$_SERVER['HTTP_HOST'].$relFilePath;
+$indexPath = trim( str_replace( array("index.php", "?"), "", $indexUrl ), "/");
+
+if ( !$useModRewrite && !strpos($indexUrl, "index.php?") )
     $indexUrl .= "index.php?";
 
 if ($queryString != "")
