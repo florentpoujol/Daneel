@@ -1,0 +1,9 @@
+{
+    "markdownFilesPath": "files",
+    "defaultPath": "home",
+    "useModRewrite": true,
+    "rewriteExtensions": [ "md", "html", "php" ],
+    "redirect": {
+        "function-reference": "daneel_v1-5-0_function-reference"
+    }
+}

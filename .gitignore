@@ -1,6 +1,8 @@
-
 /GitIgnore
-/Docs
 /files
 index.html
 luadoc.css
+/docs/download
+/docs/GitIgnore
+/docs/dev/GitIgnore
+build/node_modules

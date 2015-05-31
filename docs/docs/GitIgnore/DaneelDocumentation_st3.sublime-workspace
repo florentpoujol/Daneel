@@ -1,0 +1,628 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"index",
+				"indexUrl"
+			],
+			[
+				"asset",
+				"assetFolder"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/F/Documents/1&1.txt",
+			"settings":
+			{
+				"buffer_size": 6733,
+				"line_ending": "Windows",
+				"name": "MAIL"
+			}
+		},
+		{
+			"file": "/F/Documents/Personnel/ENY/mdp ENY.txt",
+			"settings":
+			{
+				"buffer_size": 1597,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/F/Documents/Personnel/heberg/online.txt",
+			"settings":
+			{
+				"buffer_size": 607,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/F/Documents/Personnel/heberg/Gandi.txt",
+			"settings":
+			{
+				"buffer_size": 1619,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/F/Wamp/www/MarkdownStaticSite/index.php",
+			"settings":
+			{
+				"buffer_size": 2742,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/F/Wamp/www/minecraft/config.json",
+			"settings":
+			{
+				"buffer_size": 178,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"snips",
+				"Snippet: separator"
+			],
+			[
+				"settdef",
+				"Preferences: Settings - Default"
+			],
+			[
+				"settus",
+				"Preferences: Settings - User"
+			],
+			[
+				"packcon",
+				"Package Control: Enable Package"
+			],
+			[
+				"lua",
+				"Set Syntax: Lua"
+			],
+			[
+				"paccontr",
+				"Package Control: Disable Package"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"lu",
+				"Set Syntax: Lua Dev"
+			],
+			[
+				"pack",
+				"Preferences: Browse Packages"
+			]
+		],
+		"width": 512.0
+	},
+	"console":
+	{
+		"height": 80.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by) "
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/F/Wamp/www/DaneelDocumentation"
+	],
+	"file_history":
+	[
+		"/C/Users/Florent POUJOL/AppData/Local/Temp/fz3temp-1/active_forum_users.php",
+		"/F/Wamp/www/europeannaturistyouth.eu/htdocs/.htaccess",
+		"/F/Documents/Personnel/AJNF/adhérents 215 sans forum",
+		"/C/Users/Florent POUJOL/AppData/Local/Temp/fz3temp-1/wp-config.php",
+		"/C/Users/Florent POUJOL/AppData/Local/Temp/fz3temp-1/wp-settings.php",
+		"/C/Users/Florent POUJOL/AppData/Local/Temp/fz3temp-1/.htaccess",
+		"/F/Documents/Personnel/heberg/Gandi.txt",
+		"/E/backup bdd/backupsql/backup_florentpoujol_site_2015-05-11.sql",
+		"/E/backup bdd/florentpoujol_2015_05_16.sql",
+		"/F/Wamp/www/minecraft/index.php",
+		"/F/Wamp/bin/apache/apache2.2.22/conf/httpd.conf",
+		"/F/Wamp/www/minecraft/files/tutorial-introduction.md",
+		"/F/Wamp/www/minecraft/files/introduction-to-scenes.md",
+		"/F/Wamp/www/minecraft/files/introduction-to-craftstudio.md",
+		"/F/Wamp/www/minecraft/files/introduction-to-maps-and-tilesets.md",
+		"/F/Wamp/www/minecraft/files/introduction-to-models-and-animations.md",
+		"/F/Wamp/bin/apache/apache2.2.22/conf/extra/httpd-vhosts.conf",
+		"/F/Wamp/www/DaneelDocumentation/dev/template.php",
+		"/F/Wamp/www/minecraft/template.php",
+		"/F/Wamp/alias/phpmyadmin.conf",
+		"/F/Wamp/alias/webgrind.conf",
+		"/F/Wamp/alias/sqlbuddy.conf",
+		"/C/Windows/System32/drivers/etc/hosts",
+		"/F/Wamp/www/DaneelDocumentation/dev/index.php",
+		"/F/Wamp/www/DaneelDocumentation/dev/config.json",
+		"/C/Users/Florent POUJOL/AppData/Local/Temp/fz3temp-1/.htaccess 2",
+		"/C/Users/Florent POUJOL/AppData/Local/Temp/fz3temp-1/template 2.php",
+		"/C/Users/Florent POUJOL/AppData/Local/Temp/fz3temp-1/config 2.json",
+		"/F/Wamp/www/DaneelDocumentation/dev/.htaccess",
+		"/C/Users/Florent POUJOL/AppData/Local/Temp/fz3temp-1/config.json",
+		"/C/Users/Florent POUJOL/AppData/Local/Temp/fz3temp-1/template.php",
+		"/C/Users/Florent POUJOL/AppData/Local/Temp/fz3temp-1/index.php",
+		"/F/Wamp/www/DaneelDocumentation/dev/a.htaccess",
+		"/F/Wamp/www/DaneelDocumentation/dev/files/folder/home2.md",
+		"/F/Wamp/www/DaneelDocumentation/index.php",
+		"/F/Wamp/www/DaneelDocumentation/docs/assets/css/daneeldoc.css",
+		"/F/Wamp/www/DaneelDocumentation/docs/files/color.md",
+		"/F/Wamp/www/DaneelDocumentation/docs/files/craftstudio.md",
+		"/F/Wamp/www/DaneelDocumentation/docs/files/changelog.md",
+		"/F/Wamp/www/DaneelDocumentation/docs/files/sidebar.md",
+		"/F/Wamp/www/DaneelDocumentation/docs/files/gui.md",
+		"/F/Wamp/www/DaneelDocumentation/docs/template.php",
+		"/F/Wamp/www/DaneelDocumentation/docs/files/mouse-input.md",
+		"/F/Wamp/www/DaneelDocumentation/GitIgnore/Markdown.php",
+		"/F/Wamp/www/DaneelDocumentation/docs/files/mouse-inputs.md",
+		"/F/Wamp/www/DaneelDocumentation/docs/googleanalytics.php",
+		"/F/Wamp/www/DaneelDocumentation/docs/files/example-projects.md",
+		"/F/Wamp/www/DaneelDocumentation/docs/files/home.md",
+		"/F/Wamp/www/DaneelDocumentation/docs/files/setup.md",
+		"/F/Wamp/www/DaneelDocumentation/docs/files/daneel/events.md",
+		"/F/Wamp/www/DaneelDocumentation/docs/assets/css/style_v35.css",
+		"/F/Wamp/www/DaneelDocumentation/docs/files/daneel/debugging.md",
+		"/F/Wamp/www/DaneelDocumentation/docs/files/daneel.md",
+		"/F/Wamp/www/DaneelDocumentation/docs/config.json",
+		"/F/Development/CraftStudio/Daneel/Luamin/DaneelComplete.lua",
+		"/F/Development/CraftStudio/Daneel/Daneel.lua",
+		"/C/Users/Florent POUJOL/AppData/Roaming/Sublime Text 3/Packages/User/separator.sublime-snippet",
+		"/F/Development/CraftStudio/Daneel/Color.lua",
+		"/F/Development/CraftStudio/Daneel/Tags.lua",
+		"/C/Users/Florent POUJOL/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/C/Users/Florent POUJOL/AppData/Roaming/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/F/Development/CraftStudio/Daneel/Luamin/DaneelComplete.min.lua"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 90.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"/",
+			".md",
+			"127.0.0.1",
+			"    ",
+			"127.0.0.1",
+			"indexUrl",
+			"rootPath",
+			"relIndexPath",
+			"relPath",
+			"folder",
+			"indexUrl",
+			"input",
+			"class",
+			"gameObejct",
+			"_resolve",
+			"comps",
+			"Rc",
+			"alpha",
+			"a =",
+			"a ",
+			"gameObject",
+			"GetColor",
+			"getColor",
+			"GetColor",
+			"getColor",
+			"GetColor",
+			"getColor",
+			":GetAsset",
+			"Color.GetAsset",
+			"odlAsset",
+			"Animate",
+			"front",
+			"GetHex",
+			"Fo ",
+			"Color",
+			"gameObject.front",
+			"--------------------------------------------------------------------------------",
+			"----------------------------------------------------------------------------------",
+			"color",
+			"r, g, b, a",
+			"end"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"",
+			"----------------------------------------------------------------------------------",
+			"--------------------------------------------------------------------------------"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/F/Documents/1&1.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6733,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1629,
+								1629
+							]
+						],
+						"settings":
+						{
+							"auto_name": "MAIL",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 717.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/F/Documents/Personnel/ENY/mdp ENY.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1597,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								68,
+								79
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/F/Documents/Personnel/heberg/online.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 607,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								325,
+								325
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/F/Documents/Personnel/heberg/Gandi.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1619,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1493,
+								1493
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 292.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/F/Wamp/www/MarkdownStaticSite/index.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2742,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2638,
+								2638
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 718.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/F/Wamp/www/minecraft/config.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 178,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								112,
+								129
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 234.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "DaneelDocumentation_st3.sublime-project",
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"ht",
+				"dev\\.htaccess"
+			],
+			[
+				"mo",
+				"docs\\files\\mouse-input.md"
+			],
+			[
+				"mou",
+				"docs\\files\\mouse-inputs.md"
+			],
+			[
+				"gui",
+				"docs\\files\\gui.md"
+			],
+			[
+				"cr",
+				"docs\\files\\craftstudio.md"
+			],
+			[
+				"ex",
+				"docs\\files\\example-projects.md"
+			],
+			[
+				"css",
+				"docs\\assets\\css\\daneeldoc.css"
+			],
+			[
+				"tem",
+				"docs\\template.php"
+			],
+			[
+				"setu",
+				"docs\\files\\setup.md"
+			],
+			[
+				"deb",
+				"docs\\files\\daneel\\debugging.md"
+			],
+			[
+				"eve",
+				"docs\\files\\daneel\\events.md"
+			],
+			[
+				"ch",
+				"docs\\files\\changelog.md"
+			],
+			[
+				"dane",
+				"Daneel.lua"
+			],
+			[
+				"dan",
+				"Daneel.lua"
+			],
+			[
+				"com",
+				"Luamin\\DaneelComplete.lua"
+			],
+			[
+				"co",
+				"Color.lua"
+			],
+			[
+				"twe",
+				"Tween\\Tween.lua"
+			],
+			[
+				"dcm",
+				"Luamin\\DaneelComplete.min.lua"
+			],
+			[
+				"dc",
+				"Luamin\\DaneelComplete.lua"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"F:\\Development\\CraftStudio\\Daneel\\GitIgnore\\Daneel_st3.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": false,
+	"side_bar_width": 151.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

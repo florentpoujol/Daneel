@@ -5,15 +5,15 @@
 Daneel is a scripting framework written in [Lua](http://www.lua.org) for [CraftStudio][] that bring new functionalities, extend and render more flexible to use the API as well as sweeten and shorten the code you write.
 
 
-## Installation
-
-[Download](http://daneel.florentpoujol.fr/download/Daneel_v1.4.0.zip) then import in your project whatever scripts you need from `Daneel_v1.4.0.cspack`.  
-[Check the documentation](http://daneel.florent-poujol.fr/docs/setup) for more informations.
-
-
 ## Documentation
 
-[http://daneel.florentpoujol.fr/docs](http://daneel.florent-poujol.fr/docs) 
+[http://daneel.florentpoujol.fr/docs](http://daneel.florentpoujol.fr/docs) 
+
+
+## Installation
+
+[Download](http://daneel.florentpoujol.fr/download/Daneel_v1.5.0.zip) then import in your project whatever scripts you need from `Daneel_v1.5.0.cspack`.  
+[Check the documentation](http://daneel.florentpoujol.fr/docs/setup) for more information on the setup.
 
 
 ## Support
@@ -54,3 +54,14 @@ ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
 ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+## Repo structure
+
+The main `.lua` files are in the `src` folder.  
+The scripts at the root of the folder are 'global' and don't need to be added as scripted behavior on game objects (contrary to the one found in the `scripted behaviors` folder).
+
+The `build/Daneel.lua` script (and its minified version) is an aggregation of all the 'global' scripts at the root of the `src` folder.  
+
+The `docs` folder contains the documentation website.  
+The actual documentation content is in the `docs/files` folder.

@@ -1,0 +1,829 @@
+-- Lua.lua
+-- Contains extensions of Lua's libraries.
+-- All functions in this file are totally independant from Daneel or CraftStudio, they can be reused in any Lua application.
+--
+-- Last modified for v1.5.0
+-- Copyright © 2013-2014 Florent POUJOL, published under the MIT license.
+
+
+----------------------------------------------------------------------------------
+-- math
+
+--- Tell whether the provided number is an integer.
+-- That include numbers that have one or several zeros as decimals (1.0, 2.000, ...).
+-- @param number (number) The number to check.
+-- @return (boolean) True if the provided number is an integer, false otherwise.
+function math.isinteger(number)
+    local isinteger = false
+    if type(number) == "number" then
+        isinteger = number == math.floor(number)
+    end
+    return isinteger
+end
+
+--- Returns the value resulting of the linear interpolation between value a and b by the specified factor.
+-- @param a (number)
+-- @param b (number)
+-- @param factor (number) Should be between 0.0 and 1.0.
+-- @param easing (string) [optional] The easing of the factor, can be "smooth", "smooth in", "smooth out".
+-- @return (number) The interpolated value.
+function math.lerp( a, b, factor, easing )
+    if easing == "smooth" then
+        factor = factor * 2
+        if factor < 1 then
+            factor = 0.5 * factor * factor * factor
+        else
+            factor = factor - 2
+            factor = 0.5 * ( factor * factor * factor + 2 )
+        end
+    elseif easing == "smooth in" then
+        factor = factor * factor * factor
+    elseif easing == "smooth out" then
+        factor = factor - 1
+        factor = factor * factor * factor + 1
+    end
+    return a + (b - a) * factor
+end
+
+--- Wrap the provided angle between -180 and 180.
+-- @param angle (number) The angle.
+-- @return (number) The angle.
+function math.warpangle( angle )   
+    if angle > 180 then
+        angle = angle - 360
+    elseif angle < -180 then
+        angle = angle + 360
+    end
+    return angle
+end
+
+--- Round the value to the closest integer or decimal.
+-- @param value (number) The value to round.
+-- @param decimal (number) [default=0] The decimal at which to round the value.
+-- @return (number) The rounded value.
+function math.round( value, decimal )
+    if decimal ~= nil then
+        value = math.floor( (value * 10^decimal) + 0.5) / (10^decimal)
+    else
+        value = math.floor( value + 0.5 )
+    end
+    return value
+end
+
+--- Trucate the value to the provided decimal.
+-- @param value (number) The value to truncate.
+-- @param decimal (number) [default=0] The decimal at which to truncate the value.
+-- @return (number) The truncated value.
+function math.truncate( value, decimal )
+    if decimal ~= nil then
+        value = math.floor( (value * 10^decimal) ) / (10^decimal)
+    else
+        value = math.floor( value )
+    end
+    return value
+end
+
+--- A more flexible version of tonumber().
+-- Returns the first continuous series of numbers found in the text version of the provided data even if it is prefixed or suffied by other characters.
+-- @param data (mixed) The data to be converted to number. Usually of type number, string or userdata.
+-- @return (number) The number, or nil.
+function tonumber2( data )
+    local number = tonumber( data )
+    if number == nil then
+        data = tostring( data )
+        local pattern = "(%d+)"
+        if data:find( ".", 1, true ) then
+            pattern = "(%d+%.%d+)"
+        end
+        number = data:match( (data:gsub( pattern, "(%1)" )) )
+        number = tonumber( number )
+    end
+    return number
+end
+
+--- Return the value clamped between min and max.
+-- @param value (number) The value.
+-- @param min (number) The minimal value.
+-- @param max (number) The maximal value.
+-- @return (number) The new value.
+function math.clamp( value, min, max )
+    value = math.max( value, min )
+    value = math.min( value, max )
+    return value
+end
+
+----------------------------------------------------------------------------------
+-- string
+
+--- Turn a string into a table, one character per index.
+-- @param s (string) The string.
+-- @return (table) The table.
+function string.totable( s )
+    local t = {}
+    for i = 1, #s do
+        table.insert( t, s:sub( i, i ) )
+    end
+    return t
+end
+
+--- Turn the first letter of the string uppercase.
+-- @param s (string) The string.
+-- @return (string) The string.
+function string.ucfirst( s )
+    local r = s:gsub( "^%l", string.upper ) 
+    return r
+    -- Original code was : return ( s:gsub( "^%u", string.lower ) )
+    -- It has been changed because Luamin removes the parenthesis which makes the function return all the values
+    -- returned by gsub() instead of just the one the function must return
+end
+
+--- Turn the first letter of the string lowercase.
+-- @param s (string) The string.
+-- @return (string) The string.
+function string.lcfirst( s )
+    local r = s:gsub( "^%u", string.lower )
+    return r
+end
+
+--- Split the provided string in several chunks, using the provided delimiter.
+-- The delimiter can be a pattern and can be several characters long.
+-- If the string does not contain the delimiter, a table containing only the whole string is returned.
+-- @param s (string) The string.
+-- @param delimiter (string) The delimiter.
+-- @param delimiterIsPattern (boolean) [default=false] Interpret the delimiter as pattern instead of as plain text. The function's behavior is not garanteed if true and in the webplayer.
+-- @return (table) The chunks.
+function string.split( s, delimiter, delimiterIsPattern )
+    local chunks = {}
+    
+    if delimiterIsPattern == true then
+        local delimiterStartIndex, delimiterEndIndex = s:find( delimiter )
+
+        if delimiterStartIndex ~= nil then
+            local pattern = delimiter
+            delimiter = s:sub( delimiterStartIndex, delimiterEndIndex )
+            if string.startswith( s, delimiter ) then
+                s = s:sub( #delimiter+1, #s )
+            end
+            if not s:endswith( delimiter ) then
+                s = s .. delimiter
+            end
+            
+            for match in s:gmatch( "(.-)"..pattern ) do 
+                table.insert( chunks, match )
+            end
+        end
+    
+    else -- plain text delimiter
+        if s:find( delimiter, 1, true ) ~= nil then
+            if string.startswith( s, delimiter ) then
+                s = s:sub( #delimiter+1, #s )
+            end
+            if not s:endswith( delimiter ) then
+                s = s .. delimiter
+            end
+
+            local chunk = ""
+            local ts = string.totable( s )
+            local i = 1
+
+            while i <= #ts do
+                local char = ts[i]
+                if char == delimiter or s:sub( i, i-1 + #delimiter ) == delimiter then
+                    table.insert( chunks, chunk )
+                    chunk = ""
+                    i = i + #delimiter
+                else
+                    chunk = chunk..char
+                    i = i + 1
+                end
+            end
+
+            if #chunk > 0 then
+                table.insert( chunks, chunk )
+            end
+        end
+    end
+
+    if #chunks == 0 then
+        chunks = { s }
+    end
+
+    return chunks
+end
+
+--- Tell whether the provided string begins by the provided chunk or not.
+-- @param s (string) The string.
+-- @param chunk (string) The searched chunk.
+-- @return (boolean) True or false.
+function string.startswith( s, chunk )
+    local r = s:sub( 1, #chunk ) == chunk
+    return r
+end
+
+--- Tell whether the provided string ends by the provided chunk or not.
+-- @param s (string) The string.
+-- @param chunk (string) The searched chunk.
+-- @return (boolean) True or false.
+function string.endswith( s, chunk )
+    local r = s:sub( #s - #chunk + 1, #s ) == chunk
+    return r
+end
+
+--- Removes the white spaces at the beginning of the provided string.
+-- @param s (string) The string.
+-- @return (string) The trimmed string.
+function string.trimstart( s )
+    local r = s:gsub( "^%s+", "" )
+    return r
+end
+
+--- Removes the white spaces at the end of the provided string.
+-- @param s (string) The string.
+-- @return (string) The trimmed string.
+function string.trimend( s )
+    local r = s:gsub( "%s+$", "" )
+    return r
+end
+
+--- Removes the white spaces at the beginning and the end of the provided string.
+-- @param s (string) The string.
+-- @return (string) The trimmed string.
+function string.trim(s)
+    local r = s:gsub( "^%s+", "" ):gsub( "%s+$", "" )
+    return r
+end
+
+--- Reverse the order of the characters in a string ("abcd" becomes "dcba").
+-- @param s (string) The string.
+-- @return (string) The reversed string.
+function string.reverse( s )
+    local ns = ""
+    for i=#s, 1, -1 do
+        ns = ns..s:sub(i,i)
+    end
+    return ns
+end
+
+--- Make sure that the case of the provided string is correct by checking it against the values in the provided set.
+-- @param s (string) The string to check the case of.
+-- @param set (string or table) A single value or a table of values to check the string against.
+-- @return (string) The string with the corrected case.
+function string.fixcase( s, set )
+    if type( set ) == "string" then
+        set = { set }
+    end
+    local ls = s:lower()
+    for i=1, #set do
+        local item = set[i]
+        if ls == item:lower() then
+            return item
+        end
+    end
+    return s -- in case no match is found the set
+end
+
+----------------------------------------------------------------------------------
+-- table
+
+--- Return a copy of the provided table.
+-- @param t (table) The table to copy.
+-- @param recursive (boolean) [default=false] Tell whether to also copy the tables found as value (true), or just leave the same table as value (false).
+-- @return (table) The copied table.
+function table.copy( t, recursive )
+    recursive = recursive or false
+    local newTable = {}
+    if table.isarray( t ) then
+        -- not sure if it's really necessary to use ipairs() instead of pairs() for arrays
+        -- but better be safe than sorry
+        for key, value in ipairs( t ) do
+            if type( value ) == "table" and recursive == true then
+                value = table.copy( value, recursive )
+            end
+            table.insert( newTable, value )
+        end
+    else
+        for key, value in pairs( t ) do
+            if type( value ) == "table" and recursive == true then
+                value = table.copy( value, recursive )
+            end
+            newTable[ key ] = value
+        end
+    end
+    return newTable
+end
+
+--- Tell whether the provided value is found within the provided table.
+-- @param t (table) The table to search in.
+-- @param value (mixed) The value to search for.
+-- @param ignoreCase (boolean) [default=false] Ignore the case of the value. If true, the value must be of type 'string'.
+-- @return (boolean) True if the value is found in the table, false otherwise.
+function table.containsvalue( t, value, ignoreCase )
+    if value == nil then
+        return false
+    end
+    if ignoreCase == true and type( value ) == 'string' then
+        value = value:lower()
+    end
+    for key, _value in pairs(t) do
+        if ignoreCase == true and type( _value ) == "string" then
+            _value = _value:lower()
+        end
+        if value == _value then
+            return true
+        end
+    end
+    return false
+end
+
+--- Returns the length of a table, which is the numbers of keys of the provided type (or of any type), for which the value is not nil.
+-- @param t (table) The table.
+-- @param keyType (string) [optional] Any Lua or CraftStudio type ('string', 'GameObject', ...), case insensitive.
+-- @return (number) The table length.
+function table.getlength( t, keyType )   
+    local length = 0
+    if keyType ~= nil then
+        keyType = keyType:lower()
+    end
+    for key, value in pairs( t ) do
+        if 
+            keyType == nil or
+            type( key ) == keyType
+        then
+            length = length + 1
+        end
+    end
+    return length
+end
+
+--- Print all key/value pairs within the provided table.
+-- @param t (table) The table to print.
+function table.print(t)
+    if t == nil then
+        print("table.print( t ) : Provided table is nil.")
+        return
+    end
+
+    print("~~~~~ table.print("..tostring(t)..") ~~~~~ Start ~~~~~")
+
+    local func = pairs
+    if table.getlength(t) == 0 then
+        print("Table is empty.")
+    elseif table.isarray(t) then
+        func = ipairs -- just to be sure that the entries are printed in order
+    end
+    
+    for key, value in func(t) do
+        if type(key) == "string" then
+            key = '"'..key..'"'
+        end
+        if type(value) == "string" then
+            value = '"'..value..'"'
+        end
+        print(key, value)
+    end
+
+    print("~~~~~ table.print("..tostring(t)..") ~~~~~ End ~~~~~")
+end
+
+local knownKeysByPrintedTable = {}
+local currentlyPrintedTable = nil
+
+--- Recursively print all key/value pairs within the provided table.
+-- Fully prints the tables that have no metatable found as values.
+-- @param t (table) The table to print.
+-- @param maxLevel (number) [default=10] The max recursive level. Clamped between 1 and 10.
+-- @param reprint (boolean) [default=false] Tell whether to print again the content of already printed table. If false a message "Already printed table with key" will be displayed as the table's value. /!\ See above for warning when maxLevel argument is -1.
+-- @param currentLevel (number) [default=1] Should only be set when called recursively.
+function table.printr( t, maxLevel, reprint, currentLevel  )
+    maxLevel = math.clamp( maxLevel or 10, 1, 10 )
+    if reprint == nil then
+        reprint = false
+    end
+    currentLevel = currentLevel or 1
+    local sLevel = string.rep( "| - - - ", currentLevel-1 ) -- string level
+
+    if t == nil then
+        print(level.."table.printr( t ) : Provided table is nil.")
+        return
+    end
+
+    if currentLevel == 1 then
+        for i=1, #t do
+            local value = t[i]
+            if type( value ) == "table" and getmetatable( value ) == nil then
+                --knownKeysByPrintedTable[ value ] = i
+            end
+        end
+    
+    
+        print("~~~~~ table.printr("..tostring(t)..") ~~~~~ Start ~~~~~")       
+        if currentlyPrintedTable == nil then
+          currentlyPrintedTable = t
+        end
+    end   
+
+    local func = pairs
+    if table.getlength(t) == 0 then
+        print(level, "Table is empty.")
+    elseif table.isarray(t) then
+        func = ipairs -- just to be sure that the entries are printed in order
+    end
+    
+    for key, value in func(t) do
+        if type(key) == "string" then
+            key = '"'..key..'"'
+        end
+        if type(value) == "string" then
+            value = '"'..value..'"'
+        end
+        --knownKeysByPrintedTable = {}
+        if type( value ) == "table" and getmetatable( value ) == nil then
+            local knownKey = nil
+            if reprint == false then
+                knownKey = knownKeysByPrintedTable[ value ]
+            end
+            
+            if value == currentlyPrintedTable then
+                print(sLevel..tostring(key), "Table currently being printed: "..tostring(value) )
+            elseif knownKey ~= nil then
+                print(sLevel..tostring(key), "Already printed table with key "..knownKey..": "..tostring(value) )
+                
+            elseif currentLevel <= maxLevel then
+                if reprint == false then
+                    knownKeysByPrintedTable[ value ] = key
+                end
+                print(sLevel..tostring(key), value, "#"..table.getlength(value))
+                
+                table.printr( value, maxLevel, reprint, currentLevel + 1)
+            else
+                print(sLevel..tostring(key), value, "#"..table.getlength(value))
+            end
+        else
+            print(sLevel..tostring(key), value)
+        end
+    end
+
+    if currentLevel == 1 then
+        print("~~~~~ table.printr("..tostring(t)..") ~~~~~ End ~~~~~")
+        knownKeysByPrintedTable = {}
+        currentlyPrintedTable = nil
+    end
+end
+
+--- Merge two or more tables into one new table.
+-- Table as values with a metatable are considered as instances and are not recursively merged.
+-- When the tables are arrays, the integer keys are not overridden.
+-- @param ... (table) Two or more tables
+-- @param recursive (boolean) [default=false] Tell whether tables as values must be merged recursively. Has no effect when the tables are arrays.
+-- @return (table) The new table.
+function table.merge( ... )
+    return table.mergein( {}, ... )
+end
+
+--- Merge two or more tables in place, into the first provided table.
+-- Table as values with a metatable are considered as instances and are not recursively merged.
+-- When the tables are arrays, the integer keys are not overridden.
+-- @param ... (table) Two or more tables
+-- @param recursive (boolean) [default=false] Tell whether tables as values must be merged recursively. Has no effect when the tables are arrays.
+-- @return (table) The first provided table.
+function table.mergein( ... )
+    local arg = {...}
+    local recursive = false
+    if #arg > 0 and type( arg[ #arg ] ) ~= "table" then
+        recursive = table.remove( arg )
+    end
+    
+    local fullTable = table.remove( arg, 1 )
+    if fullTable == nil then
+        local msg = "table.mergein(): No table where passed as argument."
+        if #arg > 0 then
+            table.print( arg )
+            msg = "table.mergein(): First argument is nil. Other arguments are shown above."
+        end
+        error( msg )
+    end
+    for i, t in ipairs( arg ) do
+        local argType = type( t )
+        if argType == "table" then
+            
+            if table.isarray( t ) then
+                for key, value in ipairs( t ) do
+                    table.insert( fullTable, value )
+                end
+
+            else
+                for key, value in pairs( t ) do
+                    if fullTable[ key ] ~= nil and recursive and type( value ) == "table" and getmetatable( value ) == nil then
+                        value = table.merge( fullTable[ key ], value, true )
+                    end
+                    fullTable[ key ] = value
+                end
+            end
+        end
+    end
+    return fullTable
+end
+
+--- Compare table1 and table2. Returns true if they have the exact same keys which have the exact same values.
+-- @param table1 (table) The first table to compare.
+-- @param table2 (table) The second table to compare to the first table.
+-- @return (boolean) True if the two tables have the exact same content.
+function table.havesamecontent( table1, table2 )
+    if table.getlength(table1) ~= table.getlength(table2) then
+        return false
+    end
+    for key, value in pairs( table1 ) do
+        if table1[ key ] ~= table2[ key ] then
+            return false
+        end
+    end
+    return true
+end
+
+--- Create an associative table with the provided keys and values tables.
+-- @param keys (table) The keys of the future table.
+-- @param values (table) The values of the future table.
+-- @return (table or boolean) The combined table or false if the tables have different length.
+function table.combine( keys, values )
+    if #keys ~= #values then
+        print( "table.combine( keys, values ) : WARNING : Arguments 'keys' and 'values' have different length :", #keys, #values )
+    end
+    local newTable = {}
+    for i, key in pairs( keys ) do
+        newTable[ key ] = values[ i ]
+    end
+    return newTable
+end
+
+--- Remove the provided value from the provided table.
+-- If the index of the value is an integer, the value is nicely removed with table.remove().
+-- /!\ Do not use this function on tables which have integer keys but that are not arrays (whose keys are not contiguous). /!\
+-- @param t (table) The table.
+-- @param value (mixed) The value to remove.
+-- @param maxRemoveCount (number) [optional] Maximum number of occurrences of the value to be removed. If nil : remove all occurrences.
+-- @return (number) The number of occurrence removed.
+function table.removevalue( t, value, maxRemoveCount )
+    if value == nil then
+        return 0
+    end
+    local removeCount = 0
+    for key, _value in pairs( t ) do
+        if _value == value then
+            if math.isinteger( key ) then
+                table.remove( t, key )
+            else
+                t[ key ] = nil
+            end
+            removeCount = removeCount + 1
+            if maxRemoveCount ~= nil and removeCount == maxRemoveCount then
+                break
+            end
+        end
+    end
+    return removeCount
+end
+
+--- Return all the keys of the provided table.
+-- @param t (table) The table.
+-- @return (table) The keys.
+function table.getkeys( t )
+    local keys = {}
+    for key, value in pairs( t ) do
+        table.insert( keys, key )
+    end
+    return keys
+end
+
+--- Return all the values of the provided table.
+-- @param t (table) The table.
+-- @return (table) The values.
+function table.getvalues( t )
+    local values = {}
+    for key, value in pairs( t ) do
+        table.insert( values, value )
+    end
+    return values
+end
+
+--- Get the key associated with the first occurrence of the provided value.
+-- @param t (table) The table.
+-- @param value (mixed) The value.
+-- @return (mixed) The value's key or nil if the value is not found.
+function table.getkey( t, value )
+    local key = nil
+    for k, v in pairs( t ) do
+        if value == v then
+            key = k
+        end
+    end
+    return key
+end
+
+--- Sort a list of table using one of the tables property as criteria.
+-- @param t (table) The table.
+-- @param property (string) The property used as criteria to sort the table.
+-- @param orderBy (string) [default="asc"] How the sort should be made. Can be "asc" or "desc". Asc means small values first.
+-- @return (table) The ordered table.
+function table.sortby( t, property, orderBy )
+    if orderBy == nil or not (orderBy == "asc" or orderBy == "desc") then
+        orderBy = "asc"
+    end
+    
+    local propertyValues = {}
+    local itemsByPropertyValue = {}
+    for i=1, #t do
+        local propertyValue = t[i][property]
+        if itemsByPropertyValue[propertyValue] == nil then
+            table.insert(propertyValues, propertyValue)    
+            itemsByPropertyValue[propertyValue] = {}
+        end
+        table.insert(itemsByPropertyValue[propertyValue], t[i])
+    end
+    
+    if orderBy == "desc" then
+        table.sort(propertyValues, function(a,b) return a>b end)
+    else
+        table.sort(propertyValues)
+    end
+    
+    t = {}
+    for i=1, #propertyValues do
+        for j, _table in pairs(itemsByPropertyValue[propertyValues[i]]) do
+            table.insert(t, _table)
+        end
+    end
+    return t
+end
+
+--- Safely search several levels down inside nested tables. Just returns nil if the series of keys does not leads to a value. <br>
+-- Can also be used to check if a global variable exists if the table is _G. <br>
+-- Ie for this series of nested table : table1.table2.table3.fooBar <br>
+-- table.getvalue( table1, "table2.table3.fooBar" ) would return the value of the 'fooBar' key in the 'table3' table <br>
+-- table.getvalue( table1, "table2.table3" ) would return the value of 'table3' <br>
+-- table.getvalue( table1, "table2.table3.Foo" ) would return nil because the 'table3' has no 'Foo' key <br>
+-- table.getvalue( table1, "table2.Foo.Bar.Lorem.Ipsum" ) idem <br>
+-- @param t (table) The table.
+-- @param keys (string) The chain of keys to looks for as a string, each keys separated by a dot.
+-- @return (mixed) The value, or nil.
+function table.getvalue( t, keys )
+    keys = string.split( keys, "." )
+    local value = t
+    
+    if value == _G then
+        -- prevent a "variable x was not declared" error
+        local exists = false
+        for key, value in pairs( _G ) do
+            if key == keys[1] then
+                exists = true
+                break
+            end
+        end
+        
+        if not exists then
+            return nil
+        end
+    end
+
+    for i, key in ipairs( keys ) do
+        if value[ key ] == nil then
+            value = nil 
+            break
+        else
+            value = value[ key ]
+        end
+    end
+    return value
+end
+
+--- Safely set a value several levels down inside nested tables. Creates the missing levels if the series of keys is incomplete. <br>
+-- Ie for this series of nested table : table1.table2.fooBar <br>
+-- table.setvalue( table1, "table2.fooBar", true ) would set true as the value of the 'fooBar' key in the 'table1.table2' table. if table2 does not exists, it is created <br>
+-- @param t (table) The table.
+-- @param keys (string) The chain of keys to looks for as a string, each keys separated by a dot.
+-- @param value (mixed) The value (nil is ok).
+function table.setvalue( t, keys, value )
+    if keys:find( ".", 1, true ) == nil then
+        t[ keys ] = value
+    
+    else
+        keys = string.split( keys, "." )
+        
+        for i, key in ipairs( keys ) do
+            if i == #keys then
+                t[ key ] = value
+            else
+                local temp = t[ key ]
+                if temp == nil then
+                    temp = {}
+                    t[ key ] = temp
+                end
+                t = temp
+            end
+        end
+    end
+end
+
+--- Tell whether he provided table is an array (has only integer keys).
+-- Decimal numbers with only zeros after the coma are considered as integers.
+-- @param t (table) The table.
+-- @param strict (boolean) [default=true] When false, the function returns true when the table only has integer keys. When true, the function returns true when the table only has integer keys in a single and continuous set.
+-- @return (boolean) True or false.
+function table.isarray( t, strict )
+    local entriesCount = 0
+    for k, v in pairs( t ) do
+        entriesCount = entriesCount + 1
+        if type( k ) ~= "number" or not math.isinteger( k ) then
+            return false
+        end
+    end
+    if strict == nil or strict == true then
+        return (entriesCount == #t)
+    end  
+    return true
+end
+
+--- Reverse the order of the provided table's values.
+-- @param t (table) The table.
+-- @return (table) The new table.
+function table.reverse( t )
+    local newTable = {}
+    for i=1, #t do
+        table.insert( newTable, 1, t[i] )
+    end
+    return newTable
+end
+
+--- Remove and returns the first value found in the table.
+-- Works for arrays as well as associative tables.
+-- @param t (table) The table.
+-- @param returnKey (boolean) [default=false] If true, return the key and the value instead of just the value.
+-- @return (mixed) The value, or the key and the value (if the returnKey argument is true), or nil.
+function table.shift( t, returnKey )
+    local key = nil
+    local value = nil
+    if table.isarray( t ) then
+        if #t > 0 then
+            key = 1
+            value = table.remove( t, 1 )
+        end
+    else
+        for k,v in pairs( t ) do
+            key = k
+            value = v
+            break
+        end
+        if key ~= nil then
+            t[ key ] = nil  
+        end
+    end
+    if returnKey == true then
+        return key, value
+    else
+        return value
+    end
+end
+
+--- Turn the provided table (with only integer keys) in a proper sequence (with consecutive integer key beginning at 1).
+-- @param t (table) The table.
+-- @return (table) The sequence.
+function table.reindex( t )
+    if not table.isarray( t, false ) then
+        print( "table.reindex( table ) : Provided table '"..tostring( t ).."' is not an array." )
+    end
+    local maxi = 1
+    for i, v in pairs( t ) do
+        if type( i ) == "number" and i > maxi then
+            maxi = i
+        end
+    end
+    local newTable = {}
+    for i=1, maxi do
+        if t[i] ~= nil then
+            table.insert( newTable, t[i] )
+        end
+    end
+    return newTable
+end
+
+--- Insert the provided value at the end of the provided table (or at the provided index) but only if the value is not already found in the table.
+-- @param t (table) The table.
+-- @param index (number) [optional] The index at which to insert the value.
+-- @param value (mixed) The value to insert.
+-- @return (boolean) Whether the value has been inserted (true) or not (false).
+function table.insertonce( t, index, value )
+    if value == nil then
+        value = index
+        index = nil
+    end
+    for key, _value in pairs(t) do
+        if value == _value then
+            return false
+        end
+    end
+    if index == nil then
+        table.insert( t, value )
+    else
+        table.insert( t, index, value )
+    end
+    return true
+end

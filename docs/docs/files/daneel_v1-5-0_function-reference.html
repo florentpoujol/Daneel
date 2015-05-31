@@ -1,0 +1,8196 @@
+<h1>Function reference for v1.5.0</h1>
+
+<a href="files/daneel_v1-5-0_function-reference.html">Get this HTML file.</a> <br>
+
+<table class="function_list">
+	
+		<tr>
+			<td class="name"><a href="#Asset.Get">Asset.Get</a>( assetPath, assetType, errorIfAssetNotFound )</td>
+			<td class="summary">Alias of CraftStudio.FindAsset( assetPath[, assetType] ).</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Asset.GetId">Asset.GetId</a>( asset )</td>
+			<td class="summary">Returns the asset's internal unique identifier.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Asset.GetName">Asset.GetName</a>( asset )</td>
+			<td class="summary">Returns the name of the provided asset.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Asset.GetPath">Asset.GetPath</a>( asset )</td>
+			<td class="summary">Returns the path of the provided asset.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Camera.GetBaseDistance">Camera.GetBaseDistance</a>( camera )</td>
+			<td class="summary">Returns the perspective camera's base distance.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Camera.GetFOV">Camera.GetFOV</a>( camera )</td>
+			<td class="summary">Returns the FOV of the provided perspective camera (rounded to the second digit after the coma).</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Camera.GetPixelsToUnits">Camera.GetPixelsToUnits</a>( camera )</td>
+			<td class="summary">Returns the pixels to scene units factor.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Camera.GetUnitsToPixels">Camera.GetUnitsToPixels</a>( camera )</td>
+			<td class="summary">Returns the scene units to pixels factor.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Camera.IsPositionInFrustum">Camera.IsPositionInFrustum</a>( camera, position )</td>
+			<td class="summary">Tell whether the provided position is inside the camera's frustum.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Camera.Project">Camera.Project</a>( camera, position )</td>
+			<td class="summary">Projects a 3D space position to a 2D screen position.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Camera.Set">Camera.Set</a>( camera, params )</td>
+			<td class="summary">Apply the content of the params argument to the provided camera.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Camera.SetProjectionMode">Camera.SetProjectionMode</a>( camera, projectionMode )</td>
+			<td class="summary">Sets the camera projection mode.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Camera.WorldToScreenPoint">Camera.WorldToScreenPoint</a>( camera, position )</td>
+			<td class="summary">Translate a position in the scene to an on-screen position.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Color.GetHSV">Color.GetHSV</a>( color )</td>
+			<td class="summary">Return the Hue, Saturation and Value of the provided color.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Color.GetHex">Color.GetHex</a>( color )</td>
+			<td class="summary">Return the color's hexadecimal representation.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Color.GetName">Color.GetName</a>( color )</td>
+			<td class="summary">Return the name of the color, provided it can be found in the `Color.colorsByName` object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Color.GetRandom">Color.GetRandom</a>( pattern )</td>
+			<td class="summary">Returns a random color, optional of the provided pattern.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Color.HexToRGB">Color.HexToRGB</a>( hex )</td>
+			<td class="summary">Convert an hexadecimal color into its RGB components.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Color.New">Color.New</a>( r, g, b )</td>
+			<td class="summary">Create a new color object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Color.RGBToHex">Color.RGBToHex</a>( r, g, b )</td>
+			<td class="summary">Return the hexadecimal representation of the provided color or r, g, b components.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Color.SetHex">Color.SetHex</a>( color, hex )</td>
+			<td class="summary">Set the color from an hexadecimal representation.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Color.ToArray">Color.ToArray</a>( color )</td>
+			<td class="summary">Convert the provided color object to an array.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Color.ToRGB">Color.ToRGB</a>( color )</td>
+			<td class="summary">Convert the provided color object to a table with "r", "g", "b" keys.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Color.ToString">Color.ToString</a>( color )</td>
+			<td class="summary">Returns a string representation of the color's components, each component being separated y a space.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Color.ToVector3">Color.ToVector3</a>( color )</td>
+			<td class="summary">Convert the provided color object to a Vector3.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Color.__add">Color.__add</a>( a, b )</td>
+			<td class="summary">Allow to add two Color objects by using the + operator.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Color.__div">Color.__div</a>( a, b )</td>
+			<td class="summary">Allow to divide two Color objects or a Color object and a number by using the / operator.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Color.__eq">Color.__eq</a>( a, b )</td>
+			<td class="summary">Allow to check for the equality between two Color objects using the == comparison operator.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Color.__mul">Color.__mul</a>( a, b )</td>
+			<td class="summary">Allow to multiply two Color object or a Color object and a number by using the * operator.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Color.__sub">Color.__sub</a>( a, b )</td>
+			<td class="summary">Allow to subtract two Color objects by using the - operator.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Component.Destroy">Component.Destroy</a>( component )</td>
+			<td class="summary">Destroy the provided component, removing it from the game object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Component.GetId">Component.GetId</a>( component )</td>
+			<td class="summary">Returns the component's internal unique identifier.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Component.Set">Component.Set</a>( component, params )</td>
+			<td class="summary">Apply the content of the params argument to the provided component.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#CraftStudio.Destroy">CraftStudio.Destroy</a>( object )</td>
+			<td class="summary">Removes the specified game object (and all of its descendants) or the specified component from its game object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#CraftStudio.Input.GetMouseDelta">CraftStudio.Input.GetMouseDelta</a>(  )</td>
+			<td class="summary">Return the mouse delta (the variation of position) since the last frame.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#CraftStudio.Input.GetMousePosition">CraftStudio.Input.GetMousePosition</a>(  )</td>
+			<td class="summary">Return the mouse position on screen coordinates {x, y} </td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#CraftStudio.Input.ToggleMouseLock">CraftStudio.Input.ToggleMouseLock</a>(  )</td>
+			<td class="summary">Toggle the locked state of the mouse, which can be accessed via the CraftStudio.Input.isMouseLocked property.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#CraftStudio.LoadScene">CraftStudio.LoadScene</a>( sceneNameOrAsset )</td>
+			<td class="summary">Schedules loading the specified scene after the current tick (1/60th of a second) has completed.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#CraftStudio.Screen.GetSize">CraftStudio.Screen.GetSize</a>(  )</td>
+			<td class="summary">Return the size of the screen, in pixels.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#CraftStudio.Screen.SetSize">CraftStudio.Screen.SetSize</a>( x, y )</td>
+			<td class="summary">Sets the size of the screen, in pixels.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#CraftStudio.Storage.Load">CraftStudio.Storage.Load</a>( identifier, defaultValue, callback )</td>
+			<td class="summary">Load data stored locally on the computer under the provided identifier.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#CraftStudio.Storage.Save">CraftStudio.Storage.Save</a>( identifier, data, callback )</td>
+			<td class="summary">Store locally on the computer the provided data under the provided identifier.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Debug.CheckArgType">Daneel.Debug.CheckArgType</a>( argument, argumentName, expectedArgumentTypes, p_errorHead )</td>
+			<td class="summary">Check the provided argument's type against the provided type(s) and display error if they don't match.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Debug.CheckArgValue">Daneel.Debug.CheckArgValue</a>( argument, argumentName, expectedArgumentValues, p_errorHead, defaultValue )</td>
+			<td class="summary">Check if the provided argument's value is in the provided expected value(s).</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Debug.CheckOptionalArgType">Daneel.Debug.CheckOptionalArgType</a>( argument, argumentName, expectedArgumentTypes, p_errorHead, defaultValue )</td>
+			<td class="summary">If the provided argument is not nil, check the provided argument's type against the provided type(s) and display error if they don't match.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Debug.Disable">Daneel.Debug.Disable</a>( info )</td>
+			<td class="summary">Disable the debug from this point onward.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Debug.GetNameFromValue">Daneel.Debug.GetNameFromValue</a>( value )</td>
+			<td class="summary">Returns the name as a string of the global variable (including nested tables) whose value is provided.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Debug.RegisterFunction">Daneel.Debug.RegisterFunction</a>( name, argsData )</td>
+			<td class="summary">Overload a function to call debug functions before and after it is itself called.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Debug.RegisterObject">Daneel.Debug.RegisterObject</a>( object )</td>
+			<td class="summary">Register all functions of an object to be included in the stacktrace.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Debug.RegisterScript">Daneel.Debug.RegisterScript</a>( script )</td>
+			<td class="summary">Register all functions of a scripted behavior to be included in the stacktrace.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Debug.StackTrace.BeginFunction">Daneel.Debug.StackTrace.BeginFunction</a>( functionName, ... )</td>
+			<td class="summary">Register a function call in the stack trace.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Debug.StackTrace.EndFunction">Daneel.Debug.StackTrace.EndFunction</a>(  )</td>
+			<td class="summary">Closes a successful function call, removing it from the stacktrace.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Debug.StackTrace.Print">Daneel.Debug.StackTrace.Print</a>(  )</td>
+			<td class="summary">Prints the StackTrace.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Debug.ToRawString">Daneel.Debug.ToRawString</a>( data )</td>
+			<td class="summary">Bypass the __tostring() function that may exists on the data's metatable.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Debug.Try">Daneel.Debug.Try</a>( _function )</td>
+			<td class="summary">Allow to test out a piece of code without killing the script if the code throws an error.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.DefaultConfig">Daneel.DefaultConfig</a>(  )</td>
+			<td class="summary">Config, loading </td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Event.AddEventListener">Daneel.Event.AddEventListener</a>( object, eventName, listener )</td>
+			<td class="summary">Add a listener function for the specified local event on this object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Event.Fire">Daneel.Event.Fire</a>( object, eventName, ... )</td>
+			<td class="summary">Fire the provided event at the provided object or the one that listen to it, transmitting along all subsequent arguments if some exists.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Event.Listen">Daneel.Event.Listen</a>( eventName, functionOrObject, isPersistent )</td>
+			<td class="summary">Make the provided function or object listen to the provided event(s).</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Event.RemoveEventListener">Daneel.Event.RemoveEventListener</a>( object, eventName, listener )</td>
+			<td class="summary">Remove the specified listener for the specified local event on this object </td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Event.StopListen">Daneel.Event.StopListen</a>( eventName, functionOrObject )</td>
+			<td class="summary">Make the provided function or object to stop listen to the provided event(s).</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Utilities.AllowDynamicGettersAndSetters">Daneel.Utilities.AllowDynamicGettersAndSetters</a>( Object, ancestors )</td>
+			<td class="summary">Allow to call getters and setters as if they were variable on the instance of the provided object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Utilities.ButtonExists">Daneel.Utilities.ButtonExists</a>( buttonName )</td>
+			<td class="summary">Tell whether the provided button name exists amongst the Game Controls, or not.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Utilities.GetId">Daneel.Utilities.GetId</a>( object )</td>
+			<td class="summary">Returns an integer greater than 0 and incremented by 1 from the last time the function was called.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Daneel.Utilities.ReplaceInString">Daneel.Utilities.ReplaceInString</a>( string, replacements )</td>
+			<td class="summary">Replace placeholders in the provided string with their corresponding provided replacements.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.CircleRenderer.Draw">Draw.CircleRenderer.Draw</a>( circle )</td>
+			<td class="summary">Draw the circle renderer.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.CircleRenderer.GetModel">Draw.CircleRenderer.GetModel</a>( circle )</td>
+			<td class="summary">Returns the circle renderer's segment's model.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.CircleRenderer.GetOpacity">Draw.CircleRenderer.GetOpacity</a>( circle )</td>
+			<td class="summary">Returns the circle renderer's segments' opacity.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.CircleRenderer.GetRadius">Draw.CircleRenderer.GetRadius</a>( circle )</td>
+			<td class="summary">Returns the circle renderer's radius.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.CircleRenderer.GetSegmentCount">Draw.CircleRenderer.GetSegmentCount</a>( circle )</td>
+			<td class="summary">Returns the circle renderer's number of segments.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.CircleRenderer.GetWidth">Draw.CircleRenderer.GetWidth</a>( circle )</td>
+			<td class="summary">Returns the circle renderer's segment's width (and height).</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.CircleRenderer.New">Draw.CircleRenderer.New</a>( gameObject, params )</td>
+			<td class="summary">Creates a new circle renderer component.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.CircleRenderer.Set">Draw.CircleRenderer.Set</a>( circle, params )</td>
+			<td class="summary">Apply the content of the params argument to the provided circle renderer.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.CircleRenderer.SetModel">Draw.CircleRenderer.SetModel</a>( circle, model )</td>
+			<td class="summary">Sets the circle renderer segment's model.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.CircleRenderer.SetOpacity">Draw.CircleRenderer.SetOpacity</a>( circle, opacity )</td>
+			<td class="summary">Sets the circle renderer segments' opacity.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.CircleRenderer.SetRadius">Draw.CircleRenderer.SetRadius</a>( circle, radius, draw )</td>
+			<td class="summary">Sets the circle renderer's radius.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.CircleRenderer.SetSegmentCount">Draw.CircleRenderer.SetSegmentCount</a>( circle, count, draw )</td>
+			<td class="summary">Sets the circle renderer's segment count.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.CircleRenderer.SetWidth">Draw.CircleRenderer.SetWidth</a>( circle, width )</td>
+			<td class="summary">Sets the circle renderer segment's width.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.LineRenderer.Draw">Draw.LineRenderer.Draw</a>( line )</td>
+			<td class="summary">Draw the line renderer.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.LineRenderer.GetDirection">Draw.LineRenderer.GetDirection</a>( line )</td>
+			<td class="summary">Returns the line renderer's direction.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.LineRenderer.GetEndPosition">Draw.LineRenderer.GetEndPosition</a>( line )</td>
+			<td class="summary">Returns the line renderer's end position.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.LineRenderer.GetLength">Draw.LineRenderer.GetLength</a>( line )</td>
+			<td class="summary">Returns the line renderer's length.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.LineRenderer.GetWidth">Draw.LineRenderer.GetWidth</a>( line )</td>
+			<td class="summary">Returns the line renderer's width.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.LineRenderer.New">Draw.LineRenderer.New</a>( gameObject, params )</td>
+			<td class="summary">Creates a new LineRenderer component.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.LineRenderer.Set">Draw.LineRenderer.Set</a>( line, params )</td>
+			<td class="summary">Apply the content of the params argument to the provided line renderer.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.LineRenderer.SetDirection">Draw.LineRenderer.SetDirection</a>( line, direction, useDirectionAsLength, draw )</td>
+			<td class="summary">Set the line renderer's direction.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.LineRenderer.SetEndPosition">Draw.LineRenderer.SetEndPosition</a>( line, endPosition, draw )</td>
+			<td class="summary">Set the line renderer's end position.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.LineRenderer.SetLength">Draw.LineRenderer.SetLength</a>( line, length, draw )</td>
+			<td class="summary">Set the line renderer's length.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Draw.LineRenderer.SetWidth">Draw.LineRenderer.SetWidth</a>( line, width, draw )</td>
+			<td class="summary">Set the line renderer's width (and height).</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Hud.CreateOriginGO">GUI.Hud.CreateOriginGO</a>( gameObject )</td>
+			<td class="summary">Creates a "Hud Origin" child used for positioning hud components.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Hud.GetLayer">GUI.Hud.GetLayer</a>( hud )</td>
+			<td class="summary">Get the gameObject's layer.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Hud.GetLocalLayer">GUI.Hud.GetLocalLayer</a>( hud )</td>
+			<td class="summary">Get the gameObject's local layer.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Hud.GetLocalPosition">GUI.Hud.GetLocalPosition</a>( hud )</td>
+			<td class="summary">Get the local position (relative to its parent) of the gameObject on screen.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Hud.GetPosition">GUI.Hud.GetPosition</a>( hud )</td>
+			<td class="summary">Get the position of the provided hud on the screen.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Hud.New">GUI.Hud.New</a>( gameObject, params )</td>
+			<td class="summary">Creates a new Hud component instance.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Hud.SetLayer">GUI.Hud.SetLayer</a>( hud, layer )</td>
+			<td class="summary">Set the gameObject's layer.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Hud.SetLocalLayer">GUI.Hud.SetLocalLayer</a>( hud, layer )</td>
+			<td class="summary">Set the huds's local layer.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Hud.SetLocalPosition">GUI.Hud.SetLocalPosition</a>( hud, position )</td>
+			<td class="summary">Sets the local position (relative to its parent) of the gameObject on screen .</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Hud.SetPosition">GUI.Hud.SetPosition</a>( hud, position )</td>
+			<td class="summary">Sets the position of the gameObject on screen.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Input.Focus">GUI.Input.Focus</a>( input, focus )</td>
+			<td class="summary">Set the focused state of the input.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Input.New">GUI.Input.New</a>( gameObject, params )</td>
+			<td class="summary">Creates a new GUI.Input.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Input.Update">GUI.Input.Update</a>( input, text, replaceText )</td>
+			<td class="summary">Update the text of the input.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Input.UpdateCursor">GUI.Input.UpdateCursor</a>( input )</td>
+			<td class="summary">Update the position and opacity of the input's cursor.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.ProgressBar.GetHeight">GUI.ProgressBar.GetHeight</a>( progressBar )</td>
+			<td class="summary">Get the height of the progress bar (the local scale's y component).</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.ProgressBar.GetValue">GUI.ProgressBar.GetValue</a>( progressBar, getAsPercentage )</td>
+			<td class="summary">Get the current value of the progress bar.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.ProgressBar.New">GUI.ProgressBar.New</a>( gameObject, params )</td>
+			<td class="summary">Creates a new GUI.ProgressBar.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.ProgressBar.Set">GUI.ProgressBar.Set</a>( progressBar, params )</td>
+			<td class="summary">Apply the content of the params argument to the provided progressBar.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.ProgressBar.SetHeight">GUI.ProgressBar.SetHeight</a>( progressBar, height )</td>
+			<td class="summary">Set the height of the progress bar.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.ProgressBar.SetValue">GUI.ProgressBar.SetValue</a>( progressBar, value )</td>
+			<td class="summary">Set the value of the progress bar, adjusting its length.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.ProgressBar.UpdateValue">GUI.ProgressBar.UpdateValue</a>( progressBar, value, fireEvent )</td>
+			<td class="summary">Set the value of the progress bar, adjusting its length.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Slider.GetValue">GUI.Slider.GetValue</a>( slider, getAsPercentage )</td>
+			<td class="summary">Get the current slider's value.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Slider.New">GUI.Slider.New</a>( gameObject, params )</td>
+			<td class="summary">Creates a new GUI.Slider.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Slider.Set">GUI.Slider.Set</a>( slider, params )</td>
+			<td class="summary">Apply the content of the params argument to the provided slider.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Slider.SetValue">GUI.Slider.SetValue</a>( slider, value )</td>
+			<td class="summary">Set the value of the slider, adjusting its position.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.AddLine">GUI.TextArea.AddLine</a>( textArea, line, prepend )</td>
+			<td class="summary">Add a line to the text area's text.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.GetAlignment">GUI.TextArea.GetAlignment</a>( textArea )</td>
+			<td class="summary">Get the component's horizontal alignment.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.GetAreaWidth">GUI.TextArea.GetAreaWidth</a>( textArea )</td>
+			<td class="summary">Get the component's area width.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.GetFont">GUI.TextArea.GetFont</a>( textArea )</td>
+			<td class="summary">Get the component's font used to render the text.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.GetLineHeight">GUI.TextArea.GetLineHeight</a>( textArea )</td>
+			<td class="summary">Get the component's line height.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.GetNewLine">GUI.TextArea.GetNewLine</a>( textArea )</td>
+			<td class="summary">Get the component's newLine string.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.GetOpacity">GUI.TextArea.GetOpacity</a>( textArea )</td>
+			<td class="summary">Get the component's opacity.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.GetText">GUI.TextArea.GetText</a>( textArea )</td>
+			<td class="summary">Get the component's text.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.GetVerticalAlignment">GUI.TextArea.GetVerticalAlignment</a>( textArea )</td>
+			<td class="summary">Get the component's vertical alignment property.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.GetWordWrap">GUI.TextArea.GetWordWrap</a>( textArea )</td>
+			<td class="summary">Get the component's wordWrap property.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.New">GUI.TextArea.New</a>( gameObject, params )</td>
+			<td class="summary">Creates a new TextArea component.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.Set">GUI.TextArea.Set</a>( textArea, params )</td>
+			<td class="summary">Apply the content of the params argument to the provided textArea.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.SetAlignment">GUI.TextArea.SetAlignment</a>( textArea, alignment )</td>
+			<td class="summary">Set the component's alignment.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.SetAreaWidth">GUI.TextArea.SetAreaWidth</a>( textArea, areaWidth )</td>
+			<td class="summary">Set the component's area width (maximum line length).</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.SetFont">GUI.TextArea.SetFont</a>( textArea, font )</td>
+			<td class="summary">Set the component's font used to renderer the text.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.SetLineHeight">GUI.TextArea.SetLineHeight</a>( textArea, lineHeight )</td>
+			<td class="summary">Set the component's line height.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.SetNewLine">GUI.TextArea.SetNewLine</a>( textArea, newLine )</td>
+			<td class="summary">Set the component's newLine string used by SetText() to split the input text in several lines.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.SetOpacity">GUI.TextArea.SetOpacity</a>( textArea, opacity )</td>
+			<td class="summary">Set the component's opacity.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.SetText">GUI.TextArea.SetText</a>( textArea, text )</td>
+			<td class="summary">Set the component's text.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.SetVerticalAlignment">GUI.TextArea.SetVerticalAlignment</a>( textArea, verticalAlignment )</td>
+			<td class="summary">Set the component's vertical alignment.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.TextArea.SetWordWrap">GUI.TextArea.SetWordWrap</a>( textArea, wordWrap )</td>
+			<td class="summary">Set the component's wordWrap property.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.ToPixel">GUI.ToPixel</a>( value, screenSide, camera )</td>
+			<td class="summary">Convert the provided value (a length) in a number expressed in screen pixel.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.ToSceneUnit">GUI.ToSceneUnit</a>( value, camera )</td>
+			<td class="summary">Convert the provided value (a length) in a number expressed in scene unit.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Toggle.Check">GUI.Toggle.Check</a>( toggle, state, forceUpdate )</td>
+			<td class="summary">Check or uncheck the provided toggle and fire the OnUpdate event.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Toggle.GetGroup">GUI.Toggle.GetGroup</a>( toggle )</td>
+			<td class="summary">Get the toggle's group.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Toggle.GetText">GUI.Toggle.GetText</a>( toggle )</td>
+			<td class="summary">Get the provided toggle's text.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Toggle.New">GUI.Toggle.New</a>( gameObject, params )</td>
+			<td class="summary">Creates a new Toggle component.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Toggle.Set">GUI.Toggle.Set</a>( toggle, params )</td>
+			<td class="summary">Apply the content of the params argument to the provided toggle.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Toggle.SetGroup">GUI.Toggle.SetGroup</a>( toggle, group )</td>
+			<td class="summary">Set the toggle's group.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GUI.Toggle.SetText">GUI.Toggle.SetText</a>( toggle, text )</td>
+			<td class="summary">Set the provided toggle's text.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.AddComponent">GameObject.AddComponent</a>( gameObject, componentType, params )</td>
+			<td class="summary">Add a component to the game object and optionally initialize it.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.AddEventListener">GameObject.AddEventListener</a>( gameObject, eventName, listener )</td>
+			<td class="summary">Add a listener function for the specified local event on this game object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.AddTag">GameObject.AddTag</a>( gameObject, tag )</td>
+			<td class="summary">Add the provided tag(s) to the provided game object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.Animate">GameObject.Animate</a>( gameObject, property, endValue, duration, onCompleteCallback, params )</td>
+			<td class="summary">Creates an animation (a tweener) with the provided parameters.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.Destroy">GameObject.Destroy</a>( gameObject )</td>
+			<td class="summary">Destroy the game object at the end of this frame.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.Display">GameObject.Display</a>( gameObject, value, forceUseLocalPosition )</td>
+			<td class="summary">Display or hide the game object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.FireEvent">GameObject.FireEvent</a>( gameObject, eventName, ... )</td>
+			<td class="summary">Fire an event at the provided game object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.Get">GameObject.Get</a>( name, errorIfGameObjectNotFound )</td>
+			<td class="summary">Alias of CraftStudio.FindGameObject(name).</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.GetChild">GameObject.GetChild</a>( gameObject, name, recursive )</td>
+			<td class="summary">Alias of GameObject.FindChild().</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.GetChildren">GameObject.GetChildren</a>( gameObject, recursive, includeSelf )</td>
+			<td class="summary">Get all descendants of the game object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.GetComponent">GameObject.GetComponent</a>( gameObject, componentType )</td>
+			<td class="summary">Get the first component of the provided type attached to the game object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.GetId">GameObject.GetId</a>( gameObject )</td>
+			<td class="summary">Returns the game object's internal unique identifier.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.GetInAncestors">GameObject.GetInAncestors</a>( gameObject, searchFunction )</td>
+			<td class="summary">Search the ancestors of the provided game object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.GetScriptedBehavior">GameObject.GetScriptedBehavior</a>( gameObject, scriptNameOrAsset )</td>
+			<td class="summary">Get the provided scripted behavior instance attached to the game object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.GetTags">GameObject.GetTags</a>( gameObject )</td>
+			<td class="summary">Returns the tag(s) of the provided game object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.GetWithTag">GameObject.GetWithTag</a>( tag )</td>
+			<td class="summary">Returns the game object(s) that have all the provided tag(s).</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.HasTag">GameObject.HasTag</a>( gameObject, tag, atLeastOneTag )</td>
+			<td class="summary">Tell whether the provided game object has all (or at least one of) the provided tag(s).</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.Instantiate">GameObject.Instantiate</a>( name, sceneNameOrAsset, params )</td>
+			<td class="summary">Create a new game object with the content of the provided scene and optionally initialize it.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.New">GameObject.New</a>( name, params )</td>
+			<td class="summary">Create a new game object and optionally initialize it.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.RemoveEventListener">GameObject.RemoveEventListener</a>( gameObject, eventName, listener )</td>
+			<td class="summary">Remove the specified listener for the specified local event on this game object </td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.RemoveTag">GameObject.RemoveTag</a>( gameObject, tag )</td>
+			<td class="summary">Remove the provided tag(s) from the provided game object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.SendMessage">GameObject.SendMessage</a>( gameObject, functionName, data )</td>
+			<td class="summary">Tries to call a method with the provided name on all the scriptedBehaviors attached to the game object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.Set">GameObject.Set</a>( gameObject, params )</td>
+			<td class="summary">Apply the content of the params argument to the provided game object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#GameObject.SetParent">GameObject.SetParent</a>( gameObject, parentNameOrInstance, keepLocalTransform )</td>
+			<td class="summary">Set the game object's parent.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Lang.Get">Lang.Get</a>( key, replacements )</td>
+			<td class="summary">Get the localized line identified by the provided key.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Lang.RegisterForUpdate">Lang.RegisterForUpdate</a>( gameObject, key, replacements )</td>
+			<td class="summary">Register a game object to update its text renderer whenever the language will be updated by Lang.Update().</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Lang.Update">Lang.Update</a>( language )</td>
+			<td class="summary">Update the current language and the text of all game objects that have registered via Lang.RegisterForUpdate().</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Map.GetBlockIDAt">Map.GetBlockIDAt</a>( map, x, y, z )</td>
+			<td class="summary">Returns A block ID between 0-254 if a block exists at the given location (all valid block IDs are in the range 0-254), otherwise f there is no block at the given location then it will return Map.EmptyBlockID (which has a value of 255).</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Map.GetBlockOrientationAt">Map.GetBlockOrientationAt</a>( map, x, y, z )</td>
+			<td class="summary">Returns The block orientation of the block at the specified location, otherwise if there is no block at the given location it will return Map.BlockOrientation.North.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Map.SetBlockAt">Map.SetBlockAt</a>( map, x, y, z, id, orientation )</td>
+			<td class="summary">Sets a block's ID and block orientation at the given location on the map.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#MapRenderer.LoadNewMap">MapRenderer.LoadNewMap</a>( mapRenderer, callback )</td>
+			<td class="summary">Dynamically loads a new version of the provided map renderer's map and sets it as the map renderer new map.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#MapRenderer.Set">MapRenderer.Set</a>( mapRenderer, params )</td>
+			<td class="summary">Apply the content of the params argument to the provided map renderer.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#MapRenderer.SetMap">MapRenderer.SetMap</a>( mapRenderer, mapNameOrAsset, replaceTileSet )</td>
+			<td class="summary">Attach the provided map to the provided map renderer.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#MapRenderer.SetTileSet">MapRenderer.SetTileSet</a>( mapRenderer, tileSetNameOrAsset )</td>
+			<td class="summary">Set the specified tileSet for the mapRenderer's map.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#ModelRenderer.GetColor">ModelRenderer.GetColor</a>( modelRenderer )</td>
+			<td class="summary">Get the color of the provided model renderer.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#ModelRenderer.Set">ModelRenderer.Set</a>( modelRenderer, params )</td>
+			<td class="summary">Apply the content of the params argument to the provided model renderer.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#ModelRenderer.SetAnimation">ModelRenderer.SetAnimation</a>( modelRenderer, animationNameOrAsset )</td>
+			<td class="summary">Set the specified animation for the modelRenderer's current model.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#ModelRenderer.SetColor">ModelRenderer.SetColor</a>( modelRenderer, color )</td>
+			<td class="summary">Set the color of the provided model renderer.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#ModelRenderer.SetModel">ModelRenderer.SetModel</a>( modelRenderer, modelNameOrAsset )</td>
+			<td class="summary">Attach the provided model to the provided modelRenderer.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#MouseInput.GetTags">MouseInput.GetTags</a>( mouseInput )</td>
+			<td class="summary">Return the tag(s) of the game objects the component works with.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#MouseInput.New">MouseInput.New</a>( gameObject, params )</td>
+			<td class="summary">Create a new MouseInput component.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#MouseInput.SetTags">MouseInput.SetTags</a>( mouseInput, tags )</td>
+			<td class="summary">Set tag(s) of the game objects the component works with.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#MouseInput.Update">MouseInput.Update</a>( mouseInput )</td>
+			<td class="summary">Update the specified MouseInput component or update all components when no argument is passed.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Ray.Cast">Ray.Cast</a>( ray, gameObjects, sortByDistance )</td>
+			<td class="summary">Check the collision of the ray against the provided set of game objects.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Ray.IntersectsGameObject">Ray.IntersectsGameObject</a>( ray, gameObjectNameOrInstance )</td>
+			<td class="summary">Check if the ray intersects the specified game object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#RaycastHit.New">RaycastHit.New</a>( params )</td>
+			<td class="summary">Create a new RaycastHit </td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Scene.Append">Scene.Append</a>( sceneNameOrAsset, parentNameOrInstance )</td>
+			<td class="summary">Alias of CraftStudio.AppendScene().</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Scene.Load">Scene.Load</a>( sceneNameOrAsset )</td>
+			<td class="summary">Alias of CraftStudio.LoadScene().</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Sound.Play">Sound.Play</a>( soundAssetOrPath, volume, pitch, pan )</td>
+			<td class="summary">Play the specified sound.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#TextRenderer.GetColor">TextRenderer.GetColor</a>( textRenderer )</td>
+			<td class="summary">Get the color of the provided text renderer.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#TextRenderer.SetAlignment">TextRenderer.SetAlignment</a>( textRenderer, alignment )</td>
+			<td class="summary">Set the text's alignment.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#TextRenderer.SetColor">TextRenderer.SetColor</a>( textRenderer, color )</td>
+			<td class="summary">Set the color of the provided text renderer.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#TextRenderer.SetFont">TextRenderer.SetFont</a>( textRenderer, fontNameOrAsset )</td>
+			<td class="summary">Set the provided font to the provided text renderer.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#TextRenderer.SetTextWidth">TextRenderer.SetTextWidth</a>( textRenderer, width )</td>
+			<td class="summary">Update the game object's scale to make the text appear the provided width.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Transform.GetScale">Transform.GetScale</a>( transform )</td>
+			<td class="summary">Get the transform's global scale.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Transform.LocalToWorld">Transform.LocalToWorld</a>( transform, position )</td>
+			<td class="summary">Transform a position local to this transform to a global position.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Transform.SetLocalScale">Transform.SetLocalScale</a>( transform, scale )</td>
+			<td class="summary">Set the transform's local scale.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Transform.SetScale">Transform.SetScale</a>( transform, scale )</td>
+			<td class="summary">Set the transform's global scale.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Transform.WorldToLocal">Transform.WorldToLocal</a>( transform, position )</td>
+			<td class="summary">Transform a global position to a position local to this transform.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Trigger.GetGameObjectsInRange">Trigger.GetGameObjectsInRange</a>( trigger )</td>
+			<td class="summary">Get the gameObjects that are within range of that trigger.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Trigger.GetRange">Trigger.GetRange</a>( trigger )</td>
+			<td class="summary">Get the range of the trigger.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Trigger.GetTags">Trigger.GetTags</a>( trigger )</td>
+			<td class="summary">Return the tag(s) of the game objects the component works with.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Trigger.GetUpdateInterval">Trigger.GetUpdateInterval</a>( trigger )</td>
+			<td class="summary">Get the interval (in frames) at which the trigger is automatically updated.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Trigger.IsGameObjectInRange">Trigger.IsGameObjectInRange</a>( trigger, gameObject, triggerPosition )</td>
+			<td class="summary">Tell whether the provided game object is in range of the trigger.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Trigger.New">Trigger.New</a>( gameObject, params )</td>
+			<td class="summary">Create a new Trigger component.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Trigger.SetRange">Trigger.SetRange</a>( trigger, range )</td>
+			<td class="summary">Set the range of the trigger.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Trigger.SetTags">Trigger.SetTags</a>( trigger, tags )</td>
+			<td class="summary">Set tag(s) of the game objects the component works with.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Trigger.SetUpdateInterval">Trigger.SetUpdateInterval</a>( trigger, updateInterval )</td>
+			<td class="summary">Set the interval (in frames) at which the trigger is automatically updated.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Tween.Timer.New">Tween.Timer.New</a>( duration, callback, isInfiniteLoop, params )</td>
+			<td class="summary">Creates a new tweener via one of the two allowed constructors : <br> Timer.New(duration, OnCompleteCallback[, params]) <br> Timer.New(duration, OnLoopCompleteCallback, true[, params]) <br> </td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Tween.Tweener.Complete">Tween.Tweener.Complete</a>( tweener )</td>
+			<td class="summary">Complete the tweener fire the OnComple event.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Tween.Tweener.Destroy">Tween.Tweener.Destroy</a>( tweener )</td>
+			<td class="summary">Destroy the tweener.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Tween.Tweener.New">Tween.Tweener.New</a>( target, property, endValue, duration, onCompleteCallback, params )</td>
+			<td class="summary">Creates a new tweener via one of the three allowed constructors : <br> Tweener.New(target, property, endValue, duration[, params]) <br> Tweener.New(startValue, endValue, duration[, params]) <br> Tweener.New(params) </td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Tween.Tweener.Pause">Tween.Tweener.Pause</a>( tweener )</td>
+			<td class="summary">Pause the tweener and fire the OnPause event.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Tween.Tweener.Play">Tween.Tweener.Play</a>( tweener )</td>
+			<td class="summary">Unpause the tweener and fire the OnPlay event.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Tween.Tweener.Restart">Tween.Tweener.Restart</a>( tweener )</td>
+			<td class="summary">Completely restart the tweener.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Tween.Tweener.Update">Tween.Tweener.Update</a>( tweener, deltaDuration )</td>
+			<td class="summary">Update the tweener's value based on the tweener's elapsed property.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Vector2.GetLength">Vector2.GetLength</a>( vector )</td>
+			<td class="summary">Return the length of the vector.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Vector2.GetSqrLength">Vector2.GetSqrLength</a>( vector )</td>
+			<td class="summary">Return the squared length of the vector.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Vector2.New">Vector2.New</a>( x, y )</td>
+			<td class="summary">Creates a new Vector2 intance.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Vector2.Normalize">Vector2.Normalize</a>( vector )</td>
+			<td class="summary">Normalize the provided vector in place (makes its length equal to 1).</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Vector2.Normalized">Vector2.Normalized</a>( vector )</td>
+			<td class="summary">Return a copy of the provided vector, normalized.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Vector2.ToPixel">Vector2.ToPixel</a>( vector, camera )</td>
+			<td class="summary">Make sure that the components of the provided Vector2 are numbers and in pixel, instead of strings or in percentage or relative to the screensize.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Vector2.ToString">Vector2.ToString</a>( vector )</td>
+			<td class="summary">Returns a string representation of the vector's component's values.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Vector2.__add">Vector2.__add</a>( a, b )</td>
+			<td class="summary">Allow to add two Vector2 by using the + operator.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Vector2.__div">Vector2.__div</a>( a, b )</td>
+			<td class="summary">Allow to divide two Vector2 or a Vector2 and a number by using the / operator.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Vector2.__eq">Vector2.__eq</a>( a, b )</td>
+			<td class="summary">Allow to check for the equality between two Vector2 using the == comparison operator.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Vector2.__mul">Vector2.__mul</a>( a, b )</td>
+			<td class="summary">Allow to multiply two Vector2 or a Vector2 and a number by using the * operator.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Vector2.__pow">Vector2.__pow</a>( vector, exp )</td>
+			<td class="summary">Allow to raise a Vector2 to a power using the ^ operator.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Vector2.__sub">Vector2.__sub</a>( a, b )</td>
+			<td class="summary">Allow to substract two Vector2 by using the - operator.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Vector2.__unm">Vector2.__unm</a>( vector )</td>
+			<td class="summary">Allow to inverse a vector2 using the - operator.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Vector3.GetLength">Vector3.GetLength</a>( vector )</td>
+			<td class="summary">Returns the length of the provided vector </td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Vector3.GetSqrLength">Vector3.GetSqrLength</a>( vector )</td>
+			<td class="summary">Return the squared length of the vector.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Vector3.New">Vector3.New</a>( x, y, z, z2 )</td>
+			<td class="summary">Returns a new Vector3.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#Vector3.ToString">Vector3.ToString</a>( vector )</td>
+			<td class="summary">Returns a string representation of the vector's component's values.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#error">error</a>( message, doNotPrintStacktrace )</td>
+			<td class="summary">Print the stackTrace unless told otherwise then the provided error in the console.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#math.clamp">math.clamp</a>( value, min, max )</td>
+			<td class="summary">Return the value clamped between min and max.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#math.isinteger">math.isinteger</a>( number )</td>
+			<td class="summary">Tell whether the provided number is an integer.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#math.lerp">math.lerp</a>( a, b, factor, easing )</td>
+			<td class="summary">Returns the value resulting of the linear interpolation between value a and b by the specified factor.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#math.round">math.round</a>( value, decimal )</td>
+			<td class="summary">Round the value to the closest integer or decimal.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#math.truncate">math.truncate</a>( value, decimal )</td>
+			<td class="summary">Trucate the value to the provided decimal.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#math.warpangle">math.warpangle</a>( angle )</td>
+			<td class="summary">Wrap the provided angle between -180 and 180.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#string.endswith">string.endswith</a>( s, chunk )</td>
+			<td class="summary">Tell whether the provided string ends by the provided chunk or not.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#string.fixcase">string.fixcase</a>( s, set )</td>
+			<td class="summary">Make sure that the case of the provided string is correct by checking it against the values in the provided set.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#string.lcfirst">string.lcfirst</a>( s )</td>
+			<td class="summary">Turn the first letter of the string lowercase.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#string.reverse">string.reverse</a>( s )</td>
+			<td class="summary">Reverse the order of the characters in a string ("abcd" becomes "dcba").</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#string.split">string.split</a>( s, delimiter, delimiterIsPattern )</td>
+			<td class="summary">Some Lua functions are overridden here with some Daneel-specific stuffs </td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#string.split">string.split</a>( s, delimiter, delimiterIsPattern )</td>
+			<td class="summary">Some Lua functions are overridden here with some Daneel-specific stuffs </td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#string.startswith">string.startswith</a>( s, chunk )</td>
+			<td class="summary">Tell whether the provided string begins by the provided chunk or not.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#string.tocolor">string.tocolor</a>( sColor )</td>
+			<td class="summary">Convert a string representation of a color component's values to a Color object.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#string.totable">string.totable</a>( s )</td>
+			<td class="summary">Turn a string into a table, one character per index.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#string.tovector">string.tovector</a>( sVector )</td>
+			<td class="summary">Convert a string representation of a vector component's values to a Vector3 or a Vector2.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#string.trim">string.trim</a>( s )</td>
+			<td class="summary">Removes the white spaces at the beginning and the end of the provided string.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#string.trimend">string.trimend</a>( s )</td>
+			<td class="summary">Removes the white spaces at the end of the provided string.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#string.trimstart">string.trimstart</a>( s )</td>
+			<td class="summary">Removes the white spaces at the beginning of the provided string.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#string.ucfirst">string.ucfirst</a>( s )</td>
+			<td class="summary">Turn the first letter of the string uppercase.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.combine">table.combine</a>( keys, values )</td>
+			<td class="summary">Create an associative table with the provided keys and values tables.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.containsvalue">table.containsvalue</a>( t, value, ignoreCase )</td>
+			<td class="summary">Tell whether the provided value is found within the provided table.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.copy">table.copy</a>( t, recursive )</td>
+			<td class="summary">Return a copy of the provided table.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.getkey">table.getkey</a>( t, value )</td>
+			<td class="summary">Get the key associated with the first occurrence of the provided value.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.getkeys">table.getkeys</a>( t )</td>
+			<td class="summary">Return all the keys of the provided table.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.getlength">table.getlength</a>( t, keyType )</td>
+			<td class="summary">Returns the length of a table, which is the numbers of keys of the provided type (or of any type), for which the value is not nil.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.getvalue">table.getvalue</a>( t, keys )</td>
+			<td class="summary">Safely search several levels down inside nested tables.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.getvalues">table.getvalues</a>( t )</td>
+			<td class="summary">Return all the values of the provided table.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.havesamecontent">table.havesamecontent</a>( table1, table2 )</td>
+			<td class="summary">Compare table1 and table2.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.insertonce">table.insertonce</a>( t, index, value )</td>
+			<td class="summary">Insert the provided value at the end of the provided table (or at the provided index) but only if the value is not already found in the table.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.isarray">table.isarray</a>( t, strict )</td>
+			<td class="summary">Tell whether he provided table is an array (has only integer keys).</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.merge">table.merge</a>( ..., recursive )</td>
+			<td class="summary">Merge two or more tables into one new table.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.mergein">table.mergein</a>( ..., recursive )</td>
+			<td class="summary">Merge two or more tables in place, into the first provided table.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.print">table.print</a>( t )</td>
+			<td class="summary">Print all key/value pairs within the provided table.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.printr">table.printr</a>( t, maxLevel, reprint, currentLevel )</td>
+			<td class="summary">Recursively print all key/value pairs within the provided table.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.reindex">table.reindex</a>( t )</td>
+			<td class="summary">Turn the provided table (with only integer keys) in a proper sequence (with consecutive integer key beginning at 1).</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.removevalue">table.removevalue</a>( t, value, maxRemoveCount )</td>
+			<td class="summary">Remove the provided value from the provided table.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.reverse">table.reverse</a>( t )</td>
+			<td class="summary">Reverse the order of the provided table's values.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.setvalue">table.setvalue</a>( t, keys, value )</td>
+			<td class="summary">Safely set a value several levels down inside nested tables.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.shift">table.shift</a>( t, returnKey )</td>
+			<td class="summary">Remove and returns the first value found in the table.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#table.sortby">table.sortby</a>( t, property, orderBy )</td>
+			<td class="summary">Sort a list of table using one of the tables property as criteria.</td>
+		</tr>
+	
+		<tr>
+			<td class="name"><a href="#tonumber2">tonumber2</a>( data )</td>
+			<td class="summary">A more flexible version of tonumber().</td>
+		</tr>
+	
+</table>
+
+<dl class="function">
+	
+		
+<dt><a name="Asset.Get"></a><h3>Asset.Get( assetPath, assetType, errorIfAssetNotFound )</h3></dt>
+<dd>
+Alias of CraftStudio.FindAsset( assetPath[, assetType] ). Get the asset of the specified name and type. The first argument may be an asset object, so that you can check if a variable was an asset object or name (and get the corresponding object).
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  assetPath (string or any asset type) The fully-qualified asset name or asset object.
+		</li>
+		
+		<li>
+		  assetType [optional] (string) The asset type as a case-insensitive string.
+		</li>
+		
+		<li>
+		  errorIfAssetNotFound [default=false] Throw an error if the asset was not found (instead of returning nil).
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(One of the asset type) The asset, or nil if none is found.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Asset.GetId"></a><h3>Asset.GetId( asset )</h3></dt>
+<dd>
+Returns the asset's internal unique identifier.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  asset (any asset type) The asset.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The id.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Asset.GetName"></a><h3>Asset.GetName( asset )</h3></dt>
+<dd>
+Returns the name of the provided asset.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  asset (any asset type) The asset instance.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The name (the last segment of the fully-qualified path).</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Asset.GetPath"></a><h3>Asset.GetPath( asset )</h3></dt>
+<dd>
+Returns the path of the provided asset. Alias of Map.GetPathInPackage().
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  asset (any asset type) The asset instance.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The fully-qualified asset path.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Camera.GetBaseDistance"></a><h3>Camera.GetBaseDistance( camera )</h3></dt>
+<dd>
+Returns the perspective camera's base distance. The base distance is the distance from the camera at which 1 scene unit has the size of the smallest side of the screen. Only works for perspective cameras. Returns nil for orthographic cameras.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  camera (Camera) The camera component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The camera's base distance.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Camera.GetFOV"></a><h3>Camera.GetFOV( camera )</h3></dt>
+<dd>
+Returns the FOV of the provided perspective camera (rounded to the second digit after the coma).
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  camera (Camera) The Camera component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The FOV</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Camera.GetPixelsToUnits"></a><h3>Camera.GetPixelsToUnits( camera )</h3></dt>
+<dd>
+Returns the pixels to scene units factor.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  camera 
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The camera's PixelsToUnits ratio.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Camera.GetUnitsToPixels"></a><h3>Camera.GetUnitsToPixels( camera )</h3></dt>
+<dd>
+Returns the scene units to pixels factor.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  camera 
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The camera's UnitsToPixels ratio.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Camera.IsPositionInFrustum"></a><h3>Camera.IsPositionInFrustum( camera, position )</h3></dt>
+<dd>
+Tell whether the provided position is inside the camera's frustum.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  camera (Camera) The camera component.
+		</li>
+		
+		<li>
+		  position (Vector3) The position.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(boolean) True if the position is inside the camera's frustum.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Camera.Project"></a><h3>Camera.Project( camera, position )</h3></dt>
+<dd>
+Projects a 3D space position to a 2D screen position.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  camera (Camera) The camera component.
+		</li>
+		
+		<li>
+		  position (Vector3) The position.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector2) The projected screen coordinates.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Camera.Set"></a><h3>Camera.Set( camera, params )</h3></dt>
+<dd>
+Apply the content of the params argument to the provided camera.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  camera (Camera) The camera.
+		</li>
+		
+		<li>
+		  params (table) A table of parameters to set the component with.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Camera.SetProjectionMode"></a><h3>Camera.SetProjectionMode( camera, projectionMode )</h3></dt>
+<dd>
+Sets the camera projection mode.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  camera (Camera) The camera.
+		</li>
+		
+		<li>
+		  projectionMode (string or Camera.ProjectionMode) The projection mode. Possible values are "perspective", "orthographic" (as a case-insensitive string), Camera.ProjectionMode.Perspective or Camera.ProjectionMode.Orthographic.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Camera.WorldToScreenPoint"></a><h3>Camera.WorldToScreenPoint( camera, position )</h3></dt>
+<dd>
+Translate a position in the scene to an on-screen position. The Z component of the returned Vector3 represent the distance from the camera to the position's plane. It's inferior to zero when the position is in front of the camera. Note that when the object is behind the camera, the returned screen coordinates are not the same as the ones given by Camera.Project().
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  camera (Camera) The camera component.
+		</li>
+		
+		<li>
+		  position (Vector3) The position.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector3) A Vector3 where X and Y are the screen position and Z the distance to the position's plane.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Color.GetHSV"></a><h3>Color.GetHSV( color )</h3></dt>
+<dd>
+Return the Hue, Saturation and Value of the provided color.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  color (Color) The color object.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return values:</strong>
+	<ol>
+		
+		<li>(number) The hue of the color (between 0 and 1).</li>
+		
+		<li>(number) The saturation of the color (between 0 and 1).</li>
+		
+		<li>(number) The value of the color (between 0 and 1).</li>
+		
+	</ol>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Color.GetHex"></a><h3>Color.GetHex( color )</h3></dt>
+<dd>
+Return the color's hexadecimal representation. Only return the 6 characters of the component's values, so you may want to prefix it with "#" or "0x" yourself.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  color (Color) The color object.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The color's hexadecimal representation.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Color.GetName"></a><h3>Color.GetName( color )</h3></dt>
+<dd>
+Return the name of the color, provided it can be found in the `Color.colorsByName` object.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  color (Color) The color object.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The color's name or nil.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Color.GetRandom"></a><h3>Color.GetRandom( pattern )</h3></dt>
+<dd>
+Returns a random color, optional of the provided pattern.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  pattern (number or Color.Patterns) [optional] The color pattern.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Color) The color.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Color.HexToRGB"></a><h3>Color.HexToRGB( hex )</h3></dt>
+<dd>
+Convert an hexadecimal color into its RGB components.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  hex (string) The hexadecimal color. May be prefixed by "#", "0x", "0X" or nothing.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return values:</strong>
+	<ol>
+		
+		<li>(number) The color's red component.</li>
+		
+		<li>(number) The color's green component.</li>
+		
+		<li>(number) The color's blue component.</li>
+		
+	</ol>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Color.New"></a><h3>Color.New( r, g, b )</h3></dt>
+<dd>
+Create a new color object.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  r (number, Color, table, Vector3 or string) The color's red component or a table with r,g,b / x,y,z / 1,2,3 components, or a color name or an hexadecimal color.
+		</li>
+		
+		<li>
+		  g (number) [optional] The color's green component.
+		</li>
+		
+		<li>
+		  b (number) [optional] The color's blue component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Color) The color object.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Color.RGBToHex"></a><h3>Color.RGBToHex( r, g, b )</h3></dt>
+<dd>
+Return the hexadecimal representation of the provided color or r, g, b components. Only return the 6 characters of the component's values, so you may want to prefix it with "#" or "0x" yourself.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  r (number, Color, table, Vector3 or string) The color's red component or a table with r,g,b / x,y,z / 1,2,3 components, or a color name or an hexadecimal color.
+		</li>
+		
+		<li>
+		  g (number) [optional] The color's green component.
+		</li>
+		
+		<li>
+		  b (number) [optional] The color's blue component.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Color.SetHex"></a><h3>Color.SetHex( color, hex )</h3></dt>
+<dd>
+Set the color from an hexadecimal representation.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  color (Color) The color object.
+		</li>
+		
+		<li>
+		  hex (string) The color's hexadecimal representation.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Color.ToArray"></a><h3>Color.ToArray( color )</h3></dt>
+<dd>
+Convert the provided color object to an array. Allow to loop on the color's components in order.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  color (Color) The color object.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The color as array.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Color.ToRGB"></a><h3>Color.ToRGB( color )</h3></dt>
+<dd>
+Convert the provided color object to a table with "r", "g", "b" keys. Allow to loop on the color's components.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  color (Color) The color object.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The color as table with "r", "g", "b" keys.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Color.ToString"></a><h3>Color.ToString( color )</h3></dt>
+<dd>
+Returns a string representation of the color's components, each component being separated y a space. ie: For a color { 10, 250, 128 }, the returned string would be "10 250 128". Such string can be converted back to a color object with string.tocolor()
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  color (Color) The color object.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The string.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Color.ToVector3"></a><h3>Color.ToVector3( color )</h3></dt>
+<dd>
+Convert the provided color object to a Vector3. This can be needed because the component's values of a Vector3 are not clamped between 0 and 255.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  color (Color) The color object.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector3) The color as a Vector3 with "x", "y", "z" keys.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Color.__add"></a><h3>Color.__add( a, b )</h3></dt>
+<dd>
+Allow to add two Color objects by using the + operator. Ie : color1 + color2
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  a (Color) The left member.
+		</li>
+		
+		<li>
+		  b (Color) The right member.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Color) The new color object.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Color.__div"></a><h3>Color.__div( a, b )</h3></dt>
+<dd>
+Allow to divide two Color objects or a Color object and a number by using the / operator.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  a (Color or number) The numerator.
+		</li>
+		
+		<li>
+		  b (Color or number) The denominator. Can't be equal to 0.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Color) The new color object.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Color.__eq"></a><h3>Color.__eq( a, b )</h3></dt>
+<dd>
+Allow to check for the equality between two Color objects using the == comparison operator.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  a (Color) The left member.
+		</li>
+		
+		<li>
+		  b (Color) The right member.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(boolean) True if the same components of the two colors are equal (a.r=b.r, a.g=b.g and a.b=b.b)</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Color.__mul"></a><h3>Color.__mul( a, b )</h3></dt>
+<dd>
+Allow to multiply two Color object or a Color object and a number by using the * operator.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  a (Color or number) The left member.
+		</li>
+		
+		<li>
+		  b (Color or number) The right member.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Color) The new color object.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Color.__sub"></a><h3>Color.__sub( a, b )</h3></dt>
+<dd>
+Allow to subtract two Color objects by using the - operator. Ie : color1 - color2
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  a (Color) The left member.
+		</li>
+		
+		<li>
+		  b (Color) The right member.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Color) The new color object.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Component.Destroy"></a><h3>Component.Destroy( component )</h3></dt>
+<dd>
+Destroy the provided component, removing it from the game object. Note that the component is removed only at the end of the current frame.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  component (any component type) The component.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Component.GetId"></a><h3>Component.GetId( component )</h3></dt>
+<dd>
+Returns the component's internal unique identifier.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  component (any component type) The component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The id.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Component.Set"></a><h3>Component.Set( component, params )</h3></dt>
+<dd>
+Apply the content of the params argument to the provided component.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  component (any component type) The component.
+		</li>
+		
+		<li>
+		  params (table) A table of parameters to set the component with.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="CraftStudio.Destroy"></a><h3>CraftStudio.Destroy( object )</h3></dt>
+<dd>
+Removes the specified game object (and all of its descendants) or the specified component from its game object. You can also optionally specify a dynamically loaded asset for unloading (See Map.LoadFromPackage ). Sets the 'isDestroyed' property to 'true' and fires the 'OnDestroy' event on the object.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  object (GameObject, a component or a dynamically loaded asset) The game object, component or a dynamically loaded asset (like a map loaded with Map.LoadFromPackage).
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="CraftStudio.Input.GetMouseDelta"></a><h3>CraftStudio.Input.GetMouseDelta(  )</h3></dt>
+<dd>
+Return the mouse delta (the variation of position) since the last frame. Positive x is right, positive y is bottom.
+<br><br>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector2) The position's delta.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="CraftStudio.Input.GetMousePosition"></a><h3>CraftStudio.Input.GetMousePosition(  )</h3></dt>
+<dd>
+Return the mouse position on screen coordinates {x, y}
+<br><br>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector2) The on-screen mouse position.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="CraftStudio.Input.ToggleMouseLock"></a><h3>CraftStudio.Input.ToggleMouseLock(  )</h3></dt>
+<dd>
+Toggle the locked state of the mouse, which can be accessed via the CraftStudio.Input.isMouseLocked property.
+<br><br>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="CraftStudio.LoadScene"></a><h3>CraftStudio.LoadScene( sceneNameOrAsset )</h3></dt>
+<dd>
+Schedules loading the specified scene after the current tick (1/60th of a second) has completed. When the new scene is loaded, all of the current scene's game objects will be removed. Calling this function doesn't immediately stops the calling function. As such, you might want to add a return statement afterwards.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  sceneNameOrAsset (string or Scene) The scene name or asset.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="CraftStudio.Screen.GetSize"></a><h3>CraftStudio.Screen.GetSize(  )</h3></dt>
+<dd>
+Return the size of the screen, in pixels.
+<br><br>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector2) The screen's size.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="CraftStudio.Screen.SetSize"></a><h3>CraftStudio.Screen.SetSize( x, y )</h3></dt>
+<dd>
+Sets the size of the screen, in pixels.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  x (number or table) The width of the screen or a table containing the width and height as x and and y components.
+		</li>
+		
+		<li>
+		  y (number) [optional] The height of the screen (has no effect when the "x" argument is a table).
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="CraftStudio.Storage.Load"></a><h3>CraftStudio.Storage.Load( identifier, defaultValue, callback )</h3></dt>
+<dd>
+Load data stored locally on the computer under the provided identifier. The load operation may not be instantaneous.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  identifier (string) The identifier of the data.
+		</li>
+		
+		<li>
+		  defaultValue (mixed) [optional] The value that is returned if no data (and no error) is found.
+		</li>
+		
+		<li>
+		  callback (function) The function called when the data is loaded. The the potential error (nil if no error) and data (of mixed type) are passed as first and second argument, respectively.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="CraftStudio.Storage.Save"></a><h3>CraftStudio.Storage.Save( identifier, data, callback )</h3></dt>
+<dd>
+Store locally on the computer the provided data under the provided identifier.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  identifier (string) The identifier of the data.
+		</li>
+		
+		<li>
+		  data (mixed) The data to store. May be nil.
+		</li>
+		
+		<li>
+		  callback (function) [optional] The function called when the save has completed. The potential error (as a string) is passed to the callback first and only argument (nil if no error).
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Debug.CheckArgType"></a><h3>Daneel.Debug.CheckArgType( argument, argumentName, expectedArgumentTypes, p_errorHead )</h3></dt>
+<dd>
+Check the provided argument's type against the provided type(s) and display error if they don't match.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  argument (mixed) The argument to check.
+		</li>
+		
+		<li>
+		  argumentName (string) The argument name.
+		</li>
+		
+		<li>
+		  expectedArgumentTypes (string or table) The expected argument type(s).
+		</li>
+		
+		<li>
+		  p_errorHead [optional] (string) The beginning of the error message.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(mixed) The argument's type.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Debug.CheckArgValue"></a><h3>Daneel.Debug.CheckArgValue( argument, argumentName, expectedArgumentValues, p_errorHead, defaultValue )</h3></dt>
+<dd>
+Check if the provided argument's value is in the provided expected value(s). When that's not the case, return the value of the 'defaultValue' argument, or throws an error when it is nil. Arguments of type string are considered case-insensitive. The case will be corrected but no error will be thrown. When 'expectedArgumentValues' is of type table, it is always considered as a table of several expected values.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  argument (mixed) The argument to check.
+		</li>
+		
+		<li>
+		  argumentName (string) The argument name.
+		</li>
+		
+		<li>
+		  expectedArgumentValues (mixed) The expected argument values(s).
+		</li>
+		
+		<li>
+		  p_errorHead [optional] (string) The beginning of the error message.
+		</li>
+		
+		<li>
+		  defaultValue [optional] (mixed) The optional default value.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(mixed) The argument's value (one of the expected argument values or default value)</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Debug.CheckOptionalArgType"></a><h3>Daneel.Debug.CheckOptionalArgType( argument, argumentName, expectedArgumentTypes, p_errorHead, defaultValue )</h3></dt>
+<dd>
+If the provided argument is not nil, check the provided argument's type against the provided type(s) and display error if they don't match.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  argument (mixed) The argument to check.
+		</li>
+		
+		<li>
+		  argumentName (string) The argument name.
+		</li>
+		
+		<li>
+		  expectedArgumentTypes (string or table) The expected argument type(s).
+		</li>
+		
+		<li>
+		  p_errorHead [optional] (string) The beginning of the error message.
+		</li>
+		
+		<li>
+		  defaultValue [optional] (mixed) The default value to return if 'argument' is nil.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(mixed) The value of 'argument' if it's non-nil, or the value of 'defaultValue'.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Debug.Disable"></a><h3>Daneel.Debug.Disable( info )</h3></dt>
+<dd>
+Disable the debug from this point onward.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  info [optional] (string) Some info about why or where you disabled the debug. Will be printed in the Runtime Report.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Debug.GetNameFromValue"></a><h3>Daneel.Debug.GetNameFromValue( value )</h3></dt>
+<dd>
+Returns the name as a string of the global variable (including nested tables) whose value is provided. This only works if the value of the variable is a table or a function. When the variable is nested in one or several tables (like GUI.Hud), it must have been set in the 'objects' table in the config.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  value (table or function) Any global variable, any object from CraftStudio or Daneel or objects whose name is set in 'userObjects' in the Daneel.Config.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The name, or nil.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Debug.RegisterFunction"></a><h3>Daneel.Debug.RegisterFunction( name, argsData )</h3></dt>
+<dd>
+Overload a function to call debug functions before and after it is itself called. Do not call before Daneel is loaded as it won't run even if debug is enabled in the user config.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  name (string) The function name
+		</li>
+		
+		<li>
+		  argsData (table) The parameters of the functions.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Debug.RegisterObject"></a><h3>Daneel.Debug.RegisterObject( object )</h3></dt>
+<dd>
+Register all functions of an object to be included in the stacktrace. The following function name are always excluded from the stacktrace and debug : "Load", "DefaultConfig", "UserConfig", "Awake", "Start", "Update", "New", "inner", "GetId", "GetName" Plus function names that begins by "__" or "o".
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  object (table or string) The object, or object's name.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Debug.RegisterScript"></a><h3>Daneel.Debug.RegisterScript( script )</h3></dt>
+<dd>
+Register all functions of a scripted behavior to be included in the stacktrace. Within a script, the 'Behavior' variable is the script asset.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  script (Script) The script asset.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Debug.StackTrace.BeginFunction"></a><h3>Daneel.Debug.StackTrace.BeginFunction( functionName, ... )</h3></dt>
+<dd>
+Register a function call in the stack trace.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  functionName (string) The function name.
+		</li>
+		
+		<li>
+		  ... [optional] (mixed) Arguments received by the function.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Debug.StackTrace.EndFunction"></a><h3>Daneel.Debug.StackTrace.EndFunction(  )</h3></dt>
+<dd>
+Closes a successful function call, removing it from the stacktrace.
+<br><br>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Debug.StackTrace.Print"></a><h3>Daneel.Debug.StackTrace.Print(  )</h3></dt>
+<dd>
+Prints the StackTrace.
+<br><br>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Debug.ToRawString"></a><h3>Daneel.Debug.ToRawString( data )</h3></dt>
+<dd>
+Bypass the __tostring() function that may exists on the data's metatable.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  data (mixed) The data to be converted to string.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The string.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Debug.Try"></a><h3>Daneel.Debug.Try( _function )</h3></dt>
+<dd>
+Allow to test out a piece of code without killing the script if the code throws an error. If the code throw an error, it will be printed in the Runtime Report but it won't kill the script that calls Daneel.Debug.Try(). Does not protect against exceptions thrown by CraftStudio.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  _function (function or userdata) The function containing the code to try out.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(boolean) True if the code runs without errors, false otherwise.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.DefaultConfig"></a><h3>Daneel.DefaultConfig(  )</h3></dt>
+<dd>
+Config, loading
+<br><br>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Event.AddEventListener"></a><h3>Daneel.Event.AddEventListener( object, eventName, listener )</h3></dt>
+<dd>
+Add a listener function for the specified local event on this object.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  object (table) The object.
+		</li>
+		
+		<li>
+		  eventName (string) The name of the event to listen to.
+		</li>
+		
+		<li>
+		  listener (function or userdata) The listener function.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Event.Fire"></a><h3>Daneel.Event.Fire( object, eventName, ... )</h3></dt>
+<dd>
+Fire the provided event at the provided object or the one that listen to it, transmitting along all subsequent arguments if some exists. <br> Allowed set of arguments are : <br> (eventName[, ...]) <br> (object, eventName[, ...]) <br>
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  object [optional] (table) The object to which fire the event at. If nil or abscent, will send the event to its listeners.
+		</li>
+		
+		<li>
+		  eventName (string) The event name.
+		</li>
+		
+		<li>
+		  ... [optional] Some arguments to pass along.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Event.Listen"></a><h3>Daneel.Event.Listen( eventName, functionOrObject, isPersistent )</h3></dt>
+<dd>
+Make the provided function or object listen to the provided event(s). The function will be called whenever the provided event will be fired.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  eventName (string or table) The event name (or names in a table).
+		</li>
+		
+		<li>
+		  functionOrObject (function or table) The function (not the function name) or the object.
+		</li>
+		
+		<li>
+		  isPersistent (boolean) [default=false] Tell whether the listener automatically stops to listen to any event when a new scene is loaded. Always false when the listener is a game object or a component.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Event.RemoveEventListener"></a><h3>Daneel.Event.RemoveEventListener( object, eventName, listener )</h3></dt>
+<dd>
+Remove the specified listener for the specified local event on this object
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  object (table) The object.
+		</li>
+		
+		<li>
+		  eventName (string) The name of the event.
+		</li>
+		
+		<li>
+		  listener (function or userdata) [optional] The listener function to remove. If nil, all listeners will be removed for the specified event.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Event.StopListen"></a><h3>Daneel.Event.StopListen( eventName, functionOrObject )</h3></dt>
+<dd>
+Make the provided function or object to stop listen to the provided event(s).
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  eventName (string or table) [optional] The event name or names in a table or nil to stop listen to every events.
+		</li>
+		
+		<li>
+		  functionOrObject (function, string or GameObject) The function, or the game object name or instance.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Utilities.AllowDynamicGettersAndSetters"></a><h3>Daneel.Utilities.AllowDynamicGettersAndSetters( Object, ancestors )</h3></dt>
+<dd>
+Allow to call getters and setters as if they were variable on the instance of the provided object. The instances are tables that have the provided object as metatable. Optionally allow to search in a ancestry of objects.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  Object (mixed) The object.
+		</li>
+		
+		<li>
+		  ancestors (table) [optional] A table with one or several objects the Object "inherits" from.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Utilities.ButtonExists"></a><h3>Daneel.Utilities.ButtonExists( buttonName )</h3></dt>
+<dd>
+Tell whether the provided button name exists amongst the Game Controls, or not. If the button name does not exists, it will print an error in the Runtime Report but it won't kill the script that called the function. CS.Input.ButtonExists is an alias of Daneel.Utilities.ButtonExists.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  buttonName (string) The button name.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(boolean) True if the button name exists, false otherwise.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Utilities.GetId"></a><h3>Daneel.Utilities.GetId( object )</h3></dt>
+<dd>
+Returns an integer greater than 0 and incremented by 1 from the last time the function was called. If an object is provided, returns the object's id (if no id is found, it is set).
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  object (table) [optional] An object.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The id.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Daneel.Utilities.ReplaceInString"></a><h3>Daneel.Utilities.ReplaceInString( string, replacements )</h3></dt>
+<dd>
+Replace placeholders in the provided string with their corresponding provided replacements. The placeholders are any piece of string prefixed by a semicolon.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  string (string) The string.
+		</li>
+		
+		<li>
+		  replacements (table) The placeholders and their replacements ( { placeholder = "replacement", ... } ).
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The string.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.CircleRenderer.Draw"></a><h3>Draw.CircleRenderer.Draw( circle )</h3></dt>
+<dd>
+Draw the circle renderer. Updates the game object based on the circle renderer's properties. Fires the OnDraw event at the circle renderer.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  circle (CircleRenderer) The circle renderer.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.CircleRenderer.GetModel"></a><h3>Draw.CircleRenderer.GetModel( circle )</h3></dt>
+<dd>
+Returns the circle renderer's segment's model.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  circle (CircleRenderer) The circle renderer.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Model) The model asset.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.CircleRenderer.GetOpacity"></a><h3>Draw.CircleRenderer.GetOpacity( circle )</h3></dt>
+<dd>
+Returns the circle renderer's segments' opacity.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  circle (CircleRenderer) The circle renderer.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The opacity (nil if the circle renderer has no segment).</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.CircleRenderer.GetRadius"></a><h3>Draw.CircleRenderer.GetRadius( circle )</h3></dt>
+<dd>
+Returns the circle renderer's radius.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  circle (CircleRenderer) The circle renderer.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The radius (in scene units).</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.CircleRenderer.GetSegmentCount"></a><h3>Draw.CircleRenderer.GetSegmentCount( circle )</h3></dt>
+<dd>
+Returns the circle renderer's number of segments.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  circle (CircleRenderer) The circle renderer.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The segment count.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.CircleRenderer.GetWidth"></a><h3>Draw.CircleRenderer.GetWidth( circle )</h3></dt>
+<dd>
+Returns the circle renderer's segment's width (and height).
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  circle (CircleRenderer) The circle renderer.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The width (in scene units).</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.CircleRenderer.New"></a><h3>Draw.CircleRenderer.New( gameObject, params )</h3></dt>
+<dd>
+Creates a new circle renderer component.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  params (table) [optional] A table of parameters.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(CircleRenderer) The new component.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.CircleRenderer.Set"></a><h3>Draw.CircleRenderer.Set( circle, params )</h3></dt>
+<dd>
+Apply the content of the params argument to the provided circle renderer. Overwrite Component.Set().
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  circle (CircleRenderer) The circle renderer.
+		</li>
+		
+		<li>
+		  params (table) A table of parameters.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.CircleRenderer.SetModel"></a><h3>Draw.CircleRenderer.SetModel( circle, model )</h3></dt>
+<dd>
+Sets the circle renderer segment's model.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  circle (CircleRenderer) The circle renderer.
+		</li>
+		
+		<li>
+		  model (string or Model) [optional] The segment's model name or asset, or nil.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.CircleRenderer.SetOpacity"></a><h3>Draw.CircleRenderer.SetOpacity( circle, opacity )</h3></dt>
+<dd>
+Sets the circle renderer segments' opacity.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  circle (CircleRenderer) The circle renderer.
+		</li>
+		
+		<li>
+		  opacity (number) The opacity.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.CircleRenderer.SetRadius"></a><h3>Draw.CircleRenderer.SetRadius( circle, radius, draw )</h3></dt>
+<dd>
+Sets the circle renderer's radius.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  circle (CircleRenderer) The circle renderer.
+		</li>
+		
+		<li>
+		  radius (number) The radius (in scene units).
+		</li>
+		
+		<li>
+		  draw (boolean) [default=true] Tell whether to re-draw immediately the circle renderer.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.CircleRenderer.SetSegmentCount"></a><h3>Draw.CircleRenderer.SetSegmentCount( circle, count, draw )</h3></dt>
+<dd>
+Sets the circle renderer's segment count.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  circle (CircleRenderer) The circle renderer.
+		</li>
+		
+		<li>
+		  count (number) The segment count (can't be lower than 3).
+		</li>
+		
+		<li>
+		  draw (boolean) [default=true] Tell whether to re-draw immediately the circle renderer.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.CircleRenderer.SetWidth"></a><h3>Draw.CircleRenderer.SetWidth( circle, width )</h3></dt>
+<dd>
+Sets the circle renderer segment's width.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  circle (CircleRenderer) The circle renderer.
+		</li>
+		
+		<li>
+		  width (number) The segment's width (and height).
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.LineRenderer.Draw"></a><h3>Draw.LineRenderer.Draw( line )</h3></dt>
+<dd>
+Draw the line renderer. Updates the game object based on the line renderer's properties. Fires the OnDraw event on the line renderer.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  line (LineRenderer) The line renderer.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.LineRenderer.GetDirection"></a><h3>Draw.LineRenderer.GetDirection( line )</h3></dt>
+<dd>
+Returns the line renderer's direction.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  line (LineRenderer) The line renderer.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector3) The direction.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.LineRenderer.GetEndPosition"></a><h3>Draw.LineRenderer.GetEndPosition( line )</h3></dt>
+<dd>
+Returns the line renderer's end position.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  line (LineRenderer) The line renderer.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector3) The end position.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.LineRenderer.GetLength"></a><h3>Draw.LineRenderer.GetLength( line )</h3></dt>
+<dd>
+Returns the line renderer's length.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  line (LineRenderer) The line renderer.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The length (in scene units).</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.LineRenderer.GetWidth"></a><h3>Draw.LineRenderer.GetWidth( line )</h3></dt>
+<dd>
+Returns the line renderer's width.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  line (LineRenderer) The line renderer.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The width.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.LineRenderer.New"></a><h3>Draw.LineRenderer.New( gameObject, params )</h3></dt>
+<dd>
+Creates a new LineRenderer component.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  params (table) [optional] A table of parameters.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(LineRenderer) The new component.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.LineRenderer.Set"></a><h3>Draw.LineRenderer.Set( line, params )</h3></dt>
+<dd>
+Apply the content of the params argument to the provided line renderer. Overwrite Component.Set().
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  line (LineRenderer) The line renderer.
+		</li>
+		
+		<li>
+		  params (table) A table of parameters.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.LineRenderer.SetDirection"></a><h3>Draw.LineRenderer.SetDirection( line, direction, useDirectionAsLength, draw )</h3></dt>
+<dd>
+Set the line renderer's direction. It also updates line renderer's end position.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  line (LineRenderer) The line renderer.
+		</li>
+		
+		<li>
+		  direction (Vector3) The direction.
+		</li>
+		
+		<li>
+		  useDirectionAsLength (boolean) [default=false] Tell whether to update the line renderer's length based on the provided direction's vector length.
+		</li>
+		
+		<li>
+		  draw (boolean) [default=true] Tell whether to re-draw immediately the line renderer.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.LineRenderer.SetEndPosition"></a><h3>Draw.LineRenderer.SetEndPosition( line, endPosition, draw )</h3></dt>
+<dd>
+Set the line renderer's end position. It also updates the line renderer's direction and length.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  line (LineRenderer) The line renderer.
+		</li>
+		
+		<li>
+		  endPosition (Vector3) The end position.
+		</li>
+		
+		<li>
+		  draw (boolean) [default=true] Tell whether to re-draw immediately the line renderer.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.LineRenderer.SetLength"></a><h3>Draw.LineRenderer.SetLength( line, length, draw )</h3></dt>
+<dd>
+Set the line renderer's length. It also updates line renderer's end position.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  line (LineRenderer) The line renderer.
+		</li>
+		
+		<li>
+		  length (number) The length (in scene units).
+		</li>
+		
+		<li>
+		  draw (boolean) [default=true] Tell whether to re-draw immediately the line renderer.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Draw.LineRenderer.SetWidth"></a><h3>Draw.LineRenderer.SetWidth( line, width, draw )</h3></dt>
+<dd>
+Set the line renderer's width (and height).
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  line (LineRenderer) The line renderer.
+		</li>
+		
+		<li>
+		  width (number) The width (in scene units).
+		</li>
+		
+		<li>
+		  draw (boolean) [default=true] Tell whether to re-draw immediately the line renderer.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Hud.CreateOriginGO"></a><h3>GUI.Hud.CreateOriginGO( gameObject )</h3></dt>
+<dd>
+Creates a "Hud Origin" child used for positioning hud components.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object with a camera component.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Hud.GetLayer"></a><h3>GUI.Hud.GetLayer( hud )</h3></dt>
+<dd>
+Get the gameObject's layer.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  hud (Hud) The hud component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The layer (with one decimal).</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Hud.GetLocalLayer"></a><h3>GUI.Hud.GetLocalLayer( hud )</h3></dt>
+<dd>
+Get the gameObject's local layer.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  hud (Hud) The hud component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The layer (with one decimal).</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Hud.GetLocalPosition"></a><h3>GUI.Hud.GetLocalPosition( hud )</h3></dt>
+<dd>
+Get the local position (relative to its parent) of the gameObject on screen.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  hud (Hud) The hud component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector2) The position.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Hud.GetPosition"></a><h3>GUI.Hud.GetPosition( hud )</h3></dt>
+<dd>
+Get the position of the provided hud on the screen.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  hud (Hud) The hud component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector2) The position.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Hud.New"></a><h3>GUI.Hud.New( gameObject, params )</h3></dt>
+<dd>
+Creates a new Hud component instance.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The gameObject to add to the component to.
+		</li>
+		
+		<li>
+		  params (table) [optional] A table of parameters.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Hud) The hud component.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Hud.SetLayer"></a><h3>GUI.Hud.SetLayer( hud, layer )</h3></dt>
+<dd>
+Set the gameObject's layer.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  hud (Hud) The hud component.
+		</li>
+		
+		<li>
+		  layer (number) The layer (a postive number).
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Hud.SetLocalLayer"></a><h3>GUI.Hud.SetLocalLayer( hud, layer )</h3></dt>
+<dd>
+Set the huds's local layer.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  hud (Hud) The hud component.
+		</li>
+		
+		<li>
+		  layer (number) The layer (a postiv number).
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Hud.SetLocalPosition"></a><h3>GUI.Hud.SetLocalPosition( hud, position )</h3></dt>
+<dd>
+Sets the local position (relative to its parent) of the gameObject on screen .
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  hud (Hud) The hud component.
+		</li>
+		
+		<li>
+		  position (Vector2) The position as a Vector2.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Hud.SetPosition"></a><h3>GUI.Hud.SetPosition( hud, position )</h3></dt>
+<dd>
+Sets the position of the gameObject on screen. With the top-left corner of the screen as origin.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  hud (Hud) The hud component.
+		</li>
+		
+		<li>
+		  position (Vector2) The position as a Vector2.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Input.Focus"></a><h3>GUI.Input.Focus( input, focus )</h3></dt>
+<dd>
+Set the focused state of the input.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  input (Input) The input component.
+		</li>
+		
+		<li>
+		  focus (boolean) [default=true] The new focus.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Input.New"></a><h3>GUI.Input.New( gameObject, params )</h3></dt>
+<dd>
+Creates a new GUI.Input.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The component gameObject.
+		</li>
+		
+		<li>
+		  params (table) [optional] A table of parameters.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Input) The new component.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Input.Update"></a><h3>GUI.Input.Update( input, text, replaceText )</h3></dt>
+<dd>
+Update the text of the input.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  input (Input) The input component.
+		</li>
+		
+		<li>
+		  text (string) The text (often just one character) to add to the current text.
+		</li>
+		
+		<li>
+		  replaceText (boolean) [default=false] Tell whether the provided text should be added (false) or replace (true) the current text.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Input.UpdateCursor"></a><h3>GUI.Input.UpdateCursor( input )</h3></dt>
+<dd>
+Update the position and opacity of the input's cursor.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  input (Input) The input component.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.ProgressBar.GetHeight"></a><h3>GUI.ProgressBar.GetHeight( progressBar )</h3></dt>
+<dd>
+Get the height of the progress bar (the local scale's y component).
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  progressBar (ProgressBar) The progressBar.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The height.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.ProgressBar.GetValue"></a><h3>GUI.ProgressBar.GetValue( progressBar, getAsPercentage )</h3></dt>
+<dd>
+Get the current value of the progress bar.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  progressBar (ProgressBar) The progressBar.
+		</li>
+		
+		<li>
+		  getAsPercentage (boolean) [default=false] Get the value as a percentage (between 0 and 100) instead of an absolute value.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The value.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.ProgressBar.New"></a><h3>GUI.ProgressBar.New( gameObject, params )</h3></dt>
+<dd>
+Creates a new GUI.ProgressBar.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The component gameObject.
+		</li>
+		
+		<li>
+		  params (table) [optional] A table of parameters.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(ProgressBar) The new component.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.ProgressBar.Set"></a><h3>GUI.ProgressBar.Set( progressBar, params )</h3></dt>
+<dd>
+Apply the content of the params argument to the provided progressBar. Overwrite Component.Set() from CraftStudio module.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  progressBar (ProgressBar) The progressBar.
+		</li>
+		
+		<li>
+		  params (table) A table of parameters to set the component with.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.ProgressBar.SetHeight"></a><h3>GUI.ProgressBar.SetHeight( progressBar, height )</h3></dt>
+<dd>
+Set the height of the progress bar.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  progressBar (ProgressBar) The progressBar.
+		</li>
+		
+		<li>
+		  height (number or string) Get the height in pixel or scene unit.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.ProgressBar.SetValue"></a><h3>GUI.ProgressBar.SetValue( progressBar, value )</h3></dt>
+<dd>
+Set the value of the progress bar, adjusting its length. Fires the 'OnUpdate' event.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  progressBar (ProgressBar) The progressBar.
+		</li>
+		
+		<li>
+		  value (number or string) The value as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.ProgressBar.UpdateValue"></a><h3>GUI.ProgressBar.UpdateValue( progressBar, value, fireEvent )</h3></dt>
+<dd>
+Set the value of the progress bar, adjusting its length. Does the same things as SetProgress() by does it faster. Unlike SetProgress(), does not fire the 'OnUpdate' event by default. Should be used when the value is updated regularly (ie : from a Behavior:Update() function).
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  progressBar (ProgressBar) The progressBar.
+		</li>
+		
+		<li>
+		  value (number or string) The value as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
+		</li>
+		
+		<li>
+		  fireEvent (boolean) [default=false] Tell whether to fire the 'OnUpdate' event (true) or not (false).
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Slider.GetValue"></a><h3>GUI.Slider.GetValue( slider, getAsPercentage )</h3></dt>
+<dd>
+Get the current slider's value.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  slider (Slider) The slider.
+		</li>
+		
+		<li>
+		  getAsPercentage (boolean) [default=false] Get the value as a percentage (between 0 and 100) instead of an absolute value.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The value.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Slider.New"></a><h3>GUI.Slider.New( gameObject, params )</h3></dt>
+<dd>
+Creates a new GUI.Slider.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The component gameObject.
+		</li>
+		
+		<li>
+		  params (table) [optional] A table of parameters.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Slider) The new component.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Slider.Set"></a><h3>GUI.Slider.Set( slider, params )</h3></dt>
+<dd>
+Apply the content of the params argument to the provided slider. Overwrite Component.Set() from the core.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  slider (Slider) The slider.
+		</li>
+		
+		<li>
+		  params (table) A table of parameters to set the component with.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Slider.SetValue"></a><h3>GUI.Slider.SetValue( slider, value )</h3></dt>
+<dd>
+Set the value of the slider, adjusting its position.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  slider (Slider) The slider.
+		</li>
+		
+		<li>
+		  value (number or string) The value as a number (between minVal and maxVal) or as a string and a percentage (between "0%" and "100%").
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.AddLine"></a><h3>GUI.TextArea.AddLine( textArea, line, prepend )</h3></dt>
+<dd>
+Add a line to the text area's text.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea component.
+		</li>
+		
+		<li>
+		  line (string) The line to add.
+		</li>
+		
+		<li>
+		  prepend (boolean) [default=false] If true, prepend the line to the text. Otherwise, append the line to the text.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.GetAlignment"></a><h3>GUI.TextArea.GetAlignment( textArea )</h3></dt>
+<dd>
+Get the component's horizontal alignment.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(TextRenderer.Alignment or number) The alignment (of type number in the webplayer).</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.GetAreaWidth"></a><h3>GUI.TextArea.GetAreaWidth( textArea )</h3></dt>
+<dd>
+Get the component's area width.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The area width in scene units.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.GetFont"></a><h3>GUI.TextArea.GetFont( textArea )</h3></dt>
+<dd>
+Get the component's font used to render the text.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Font) The font.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.GetLineHeight"></a><h3>GUI.TextArea.GetLineHeight( textArea )</h3></dt>
+<dd>
+Get the component's line height.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The line height in scene units.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.GetNewLine"></a><h3>GUI.TextArea.GetNewLine( textArea )</h3></dt>
+<dd>
+Get the component's newLine string.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The newLine string.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.GetOpacity"></a><h3>GUI.TextArea.GetOpacity( textArea )</h3></dt>
+<dd>
+Get the component's opacity.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The opacity between 0.0 and 1.0.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.GetText"></a><h3>GUI.TextArea.GetText( textArea )</h3></dt>
+<dd>
+Get the component's text.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The component's text.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.GetVerticalAlignment"></a><h3>GUI.TextArea.GetVerticalAlignment( textArea )</h3></dt>
+<dd>
+Get the component's vertical alignment property.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The vertical alignment.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.GetWordWrap"></a><h3>GUI.TextArea.GetWordWrap( textArea )</h3></dt>
+<dd>
+Get the component's wordWrap property.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(boolean) True or false.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.New"></a><h3>GUI.TextArea.New( gameObject, params )</h3></dt>
+<dd>
+Creates a new TextArea component.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  params (table) [optional] A table of parameters.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(TextArea) The new component.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.Set"></a><h3>GUI.TextArea.Set( textArea, params )</h3></dt>
+<dd>
+Apply the content of the params argument to the provided textArea. Overwrite Component.Set() from the core.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea.
+		</li>
+		
+		<li>
+		  params (table) A table of parameters to set the component with.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.SetAlignment"></a><h3>GUI.TextArea.SetAlignment( textArea, alignment )</h3></dt>
+<dd>
+Set the component's alignment. Works like a TextRenderer alignment.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea component.
+		</li>
+		
+		<li>
+		  alignment (TextRenderer.Alignment or string) One of the values in the 'TextRenderer.Alignment' enum (Left, Center or Right) or the same values as case-insensitive string ("left", "center" or "right").
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.SetAreaWidth"></a><h3>GUI.TextArea.SetAreaWidth( textArea, areaWidth )</h3></dt>
+<dd>
+Set the component's area width (maximum line length). Must be strictly positive to have an effect. Set as a negative value, 0 or nil to remove the limitation.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea component.
+		</li>
+		
+		<li>
+		  areaWidth (number or string) [default=0] The area width in scene units or in pixels as a string suffixed with "px".
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.SetFont"></a><h3>GUI.TextArea.SetFont( textArea, font )</h3></dt>
+<dd>
+Set the component's font used to renderer the text.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea component.
+		</li>
+		
+		<li>
+		  font (Font or string) The font asset or fully-qualified path.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.SetLineHeight"></a><h3>GUI.TextArea.SetLineHeight( textArea, lineHeight )</h3></dt>
+<dd>
+Set the component's line height.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea component.
+		</li>
+		
+		<li>
+		  lineHeight (number or string) The line height in scene units or in pixels as a string suffixed with "px".
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.SetNewLine"></a><h3>GUI.TextArea.SetNewLine( textArea, newLine )</h3></dt>
+<dd>
+Set the component's newLine string used by SetText() to split the input text in several lines.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea component.
+		</li>
+		
+		<li>
+		  newLine (string) The newLine string (one or several character long). Set "\n" to split multiline strings.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.SetOpacity"></a><h3>GUI.TextArea.SetOpacity( textArea, opacity )</h3></dt>
+<dd>
+Set the component's opacity.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea component.
+		</li>
+		
+		<li>
+		  opacity (number) The opacity between 0.0 and 1.0.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.SetText"></a><h3>GUI.TextArea.SetText( textArea, text )</h3></dt>
+<dd>
+Set the component's text.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea component.
+		</li>
+		
+		<li>
+		  text (string) The text to display.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.SetVerticalAlignment"></a><h3>GUI.TextArea.SetVerticalAlignment( textArea, verticalAlignment )</h3></dt>
+<dd>
+Set the component's vertical alignment.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea component.
+		</li>
+		
+		<li>
+		  verticalAlignment (string) "top", "middle" or "bottom". Case-insensitive.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.TextArea.SetWordWrap"></a><h3>GUI.TextArea.SetWordWrap( textArea, wordWrap )</h3></dt>
+<dd>
+Set the component's wordWrap property. Define what happens when the lines are longer then the area width.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textArea (TextArea) The textArea component.
+		</li>
+		
+		<li>
+		  wordWrap (boolean) [default=false] Cut the line when false, or creates new additional lines with the remaining text when true.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.ToPixel"></a><h3>GUI.ToPixel( value, screenSide, camera )</h3></dt>
+<dd>
+Convert the provided value (a length) in a number expressed in screen pixel. The provided value may be suffixed with "px" or be expressed in percentage (ie: "10%") or be relative (ie: "s" or "s-10") to the specified screen side size (in which case the 'screenSide' argument is mandatory).
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  value (string or number) The value to convert.
+		</li>
+		
+		<li>
+		  screenSide (string) [optional] "x" (width) or "y" (height)
+		</li>
+		
+		<li>
+		  camera (Camera) [optional] The reference camera used to convert from pixels to units. Only needed when the value is in units.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The converted value, expressed in pixels.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.ToSceneUnit"></a><h3>GUI.ToSceneUnit( value, camera )</h3></dt>
+<dd>
+Convert the provided value (a length) in a number expressed in scene unit. The provided value may be suffixed with "px" (pixels) or "u" (scene units).
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  value (string or number) The value to convert.
+		</li>
+		
+		<li>
+		  camera (Camera or GameObject) [optional] The reference camera used to convert from pixels to units. Only needed when the value is in pixels.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The converted value, expressed in scene units.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Toggle.Check"></a><h3>GUI.Toggle.Check( toggle, state, forceUpdate )</h3></dt>
+<dd>
+Check or uncheck the provided toggle and fire the OnUpdate event. You can get the toggle's state via toggle.isChecked.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  toggle (Toggle) The toggle component.
+		</li>
+		
+		<li>
+		  state (boolean) [default=true] The new state of the toggle.
+		</li>
+		
+		<li>
+		  forceUpdate (boolean) [default=false] Tell whether to force the updating of the state.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Toggle.GetGroup"></a><h3>GUI.Toggle.GetGroup( toggle )</h3></dt>
+<dd>
+Get the toggle's group.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  toggle (Toggle) The toggle component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The group, or nil.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Toggle.GetText"></a><h3>GUI.Toggle.GetText( toggle )</h3></dt>
+<dd>
+Get the provided toggle's text. Actually get the text of the TextRenderer component on the same gameObject but without the check mark.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  toggle (Toggle) The toggle component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The text.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Toggle.New"></a><h3>GUI.Toggle.New( gameObject, params )</h3></dt>
+<dd>
+Creates a new Toggle component.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The component gameObject.
+		</li>
+		
+		<li>
+		  params (table) [optional] A table of parameters.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Toggle) The new component.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Toggle.Set"></a><h3>GUI.Toggle.Set( toggle, params )</h3></dt>
+<dd>
+Apply the content of the params argument to the provided toggle. Overwrite Component.Set() from Daneel's CraftStudio file.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  toggle (Toggle) The toggle component.
+		</li>
+		
+		<li>
+		  params (table) A table of parameters to set the component with.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Toggle.SetGroup"></a><h3>GUI.Toggle.SetGroup( toggle, group )</h3></dt>
+<dd>
+Set the toggle's group. If the toggle was already in a group it will be removed from it.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  toggle (Toggle) The toggle component.
+		</li>
+		
+		<li>
+		  group (string) [optional] The new group, or nil to remove the toggle from its group.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GUI.Toggle.SetText"></a><h3>GUI.Toggle.SetText( toggle, text )</h3></dt>
+<dd>
+Set the provided toggle's text. Actually set the text of the TextRenderer component on the same gameObject, but add the correct check mark in front of the provided text.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  toggle (Toggle) The toggle component.
+		</li>
+		
+		<li>
+		  text (string) The text to display.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.AddComponent"></a><h3>GameObject.AddComponent( gameObject, componentType, params )</h3></dt>
+<dd>
+Add a component to the game object and optionally initialize it.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  componentType (string or Script) The component type, or script asset or path (can't be Transform or ScriptedBehavior).
+		</li>
+		
+		<li>
+		  params (string, Script or table) [optional] A table of parameters to initialize the new component with or, if componentType is 'ScriptedBehavior', the mandatory script name or asset.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(mixed) The component.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.AddEventListener"></a><h3>GameObject.AddEventListener( gameObject, eventName, listener )</h3></dt>
+<dd>
+Add a listener function for the specified local event on this game object. Alias of Daneel.Event.AddEventListener().
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  eventName (string) The name of the event to listen to.
+		</li>
+		
+		<li>
+		  listener (function or userdata) The listener function.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.AddTag"></a><h3>GameObject.AddTag( gameObject, tag )</h3></dt>
+<dd>
+Add the provided tag(s) to the provided game object.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  tag (string or table) One or several tag(s) (as a string or table of strings).
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.Animate"></a><h3>GameObject.Animate( gameObject, property, endValue, duration, onCompleteCallback, params )</h3></dt>
+<dd>
+Creates an animation (a tweener) with the provided parameters.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  property (string) The name of the property to animate.
+		</li>
+		
+		<li>
+		  endValue (number, Vector2, Vector3 or string) The value the property should have at the end of the duration.
+		</li>
+		
+		<li>
+		  duration (number) The time (in seconds) or frame it should take for the property to reach endValue.
+		</li>
+		
+		<li>
+		  onCompleteCallback (function) [optional] The function to execute when the tweener has completed.
+		</li>
+		
+		<li>
+		  params (table) [optional] A table of parameters.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Tweener) The tweener.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.Destroy"></a><h3>GameObject.Destroy( gameObject )</h3></dt>
+<dd>
+Destroy the game object at the end of this frame.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.Display"></a><h3>GameObject.Display( gameObject, value, forceUseLocalPosition )</h3></dt>
+<dd>
+Display or hide the game object. Act on the renderer's opacity or the transform's local position. Sets the "isDisplayed" property to true or false and fire the "OnDisplay" event on the game object.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  value (boolean, number or Vector3) [default=true] Tell whether to display or hide the game object (as a boolean), or the opacity (as a number) or the local position (as a Vector3).
+		</li>
+		
+		<li>
+		  forceUseLocalPosition (boolean) [default=false] Tell whether to force to axt on the game object's local position even when it possess a renderer.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.FireEvent"></a><h3>GameObject.FireEvent( gameObject, eventName, ... )</h3></dt>
+<dd>
+Fire an event at the provided game object.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  eventName (string) The event name.
+		</li>
+		
+		<li>
+		  ... [optional] Some arguments to pass along.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.Get"></a><h3>GameObject.Get( name, errorIfGameObjectNotFound )</h3></dt>
+<dd>
+Alias of CraftStudio.FindGameObject(name). Get the first game object with the provided name.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  name (string) The game object name.
+		</li>
+		
+		<li>
+		  errorIfGameObjectNotFound (boolean) [default=false] Throw an error if the game object was not found (instead of returning nil).
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(GameObject) The game object or nil if none is found.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.GetChild"></a><h3>GameObject.GetChild( gameObject, name, recursive )</h3></dt>
+<dd>
+Alias of GameObject.FindChild(). Find the first game object's child with the provided name. If the name is not provided, it returns the first child.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  name (string) [optional] The child name (may be hyerarchy of names separated by dots).
+		</li>
+		
+		<li>
+		  recursive (boolean) [default=false] Search for the child in all descendants instead of just the first generation.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(GameObject) The child or nil if none is found.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.GetChildren"></a><h3>GameObject.GetChildren( gameObject, recursive, includeSelf )</h3></dt>
+<dd>
+Get all descendants of the game object.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  recursive (boolean) [default=false] Look for all descendants instead of just the first generation.
+		</li>
+		
+		<li>
+		  includeSelf (boolean) [default=false] Include the game object in the children.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The children.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.GetComponent"></a><h3>GameObject.GetComponent( gameObject, componentType )</h3></dt>
+<dd>
+Get the first component of the provided type attached to the game object.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  componentType (string or Script) The component type, or script asset or path.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(One of the component types) The component instance, or nil if none is found.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.GetId"></a><h3>GameObject.GetId( gameObject )</h3></dt>
+<dd>
+Returns the game object's internal unique identifier.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The id.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.GetInAncestors"></a><h3>GameObject.GetInAncestors( gameObject, searchFunction )</h3></dt>
+<dd>
+Search the ancestors of the provided game object. It returns the game object that match the condition in the search function. The search function receive a game object as the only argument. The search function must return true in order for GetInAncestors() to return the searched game object.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  searchFunction (function) The search function.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(GameObject) The searched game object, or nil.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.GetScriptedBehavior"></a><h3>GameObject.GetScriptedBehavior( gameObject, scriptNameOrAsset )</h3></dt>
+<dd>
+Get the provided scripted behavior instance attached to the game object.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  scriptNameOrAsset (string or Script) The script name or asset.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(ScriptedBehavior) The ScriptedBehavior instance.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.GetTags"></a><h3>GameObject.GetTags( gameObject )</h3></dt>
+<dd>
+Returns the tag(s) of the provided game object.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The tag(s) (empty if the game object has no tag).</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.GetWithTag"></a><h3>GameObject.GetWithTag( tag )</h3></dt>
+<dd>
+Returns the game object(s) that have all the provided tag(s).
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  tag (string or table) One or several tag(s) (as a string or table of strings).
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The game object(s) (empty if none is found).</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.HasTag"></a><h3>GameObject.HasTag( gameObject, tag, atLeastOneTag )</h3></dt>
+<dd>
+Tell whether the provided game object has all (or at least one of) the provided tag(s).
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  tag (string or table) One or several tag (as a string or table of strings).
+		</li>
+		
+		<li>
+		  atLeastOneTag (boolean) [default=false] If true, returns true if the game object has AT LEAST one of the tag (instead of ALL the tag).
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(boolean) True</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.Instantiate"></a><h3>GameObject.Instantiate( name, sceneNameOrAsset, params )</h3></dt>
+<dd>
+Create a new game object with the content of the provided scene and optionally initialize it.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  name (string) The game object name.
+		</li>
+		
+		<li>
+		  sceneNameOrAsset (string or Scene) The scene name or scene asset.
+		</li>
+		
+		<li>
+		  params (table or GameObject) [optional] A table with parameters to initialize the new game object with, or the parent gameO object to attach to..
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(GameObject) The new game object.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.New"></a><h3>GameObject.New( name, params )</h3></dt>
+<dd>
+Create a new game object and optionally initialize it.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  name (string) The game object name.
+		</li>
+		
+		<li>
+		  params (table or GameObject) [optional] A table with parameters to initialize the new game object with, or the parent gameO object to attach to.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(GameObject) The new game object.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.RemoveEventListener"></a><h3>GameObject.RemoveEventListener( gameObject, eventName, listener )</h3></dt>
+<dd>
+Remove the specified listener for the specified local event on this game object
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (table) The game object.
+		</li>
+		
+		<li>
+		  eventName (string) The name of the event.
+		</li>
+		
+		<li>
+		  listener (function or userdata) [optional] The listener function to remove. If nil, all listeners will be removed for the specified event.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.RemoveTag"></a><h3>GameObject.RemoveTag( gameObject, tag )</h3></dt>
+<dd>
+Remove the provided tag(s) from the provided game object. If the 'tag' argument is not provided, all tag of the game object will be removed.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  tag (string or table) [optional] One or several tag(s) (as a string or table of strings).
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.SendMessage"></a><h3>GameObject.SendMessage( gameObject, functionName, data )</h3></dt>
+<dd>
+Tries to call a method with the provided name on all the scriptedBehaviors attached to the game object. The data argument can be nil or a table you want the method to receive as its first (and only) argument. If none of the scripteBehaviors attached to the game object or its children have a method matching the provided name, nothing happens.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  functionName (string) The method name.
+		</li>
+		
+		<li>
+		  data (table) [optional] The data to pass along the method call.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.Set"></a><h3>GameObject.Set( gameObject, params )</h3></dt>
+<dd>
+Apply the content of the params argument to the provided game object.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  params (table) A table of parameters to set the game object with.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="GameObject.SetParent"></a><h3>GameObject.SetParent( gameObject, parentNameOrInstance, keepLocalTransform )</h3></dt>
+<dd>
+Set the game object's parent. Optionaly carry over the game object's local transform instead of the global one.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  parentNameOrInstance (string or GameObject) [optional] The parent name or game object (or nil to remove the parent).
+		</li>
+		
+		<li>
+		  keepLocalTransform (boolean) [default=false] Carry over the game object's local transform instead of the global one.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Lang.Get"></a><h3>Lang.Get( key, replacements )</h3></dt>
+<dd>
+Get the localized line identified by the provided key.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  key (string) The language key.
+		</li>
+		
+		<li>
+		  replacements (table) [optional] The placeholders and their replacements.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The line.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Lang.RegisterForUpdate"></a><h3>Lang.RegisterForUpdate( gameObject, key, replacements )</h3></dt>
+<dd>
+Register a game object to update its text renderer whenever the language will be updated by Lang.Update().
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The gameObject.
+		</li>
+		
+		<li>
+		  key (string) The language key.
+		</li>
+		
+		<li>
+		  replacements (table) [optional] The placeholders and their replacements.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Lang.Update"></a><h3>Lang.Update( language )</h3></dt>
+<dd>
+Update the current language and the text of all game objects that have registered via Lang.RegisterForUpdate(). <br> Fire the OnLangUpdate event.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  language (string) The new current language.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Map.GetBlockIDAt"></a><h3>Map.GetBlockIDAt( map, x, y, z )</h3></dt>
+<dd>
+Returns A block ID between 0-254 if a block exists at the given location (all valid block IDs are in the range 0-254), otherwise f there is no block at the given location then it will return Map.EmptyBlockID (which has a value of 255).
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  map (Map) The map.
+		</li>
+		
+		<li>
+		  x (number or Vector3) The location's x component, or the location as a Vector3.
+		</li>
+		
+		<li>
+		  y (number) [optional] The location's y component. Should be nil if the "x" argument is a Vector3.
+		</li>
+		
+		<li>
+		  z (number) [optional] The location's z component. Should be nil if the "x" argument is a Vector3.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The block ID.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Map.GetBlockOrientationAt"></a><h3>Map.GetBlockOrientationAt( map, x, y, z )</h3></dt>
+<dd>
+Returns The block orientation of the block at the specified location, otherwise if there is no block at the given location it will return Map.BlockOrientation.North.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  map (Map) The map.
+		</li>
+		
+		<li>
+		  x (number or Vector3) The location's x component, or the location as a Vector3.
+		</li>
+		
+		<li>
+		  y (number) [optional] The location's y component. Should be nil if the "x" argument is a Vector3.
+		</li>
+		
+		<li>
+		  z (number) [optional] The location's z component. Should be nil if the "x" argument is a Vector3.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Map.BlockOrientation) The block orientation.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Map.SetBlockAt"></a><h3>Map.SetBlockAt( map, x, y, z, id, orientation )</h3></dt>
+<dd>
+Sets a block's ID and block orientation at the given location on the map.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  map (Map) The map.
+		</li>
+		
+		<li>
+		  x (number or Vector3) The location's x component, or the location as a Vector3.
+		</li>
+		
+		<li>
+		  y (number) [optional] The location's y component. Must have the value of the "id" argument if the "x" argument is a Vector3.
+		</li>
+		
+		<li>
+		  z (number) [optional] The location's z component. Must have the value of the optional "orientation" argument  if the "x" argument is a Vector3.
+		</li>
+		
+		<li>
+		  id (number) The block ID.
+		</li>
+		
+		<li>
+		  orientation (Map.BlockOrientation) [optional] The block orientation.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="MapRenderer.LoadNewMap"></a><h3>MapRenderer.LoadNewMap( mapRenderer, callback )</h3></dt>
+<dd>
+Dynamically loads a new version of the provided map renderer's map and sets it as the map renderer new map.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  mapRenderer (MapRenderer) The map renderer.
+		</li>
+		
+		<li>
+		  callback (function) [optional] The callback function to be called when the new map has been loaded. The new map is pased as first and only argument.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="MapRenderer.Set"></a><h3>MapRenderer.Set( mapRenderer, params )</h3></dt>
+<dd>
+Apply the content of the params argument to the provided map renderer.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  mapRenderer (MapRenderer) The map renderer.
+		</li>
+		
+		<li>
+		  params (table) A table of parameters to set the component with.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="MapRenderer.SetMap"></a><h3>MapRenderer.SetMap( mapRenderer, mapNameOrAsset, replaceTileSet )</h3></dt>
+<dd>
+Attach the provided map to the provided map renderer.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  mapRenderer (MapRenderer) The map renderer.
+		</li>
+		
+		<li>
+		  mapNameOrAsset (string or Map) [optional] The map name or asset, or nil.
+		</li>
+		
+		<li>
+		  replaceTileSet (boolean) [default=true] Replace the current TileSet by the one set for the provided map in the map editor.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="MapRenderer.SetTileSet"></a><h3>MapRenderer.SetTileSet( mapRenderer, tileSetNameOrAsset )</h3></dt>
+<dd>
+Set the specified tileSet for the mapRenderer's map.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  mapRenderer (MapRenderer) The mapRenderer.
+		</li>
+		
+		<li>
+		  tileSetNameOrAsset (string or TileSet) [optional] The tileSet name or asset, or nil.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="ModelRenderer.GetColor"></a><h3>ModelRenderer.GetColor( modelRenderer )</h3></dt>
+<dd>
+Get the color of the provided model renderer.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  modelRenderer (ModelRenderer) The model renderer.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>Rc (Color) The result/renderer color (the one you see).</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="ModelRenderer.Set"></a><h3>ModelRenderer.Set( modelRenderer, params )</h3></dt>
+<dd>
+Apply the content of the params argument to the provided model renderer.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  modelRenderer (ModelRenderer) The model renderer.
+		</li>
+		
+		<li>
+		  params (table) A table of parameters to set the component with.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="ModelRenderer.SetAnimation"></a><h3>ModelRenderer.SetAnimation( modelRenderer, animationNameOrAsset )</h3></dt>
+<dd>
+Set the specified animation for the modelRenderer's current model.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  modelRenderer (ModelRenderer) The modelRenderer.
+		</li>
+		
+		<li>
+		  animationNameOrAsset (string or ModelAnimation) [optional] The animation name or asset, or nil.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="ModelRenderer.SetColor"></a><h3>ModelRenderer.SetColor( modelRenderer, color )</h3></dt>
+<dd>
+Set the color of the provided model renderer.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  modelRenderer (ModelRenderer) The model renderer.
+		</li>
+		
+		<li>
+		  color (Color) The color instance.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="ModelRenderer.SetModel"></a><h3>ModelRenderer.SetModel( modelRenderer, modelNameOrAsset )</h3></dt>
+<dd>
+Attach the provided model to the provided modelRenderer.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  modelRenderer (ModelRenderer) The modelRenderer.
+		</li>
+		
+		<li>
+		  modelNameOrAsset (string or Model) [optional] The model name or asset, or nil.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="MouseInput.GetTags"></a><h3>MouseInput.GetTags( mouseInput )</h3></dt>
+<dd>
+Return the tag(s) of the game objects the component works with.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  mouseInput (MouseInput) The mouse input component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The tag(s) of the game objects the component works with.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="MouseInput.New"></a><h3>MouseInput.New( gameObject, params )</h3></dt>
+<dd>
+Create a new MouseInput component.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  params (table) [optional] A table of parameters.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(MouseInput) The new component.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="MouseInput.SetTags"></a><h3>MouseInput.SetTags( mouseInput, tags )</h3></dt>
+<dd>
+Set tag(s) of the game objects the component works with.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  mouseInput (MouseInput) The mouse input component.
+		</li>
+		
+		<li>
+		  tags (string or table) The tag(s) of the game objects the component works with.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="MouseInput.Update"></a><h3>MouseInput.Update( mouseInput )</h3></dt>
+<dd>
+Update the specified MouseInput component or update all components when no argument is passed. When the component is specified, the update is forced. It happens even if the mouse doesn't move and no button input happens.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  mouseInput (MouseInput) [optional] The MouseInput component to update.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Ray.Cast"></a><h3>Ray.Cast( ray, gameObjects, sortByDistance )</h3></dt>
+<dd>
+Check the collision of the ray against the provided set of game objects.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  ray (Ray) The ray.
+		</li>
+		
+		<li>
+		  gameObjects (table) The set of game objects to cast the ray against.
+		</li>
+		
+		<li>
+		  sortByDistance (boolean) [default=false] Sort the raycastHit by increasing distance in the returned table.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) A table of RaycastHits (will be empty if the ray didn't intersects anything).</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Ray.IntersectsGameObject"></a><h3>Ray.IntersectsGameObject( ray, gameObjectNameOrInstance )</h3></dt>
+<dd>
+Check if the ray intersects the specified game object.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  ray (Ray) The ray.
+		</li>
+		
+		<li>
+		  gameObjectNameOrInstance (string or GameObject) The game object instance or name.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(RaycastHit) A raycastHit if there was a collision, or nil.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="RaycastHit.New"></a><h3>RaycastHit.New( params )</h3></dt>
+<dd>
+Create a new RaycastHit
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  params 
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(RaycastHit) The raycastHit.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Scene.Append"></a><h3>Scene.Append( sceneNameOrAsset, parentNameOrInstance )</h3></dt>
+<dd>
+Alias of CraftStudio.AppendScene(). Appends the specified scene to the game by instantiating all of its game objects. Contrary to CraftStudio.LoadScene, this doesn't unload the current scene nor waits for the next tick: it happens right away. You can optionally specify a parent game object which will be used as a root for adding all game objects. Returns the game object appended if there was only one root game object in the provided scene.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  sceneNameOrAsset (string or Scene) The scene name or asset.
+		</li>
+		
+		<li>
+		  parentNameOrInstance (string or GameObject) [optional] The parent game object name or instance.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(GameObject) The appended game object, or nil.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Scene.Load"></a><h3>Scene.Load( sceneNameOrAsset )</h3></dt>
+<dd>
+Alias of CraftStudio.LoadScene(). Schedules loading the specified scene after the current tick (frame) (1/60th of a second) has completed. When the new scene is loaded, all of the current scene's game objects will be removed. Calling this function doesn't immediately stops the calling function. As such, you might want to add a return statement afterwards.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  sceneNameOrAsset (string or Scene) The scene name or asset.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Sound.Play"></a><h3>Sound.Play( soundAssetOrPath, volume, pitch, pan )</h3></dt>
+<dd>
+Play the specified sound.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  soundAssetOrPath (Sound or string) The sound asset or path.
+		</li>
+		
+		<li>
+		  volume (number) [default=1] The sound's volume between 0 and 1.
+		</li>
+		
+		<li>
+		  pitch (number) [default=0] The sound's pitch between -1 and 1.
+		</li>
+		
+		<li>
+		  pan (number) [default=0] The sound's pan (left/right positioning) between -1 and 1.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="TextRenderer.GetColor"></a><h3>TextRenderer.GetColor( textRenderer )</h3></dt>
+<dd>
+Get the color of the provided text renderer.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textRenderer (textRenderer) The text renderer.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>Rc (Color) The result/renderer color (the one you see).</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="TextRenderer.SetAlignment"></a><h3>TextRenderer.SetAlignment( textRenderer, alignment )</h3></dt>
+<dd>
+Set the text's alignment.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textRenderer (TextRenderer) The textRenderer.
+		</li>
+		
+		<li>
+		  alignment (string or TextRenderer.Alignment) The alignment. Values (case-insensitive when of type string) may be "left", "center", "right", TextRenderer.Alignment.Left, TextRenderer.Alignment.Center or TextRenderer.Alignment.Right.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="TextRenderer.SetColor"></a><h3>TextRenderer.SetColor( textRenderer, color )</h3></dt>
+<dd>
+Set the color of the provided text renderer.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textRenderer (textRenderer) The text renderer.
+		</li>
+		
+		<li>
+		  color (Color) The color instance.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="TextRenderer.SetFont"></a><h3>TextRenderer.SetFont( textRenderer, fontNameOrAsset )</h3></dt>
+<dd>
+Set the provided font to the provided text renderer.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textRenderer (TextRenderer) The text renderer.
+		</li>
+		
+		<li>
+		  fontNameOrAsset (string or Font) [optional] The font name or asset, or nil.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="TextRenderer.SetTextWidth"></a><h3>TextRenderer.SetTextWidth( textRenderer, width )</h3></dt>
+<dd>
+Update the game object's scale to make the text appear the provided width.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  textRenderer (TextRenderer) The textRenderer.
+		</li>
+		
+		<li>
+		  width (number) The text's width in scene units.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Transform.GetScale"></a><h3>Transform.GetScale( transform )</h3></dt>
+<dd>
+Get the transform's global scale.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  transform (Transform) The transform component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector3) The global scale.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Transform.LocalToWorld"></a><h3>Transform.LocalToWorld( transform, position )</h3></dt>
+<dd>
+Transform a position local to this transform to a global position.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  transform (Transform) The transform component.
+		</li>
+		
+		<li>
+		  position (Vector3) The local position.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector3) The global position corresponding to the provided local position.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Transform.SetLocalScale"></a><h3>Transform.SetLocalScale( transform, scale )</h3></dt>
+<dd>
+Set the transform's local scale.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  transform (Transform) The transform component.
+		</li>
+		
+		<li>
+		  scale (number or Vector3) The global scale.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Transform.SetScale"></a><h3>Transform.SetScale( transform, scale )</h3></dt>
+<dd>
+Set the transform's global scale.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  transform (Transform) The transform component.
+		</li>
+		
+		<li>
+		  scale (number or Vector3) The global scale.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Transform.WorldToLocal"></a><h3>Transform.WorldToLocal( transform, position )</h3></dt>
+<dd>
+Transform a global position to a position local to this transform.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  transform (Transform) The transform component.
+		</li>
+		
+		<li>
+		  position (Vector3) The global position.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector3) The local position corresponding to the provided global position.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Trigger.GetGameObjectsInRange"></a><h3>Trigger.GetGameObjectsInRange( trigger )</h3></dt>
+<dd>
+Get the gameObjects that are within range of that trigger.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  trigger (Trigger) The trigger component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The list of the gameObjects in range (empty if none in range).</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Trigger.GetRange"></a><h3>Trigger.GetRange( trigger )</h3></dt>
+<dd>
+Get the range of the trigger.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  trigger (Trigger) The trigger component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The range of the trigger.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Trigger.GetTags"></a><h3>Trigger.GetTags( trigger )</h3></dt>
+<dd>
+Return the tag(s) of the game objects the component works with.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  trigger (Trigger) The trigger component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The tag(s) of the game objects the component works with.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Trigger.GetUpdateInterval"></a><h3>Trigger.GetUpdateInterval( trigger )</h3></dt>
+<dd>
+Get the interval (in frames) at which the trigger is automatically updated.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  trigger (Trigger) The trigger component.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The update interval (in frames) of the trigger.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Trigger.IsGameObjectInRange"></a><h3>Trigger.IsGameObjectInRange( trigger, gameObject, triggerPosition )</h3></dt>
+<dd>
+Tell whether the provided game object is in range of the trigger.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  trigger (Trigger) The trigger component.
+		</li>
+		
+		<li>
+		  gameObject (GameObject) The gameObject.
+		</li>
+		
+		<li>
+		  triggerPosition (Vector3) [optional] The trigger's current position.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(boolean) True or false.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Trigger.New"></a><h3>Trigger.New( gameObject, params )</h3></dt>
+<dd>
+Create a new Trigger component.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  gameObject (GameObject) The game object.
+		</li>
+		
+		<li>
+		  params (table) [optional] A table of parameters.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Trigger) The new component.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Trigger.SetRange"></a><h3>Trigger.SetRange( trigger, range )</h3></dt>
+<dd>
+Set the range of the trigger.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  trigger (Trigger) The trigger component.
+		</li>
+		
+		<li>
+		  range (number) The range of the trigger. Must be >= 0. Set to 0 to use the trigger's map or model as area.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Trigger.SetTags"></a><h3>Trigger.SetTags( trigger, tags )</h3></dt>
+<dd>
+Set tag(s) of the game objects the component works with.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  trigger (Trigger) The trigger component.
+		</li>
+		
+		<li>
+		  tags (string or table) The tag(s) of the game objects the component works with.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Trigger.SetUpdateInterval"></a><h3>Trigger.SetUpdateInterval( trigger, updateInterval )</h3></dt>
+<dd>
+Set the interval (in frames) at which the trigger is automatically updated. A value < 1 will prevent the trigger to be automatically updated.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  trigger (Trigger) The trigger component.
+		</li>
+		
+		<li>
+		  updateInterval (number) The update interval in frames. Must be >= 0
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Tween.Timer.New"></a><h3>Tween.Timer.New( duration, callback, isInfiniteLoop, params )</h3></dt>
+<dd>
+Creates a new tweener via one of the two allowed constructors : <br> Timer.New(duration, OnCompleteCallback[, params]) <br> Timer.New(duration, OnLoopCompleteCallback, true[, params]) <br>
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  duration (number) The time or frame it should take for the timer or one loop to complete.
+		</li>
+		
+		<li>
+		  callback (function or userdata) The function that gets called when the OnComplete or OnLoopComplete event are fired.
+		</li>
+		
+		<li>
+		  isInfiniteLoop [optional default=false] (boolean) Tell wether the timer loops indefinitely.
+		</li>
+		
+		<li>
+		  params [optional] (table) A table of parameters.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Tweener) The tweener.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Tween.Tweener.Complete"></a><h3>Tween.Tweener.Complete( tweener )</h3></dt>
+<dd>
+Complete the tweener fire the OnComple event.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  tweener (Tween.Tweener) The tweener.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Tween.Tweener.Destroy"></a><h3>Tween.Tweener.Destroy( tweener )</h3></dt>
+<dd>
+Destroy the tweener.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  tweener (Tween.Tweener) The tweener.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Tween.Tweener.New"></a><h3>Tween.Tweener.New( target, property, endValue, duration, onCompleteCallback, params )</h3></dt>
+<dd>
+Creates a new tweener via one of the three allowed constructors : <br> Tweener.New(target, property, endValue, duration[, params]) <br> Tweener.New(startValue, endValue, duration[, params]) <br> Tweener.New(params)
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  target (table) An object.
+		</li>
+		
+		<li>
+		  property (string) The name of the propertty to animate.
+		</li>
+		
+		<li>
+		  endValue (number) The value the property should have at the end of the duration.
+		</li>
+		
+		<li>
+		  duration (number) The time or frame it should take for the property to reach endValue.
+		</li>
+		
+		<li>
+		  onCompleteCallback (function) [optional] The function to execute when the tweener has completed.
+		</li>
+		
+		<li>
+		  params (table) [optional] A table of parameters.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Tweener) The Tweener.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Tween.Tweener.Pause"></a><h3>Tween.Tweener.Pause( tweener )</h3></dt>
+<dd>
+Pause the tweener and fire the OnPause event.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  tweener (Tween.Tweener) The tweener.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Tween.Tweener.Play"></a><h3>Tween.Tweener.Play( tweener )</h3></dt>
+<dd>
+Unpause the tweener and fire the OnPlay event.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  tweener (Tween.Tweener) The tweener.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Tween.Tweener.Restart"></a><h3>Tween.Tweener.Restart( tweener )</h3></dt>
+<dd>
+Completely restart the tweener.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  tweener (Tween.Tweener) The tweener.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Tween.Tweener.Update"></a><h3>Tween.Tweener.Update( tweener, deltaDuration )</h3></dt>
+<dd>
+Update the tweener's value based on the tweener's elapsed property. Fire the OnUpdate event. This allows the tweener to fast-forward to a certain time.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  tweener (Tween.Tweener) The tweener.
+		</li>
+		
+		<li>
+		  deltaDuration [optional] (number) <strong>Only used internaly.</strong> If nil, the tweener's value will be updated based on the current value of tweener.elapsed.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Vector2.GetLength"></a><h3>Vector2.GetLength( vector )</h3></dt>
+<dd>
+Return the length of the vector.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  vector (Vector2) The vector.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The length.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Vector2.GetSqrLength"></a><h3>Vector2.GetSqrLength( vector )</h3></dt>
+<dd>
+Return the squared length of the vector.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  vector (Vector2) The vector.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The squared length.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Vector2.New"></a><h3>Vector2.New( x, y )</h3></dt>
+<dd>
+Creates a new Vector2 intance.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  x (number, table, Vector2 or Vector3) The vector's x component, or a table that contains "x" and "y" components.
+		</li>
+		
+		<li>
+		  y (number) [optional] The vector's y component. If nil, will be equal to x.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector2) The new instance.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Vector2.Normalize"></a><h3>Vector2.Normalize( vector )</h3></dt>
+<dd>
+Normalize the provided vector in place (makes its length equal to 1).
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  vector (Vector2) The vector to normalize.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Vector2.Normalized"></a><h3>Vector2.Normalized( vector )</h3></dt>
+<dd>
+Return a copy of the provided vector, normalized.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  vector (Vector2) The vector to normalize.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector2) A copy of the vector, normalized.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Vector2.ToPixel"></a><h3>Vector2.ToPixel( vector, camera )</h3></dt>
+<dd>
+Make sure that the components of the provided Vector2 are numbers and in pixel, instead of strings or in percentage or relative to the screensize.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  vector (Vector2) The vector2.
+		</li>
+		
+		<li>
+		  camera (Camera) [optional] The reference camera used to convert from pixels to units. Only needed when the vector's components are in units.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector2) The fixed position.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Vector2.ToString"></a><h3>Vector2.ToString( vector )</h3></dt>
+<dd>
+Returns a string representation of the vector's component's values. ie: For a vector {-6.5,10}, the returned string would be "-6.5 10". Such string can be converted back to a vector with string.tovector()
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  vector (Vector2) The vector.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The string.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Vector2.__add"></a><h3>Vector2.__add( a, b )</h3></dt>
+<dd>
+Allow to add two Vector2 by using the + operator. Ie : vector1 + vector2
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  a (Vector2) The left member.
+		</li>
+		
+		<li>
+		  b (Vector2) The right member.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector2) The new vector.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Vector2.__div"></a><h3>Vector2.__div( a, b )</h3></dt>
+<dd>
+Allow to divide two Vector2 or a Vector2 and a number by using the / operator.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  a (Vector2 or number) The numerator.
+		</li>
+		
+		<li>
+		  b (Vector2 or number) The denominator. Can't be equal to 0.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector2) The new vector.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Vector2.__eq"></a><h3>Vector2.__eq( a, b )</h3></dt>
+<dd>
+Allow to check for the equality between two Vector2 using the == comparison operator.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  a (Vector2) The left member.
+		</li>
+		
+		<li>
+		  b (Vector2) The right member.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(boolean) True if the same components of the two vectors are equal (a.x=b.x and a.y=b.y)</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Vector2.__mul"></a><h3>Vector2.__mul( a, b )</h3></dt>
+<dd>
+Allow to multiply two Vector2 or a Vector2 and a number by using the * operator.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  a (Vector2 or number) The left member.
+		</li>
+		
+		<li>
+		  b (Vector2 or number) The right member.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector2) The new vector.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Vector2.__pow"></a><h3>Vector2.__pow( vector, exp )</h3></dt>
+<dd>
+Allow to raise a Vector2 to a power using the ^ operator.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  vector (Vector2) The vector.
+		</li>
+		
+		<li>
+		  exp (number) The power to raise the vector to.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector2) The new vector.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Vector2.__sub"></a><h3>Vector2.__sub( a, b )</h3></dt>
+<dd>
+Allow to substract two Vector2 by using the - operator. Ie : vector1 - vector2
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  a (Vector2) The left member.
+		</li>
+		
+		<li>
+		  b (Vector2) The right member.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector2) The new vector.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Vector2.__unm"></a><h3>Vector2.__unm( vector )</h3></dt>
+<dd>
+Allow to inverse a vector2 using the - operator.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  vector (Vector2) The vector.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector2) The new vector.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Vector3.GetLength"></a><h3>Vector3.GetLength( vector )</h3></dt>
+<dd>
+Returns the length of the provided vector
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  vector (Vector3) The vector.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The length.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Vector3.GetSqrLength"></a><h3>Vector3.GetSqrLength( vector )</h3></dt>
+<dd>
+Return the squared length of the vector.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  vector (Vector3) The vector.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The squared length.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Vector3.New"></a><h3>Vector3.New( x, y, z, z2 )</h3></dt>
+<dd>
+Returns a new Vector3.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  x (number, Vector3 or Vector2) [optional] The vector's x component.
+		</li>
+		
+		<li>
+		  y (number or Vector2) [optional] The vector's y component.
+		</li>
+		
+		<li>
+		  z (number) [optional] The vector's z component.
+		</li>
+		
+		<li>
+		  z2 
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="Vector3.ToString"></a><h3>Vector3.ToString( vector )</h3></dt>
+<dd>
+Returns a string representation of the vector's component's values. ie: For a vector {-6.5,10,2.1}, the returned string would be "-6.5 10 2.1". Such string can be converted back to a vector with string.tovector()
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  vector (Vector3) The vector.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The string.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="error"></a><h3>error( message, doNotPrintStacktrace )</h3></dt>
+<dd>
+Print the stackTrace unless told otherwise then the provided error in the console. Only exists when debug is enabled. When debug in disabled the built-in 'error(message)'' function exists instead.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  message (string) The error message.
+		</li>
+		
+		<li>
+		  doNotPrintStacktrace [optional default=false] (boolean) Set to true to prevent the stacktrace to be printed before the error message.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="math.clamp"></a><h3>math.clamp( value, min, max )</h3></dt>
+<dd>
+Return the value clamped between min and max.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  value (number) The value.
+		</li>
+		
+		<li>
+		  min (number) The minimal value.
+		</li>
+		
+		<li>
+		  max (number) The maximal value.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The new value.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="math.isinteger"></a><h3>math.isinteger( number )</h3></dt>
+<dd>
+Tell whether the provided number is an integer. That include numbers that have one or several zeros as decimals (1.0, 2.000, ...).
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  number (number) The number to check.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(boolean) True if the provided number is an integer, false otherwise.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="math.lerp"></a><h3>math.lerp( a, b, factor, easing )</h3></dt>
+<dd>
+Returns the value resulting of the linear interpolation between value a and b by the specified factor.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  a (number)
+		</li>
+		
+		<li>
+		  b (number)
+		</li>
+		
+		<li>
+		  factor (number) Should be between 0.0 and 1.0.
+		</li>
+		
+		<li>
+		  easing (string) [optional] The easing of the factor, can be "smooth", "smooth in", "smooth out".
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The interpolated value.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="math.round"></a><h3>math.round( value, decimal )</h3></dt>
+<dd>
+Round the value to the closest integer or decimal.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  value (number) The value to round.
+		</li>
+		
+		<li>
+		  decimal (number) [default=0] The decimal at which to round the value.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The rounded value.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="math.truncate"></a><h3>math.truncate( value, decimal )</h3></dt>
+<dd>
+Trucate the value to the provided decimal.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  value (number) The value to truncate.
+		</li>
+		
+		<li>
+		  decimal (number) [default=0] The decimal at which to truncate the value.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The truncated value.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="math.warpangle"></a><h3>math.warpangle( angle )</h3></dt>
+<dd>
+Wrap the provided angle between -180 and 180.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  angle (number) The angle.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The angle.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="string.endswith"></a><h3>string.endswith( s, chunk )</h3></dt>
+<dd>
+Tell whether the provided string ends by the provided chunk or not.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  s (string) The string.
+		</li>
+		
+		<li>
+		  chunk (string) The searched chunk.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(boolean) True or false.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="string.fixcase"></a><h3>string.fixcase( s, set )</h3></dt>
+<dd>
+Make sure that the case of the provided string is correct by checking it against the values in the provided set.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  s (string) The string to check the case of.
+		</li>
+		
+		<li>
+		  set (string or table) A single value or a table of values to check the string against.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The string with the corrected case.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="string.lcfirst"></a><h3>string.lcfirst( s )</h3></dt>
+<dd>
+Turn the first letter of the string lowercase.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  s (string) The string.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The string.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="string.reverse"></a><h3>string.reverse( s )</h3></dt>
+<dd>
+Reverse the order of the characters in a string ("abcd" becomes "dcba").
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  s (string) The string.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The reversed string.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="string.split"></a><h3>string.split( s, delimiter, delimiterIsPattern )</h3></dt>
+<dd>
+Some Lua functions are overridden here with some Daneel-specific stuffs
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  s 
+		</li>
+		
+		<li>
+		  delimiter 
+		</li>
+		
+		<li>
+		  delimiterIsPattern 
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="string.split"></a><h3>string.split( s, delimiter, delimiterIsPattern )</h3></dt>
+<dd>
+Some Lua functions are overridden here with some Daneel-specific stuffs
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  s 
+		</li>
+		
+		<li>
+		  delimiter 
+		</li>
+		
+		<li>
+		  delimiterIsPattern 
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="string.startswith"></a><h3>string.startswith( s, chunk )</h3></dt>
+<dd>
+Tell whether the provided string begins by the provided chunk or not.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  s (string) The string.
+		</li>
+		
+		<li>
+		  chunk (string) The searched chunk.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(boolean) True or false.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="string.tocolor"></a><h3>string.tocolor( sColor )</h3></dt>
+<dd>
+Convert a string representation of a color component's values to a Color object. ie: For a string "10 250 128", the returned color would be { 10, 250, 128 }. Such string can be created from a Color with with Color.ToString()
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  sColor (string) The color as a string, each component's value being separated by a space.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Color) The color.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="string.totable"></a><h3>string.totable( s )</h3></dt>
+<dd>
+Turn a string into a table, one character per index.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  s (string) The string.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The table.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="string.tovector"></a><h3>string.tovector( sVector )</h3></dt>
+<dd>
+Convert a string representation of a vector component's values to a Vector3 or a Vector2. ie: For a string "-6.5 10 2.1", the returned vector would be {-6.5, 10, 2.1}. Such string can be created from a vector2 or Vector3 with Vector2.ToString() or Vector3.ToString().
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  sVector (string) The vector as a string, each component's value being separated by a space.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(Vector3 or vector2) The vector.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="string.trim"></a><h3>string.trim( s )</h3></dt>
+<dd>
+Removes the white spaces at the beginning and the end of the provided string.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  s (string) The string.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The trimmed string.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="string.trimend"></a><h3>string.trimend( s )</h3></dt>
+<dd>
+Removes the white spaces at the end of the provided string.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  s (string) The string.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The trimmed string.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="string.trimstart"></a><h3>string.trimstart( s )</h3></dt>
+<dd>
+Removes the white spaces at the beginning of the provided string.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  s (string) The string.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The trimmed string.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="string.ucfirst"></a><h3>string.ucfirst( s )</h3></dt>
+<dd>
+Turn the first letter of the string uppercase.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  s (string) The string.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(string) The string.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.combine"></a><h3>table.combine( keys, values )</h3></dt>
+<dd>
+Create an associative table with the provided keys and values tables.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  keys (table) The keys of the future table.
+		</li>
+		
+		<li>
+		  values (table) The values of the future table.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table or boolean) The combined table or false if the tables have different length.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.containsvalue"></a><h3>table.containsvalue( t, value, ignoreCase )</h3></dt>
+<dd>
+Tell whether the provided value is found within the provided table.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  t (table) The table to search in.
+		</li>
+		
+		<li>
+		  value (mixed) The value to search for.
+		</li>
+		
+		<li>
+		  ignoreCase (boolean) [default=false] Ignore the case of the value. If true, the value must be of type 'string'.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(boolean) True if the value is found in the table, false otherwise.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.copy"></a><h3>table.copy( t, recursive )</h3></dt>
+<dd>
+Return a copy of the provided table.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  t (table) The table to copy.
+		</li>
+		
+		<li>
+		  recursive (boolean) [default=false] Tell whether to also copy the tables found as value (true), or just leave the same table as value (false).
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The copied table.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.getkey"></a><h3>table.getkey( t, value )</h3></dt>
+<dd>
+Get the key associated with the first occurrence of the provided value.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  t (table) The table.
+		</li>
+		
+		<li>
+		  value (mixed) The value.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(mixed) The value's key or nil if the value is not found.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.getkeys"></a><h3>table.getkeys( t )</h3></dt>
+<dd>
+Return all the keys of the provided table.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  t (table) The table.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The keys.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.getlength"></a><h3>table.getlength( t, keyType )</h3></dt>
+<dd>
+Returns the length of a table, which is the numbers of keys of the provided type (or of any type), for which the value is not nil.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  t (table) The table.
+		</li>
+		
+		<li>
+		  keyType (string) [optional] Any Lua or CraftStudio type ('string', 'GameObject', ...), case insensitive.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The table length.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.getvalue"></a><h3>table.getvalue( t, keys )</h3></dt>
+<dd>
+Safely search several levels down inside nested tables. Just returns nil if the series of keys does not leads to a value. <br> Can also be used to check if a global variable exists if the table is _G. <br> Ie for this series of nested table : table1.table2.table3.fooBar <br> table.getvalue( table1, "table2.table3.fooBar" ) would return the value of the 'fooBar' key in the 'table3' table <br> table.getvalue( table1, "table2.table3" ) would return the value of 'table3' <br> table.getvalue( table1, "table2.table3.Foo" ) would return nil because the 'table3' has no 'Foo' key <br> table.getvalue( table1, "table2.Foo.Bar.Lorem.Ipsum" ) idem <br>
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  t (table) The table.
+		</li>
+		
+		<li>
+		  keys (string) The chain of keys to looks for as a string, each keys separated by a dot.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(mixed) The value, or nil.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.getvalues"></a><h3>table.getvalues( t )</h3></dt>
+<dd>
+Return all the values of the provided table.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  t (table) The table.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The values.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.havesamecontent"></a><h3>table.havesamecontent( table1, table2 )</h3></dt>
+<dd>
+Compare table1 and table2. Returns true if they have the exact same keys which have the exact same values.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  table1 (table) The first table to compare.
+		</li>
+		
+		<li>
+		  table2 (table) The second table to compare to the first table.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(boolean) True if the two tables have the exact same content.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.insertonce"></a><h3>table.insertonce( t, index, value )</h3></dt>
+<dd>
+Insert the provided value at the end of the provided table (or at the provided index) but only if the value is not already found in the table.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  t (table) The table.
+		</li>
+		
+		<li>
+		  index (number) [optional] The index at which to insert the value.
+		</li>
+		
+		<li>
+		  value (mixed) The value to insert.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(boolean) Whether the value has been inserted (true) or not (false).</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.isarray"></a><h3>table.isarray( t, strict )</h3></dt>
+<dd>
+Tell whether he provided table is an array (has only integer keys). Decimal numbers with only zeros after the coma are considered as integers.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  t (table) The table.
+		</li>
+		
+		<li>
+		  strict (boolean) [default=true] When false, the function returns true when the table only has integer keys. When true, the function returns true when the table only has integer keys in a single and continuous set.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(boolean) True or false.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.merge"></a><h3>table.merge( ..., recursive )</h3></dt>
+<dd>
+Merge two or more tables into one new table. Table as values with a metatable are considered as instances and are not recursively merged. When the tables are arrays, the integer keys are not overridden.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  ... (table) Two or more tables
+		</li>
+		
+		<li>
+		  recursive (boolean) [default=false] Tell whether tables as values must be merged recursively. Has no effect when the tables are arrays.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The new table.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.mergein"></a><h3>table.mergein( ..., recursive )</h3></dt>
+<dd>
+Merge two or more tables in place, into the first provided table. Table as values with a metatable are considered as instances and are not recursively merged. When the tables are arrays, the integer keys are not overridden.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  ... (table) Two or more tables
+		</li>
+		
+		<li>
+		  recursive (boolean) [default=false] Tell whether tables as values must be merged recursively. Has no effect when the tables are arrays.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The first provided table.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.print"></a><h3>table.print( t )</h3></dt>
+<dd>
+Print all key/value pairs within the provided table.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  t (table) The table to print.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.printr"></a><h3>table.printr( t, maxLevel, reprint, currentLevel )</h3></dt>
+<dd>
+Recursively print all key/value pairs within the provided table. Fully prints the tables that have no metatable found as values.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  t (table) The table to print.
+		</li>
+		
+		<li>
+		  maxLevel (number) [default=10] The max recursive level. Clamped between 1 and 10.
+		</li>
+		
+		<li>
+		  reprint (boolean) [default=false] Tell whether to print again the content of already printed table. If false a message "Already printed table with key" will be displayed as the table's value. /!\ See above for warning when maxLevel argument is -1.
+		</li>
+		
+		<li>
+		  currentLevel (number) [default=1] Should only be set when called recursively.
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.reindex"></a><h3>table.reindex( t )</h3></dt>
+<dd>
+Turn the provided table (with only integer keys) in a proper sequence (with consecutive integer key beginning at 1).
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  t (table) The table.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The sequence.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.removevalue"></a><h3>table.removevalue( t, value, maxRemoveCount )</h3></dt>
+<dd>
+Remove the provided value from the provided table. If the index of the value is an integer, the value is nicely removed with table.remove(). /!\ Do not use this function on tables which have integer keys but that are not arrays (whose keys are not contiguous). /!\
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  t (table) The table.
+		</li>
+		
+		<li>
+		  value (mixed) The value to remove.
+		</li>
+		
+		<li>
+		  maxRemoveCount (number) [optional] Maximum number of occurrences of the value to be removed. If nil : remove all occurrences.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The number of occurrence removed.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.reverse"></a><h3>table.reverse( t )</h3></dt>
+<dd>
+Reverse the order of the provided table's values.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  t (table) The table.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The new table.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.setvalue"></a><h3>table.setvalue( t, keys, value )</h3></dt>
+<dd>
+Safely set a value several levels down inside nested tables. Creates the missing levels if the series of keys is incomplete. <br> Ie for this series of nested table : table1.table2.fooBar <br> table.setvalue( table1, "table2.fooBar", true ) would set true as the value of the 'fooBar' key in the 'table1.table2' table. if table2 does not exists, it is created <br>
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  t (table) The table.
+		</li>
+		
+		<li>
+		  keys (string) The chain of keys to looks for as a string, each keys separated by a dot.
+		</li>
+		
+		<li>
+		  value (mixed) The value (nil is ok).
+		</li>
+		
+	</ul>
+
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.shift"></a><h3>table.shift( t, returnKey )</h3></dt>
+<dd>
+Remove and returns the first value found in the table. Works for arrays as well as associative tables.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  t (table) The table.
+		</li>
+		
+		<li>
+		  returnKey (boolean) [default=false] If true, return the key and the value instead of just the value.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(mixed) The value, or the key and the value (if the returnKey argument is true), or nil.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="table.sortby"></a><h3>table.sortby( t, property, orderBy )</h3></dt>
+<dd>
+Sort a list of table using one of the tables property as criteria.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  t (table) The table.
+		</li>
+		
+		<li>
+		  property (string) The property used as criteria to sort the table.
+		</li>
+		
+		<li>
+		  orderBy (string) [default="asc"] How the sort should be made. Can be "asc" or "desc". Asc means small values first.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(table) The ordered table.</ul>
+
+</dd>
+<hr>
+	
+		
+<dt><a name="tonumber2"></a><h3>tonumber2( data )</h3></dt>
+<dd>
+A more flexible version of tonumber(). Returns the first continuous series of numbers found in the text version of the provided data even if it is prefixed or suffied by other characters.
+<br><br>
+
+	<strong>Parameters:</strong>
+	<ul>
+		
+		<li>
+		  data (mixed) The data to be converted to number. Usually of type number, string or userdata.
+		</li>
+		
+	</ul>
+
+
+	<strong>Return value:</strong>
+	<ul>(number) The number, or nil.</ul>
+
+</dd>
+<hr>
+	
+</dl>
+
