@@ -1,4 +1,4 @@
--- Generated on Wed Dec 10 2014 17:13:39 GMT+0100 (Paris, Madrid)
+-- Generated on Sun May 31 2015 11:22:03 GMT+0200 (Paris, Madrid (heure d’été))
 -- Lua.lua
 -- Contains extensions of Lua's libraries.
 -- All functions in this file are totally independant from Daneel or CraftStudio, they can be reused in any Lua application.
@@ -386,22 +386,37 @@ function table.print(t)
     print("~~~~~ table.print("..tostring(t)..") ~~~~~ End ~~~~~")
 end
 
-local knownKeysByPrintedTable = {} -- [ table ] = key
+local knownKeysByPrintedTable = {}
 local currentlyPrintedTable = nil
 
 --- Recursively print all key/value pairs within the provided table.
 -- Fully prints the tables that have no metatable found as values.
 -- @param t (table) The table to print.
--- @param level (string) [default=""] The string to prepend to the printed lines. Should be empty or nil unless called from table.printr().
-function table.printr( t, level )
-    level = level or ""
+-- @param maxLevel (number) [default=10] The max recursive level. Clamped between 1 and 10.
+-- @param reprint (boolean) [default=false] Tell whether to print again the content of already printed table. If false a message "Already printed table with key" will be displayed as the table's value. /!\ See above for warning when maxLevel argument is -1.
+-- @param currentLevel (number) [default=1] Should only be set when called recursively.
+function table.printr( t, maxLevel, reprint, currentLevel  )
+    maxLevel = math.clamp( maxLevel or 10, 1, 10 )
+    if reprint == nil then
+        reprint = false
+    end
+    currentLevel = currentLevel or 1
+    local sLevel = string.rep( "| - - - ", currentLevel-1 ) -- string level
 
     if t == nil then
         print(level.."table.printr( t ) : Provided table is nil.")
         return
     end
 
-    if level == "" then
+    if currentLevel == 1 then
+        for i=1, #t do
+            local value = t[i]
+            if type( value ) == "table" and getmetatable( value ) == nil then
+                --knownKeysByPrintedTable[ value ] = i
+            end
+        end
+    
+    
         print("~~~~~ table.printr("..tostring(t)..") ~~~~~ Start ~~~~~")       
         if currentlyPrintedTable == nil then
           currentlyPrintedTable = t
@@ -422,24 +437,34 @@ function table.printr( t, level )
         if type(value) == "string" then
             value = '"'..value..'"'
         end
-
+        --knownKeysByPrintedTable = {}
         if type( value ) == "table" and getmetatable( value ) == nil then
-            local knownKey = knownKeysByPrintedTable[ value ]
+            local knownKey = nil
+            if reprint == false then
+                knownKey = knownKeysByPrintedTable[ value ]
+            end
+            
             if value == currentlyPrintedTable then
-                print(level..tostring(key), "Table currently being printed: "..tostring(value) )
+                print(sLevel..tostring(key), "Table currently being printed: "..tostring(value) )
             elseif knownKey ~= nil then
-                print(level..tostring(key), "Already printed table with key "..knownKey..": "..tostring(value) )
+                print(sLevel..tostring(key), "Already printed table with key "..knownKey..": "..tostring(value) )
+                
+            elseif currentLevel <= maxLevel then
+                if reprint == false then
+                    knownKeysByPrintedTable[ value ] = key
+                end
+                print(sLevel..tostring(key), value, "#"..table.getlength(value))
+                
+                table.printr( value, maxLevel, reprint, currentLevel + 1)
             else
-                knownKeysByPrintedTable[ value ] = key
-                print(level..tostring(key), value)
-                table.printr( value, level.."| - - - ")
+                print(sLevel..tostring(key), value, "#"..table.getlength(value))
             end
         else
-            print(level..tostring(key), value)
+            print(sLevel..tostring(key), value)
         end
     end
 
-    if level == "" then
+    if currentLevel == 1 then
         print("~~~~~ table.printr("..tostring(t)..") ~~~~~ End ~~~~~")
         knownKeysByPrintedTable = {}
         currentlyPrintedTable = nil
@@ -3121,20 +3146,21 @@ function Transform.GetScale(transform)
     return scale
 end
 
+local worldToLocalGO = nil
+
 --- Transform a global position to a position local to this transform.
 -- @param transform (Transform) The transform component.
 -- @param position (Vector3) The global position.
 -- @return (Vector3) The local position corresponding to the provided global position.
 function Transform.WorldToLocal( transform, position )
-    local go = transform.worldToLocalGO
-    if go == nil then
-        go = CS.CreateGameObject( "WorldToLocal", transform.gameObject )
-        transform.worldToLocalGO = go
-    else
-        go:SetParent( transform.gameObject )
+    if worldToLocalGO == nil or worldToLocalGO.inner == nil then
+        worldToLocalGO = CS.CreateGameObject( "WorldToLocal" )
     end
-    go.transform:SetPosition( position )
-    return go.transform:GetLocalPosition()
+    worldToLocalGO:SetParent( transform.gameObject )
+    worldToLocalGO.transform:SetPosition( position )
+    position = worldToLocalGO.transform:GetLocalPosition()
+    worldToLocalGO:SetParent( nil )
+    return position
 end
 
 --- Transform a position local to this transform to a global position.
@@ -3142,15 +3168,14 @@ end
 -- @param position (Vector3) The local position.
 -- @return (Vector3) The global position corresponding to the provided local position.
 function Transform.LocalToWorld( transform, position )
-    local go = transform.worldToLocalGO
-    if go == nil then
-        go = CS.CreateGameObject( "WorldToLocal", transform.gameObject )
-        transform.worldToLocalGO = go
-    else
-        go:SetParent( transform.gameObject )
+    if worldToLocalGO == nil or worldToLocalGO.inner == nil then
+        worldToLocalGO = CS.CreateGameObject( "WorldToLocal" )
     end
-    go.transform:SetLocalPosition( position )
-    return go.transform:GetPosition()
+    worldToLocalGO:SetParent( transform.gameObject )
+    worldToLocalGO.transform:SetLocalPosition( position )
+    position = worldToLocalGO.transform:GetPosition()
+    worldToLocalGO:SetParent( nil )
+    return position
 end
 
 --------------------------------------------------------------------------------
@@ -3503,7 +3528,7 @@ function Vector2.__tostring(vector2)
 end
 
 --- Creates a new Vector2 intance.
--- @param x (number, table or Vector2) The vector's x component, or a table that contains "x" and "y" components.
+-- @param x (number, table, Vector2 or Vector3) The vector's x component, or a table that contains "x" and "y" components.
 -- @param y (number) [optional] The vector's y component. If nil, will be equal to x.
 -- @return (Vector2) The new instance.
 function Vector2.New(x, y)
@@ -7465,7 +7490,7 @@ end
 ----------------------------------------------------------------------------------
 -- Tweener
 
-Tween.Tweener = { tweeners = {} }
+Tween.Tweener = { newTweeners = {}, tweeners = {} }
 Tween.Tweener.__index = Tween.Tweener
 setmetatable(Tween.Tweener, { __call = function(Object, ...) return Object.New(...) end })
 
@@ -7583,7 +7608,7 @@ function Tween.Tweener.New(target, property, endValue, duration, onCompleteCallb
         tweener.endValue = #tweener.endStringValue
     end
     
-    Tween.Tweener.tweeners[tweener.id] = tweener
+    Tween.Tweener.newTweeners[tweener.id] = tweener
     Daneel.Debug.StackTrace.EndFunction()
     return tweener
 end
@@ -7893,6 +7918,8 @@ function Tween.Awake()
     Tween.Config.componentNamesByProperty = t
 
     -- destroy and sanitize the tweeners when the scene loads
+    table.mergein( Tween.Tweener.tweeners, Tween.Tweener.newTweeners )
+    Tween.Tweener.newTweeners = {}
     for id, tweener in pairs( Tween.Tweener.tweeners ) do
         if tweener.destroyOnSceneLoad then
             tweener:Destroy()
@@ -7901,6 +7928,9 @@ function Tween.Awake()
 end
 
 function Tween.Update()
+    table.mergein( Tween.Tweener.tweeners, Tween.Tweener.newTweeners )
+    Tween.Tweener.newTweeners = {}
+
     for id, tweener in pairs( Tween.Tweener.tweeners ) do
         if tweener:IsTargetDestroyed() then
             tweener:Destroy()
@@ -8031,6 +8061,7 @@ local function resolveTarget( gameObject, property )
 end
 
 --- Creates an animation (a tweener) with the provided parameters.
+-- @param gameObject (GameObject) The game object.
 -- @param property (string) The name of the property to animate.
 -- @param endValue (number, Vector2, Vector3 or string) The value the property should have at the end of the duration.
 -- @param duration (number) The time (in seconds) or frame it should take for the property to reach endValue.

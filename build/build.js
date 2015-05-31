@@ -9,8 +9,8 @@ How to use :
 - Launch a Node Js cmd prompt, nagivate to where this script is then run it with "node [nameofthescript]" 
 */
 
-var luamin = require("luamin")
-var fs = require("fs")
+var luamin = require("luamin");
+var fs = require("fs");
 
 var root = "F:/Development/CraftStudio/Daneel/";
 var readRoot = root+"src/";
@@ -26,8 +26,8 @@ var fileNames = [
     "Tween",
 ]; // let the Tween script at the end of the array
 
-var completeFilePath = writeRoot+"Daneel.lua"
-var completeMinFilePath = writeRoot+"Daneel.min.lua"
+var completeFilePath = writeRoot+"Daneel.lua";
+var completeMinFilePath = writeRoot+"Daneel.min.lua";
 
 var fileIndex = -1;
 var sDate = "-- Generated on "+ new Date().toString() +"\n";
@@ -51,7 +51,7 @@ var appendToCompleteFile = function(err, data) {
 
         main();
     } );    
-}
+};
 
 
 function main() {
@@ -71,7 +71,7 @@ function main() {
 
     if (fileToReadName === undefined) {
         // no more files to read, time to minify
-        /*console.log( "Aggregation of the files completed" );
+        console.log( "Aggregation of the files completed" );
         
         fs.readFile( completeFilePath, "utf8", function(err, data) {
             if (err) {
@@ -98,7 +98,7 @@ function main() {
 
                 console.log("Complete min file written.");
             } );
-        } );*/
+        } );
     }
     else {
         // read a file and append it to the complete file
